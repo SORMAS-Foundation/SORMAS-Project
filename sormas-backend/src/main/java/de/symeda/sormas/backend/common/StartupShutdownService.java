@@ -199,7 +199,13 @@ public class StartupShutdownService {
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
 		logger.info("Starting automatic database update...");
 		
-		Integer currentVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();		
+		boolean hasSchmemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
+		Integer currentVersion;
+		if (hasSchmemaVersion) {
+			currentVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();	
+		} else {
+			currentVersion = null;
+		}
 		File schemaFile = new File(getClass().getClassLoader().getResource(schemaFileName).getFile());
 		Scanner scanner = null;
 		
@@ -215,7 +221,7 @@ public class StartupShutdownService {
 					continue;
 				}
 				
-				if (nextLine.startsWith("--")) {
+				if (nextLine.trim().startsWith("--")) {
 					continue;
 				}
 				
@@ -235,6 +241,7 @@ public class StartupShutdownService {
 					String newVersion = nextLine.substring(61, nextLine.indexOf(",", 61));
 					logger.info("Updating database to version " + newVersion + "...");
 					entityManager.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
+					nextUpdateBuilder = new StringBuilder();
 				}
 			}
 		} catch (FileNotFoundException e) {

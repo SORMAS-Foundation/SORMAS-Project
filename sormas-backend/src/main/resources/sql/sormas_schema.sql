@@ -2260,7 +2260,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (102, 'Case age fiel
 -- 1st of january is always in week 1
 CREATE OR REPLACE FUNCTION epi_week (indate timestamp)
 RETURNS integer AS 
-$$
+$result$
 DECLARE year integer;
 	doy integer;
 	doy_end integer;
@@ -2276,7 +2276,7 @@ BEGIN
    -- week day of first day in next year
    -- isodow: The day of the week as Monday (1) to Sunday (7)
    isodow_start_next := date_part('isodow', date ((year+1) || '-01-01'));
-   -- end of date year?
+   -- check end of date year
    -- DOY 31.12 - DOY < DOY(01.01.Y+1)
    if (doy_end - doy < isodow_start_next-1) THEN
 	-- falls into next epi year
@@ -2291,13 +2291,13 @@ BEGIN
    
    RETURN epi_week;
 END;
-$$ 
+$result$
 LANGUAGE plpgsql;
 
 -- see epi_week
 CREATE OR REPLACE FUNCTION epi_year (indate timestamp)
 RETURNS integer AS 
-$$
+$result$
 DECLARE year integer;
 	doy integer;
 	doy_end integer;
@@ -2318,7 +2318,7 @@ BEGIN
    
    RETURN epi_year;
 END;
-$$ 
+$result$ 
 LANGUAGE plpgsql;
 
 -- e.g. SELECT epi_week('2015-12-27'), epi_year('2015-12-27'); -- 52-2015
@@ -2359,7 +2359,7 @@ UPDATE visit SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 UPDATE visit_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 UPDATE weeklyreportentry SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 
-INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');-- 2018-05-31 Add description field for other health facility to previous hospitalizations and person occupations #549
+INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');
 
 -- 2018-06-01 Add description field for other health facility to previous hospitalizations and person occupations #549
 
