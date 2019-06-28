@@ -199,9 +199,9 @@ public class StartupShutdownService {
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
 		logger.info("Starting automatic database update...");
 		
-		boolean hasSchmemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
+		boolean hasSchemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
 		Integer currentVersion;
-		if (hasSchmemaVersion) {
+		if (hasSchemaVersion) {
 			currentVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();	
 		} else {
 			currentVersion = null;

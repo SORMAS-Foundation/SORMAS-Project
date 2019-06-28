@@ -22,6 +22,7 @@ import java.util.Set;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -48,6 +49,7 @@ public class UserDto extends EntityDto {
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String LABORATORY = "laboratory";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String LIMITED_DISEASE = "limitedDisease";
 
 	private boolean active = true;
@@ -70,6 +72,8 @@ public class UserDto extends EntityDto {
 	private FacilityReferenceDto healthFacility;
 	// laboratory of lab user
 	private FacilityReferenceDto laboratory;
+	// point of entry of POE users
+	private PointOfEntryReferenceDto pointOfEntry;
 
 	private UserReferenceDto associatedOfficer;
 	
@@ -197,6 +201,14 @@ public class UserDto extends EntityDto {
 		this.laboratory = laboratory;
 	}
 	
+	public PointOfEntryReferenceDto getPointOfEntry() {
+		return pointOfEntry;
+	}
+
+	public void setPointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
+	}
+
 	public UserReferenceDto toReference() {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
 	}

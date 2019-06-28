@@ -74,6 +74,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
@@ -119,6 +120,8 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb;
+import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -148,6 +151,8 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.Hospita
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalizationService;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
@@ -274,6 +279,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private OutbreakFacadeEjbLocal outbreakFacade;
 	@EJB
 	private MaternalHistoryFacadeEjbLocal maternalHistoryFacade;
+	@EJB
+	private PointOfEntryService pointOfEntryService;
+	@EJB
+	private PortHealthInfoFacadeEjbLocal portHealthInfoFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -1223,6 +1232,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			source.setMaternalHistory(MaternalHistoryDto.build());
 		}
 		target.setMaternalHistory(maternalHistoryFacade.fromDto(source.getMaternalHistory()));
+		if (source.getPortHealthInfo() == null) {
+			source.setPortHealthInfo(PortHealthInfoDto.build());
+		}
+		target.setPortHealthInfo(portHealthInfoFacade.fromDto(source.getPortHealthInfo()));
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1257,7 +1270,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
 		
 		target.setCreationVersion(source.getCreationVersion());
-
+		target.setCaseOrigin(source.getCaseOrigin());
+		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
+		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
+		
 		return target;
 	}
 
@@ -1296,6 +1312,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		if (source.getMaternalHistory() != null) {
 			target.setMaternalHistory(MaternalHistoryFacadeEjb.toDto(source.getMaternalHistory()));
+		}
+		if (source.getPortHealthInfo() != null) {
+			target.setPortHealthInfo(PortHealthInfoFacadeEjb.toDto(source.getPortHealthInfo()));
 		}
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
@@ -1338,6 +1357,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
 		
 		target.setCreationVersion(source.getCreationVersion());
+		target.setCaseOrigin(source.getCaseOrigin());
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 
 		return target;
 	}

@@ -46,10 +46,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter.FacilityConsumer;
 
-/**
- * @author Christopher Riedel
- *
- */
 @Stateless
 @LocalBean
 public class FacilityService extends AbstractAdoService<Facility> {

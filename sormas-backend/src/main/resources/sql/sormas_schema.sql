@@ -3374,3 +3374,81 @@ UPDATE public.facility SET publicownership=false WHERE publicownership IS NULL;
 ALTER TABLE public.facility ALTER COLUMN publicownership SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (155, 'Added missing not null to publicownership #1198');
+
+-- 2019-06-28 #985
+--ALTER TABLE cases ADD COLUMN caseorigin varchar(255);
+--ALTER TABLE cases ADD COLUMN pointofentry_id bigint;
+--ALTER TABLE cases ADD COLUMN pointofentrydetails varchar(512);
+--ALTER TABLE cases_history ADD COLUMN pointofentry_id bigint;
+--ALTER TABLE cases_history ADD COLUMN pointofentrydetails varchar(512);
+--ALTER TABLE cases_history ADD COLUMN caseorigin varchar(255);
+--UPDATE cases SET caseorigin = 'IN_COUNTRY';
+
+--ALTER TABLE cases ADD CONSTRAINT fk_cases_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry (id);
+
+--CREATE TABLE pointofentry(
+--	id bigint not null,
+--	uuid varchar(36) not null unique,
+--	changedate timestamp not null,
+--	creationdate timestamp not null,
+--	pointofentrytype varchar(255),
+--	name varchar(512),
+--	region_id bigint,
+--	district_id bigint,
+--  latitude double precision,
+--  longitude double precision,
+--  active boolean, 
+--	sys_period tstzrange not null,
+--	primary key(id)
+--);
+
+--ALTER TABLE pointofentry OWNER TO sormas_user;
+--ALTER TABLE pointofentry ADD CONSTRAINT fk_pointofentry_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+--ALTER TABLE pointofentry ADD CONSTRAINT fk_pointofentry_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+
+--ALTER TABLE users ADD COLUMN pointofentry_id bigint;
+--ALTER TABLE users_history ADD COLUMN pointofentry_id bigint;
+
+--ALTER TABLE users ADD CONSTRAINT fk_users_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry (id);
+
+--CREATE TABLE porthealthinfo(
+--	id bigint not null,
+--	uuid varchar(36) not null unique,
+--	changedate timestamp not null,
+--	creationdate timestamp not null,
+--	airlinenumber varchar(512),
+--	flightnumber varchar(512),
+--	departuredatetime timestamp,
+--	arrivaldatetime timestamp,
+--	freeseating varchar(255),
+--	seatnumber varchar(512),
+--	departureairport varchar(512),
+--	numberoftransitstops integer,
+--	transitstopdetails1 varchar(512),
+--	transitstopdetails2 varchar(512),
+--	transitstopdetails3 varchar(512),
+--	transitstopdetails4 varchar(512),
+--	transitstopdetails5 varchar(512),
+--	vesselname varchar(512),
+--	vesseldetails varchar(512),
+--	portofdeparture varchar(512),
+--	lastportofcall varchar(512),
+--	conveyancetype varchar(255),
+--	departurelocation varchar(512),
+--	finaldestination varchar(512),
+--	details varchar(512),
+--	sys_period tstzrange not null,
+--	primary key(id)
+--);
+
+--CREATE TABLE porthealthinfo_history (LIKE casepointofentry);
+--CREATE TRIGGER versioning_trigger
+--BEFORE INSERT OR UPDATE OR DELETE ON porthealthinfo
+--FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'porthealthinfo_history', true);
+--ALTER TABLE porthealthinfo_history OWNER TO sormas_user;
+
+--ALTER TABLE cases ADD COLUMN porthealthinfo_id bigint;
+--ALTER TABLE cases_history ADD COLUMN porthealthinfo_id bigint;
+--ALTER TABLE cases ADD CONSTRAINT fk_cases_porthealthinfo_id FOREIGN KEY (porthealthinfo_id) REFERENCES porthealthinfo (id);
+
+-- TODO: INSERT INTO schema_version

@@ -22,10 +22,12 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -75,6 +77,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String THERAPY = "therapy";
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
+	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
@@ -92,6 +95,9 @@ public class CaseDataDto extends EntityDto {
 	public static final String CLINICIAN_DETAILS = "clinicianDetails";
 	public static final String NOTIFYING_CLINIC = "notifyingClinic";
 	public static final String NOTIFYING_CLINIC_DETAILS = "notifyingClinicDetails";
+	public static final String CASE_ORIGIN = "caseOrigin";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -188,6 +194,9 @@ public class CaseDataDto extends EntityDto {
 	private ClinicalCourseDto clinicalCourse;
 	private MaternalHistoryDto maternalHistory;
 	private String creationVersion;
+	private PortHealthInfoDto portHealthInfo;	private CaseOrigin caseOrigin;
+	private PointOfEntryReferenceDto pointOfEntry;
+	private String pointOfEntryDetails;
 	
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -199,6 +208,7 @@ public class CaseDataDto extends EntityDto {
 		caze.setTherapy(TherapyDto.build());
 		caze.setClinicalCourse(ClinicalCourseDto.build());
 		caze.setMaternalHistory(MaternalHistoryDto.build());
+		caze.setPortHealthInfo(PortHealthInfoDto.build());
 		caze.setDisease(disease);
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
@@ -453,6 +463,14 @@ public class CaseDataDto extends EntityDto {
 		this.maternalHistory = maternalHistory;
 	}
 
+	public PortHealthInfoDto getPortHealthInfo() {
+		return portHealthInfo;
+	}
+
+	public void setPortHealthInfo(PortHealthInfoDto portHealthInfo) {
+		this.portHealthInfo = portHealthInfo;
+	}
+
 	public YesNoUnknown getPregnant() {
 		return pregnant;
 	}
@@ -595,6 +613,30 @@ public class CaseDataDto extends EntityDto {
 
 	public void setCreationVersion(String creationVersion) {
 		this.creationVersion = creationVersion;
+	}
+
+	public CaseOrigin getCaseOrigin() {
+		return caseOrigin;
+	}
+
+	public void setCaseOrigin(CaseOrigin caseOrigin) {
+		this.caseOrigin = caseOrigin;
+	}
+
+	public PointOfEntryReferenceDto getPointOfEntry() {
+		return pointOfEntry;
+	}
+
+	public void setPointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
+	}
+
+	public String getPointOfEntryDetails() {
+		return pointOfEntryDetails;
+	}
+
+	public void setPointOfEntryDetails(String pointOfEntryDetails) {
+		this.pointOfEntryDetails = pointOfEntryDetails;
 	}
 	
 }
