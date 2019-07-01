@@ -34,7 +34,7 @@ public class SampleDto extends EntityDto {
 	public static final String I18N_PREFIX = "Sample";
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
-	public static final String SAMPLE_CODE = "sampleCode";
+//	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
