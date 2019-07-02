@@ -72,9 +72,9 @@ public class FacilityServiceTest {
 	@Test
 	public void testImportHealthFacilities() {
 		FacilityService facilityService = getBean(FacilityService.class);
-		RegionService regionService = getBean(RegionService.class);
+		DistrictService districtService = getBean(DistrictService.class);
 
-		List<Facility> healthFacilitiesByDistrict = facilityService.getHealthFacilitiesByDistrict(regionService.getAll().get(0).getDistricts().get(0), false);
+		List<Facility> healthFacilitiesByDistrict = facilityService.getHealthFacilitiesByDistrict(districtService.getAll().get(0), false);
 		// List should have some entries
 		assertThat(healthFacilitiesByDistrict.size(), greaterThan(1));
 	}

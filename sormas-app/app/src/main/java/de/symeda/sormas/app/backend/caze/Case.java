@@ -211,6 +211,10 @@ public class Case extends AbstractDomainObject {
     @Column(length = 512)
     private String notifyingClinicDetails;
 
+    @Column(length = 32)
+    @DatabaseField(columnName = "versionCreated")
+    private String creationVersion;
+
     public Person getPerson() {
         return person;
     }
@@ -599,5 +603,13 @@ public class Case extends AbstractDomainObject {
 
     public void setNotifyingClinicDetails(String notifyingClinicDetails) {
         this.notifyingClinicDetails = notifyingClinicDetails;
+    }
+
+    public String getCreationVersion() {
+        return creationVersion;
+    }
+
+    public void setCreationVersion(String creationVersion) {
+        this.creationVersion = creationVersion;
     }
 }

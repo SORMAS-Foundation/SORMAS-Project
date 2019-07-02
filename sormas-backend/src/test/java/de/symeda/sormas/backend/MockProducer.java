@@ -18,8 +18,8 @@
 package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
@@ -77,7 +77,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, getPrincipal(), topic, connectionFactory, timerService, userTransaction);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction);
 		wireMocks();
 	}
 

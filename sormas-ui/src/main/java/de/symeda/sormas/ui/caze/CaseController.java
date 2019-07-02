@@ -307,7 +307,7 @@ public class CaseController {
 							FacadeProvider.getContactFacade().saveContact(updatedContact);
 						}
 						Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-						navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
+						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					} else {
 						ControllerProvider.getPersonController().selectOrCreatePerson(
 								createForm.getPersonFirstName(), createForm.getPersonLastName(), 
@@ -316,7 +316,7 @@ public class CaseController {
 										dto.setPerson(person);
 										FacadeProvider.getCaseFacade().saveCase(dto);
 										Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-										navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
+										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 									}
 								});
 					}

@@ -349,7 +349,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	public String getHighestEpidNumber(String epidNumberPrefix) {
 		try {
 			Query query = em.createNativeQuery("SELECT epidnumber FROM " + Case.TABLE_NAME + " WHERE " + Case.TABLE_NAME + ".epidnumber LIKE '" 
-							+ epidNumberPrefix + "%' ORDER BY NULLIF(regexp_replace(" + Case.TABLE_NAME + ".epidnumber, '\\D', '', 'g'), '')::int DESC LIMIT 1");
+							+ epidNumberPrefix + "%' ORDER BY CAST(NULLIF(regexp_replace(" + Case.TABLE_NAME + ".epidnumber, '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
 			return (String) query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
@@ -393,6 +393,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		// National users can access all cases in the system
 		if (user == null
 				|| user.getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
@@ -585,6 +586,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, From<Case, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
@@ -638,13 +640,11 @@ public class CaseService extends AbstractAdoService<Case> {
 					);
 		}
 		if (caseCriteria.getArchived() != null) {
-			filter = and (cb, filter, cb.equal(from.get(Case.ARCHIVED), caseCriteria.getArchived()));
+			filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), caseCriteria.getArchived()));
 		}
-
 		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
 			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
-			for (int i=0; i<textFilters.length; i++)
-			{
+			for (int i = 0; i < textFilters.length; i++) {
 				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
@@ -652,6 +652,19 @@ public class CaseService extends AbstractAdoService<Case> {
 							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
 							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
 							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		if (caseCriteria.getReportingUserLike() != null) {
+			String[] textFilters = caseCriteria.getReportingUserLike().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
+							cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

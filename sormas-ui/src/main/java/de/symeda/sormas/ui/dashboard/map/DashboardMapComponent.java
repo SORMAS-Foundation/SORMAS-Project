@@ -147,7 +147,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER) || UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER) || UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
+				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
 			showRegions = true;
 
 			map.setZoom(6);
@@ -394,6 +395,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				layersLayout.addComponent(showEventsCheckBox);
 
 				if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
+						|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
 						|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
 					OptionGroup regionMapVisualizationSelect = new OptionGroup();
 					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);

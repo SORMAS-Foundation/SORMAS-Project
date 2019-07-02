@@ -75,7 +75,7 @@ public class UserRoleConfigService extends AbstractAdoService<UserRoleConfig> {
 
 		String queryString = "SELECT " + AbstractDomainObject.UUID 
 				+ " FROM " + UserRoleConfig.TABLE_NAME + "_history h"
-				+ " WHERE sys_period @> ?1::timestamptz"
+				+ " WHERE sys_period @> CAST (?1 AS timestamptz)"
 				+ " AND NOT EXISTS (SELECT FROM " + UserRoleConfig.TABLE_NAME 
 					+ " WHERE " + AbstractDomainObject.ID + " = h." + AbstractDomainObject.ID + ")";
 		Query nativeQuery = em.createNativeQuery(queryString);

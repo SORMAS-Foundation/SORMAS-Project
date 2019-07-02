@@ -52,6 +52,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,6 +112,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -705,7 +707,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
-		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Case, Community> communityJoin = caze.join(Case.COMMUNITY, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
@@ -715,16 +717,19 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		cq.multiselect(caze.get(Case.DISEASE), facility.get(Facility.COMMUNITY));
-		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
-		cq.distinct(true);
+		Expression<Number> maxReportDate = cb.max(caze.get(Case.REPORT_DATE));
+		cq.multiselect(caze.get(Case.DISEASE), communityJoin, maxReportDate);
+		cq.groupBy(caze.get(Case.DISEASE), communityJoin);
+		cq.orderBy(cb.desc(maxReportDate));
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
 		Map<Disease, Community> resultMap = new HashMap<Disease, Community>();
 		for (Object[] e : results) {
-			if (!resultMap.containsKey(e[0])) {
-				resultMap.put((Disease) e[0], (Community) e[1]);
+			Disease disease = (Disease)e[0];
+			if (!resultMap.containsKey(disease)) {
+				Community community = (Community)e[1];
+				resultMap.put(disease, community);
 			}
 		}
 
@@ -737,8 +742,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
-		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
-		Join<Facility, Community> community = facility.join(Facility.COMMUNITY, JoinType.LEFT);
+		Join<Case, Community> community = caze.join(Case.COMMUNITY, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
@@ -749,7 +753,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.select(community.get(Community.NAME));
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
-		cq.distinct(true);
 
 		TypedQuery<String> query = em.createQuery(cq);
 		query.setFirstResult(0);
@@ -781,6 +784,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);
+		
+		// Set version number on a new case
+		if (existingCaseDto == null && StringUtils.isEmpty(dto.getCreationVersion())) {
+			caze.setCreationVersion(InfoProvider.get().getVersion());
+		}
 
 		caseService.ensurePersisted(caze);
 		onCaseChanged(existingCaseDto, caze);
@@ -1247,6 +1255,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSequelaeDetails(source.getSequelaeDetails());
 		target.setNotifyingClinic(source.getNotifyingClinic());
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+		
+		target.setCreationVersion(source.getCreationVersion());
 
 		return target;
 	}
@@ -1326,6 +1336,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSequelaeDetails(source.getSequelaeDetails());
 		target.setNotifyingClinic(source.getNotifyingClinic());
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+		
+		target.setCreationVersion(source.getCreationVersion());
 
 		return target;
 	}
@@ -1881,7 +1893,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			query.setParameter(i + 1, filterBuilderParameters.get(i));
 		}
 		if (groupingA == null && groupingB == null) {
-			long result = (long) query.getSingleResult();
+			long result = ((Number) query.getSingleResult()).longValue();
 			if (result == 0) {
 				// Return an empty list if no cases have been found
 				return new ArrayList<>();
@@ -1991,8 +2003,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append("(EXTRACT(" + dateElementToExtract + " FROM ").append(tableName).append(".")
-		.append(fieldName).append(")::integer)").append(" IN ");
+		filterBuilder.append("(CAST(EXTRACT(" + dateElementToExtract + " FROM ").append(tableName).append(".")
+		.append(fieldName).append(")  AS integer))").append(" IN ");
 		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
@@ -2026,9 +2038,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
-		.append(" * 10)::integer) + (EXTRACT(QUARTER FROM ").append(tableName).append(".").append(fieldName)
-		.append(")::integer)").append(" IN ");
+		filterBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
+		.append(" * 10) AS integer)) + (CAST(EXTRACT(QUARTER FROM ").append(tableName).append(".").append(fieldName)
+		.append(") AS integer))").append(" IN ");
 		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
@@ -2039,9 +2051,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
-		.append(" * 100)::integer) + (EXTRACT(MONTH FROM ").append(tableName).append(".").append(fieldName)
-		.append(")::integer)").append(" IN ");
+		filterBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
+		.append(" * 100) AS integer)) + (CAST(EXTRACT(MONTH FROM ").append(tableName).append(".").append(fieldName)
+		.append(") AS integer))").append(" IN ");
 		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
@@ -2201,8 +2213,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void extendGroupingBuilderWithDate(StringBuilder groupingBuilder, String dateToExtract, String tableName,
 			String fieldName, String groupAlias) {
-		groupingBuilder.append("(EXTRACT(" + dateToExtract + " FROM ").append(tableName).append(".").append(fieldName)
-		.append(")::integer) AS ").append(groupAlias);
+		groupingBuilder.append("(CAST(EXTRACT(" + dateToExtract + " FROM ").append(tableName).append(".").append(fieldName)
+		.append(") AS integer)) AS ").append(groupAlias);
 	}
 
 	private void extendGroupingBuilderWithEpiWeek(StringBuilder groupingBuilder, String tableName, String fieldName,
@@ -2220,16 +2232,16 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void extendGroupingBuilderWithQuarterOfYear(StringBuilder groupingBuilder, String tableName,
 			String fieldName, String groupAlias) {
-		groupingBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName)
-		.append(") * 10)::integer)").append(" + (EXTRACT(QUARTER FROM ").append(tableName).append(".")
-		.append(fieldName).append(")::integer) AS ").append(groupAlias);
+		groupingBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName)
+		.append(") * 10) AS integer))").append(" + (CAST(EXTRACT(QUARTER FROM ").append(tableName).append(".")
+		.append(fieldName).append(") AS integer)) AS ").append(groupAlias);
 	}
 
 	private void extendGroupingBuilderWithMonthOfYear(StringBuilder groupingBuilder, String tableName, String fieldName,
 			String groupAlias) {
-		groupingBuilder.append("((EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName)
-		.append(") * 100)::integer)").append(" + (EXTRACT(MONTH FROM ").append(tableName).append(".")
-		.append(fieldName).append(")::integer) AS ").append(groupAlias);
+		groupingBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName)
+		.append(") * 100) AS integer))").append(" + (CAST(EXTRACT(MONTH FROM ").append(tableName).append(".")
+		.append(fieldName).append(") AS integer)) AS ").append(groupAlias);
 	}
 
 	private void extendGroupingBuilderWithAgeInterval(StringBuilder groupingBuilder, StatisticsCaseAttribute grouping,

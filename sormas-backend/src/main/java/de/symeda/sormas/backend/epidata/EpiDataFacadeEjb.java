@@ -115,7 +115,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		if (!DataHelper.equal(target.getBurials(), burials)) {
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
-		target.setBurials(burials);
+		target.getBurials().clear();
+		target.getBurials().addAll(burials);
 		
 		List<EpiDataGathering> gatherings = new ArrayList<>();
 		for (EpiDataGatheringDto gatheringDto : source.getGatherings()) {
@@ -126,7 +127,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		if (!DataHelper.equal(target.getGatherings(), gatherings)) {
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
-		target.setGatherings(gatherings);
+		target.getGatherings().clear();
+		target.getGatherings().addAll(gatherings);
 		
 		List<EpiDataTravel> travels = new ArrayList<>();
 		for (EpiDataTravelDto travelDto : source.getTravels()) {
@@ -137,7 +139,8 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		if (!DataHelper.equal(target.getTravels(), travels)) {
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
-		target.setTravels(travels);
+		target.getTravels().clear();
+		target.getTravels().addAll(travels);
 		
 		return target;
 	}

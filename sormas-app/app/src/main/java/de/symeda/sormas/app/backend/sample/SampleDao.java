@@ -105,7 +105,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
 
     public List<Sample> queryByCriteria(SampleCriteria criteria, long offset, long limit) {
         try {
-            return buildQueryBuilder(criteria).orderBy(Sample.SAMPLE_DATE_TIME, true)
+            return buildQueryBuilder(criteria).orderBy(Sample.LOCAL_CHANGE_DATE, true)
                     .offset(offset).limit(limit).query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryByCriteria on Sample");

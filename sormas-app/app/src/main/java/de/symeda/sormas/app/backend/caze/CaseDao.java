@@ -49,6 +49,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
@@ -405,6 +406,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
     @Override
     public Case saveAndSnapshot(final Case caze) throws DaoException {
         final Case existingCase = queryUuidBasic(caze.getUuid());
+
+        if (existingCase == null) {
+            caze.setCreationVersion(InfoProvider.get().getVersion() + " (App)");
+        }
+
         onCaseChanged(existingCase, caze);
         return super.saveAndSnapshot(caze);
     }
@@ -509,7 +515,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     public List<Case> queryByCriteria(CaseCriteria criteria, long offset, long limit) {
         try {
-            return buildQueryBuilder(criteria).orderBy(Case.CHANGE_DATE, false)
+            return buildQueryBuilder(criteria).orderBy(Case.LOCAL_CHANGE_DATE, false)
                     .offset(offset).limit(limit).query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryByCriteria on Case");

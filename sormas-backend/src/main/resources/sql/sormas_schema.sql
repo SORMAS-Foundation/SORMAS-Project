@@ -2168,7 +2168,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (96, 'SQL function t
 -- 2018-03-05 Add upgrade column to schema_version for backend upgrade logic #402
 ALTER TABLE schema_version ADD COLUMN upgradeNeeded boolean NOT NULL DEFAULT false;
 UPDATE schema_version SET upgradeNeeded=true WHERE version_number=95;
-GRANT SELECT, UPDATE ON TABLE schema_version TO sormas_user;
+-- fixed 2019-06-25 #1126
+GRANT ALL ON TABLE schema_version TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (97, 'Add upgrade column to schema_version for backend upgrade logic #402');
 
@@ -2259,7 +2260,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (102, 'Case age fiel
 -- 1st of january is always in week 1
 CREATE OR REPLACE FUNCTION epi_week (indate timestamp)
 RETURNS integer AS 
-$$
+$result$
 DECLARE year integer;
 	doy integer;
 	doy_end integer;
@@ -2275,7 +2276,7 @@ BEGIN
    -- week day of first day in next year
    -- isodow: The day of the week as Monday (1) to Sunday (7)
    isodow_start_next := date_part('isodow', date ((year+1) || '-01-01'));
-   -- end of date year?
+   -- check end of date year
    -- DOY 31.12 - DOY < DOY(01.01.Y+1)
    if (doy_end - doy < isodow_start_next-1) THEN
 	-- falls into next epi year
@@ -2290,13 +2291,13 @@ BEGIN
    
    RETURN epi_week;
 END;
-$$ 
+$result$
 LANGUAGE plpgsql;
 
 -- see epi_week
 CREATE OR REPLACE FUNCTION epi_year (indate timestamp)
 RETURNS integer AS 
-$$
+$result$
 DECLARE year integer;
 	doy integer;
 	doy_end integer;
@@ -2317,7 +2318,7 @@ BEGIN
    
    RETURN epi_year;
 END;
-$$ 
+$result$ 
 LANGUAGE plpgsql;
 
 -- e.g. SELECT epi_week('2015-12-27'), epi_year('2015-12-27'); -- 52-2015
@@ -2358,7 +2359,7 @@ UPDATE visit SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 UPDATE visit_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 UPDATE weeklyreportentry SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 
-INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');-- 2018-05-31 Add description field for other health facility to previous hospitalizations and person occupations #549
+INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');
 
 -- 2018-06-01 Add description field for other health facility to previous hospitalizations and person occupations #549
 
@@ -3334,3 +3335,36 @@ ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthcommunity_id FOREIGN KEY
 ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthfacility_id FOREIGN KEY (placeofbirthfacility_id) REFERENCES facility (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (151, 'Add new fields for Congenital Rubella #1133');
+
+-- 2019-06-25 Add version case was created #1106
+ALTER TABLE cases ADD COLUMN versioncreated varchar(32);
+
+INSERT INTO schema_version (version_number, comment) VALUES (152, 'Add version case was created #1106');
+
+-- 2019-07-01 Fixed problems in database schema #1198
+UPDATE public.location SET areatype='URBAN' WHERE areatype='0';
+UPDATE public.location SET areatype='RURAL' WHERE areatype='1';
+
+UPDATE public.symptoms SET congenitalGlaucoma='YES' WHERE congenitalGlaucoma='0';
+UPDATE public.symptoms SET congenitalGlaucoma='NO' WHERE congenitalGlaucoma='1';
+UPDATE public.symptoms SET congenitalGlaucoma='UNKNOWN' WHERE congenitalGlaucoma='2';
+
+UPDATE public.symptoms SET lesionsResembleImg1='YES' WHERE lesionsResembleImg1='0';
+UPDATE public.symptoms SET lesionsResembleImg1='NO' WHERE lesionsResembleImg1='1';
+UPDATE public.symptoms SET lesionsResembleImg1='UNKNOWN' WHERE lesionsResembleImg1='2';
+UPDATE public.symptoms SET lesionsResembleImg2='YES' WHERE lesionsResembleImg2='0';
+UPDATE public.symptoms SET lesionsResembleImg2='NO' WHERE lesionsResembleImg2='1';
+UPDATE public.symptoms SET lesionsResembleImg2='UNKNOWN' WHERE lesionsResembleImg2='2';
+UPDATE public.symptoms SET lesionsResembleImg3='YES' WHERE lesionsResembleImg3='0';
+UPDATE public.symptoms SET lesionsResembleImg3='NO' WHERE lesionsResembleImg3='1';
+UPDATE public.symptoms SET lesionsResembleImg3='UNKNOWN' WHERE lesionsResembleImg3='2';
+UPDATE public.symptoms SET lesionsResembleImg4='YES' WHERE lesionsResembleImg4='0';
+UPDATE public.symptoms SET lesionsResembleImg4='NO' WHERE lesionsResembleImg4='1';
+UPDATE public.symptoms SET lesionsResembleImg4='UNKNOWN' WHERE lesionsResembleImg4='2';
+
+INSERT INTO schema_version (version_number, comment) VALUES (153, 'Fixed problems in database schema #1198');
+
+-- 2019-07-02 Renamed version case was created #1106
+ALTER TABLE cases RENAME COLUMN versioncreated TO creationversion;
+
+INSERT INTO schema_version (version_number, comment) VALUES (154, 'Renamed version case was created #1106');

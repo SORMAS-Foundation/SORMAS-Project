@@ -23,6 +23,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class FacilityDto extends EntityDto {
 
@@ -155,6 +156,7 @@ public class FacilityDto extends EntityDto {
 
 	public static FacilityDto build() {
 		FacilityDto dto = new FacilityDto();
+		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}
 

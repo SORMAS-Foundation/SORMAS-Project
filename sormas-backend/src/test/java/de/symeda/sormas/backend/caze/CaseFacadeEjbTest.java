@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +76,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -86,7 +87,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testDiseaseChangeUpdatesContacts() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -113,7 +114,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	
 	@Test
 	public void testMovingCaseUpdatesTaskAssigneeAndCreatesPreviousHospitalization() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -126,7 +127,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		TaskDto doneTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.DONE,
 				caze.toReference(), null, null, new Date(), user.toReference());
 
-		RDCF newRDCF = creator.createRDCF("New Region", "New District", "New Community", "New Facility");
+		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
 		
 		caze.setRegion(new RegionReferenceDto(newRDCF.region.getUuid()));
 		caze.setDistrict(new DistrictReferenceDto(newRDCF.district.getUuid()));
@@ -159,7 +160,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDashboardCaseListCreation() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -179,7 +180,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testMapCaseListCreation() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -197,7 +198,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -216,7 +217,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetExportList() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -255,7 +256,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseDeletion() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
@@ -290,7 +291,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testOutcomePersonConditionUpdate() {
 
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -358,7 +359,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testOutcomePersonConditionUpdateForAppSync() throws InterruptedException {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -380,7 +381,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	
 	@Test
 	public void testArchiveAndDearchiveCase() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -414,7 +415,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void testQueryCaseCount() throws Exception {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -436,23 +437,22 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, results.size());
 	}
 
-	// TODO: Re-enable when issue with H2 has been resolved
-//	@Test
-//	public void testEpidNumberGeneration() {
-//		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-//		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-//				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-//		PersonDto cazePerson = creator.createPerson("Case", "Person");
-//		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
-//		
-//		Calendar calendar = Calendar.getInstance();
-//		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-//		
-//		assertEquals("COU-REG-DIS-" + year + "-01", caze.getEpidNumber());
-//
-//		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
-//		
-//		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
-//	}
+	@Test
+	public void testEpidNumberGeneration() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+		
+		Calendar calendar = Calendar.getInstance();
+		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+		
+		assertEquals("COU-REG-DIS-" + year + "-01", caze.getEpidNumber());
+
+		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+		
+		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
+	}
 	
 }

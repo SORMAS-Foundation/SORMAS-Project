@@ -132,7 +132,7 @@ public class EventDao extends AbstractAdoDao<Event> {
 
     public List<Event> queryByCriteria(EventCriteria criteria, long offset, long limit) {
         try {
-            return buildQueryBuilder(criteria).orderBy(Event.EVENT_DATE, true)
+            return buildQueryBuilder(criteria).orderBy(Event.LOCAL_CHANGE_DATE, true)
                     .offset(offset).limit(limit).query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryByCriteria on Event");

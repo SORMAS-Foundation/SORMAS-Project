@@ -43,6 +43,9 @@
 	<security-role>
 	  <role-name>DISTRICT_OBSERVER</role-name>
 	</security-role>
+	<security-role>
+	  <role-name>NATIONAL_CLINICIAN</role-name>
+	</security-role>
   	
   	<!-- 
   	<security-constraint>

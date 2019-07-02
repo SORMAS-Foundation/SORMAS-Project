@@ -110,6 +110,7 @@ public class TaskService extends AbstractAdoService<Task> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task,Task> taskPath, User user) {
 		// National users can access all tasks in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}

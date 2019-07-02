@@ -3,8 +3,9 @@
 	version="2.1">
 
 	<persistence-unit name="SormasPU" transaction-type="JTA">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<jta-data-source>jdbc/sormasDataPool</jta-data-source>
-
+        
 		<mapping-file>META-INF/listener.xml</mapping-file>
 
 		<class>de.symeda.sormas.backend.caze.Case</class>
@@ -48,22 +49,19 @@
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
-		<properties>
+		
+		 <properties>
+         	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+         	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+         	<!-- don't validate on release, otherwise the automatic db update won't work
+         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
+         	 -->
+      	</properties>
 
-			<property name="eclipselink.ddl-generation" value="none" /> 
-
-			<!-- 
-			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
-			<property name="eclipselink.ddl-generation.output-mode" value="sql-script" />
-		    <property name="eclipselink.application-location" value="D:/workspaces/SORMAS" />
-		    <property name="eclipselink.create-ddl-jdbc-file-name" value="create.sql"/>			
-			<property name="eclipselink.target-database" value="PostgreSQL" /> 
-			-->
-
-		</properties>
 	</persistence-unit>
 	
-	<persistence-unit name="auditlogPU" transaction-type="JTA">
+	<persistence-unit name="auditlogPU">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<jta-data-source>jdbc/AuditlogPool</jta-data-source>
 
 		<class>de.symeda.sormas.backend.auditlog.AuditLogEntry</class>
@@ -72,9 +70,14 @@
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
-		<properties>
-			<property name="eclipselink.ddl-generation" value="none" /> 
-		</properties>
-
+		
+		 <properties>
+         	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+         	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+         	<!-- don't validate on release, otherwise the automatic db update won't work
+         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
+         	 -->
+      	</properties>
+		
 	</persistence-unit>
 </persistence>

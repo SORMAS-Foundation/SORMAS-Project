@@ -221,6 +221,7 @@ public class Person extends AbstractDomainObject {
 		this.approximateAgeType = approximateAgeType;
 	}
 
+	@Temporal(TemporalType.DATE)
 	public Date getApproximateAgeReferenceDate() {
 		return approximateAgeReferenceDate;
 	}

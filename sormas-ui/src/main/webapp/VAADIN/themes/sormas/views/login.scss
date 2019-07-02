@@ -9,6 +9,8 @@ $login-background-image: null !default;
 	  
   .login-screen {
     background: #EFF5FC;
+    display: flex;
+    justify-content: space-between;
 
     @if $login-background-image {
       background-image: url(#{$login-background-image});
@@ -22,16 +24,21 @@ $login-background-image: null !default;
 
     .login-form {
       @include valo-panel-style;
+      width: auto !important;
       border: none;
       padding: $v-layout-margin;
       @include valo-animate-in-fade($duration: 1s);
-	  margin-right: 50%;
-	  margin-bottom: 10%;      
+      top: 50%;
+      left: 50%;
+      margin: 0;
+      margin-right: -50%;
+      display: inline-block;
+      position: absolute;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
     }
 
     .login-information {
-      display: inline-block;
-      position: absolute;
       top: 0;
       left: 0;
       width: $login-info-width;
@@ -41,17 +48,55 @@ $login-background-image: null !default;
       padding: $v-layout-margin;
       color: valo-font-color($v-selection-color, 0.9);
       @include animation(valo-animate-in-fade 1s 1s backwards);
+      flex:0 0 auto;
 
       h1 {
         color: inherit;
       }
     }
-
-    .centering-layout {
-      display: inline-block;
-      width: 100%;
+    
+    .login-sidebar {
+      top: 0;
+      right: 0;
       height: 100%;
-      padding-left: $login-info-width;
+      padding: $v-layout-margin;
+      padding-right: 0px;
+      @include animation(valo-animate-in-fade 1s 1s backwards);
+      flex:0 0 auto;
+      
+      .headline-container {
+      	background-color: rgba(0, 90, 156, 0.7);
+      	margin-bottom: 30px;
+      	
+      	h2 {
+      	  color: #FFF;
+      	  padding: 10px;
+      	}
+      }
+      
+      .content-container {
+      	padding-right: 20px;
+      	
+      	.logo {
+      	  width: 250px;
+      	  margin-bottom: 30px;
+      	}
+      }
+    }
+    
+    .login-details {
+      padding-left: 21px;
+      padding-right: 21px;
+    }
+
+    .login-form-container {
+      height: 100%;
+      width: auto;
+      display: flex;
+      flex: 1 1 auto;
+      overflow: visible;
+      text-align: center;
+      position: relative;
 
       .v-slot {
         height: 100%;
@@ -60,13 +105,15 @@ $login-background-image: null !default;
   }
   
   // No top menu on the login view, login screen layout changes
-  .v-ui[width-range~="0-800px"] {
+  .v-ui[width-range~="0-960px"] {
 
     .login-screen {
       height: auto;
       min-height: 100%;
+      display: inline;
 
       .login-information {
+      	display: inline-block;
         position: static;
         width: 100%;
         height: auto;
@@ -80,19 +127,39 @@ $login-background-image: null !default;
           
         }
       }
+      
+      .login-sidebar {
+      	display: inline-block;
+        position: static;
+        text-align: center;
+        width: 100%;
+        height: auto;
+        padding-right: $v-layout-margin;
+        margin-top: 0px;
+      
+        .content-container {
+      	  padding-right: 0px;
+        }
+      }
 
-      .centering-layout {
-        display: block;
+      .login-form-container {
+      	display: inline-block;
+        position: static;
         width: 100%;
         height: auto;
         padding-left: 0;
-        padding-top: 60px;
-        padding-bottom: 60px;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        margin-bottom: 0px;
       }
 
       .login-form {
-        width: 400px;
         max-width: 100%;
+        margin-right: 0px;
+        -ms-transform: none;
+        transform: none;
+        position: static;
+        top: auto;
 
         table {
           width: 100%;
