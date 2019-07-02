@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -282,7 +283,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLimitedDisease(source.getLimitedDisease());
 
 		source.getUserRoles().size();
-		target.setUserRoles(source.getUserRoles());
+		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
 		return target;
 	}
 
@@ -353,7 +354,7 @@ public class UserFacadeEjb implements UserFacade {
 		User user = userService.getByUserName(userName);
 		if (user != null) {
 			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return user.getUserRoles();
+				return new HashSet<UserRole>(user.getUserRoles());
 			}
 		}
 		return null;

@@ -58,7 +58,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	@EJB
 	DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	
-	//@Override
+	@Override
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
 			RegionReferenceDto regionRef,
 			DistrictReferenceDto districtRef, 
@@ -79,10 +79,6 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		
 		Map<Disease, Long> newCases = caseFacade.getCaseCountByDisease(caseCriteria, userUuid);
 		
-		//previous cases
-		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);		
-		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, userUuid);
-		
 		//events
 		Map<Disease, Long> events = eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).reportedBetween(from, to), userUuid);
 					
@@ -94,6 +90,10 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		
 		//case fatalities
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(regionRef, districtRef, from, to);
+		
+		//previous cases
+		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);		
+		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, userUuid);
 		
 		//build diseasesBurden
 		List<DiseaseBurdenDto> diseasesBurden = diseases.stream().map(disease -> {

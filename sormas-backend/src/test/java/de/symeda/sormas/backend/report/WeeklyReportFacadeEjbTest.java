@@ -37,7 +37,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -52,7 +52,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 
 	@Before
 	public void setupData() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		officer = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), null, "Off", "One", UserRole.SURVEILLANCE_OFFICER);
 
 		informant1 = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Info", "One", UserRole.HOSPITAL_INFORMANT);
@@ -63,7 +63,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 		informant2.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant2);
 
-		RDCF rdcf2 = new RDCF(rdcf.region, rdcf.district, rdcf.community, creator.createFacility("Facility2", rdcf.region, rdcf.district, rdcf.community));
+		RDCFEntities rdcf2 = new RDCFEntities(rdcf.region, rdcf.district, rdcf.community, creator.createFacility("Facility2", rdcf.region, rdcf.district, rdcf.community));
 		informant3 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Info", "Three", UserRole.COMMUNITY_INFORMANT);
 		informant3.setCommunity(new CommunityReferenceDto(rdcf.community.getUuid()));
 		informant3.setAssociatedOfficer(officer.toReference());
@@ -72,7 +72,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 		District district2 = creator.createDistrict("District2", rdcf.region);
 		Community community2 = creator.createCommunity("Community2", district2);
 		Facility facility3 = creator.createFacility("Facility3", rdcf.region, district2, community2);
-		RDCF rdcf3 = new RDCF(rdcf.region, district2, community2, facility3);
+		RDCFEntities rdcf3 = new RDCFEntities(rdcf.region, district2, community2, facility3);
 		informant4 = creator.createUser(rdcf3.region.getUuid(), rdcf3.district.getUuid(), rdcf3.facility.getUuid(), "Info", "Four", UserRole.HOSPITAL_INFORMANT);
 		informant4.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant4);

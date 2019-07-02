@@ -18,8 +18,8 @@
 package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
@@ -46,7 +46,12 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 public class MockProducer {
 
 	private static final SessionContext sessionContext = mock(SessionContext.class);
-	private static final Principal principal = mock(Principal.class);
+	private static final Principal principal = new Principal() {
+		@Override
+		public String getName() {
+			return "admin";
+		}
+	};
 	private static final Topic topic = mock(Topic.class);
 	private static final ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 	private static final TimerService timerService = mock(TimerService.class);
@@ -77,7 +82,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, getPrincipal(), topic, connectionFactory, timerService, userTransaction);
+		reset(sessionContext, topic, connectionFactory, timerService, userTransaction);
 		wireMocks();
 	}
 

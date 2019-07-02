@@ -3,8 +3,9 @@
 	version="2.1">
 
 	<persistence-unit name="SormasPU" transaction-type="JTA">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<jta-data-source>jdbc/sormasDataPool</jta-data-source>
-
+        
 		<mapping-file>META-INF/listener.xml</mapping-file>
 
 		<class>de.symeda.sormas.backend.caze.Case</class>
@@ -48,10 +49,17 @@
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
+		
+		 <properties>
+         	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
+         	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+      	</properties>
 
 	</persistence-unit>
 	
-	<persistence-unit name="auditlogPU" transaction-type="JTA">
+	<persistence-unit name="auditlogPU">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<jta-data-source>jdbc/AuditlogPool</jta-data-source>
 
 		<class>de.symeda.sormas.backend.auditlog.AuditLogEntry</class>
@@ -60,5 +68,12 @@
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
+		
+		 <properties>
+         	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
+         	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+      	</properties>
+		
 	</persistence-unit>
 </persistence>

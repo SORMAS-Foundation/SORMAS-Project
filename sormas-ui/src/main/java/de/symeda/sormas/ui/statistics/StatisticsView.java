@@ -26,21 +26,21 @@ import java.util.TreeMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
-import com.vaadin.server.FileDownloader;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.CheckBox;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -483,7 +483,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			final StringBuilder currentSeriesString = new StringBuilder();
 			final StringBuilder unknownSeriesString = new StringBuilder();
 			final StringBuilder totalSeriesString = new StringBuilder();
-			TreeMap<Integer, Long> currentSeriesValues = new TreeMap<>();
+			TreeMap<Integer, Number> currentSeriesValues = new TreeMap<>();
 
 			for (Object[] row : resultData) {
 				// Retrieve series caption of the current row
@@ -526,9 +526,9 @@ public class StatisticsView extends AbstractStatisticsView {
 					Object xAxisId = row[xAxisIdIndex];
 					int captionPosition = StatisticsHelper.isNullOrUnknown(xAxisId) ? xAxisCaptions.size()
 							: xAxisCaptions.headMap((StatisticsGroupingKey) xAxisId).size();
-					currentSeriesValues.put(captionPosition, (long) value);
+					currentSeriesValues.put(captionPosition, (Number) value);
 				} else {
-					currentSeriesValues.put(0, (long) value);
+					currentSeriesValues.put(0, (Number) value);
 				}
 			}
 
@@ -566,7 +566,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		return StringEscapeUtils.escapeEcmaScript(I18nProperties.getCaption(i18nFragmentKeykey));
 	}
 
-	private void finalizeChartSegment(Object seriesKey, TreeMap<Integer, Long> currentKeyValues,
+	private void finalizeChartSegment(Object seriesKey, TreeMap<Integer, Number> currentKeyValues,
 			StringBuilder unknownKeyString, StringBuilder currentKeyString, StringBuilder totalKeyString,
 			TreeMap<StatisticsGroupingKey, String> columnStrings) {
 		if (seriesKey != null) {
@@ -645,15 +645,15 @@ public class StatisticsView extends AbstractStatisticsView {
 		map.addPolygonGroup("outlines", outlinePolygones);
 
 		resultData.sort((a, b) -> {
-			return Long.compare((Long) a[0], (Long) b[0]);
+			return Long.compare(((Number) a[0]).longValue(), ((Number) b[0]).longValue());
 		});
 
 		BigDecimal valuesLowerQuartile = new BigDecimal(
-				resultData.size() > 0 ? (Long) resultData.get((int) (resultData.size() * 0.25))[0] : null);
+				resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.25))[0]).longValue() : null);
 		BigDecimal valuesMedian = new BigDecimal(
-				resultData.size() > 0 ? (Long) resultData.get((int) (resultData.size() * 0.5))[0] : null);
+				resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.5))[0]).longValue() : null);
 		BigDecimal valuesUpperQuartile = new BigDecimal(
-				resultData.size() > 0 ? (Long) resultData.get((int) (resultData.size() * 0.75))[0] : null);
+				resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.75))[0]).longValue() : null);
 
 		List<LeafletPolygon> resultPolygons = new ArrayList<LeafletPolygon>();
 
@@ -662,7 +662,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 			ReferenceDto regionOrDistrict = (ReferenceDto) resultRow[1];
 			String shapeUuid = regionOrDistrict.getUuid();
-			BigDecimal regionOrDistrictValue = new BigDecimal((Long) resultRow[0]);
+			BigDecimal regionOrDistrictValue = new BigDecimal(((Number) resultRow[0]).longValue());
 			GeoLatLon[][] shape;
 			switch (visualizationComponent.getVisualizationMapType()) {
 			case REGIONS:

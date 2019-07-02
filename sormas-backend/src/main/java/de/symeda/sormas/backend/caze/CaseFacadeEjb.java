@@ -707,7 +707,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
-		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Case, Community> communityJoin = caze.join(Case.COMMUNITY, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
@@ -717,16 +717,19 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		cq.multiselect(caze.get(Case.DISEASE), facility.get(Facility.COMMUNITY));
-		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
-		cq.distinct(true);
+		Expression<Number> maxReportDate = cb.max(caze.get(Case.REPORT_DATE));
+		cq.multiselect(caze.get(Case.DISEASE), communityJoin, maxReportDate);
+		cq.groupBy(caze.get(Case.DISEASE), communityJoin);
+		cq.orderBy(cb.desc(maxReportDate));
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
 		Map<Disease, Community> resultMap = new HashMap<Disease, Community>();
 		for (Object[] e : results) {
-			if (!resultMap.containsKey(e[0])) {
-				resultMap.put((Disease) e[0], (Community) e[1]);
+			Disease disease = (Disease)e[0];
+			if (!resultMap.containsKey(disease)) {
+				Community community = (Community)e[1];
+				resultMap.put(disease, community);
 			}
 		}
 
@@ -739,8 +742,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
-		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
-		Join<Facility, Community> community = facility.join(Facility.COMMUNITY, JoinType.LEFT);
+		Join<Case, Community> community = caze.join(Case.COMMUNITY, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
@@ -751,7 +753,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.select(community.get(Community.NAME));
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
-		cq.distinct(true);
 
 		TypedQuery<String> query = em.createQuery(cq);
 		query.setFirstResult(0);
