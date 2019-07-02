@@ -786,8 +786,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		caze = fillOrBuildEntity(dto, caze);
 		
 		// Set version number on a new case
-		if (existingCaseDto == null && StringUtils.isEmpty(dto.getVersionCreated())) {
-			caze.setVersionCreated(InfoProvider.get().getVersion());
+		if (existingCaseDto == null && StringUtils.isEmpty(dto.getCreationVersion())) {
+			caze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
 		caseService.ensurePersisted(caze);
@@ -1256,7 +1256,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotifyingClinic(source.getNotifyingClinic());
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
 		
-		target.setVersionCreated(source.getVersionCreated());
+		target.setCreationVersion(source.getCreationVersion());
 
 		return target;
 	}
@@ -1337,7 +1337,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotifyingClinic(source.getNotifyingClinic());
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
 		
-		target.setVersionCreated(source.getVersionCreated());
+		target.setCreationVersion(source.getCreationVersion());
 
 		return target;
 	}

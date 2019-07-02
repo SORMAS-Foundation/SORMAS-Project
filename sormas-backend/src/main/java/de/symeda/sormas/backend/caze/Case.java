@@ -176,7 +176,7 @@ public class Case extends AbstractDomainObject {
 	private Integer caseAge;
 	
 	private boolean archived;
-	private String versionCreated;
+	private String creationVersion;
 
 	private List<Task> tasks;
 
@@ -681,12 +681,12 @@ public class Case extends AbstractDomainObject {
 	}
 
 	@Column(length = 32)
-	public String getVersionCreated() {
-		return versionCreated;
+	public String getCreationVersion() {
+		return creationVersion;
 	}
 	
-	public void setVersionCreated(String versionCreated) {
-		this.versionCreated = versionCreated;
+	public void setCreationVersion(String creationVersion) {
+		this.creationVersion = creationVersion;
 	}
 	
 	@Enumerated(EnumType.STRING)

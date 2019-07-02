@@ -187,7 +187,7 @@ public class CaseDataDto extends EntityDto {
 	private TherapyDto therapy;
 	private ClinicalCourseDto clinicalCourse;
 	private MaternalHistoryDto maternalHistory;
-	private String versionCreated;
+	private String creationVersion;
 	
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -589,12 +589,12 @@ public class CaseDataDto extends EntityDto {
 		this.notifyingClinicDetails = notifyingClinicDetails;
 	}
 
-	public String getVersionCreated() {
-		return versionCreated;
+	public String getCreationVersion() {
+		return creationVersion;
 	}
 
-	public void setVersionCreated(String versionCreated) {
-		this.versionCreated = versionCreated;
+	public void setCreationVersion(String creationVersion) {
+		this.creationVersion = creationVersion;
 	}
 	
 }

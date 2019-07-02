@@ -408,7 +408,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         final Case existingCase = queryUuidBasic(caze.getUuid());
 
         if (existingCase == null) {
-            caze.setVersionCreated(InfoProvider.get().getVersion() + " (App)");
+            caze.setCreationVersion(InfoProvider.get().getVersion() + " (App)");
         }
 
         onCaseChanged(existingCase, caze);
