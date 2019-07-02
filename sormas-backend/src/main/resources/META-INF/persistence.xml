@@ -52,8 +52,10 @@
 		
 		 <properties>
          	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
          	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+         	<!-- don't validate on release, otherwise the automatic db update won't work
+         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
+         	 -->
       	</properties>
 
 	</persistence-unit>
@@ -71,8 +73,10 @@
 		
 		 <properties>
          	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
          	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+         	<!-- don't validate on release, otherwise the automatic db update won't work
+         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
+         	 -->
       	</properties>
 		
 	</persistence-unit>

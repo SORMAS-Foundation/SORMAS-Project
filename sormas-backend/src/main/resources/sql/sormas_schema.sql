@@ -3363,3 +3363,8 @@ UPDATE public.symptoms SET lesionsResembleImg4='NO' WHERE lesionsResembleImg4='1
 UPDATE public.symptoms SET lesionsResembleImg4='UNKNOWN' WHERE lesionsResembleImg4='2';
 
 INSERT INTO schema_version (version_number, comment) VALUES (153, 'Fixed problems in database schema #1198');
+
+-- 2019-07-02 Renamed version case was created #1106
+ALTER TABLE cases RENAME COLUMN versioncreated TO creationversion;
+
+INSERT INTO schema_version (version_number, comment) VALUES (154, 'Renamed version case was created #1106');

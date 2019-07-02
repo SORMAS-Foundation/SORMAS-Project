@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -108,6 +110,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 		MockProducer.resetMocks();
 
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
 	}
 	
 	@Before
