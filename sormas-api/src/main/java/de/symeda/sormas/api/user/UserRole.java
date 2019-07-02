@@ -185,11 +185,11 @@ public enum UserRole {
 					NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN
 					);
 		case NATIONAL_USER:
-			return Arrays.asList(LAB_USER, ADMIN);
+			return Arrays.asList(LAB_USER, ADMIN, NATIONAL_CLINICIAN);
 		case NATIONAL_OBSERVER:
 			return Arrays.asList(ADMIN);
 		case NATIONAL_CLINICIAN:
-			return Arrays.asList(ADMIN);
+			return Arrays.asList(ADMIN, NATIONAL_USER);
 		case STATE_OBSERVER:
 			return Collections.emptyList();
 		case DISTRICT_OBSERVER:
