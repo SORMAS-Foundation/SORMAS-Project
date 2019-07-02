@@ -33,6 +33,7 @@ public interface Captions {
 	public static String actionShowLessFilters = "actionShowLessFilters";
 	public static String actionShowMoreFilters = "actionShowMoreFilters";
 	public static String actionSkip = "actionSkip";
+	public static String AdditionalTest = "AdditionalTest";
 	public static String AdditionalTest_altSgpt = "AdditionalTest.altSgpt";
 	public static String AdditionalTest_arterialVenousBloodGas = "AdditionalTest.arterialVenousBloodGas";
 	public static String AdditionalTest_arterialVenousGasHco3 = "AdditionalTest.arterialVenousGasHco3";
@@ -134,6 +135,7 @@ public interface Captions {
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
+	public static String CaseHospitalization = "CaseHospitalization";
 	public static String CaseHospitalization_accommodation = "CaseHospitalization.accommodation";
 	public static String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
 	public static String CaseHospitalization_admittedToHealthFacility = "CaseHospitalization.admittedToHealthFacility";
@@ -161,6 +163,7 @@ public interface Captions {
 	public static String caseShowArchived = "caseShowArchived";
 	public static String caseTransferCase = "caseTransferCase";
 	public static String city = "city";
+	public static String ClinicalVisit = "ClinicalVisit";
 	public static String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
 	public static String ClinicalVisit_heartRate = "ClinicalVisit.heartRate";
 	public static String ClinicalVisit_temperature = "ClinicalVisit.temperature";
@@ -465,6 +468,7 @@ public interface Captions {
 	public static String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";
 	public static String formatSimpleNumberFormat = "formatSimpleNumberFormat";
 	public static String from = "from";
+	public static String HealthConditions = "HealthConditions";
 	public static String HealthConditions_asplenia = "HealthConditions.asplenia";
 	public static String HealthConditions_chronicHeartFailure = "HealthConditions.chronicHeartFailure";
 	public static String HealthConditions_chronicKidneyDisease = "HealthConditions.chronicKidneyDisease";
