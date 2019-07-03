@@ -262,8 +262,10 @@ cp sormas.properties ${DOMAIN_DIR}
 cp start-payara-sormas.sh ${DOMAIN_DIR}
 cp stop-payara-sormas.sh ${DOMAIN_DIR}
 cp logback.xml ${DOMAIN_DIR}/config/
-# Fixes outdated certificate
-cp cacerts.txt ${DOMAIN_DIR}/config/cacerts.jks
+if [ ${DEV_SYSTEM} = true ] && [ ${LINUX} != true ]; then
+	# Fixes outdated certificate - don't do this on linux systems!
+	cp cacerts.txt ${DOMAIN_DIR}/config/cacerts.jks
+fi
 cp loginsidebar.html ${CUSTOM_DIR}
 if [ ${DEMO_SYSTEM} = true ]; then
 	cp demologindetails.html ${CUSTOM_DIR}/logindetails.html
