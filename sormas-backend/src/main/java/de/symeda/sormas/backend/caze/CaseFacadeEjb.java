@@ -1496,8 +1496,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		cq.groupBy(from.get(Case.REGION));
-		cq.multiselect(from.get(Case.REGION), cb.count(from));
+		Join<Case, Region> regionJoin = from.join(Case.REGION, JoinType.LEFT);
+		cq.groupBy(regionJoin);
+		cq.multiselect(regionJoin, cb.count(from));
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
 		Map<RegionDto, Long> resultMap = results.stream()
@@ -1541,8 +1542,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		cq.groupBy(from.get(Case.DISTRICT));
-		cq.multiselect(from.get(Case.DISTRICT), cb.count(from));
+		Join<Case, District> districtJoin = from.join(Case.DISTRICT, JoinType.LEFT);
+		cq.groupBy(districtJoin);
+		cq.multiselect(districtJoin, cb.count(from));
 		if (caseMeasure == CaseMeasure.CASE_COUNT) {
 			cq.orderBy(cb.asc(cb.count(from)));
 		}

@@ -1250,7 +1250,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (36, 'Epidemiologica
 
 CREATE TEMP TABLE tmp_caseids AS SELECT cases.id AS caseid, nextval('entity_seq') AS epiid FROM cases WHERE cases.epidata_id IS NULL;
 INSERT INTO epidata (id, changedate, creationdate, uuid) 
-	SELECT epiid, now(), now(), uuid_in(md5(random()::text || clock_timestamp()::text)::cstring) FROM tmp_caseids;
+	SELECT epiid, now(), now(), uuid_in(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS cstring)) FROM tmp_caseids;
 UPDATE cases SET epidata_id = epiid FROM tmp_caseids t where cases.id = t.caseid;
 DROP TABLE tmp_caseids;
 
@@ -2147,7 +2147,7 @@ BEGIN
 
 	_id = nextval('entity_seq');
 	-- this is not the same format as we are using in code (which is base32 with 4 seperators)
-	_uuid = upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29));
+	_uuid = upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29));
 
 	IF ((SELECT facility.id FROM facility WHERE facility.name = _name AND facility.region_id = _region_id AND facility.district_id = _district_id) IS NOT NULL) THEN
 		RAISE EXCEPTION 'facility % allready exists in district', _name;
@@ -3041,13 +3041,13 @@ DECLARE new_health_conditions_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
 LOOP
-INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
 UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
 END LOOP;
 FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
 LOOP
-INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
-INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
 UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
 END LOOP;
 END;
@@ -3071,13 +3071,13 @@ DECLARE new_health_conditions_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
 LOOP
-INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
 UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
 END LOOP;
 FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
 LOOP
-INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
-INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
 UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
 END LOOP;
 END;
@@ -3304,7 +3304,7 @@ DECLARE new_maternalhistory_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE maternalhistory_id IS NULL
 LOOP
-INSERT INTO maternalhistory(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_maternalhistory_id;
+INSERT INTO maternalhistory(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_maternalhistory_id;
 UPDATE cases SET maternalhistory_id = new_maternalhistory_id WHERE id = rec.id;
 END LOOP;
 END;
@@ -3368,3 +3368,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (153, 'Fixed problem
 ALTER TABLE cases RENAME COLUMN versioncreated TO creationversion;
 
 INSERT INTO schema_version (version_number, comment) VALUES (154, 'Renamed version case was created #1106');
+
+-- 2019-07-03 Added missing not null to publicownership #1198
+UPDATE public.facility SET publicownership=false WHERE publicownership IS NULL;
+ALTER TABLE public.facility ALTER COLUMN publicownership SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (155, 'Added missing not null to publicownership #1198');
