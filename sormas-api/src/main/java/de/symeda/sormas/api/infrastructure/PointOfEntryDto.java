@@ -82,4 +82,9 @@ public class PointOfEntryDto extends EntityDto {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
 	}
 	
+	public boolean isOtherPointOfEntry() {
+		return OTHER_AIRPORT_UUID.equals(getUuid()) || OTHER_SEAPORT_UUID.equals(getUuid()) ||
+				OTHER_GROUND_CROSSING_UUID.equals(getUuid()) || OTHER_POE_UUID.equals(getUuid());
+	}
+	
 }

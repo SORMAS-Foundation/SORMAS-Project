@@ -3398,7 +3398,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (155, 'Added missing
 --  latitude double precision,
 --  longitude double precision,
 --  active boolean, 
---	sys_period tstzrange not null,
 --	primary key(id)
 --);
 

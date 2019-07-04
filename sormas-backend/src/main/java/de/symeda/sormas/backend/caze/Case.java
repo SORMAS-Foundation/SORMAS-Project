@@ -96,7 +96,7 @@ public class Case extends AbstractDomainObject {
 	public static final String EPI_DATA = "epiData";
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
-	public static final String CASE_POINT_OF_ENTRY = "casePointOfEntry";
+	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";

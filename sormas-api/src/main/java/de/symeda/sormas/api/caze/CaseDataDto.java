@@ -214,6 +214,7 @@ public class CaseDataDto extends EntityDto {
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
 		caze.setReportDate(new Date());
+		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		return caze;
 	}
 

@@ -58,6 +58,7 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -108,6 +109,8 @@ public class StartupShutdownService {
 	@EJB
 	private FacilityService facilityService;
 	@EJB
+	private PointOfEntryService pointOfEntryService;
+	@EJB
 	private ImportFacadeEjbLocal importFacade;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
@@ -131,6 +134,8 @@ public class StartupShutdownService {
 		importAdministrativeDivisions(countryName);
 		
 		facilityService.importFacilities(countryName);
+		
+		pointOfEntryService.importPointsOfEntry(countryName);
 
 		initDefaultUsers();
 		

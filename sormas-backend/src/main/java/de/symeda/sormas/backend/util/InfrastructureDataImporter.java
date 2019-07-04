@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.backend.region.Region;
 
 public final class InfrastructureDataImporter {
@@ -54,6 +55,12 @@ public final class InfrastructureDataImporter {
         public void consume(String regionName, String districtName, String communityName,
         		String facilityName, String city, String address, Double latitude, Double longitude, 
         		FacilityType type, boolean publicOwnership);
+    }
+    
+    @FunctionalInterface
+    public interface PointOfEntryConsumer {
+    	public void consume(String regionName, String districtName, String pointOfEntryName,
+    			PointOfEntryType type, boolean active, Double latitude, Double longitude);
     }
 
 	private static final Logger logger = LoggerFactory.getLogger(InfrastructureDataImporter.class);
@@ -227,6 +234,74 @@ public final class InfrastructureDataImporter {
 
 				facilityConsumer.consume(region.getName(), districtName, communityName, facilityName, cityName, address, 
 						latitude, longitude, facilityType, publicOwnership);
+			}
+			
+			stream.close();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Exception while reading resource file '" + resourceFileName + "' line '" + currentLine + "'", e);
+		}
+	}
+	
+	public static void importPointsOfEntry(String countryName, PointOfEntryConsumer consumer) {
+
+		String resourceFileName = "/porthealth/" + countryName + "/pointsofentry.csv";
+		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);		
+		if (stream == null) {
+			logger.warn("No points of entry for country '" + countryName + "' defined.");
+			return;
+		}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
+		DecimalFormat geoCoordFormat = new DecimalFormat();
+		DecimalFormatSymbols decimalSymbols = new DecimalFormatSymbols();
+		decimalSymbols.setDecimalSeparator('.');
+		decimalSymbols.setGroupingSeparator(',');
+		geoCoordFormat.setDecimalFormatSymbols(decimalSymbols);
+		
+		String currentLine = null;
+		try {
+			currentLine = reader.readLine();
+			if (!currentLine.equals("Region;District;Name;Type;Active;Latitude;Longitude")) {
+				throw new IllegalArgumentException("Resource file does not match the expected format. "
+						+ "First line has to be '﻿Region;District;Name;Type;Active;Latitude;Longitude'. " + resourceFileName);
+			}
+			
+			while (reader.ready()) {
+				currentLine = reader.readLine();
+				String[] columns = currentLine.split(";");
+				
+				String regionName = columns[0];
+				String districtName = columns[1];
+				String pointOfEntryName = columns[2];
+				String typeString = columns[3];
+				String activeString = columns.length > 4 ? columns[4] : "";
+				String latitudeString = columns.length > 5 ? columns[5] : "";
+				String longitudeString = columns.length > 6 ? columns[6] : "";
+				
+				Double latitude = null, longitude = null;
+				
+				try {
+					if (!latitudeString.isEmpty()) {
+						latitude = geoCoordFormat.parse(latitudeString).doubleValue();
+					}
+					if (!longitudeString.isEmpty()) {
+						longitude = geoCoordFormat.parse(longitudeString).doubleValue();
+					}
+				} catch (ParseException e) {
+					logger.warn("Failed parsing geo coordinates for point of entry '" + pointOfEntryName + "' in " + resourceFileName, e);
+				}
+
+				PointOfEntryType type = null;
+				try { 
+					type = PointOfEntryType.valueOf(typeString);
+				} catch (IllegalArgumentException e) { 
+					logger.warn("Failed parsing point of entry type for point of entry '" + pointOfEntryName + "' in " + resourceFileName + "; entry will be skipped", e);
+					continue;
+				}
+				
+				boolean active = "YES".equalsIgnoreCase(activeString);
+
+				consumer.consume(regionName, districtName, pointOfEntryName, type, active, latitude, longitude);
 			}
 			
 			stream.close();
