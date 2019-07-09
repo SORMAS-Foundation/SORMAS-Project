@@ -28,12 +28,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name= PathogenTest.TABLE_NAME)
 @DatabaseTable(tableName = PathogenTest.TABLE_NAME)
@@ -64,8 +68,20 @@ public class PathogenTest extends AbstractDomainObject {
     @Column(nullable = false)
     private PathogenTestResultType testResult;
 
+    @Column(nullable = true)
+    private Boolean testResultVerified;
+
+    @Column(length=512, nullable = true)
+    private String testResultText;
+
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date testDateTime;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3, canBeNull = false)
+    private Facility lab;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private User labUser;
 
     public Sample getSample() {
         return sample;
@@ -103,10 +119,34 @@ public class PathogenTest extends AbstractDomainObject {
         return testResult;
     }
 
+    public Boolean getTestResultVerified() {
+        return testResultVerified;
+    }
+    public void setTestResultVerified(Boolean testResultVerified) {
+        this.testResultVerified = testResultVerified;
+    }
+
+    public String getTestResultText() {
+        return testResultText;
+    }
+    public void setTestResultText(String testResultText) {
+        this.testResultText = testResultText;
+    }
+    public Facility getLab() {
+        return lab;
+    }
+    public void setLab(Facility lab) {
+        this.lab = lab;
+    }
     public void setTestResult(PathogenTestResultType testResult) {
         this.testResult = testResult;
     }
-
+    public User getLabUser() {
+        return labUser;
+    }
+    public void setLabUser(User labUser) {
+        this.labUser = labUser;
+    }
     public Date getTestDateTime() {
         return testDateTime;
     }

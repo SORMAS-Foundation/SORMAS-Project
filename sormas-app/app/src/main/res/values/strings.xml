@@ -158,6 +158,7 @@
     <string name="caption_new_contact">New Contact</string>
     <string name="caption_new_event_participant">New Person Involved</string>
     <string name="caption_new_sample">New Sample</string>
+    <string name="caption_new_pathogen_test">New Pathogen Test</string>
     <string name="caption_new_task">New Task</string>
     <string name="caption_not_a_contact">Not a Contact</string>
     <string name="caption_not_an_event">Not an Event</string>
@@ -302,7 +303,12 @@
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sample_read">Read Sample</string>
     <string name="heading_sample_summary">Sample Summary</string>
-    <string name="heading_samples_list">Sample Listing</string>
+    <string name="heading_samples_list">Sample Listing</string>    
+    <string name="heading_pathogen_test_edit">Edit Pathogen Test</string>
+    <string name="heading_pathogen_test_new">New Pathogen Test</string>
+    <string name="heading_pathogen_test_read">Read Pathogen Test</string>
+    <string name="heading_pathogen_test_summary">Pathogen Summary</string>
+    <string name="heading_pathogen_tests_list">Pathogen Listing</string>
     <string name="heading_sign_in">Sign In</string>
     <string name="heading_social_events">Social Events</string>
     <string name="heading_source_case">Source Case</string>

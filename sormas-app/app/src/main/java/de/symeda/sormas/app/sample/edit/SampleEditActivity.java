@@ -22,9 +22,14 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
 
+import java.util.List;
+
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
+import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -34,7 +39,12 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.pathogentest.edit.PathogenTestNewActivity;
+import de.symeda.sormas.app.sample.SampleSection;
 import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.sample.read.SampleEditPathogenTestListFragment;
+import de.symeda.sormas.app.sample.read.SampleReadFragment;
+import de.symeda.sormas.app.sample.read.SampleReadPathogenTestListFragment;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -46,6 +56,9 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
     public static void startActivity(Context context, String rootUuid) {
         BaseEditActivity.startActivity(context, SampleEditActivity.class, buildBundle(rootUuid));
     }
+    public static void startActivity(Context context, String recordUuid, SampleSection section) {
+        BaseEditActivity.startActivity(context, SampleEditActivity.class, buildBundle(recordUuid, section));
+    }
 
     @Override
     protected Sample queryRootEntity(String recordUuid) {
@@ -55,6 +68,34 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
     @Override
     protected Sample buildRootEntity() {
         throw new UnsupportedOperationException();
+    }
+
+
+    @Override
+    public List<PageMenuItem> getPageMenuData() {
+        List<PageMenuItem> menuItems = PageMenuItem.fromEnum(SampleSection.values(), getContext());
+        return menuItems;
+    }
+
+    @Override
+    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
+//        return SampleReadFragment.newInstance(activityRootData);
+        int menuKey =0;
+        if(menuItem !=null)
+            menuKey= menuItem.getKey();
+        SampleSection section = SampleSection.fromOrdinal(menuKey);
+        BaseEditFragment fragment;
+        switch (section) {
+            case SAMPLE_INFO:
+                fragment = SampleEditFragment.newInstance(activityRootData);
+                break;
+            case PATHOGEN_TESTS:
+                fragment = SampleEditPathogenTestListFragment.newInstance(activityRootData);
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
+        }
+        return fragment;
     }
 
     @Override
@@ -78,10 +119,10 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
         }
     }
 
-    @Override
-    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
-        return SampleEditFragment.newInstance(activityRootData);
-    }
+//    @Override
+//    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
+//        return SampleEditFragment.newInstance(activityRootData);
+//    }
 
     @Override
     protected int getActivityTitle() {
@@ -131,6 +172,15 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
                 saveTask = null;
             }
         }.executeOnThreadPool();
+    }
+
+    @Override
+    public void goToNewView() {
+        SampleSection activeSection = SampleSection.fromOrdinal(getActivePage().getKey());
+
+        if (activeSection == SampleSection.PATHOGEN_TESTS) {
+            PathogenTestNewActivity.startActivity(getContext(), getRootUuid());
+        }
     }
 
     @Override
