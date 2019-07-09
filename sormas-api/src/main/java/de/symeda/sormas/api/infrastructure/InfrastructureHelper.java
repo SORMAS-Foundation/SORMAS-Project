@@ -34,7 +34,12 @@ public class InfrastructureHelper {
 			}
 		}
 
-		return pointOfEntryName;
+		StringBuilder caption = new StringBuilder();
+		if (!DataHelper.isNullOrEmpty(pointOfEntryName)) {
+			caption.append(pointOfEntryName);
+		}
+
+		return caption.toString();
 	}
 	
 }

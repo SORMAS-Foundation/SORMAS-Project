@@ -33,6 +33,16 @@ public class PointOfEntryDto extends EntityDto {
 	private Double latitude;
 	private Double longitude;
 	private boolean active;
+
+	public static PointOfEntryDto build() {
+		PointOfEntryDto dto = new PointOfEntryDto();
+		return dto;
+	}
+	
+	public boolean isOtherPointOfEntry() {
+		return OTHER_AIRPORT_UUID.equals(getUuid()) || OTHER_SEAPORT_UUID.equals(getUuid()) ||
+				OTHER_GROUND_CROSSING_UUID.equals(getUuid()) || OTHER_POE_UUID.equals(getUuid());
+	}
 	
 	public PointOfEntryType getPointOfEntryType() {
 		return pointOfEntryType;
@@ -80,11 +90,6 @@ public class PointOfEntryDto extends EntityDto {
 	@Override
 	public String toString() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
-	}
-	
-	public boolean isOtherPointOfEntry() {
-		return OTHER_AIRPORT_UUID.equals(getUuid()) || OTHER_SEAPORT_UUID.equals(getUuid()) ||
-				OTHER_GROUND_CROSSING_UUID.equals(getUuid()) || OTHER_POE_UUID.equals(getUuid());
 	}
 	
 }

@@ -28,6 +28,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -93,12 +94,6 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}
-		
-		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
-			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
-		} else {
-			removeColumn(CaseIndexDto.POINT_OF_ENTRY_NAME);
-		}
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
@@ -122,6 +117,16 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(false);
 		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
+		}
+		
+		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
+		} else {
+			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
+				removeColumn(CaseIndexDto.POINT_OF_ENTRY_NAME);
+			} else if (getCriteria().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+				removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
+			}
 		}
 
 		getDataProvider().refreshAll();

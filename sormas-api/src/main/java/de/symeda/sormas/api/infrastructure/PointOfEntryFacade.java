@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+
 @Remote
 public interface PointOfEntryFacade {
 	
@@ -14,5 +17,11 @@ public interface PointOfEntryFacade {
 	List<PointOfEntryReferenceDto> getAllByDistrict(String districtUuid, boolean includeOthers);
 	
 	PointOfEntryDto getByUuid(String uuid);
+	
+	void save(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
+	
+	List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	
+	long count(PointOfEntryCriteria criteria);
 
 }

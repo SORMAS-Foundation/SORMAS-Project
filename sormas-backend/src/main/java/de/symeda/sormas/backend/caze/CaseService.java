@@ -672,7 +672,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			filter = and(cb, filter,
 					cb.and(
 							cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY),
-							cb.isNull(from.get(Case.HEALTH_FACILITY))));
+							cb.isNull(from.join(Case.HEALTH_FACILITY, JoinType.LEFT))));
 		}
 		if (caseCriteria.getArchived() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), caseCriteria.getArchived()));

@@ -23,8 +23,9 @@ import com.vaadin.ui.Notification.Type;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -86,6 +87,19 @@ public class InfrastructureController {
 		CommitDiscardWrapperComponent<CommunityEditForm> editComponent = getCommunityEditComponent(community);
 		String caption = I18nProperties.getString(Strings.edit) + " " + community.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+	
+	public void createPointOfEntry() {
+		CommitDiscardWrapperComponent<PointOfEntryForm> component = getPointOfEntryEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingCreateEntry));
+	}
+	
+	
+	public void editPointOfEntry(String uuid) {
+		PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByUuid(uuid);
+		CommitDiscardWrapperComponent<PointOfEntryForm> component = getPointOfEntryEditComponent(pointOfEntry);
+		String caption = I18nProperties.getString(Strings.edit) + " " + pointOfEntry.getName();
+		VaadinUiUtil.showModalPopupWindow(component, caption);
 	}
 
 	private CommitDiscardWrapperComponent<FacilityEditForm> getFacilityEditComponent(FacilityDto facility, boolean laboratory) {
@@ -190,6 +204,24 @@ public class InfrastructureController {
 		});
 		
 		return editView;
+	}
+	
+	private CommitDiscardWrapperComponent<PointOfEntryForm> getPointOfEntryEditComponent(PointOfEntryDto pointOfEntry) {
+		PointOfEntryForm form = new PointOfEntryForm(pointOfEntry == null ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, pointOfEntry == null);
+		if (pointOfEntry == null) {
+			pointOfEntry = PointOfEntryDto.build();
+		}
+		
+		form.setValue(pointOfEntry);
+		
+		final CommitDiscardWrapperComponent<PointOfEntryForm> view = new CommitDiscardWrapperComponent<PointOfEntryForm>(form, form.getFieldGroup());
+		view.addCommitListener(() -> {
+			FacadeProvider.getPointOfEntryFacade().save(form.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(PointsOfEntryView.VIEW_NAME);
+		});
+		
+		return view;
 	}
 
 }

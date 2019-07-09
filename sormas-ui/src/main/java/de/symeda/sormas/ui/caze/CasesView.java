@@ -290,8 +290,10 @@ public class CasesView extends AbstractView {
 				caseOriginFilter.addItems((Object[]) CaseOrigin.values());
 				caseOriginFilter.addValueChangeListener(e -> {
 					criteria.caseOrigin(((CaseOrigin) e.getProperty().getValue()));
-					pointOfEntryFilter.setEnabled(e.getProperty().getValue() != CaseOrigin.IN_COUNTRY);
-					portHealthCasesWithoutFacilityFilter.setEnabled(e.getProperty().getValue() != CaseOrigin.IN_COUNTRY);
+					if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+						pointOfEntryFilter.setEnabled(e.getProperty().getValue() != CaseOrigin.IN_COUNTRY);
+						portHealthCasesWithoutFacilityFilter.setEnabled(e.getProperty().getValue() != CaseOrigin.IN_COUNTRY);
+					}
 					navigateTo(criteria);
 				});
 				firstFilterRowLayout.addComponent(caseOriginFilter);
@@ -429,12 +431,11 @@ public class CasesView extends AbstractView {
 					criteria.pointOfEntry(((PointOfEntryReferenceDto) e.getProperty().getValue()));
 					navigateTo(criteria);
 				});
-				pointOfEntryFilter.setEnabled(false);
 				secondFilterRowLayout.addComponent(pointOfEntryFilter);
 			}
 
 			districtFilter.addValueChangeListener(e-> {
-				if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				if (facilityFilter != null) {
 					facilityFilter.removeAllItems();
 					DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 					if (district != null) {
@@ -443,12 +444,13 @@ public class CasesView extends AbstractView {
 					} else {
 						facilityFilter.setEnabled(false);
 					}
-				} else {
+				}
+				if (pointOfEntryFilter != null) {
 					pointOfEntryFilter.removeAllItems();
 					DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 					if (district != null) {
 						pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllByDistrict(district.getUuid(), true));
-						pointOfEntryFilter.setEnabled(true);
+						pointOfEntryFilter.setEnabled(caseOriginFilter == null || caseOriginFilter.getValue() != CaseOrigin.IN_COUNTRY);
 					} else {
 						pointOfEntryFilter.setEnabled(false);
 					}
