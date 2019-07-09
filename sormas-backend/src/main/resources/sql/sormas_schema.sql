@@ -3415,7 +3415,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (155, 'Added missing
 --	uuid varchar(36) not null unique,
 --	changedate timestamp not null,
 --	creationdate timestamp not null,
---	airlinenumber varchar(512),
+--	airlinename varchar(512),
 --	flightnumber varchar(512),
 --	departuredatetime timestamp,
 --	arrivaldatetime timestamp,
@@ -3433,12 +3433,15 @@ INSERT INTO schema_version (version_number, comment) VALUES (155, 'Added missing
 --	portofdeparture varchar(512),
 --	lastportofcall varchar(512),
 --	conveyancetype varchar(255),
+--  conveyancetypedetails varchar(512),
 --	departurelocation varchar(512),
 --	finaldestination varchar(512),
 --	details varchar(512),
 --	sys_period tstzrange not null,
 --	primary key(id)
 --);
+
+--ALTER TABLE porthealthinfo OWNER TO sormas_user;
 
 --CREATE TABLE porthealthinfo_history (LIKE casepointofentry);
 --CREATE TRIGGER versioning_trigger

@@ -12,5 +12,7 @@ public interface PointOfEntryFacade {
 	 * point of entry is not in the database.
 	 */
 	List<PointOfEntryReferenceDto> getAllByDistrict(String districtUuid, boolean includeOthers);
+	
+	PointOfEntryDto getByUuid(String uuid);
 
 }

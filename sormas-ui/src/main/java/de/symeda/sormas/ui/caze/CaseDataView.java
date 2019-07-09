@@ -21,8 +21,12 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -55,6 +59,8 @@ public class CaseDataView extends AbstractCaseView {
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 		setHeightUndefined();
+		
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
 		String htmlLayout = LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CASE_LOC),
 				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
@@ -77,7 +83,7 @@ public class CaseDataView extends AbstractCaseView {
 		} else {
 			editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
 		}
-		
+
 		// setSubComponent(editComponent);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
@@ -89,8 +95,10 @@ public class CaseDataView extends AbstractCaseView {
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
 
-		SampleListComponent sampleList = new SampleListComponent(getCaseRef());
-		sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(sampleList, SAMPLES_LOC);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.isPortHealthCase()) {
+			SampleListComponent sampleList = new SampleListComponent(getCaseRef());
+			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(sampleList, SAMPLES_LOC);
+		}
 	}
 }

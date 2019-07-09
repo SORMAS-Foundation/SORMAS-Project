@@ -41,20 +41,18 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -98,9 +96,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.DENGUE_FEVER_TYPE)))
 			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE)
 			+ LayoutUtil.fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)
-			+ LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
 			+ LayoutUtil.loc(MEDICAL_INFORMATION_LOC)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES)
@@ -161,15 +161,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
 
+		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		addField(CaseDataDto.REGION, ComboBox.class);
-		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
+		addField(CaseDataDto.DISTRICT, ComboBox.class);
 		addField(CaseDataDto.COMMUNITY, ComboBox.class);
-		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+		addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
 		TextField fClinicianDetails = addField(CaseDataDto.CLINICIAN_DETAILS, TextField.class);
 		fClinicianDetails.setInputPrompt(I18nProperties.getString(Strings.promptNamePhoneEmail));
+		addField(CaseDataDto.POINT_OF_ENTRY, ComboBox.class);
+		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addFields(CaseDataDto.PREGNANT,
 				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
@@ -181,18 +184,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Set requirements that don't need visibility changes and read only status
 
-		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME,
-				CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
-		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE,
-				CaseDataDto.COMMUNITY, CaseDataDto.SURVEILLANCE_OFFICER);
+		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME, CaseDataDto.DISEASE);
+		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
 		FieldHelper.setReadOnlyWhen(getFieldGroup(), CaseDataDto.INVESTIGATED_DATE, CaseDataDto.INVESTIGATION_STATUS, Arrays.asList(InvestigationStatus.PENDING), false);
 		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORTING_USER, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.REGION,
-				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS, CaseDataDto.POINT_OF_ENTRY, 
+				CaseDataDto.POINT_OF_ENTRY_DETAILS, CaseDataDto.CASE_ORIGIN);
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
-		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS,
-				CaseDataDto.INVESTIGATED_DATE);
-		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION,
-				CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
+		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
+		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
 
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
 		// dynamically setting the visibility
@@ -306,20 +306,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			epidField.addValueChangeListener(f -> {
 				setEpidNumberError(epidField, assignNewEpidNumberButton, (String) f.getProperty().getValue());
 			});
-		});
-
-		district.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
-					.getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
-			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
-		});
-
-		facility.addValueChangeListener(e -> {
-			if (facility.getValue() != null) {
-				boolean otherHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid()
+			
+			// Set health facility details visibility and caption
+			if (getValue().getHealthFacility() != null) {
+				boolean otherHealthFacility = getValue().getHealthFacility().getUuid()
 						.equals(FacilityDto.OTHER_FACILITY_UUID);
-				boolean noneHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid()
+				boolean noneHealthFacility = getValue().getHealthFacility().getUuid()
 						.equals(FacilityDto.NONE_FACILITY_UUID);
 				boolean detailsVisible = otherHealthFacility || noneHealthFacility;
 
@@ -335,16 +327,23 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					healthFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX,
 							NONE_HEALTH_FACILITY_DETAILS));
 				}
-				if (!detailsVisible) {
-					if (!healthFacilityDetails.isReadOnly()) {
-						healthFacilityDetails.clear();
-					}
+			}
+			
+			// Set health facility/point of entry visibility based on case origin
+			if (getValue().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
+				setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
+				
+				if (getValue().getHealthFacility() == null) {
+					setVisible(false, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS);
 				}
 			} else {
-				healthFacilityDetails.setVisible(false);
-				if (!healthFacilityDetails.isReadOnly()) {
-					healthFacilityDetails.clear();
-				}
+				setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
+			}
+			
+			// Hide case origin from port health users
+			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
 		});
 	}

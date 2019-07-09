@@ -66,6 +66,18 @@
         <role-name>NATIONAL_CLINICIAN</role-name>
         <group-name>NATIONAL_CLINICIAN</group-name>
     </security-role-mapping>
+    <security-role-mapping>
+        <role-name>POE_INFORMANT</role-name>
+        <group-name>POE_INFORMANT</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>POE_SUPERVISOR</role-name>
+        <group-name>POE_SUPERVISOR</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>POE_NATIONAL_USER</role-name>
+        <group-name>POE_NATIONAL_USER</group-name>
+    </security-role-mapping>
 
 	<!-- SYSTEM ROLE -->
 	<security-role-mapping>

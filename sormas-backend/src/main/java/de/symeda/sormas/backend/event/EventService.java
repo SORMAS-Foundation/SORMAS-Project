@@ -254,7 +254,8 @@ public class EventService extends AbstractAdoService<Event> {
 		// National users can access all events in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)
+				|| user.getUserRoles().contains(UserRole.POE_NATIONAL_USER)) {
 			return null;
 		}
 
@@ -269,6 +270,7 @@ public class EventService extends AbstractAdoService<Event> {
 			case SURVEILLANCE_SUPERVISOR:
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
+			case POE_SUPERVISOR:
 			case EVENT_OFFICER:
 			case STATE_OBSERVER:
 				// supervisors see all events of their region
@@ -287,6 +289,7 @@ public class EventService extends AbstractAdoService<Event> {
 				break;
 			case HOSPITAL_INFORMANT:
 			case COMMUNITY_INFORMANT:
+			case POE_INFORMANT:
 			case EXTERNAL_LAB_USER:
 				// informants dont see events
 				break;

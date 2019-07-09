@@ -31,6 +31,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -80,7 +81,7 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
 				CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
 				CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
-				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME,
+				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
 				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, NUMBER_OF_PENDING_TASKS);
 
 
@@ -91,6 +92,12 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 			((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
+		}
+		
+		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
+		} else {
+			removeColumn(CaseIndexDto.POINT_OF_ENTRY_NAME);
 		}
 
 		for (Column<?, ?> column : getColumns()) {

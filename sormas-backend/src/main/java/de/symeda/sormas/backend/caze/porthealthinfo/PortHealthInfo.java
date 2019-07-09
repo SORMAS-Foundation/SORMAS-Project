@@ -20,7 +20,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 3289289799891965437L;
 	
-	public static final String TABLE_NAME = "casepointofentry";
+	public static final String TABLE_NAME = "porthealthinfo";
 	
 	// Airport
 	private String airlineName;
@@ -45,6 +45,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 	
 	// Ground Crossing
 	private ConveyanceType conveyanceType;
+	private String conveyanceTypeDetails;
 	private String departureLocation;
 	private String finalDestination;
 	
@@ -210,6 +211,15 @@ public class PortHealthInfo extends AbstractDomainObject {
 
 	public void setConveyanceType(ConveyanceType conveyanceType) {
 		this.conveyanceType = conveyanceType;
+	}
+
+	@Column(length = 512)
+	public String getConveyanceTypeDetails() {
+		return conveyanceTypeDetails;
+	}
+
+	public void setConveyanceTypeDetails(String conveyanceTypeDetails) {
+		this.conveyanceTypeDetails = conveyanceTypeDetails;
 	}
 
 	@Column(length = 512)

@@ -50,6 +50,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -60,6 +61,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -109,11 +111,13 @@ public class CasesView extends AbstractView {
 	private VerticalLayout gridLayout;
 	private HorizontalLayout firstFilterRowLayout;
 	private HorizontalLayout secondFilterRowLayout;
+	private HorizontalLayout thirdFilterRowLayout;
 	private HorizontalLayout dateFilterRowLayout;
 
 	private String originalViewTitle;
 
 	// Filters
+	private ComboBox caseOriginFilter;
 	private ComboBox outcomeFilter;
 	private ComboBox diseaseFilter;
 	private ComboBox classificationFilter;
@@ -122,10 +126,12 @@ public class CasesView extends AbstractView {
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox facilityFilter;
+	private ComboBox pointOfEntryFilter;
 	private ComboBox officerFilter;
 	private ComboBox reportedByFilter;
 	private TextField reportingUserFilter;
 	private CheckBox casesWithoutGeoCoordsFilter;
+	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 
 	// Bulk operations
@@ -277,6 +283,20 @@ public class CasesView extends AbstractView {
 		firstFilterRowLayout.setSpacing(true);
 		firstFilterRowLayout.setSizeUndefined();
 		{
+			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				caseOriginFilter = new ComboBox();
+				caseOriginFilter.setWidth(140, Unit.PIXELS);
+				caseOriginFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_ORIGIN));
+				caseOriginFilter.addItems((Object[]) CaseOrigin.values());
+				caseOriginFilter.addValueChangeListener(e -> {
+					criteria.caseOrigin(((CaseOrigin) e.getProperty().getValue()));
+					pointOfEntryFilter.setEnabled(e.getProperty().getValue() != CaseOrigin.IN_COUNTRY);
+					portHealthCasesWithoutFacilityFilter.setEnabled(e.getProperty().getValue() != CaseOrigin.IN_COUNTRY);
+					navigateTo(criteria);
+				});
+				firstFilterRowLayout.addComponent(caseOriginFilter);
+			}
+
 			outcomeFilter = new ComboBox();
 			outcomeFilter.setWidth(140, Unit.PIXELS);
 			outcomeFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
@@ -387,25 +407,51 @@ public class CasesView extends AbstractView {
 			}
 			secondFilterRowLayout.addComponent(districtFilter);
 
-			facilityFilter = new ComboBox();
-			facilityFilter.setWidth(140, Unit.PIXELS);
-			facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
-			facilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
-			facilityFilter.addValueChangeListener(e -> {
-				criteria.healthFacility(((FacilityReferenceDto)e.getProperty().getValue()));
-				navigateTo(criteria);
-			});
-			facilityFilter.setEnabled(false);
-			secondFilterRowLayout.addComponent(facilityFilter);
+			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				facilityFilter = new ComboBox();
+				facilityFilter.setWidth(140, Unit.PIXELS);
+				facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
+				facilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
+				facilityFilter.addValueChangeListener(e -> {
+					criteria.healthFacility(((FacilityReferenceDto)e.getProperty().getValue()));
+					navigateTo(criteria);
+				});
+				facilityFilter.setEnabled(false);
+				secondFilterRowLayout.addComponent(facilityFilter);
+			}
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+				pointOfEntryFilter = new ComboBox();
+				pointOfEntryFilter.setWidth(140, Unit.PIXELS);
+				pointOfEntryFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.POINT_OF_ENTRY));
+				pointOfEntryFilter.setDescription(I18nProperties.getDescription(Descriptions.descPointOfEntryFilter));
+				pointOfEntryFilter.addValueChangeListener(e -> {
+					criteria.pointOfEntry(((PointOfEntryReferenceDto) e.getProperty().getValue()));
+					navigateTo(criteria);
+				});
+				pointOfEntryFilter.setEnabled(false);
+				secondFilterRowLayout.addComponent(pointOfEntryFilter);
+			}
 
 			districtFilter.addValueChangeListener(e-> {
-				facilityFilter.removeAllItems();
-				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
-				if (district != null) {
-					facilityFilter.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(district, true));
-					facilityFilter.setEnabled(true);
+				if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+					facilityFilter.removeAllItems();
+					DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+					if (district != null) {
+						facilityFilter.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(district, true));
+						facilityFilter.setEnabled(true);
+					} else {
+						facilityFilter.setEnabled(false);
+					}
 				} else {
-					facilityFilter.setEnabled(false);
+					pointOfEntryFilter.removeAllItems();
+					DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+					if (district != null) {
+						pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllByDistrict(district.getUuid(), true));
+						pointOfEntryFilter.setEnabled(true);
+					} else {
+						pointOfEntryFilter.setEnabled(false);
+					}
 				}
 			});
 
@@ -430,7 +476,7 @@ public class CasesView extends AbstractView {
 				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
-			
+
 			reportingUserFilter = new TextField();
 			reportingUserFilter.setWidth(200, Unit.PIXELS);
 			reportingUserFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORTING_USER));
@@ -440,7 +486,16 @@ public class CasesView extends AbstractView {
 				grid.reload();
 			});
 			secondFilterRowLayout.addComponent(reportingUserFilter);
-			
+		}
+		filterLayout.addComponent(secondFilterRowLayout);
+		secondFilterRowLayout.setVisible(false);
+
+		thirdFilterRowLayout = new HorizontalLayout();
+		thirdFilterRowLayout.setMargin(false);
+		thirdFilterRowLayout.setSpacing(true);
+		thirdFilterRowLayout.setSizeUndefined();
+		CssStyles.style(thirdFilterRowLayout, CssStyles.VSPACE_3);
+		{
 			casesWithoutGeoCoordsFilter = new CheckBox();
 			CssStyles.style(casesWithoutGeoCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
 			casesWithoutGeoCoordsFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterWithoutGeo));
@@ -449,10 +504,22 @@ public class CasesView extends AbstractView {
 				criteria.mustHaveNoGeoCoordinates((Boolean) e.getProperty().getValue());
 				navigateTo(criteria);
 			});
-			secondFilterRowLayout.addComponent(casesWithoutGeoCoordsFilter);
+			thirdFilterRowLayout.addComponent(casesWithoutGeoCoordsFilter);
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+				portHealthCasesWithoutFacilityFilter = new CheckBox();
+				CssStyles.style(portHealthCasesWithoutFacilityFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+				portHealthCasesWithoutFacilityFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterPortHealthWithoutFacility));
+				portHealthCasesWithoutFacilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descCaseFilterPortHealthWithoutFacility));
+				portHealthCasesWithoutFacilityFilter.addValueChangeListener(e -> {
+					criteria.mustBePortHealthCaseWithoutFacility((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(portHealthCasesWithoutFacilityFilter);
+			}
 		}
-		filterLayout.addComponent(secondFilterRowLayout);
-		secondFilterRowLayout.setVisible(false);
+		filterLayout.addComponent(thirdFilterRowLayout);
+		thirdFilterRowLayout.setVisible(false);
 
 		dateFilterRowLayout = new HorizontalLayout();
 		dateFilterRowLayout.setSpacing(true);
@@ -622,6 +689,7 @@ public class CasesView extends AbstractView {
 		expandFiltersButton.setVisible(!expanded);
 		collapseFiltersButton.setVisible(expanded);
 		secondFilterRowLayout.setVisible(expanded);
+		thirdFilterRowLayout.setVisible(expanded);
 		dateFilterRowLayout.setVisible(expanded);
 	}
 
@@ -644,7 +712,9 @@ public class CasesView extends AbstractView {
 
 		updateStatusButtons();
 		updateArchivedButton();
-
+		if (caseOriginFilter != null) {
+			caseOriginFilter.setValue(criteria.getCaseOrigin());
+		}
 		outcomeFilter.setValue(criteria.getOutcome());
 		diseaseFilter.setValue(criteria.getDisease());
 		classificationFilter.setValue(criteria.getCaseClassification());
@@ -652,17 +722,27 @@ public class CasesView extends AbstractView {
 		presentConditionFilter.setValue(criteria.getPresentCondition());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
-		facilityFilter.setValue(criteria.getHealthFacility());
+		if (facilityFilter != null) {
+			facilityFilter.setValue(criteria.getHealthFacility());
+		}
+		if (pointOfEntryFilter != null) {
+			pointOfEntryFilter.setValue(criteria.getPointOfEntry());
+		}
 		officerFilter.setValue(criteria.getSurveillanceOfficer());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
 		reportingUserFilter.setValue(criteria.getReportingUserLike());
 		casesWithoutGeoCoordsFilter.setValue(criteria.isMustHaveNoGeoCoordinates());
+		if (portHealthCasesWithoutFacilityFilter != null) {
+			portHealthCasesWithoutFacilityFilter.setValue(criteria.isMustBePortHealthCaseWithoutFacility());
+		}
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
 
 		boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
+				.anyMatch(f -> !f.isEmpty());
+		hasExpandedFilter |= FieldHelper.streamFields(thirdFilterRowLayout)
 				.anyMatch(f -> !f.isEmpty());
 		hasExpandedFilter |=  FieldHelper.streamFields(dateFilterRowLayout)
 				.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter())

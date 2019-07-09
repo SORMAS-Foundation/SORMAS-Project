@@ -27,16 +27,19 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
+import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
@@ -141,19 +144,25 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			if (caze.getDisease() == Disease.CONGENITAL_RUBELLA) {
 				menu.addView(MaternalHistoryView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.MATERNAL_HISTORY), params);
 			}
-			menu.addView(HospitalizationView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), params);
+			if (!caze.isPortHealthCase() && !UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				menu.addView(HospitalizationView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION), params);
+			}
+			if (caze.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+				menu.addView(PortHealthInfoView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO), params);
+			}
 			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 			if (caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
 				menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
-			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW) && !caze.isPortHealthCase()) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW) && !caze.isPortHealthCase()) {
 				menu.addView(ClinicalCourseView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE), params);
 			}
 		}
-		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease())) {
+		if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(caze.getDisease()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW) &&
+				!caze.isPortHealthCase()) {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 

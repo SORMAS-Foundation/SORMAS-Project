@@ -221,6 +221,13 @@ public class CaseDataDto extends EntityDto {
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
 	}
+	
+	/**
+	 * Returns true if the case is an original point of entry case and has not yet been assigned a health facility.
+	 */
+	public boolean isPortHealthCase() {
+		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
+	}
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;

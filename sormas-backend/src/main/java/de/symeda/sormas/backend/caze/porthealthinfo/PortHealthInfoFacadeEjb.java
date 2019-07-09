@@ -43,6 +43,7 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		target.setPortOfDeparture(source.getPortOfDeparture());
 		target.setLastPortOfCall(source.getLastPortOfCall());
 		target.setConveyanceType(source.getConveyanceType());
+		target.setConveyanceTypeDetails(source.getConveyanceTypeDetails());
 		target.setDepartureLocation(source.getDepartureLocation());
 		target.setFinalDestination(source.getFinalDestination());
 		target.setDetails(source.getDetails());
@@ -81,6 +82,7 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		target.setPortOfDeparture(source.getPortOfDeparture());
 		target.setLastPortOfCall(source.getLastPortOfCall());
 		target.setConveyanceType(source.getConveyanceType());
+		target.setConveyanceTypeDetails(source.getConveyanceTypeDetails());
 		target.setDepartureLocation(source.getDepartureLocation());
 		target.setFinalDestination(source.getFinalDestination());
 		target.setDetails(source.getDetails());

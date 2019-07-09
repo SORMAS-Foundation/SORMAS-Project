@@ -10,7 +10,7 @@ public class PortHealthInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = 3289289799891965437L;
 
-	public static final String I18N_PREFIX = "CasePointOfEntry";
+	public static final String I18N_PREFIX = "PortHealthInfo";
 	
 	public static final String AIRLINE_NAME = "airlineName";
 	public static final String FLIGHT_NUMBER = "flightNumber";
@@ -30,6 +30,7 @@ public class PortHealthInfoDto extends EntityDto {
 	public static final String PORT_OF_DEPARTURE = "portOfDeparture";
 	public static final String LAST_PORT_OF_CALL = "lastPortOfCall";
 	public static final String CONVEYANCE_TYPE = "conveyanceType";
+	public static final String CONVEYANCE_TYPE_DETAILS = "conveyanceTypeDetails";
 	public static final String DEPARTURE_LOCATION = "departureLocation";
 	public static final String FINAL_DESTINATION = "finalDestination";
 	public static final String DETAILS = "details";
@@ -57,6 +58,7 @@ public class PortHealthInfoDto extends EntityDto {
 	
 	// Ground Crossing
 	private ConveyanceType conveyanceType;
+	private String conveyanceTypeDetails;
 	private String departureLocation;
 	private String finalDestination;
 	
@@ -211,6 +213,14 @@ public class PortHealthInfoDto extends EntityDto {
 
 	public void setConveyanceType(ConveyanceType conveyanceType) {
 		this.conveyanceType = conveyanceType;
+	}
+
+	public String getConveyanceTypeDetails() {
+		return conveyanceTypeDetails;
+	}
+
+	public void setConveyanceTypeDetails(String conveyanceTypeDetails) {
+		this.conveyanceTypeDetails = conveyanceTypeDetails;
 	}
 
 	public String getDepartureLocation() {

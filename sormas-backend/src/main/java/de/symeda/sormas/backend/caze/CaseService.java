@@ -40,6 +40,7 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.user.UserRole;
@@ -63,6 +64,7 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -350,7 +352,7 @@ public class CaseService extends AbstractAdoService<Case> {
 	public String getHighestEpidNumber(String epidNumberPrefix) {
 		try {
 			Query query = em.createNativeQuery("SELECT epidnumber FROM " + Case.TABLE_NAME + " WHERE " + Case.TABLE_NAME + ".epidnumber LIKE '" 
-							+ epidNumberPrefix + "%' ORDER BY CAST(NULLIF(regexp_replace(" + Case.TABLE_NAME + ".epidnumber, '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
+					+ epidNumberPrefix + "%' ORDER BY CAST(NULLIF(regexp_replace(" + Case.TABLE_NAME + ".epidnumber, '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
 			return (String) query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
@@ -399,6 +401,11 @@ public class CaseService extends AbstractAdoService<Case> {
 			return null;
 		}
 
+		// POE national users can access all port health cases in the system
+		if (user.getUserRoles().contains(UserRole.POE_NATIONAL_USER)) {
+			return cb.equal(casePath.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY);
+		}
+
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), user);
 		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
@@ -411,6 +418,7 @@ public class CaseService extends AbstractAdoService<Case> {
 			case SURVEILLANCE_SUPERVISOR:
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
+			case POE_SUPERVISOR:
 			case EVENT_OFFICER:
 			case STATE_OBSERVER:
 				// supervisors see all cases of their region
@@ -437,6 +445,12 @@ public class CaseService extends AbstractAdoService<Case> {
 				// community informants see all cases of their community
 				if (user.getCommunity() != null) {
 					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), user.getCommunity()));
+				}
+				break;
+			case POE_INFORMANT:
+				// poe informants see all cases of their point of entry
+				if (user.getPointOfEntry() != null) {
+					filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), user.getPointOfEntry()));
 				}
 				break;
 			case LAB_USER:
@@ -470,6 +484,11 @@ public class CaseService extends AbstractAdoService<Case> {
 		// only show cases of a specific disease if a limited disease is set
 		if (user.getLimitedDisease() != null) {
 			filter = and(cb, filter, cb.equal(casePath.get(Case.DISEASE), user.getLimitedDisease()));
+		}
+
+		// only show port health cases to port health users
+		if (UserRole.isPortHealthUser(user.getUserRoles())) {
+			filter = and(cb, filter, cb.equal(casePath.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY));
 		}
 
 		if (filter != null) {
@@ -521,7 +540,7 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		Join<Case, MaternalHistory> maternalHistory = casePath.join(Case.MATERNAL_HISTORY, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(maternalHistory.get(AbstractDomainObject.CHANGE_DATE), date));
-		
+
 		Join<Case, PortHealthInfo> portHealthInfo = casePath.join(Case.PORT_HEALTH_INFO, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(portHealthInfo.get(AbstractDomainObject.CHANGE_DATE), date));
 
@@ -587,7 +606,7 @@ public class CaseService extends AbstractAdoService<Case> {
 
 		return newCaseFilter;
 	}
-	
+
 	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, From<Case, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
@@ -609,8 +628,14 @@ public class CaseService extends AbstractAdoService<Case> {
 		if (caseCriteria.getDistrict() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), caseCriteria.getDistrict().getUuid()));
 		}
+		if (caseCriteria.getCaseOrigin() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
+		}
 		if (caseCriteria.getHealthFacility() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
+		}
+		if (caseCriteria.getPointOfEntry() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Case.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), caseCriteria.getPointOfEntry().getUuid()));
 		}
 		if (caseCriteria.getSurveillanceOfficer() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
@@ -642,6 +667,12 @@ public class CaseService extends AbstractAdoService<Case> {
 									cb.isNull(personAddress.get(Location.LONGITUDE)))
 							)
 					);
+		}
+		if (caseCriteria.isMustBePortHealthCaseWithoutFacility() != null && caseCriteria.isMustBePortHealthCaseWithoutFacility() == true) {
+			filter = and(cb, filter,
+					cb.and(
+							cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY),
+							cb.isNull(from.get(Case.HEALTH_FACILITY))));
 		}
 		if (caseCriteria.getArchived() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), caseCriteria.getArchived()));

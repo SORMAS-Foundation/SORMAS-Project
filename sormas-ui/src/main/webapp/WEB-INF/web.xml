@@ -46,6 +46,12 @@
 	<security-role>
 	  <role-name>NATIONAL_CLINICIAN</role-name>
 	</security-role>
+	<security-role>
+	  <role-name>POE_SUPERVISOR</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>POE_NATIONAL_USER</role-name>
+	</security-role>
   	
   	<!-- 
   	<security-constraint>
