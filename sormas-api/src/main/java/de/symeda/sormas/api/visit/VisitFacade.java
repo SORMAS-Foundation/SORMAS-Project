@@ -17,11 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -54,5 +56,7 @@ public interface VisitFacade {
 	List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, int first, int max, List<SortProperty> sortProperties);
 	
 	long count(VisitCriteria visitCriteria);
+	
+	VisitDto getLastVisitByPerson(PersonReferenceDto person, Disease disease, LocalDate maxDate);
 	
 }

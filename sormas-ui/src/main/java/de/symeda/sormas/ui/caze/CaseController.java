@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.caze;
 import java.util.Collection;
 import java.util.Date;
 
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
@@ -50,6 +52,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -63,6 +66,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.visit.VisitDto; 
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -274,6 +278,7 @@ public class CaseController {
 		if (contact != null) {
 			createForm.setDiseaseReadOnly(true);
 		}
+		
 		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -287,7 +292,25 @@ public class CaseController {
 						contact.setContactStatus(ContactStatus.CONVERTED);
 						FacadeProvider.getContactFacade().saveContact(contact);
 					}
-
+					// #1115: pre-fill the case symptoms based on the last visit of the contact (if existent)
+					if(person!=null && disease!=null) {
+						
+						VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByPerson(person, disease, java.time.LocalDate.now() );
+						if(lastVisit != null) {
+							caze.setSymptoms(lastVisit.getSymptoms());
+							System.out.println("Found and saved visit's symptom");
+//							LoggerFactory.getLogger(CaseController.class).info("Found and saved visit's symptom");;
+						}else {
+//							LoggerFactory.getLogger(CaseController.class).info("No visit found for person:"+ person.getUuid() +" || disease:"+disease.getName());
+							System.out.println("No visit found for person:"+ person.getUuid() +" || disease:"+disease.getName());
+						}
+						EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), UserRight.CASE_EDIT, ViewMode.NORMAL);
+						caze.setEpiData(epiDataForm.getValue());
+					}else {
+						System.out.println("Person and Disease not found");
+//						LoggerFactory.getLogger(CaseController.class).info("Person and Disease not found");;
+					}
+					
 					if (contact != null || eventParticipant != null) {
 						// use the person of the contact or event participant the case is created for
 						dto.setPerson(person);
