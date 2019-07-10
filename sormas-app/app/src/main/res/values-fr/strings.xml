@@ -294,6 +294,11 @@
     <string name="heading_sample_read">Read Sample</string>
     <string name="heading_sample_summary">Sample Summary</string>
     <string name="heading_samples_list">Sample Listing</string>
+    <string name="heading_pathogen_test_edit">Edit Pathogen Test</string>
+    <string name="heading_pathogen_test_new">New Pathogen Test</string>
+    <string name="heading_pathogen_test_read">Read Pathogen Test</string>
+    <string name="heading_pathogen_test_summary">Pathogen Summary</string>
+    <string name="heading_pathogen_tests_list">Pathogen Listing</string>
     <string name="heading_sign_in">Sign In</string>
     <string name="heading_social_events">Social Events</string>
     <string name="heading_source_case">Source Case</string>
@@ -498,4 +503,5 @@
     <string name="value_visit_remarks_unknown">Remarks N/A</string>
     <string name="value_visit_time_unknown">Visit Time N/A</string>
     <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
+    <string name="caption_new_pathogen_test">New Pathogen test</string>
 </resources>

@@ -32,25 +32,26 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
+import de.symeda.sormas.app.databinding.RowSampleTestLayoutBinding;
 import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
-public class PathogenTestListAdapter extends BindingPagedListAdapter<Contact, RowReadContactListItemLayoutBinding> {
+public class PathogenTestListAdapter extends BindingPagedListAdapter<PathogenTest, RowSampleTestLayoutBinding> {
 
     private FollowUpStatus currentListFilter;
 
     public PathogenTestListAdapter(FollowUpStatus initialListFilter) {
-        super(R.layout.row_read_contact_list_item_layout);
+        super(R.layout.row_sample_test_layout);
         this.currentListFilter = initialListFilter;
     }
 
     public PathogenTestListAdapter() {
-        super(R.layout.row_read_contact_list_item_layout);
+        super(R.layout.row_sample_test_layout);
     }
 
     @Override
@@ -58,61 +59,13 @@ public class PathogenTestListAdapter extends BindingPagedListAdapter<Contact, Ro
         super.onBindViewHolder(holder, position);
 
         if (getItemViewType(position) == TYPE_ITEM) {
-            BindingViewHolder<Contact, RowReadContactListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
-            Contact item = getItem(position);
+            BindingViewHolder<PathogenTest, RowSampleTestLayoutBinding> pagedHolder = (BindingViewHolder) holder;
+            PathogenTest item = getItem(position);
 
             pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 
-            indicateContactClassification(pagedHolder.binding.contactClassificationIcon, item);
-
-            if (item.isModifiedOrChildModified()) {
-                pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
-                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
-            } else {
-                pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
-            }
-
-            if (DiseaseConfigurationHelper.getInstance().hasFollowUp(item.getCaseDisease())
-                    && (currentListFilter == null || currentListFilter != FollowUpStatus.NO_FOLLOW_UP)) {
-                int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(item, null);
-                int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(item, VisitStatus.COOPERATIVE);
-
-                pagedHolder.binding.numberOfVisits.setText(String.format(
-                        pagedHolder.binding.getRoot().getResources().getString(R.string.number_of_visits_long_format),
-                        numberOfCooperativeVisits, numberOfVisits - numberOfCooperativeVisits));
-            } else {
-                pagedHolder.binding.numberOfVisits.setVisibility(View.GONE);
-            }
-
         }
-
-        // TODO #704
-//        updateUnreadIndicator(holder, record);
     }
 
-//    public void updateUnreadIndicator(DataBoundViewHolder<RowReadContactListItemLayoutBinding> holder, Contact item) {
-//        LayerDrawable backgroundRowItem = (LayerDrawable) ContextCompat.getDrawable(holder.context, R.drawable.background_list_activity_row);
-//        Drawable unreadListItemIndicator = backgroundRowItem.findDrawableByLayerId(R.id.unreadListItemIndicator);
-//
-//        if (item != null) {
-//            if (item.isUnreadOrChildUnread()) {
-//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(R.color.unreadIcon));
-//            } else {
-//                unreadListItemIndicator.setTint(holder.context.getResources().getColor(android.R.color.transparent));
-//            }
-//        }
-//    }
-
-    public void indicateContactClassification(ImageView img, Contact record) {
-        Resources resources = img.getContext().getResources();
-        Drawable drw = ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
-        StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(record.getContactClassification());
-        drw.setColorFilter(resources.getColor(elaborator.getColorIndicatorResource()), PorterDuff.Mode.SRC_OVER);
-        img.setBackground(drw);
-    }
-
-    public void setCurrentListFilter(FollowUpStatus currentListFilter) {
-        this.currentListFilter = currentListFilter;
-    }
 
 }
