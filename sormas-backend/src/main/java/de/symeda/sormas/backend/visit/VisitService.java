@@ -260,13 +260,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
 
-		try {
-			Visit result = em.createQuery(cq).getSingleResult();
-			return result;
-		} 
-		catch (NoResultException | NonUniqueResultException ex) {
-			return null;
-		}
+		List<Visit> results = em.createQuery(cq).getResultList();
+		return results.size()>0? results.get(0): null;
 	}
 
 	public List<Visit> getAllByPerson(Person person) {
