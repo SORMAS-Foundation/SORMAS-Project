@@ -24,4 +24,6 @@ public interface PointOfEntryFacade {
 	
 	long count(PointOfEntryCriteria criteria);
 
+	void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
+	
 }

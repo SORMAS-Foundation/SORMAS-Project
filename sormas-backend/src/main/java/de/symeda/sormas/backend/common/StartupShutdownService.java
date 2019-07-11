@@ -297,6 +297,12 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create case import template .csv file.");
 		}
+		
+		try {
+			importFacade.generatePointOfEntryImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create point of entry import template .csv file.");
+		}
 	}
 	
 	private void createMissingDiseaseConfigurations() {

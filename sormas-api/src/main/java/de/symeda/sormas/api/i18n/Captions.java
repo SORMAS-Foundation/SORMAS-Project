@@ -186,6 +186,7 @@ public interface Captions {
 	public static String Configuration_HealthFacilities = "Configuration.HealthFacilities";
 	public static String Configuration_Laboratories = "Configuration.Laboratories";
 	public static String Configuration_Outbreaks = "Configuration.Outbreaks";
+	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
 	public static String Contact_caseDisease = "Contact.caseDisease";
 	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
@@ -495,6 +496,8 @@ public interface Captions {
 	public static String importDownloadDataDictionary = "importDownloadDataDictionary";
 	public static String importDownloadErrorReport = "importDownloadErrorReport";
 	public static String importDownloadImportGuide = "importDownloadImportGuide";
+	public static String importDownloadImportTemplate = "importDownloadImportTemplate";
+	public static String importErrorDescription = "importErrorDescription";
 	public static String importErrors = "importErrors";
 	public static String importImports = "importImports";
 	public static String importProcessed = "importProcessed";
@@ -621,6 +624,9 @@ public interface Captions {
 	public static String personCreateNew = "personCreateNew";
 	public static String personFindMatching = "personFindMatching";
 	public static String personSelect = "personSelect";
+	public static String PointOfEntry_active = "PointOfEntry.active";
+	public static String PointOfEntry_latitude = "PointOfEntry.latitude";
+	public static String PointOfEntry_longitude = "PointOfEntry.longitude";
 	public static String PointOfEntry_OTHER_AIRPORT = "PointOfEntry.OTHER_AIRPORT";
 	public static String PointOfEntry_OTHER_GROUND_CROSSING = "PointOfEntry.OTHER_GROUND_CROSSING";
 	public static String PointOfEntry_OTHER_POE = "PointOfEntry.OTHER_POE";
@@ -1025,6 +1031,8 @@ public interface Captions {
 	public static String View_configuration_laboratories_short = "View.configuration.laboratories.short";
 	public static String View_configuration_outbreaks = "View.configuration.outbreaks";
 	public static String View_configuration_outbreaks_short = "View.configuration.outbreaks.short";
+	public static String View_configuration_pointsofentry = "View.configuration.pointsofentry";
+	public static String View_configuration_pointsofentry_short = "View.configuration.pointsofentry.short";
 	public static String View_configuration_regions = "View.configuration.regions";
 	public static String View_configuration_regions_short = "View.configuration.regions.short";
 	public static String View_configuration_userrights = "View.configuration.userrights";

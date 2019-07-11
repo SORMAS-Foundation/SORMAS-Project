@@ -59,10 +59,12 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		});
 		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		
-		setRequired(true, PointOfEntryDto.NAME);
+		setRequired(true, PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE);
 		if (!create) {
 			cbRegion.setEnabled(false);
 			cbDistrict.setEnabled(false);
+		} else {
+			setRequired(true, PointOfEntryDto.REGION, PointOfEntryDto.DISTRICT);
 		}
 	}
 

@@ -133,7 +133,7 @@ public class ImportPersonSelectField extends CustomField<PersonIndexDto> {
 
 			Label communityField = new Label();
 			communityField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY));
-			communityField.setValue(importedCase.getCommunity().toString());
+			communityField.setValue(importedCase.getCommunity() != null ? importedCase.getCommunity().toString() : "");
 			communityField.setWidthUndefined();
 			caseInfoLayout.addComponent(communityField);
 

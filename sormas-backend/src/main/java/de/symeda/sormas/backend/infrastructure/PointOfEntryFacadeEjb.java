@@ -18,6 +18,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PointOfEntryCriteria;
@@ -34,6 +36,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -49,6 +52,8 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
 	
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
 		if (entity == null) {
@@ -94,15 +99,29 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
 		PointOfEntry pointOfEntry = service.getByUuid(dto.getUuid());
 		
-		if (dto.getRegion() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
-		}
-		if (dto.getDistrict() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
-		}
+		validate(dto);
 		
 		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry);
 		service.ensurePersisted(pointOfEntry);
+	}
+	
+	@Override
+	public void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
+		if (StringUtils.isEmpty(pointOfEntry.getName())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.NAME)));
+		}
+		if (pointOfEntry.getPointOfEntryType() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.POINT_OF_ENTRY_TYPE)));
+		}
+		if (pointOfEntry.getRegion() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+		if (pointOfEntry.getDistrict() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
+		}
+		if (!districtFacade.getDistrictByUuid(pointOfEntry.getDistrict().getUuid()).getRegion().equals(pointOfEntry.getRegion())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
+		}
 	}
 	
 	@Override
