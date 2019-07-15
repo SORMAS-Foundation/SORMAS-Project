@@ -145,11 +145,24 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top"
-                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         android:textSize="@dimen/row_entry_secondary_text_size"
                         android:textColor="@color/row_entry_secondary_text"
                         app:facilityValue="@{data.healthFacility}"
+                        app:goneIfEmpty="@{data.healthFacility}"
                         app:defaultValue='@{@string/value_facility_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/txtPointOfEntryName"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        android:textColor="@color/row_entry_secondary_text"
+                        app:pointOfEntryValue="@{data.pointOfEntry}"
+                        app:goneIfEmpty="@{data.pointOfEntry}"
+                        app:defaultValue='@{@string/value_point_of_entry_unknown}'
                         />
 
                     <TextView
@@ -159,6 +172,7 @@
                         android:textSize="@dimen/listActivityRowTertiaryTextSize"
                         android:textColor="@color/listActivityRowLeastText"
                         android:fontFamily="sans-serif-medium"
+                        android:layout_marginTop="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         app:userValue="@{data.reportingUser}"
                         app:defaultValue='@{@string/value_person_unknown}'
                         />

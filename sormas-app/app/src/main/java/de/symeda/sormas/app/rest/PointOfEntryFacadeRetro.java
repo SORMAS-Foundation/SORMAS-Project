@@ -20,22 +20,22 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
-public interface CommunityFacadeRetro {
+public interface PointOfEntryFacadeRetro {
 
-    @GET("communities/all/{since}")
-    Call<List<CommunityDto>> pullAllSince(@Path("since") long since);
+    @GET("pointsofentry/all/{since}")
+    Call<List<PointOfEntryDto>> pullAllSince(@Path("since") long since);
 
-    @POST("communities/query")
-    Call<List<CommunityDto>> pullByUuids(@Body List<String> uuids);
+    @POST("pointsofentry/query")
+    Call<List<PointOfEntryDto>> pullByUuids(@Body List<String> uuids);
 
-    @GET("communities/uuids")
+    @GET("pointsofentry/uuids")
     Call<List<String>> pullUuids();
+
 }

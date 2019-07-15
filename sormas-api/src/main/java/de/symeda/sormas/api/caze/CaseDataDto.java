@@ -197,7 +197,7 @@ public class CaseDataDto extends EntityDto {
 	private PortHealthInfoDto portHealthInfo;	private CaseOrigin caseOrigin;
 	private PointOfEntryReferenceDto pointOfEntry;
 	private String pointOfEntryDetails;
-	
+
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
 		caze.setUuid(DataHelper.createUuid());
@@ -221,7 +221,7 @@ public class CaseDataDto extends EntityDto {
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
 	}
-	
+
 	/**
 	 * Returns true if the case is an original point of entry case and has not yet been assigned a health facility.
 	 */
@@ -446,19 +446,19 @@ public class CaseDataDto extends EntityDto {
 	public void setEpiData(EpiDataDto epiData) {
 		this.epiData = epiData;
 	}
-	
+
 	public TherapyDto getTherapy() {
 		return therapy;
 	}
-	
+
 	public void setTherapy(TherapyDto therapy) {
 		this.therapy = therapy;
 	}
-	
+
 	public ClinicalCourseDto getClinicalCourse() {
 		return clinicalCourse;
 	}
-	
+
 	public void setClinicalCourse(ClinicalCourseDto clinicalCourse) {
 		this.clinicalCourse = clinicalCourse;
 	}
@@ -646,5 +646,5 @@ public class CaseDataDto extends EntityDto {
 	public void setPointOfEntryDetails(String pointOfEntryDetails) {
 		this.pointOfEntryDetails = pointOfEntryDetails;
 	}
-	
+
 }

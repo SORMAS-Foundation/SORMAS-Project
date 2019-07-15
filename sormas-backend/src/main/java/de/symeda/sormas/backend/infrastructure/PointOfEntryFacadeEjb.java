@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,11 +34,13 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -54,6 +58,8 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	private DistrictService districtService;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
+	private UserService userService;
 	
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
 		if (entity == null) {
@@ -75,6 +81,30 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	@Override
 	public PointOfEntryDto getByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
+	}
+	
+	@Override
+	public List<PointOfEntryDto> getAllAfter(Date date) {
+		return service.getAllAfter(date, null).stream()
+			.map(c -> toDto(c))
+			.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<String> getAllUuids(String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		return service.getAllUuids(user);
+	}
+	
+	@Override
+	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
 	}
 	
 	private PointOfEntryDto toDto(PointOfEntry entity) {

@@ -18,10 +18,13 @@
 
 package de.symeda.sormas.app.caze.edit;
 
+import android.view.View;
+
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.user.UserRole;
@@ -37,6 +40,9 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 
 public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBinding, Case, Case> {
 
@@ -51,6 +57,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> initialDistricts;
     private List<Item> initialCommunities;
     private List<Item> initialFacilities;
+    private List<Item> initialPointsOfEntry;
 
     public static CaseNewFragment newInstance(Case activityRootData) {
         return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle().get(), activityRootData);
@@ -90,16 +97,19 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
         initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
         initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity());
+        initialPointsOfEntry = InfrastructureHelper.loadPointsOfEntry(record.getDistrict());
     }
 
     @Override
     public void onLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
+        contentBinding.setCaseOriginClass(CaseOrigin.class);
 
         InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
                 contentBinding.caseDataDistrict, initialDistricts,
                 contentBinding.caseDataCommunity, initialCommunities,
-                contentBinding.caseDataHealthFacility, initialFacilities);
+                contentBinding.caseDataHealthFacility, initialFacilities,
+                contentBinding.caseDataPointOfEntry, initialPointsOfEntry);
 
         contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
@@ -110,6 +120,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     @Override
     public void onAfterLayoutBinding(final FragmentCaseNewLayoutBinding contentBinding) {
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+        InfrastructureHelper.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
         contentBinding.caseDataRegion.setEnabled(false);
         contentBinding.caseDataRegion.setRequired(false);
@@ -123,6 +134,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.caseDataCommunity.setRequired(false);
             contentBinding.caseDataHealthFacility.setEnabled(false);
             contentBinding.caseDataHealthFacility.setRequired(false);
+        }
+
+        if (user.hasUserRole(UserRole.POE_INFORMANT) && user.getPointOfEntry() != null) {
+            contentBinding.caseDataPointOfEntry.setEnabled(false);
+            contentBinding.caseDataPointOfEntry.setRequired(false);
         }
 
         if (user.hasUserRole(UserRole.COMMUNITY_INFORMANT) && user.getCommunity() != null) {
@@ -141,6 +157,40 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.caseDataDiseaseDetails.setEnabled(false);
             contentBinding.caseDataPlagueType.setEnabled(false);
             contentBinding.caseDataDengueFeverType.setEnabled(false);
+        }
+
+        // Set up port health visibilities
+        if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
+            contentBinding.caseDataCaseOrigin.setVisibility(GONE);
+            contentBinding.caseDataDisease.setVisibility(GONE);
+            contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+            contentBinding.caseDataHealthFacility.setRequired(false);
+            contentBinding.caseDataHealthFacilityDetails.setRequired(false);
+        } else {
+            if (record.getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
+                contentBinding.caseDataPointOfEntry.setRequired(false);
+                contentBinding.caseDataPointOfEntry.setVisibility(GONE);
+            } else {
+                contentBinding.caseDataHealthFacility.setRequired(false);
+                contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+            }
+            contentBinding.caseDataCaseOrigin.addValueChangedListener(e -> {
+                if (e.getValue() == CaseOrigin.IN_COUNTRY) {
+                    contentBinding.caseDataPointOfEntry.setVisibility(GONE);
+                    contentBinding.healthFacilityFieldsLayout.setVisibility(VISIBLE);
+                    InfrastructureHelper.setHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+                    contentBinding.caseDataPointOfEntry.setRequired(false);
+                    contentBinding.caseDataPointOfEntry.setValue(null);
+                    contentBinding.caseDataHealthFacility.setRequired(true);
+                } else {
+                    contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+                    contentBinding.caseDataPointOfEntry.setVisibility(VISIBLE);
+                    InfrastructureHelper.setPointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
+                    contentBinding.caseDataHealthFacility.setRequired(false);
+                    contentBinding.caseDataHealthFacility.setValue(null);
+                    contentBinding.caseDataPointOfEntry.setRequired(true);
+                }
+            });
         }
     }
 

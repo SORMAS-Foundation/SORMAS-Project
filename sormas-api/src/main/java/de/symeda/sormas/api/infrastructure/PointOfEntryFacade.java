@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.infrastructure;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -25,5 +26,11 @@ public interface PointOfEntryFacade {
 	long count(PointOfEntryCriteria criteria);
 
 	void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
+
+	List<PointOfEntryDto> getAllAfter(Date date);
+
+	List<String> getAllUuids(String userUuid);
+	
+	List<PointOfEntryDto> getByUuids(List<String> uuids);
 	
 }

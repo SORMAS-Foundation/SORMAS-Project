@@ -27,8 +27,10 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -97,20 +99,31 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
         Case caze = getStoredRootEntity();
         // Sections must be removed in reverse order
-        if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW) || (caze != null && caze.getClinicalCourse() == null)) {
+        if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW) || (caze != null && caze.isPortHealthCase()) ||
+                (caze != null && caze.getClinicalCourse() == null)) {
             menuItems.remove(CaseSection.CLINICAL_VISITS.ordinal());
             menuItems.remove(CaseSection.HEALTH_CONDITIONS.ordinal());
         }
-        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW) || (caze != null && caze.getTherapy() == null)) {
+        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW) || (caze != null && caze.isPortHealthCase()) ||
+        (caze != null && caze.getTherapy() == null)) {
             menuItems.remove(CaseSection.TREATMENTS.ordinal());
             menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
-                || (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
+        if (caze != null && caze.isPortHealthCase()) {
+            menuItems.remove(CaseSection.SAMPLES.ordinal());
+        }
+        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isPortHealthCase()) ||
+                (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
         if (caze != null && caze.getDisease() == Disease.CONGENITAL_RUBELLA) {
             menuItems.remove(CaseSection.EPIDEMIOLOGICAL_DATA.ordinal());
+        }
+        if (caze != null && (caze.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || !ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW))) {
+            menuItems.remove(CaseSection.PORT_HEALTH_INFO.ordinal());
+        }
+        if (caze != null && (caze.isPortHealthCase() || UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles()))) {
+            menuItems.remove(CaseSection.HOSPITALIZATION.ordinal());
         }
         if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
             menuItems.remove(CaseSection.MATERNAL_HISTORY.ordinal());
@@ -135,6 +148,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
                 break;
             case HOSPITALIZATION:
                 fragment = CaseEditHospitalizationFragment.newInstance(activityRootData);
+                break;
+            case PORT_HEALTH_INFO:
+                fragment = CaseEditPortHealthInfoFragment.newInstance(activityRootData);
                 break;
             case SYMPTOMS:
                 fragment = SymptomsEditFragment.newInstance(activityRootData);
@@ -185,16 +201,10 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     public void saveData() {
-        saveData(new Consumer<Case>() {
-            @Override
-            public void accept(Case parameter) {
-                goToNextPage();
-            }
-        });
+        saveData(parameter -> goToNextPage());
     }
 
     public void saveData(final Consumer<Case> successCallback) {
-
         if (saveTask != null) {
             NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times

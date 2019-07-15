@@ -141,7 +141,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
     public List<Contact> queryByCriteria(ContactCriteria criteria, long offset, long limit) {
         try {
-            return buildQueryBuilder(criteria).orderBy(Contact.LOCAL_CHANGE_DATE, true)
+            return buildQueryBuilder(criteria).orderBy(Contact.REPORT_DATE_TIME, true)
                     .offset(offset).limit(limit).query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryByCriteria on Contact");

@@ -796,7 +796,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-
+		
 		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);

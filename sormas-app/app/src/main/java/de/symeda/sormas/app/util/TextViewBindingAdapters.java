@@ -53,6 +53,7 @@ import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
@@ -801,6 +802,15 @@ public class TextViewBindingAdapters {
             textField.setText(defaultValue);
         } else {
             textField.setText(facility.toString());
+        }
+    }
+
+    @BindingAdapter(value={"pointOfEntryValue", "defaultValue"}, requireAll=false)
+    public static void setPointOfEntryValue(TextView textField, PointOfEntry pointOfEntry, String defaultValue) {
+        if (pointOfEntry == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(pointOfEntry.toString());
         }
     }
 

@@ -16,26 +16,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.rest;
+package de.symeda.sormas.app.backend.caze.porthealthinfo;
 
-import java.util.List;
+import com.j256.ormlite.dao.Dao;
 
-import de.symeda.sormas.api.region.CommunityDto;
-import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
+import java.sql.SQLException;
 
-public interface CommunityFacadeRetro {
+import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 
-    @GET("communities/all/{since}")
-    Call<List<CommunityDto>> pullAllSince(@Path("since") long since);
+public class PortHealthInfoDao extends AbstractAdoDao<PortHealthInfo> {
 
-    @POST("communities/query")
-    Call<List<CommunityDto>> pullByUuids(@Body List<String> uuids);
+    public PortHealthInfoDao(Dao<PortHealthInfo, Long> innerDao) throws SQLException {
+        super(innerDao);
+    }
 
-    @GET("communities/uuids")
-    Call<List<String>> pullUuids();
+    @Override
+    protected Class<PortHealthInfo> getAdoClass() {
+        return PortHealthInfo.class;
+    }
+
+    @Override
+    public String getTableName() {
+        return PortHealthInfo.TABLE_NAME;
+    }
+
 }

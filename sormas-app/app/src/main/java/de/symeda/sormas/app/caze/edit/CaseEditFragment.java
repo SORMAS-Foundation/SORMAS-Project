@@ -26,6 +26,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -34,6 +35,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -83,6 +85,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private void setUpFieldVisibilities(final FragmentCaseEditLayoutBinding contentBinding) {
         setVisibilityByDisease(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.mainContent);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+        InfrastructureHelper.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
         // Vaccination date
         if (isVisibleAllowed(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.caseDataVaccination)) {
@@ -105,51 +108,71 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
             }
         });
 
+        // Port Health fields
+        if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
+            contentBinding.caseDataCaseOrigin.setVisibility(GONE);
+            contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+        } else {
+            if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+                if (record.getHealthFacility() == null) {
+                    contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+                    contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
+                }
+            } else {
+                contentBinding.pointOfEntryFieldsLayout.setVisibility(GONE);
+            }
+        }
+
         // Button panel
         DiseaseClassificationCriteria classificationCriteria = DatabaseHelper.getDiseaseClassificationCriteriaDao().getByDisease(record.getDisease());
         if (classificationCriteria == null || !classificationCriteria.hasAnyCriteria()) {
             contentBinding.showClassificationRules.setVisibility(GONE);
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CASE_TRANSFER)) {
+        if (!ConfigProvider.hasUserRight(UserRight.CASE_TRANSFER) || record.getHealthFacility() == null) {
             contentBinding.transferCase.setVisibility(GONE);
         }
-        if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.transferCase.getVisibility() == GONE) {
+        if (!ConfigProvider.hasUserRight(UserRight.CASE_REFER_TO_FACILITY) || record.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || record.getHealthFacility() != null) {
+            contentBinding.referCase.setVisibility(GONE);
+        }
+        if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.transferCase.getVisibility() == GONE && contentBinding.referCase.getVisibility() == GONE) {
             contentBinding.caseButtonsPanel.setVisibility(GONE);
         }
     }
 
     private void setUpButtonListeners(FragmentCaseEditLayoutBinding contentBinding) {
-        contentBinding.transferCase.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
-                activity.saveData(new Consumer<Case>() {
-                    @Override
-                    public void accept(final Case caze) {
-                        final Case caseClone = (Case) caze.clone();
-                        final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caze);
-                        moveCaseDialog.setPositiveCallback(new Callback() {
-                            @Override
-                            public void call() {
-                                record = caseClone;
-                                requestLayoutRebind();
-                                moveCaseDialog.dismiss();
-                            }
-                        });
-                        moveCaseDialog.show();
-                    }
+        contentBinding.transferCase.setOnClickListener(v -> {
+            final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
+            activity.saveData(caze -> {
+                final Case caseClone = (Case) caze.clone();
+                final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caze);
+                moveCaseDialog.setPositiveCallback(() -> {
+                    record = caseClone;
+                    requestLayoutRebind();
+                    moveCaseDialog.dismiss();
                 });
-            }
+                moveCaseDialog.show();
+            });
         });
 
-        contentBinding.showClassificationRules.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final InfoDialog classificationDialog = new InfoDialog(CaseEditFragment.this.getContext(), R.layout.dialog_classification_rules_layout, null);
-                WebView classificationView = ((DialogClassificationRulesLayoutBinding) classificationDialog.getBinding()).content;
-                classificationView.loadData(DiseaseClassificationAppHelper.buildDiseaseClassificationHtml(record.getDisease()), "text/html", "utf-8");
-                classificationDialog.show();
-            }
+        contentBinding.referCase.setOnClickListener(e -> {
+            final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
+            activity.saveData(caze -> {
+                final Case caseClone = (Case) caze.clone();
+                final ReferCaseDialog referCaseDialog = new ReferCaseDialog(BaseActivity.getActiveActivity(), caze);
+                referCaseDialog.setPositiveCallback(() -> {
+                    record = caseClone;
+                    requestLayoutRebind();
+                    referCaseDialog.dismiss();
+                });
+                referCaseDialog.show();
+            });
+        });
+
+        contentBinding.showClassificationRules.setOnClickListener(v -> {
+            final InfoDialog classificationDialog = new InfoDialog(CaseEditFragment.this.getContext(), R.layout.dialog_classification_rules_layout, null);
+            WebView classificationView = ((DialogClassificationRulesLayoutBinding) classificationDialog.getBinding()).content;
+            classificationView.loadData(DiseaseClassificationAppHelper.buildDiseaseClassificationHtml(record.getDisease()), "text/html", "utf-8");
+            classificationDialog.show();
         });
     }
 

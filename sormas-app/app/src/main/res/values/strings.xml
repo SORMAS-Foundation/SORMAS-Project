@@ -79,6 +79,7 @@
     <string name="action_pick_gps">Pick current GPS for address</string>
     <string name="action_redownload_app">Redownload</string>
     <string name="action_redownload_app_later">Redownload later</string>
+    <string name="action_refer_case">Refer case to health facility</string>
     <string name="action_report">Report Problem</string>
     <string name="action_repull_data">Re-synchronize data</string>
     <string name="action_reset_filters">Reset filters</string>
@@ -115,6 +116,7 @@
     <string name="caption_case_hospitalization">Hospitalization Info</string>
     <string name="caption_case_information">Case Information</string>
     <string name="caption_case_maternal_history">Maternal History</string>
+    <string name="caption_case_port_health_info">Port Health Info</string>
     <string name="caption_case_prescriptions">Prescriptions</string>
     <string name="caption_case_samples">Case Samples</string>
     <string name="caption_case_tasks">Case Tasks</string>
@@ -227,6 +229,7 @@
     <string name="entity_task">Task</string>
 
     <string name="error_case_transfer">An error occurred while trying to transfer the case.</string>
+    <string name="error_case_referring">An error occurred while trying to refer the case.</string>
     <string name="error_changes_dropped_no_access">Changes dropped because you have no longer access to this entity.</string>
     <string name="error_internal_error">An internal error occurred. Please contact an administrator.</string>
     <string name="error_modified_list_entry_deleted">A list entry you modified was deleted:</string>
@@ -296,6 +299,7 @@
     <string name="heading_prescription_new">New Prescription</string>
     <string name="heading_previous_hospitalization">Previous Hospitalization</string>
     <string name="heading_previous_hospitalizations">Previous Hospitalizations</string>
+    <string name="heading_refer_case">Refer Case</string>
     <string name="heading_reset_PIN">Reset PIN</string>
     <string name="heading_response_management">Response Management &amp; Analysis System</string>
     <string name="heading_sample_edit">Edit Sample</string>
@@ -497,6 +501,7 @@
     <string name="value_no_username">No Username</string>
     <string name="value_not_available">N/A</string>
     <string name="value_person_unknown">Person N/A</string>
+    <string name="value_point_of_entry_unknown">Point of Entry N/A</string>
     <string name="value_prescribing_clinician_unknown">Prescribing Clinician N/A</string>
     <string name="value_prescription_date_unknown">Date Prescription Issued N/A</string>
     <string name="value_prescription_period_unknown">Prescription Period N/A</string>

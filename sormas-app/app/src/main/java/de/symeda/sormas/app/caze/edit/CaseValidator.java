@@ -20,6 +20,7 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.View;
 
 import org.joda.time.DateTimeComparator;
 
@@ -36,6 +37,7 @@ import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentCaseEditPortHealthInfoLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ResultCallback;
 
@@ -105,6 +107,43 @@ final class CaseValidator {
 
         contentBinding.epiDataTravelTravelDateFrom.setValidationCallback(travelDateFromCallback);
         contentBinding.epiDataTravelTravelDateTo.setValidationCallback(burialDateToCallback);
+    }
+
+    static void initializePortHealthInfoValidation(final FragmentCaseEditPortHealthInfoLayoutBinding contentBinding, final Case caze) {
+        if (contentBinding.portHealthInfoDepartureDateTime.getVisibility() == View.GONE || contentBinding.portHealthInfoArrivalDateTime.getVisibility() == View.GONE) {
+            return;
+        }
+
+        ResultCallback<Boolean> departureCallback = () -> {
+            if (contentBinding.portHealthInfoDepartureDateTime.getValue() != null && contentBinding.portHealthInfoArrivalDateTime.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.portHealthInfoDepartureDateTime.getValue(), contentBinding.portHealthInfoArrivalDateTime.getValue()) > 0) {
+                    contentBinding.portHealthInfoDepartureDateTime.enableErrorState(
+                            I18nProperties.getValidationError(Validations.beforeDate,
+                                    contentBinding.portHealthInfoDepartureDateTime.getCaption(),
+                                    contentBinding.portHealthInfoArrivalDateTime.getCaption()));
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        ResultCallback<Boolean> arrivalCallback = () -> {
+            if (contentBinding.portHealthInfoArrivalDateTime.getValue() != null && contentBinding.portHealthInfoDepartureDateTime.getValue() != null) {
+                if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.portHealthInfoArrivalDateTime.getValue(), contentBinding.portHealthInfoDepartureDateTime.getValue()) < 0) {
+                    contentBinding.portHealthInfoArrivalDateTime.enableErrorState(
+                            I18nProperties.getValidationError(Validations.beforeDate,
+                                    contentBinding.portHealthInfoArrivalDateTime.getCaption(),
+                                    contentBinding.portHealthInfoDepartureDateTime.getCaption()));
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        contentBinding.portHealthInfoDepartureDateTime.setValidationCallback(departureCallback);
+        contentBinding.portHealthInfoArrivalDateTime.setValidationCallback(arrivalCallback);
     }
 
     static void initializeHospitalizationValidation(final FragmentCaseEditHospitalizationLayoutBinding contentBinding, final Case caze) {

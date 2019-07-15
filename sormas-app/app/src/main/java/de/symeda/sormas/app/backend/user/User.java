@@ -38,6 +38,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -89,6 +90,8 @@ public class User extends AbstractDomainObject {
     private Community community;
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Facility healthFacility;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private PointOfEntry pointOfEntry;
 
     @ManyToOne(cascade = {})
     private User associatedOfficer;
@@ -188,6 +191,14 @@ public class User extends AbstractDomainObject {
 
     public void setHealthFacility(Facility healthFacility) {
         this.healthFacility = healthFacility;
+    }
+
+    public PointOfEntry getPointOfEntry() {
+        return pointOfEntry;
+    }
+
+    public void setPointOfEntry(PointOfEntry pointOfEntry) {
+        this.pointOfEntry = pointOfEntry;
     }
 
     public User getAssociatedOfficer() {
