@@ -126,7 +126,7 @@ public enum ApproximateAgeType {
 			if (lowerAgeBoundary >= 120) {
 				return "120+";
 			} else {
-				return lowerAgeBoundary + "-" + (lowerAgeBoundary + 4);
+				return lowerAgeBoundary + ".." + (lowerAgeBoundary + 4);
 			}
 		}
 	}
