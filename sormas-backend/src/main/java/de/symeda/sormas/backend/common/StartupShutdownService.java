@@ -229,9 +229,10 @@ public class StartupShutdownService {
 					if (nextLine.startsWith("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
 						currentVersionReached = true;
 					}
-
 					continue;
 				}
+				
+				nextLine = nextLine.replaceAll(":", "\\\\:");
 				
 				// Add the line to the StringBuilder
 				nextUpdateBuilder.append(nextLine).append("\n");
