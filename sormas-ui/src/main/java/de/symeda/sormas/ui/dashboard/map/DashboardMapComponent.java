@@ -147,28 +147,13 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER) || UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
+		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
+				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
 				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
-			showRegions = true;
-
 			map.setZoom(6);
 			GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 			map.setCenter(mapCenter.getLon(), mapCenter.getLat());
 		} else {
-			if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
-				showCases = true;
-				showContacts = true;
-				showEvents = true;
-				showConfirmedContacts = true;
-				showUnconfirmedContacts = true;
-			} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
-				showCases = false;
-				showContacts = true;
-				showEvents = false;
-				showConfirmedContacts = true;
-				showUnconfirmedContacts = true;
-			}
-
 			UserDto user = UserProvider.getCurrent().getUser();
 			if (user.getRegion() != null) {
 				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(user.getRegion());
@@ -178,6 +163,20 @@ public class DashboardMapComponent extends VerticalLayout {
 				map.setCenter(mapCenter.getLon(), mapCenter.getLat());
 			}
 			map.setZoom(6);
+		}
+
+		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
+			showCases = true;
+			showContacts = true;
+			showEvents = true;
+			showConfirmedContacts = true;
+			showUnconfirmedContacts = true;
+		} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			showCases = false;
+			showContacts = true;
+			showEvents = false;
+			showConfirmedContacts = true;
+			showUnconfirmedContacts = true;
 		}
 
 		this.setMargin(true);
