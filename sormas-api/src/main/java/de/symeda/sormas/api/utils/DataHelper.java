@@ -174,11 +174,11 @@ public final class DataHelper {
 		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0,  RoundingMode.HALF_UP) : number;
 	}
 	
-	public static List<Integer> getIntegerValues(int min, int max) {
-		return getIntegerValues(min, max, 1);
+	public static List<Integer> buildIntegerList(int min, int max) {
+		return buildIntegerList(min, max, 1);
 	}
 	
-	public static List<Integer> getIntegerValues(int min, int max, int step) {
+	public static List<Integer> buildIntegerList(int min, int max, int step) {
 		List<Integer> x = new ArrayList<>();
 		for (int i = min; i <= max; i += step) {
 			x.add(i);

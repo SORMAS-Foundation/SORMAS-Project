@@ -24,7 +24,6 @@ import android.view.Menu;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.user.UserRight;
@@ -37,7 +36,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.caze.edit.CaseEditPrescriptionListFragment;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -73,20 +71,20 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(CaseSection.values(), getContext());
         Case caze = getStoredRootEntity();
         // Sections must be removed in reverse order
-        if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW) || (caze != null && caze.isPortHealthCase()) ||
+        if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
                 (caze != null && caze.getClinicalCourse() == null)) {
             menuItems.remove(CaseSection.CLINICAL_VISITS.ordinal());
             menuItems.remove(CaseSection.HEALTH_CONDITIONS.ordinal());
         }
-        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW) || (caze != null && caze.isPortHealthCase()) ||
+        if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
                 (caze != null && caze.getTherapy() == null)) {
             menuItems.remove(CaseSection.TREATMENTS.ordinal());
             menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
         }
-        if (caze != null && caze.isPortHealthCase()) {
+        if (caze != null && caze.isUnreferredPortHealthCase()) {
             menuItems.remove(CaseSection.SAMPLES.ordinal());
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isPortHealthCase())  ||
+        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isUnreferredPortHealthCase())  ||
                 (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.remove(CaseSection.CONTACTS.ordinal());
         }
@@ -96,7 +94,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
         if (caze != null && (caze.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || !ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW))) {
             menuItems.remove(CaseSection.PORT_HEALTH_INFO.ordinal());
         }
-        if (caze != null && (caze.isPortHealthCase() || UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles()))) {
+        if (caze != null && (caze.isUnreferredPortHealthCase() || UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles()))) {
             menuItems.remove(CaseSection.HOSPITALIZATION.ordinal());
         }
         if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {

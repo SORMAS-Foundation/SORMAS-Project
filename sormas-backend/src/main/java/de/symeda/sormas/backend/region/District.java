@@ -28,7 +28,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 
 @Entity
 public class District extends AbstractDomainObject {
@@ -48,7 +47,6 @@ public class District extends AbstractDomainObject {
 	private Region region;
 	private String epidCode;
 	private List<Community> communities;
-	private List<PointOfEntry> pointsOfEntry;
 	private Integer population;
 	private Float growthRate;
 	
@@ -82,15 +80,6 @@ public class District extends AbstractDomainObject {
 	}
 	public void setCommunities(List<Community> communities) {
 		this.communities = communities;
-	}
-	
-	@OneToMany(mappedBy = PointOfEntry.DISTRICT, cascade = {}, fetch = FetchType.LAZY)
-	@OrderBy(PointOfEntry.NAME)
-	public List<PointOfEntry> getPointsOfEntry() {
-		return pointsOfEntry;
-	}
-	public void setPointsOfEntry(List<PointOfEntry> pointsOfEntry) {
-		this.pointsOfEntry = pointsOfEntry;
 	}
 	
 	public Integer getPopulation() {

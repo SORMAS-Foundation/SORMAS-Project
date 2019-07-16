@@ -51,8 +51,6 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
@@ -131,10 +129,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (!ConfigProvider.hasUserRight(UserRight.CASE_TRANSFER) || record.getHealthFacility() == null) {
             contentBinding.transferCase.setVisibility(GONE);
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CASE_REFER_TO_FACILITY) || record.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || record.getHealthFacility() != null) {
-            contentBinding.referCase.setVisibility(GONE);
+        if (!ConfigProvider.hasUserRight(UserRight.CASE_REFER_FROM_POE) || record.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || record.getHealthFacility() != null) {
+            contentBinding.referCaseFromPoe.setVisibility(GONE);
         }
-        if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.transferCase.getVisibility() == GONE && contentBinding.referCase.getVisibility() == GONE) {
+        if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.transferCase.getVisibility() == GONE && contentBinding.referCaseFromPoe.getVisibility() == GONE) {
             contentBinding.caseButtonsPanel.setVisibility(GONE);
         }
     }
@@ -154,17 +152,17 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
             });
         });
 
-        contentBinding.referCase.setOnClickListener(e -> {
+        contentBinding.referCaseFromPoe.setOnClickListener(e -> {
             final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
             activity.saveData(caze -> {
                 final Case caseClone = (Case) caze.clone();
-                final ReferCaseDialog referCaseDialog = new ReferCaseDialog(BaseActivity.getActiveActivity(), caze);
-                referCaseDialog.setPositiveCallback(() -> {
+                final ReferCaseFromPoeDialog referCaseFromPoeDialog = new ReferCaseFromPoeDialog(BaseActivity.getActiveActivity(), caze);
+                referCaseFromPoeDialog.setPositiveCallback(() -> {
                     record = caseClone;
                     requestLayoutRebind();
-                    referCaseDialog.dismiss();
+                    referCaseFromPoeDialog.dismiss();
                 });
-                referCaseDialog.show();
+                referCaseFromPoeDialog.show();
             });
         });
 

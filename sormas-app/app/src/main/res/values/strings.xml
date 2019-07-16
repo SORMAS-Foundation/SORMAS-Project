@@ -79,7 +79,7 @@
     <string name="action_pick_gps">Pick current GPS for address</string>
     <string name="action_redownload_app">Redownload</string>
     <string name="action_redownload_app_later">Redownload later</string>
-    <string name="action_refer_case">Refer case to health facility</string>
+    <string name="action_refer_case_from_poe">Refer case from Point of Entry</string>
     <string name="action_report">Report Problem</string>
     <string name="action_repull_data">Re-synchronize data</string>
     <string name="action_reset_filters">Reset filters</string>
@@ -229,7 +229,7 @@
     <string name="entity_task">Task</string>
 
     <string name="error_case_transfer">An error occurred while trying to transfer the case.</string>
-    <string name="error_case_referring">An error occurred while trying to refer the case.</string>
+    <string name="error_case_referring_from_poe">An error occurred while trying to refer the case.</string>
     <string name="error_changes_dropped_no_access">Changes dropped because you have no longer access to this entity.</string>
     <string name="error_internal_error">An internal error occurred. Please contact an administrator.</string>
     <string name="error_modified_list_entry_deleted">A list entry you modified was deleted:</string>
@@ -299,7 +299,7 @@
     <string name="heading_prescription_new">New Prescription</string>
     <string name="heading_previous_hospitalization">Previous Hospitalization</string>
     <string name="heading_previous_hospitalizations">Previous Hospitalizations</string>
-    <string name="heading_refer_case">Refer Case</string>
+    <string name="heading_refer_case_from_poe">Refer Case from Point of Entry</string>
     <string name="heading_reset_PIN">Reset PIN</string>
     <string name="heading_response_management">Response Management &amp; Analysis System</string>
     <string name="heading_sample_edit">Edit Sample</string>

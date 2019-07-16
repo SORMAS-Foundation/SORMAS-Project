@@ -1129,21 +1129,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return saveCase(caze);
 	}
-	
-	/**
-	 * Updates the hospitalization of a given case when it's so far been a port health case,
-	 * i.e. it had a point of entry, but not a health facility set.
-	 */
-	@Override
-	public CaseDataDto saveAndReferCase(CaseDataDto caze) {
-		Case existingCase = caseService.getByUuid(caze.getUuid());
-		
-		if (existingCase.getHealthFacility() == null) {
-			caze.getHospitalization().setAdmissionDate(new Date());
-		}
-		
-		return saveCase(caze);
-	}
 
 	@Override
 	public void deleteCase(CaseReferenceDto caseRef, String userUuid) {

@@ -51,31 +51,31 @@ public final class SymptomsHelper {
 	}
 	
 	public static List<Integer> getBloodPressureValues() {
-		return DataHelper.getIntegerValues(0, 300);
+		return DataHelper.buildIntegerList(0, 300);
 	}
 
 	public static List<Integer> getHeartRateValues() {
-		return DataHelper.getIntegerValues(0, 300);
+		return DataHelper.buildIntegerList(0, 300);
 	}
 
 	public static List<Integer> getRespiratoryRateValues() {
-		return DataHelper.getIntegerValues(0, 80);
+		return DataHelper.buildIntegerList(0, 80);
 	}
 
 	public static List<Integer> getGlasgowComaScaleValues() {
-		return DataHelper.getIntegerValues(3, 15);
+		return DataHelper.buildIntegerList(3, 15);
 	}
 
 	public static List<Integer> getWeightValues() {
-		return DataHelper.getIntegerValues(0, 50000, 10);
+		return DataHelper.buildIntegerList(0, 50000, 10);
 	}
 
 	public static List<Integer> getHeightValues() {
-		return DataHelper.getIntegerValues(0, 250);
+		return DataHelper.buildIntegerList(0, 250);
 	}
 
 	public static List<Integer> getMidUpperArmCircumferenceValues() {
-		return DataHelper.getIntegerValues(100, 10000, 10);
+		return DataHelper.buildIntegerList(100, 10000, 10);
 	}
 
 	public static String getTemperatureString(float value) {

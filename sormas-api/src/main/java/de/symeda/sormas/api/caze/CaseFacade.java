@@ -68,8 +68,6 @@ public interface CaseFacade {
 	List<String> getAllActiveUuids(String userUuid);
 	
 	CaseDataDto saveAndTransferCase(CaseDataDto caze);
-	
-	CaseDataDto saveAndReferCase(CaseDataDto caze);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	

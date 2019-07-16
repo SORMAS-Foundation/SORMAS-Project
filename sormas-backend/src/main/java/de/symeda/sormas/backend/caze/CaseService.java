@@ -400,12 +400,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
-
-		// POE national users can access all port health cases in the system
-		if (user.getUserRoles().contains(UserRole.POE_NATIONAL_USER)) {
-			return cb.equal(casePath.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY);
-		}
-
+		
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), user);
 		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
@@ -463,6 +458,7 @@ public class CaseService extends AbstractAdoService<Case> {
 				break;
 			case ADMIN:
 			case EXTERNAL_LAB_USER:
+			case POE_NATIONAL_USER:
 				break;
 
 			default:

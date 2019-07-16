@@ -490,7 +490,7 @@ public class CaseController {
 		}
 
 		// Initialize 'Transfer case' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER) && !caze.isPortHealthCase()) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER) && !caze.isUnreferredPortHealthCase()) {
 			Button transferCaseButton = new Button();
 			transferCaseButton.setCaption(I18nProperties.getCaption(Captions.caseTransferCase));
 			transferCaseButton.addClickListener(new ClickListener() {
@@ -507,13 +507,13 @@ public class CaseController {
 			editView.getButtonsPanel().setComponentAlignment(transferCaseButton, Alignment.BOTTOM_LEFT);
 		}
 		
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_TO_FACILITY) && caze.isPortHealthCase()) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.isUnreferredPortHealthCase()) {
 			Button btnReferToFacility = new Button();
 			btnReferToFacility.setCaption(I18nProperties.getCaption(Captions.caseReferToFacility));
 			btnReferToFacility.addClickListener(e -> {
 				editView.commit();
 				CaseDataDto caseDto = findCase(caze.getUuid());
-				referToFacility(caseDto);
+				referFromPointOfEntry(caseDto);
 			});
 			
 			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
@@ -668,21 +668,22 @@ public class CaseController {
 		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
 	}
 	
-	public void referToFacility(CaseDataDto caze) {
-		CaseFacilityChangeForm form = new CaseFacilityChangeForm(UserRight.CASE_REFER_TO_FACILITY);
+	public void referFromPointOfEntry(CaseDataDto caze) {
+		CaseFacilityChangeForm form = new CaseFacilityChangeForm(UserRight.CASE_REFER_FROM_POE);
 		form.setValue(caze);
 		CommitDiscardWrapperComponent<CaseFacilityChangeForm> view = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(form, form.getFieldGroup());
 		view.getCommitButton().setCaption(I18nProperties.getCaption(Captions.caseReferToFacility));
 		
 		Window window = VaadinUiUtil.showPopupWindow(view);
-		window.setCaption(I18nProperties.getString(Strings.headingReferCaseToFacility));
+		window.setCaption(I18nProperties.getString(Strings.headingReferCaseFromPointOfEntry));
 		
 		view.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				CaseDataDto dto = form.getValue();
-				FacadeProvider.getCaseFacade().saveAndReferCase(dto);
+				dto.getHospitalization().setAdmissionDate(new Date());
+				FacadeProvider.getCaseFacade().saveCase(dto);
 				window.close();
-				Notification.show(I18nProperties.getString(Strings.messageCaseReferred), Type.ASSISTIVE_NOTIFICATION);
+				Notification.show(I18nProperties.getString(Strings.messageCaseReferredFromPoe), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.refreshView();
 			}
 		});

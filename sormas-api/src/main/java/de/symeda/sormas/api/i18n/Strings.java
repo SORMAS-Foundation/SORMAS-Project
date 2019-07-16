@@ -208,7 +208,7 @@ public interface Strings {
 	public static String headingPointOfEntryImport = "headingPointOfEntryImport";
 	public static String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	public static String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
-	public static String headingReferCaseToFacility = "headingReferCaseToFacility";
+	public static String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	public static String headingReferSample = "headingReferSample";
 	public static String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	public static String headingRequestedPathogenTests = "headingRequestedPathogenTests";
@@ -276,7 +276,7 @@ public interface Strings {
 	public static String messageCaseArchived = "messageCaseArchived";
 	public static String messageCaseCreated = "messageCaseCreated";
 	public static String messageCaseDearchived = "messageCaseDearchived";
-	public static String messageCaseReferred = "messageCaseReferred";
+	public static String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
 	public static String messageCasesArchived = "messageCasesArchived";
 	public static String messageCaseSaved = "messageCaseSaved";
 	public static String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";

@@ -231,7 +231,7 @@ public class Case extends AbstractDomainObject {
     @DatabaseField(columnName = "versionCreated")
     private String creationVersion;
 
-    public boolean isPortHealthCase() {
+    public boolean isUnreferredPortHealthCase() {
         return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
     }
 

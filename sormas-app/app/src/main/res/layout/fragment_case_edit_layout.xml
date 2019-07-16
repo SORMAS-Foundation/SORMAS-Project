@@ -401,15 +401,15 @@
                     android:text="@string/action_transfer_case" />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/refer_case"
+                    android:id="@+id/refer_case_from_poe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/controlHalfMarginBottom"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:iconStart="@drawable/ic_transfer_case_24dp"
                     app:rounded="true"
-                    app:userViewRight="@{UserRight.CASE_REFER_TO_FACILITY}"
-                    android:text="@string/action_refer_case" />
+                    app:userViewRight="@{UserRight.CASE_REFER_FROM_POE}"
+                    android:text="@string/action_refer_case_from_poe" />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/show_classification_rules"

@@ -95,7 +95,7 @@ public class CaseDataView extends AbstractCaseView {
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.isPortHealthCase()) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.isUnreferredPortHealthCase()) {
 			SampleListComponent sampleList = new SampleListComponent(getCaseRef());
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(sampleList, SAMPLES_LOC);

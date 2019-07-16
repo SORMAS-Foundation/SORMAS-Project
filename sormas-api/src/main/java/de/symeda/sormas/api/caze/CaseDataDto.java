@@ -225,7 +225,7 @@ public class CaseDataDto extends EntityDto {
 	/**
 	 * Returns true if the case is an original point of entry case and has not yet been assigned a health facility.
 	 */
-	public boolean isPortHealthCase() {
+	public boolean isUnreferredPortHealthCase() {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
 	}
 

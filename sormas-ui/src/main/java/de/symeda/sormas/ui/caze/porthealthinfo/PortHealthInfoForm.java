@@ -113,7 +113,7 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 		addField(PortHealthInfoDto.FREE_SEATING, OptionGroup.class);
 		ComboBox cbNumberOfTransitStops = addField(PortHealthInfoDto.NUMBER_OF_TRANSIT_STOPS, ComboBox.class);
 		
-		cbNumberOfTransitStops.addItems(DataHelper.getIntegerValues(0, 5));
+		cbNumberOfTransitStops.addItems(DataHelper.buildIntegerList(0, 5));
 		
 		// Visibility
 		FieldHelper.setVisibleWhen(getFieldGroup(), PortHealthInfoDto.TRANSIT_STOP_DETAILS_1, PortHealthInfoDto.NUMBER_OF_TRANSIT_STOPS, Arrays.asList(1, 2, 3, 4, 5), true);
