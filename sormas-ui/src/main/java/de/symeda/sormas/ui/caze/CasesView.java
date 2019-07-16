@@ -245,7 +245,7 @@ public class CasesView extends AbstractView {
 			new FileDownloader(sampleExportStreamResource).extend(sampleExportButton);
 
 			// Warning if no filters have been selected
-			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters), ContentMode.HTML);
+			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
 			warningLabel.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);

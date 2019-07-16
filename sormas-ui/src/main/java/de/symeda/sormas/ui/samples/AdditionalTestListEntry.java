@@ -131,7 +131,7 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 
 	private Label createFieldLabel(String caption, String value) {
 		String html = "<b>" + caption.toUpperCase() + ":</b> " + value;
-		return new Label(html, ContentMode.HTML);
+		return new Label(html, ContentMode.TEXT);
 	}
 
 	public void addEditListener(ClickListener editClickListener) {

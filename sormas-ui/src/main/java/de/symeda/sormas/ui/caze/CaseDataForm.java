@@ -269,16 +269,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
-				String medicalInformationCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingMedicalInformation));
-				Label medicalInformationCaptionLabel = new Label(medicalInformationCaptionLayout);
-				medicalInformationCaptionLabel.setContentMode(ContentMode.HTML);
+				Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
+				medicalInformationCaptionLabel.addStyleName(CssStyles.H3);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
 				break;
 			}
 		}
 
-		Label paperFormDatesLabel = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingPaperFormDates)));
-		paperFormDatesLabel.setContentMode(ContentMode.HTML);
+		Label paperFormDatesLabel = new Label(I18nProperties.getString(Strings.headingPaperFormDates));
+		paperFormDatesLabel.addStyleName(CssStyles.H3);
 		getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);
 
 		// Automatic case classification rules button - invisible for other diseases

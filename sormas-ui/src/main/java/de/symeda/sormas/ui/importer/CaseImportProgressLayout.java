@@ -76,7 +76,7 @@ public class CaseImportProgressLayout extends VerticalLayout {
 		initializeInfoComponents();
 		currentInfoComponent = progressCircle;
 		infoLayout.addComponent(currentInfoComponent);
-		infoLabel = new Label(String.format(I18nProperties.getString(Strings.infoImportProcess), totalCasesCount), ContentMode.HTML);
+		infoLabel = new Label(String.format(I18nProperties.getString(Strings.infoImportProcess), totalCasesCount));
 		infoLabel.setContentMode(ContentMode.HTML);
 		infoLayout.addComponent(infoLabel);
 		infoLayout.setExpandRatio(infoLabel, 1);

@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.samples;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -30,16 +29,15 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class SampleListEntry extends HorizontalLayout {
@@ -48,71 +46,86 @@ public class SampleListEntry extends HorizontalLayout {
 	private Button editButton;
 
 	public SampleListEntry(SampleIndexDto sample) {
-
+		
+		this.sample = sample;
+		
 		setMargin(false);
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-		this.sample = sample;
-
-		VerticalLayout labelLayout = new VerticalLayout();
-		labelLayout.setWidth(100, Unit.PERCENTAGE);
-		labelLayout.setMargin(false);
-		labelLayout.setSpacing(false);
-		addComponent(labelLayout);
-		setExpandRatio(labelLayout, 1);
-
-		// very hacky: clean up when needed elsewher! 
-		HorizontalLayout topLabelLayout = new HorizontalLayout();
-		topLabelLayout.setWidth(100, Unit.PERCENTAGE);
-		labelLayout.addComponent(topLabelLayout);
-		String htmlLeft = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
-				DataHelper.toStringNullable(sample.getSampleMaterial()))
-				+ LayoutUtil.div(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)
-						+ ": " + DateHelper.formatLocalShortDate(sample.getSampleDateTime()))
-				+ LayoutUtil.div(DataHelper.toStringNullable(sample.getLab()));
-		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
-		labelLeft.setWidth(100, Unit.PERCENTAGE);
-		topLabelLayout.addComponent(labelLeft);
-		topLabelLayout.setExpandRatio(labelLeft, 0.7f);
-
-		String htmlRight = "";
-		if (sample.getPathogenTestResult() != null) {
-			htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " "
-					+ (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE ? CssStyles.LABEL_CRITICAL
-							: (sample.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE
-									? CssStyles.LABEL_WARNING
-									: "")),
-					DataHelper.toStringNullable(sample.getPathogenTestResult()));
-		} else if (sample.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-			htmlRight = LayoutUtil.divCss(
-					CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " " + CssStyles.LABEL_WARNING,
-					sample.getSpecimenCondition().toString());
-		} 
 		
+		VerticalLayout mainLayout = new VerticalLayout();
+		mainLayout.setWidth(100, Unit.PERCENTAGE);
+		mainLayout.setMargin(false);
+		mainLayout.setSpacing(false);
+		addComponent(mainLayout);
+		setExpandRatio(mainLayout, 1);
 		
-		if (sample.isReferred()) {
-			htmlRight += LayoutUtil.divCss(
-					CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE + " " + CssStyles.LABEL_NOT, I18nProperties.getCaption(Captions.sampleReferredShort));
-		} else if (sample.isReceived()) {
-			htmlRight += LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleReceived))
-					+ LayoutUtil.div(DateHelper.formatLocalShortDate(sample.getReceivedDate()));
-		} else if (sample.isShipped()) {
-			htmlRight += LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleShipped))
-					+ LayoutUtil.div(DateHelper.formatLocalShortDate(sample.getShipmentDate()));
-		} else {
-			htmlRight += LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE, I18nProperties.getCaption(Captions.sampleNotShippedLong));
+		HorizontalLayout topLayout = new HorizontalLayout();
+		topLayout.setWidth(100, Unit.PERCENTAGE);
+		topLayout.setMargin(false);
+		topLayout.setSpacing(false);
+		mainLayout.addComponent(topLayout);
+		
+		VerticalLayout topLeftLayout = new VerticalLayout();
+		{		
+			topLeftLayout.setMargin(false);
+			topLeftLayout.setSpacing(false);
+		
+			Label materialLabel = new Label(DataHelper.toStringNullable(sample.getSampleMaterial()));
+			CssStyles.style(materialLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			topLeftLayout.addComponent(materialLabel);
+			
+			Label dateTimeLabel = new Label(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)
+					+ ": " + DateHelper.formatLocalShortDate(sample.getSampleDateTime()));
+			topLeftLayout.addComponent(dateTimeLabel);
+			
+			Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
+			topLeftLayout.addComponent(labLabel);			
 		}
-		Label labelRight = new Label(htmlRight, ContentMode.HTML);
-		labelRight.setWidth(100, Unit.PERCENTAGE);
-		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
-		topLabelLayout.addComponent(labelRight);
-		topLabelLayout.setExpandRatio(labelRight, 0.3f);
-		topLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);
-		
+		topLayout.addComponent(topLeftLayout);
+
+		VerticalLayout topRightLayout = new VerticalLayout();
+		{
+			topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
+			topRightLayout.setMargin(false);
+			topRightLayout.setSpacing(false);
+			
+			Label resultLabel = new Label();
+			CssStyles.style(resultLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			if (sample.getPathogenTestResult() != null) {
+				resultLabel.setValue(DataHelper.toStringNullable(sample.getPathogenTestResult()));
+				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					resultLabel.addStyleName(CssStyles.LABEL_CRITICAL);
+				} else if (sample.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE){
+					resultLabel.addStyleName(CssStyles.LABEL_WARNING);
+				}
+			} else if (sample.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+				resultLabel.setValue(DataHelper.toStringNullable(sample.getSpecimenCondition()));
+				resultLabel.addStyleName(CssStyles.LABEL_WARNING);
+			} 
+			topRightLayout.addComponent(resultLabel);
+			
+			Label referredLabel = new Label();
+			CssStyles.style(referredLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			if (sample.isReferred()) {
+				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleReferredShort));
+				referredLabel.addStyleName(CssStyles.LABEL_NOT);
+			} else if (sample.isReceived()) {
+				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleReceived) + " " + DateHelper.formatLocalShortDate(sample.getReceivedDate()));
+			} else if (sample.isShipped()) {
+				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleShipped) + " " + DateHelper.formatLocalShortDate(sample.getShipmentDate()));
+			} else {
+				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleNotShippedLong));
+			}
+			topRightLayout.addComponent(referredLabel);
+		}
+		topLayout.addComponent(topRightLayout);
+		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			Label labelAdditionalTests = new Label(I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
-			labelLayout.addComponent(labelAdditionalTests);
+			mainLayout.addComponent(labelAdditionalTests);
 		}
 	}
 
