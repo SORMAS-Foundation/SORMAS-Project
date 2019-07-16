@@ -26,17 +26,17 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
-public class ImportUploader implements Receiver, SucceededListener {
-	
+public class ImportReceiver implements Receiver, SucceededListener {
+
 	private File file;
 	private String fileNameAddition;
 	Consumer<File> fileConsumer;
-	
-	public ImportUploader(String fileNameAddition, Consumer<File> fileConsumer) {
+
+	public ImportReceiver(String fileNameAddition, Consumer<File> fileConsumer) {
 		this.fileNameAddition = fileNameAddition;
 		this.fileConsumer = fileConsumer;
 	}
-	
+
 	@Override
 	public OutputStream receiveUpload(String fileName, String mimeType) {
 		// Reject empty files
@@ -84,7 +84,7 @@ public class ImportUploader implements Receiver, SucceededListener {
 			if (!csvFile.exists()) {
 				throw new FileNotFoundException("CSV file does not exist");
 			}
-			
+
 			fileConsumer.accept(csvFile);
 		} catch (IOException e) {
 			new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), 

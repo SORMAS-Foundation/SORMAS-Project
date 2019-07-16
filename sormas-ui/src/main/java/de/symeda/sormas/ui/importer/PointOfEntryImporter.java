@@ -4,11 +4,11 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -23,8 +23,12 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 public class PointOfEntryImporter extends DataImporter {
 
-	public PointOfEntryImporter(File inputFile, Button downloadErrorReportButton, UserReferenceDto currentUser, UI currentUI) throws IOException {
-		super(inputFile, downloadErrorReportButton, currentUser, currentUI);
+	public PointOfEntryImporter(File inputFile, UserReferenceDto currentUser, UI currentUI) throws IOException {
+		this(inputFile, null, currentUser, currentUI);
+	}
+	
+	public PointOfEntryImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
+		super(inputFile, errorReportWriter, currentUser, currentUI);
 	}
 
 	@Override

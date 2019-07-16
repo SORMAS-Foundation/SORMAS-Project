@@ -21,6 +21,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.Date;
@@ -79,9 +80,14 @@ public class CaseImporter extends DataImporter {
 
 	private List<PersonNameDto> personNames;
 
-	public CaseImporter(File inputFile, Button downloadErrorReportButton, UserReferenceDto currentUser, UI currentUI) throws IOException {
-		super(inputFile, downloadErrorReportButton, currentUser, currentUI);
+	public CaseImporter(File inputFile, UserReferenceDto currentUser, UI currentUI) throws IOException {
+		this(inputFile, null, currentUser, currentUI);
+	}
+	
+	public CaseImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
+		super(inputFile, errorReportWriter, currentUser, currentUI);
 		personNames = FacadeProvider.getPersonFacade().getNameDtos(currentUser);
+		
 	}
 
 	@Override

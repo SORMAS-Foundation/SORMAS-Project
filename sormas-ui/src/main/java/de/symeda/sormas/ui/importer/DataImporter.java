@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -21,11 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-import com.vaadin.server.Extension;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
@@ -57,38 +55,36 @@ public abstract class DataImporter {
 	protected UserReferenceDto currentUser;
 	protected UI currentUI;
 	protected String errorReportFilePath;
-	protected Button downloadErrorReportButton;
 
-	public DataImporter(File inputFile, Button downloadErrorReportButton, UserReferenceDto currentUser, UI currentUI) throws IOException {
+	public DataImporter(File inputFile, UserReferenceDto currentUser, UI currentUI) throws IOException {
+		this(inputFile, null, currentUser, currentUI);
+	}
+	
+	public DataImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
 		this.currentUser = currentUser;
 		this.currentUI = currentUI;
-		this.downloadErrorReportButton = downloadErrorReportButton;
 
 		if (!inputFile.exists()) {
 			throw new FileNotFoundException("CSV file does not exist");
 		}
+		
+		if (errorReportWriter == null) {
+			Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+			Path errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" 
+					+ DataHelper.getShortUuid(currentUser.getUuid()) + "_" 
+					+ DateHelper.formatDateForExport(new Date()) + ".csv");
+			this.errorReportFilePath = errorReportFilePath.toString();
 
-		// Generate the error report file
-		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
-		Path errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" 
-				+ DataHelper.getShortUuid(currentUser.getUuid()) + "_" 
-				+ DateHelper.formatDateForExport(new Date()) + ".csv");
-		this.errorReportFilePath = errorReportFilePath.toString();
-		// If the error report file already exists, delete it
-		File errorReportFile = new File(errorReportFilePath.toString());
-		if (errorReportFile.exists()) {
-			errorReportFile.delete();
+			File errorReportFile = new File(errorReportFilePath.toString());
+			if (errorReportFile.exists()) {
+				errorReportFile.delete();
+			}
+			
+			errorReportWriter = new FileWriter(errorReportFile.getPath());
 		}
 
-		// Remove FileDownloader extension from "Download Error Report" button
-		downloadErrorReportButton.setEnabled(false);
-		for (int i = 0; i < downloadErrorReportButton.getExtensions().size(); i++) {
-			Extension ext = downloadErrorReportButton.getExtensions().iterator().next();
-			downloadErrorReportButton.removeExtension(ext);
-		}	
-
 		csvReader = CSVUtils.createCSVReader(new FileReader(inputFile.getPath()), FacadeProvider.getConfigFacade().getCsvSeparator());
-		csvWriter = CSVUtils.createCSVWriter(new FileWriter(errorReportFile.getPath()), FacadeProvider.getConfigFacade().getCsvSeparator());
+		csvWriter = CSVUtils.createCSVWriter(errorReportWriter, FacadeProvider.getConfigFacade().getCsvSeparator());
 
 		progressLayout = new ImportProgressLayout(getImportFileLength(new FileReader(inputFile.getPath())), currentUI, new Runnable() {
 			@Override
@@ -105,7 +101,7 @@ public abstract class DataImporter {
 		};
 	}
 
-	public void startImport() {
+	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingPointOfEntryImport));
 		window.setWidth(800, Unit.PIXELS);
@@ -113,7 +109,7 @@ public abstract class DataImporter {
 		window.setClosable(false);
 		currentUI.addWindow(window);
 
-		new ImportThread(this, importedCallback, window, progressLayout, errorReportFilePath, downloadErrorReportButton).start();
+		new ImportThread(this, importedCallback, addErrorReportToLayoutCallback, window, progressLayout, errorReportFilePath).start();
 	}
 
 	public int getImportFileLength(InputStreamReader inputReader) throws IOException {
@@ -250,19 +246,19 @@ public abstract class DataImporter {
 	private class ImportThread extends Thread {
 		private DataImporter importer;
 		private Consumer<ImportResult> importedCallback;
+		private Consumer<StreamResource> addErrorReportToLayoutCallback;
 		private Window window;
 		private ImportProgressLayout progressLayout;
 		private String errorReportFilePath;
-		private Button downloadErrorReportButton;
 
-		public ImportThread(DataImporter importer, Consumer<ImportResult> importedCallback, Window window,
-				ImportProgressLayout progressLayout, String errorReportFilePath, Button downloadErrorReportButton) {
+		public ImportThread(DataImporter importer, Consumer<ImportResult> importedCallback, Consumer<StreamResource> addErrorReportToLayoutCallback,
+				Window window, ImportProgressLayout progressLayout, String errorReportFilePath) {
 			this.importer = importer;
 			this.importedCallback = importedCallback;
+			this.addErrorReportToLayoutCallback = addErrorReportToLayoutCallback;
 			this.window = window;
 			this.progressLayout = progressLayout;
 			this.errorReportFilePath = errorReportFilePath;
-			this.downloadErrorReportButton = downloadErrorReportButton;
 		}
 
 		@Override
@@ -298,9 +294,7 @@ public abstract class DataImporter {
 							if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
 								StreamResource streamResource = DownloadUtil.createFileStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
 										I18nProperties.getString(Strings.headingErrorReportNotAvailable), I18nProperties.getString(Strings.messageErrorReportNotAvailable));
-								FileDownloader fileDownloader = new FileDownloader(streamResource);
-								fileDownloader.extend(downloadErrorReportButton);
-								downloadErrorReportButton.setEnabled(true);
+								addErrorReportToLayoutCallback.accept(streamResource);
 							}
 						});
 

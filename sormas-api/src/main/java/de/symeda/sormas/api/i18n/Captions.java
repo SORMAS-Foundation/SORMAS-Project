@@ -499,10 +499,10 @@ public interface Captions {
 	public static String importDownloadImportTemplate = "importDownloadImportTemplate";
 	public static String importErrorDescription = "importErrorDescription";
 	public static String importErrors = "importErrors";
+	public static String importImportData = "importImportData";
 	public static String importImports = "importImports";
 	public static String importProcessed = "importProcessed";
 	public static String importSkips = "importSkips";
-	public static String importUploadCaseList = "importUploadCaseList";
 	public static String info = "info";
 	public static String lastName = "lastName";
 	public static String Location = "Location";
