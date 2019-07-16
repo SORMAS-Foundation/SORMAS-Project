@@ -3442,7 +3442,7 @@ CREATE TABLE porthealthinfo(
 
 ALTER TABLE porthealthinfo OWNER TO sormas_user;
 
-CREATE TABLE porthealthinfo_history (LIKE casepointofentry);
+CREATE TABLE porthealthinfo_history (LIKE porthealthinfo);
 CREATE TRIGGER versioning_trigger
 BEFORE INSERT OR UPDATE OR DELETE ON porthealthinfo
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'porthealthinfo_history', true);
