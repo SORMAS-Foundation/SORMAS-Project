@@ -381,8 +381,8 @@ public class SampleFacadeEjb implements SampleFacade {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
-			Path<Case> casePath = sample.get(Sample.ASSOCIATED_CASE);
-			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, (From<Case, Case>) casePath);
+			Join<Case, Case> casePath = sample.join(Sample.ASSOCIATED_CASE);
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, casePath);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
