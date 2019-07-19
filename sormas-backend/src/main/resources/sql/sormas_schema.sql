@@ -3453,3 +3453,40 @@ ALTER TABLE cases_history ADD COLUMN porthealthinfo_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_porthealthinfo_id FOREIGN KEY (porthealthinfo_id) REFERENCES porthealthinfo (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (156, 'Add fields and tables for points of entry and port health info #985');
+
+-- 2019-07-16 Change types of AdditionalTest columns to double #1200
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgasph TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgaspco2 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgaspao2 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgashco3 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN gasoxygentherapy TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN altsgpt TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN astsgot TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN creatinine TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN potassium TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN urea TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN haemoglobin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN totalbilirubin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN conjbilirubin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN wbccount TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN platelets TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN prothrombintime TYPE real;
+
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgasph TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgaspco2 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgaspao2 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgashco3 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN gasoxygentherapy TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN altsgpt TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN astsgot TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN creatinine TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN potassium TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN urea TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN haemoglobin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN totalbilirubin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN conjbilirubin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN wbccount TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN platelets TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN prothrombintime TYPE real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (157, 'Change types of AdditionalTest columns to double #1200');

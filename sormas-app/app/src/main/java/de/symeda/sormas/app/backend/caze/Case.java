@@ -29,18 +29,16 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -633,8 +631,10 @@ public class Case extends AbstractDomainObject {
         this.notifyingClinicDetails = notifyingClinicDetails;
     }
 
-    public String getCreationVersion() {
-        return creationVersion;
+    public PointOfEntry getPointOfEntry() {
+        return pointOfEntry;
+    }
+
     public void setPointOfEntry(PointOfEntry pointOfEntry) {
         this.pointOfEntry = pointOfEntry;
     }
@@ -655,10 +655,12 @@ public class Case extends AbstractDomainObject {
         this.caseOrigin = caseOrigin;
     }
 
-    public String getVersionCreated() {
-        return versionCreated;    }
+    public String getCreationVersion() {
+        return creationVersion;
+    }
 
     public void setCreationVersion(String creationVersion) {
         this.creationVersion = creationVersion;
     }
+
 }

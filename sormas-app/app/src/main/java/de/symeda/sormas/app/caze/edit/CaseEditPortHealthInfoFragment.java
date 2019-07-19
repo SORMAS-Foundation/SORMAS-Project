@@ -84,7 +84,7 @@ public class CaseEditPortHealthInfoFragment extends BaseEditFragment<FragmentCas
 
         // Initialize ControlSpinnerFields
         contentBinding.portHealthInfoConveyanceType.initializeSpinner(DataUtils.getEnumItems(ConveyanceType.class));
-        contentBinding.portHealthInfoNumberOfTransitStops.initializeSpinner(DataUtils.toItems(DataHelper.getIntegerValues(0, 5)));
+        contentBinding.portHealthInfoNumberOfTransitStops.initializeSpinner(DataUtils.toItems(DataHelper.buildIntegerList(0, 5)));
     }
 
     @Override

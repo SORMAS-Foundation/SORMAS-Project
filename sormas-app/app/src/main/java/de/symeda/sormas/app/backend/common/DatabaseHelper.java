@@ -122,7 +122,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 162;
+	public static final int DATABASE_VERSION = 163;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1145,6 +1145,50 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 					getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 					getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				case 162:
+					currentVersion = 162;
+					getDao(AdditionalTest.class).executeRaw("ALTER TABLE additionalTest RENAME TO tmp_additionalTest");
+					getDao(AdditionalTest.class).executeRaw("CREATE TABLE additionalTest(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"sample_id bigint REFERENCES samples(id)," +
+							"testDateTime timestamp," +
+							"haemoglobinuria varchar(255)," +
+							"proteinuria varchar(255)," +
+							"hematuria varchar(255)," +
+							"arterialVenousGasPh real," +
+							"arterialVenousGasPco2 real," +
+							"arterialVenousGasPao2 real," +
+							"arterialVenousGasHco3 real," +
+							"gasOxygenTherapy real," +
+							"altSgpt real," +
+							"astSgot real," +
+							"creatinine real," +
+							"potassium real," +
+							"urea real," +
+							"haemoglobin real," +
+							"totalBilirubin real," +
+							"conjBilirubin real," +
+							"wbcCount real," +
+							"platelets real," +
+							"prothrombinTime real," +
+							"otherTestResults varchar(512)," +
+							"UNIQUE(snapshot, uuid));");
+					getDao(AdditionalTest.class).executeRaw("INSERT INTO additionalTest(id, uuid, changeDate, creationDate, lastOpenedDate, " +
+							"localChangeDate, modified, snapshot, sample_id, testDateTime, haemoglobinuria, proteinuria, hematuria, arterialVenousGasPh, " +
+							"arterialVenousGasPco2, arterialVenousGasPao2, arterialVenousGasHco3, gasOxygenTherapy, altSgpt, astSgot, creatinine, " +
+							"potassium, urea, haemoglobin, totalBilirubin, conjBilirubin, wbcCount, platelets, prothrombinTime, otherTestResults) " +
+							"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, sample_id, testDateTime, " +
+							"haemoglobinuria, proteinuria, hematuria, arterialVenousGasPh, arterialVenousGasPco2, arterialVenousGasPao2, arterialVenousGasHco3, " +
+							"gasOxygenTherapy, altSgpt, astSgot, creatinine, potassium, urea, haemoglobin, totalBilirubin, conjBilirubin, wbcCount, " +
+							"platelets, prothrombinTime, otherTestResults FROM tmp_additionalTest");
+					getDao(Sample.class).executeRaw("DROP TABLE tmp_additionalTest;");
 
 					// ATTENTION: break should only be done after last version
 					break;
