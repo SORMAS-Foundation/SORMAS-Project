@@ -30,11 +30,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
-import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.therapy.PrescriptionDto;
-import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -113,14 +108,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 case Complete:
                     pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
-                    pullMissingAndDeleteInvalidData();
+                    pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
                     pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
                     repullData();
-                    pullMissingAndDeleteInvalidData();
+                    pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     ConfigProvider.setRepullNeeded(false);
                     break;
@@ -352,12 +347,29 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void pullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
+    private void pushNewPullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
-        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidData");
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pushNewPullMissingAndDeleteInvalidData");
 
         // order is important, due to dependencies (e.g. case & person)
+
+        // first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
+        // Example: Case is created using an existing person, meanwhile user loses access to the person
+        new PersonDtoHelper().pushEntities(true);
+        new CaseDtoHelper().pushEntities(true);
+        new EventDtoHelper().pushEntities(true);
+        new EventParticipantDtoHelper().pushEntities(true);
+        new SampleDtoHelper().pushEntities(true);
+        new PathogenTestDtoHelper().pushEntities(true);
+        new AdditionalTestDtoHelper().pushEntities(true);
+        new ContactDtoHelper().pushEntities(true);
+        new VisitDtoHelper().pushEntities(true);
+        new TaskDtoHelper().pushEntities(true);
+        new WeeklyReportDtoHelper().pushEntities(true);
+        new PrescriptionDtoHelper().pushEntities(true);
+        new TreatmentDtoHelper().pushEntities(true);
+        new ClinicalVisitDtoHelper().pushEntities(true);
 
         // weekly reports and entries
         List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
