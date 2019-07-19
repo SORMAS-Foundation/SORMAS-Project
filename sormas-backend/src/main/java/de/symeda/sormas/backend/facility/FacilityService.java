@@ -435,7 +435,11 @@ public class FacilityService extends AbstractAdoService<Facility> {
 				}
 			}
 		}
-		filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
+		if (facilityCriteria.getType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
+		} else {
+			filter = and(cb, filter, cb.isNull(from.get(Facility.TYPE)));
+		}
 		return filter;
 	}
 }
