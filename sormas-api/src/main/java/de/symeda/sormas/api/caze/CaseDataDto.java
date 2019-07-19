@@ -92,7 +92,9 @@ public class CaseDataDto extends EntityDto {
 	public static final String OUTCOME_DATE = "outcomeDate";
 	public static final String SEQUELAE = "sequelae";
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
-	public static final String CLINICIAN_DETAILS = "clinicianDetails";
+	public static final String CLINICIAN_NAME = "clinicianName";
+	public static final String CLINICIAN_PHONE = "clinicianPhone";
+	public static final String CLINICIAN_EMAIL = "clinicianEmail";
 	public static final String NOTIFYING_CLINIC = "notifyingClinic";
 	public static final String NOTIFYING_CLINIC_DETAILS = "notifyingClinicDetails";
 	public static final String CASE_ORIGIN = "caseOrigin";
@@ -177,7 +179,9 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown smallpoxVaccinationReceived;
 	@Outbreaks
 	private UserReferenceDto surveillanceOfficer;
-	private String clinicianDetails;
+	private String clinicianName;
+	private String clinicianPhone;
+	private String clinicianEmail;
 	@Diseases({ Disease.CONGENITAL_RUBELLA })
 	private HospitalWardType notifyingClinic;
 	@Diseases({ Disease.CONGENITAL_RUBELLA })
@@ -373,12 +377,28 @@ public class CaseDataDto extends EntityDto {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	public String getClinicianDetails() {
-		return clinicianDetails;
+	public String getClinicianName() {
+		return clinicianName;
 	}
 
-	public void setClinicianDetails(String clinicianDetails) {
-		this.clinicianDetails = clinicianDetails;
+	public void setClinicianName(String clinicianName) {
+		this.clinicianName = clinicianName;
+	}
+
+	public String getClinicianPhone() {
+		return clinicianPhone;
+	}
+
+	public void setClinicianPhone(String clinicianPhone) {
+		this.clinicianPhone = clinicianPhone;
+	}
+
+	public String getClinicianEmail() {
+		return clinicianEmail;
+	}
+
+	public void setClinicianEmail(String clinicianEmail) {
+		this.clinicianEmail = clinicianEmail;
 	}
 
 	@Deprecated

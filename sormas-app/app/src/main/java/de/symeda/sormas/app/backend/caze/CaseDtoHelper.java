@@ -129,7 +129,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setPortHealthInfo(portHealthInfoDtoHelper.fillOrCreateFromDto(target.getPortHealthInfo(), source.getPortHealthInfo()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
-        target.setClinicianDetails(source.getClinicianDetails());
+        target.setClinicianName(source.getClinicianName());
+        target.setClinicianPhone(source.getClinicianPhone());
+        target.setClinicianEmail(source.getClinicianEmail());
         target.setPregnant(source.getPregnant());
         target.setVaccination(source.getVaccination());
         target.setVaccinationDoses(source.getVaccinationDoses());
@@ -282,7 +284,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setPortHealthInfo(null);
         }
 
-        target.setClinicianDetails(source.getClinicianDetails());
+        target.setClinicianName(source.getClinicianName());
+        target.setClinicianPhone(source.getClinicianPhone());
+        target.setClinicianEmail(source.getClinicianEmail());
         target.setPregnant(source.getPregnant());
         target.setVaccination(source.getVaccination());
         target.setVaccinationDoses(source.getVaccinationDoses());

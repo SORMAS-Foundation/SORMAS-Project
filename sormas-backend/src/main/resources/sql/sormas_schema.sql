@@ -3490,3 +3490,9 @@ ALTER TABLE additionaltest_history ALTER COLUMN platelets TYPE real;
 ALTER TABLE additionaltest_history ALTER COLUMN prothrombintime TYPE real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (157, 'Change types of AdditionalTest columns to double #1200');
+
+-- 2019-07-19 Add clinician phone and email #1190
+ALTER TABLE cases ADD COLUMN clinicianphone varchar(512);
+ALTER TABLE cases ADD COLUMN clinicianemail varchar(512);
+ALTER TABLE cases_history ADD COLUMN clinicianphone varchar(512);
+ALTER TABLE cases_history ADD COLUMN clinicianemail varchar(512);

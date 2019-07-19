@@ -349,8 +349,27 @@
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_clinicianDetails"
-                        app:value="@{data.clinicianDetails}"
+                        android:id="@+id/caseData_clinicianName"
+                        app:value="@{data.clinicianName}"
+                        app:userViewRight="@{UserRight.CASE_MANAGEMENT_ACCESS}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_clinicianPhone"
+                        app:value="@{data.clinicianPhone}"
+                        app:userViewRight="@{UserRight.CASE_MANAGEMENT_ACCESS}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_clinicianEmail"
+                        app:value="@{data.clinicianEmail}"
                         app:userViewRight="@{UserRight.CASE_MANAGEMENT_ACCESS}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 

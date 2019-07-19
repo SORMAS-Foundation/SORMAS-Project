@@ -1247,7 +1247,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
-		target.setClinicianDetails(source.getClinicianDetails());
+		target.setClinicianName(source.getClinicianName());
+		target.setClinicianPhone(source.getClinicianPhone());
+		target.setClinicianEmail(source.getClinicianEmail());
 		target.setCaseOfficer(userService.getByReferenceDto(source.getCaseOfficer()));
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 
@@ -1334,7 +1336,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDistrictLevelDate(source.getDistrictLevelDate());
 
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
-		target.setClinicianDetails(source.getClinicianDetails());
+		target.setClinicianName(source.getClinicianName());
+		target.setClinicianPhone(source.getClinicianPhone());
+		target.setClinicianEmail(source.getClinicianEmail());
 		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 
