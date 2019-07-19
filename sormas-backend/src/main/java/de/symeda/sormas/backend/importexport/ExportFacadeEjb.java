@@ -136,94 +136,94 @@ public class ExportFacadeEjb implements ExportFacade {
 		for (DatabaseTable databaseTable : databaseTables) {
 			switch (databaseTable) {
 			case CASES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Case.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Case.TABLE_NAME).execute();
 				break;
 			case HOSPITALIZATIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Hospitalization.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Hospitalization.TABLE_NAME).execute();
 				break;
 			case PREVIOUSHOSPITALIZATIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, PreviousHospitalization.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, PreviousHospitalization.TABLE_NAME).execute();
 				break;
 			case EPIDATA:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiData.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiData.TABLE_NAME).execute();
 				break;
 			case EPIDATABURIALS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataBurial.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataBurial.TABLE_NAME).execute();
 				break;
 			case EPIDATAGATHERINGS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataGathering.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataGathering.TABLE_NAME).execute();
 				break;
 			case EPIDATATRAVELS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataTravel.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EpiDataTravel.TABLE_NAME).execute();
 				break;
 			case THERAPIES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Therapy.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Therapy.TABLE_NAME).execute();
 				break;
 			case PRESCRIPTIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Prescription.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Prescription.TABLE_NAME).execute();
 				break;
 			case TREATMENTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Treatment.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Treatment.TABLE_NAME).execute();
 				break;
 			case CLINICAL_COURSES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, ClinicalCourse.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, ClinicalCourse.TABLE_NAME).execute();
 				break;
 			case HEALTH_CONDITIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, HealthConditions.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, HealthConditions.TABLE_NAME).execute();
 				break;
 			case CLINICAL_VISITS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, ClinicalVisit.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, ClinicalVisit.TABLE_NAME).execute();
 				break;
 			case CONTACTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Contact.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Contact.TABLE_NAME).execute();
 				break;
 			case VISITS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Visit.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Visit.TABLE_NAME).execute();
 				break;
 			case EVENTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Event.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Event.TABLE_NAME).execute();
 				break;
 			case EVENTPARTICIPANTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EventParticipant.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, EventParticipant.TABLE_NAME).execute();
 				break;
 			case SAMPLES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Sample.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Sample.TABLE_NAME).execute();
 				break;
 			case SAMPLETESTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, PathogenTest.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, PathogenTest.TABLE_NAME).execute();
 				break;
 			case TASKS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Task.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Task.TABLE_NAME).execute();
 				break;
 			case PERSONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Person.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Person.TABLE_NAME).execute();
 				break;
 			case LOCATIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Location.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Location.TABLE_NAME).execute();
 				break;
 			case REGIONS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Region.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Region.TABLE_NAME).execute();
 				break;
 			case DISTRICTS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, District.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, District.TABLE_NAME).execute();
 				break;
 			case COMMUNITIES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Community.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Community.TABLE_NAME).execute();
 				break;
 			case FACILITIES:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Facility.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Facility.TABLE_NAME).execute();
 				break;
 			case OUTBREAKS:
-				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Outbreak.TABLE_NAME).getResultList();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Outbreak.TABLE_NAME).execute();
 				break;
 			case CASE_SYMPTOMS:
-				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Case.TABLE_NAME, "id", "symptoms_id").getResultList();
+				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Case.TABLE_NAME, "id", "symptoms_id").execute();
 				break;
 			case VISIT_SYMPTOMS:
-				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Visit.TABLE_NAME, "id", "symptoms_id").getResultList();
+				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Visit.TABLE_NAME, "id", "symptoms_id").execute();
 				break;	
 			case CLINICAL_VISIT_SYMPTOMS:
-				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id").getResultList();
+				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id").execute();
 				break;
 			}
 		}
@@ -264,7 +264,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	 * Generates the query used to create a .csv file of this table. In order to gain access to the server file system, a function
 	 * that needs to be defined in the database is used. The path to save the .csv file to needs to be specified in the sormas.properties file.
 	 */
-	private Query generateCsvExportQuery(String fileName, String date, int randomNumber, String tableName) {
+	private StoredProcedureQuery generateCsvExportQuery(String fileName, String date, int randomNumber, String tableName) {
 		Path path = new File(FacadeProvider.getConfigFacade().getTempFilesPath()).toPath();
 		String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
 		Path filePath = path.resolve(name);
@@ -280,7 +280,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	 * Generates the query used to create a .csv file of a this table, joined with another table. This is specifially used to only retrieve
 	 * the symptoms of cases or visits to export two different tables for this data.
 	 */
-	private Query generateCsvExportJoinQuery(String fileName, String date, int randomNumber, String tableName, String joinTableName, String columnName, String joinColumnName) {
+	private StoredProcedureQuery generateCsvExportJoinQuery(String fileName, String date, int randomNumber, String tableName, String joinTableName, String columnName, String joinColumnName) {
 		Path path = new File(FacadeProvider.getConfigFacade().getTempFilesPath()).toPath();
 		String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
 		Path filePath = path.resolve(name);

@@ -3496,3 +3496,57 @@ ALTER TABLE cases ADD COLUMN clinicianphone varchar(512);
 ALTER TABLE cases ADD COLUMN clinicianemail varchar(512);
 ALTER TABLE cases_history ADD COLUMN clinicianphone varchar(512);
 ALTER TABLE cases_history ADD COLUMN clinicianemail varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (158, 'Add clinician phone and email #1190');
+
+-- 2019-07-19 Fix Hibernate "feature" that throws an error when using functions without a return value #1228
+DROP FUNCTION export_database(text, text);
+DROP FUNCTION export_database_join(text, text, text, text, text);
+
+CREATE FUNCTION export_database(table_name text, file_path text)
+	RETURNS INTEGER
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || '
+				) TO 
+					' || quote_literal(file_path) || '
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+			RETURN 1;
+		END;
+	$BODY$
+;
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
+	RETURNS INTEGER
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(file_path) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+			RETURN 1;
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (159, 'Fix Hibernate "feature" that throws an error when using functions without a return value #1228');
