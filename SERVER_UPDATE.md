@@ -5,6 +5,16 @@ SORMAS releases starting from 1.21.0 contain a script that automatically updates
 * Get the latest release files (deploy.zip) from https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
 
+## Version Specifics
+You'll have to execute these commands before (and, sometimes, after) updating the server when you update to one of these versions.
+
+* Version 1.23.0 (before updating the server):  
+``ALTER FUNCTION export_database(text, text) OWNER TO sormas_user;``
+``ALTER FUNCTION export_database_join(text, text, text, text, text) OWNER TO sormas_user;``
+* Version 1.23.0 (after updating the server):  
+``ALTER FUNCTION export_database(text, text) OWNER TO postgres;``
+``ALTER FUNCTION export_database_join(text, text, text, text, text) OWNER TO postgres;``
+
 ## Automatic Server Update
 * Navigate to the  folder containing the unzipped deploy files:
 ``cd /root/deploy/sormas/$(date +%F)``
