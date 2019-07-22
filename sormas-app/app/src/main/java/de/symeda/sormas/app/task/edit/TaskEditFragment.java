@@ -102,7 +102,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
     @Override
     public boolean isShowSaveAction() {
-        return ConfigProvider.getUser().equals(record.getCreatorUser());
+        return record != null && ConfigProvider.getUser().equals(record.getCreatorUser());
     }
 
     @Override
