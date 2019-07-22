@@ -35,7 +35,11 @@ import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.sample.PathogenTestDtoHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.util.Callback;
 
@@ -80,6 +84,17 @@ public class SampleListActivity extends PagedBaseListActivity {
             model.getSampleCriteria().shipmentStatus(statusFilters[((PageMenuItem) p).getKey()]);
             model.notifyCriteriaUpdated();
         });
+
+
+//        try {
+////            (new PathogenTestDtoHelper()).repullEntities();
+//        } catch (DaoException e) {
+//            e.printStackTrace();
+//        } catch (ServerCommunicationException e) {
+//            e.printStackTrace();
+//        } catch (ServerConnectionException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

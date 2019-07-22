@@ -47,7 +47,7 @@ public class DistrictResource {
 	@GET @Path("/all/{since}")
 	public List<DistrictDto> getAll(@PathParam("since") long since) {
 		return FacadeProvider.getDistrictFacade().getAllAfter(new Date(since));
-	}	
+	}
 	
 	@POST
 	@Path("/query")

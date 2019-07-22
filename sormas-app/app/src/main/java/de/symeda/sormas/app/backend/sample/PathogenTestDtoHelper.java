@@ -18,12 +18,18 @@
 
 package de.symeda.sormas.app.backend.sample;
 
+import android.util.Log;
+
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -51,7 +57,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 
     @Override
     protected Call<List<PushResult>> pushAll(List<PathogenTestDto> PathogenTestDtos) {
-        throw new UnsupportedOperationException("Can't change sample tests in app");
+        return RetroProvider.getSampleTestFacade().pushAll(PathogenTestDtos);
     }
 
     @Override
@@ -63,6 +69,12 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestType(source.getTestType());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+
+        //newly added
+        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
+        target.setTestResultVerified(source.getTestResultVerified());
+        target.setTestResultText(source.getTestResultText());
+        target.setLabUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getLabUser()));
     }
 
     @Override
@@ -79,5 +91,21 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestType(source.getTestType());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+
+        //newly added
+        if(source.getLab() != null) {
+            Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getLab().getId());
+            target.setLab(FacilityDtoHelper.toReferenceDto(lab));
+        } else {
+            target.setLab(null);
+        }
+        target.setTestResultVerified(source.getTestResultVerified());
+        target.setTestResultText(source.getTestResultText());
+        if(source.getLabUser() != null) {
+            User user = DatabaseHelper.getUserDao().queryForId(source.getLabUser().getId());
+            target.setLabUser(UserDtoHelper.toReferenceDto(user));
+        } else {
+            target.setLabUser(null);
+        }
     }
 }
