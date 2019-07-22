@@ -31,23 +31,26 @@ import de.symeda.sormas.api.utils.ValidationException;
  */
 public enum UserRole {
 
-	ADMIN(false, false, false),
-	NATIONAL_USER(false, false, false),	
-	SURVEILLANCE_SUPERVISOR(true, false, false),	
-	SURVEILLANCE_OFFICER(false, true, false),	
-	HOSPITAL_INFORMANT(false, false, true),	
-	COMMUNITY_INFORMANT(false, false, true),
-	CASE_SUPERVISOR(true, false, false),	
-	CASE_OFFICER(false, true, false),	
-	CONTACT_SUPERVISOR(true, false, false),	
-	CONTACT_OFFICER(false, true, false),	
-	EVENT_OFFICER(true, false, false),	
-	LAB_USER(false, false, false),
-	EXTERNAL_LAB_USER(false, false, false),
-	NATIONAL_OBSERVER(false, false, false),
-	STATE_OBSERVER(false, false, false),
-	DISTRICT_OBSERVER(false, false, false),
-	NATIONAL_CLINICIAN(false, false, false);
+	ADMIN(false, false, false, false),
+	NATIONAL_USER(false, false, false, false),	
+	SURVEILLANCE_SUPERVISOR(true, false, false, false),	
+	SURVEILLANCE_OFFICER(false, true, false, false),	
+	HOSPITAL_INFORMANT(false, false, true, false),	
+	COMMUNITY_INFORMANT(false, false, true, false),
+	CASE_SUPERVISOR(true, false, false, false),	
+	CASE_OFFICER(false, true, false, false),	
+	CONTACT_SUPERVISOR(true, false, false, false),	
+	CONTACT_OFFICER(false, true, false, false),	
+	EVENT_OFFICER(true, false, false, false),	
+	LAB_USER(false, false, false, false),
+	EXTERNAL_LAB_USER(false, false, false, false),
+	NATIONAL_OBSERVER(false, false, false, false),
+	STATE_OBSERVER(false, false, false, false),
+	DISTRICT_OBSERVER(false, false, false, false),
+	NATIONAL_CLINICIAN(false, false, false, false),
+	POE_INFORMANT(false, false, true, true),
+	POE_SUPERVISOR(true, false, false, true),
+	POE_NATIONAL_USER(false, false, false, true);
 	
 	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
@@ -66,21 +69,31 @@ public enum UserRole {
 	public static final String _EXTERNAL_LAB_USER = EXTERNAL_LAB_USER.name();
 	public static final String _NATIONAL_OBSERVER = NATIONAL_OBSERVER.name();
 	public static final String _NATIONAL_CLINICIAN = NATIONAL_CLINICIAN.name();
+	public static final String _POE_INFORMANT = POE_INFORMANT.name();
+	public static final String _POE_SUPERVISOR = POE_SUPERVISOR.name();
+	public static final String _POE_NATIONAL_USER = POE_NATIONAL_USER.name();
 	
 	private final boolean supervisor;
 	private final boolean officer;
 	private final boolean informant;
+	
+	/**
+	 * Whether the user is directly responsible for managing port health cases
+	 */
+	private final boolean portHealthUser;
 	
 	private HashSet<UserRight> defaultUserRights = null;
 	
 	private static HashSet<UserRole> supervisorRoles = null;
 	private static HashSet<UserRole> officerRoles = null;
 	private static HashSet<UserRole> informantRoles = null;
+	private static HashSet<UserRole> portHealthUserRoles = null;
 	
-	private UserRole(boolean supervisor, boolean officer, boolean informant) {
+	private UserRole(boolean supervisor, boolean officer, boolean informant, boolean portHealthUser) {
 		this.supervisor = supervisor;
 		this.officer = officer;
 		this.informant = informant;
+		this.portHealthUser = portHealthUser;
 	}
 	
 	public String toString() {
@@ -103,8 +116,12 @@ public enum UserRole {
 		return informant;
 	}
 	
+	public boolean isPortHealthUser() {
+		return portHealthUser;
+	}
+	
 	public boolean isNational() {
-		return this == UserRole.NATIONAL_OBSERVER || this == UserRole.NATIONAL_USER || this == UserRole.NATIONAL_CLINICIAN;
+		return this == UserRole.NATIONAL_OBSERVER || this == UserRole.NATIONAL_USER || this == UserRole.NATIONAL_CLINICIAN || this == UserRole.POE_NATIONAL_USER;
 	}
 	
 	public HashSet<UserRight> getDefaultUserRights() {
@@ -142,6 +159,17 @@ public enum UserRole {
 			collection.add(STATE_OBSERVER);
 			collection.add(DISTRICT_OBSERVER);
 			collection.add(NATIONAL_CLINICIAN);
+			collection.add(POE_INFORMANT);
+			collection.add(POE_SUPERVISOR);
+			collection.add(POE_NATIONAL_USER);
+			break;
+		case POE_NATIONAL_USER:
+			collection.add(POE_INFORMANT);
+			collection.add(POE_SUPERVISOR);
+			break;
+		case NATIONAL_CLINICIAN:
+			collection.add(CASE_SUPERVISOR);
+			collection.add(CASE_OFFICER);
 			break;
 		case SURVEILLANCE_SUPERVISOR:
 			collection.add(SURVEILLANCE_OFFICER);
@@ -153,6 +181,9 @@ public enum UserRole {
 			break;
 		case CONTACT_SUPERVISOR:
 			collection.add(CONTACT_OFFICER);
+			break;
+		case POE_SUPERVISOR:
+			collection.add(POE_INFORMANT);
 			break;
 		case EVENT_OFFICER:
 			collection.add(EVENT_OFFICER);
@@ -181,44 +212,40 @@ public enum UserRole {
 		case ADMIN:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER,
-					NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN
-					);
+					EVENT_OFFICER, LAB_USER, NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN);
 		case NATIONAL_USER:
 			return Arrays.asList(LAB_USER, ADMIN, NATIONAL_CLINICIAN);
 		case NATIONAL_OBSERVER:
 			return Arrays.asList(ADMIN);
 		case NATIONAL_CLINICIAN:
 			return Arrays.asList(ADMIN, NATIONAL_USER);
-		case STATE_OBSERVER:
-			return Collections.emptyList();
-		case DISTRICT_OBSERVER:
-			return Collections.emptyList();
 		case CASE_SUPERVISOR:
 		case CONTACT_SUPERVISOR:
 		case SURVEILLANCE_SUPERVISOR:
 		case EVENT_OFFICER:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, ADMIN
-					);
+					EVENT_OFFICER, LAB_USER, ADMIN);
 		case LAB_USER:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN
-					);
+					EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN);
 		case SURVEILLANCE_OFFICER:
 		case CASE_OFFICER:
 		case CONTACT_OFFICER:
-			return Arrays.asList(
-					SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER
-					);
+			return Arrays.asList(SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER);
 		case HOSPITAL_INFORMANT:
 			return Arrays.asList(HOSPITAL_INFORMANT);
 		case COMMUNITY_INFORMANT:
 			return Arrays.asList(COMMUNITY_INFORMANT);
 		case EXTERNAL_LAB_USER:
 			return Arrays.asList(EXTERNAL_LAB_USER);
+		case STATE_OBSERVER:
+		case DISTRICT_OBSERVER:
+		case POE_INFORMANT:
+		case POE_SUPERVISOR:
+		case POE_NATIONAL_USER:
+			return Collections.emptyList();
 		default:
 			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
 		}
@@ -258,6 +285,15 @@ public enum UserRole {
 	public static boolean isNational(Collection<UserRole> roles) {
 		for (UserRole role : roles) {
 			if (role.isNational()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isPortHealthUser(Collection<UserRole> roles) {
+		for (UserRole role : roles) {
+			if (role.isPortHealthUser()) {
 				return true;
 			}
 		}
@@ -322,6 +358,18 @@ public enum UserRole {
 			}
 		}
 		return informantRoles;
+	}
+	
+	public static HashSet<UserRole> getPortHealthUserRoles() {
+		if (portHealthUserRoles == null) {
+			portHealthUserRoles = new HashSet<>();
+			for (UserRole userRole : values()) {
+				if (userRole.isPortHealthUser()) {
+					portHealthUserRoles.add(userRole);
+				}
+			}
+		}
+		return portHealthUserRoles;
 	}
 	
 	@SuppressWarnings("serial")

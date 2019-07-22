@@ -10,6 +10,7 @@
 * [SORMAS Server](#sormas-server)
 * [Web Server Setup](#web-server-setup)
   * [Apache Web Server](#apache-web-server)
+  * [Firewall](#firewall)
   * [Postfix Mail Server](#postfix-mail-server)
 * [Troubleshooting](#troubleshooting)
 
@@ -159,6 +160,19 @@ Here are some things that you should do to configure the Apache server as a prox
 * In case you need to update the site config while the server is running, use the following command to publish the changes without the need for a reload:
 
         apache2ctl graceful
+		
+### Firewall
+
+* The server should only publish the ports that are needed. For SORMAS this is port 80 (HTTP) and 443 (HTTPS). In addition you will need the SSH port to access the server for admin purposes.
+* We suggest to use UFW (Uncomplicated Firewall) which provides a simple interface to iptables:
+
+		sudo apt-get install ufw
+		sudo ufw default deny incoming
+		sudo ufw default allow outgoing
+		sudo ufw allow ssh
+		sudo ufw allow http
+		sudo ufw allow https
+		sudo ufw enable
 
 ### Postfix Mail Server
 

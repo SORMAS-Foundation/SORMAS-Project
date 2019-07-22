@@ -61,9 +61,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			LayoutUtil.fluidRowLocs(UserDto.ACTIVE) +
 			LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
 			LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
-			LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
-			LayoutUtil.fluidRowLocs(UserDto.LIMITED_DISEASE, "", "")
-			;
+			LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
+			LayoutUtil.fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     
     public UserEditForm(boolean create, UserRight editOrCreateUserRight) {
         super(UserDto.class, UserDto.I18N_PREFIX, editOrCreateUserRight);
@@ -114,13 +113,16 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
 
     	ComboBox healthFacility = addField(UserDto.HEALTH_FACILITY, ComboBox.class);
+    	ComboBox cbPointOfEntry = addField(UserDto.POINT_OF_ENTRY, ComboBox.class);
     	district.addValueChangeListener(e -> {
     		FieldHelper.removeItems(healthFacility);
     		FieldHelper.removeItems(associatedOfficer);
+    		FieldHelper.removeItems(cbPointOfEntry);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
     		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
     		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false) : null);
     		FieldHelper.updateItems(associatedOfficer, districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
+    		FieldHelper.updateItems(cbPointOfEntry, districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllByDistrict(districtDto.getUuid(), false) : null);
     	});
 
     	ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
@@ -145,13 +147,14 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	boolean isOfficer = UserRole.isOfficer(userRoles);
     	boolean isSupervisor = UserRole.isSupervisor(userRoles);
     	boolean isLabUser = UserRole.isLabUser(userRoles);
+    	boolean isPortHealthUser = UserRole.isPortHealthUser(userRoles);
     	boolean isStateObserver = userRoles.contains(UserRole.STATE_OBSERVER);
     	boolean isDistrictObserver = userRoles.contains(UserRole.DISTRICT_OBSERVER);
     	
     	// associated officer
     	ComboBox associatedOfficer = (ComboBox)getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
     	associatedOfficer.setVisible(isInformant);
-    	setRequired(isInformant, UserDto.ASSOCIATED_OFFICER);
+    	setRequired(isInformant && !isPortHealthUser, UserDto.ASSOCIATED_OFFICER);
     	if (!isInformant) {
     		associatedOfficer.clear(); 
     	}
@@ -178,6 +181,15 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	setRequired(isLabUser, UserDto.LABORATORY);
     	if (!isLabUser) {
     		laboratory.clear();
+    	}
+    	
+    	// point of entry
+    	ComboBox pointOfEntry = (ComboBox) getFieldGroup().getField(UserDto.POINT_OF_ENTRY);
+    	boolean usePointOfEntry = isPortHealthUser && isInformant;
+    	pointOfEntry.setVisible(usePointOfEntry);
+    	setRequired(usePointOfEntry, UserDto.POINT_OF_ENTRY);
+    	if (!usePointOfEntry) {
+    		pointOfEntry.clear();
     	}
     	
     	ComboBox region = (ComboBox)getFieldGroup().getField(UserDto.REGION);

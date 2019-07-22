@@ -35,6 +35,7 @@ import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -211,6 +212,10 @@ public class FacadeProvider {
 	
 	public static MaternalHistoryFacade getMaternalHistoryFacade() {
 		return get().lookupEjbRemote(MaternalHistoryFacade.class);
+	}
+	
+	public static PointOfEntryFacade getPointOfEntryFacade() {
+		return get().lookupEjbRemote(PointOfEntryFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

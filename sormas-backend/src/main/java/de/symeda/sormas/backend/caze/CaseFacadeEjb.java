@@ -67,6 +67,7 @@ import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
@@ -74,6 +75,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
@@ -119,6 +121,8 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb;
+import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -148,6 +152,9 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.Hospita
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalizationService;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
@@ -274,6 +281,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private OutbreakFacadeEjbLocal outbreakFacade;
 	@EJB
 	private MaternalHistoryFacadeEjbLocal maternalHistoryFacade;
+	@EJB
+	private PointOfEntryService pointOfEntryService;
+	@EJB
+	private PortHealthInfoFacadeEjbLocal portHealthInfoFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -321,6 +332,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Case, PointOfEntry> pointOfEntry = caze.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = caze.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
 		cq.multiselect(caze.get(Case.UUID), caze.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME),
@@ -329,7 +341,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				person.get(Person.PRESENT_CONDITION), caze.get(Case.REPORT_DATE),
 				caze.get(AbstractDomainObject.CREATION_DATE), region.get(Region.UUID), district.get(District.UUID),
 				district.get(District.NAME), facility.get(Facility.UUID), facility.get(Facility.NAME),
-				caze.get(Case.HEALTH_FACILITY_DETAILS), surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME));
+				caze.get(Case.HEALTH_FACILITY_DETAILS), pointOfEntry.get(PointOfEntry.UUID), pointOfEntry.get(PointOfEntry.NAME),
+				caze.get(Case.POINT_OF_ENTRY_DETAILS), surveillanceOfficer.get(User.UUID), caze.get(Case.OUTCOME));
 
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
@@ -381,6 +394,9 @@ public class CaseFacadeEjb implements CaseFacade {
 					break;
 				case CaseIndexDto.HEALTH_FACILITY_NAME:
 					expression = facility.get(Facility.NAME);
+					break;
+				case CaseIndexDto.POINT_OF_ENTRY_NAME:
+					expression = pointOfEntry.get(PointOfEntry.NAME);
 					break;
 				case CaseIndexDto.SURVEILLANCE_OFFICER_UUID:
 					expression = surveillanceOfficer.get(User.UUID);
@@ -780,11 +796,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-
+		
 		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);
-		
+
 		// Set version number on a new case
 		if (existingCaseDto == null && StringUtils.isEmpty(dto.getCreationVersion())) {
 			caze.setCreationVersion(InfoProvider.get().getVersion());
@@ -798,15 +814,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public void validate(CaseDataDto caze) throws ValidationRuntimeException {
-		// Check whether any required field that does not have a not null constraint in
-		// the database is empty
+		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (caze.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
 		if (caze.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
-		if (caze.getHealthFacility() == null) {
+		if (caze.getCaseOrigin() == CaseOrigin.IN_COUNTRY && caze.getHealthFacility() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacility));
 		}
 		if (caze.getDisease() == null) {
@@ -820,20 +835,22 @@ public class CaseFacadeEjb implements CaseFacade {
 				&& !communityFacade.getByUuid(caze.getCommunity().getUuid()).getDistrict().equals(caze.getDistrict())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCommunityInDistrict));
 		}
-		if (caze.getCommunity() == null
-				&& facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict() != null && !facilityFacade
-				.getByUuid(caze.getHealthFacility().getUuid()).getDistrict().equals(caze.getDistrict())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInDistrict));
-		}
-		if (caze.getCommunity() != null
-				&& facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity() != null
-				&& !caze.getCommunity()
-				.equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInCommunity));
-		}
-		if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null
-				&& !caze.getRegion().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInRegion));
+		if (caze.getHealthFacility() != null) {
+			if (caze.getCommunity() == null
+					&& facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict() != null && !facilityFacade
+					.getByUuid(caze.getHealthFacility().getUuid()).getDistrict().equals(caze.getDistrict())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInDistrict));
+			}
+			if (caze.getCommunity() != null
+					&& facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity() != null
+					&& !caze.getCommunity()
+					.equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInCommunity));
+			}
+			if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null
+					&& !caze.getRegion().equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInRegion));
+			}
 		}
 	}
 
@@ -896,10 +913,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		// Re-assign the Tasks associated with this Case to the new Officer (if
-		// selected) or the Region Supervisor.
-		if (existingCase != null
-				&& !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
+		// Re-assign the tasks associated with this case to the new officer (if selected) or the surveillance supervisor if the facility has changed
+		if (existingCase != null && newCase.getHealthFacility() != null && existingCase.getHealthFacility() != null && !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
 			for (Task task : newCase.getTasks()) {
 				if (task.getTaskStatus() != TaskStatus.PENDING) {
 					continue;
@@ -949,8 +964,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		// Send an email to all responsible supervisors when the case classification has
-		// changed
+		// Send an email to all responsible supervisors when the case classification has changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
@@ -972,9 +986,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		// Send an email to all responsible supervisors when the disease of an
-		// Unspecified VHF
-		// case has changed
+		// Send an email to all responsible supervisors when the disease of an Unspecified VHF case has changed
 		if (existingCase != null && existingCase.getDisease() == Disease.UNSPECIFIED_VHF
 				&& existingCase.getDisease() != newCase.getDisease()) {
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
@@ -1002,10 +1014,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	public String generateEpidNumber(CaseReferenceDto caze) {
 		return generateEpidNumber(caseService.getByReferenceDto(caze));
 	}
-	
+
 	public String generateEpidNumber(Case caze) {
 		String newEpidNumber = caze.getEpidNumber();
-		
+
 		if (!CaseLogic.isEpidNumberPrefix(caze.getEpidNumber())) {
 			// Generate a completely new epid number if the prefix is not complete or doesn't match the pattern
 			Calendar calendar = Calendar.getInstance();
@@ -1037,10 +1049,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 		}
-		
+
 		return newEpidNumber;
 	}
-	
+
 	private void updatePersonAndCaseByOutcome(CaseDataDto existingCase, Case newCase) {
 
 		if (existingCase != null && newCase.getOutcome() != existingCase.getOutcome()) {
@@ -1223,6 +1235,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			source.setMaternalHistory(MaternalHistoryDto.build());
 		}
 		target.setMaternalHistory(maternalHistoryFacade.fromDto(source.getMaternalHistory()));
+		if (source.getPortHealthInfo() == null) {
+			source.setPortHealthInfo(PortHealthInfoDto.build());
+		}
+		target.setPortHealthInfo(portHealthInfoFacade.fromDto(source.getPortHealthInfo()));
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1231,7 +1247,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
-		target.setClinicianDetails(source.getClinicianDetails());
+		target.setClinicianName(source.getClinicianName());
+		target.setClinicianPhone(source.getClinicianPhone());
+		target.setClinicianEmail(source.getClinicianEmail());
 		target.setCaseOfficer(userService.getByReferenceDto(source.getCaseOfficer()));
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
 
@@ -1255,8 +1273,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSequelaeDetails(source.getSequelaeDetails());
 		target.setNotifyingClinic(source.getNotifyingClinic());
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
-		
+
 		target.setCreationVersion(source.getCreationVersion());
+		target.setCaseOrigin(source.getCaseOrigin());
+		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
+		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 
 		return target;
 	}
@@ -1297,6 +1318,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (source.getMaternalHistory() != null) {
 			target.setMaternalHistory(MaternalHistoryFacadeEjb.toDto(source.getMaternalHistory()));
 		}
+		if (source.getPortHealthInfo() != null) {
+			target.setPortHealthInfo(PortHealthInfoFacadeEjb.toDto(source.getPortHealthInfo()));
+		}
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -1312,7 +1336,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDistrictLevelDate(source.getDistrictLevelDate());
 
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
-		target.setClinicianDetails(source.getClinicianDetails());
+		target.setClinicianName(source.getClinicianName());
+		target.setClinicianPhone(source.getClinicianPhone());
+		target.setClinicianEmail(source.getClinicianEmail());
 		target.setCaseOfficer(UserFacadeEjb.toReferenceDto(source.getCaseOfficer()));
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 
@@ -1336,8 +1362,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSequelaeDetails(source.getSequelaeDetails());
 		target.setNotifyingClinic(source.getNotifyingClinic());
 		target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
-		
+
 		target.setCreationVersion(source.getCreationVersion());
+		target.setCaseOrigin(source.getCaseOrigin());
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 
 		return target;
 	}
@@ -1505,13 +1534,13 @@ public class CaseFacadeEjb implements CaseFacade {
 				.collect(Collectors.toMap(e -> RegionFacadeEjb.toDto((Region) e[0]), e -> (Long) e[1]));
 		return resultMap;
 	}
-	
+
 	@Override
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> from = cq.from(Case.class);
-		
+
 		Predicate filter = cb.equal(from.get(Case.EPID_NUMBER), epidNumber);
 		if (caseUuid != null) {
 			filter = cb.and(filter, cb.notEqual(from.get(Case.UUID), caseUuid));

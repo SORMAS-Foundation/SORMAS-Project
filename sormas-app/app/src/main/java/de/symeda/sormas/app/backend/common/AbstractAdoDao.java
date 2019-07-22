@@ -1106,13 +1106,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
-    public List<ADO> queryForNotNull(String fieldName) {
+    public List<ADO> queryForNull(String fieldName) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
-                    where.isNotNull(fieldName),
-                    where.ne(fieldName, ""),
+                    where.isNull(fieldName),
                     where.eq(AbstractDomainObject.SNAPSHOT, false)
             ).query();
             return builder.query();

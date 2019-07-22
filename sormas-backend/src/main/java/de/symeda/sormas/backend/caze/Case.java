@@ -37,6 +37,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DengueFeverType;
@@ -47,11 +48,13 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
+import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -93,6 +96,7 @@ public class Case extends AbstractDomainObject {
 	public static final String EPI_DATA = "epiData";
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
+	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
@@ -110,6 +114,9 @@ public class Case extends AbstractDomainObject {
 	public static final String ARCHIVED = "archived";
 	public static final String THERAPY = "therapy";
 	public static final String CLINICIAN_DETAILS = "clinicianDetails";
+	public static final String CASE_ORIGIN = "caseOrigin";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 
 	private Person person;
 	private String description;
@@ -130,6 +137,7 @@ public class Case extends AbstractDomainObject {
 	private Therapy therapy;
 	private ClinicalCourse clinicalCourse;
 	private MaternalHistory maternalHistory;
+	private PortHealthInfo portHealthInfo;
 	
 	private Region region;
 	private District district;
@@ -149,7 +157,9 @@ public class Case extends AbstractDomainObject {
 	private Date districtLevelDate;
 
 	private User surveillanceOfficer;
-	private String clinicianDetails;
+	private String clinicianName;
+	private String clinicianPhone;
+	private String clinicianEmail;
 	private User caseOfficer;
 	
 	private HospitalWardType notifyingClinic;
@@ -177,6 +187,10 @@ public class Case extends AbstractDomainObject {
 	
 	private boolean archived;
 	private String creationVersion;
+	
+	private CaseOrigin caseOrigin;
+	private PointOfEntry pointOfEntry;
+	private String pointOfEntryDetails;
 
 	private List<Task> tasks;
 
@@ -356,13 +370,31 @@ public class Case extends AbstractDomainObject {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	@Column(length = 512)
-	public String getClinicianDetails() {
-		return clinicianDetails;
+	@Column(length = 512, name = "cliniciandetails")
+	public String getClinicianName() {
+		return clinicianName;
 	}
 
-	public void setClinicianDetails(String clinicianDetails) {
-		this.clinicianDetails = clinicianDetails;
+	public void setClinicianName(String clinicianName) {
+		this.clinicianName = clinicianName;
+	}
+
+	@Column(length = 512)
+	public String getClinicianPhone() {
+		return clinicianPhone;
+	}
+
+	public void setClinicianPhone(String clinicianPhone) {
+		this.clinicianPhone = clinicianPhone;
+	}
+
+	@Column(length = 512)
+	public String getClinicianEmail() {
+		return clinicianEmail;
+	}
+
+	public void setClinicianEmail(String clinicianEmail) {
+		this.clinicianEmail = clinicianEmail;
 	}
 
 	@ManyToOne(cascade = {})
@@ -483,6 +515,18 @@ public class Case extends AbstractDomainObject {
 
 	public void setMaternalHistory(MaternalHistory maternalHistory) {
 		this.maternalHistory = maternalHistory;
+	}
+	
+	// It's necessary to do a lazy fetch here because having three eager fetching
+	// one to one relations produces an error where two non-xa connections are opened
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public PortHealthInfo getPortHealthInfo() {
+		return portHealthInfo;
+	}
+
+	public void setPortHealthInfo(PortHealthInfo portHealthInfo) {
+		this.portHealthInfo = portHealthInfo;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -697,6 +741,33 @@ public class Case extends AbstractDomainObject {
 
 	public void setSystemCaseClassification(CaseClassification systemCaseClassification) {
 		this.systemCaseClassification = systemCaseClassification;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseOrigin getCaseOrigin() {
+		return caseOrigin;
+	}
+
+	public void setCaseOrigin(CaseOrigin caseOrigin) {
+		this.caseOrigin = caseOrigin;
+	}
+
+	@ManyToOne(cascade = {})
+	public PointOfEntry getPointOfEntry() {
+		return pointOfEntry;
+	}
+
+	public void setPointOfEntry(PointOfEntry pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
+	}
+
+	@Column(length = 512)
+	public String getPointOfEntryDetails() {
+		return pointOfEntryDetails;
+	}
+
+	public void setPointOfEntryDetails(String pointOfEntryDetails) {
+		this.pointOfEntryDetails = pointOfEntryDetails;
 	}
 
 }

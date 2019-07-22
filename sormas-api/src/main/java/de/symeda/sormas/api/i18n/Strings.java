@@ -135,9 +135,9 @@ public interface Strings {
 	public static String headingDearchiveCase = "headingDearchiveCase";
 	public static String headingDearchiveEvent = "headingDearchiveEvent";
 	public static String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
-	public static String headingDownloadCaseImportTemplate = "headingDownloadCaseImportTemplate";
 	public static String headingDownloadErrorReport = "headingDownloadErrorReport";
 	public static String headingDownloadImportGuide = "headingDownloadImportGuide";
+	public static String headingDownloadImportTemplate = "headingDownloadImportTemplate";
 	public static String headingEditAdditionalTest = "headingEditAdditionalTest";
 	public static String headingEditCases = "headingEditCases";
 	public static String headingEditClinicalVisit = "headingEditClinicalVisit";
@@ -172,6 +172,7 @@ public interface Strings {
 	public static String headingImportedPersonInfo = "headingImportedPersonInfo";
 	public static String headingImportError = "headingImportError";
 	public static String headingImportFailed = "headingImportFailed";
+	public static String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	public static String headingInformationSource = "headingInformationSource";
 	public static String headingLaboratorySample = "headingLaboratorySample";
 	public static String headingLocation = "headingLocation";
@@ -204,7 +205,10 @@ public interface Strings {
 	public static String headingPersonInformation = "headingPersonInformation";
 	public static String headingPersonOccupation = "headingPersonOccupation";
 	public static String headingPickOrCreatePerson = "headingPickOrCreatePerson";
+	public static String headingPointOfEntryImport = "headingPointOfEntryImport";
+	public static String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	public static String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
+	public static String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	public static String headingReferSample = "headingReferSample";
 	public static String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	public static String headingRequestedPathogenTests = "headingRequestedPathogenTests";
@@ -242,6 +246,7 @@ public interface Strings {
 	public static String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	public static String infoDownloadErrorReport = "infoDownloadErrorReport";
 	public static String infoDownloadImportGuide = "infoDownloadImportGuide";
+	public static String infoDownloadImportTemplate = "infoDownloadImportTemplate";
 	public static String infoExportNoFilters = "infoExportNoFilters";
 	public static String infoImportCsvFile = "infoImportCsvFile";
 	public static String infoImportProcess = "infoImportProcess";
@@ -271,6 +276,7 @@ public interface Strings {
 	public static String messageCaseArchived = "messageCaseArchived";
 	public static String messageCaseCreated = "messageCaseCreated";
 	public static String messageCaseDearchived = "messageCaseDearchived";
+	public static String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
 	public static String messageCasesArchived = "messageCasesArchived";
 	public static String messageCaseSaved = "messageCaseSaved";
 	public static String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";

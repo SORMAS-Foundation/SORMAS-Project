@@ -199,9 +199,9 @@ public class StartupShutdownService {
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
 		logger.info("Starting automatic database update...");
 		
-		boolean hasSchmemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
+		boolean hasSchemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
 		Integer currentVersion;
-		if (hasSchmemaVersion) {
+		if (hasSchemaVersion) {
 			currentVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();	
 		} else {
 			currentVersion = null;
@@ -229,9 +229,10 @@ public class StartupShutdownService {
 					if (nextLine.startsWith("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
 						currentVersionReached = true;
 					}
-
 					continue;
 				}
+				
+				nextLine = nextLine.replaceAll(":", "\\\\:");
 				
 				// Add the line to the StringBuilder
 				nextUpdateBuilder.append(nextLine).append("\n");
@@ -290,6 +291,12 @@ public class StartupShutdownService {
 			importFacade.generateCaseImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create case import template .csv file.");
+		}
+		
+		try {
+			importFacade.generatePointOfEntryImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create point of entry import template .csv file.");
 		}
 	}
 	

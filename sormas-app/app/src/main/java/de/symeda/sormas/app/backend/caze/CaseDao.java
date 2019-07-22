@@ -42,6 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -147,6 +148,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
             date = maternalHistoryDate;
         }
 
+        Date portHealthInfoDate = DatabaseHelper.getPortHealthInfoDao().getLatestChangeDate();
+        if (portHealthInfoDate != null && portHealthInfoDate.after(date)) {
+            date = portHealthInfoDate;
+        }
+
         return date;
     }
 
@@ -208,17 +214,29 @@ public class CaseDao extends AbstractAdoDao<Case> {
         // Maternal History
         caze.setMaternalHistory(DatabaseHelper.getMaternalHistoryDao().build());
 
+        // Port Health Info
+        caze.setPortHealthInfo(DatabaseHelper.getPortHealthInfoDao().build());
+
         // Location
         User currentUser = ConfigProvider.getUser();
-        if (currentUser.getHealthFacility() != null) {
+
+        if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
+            caze.setRegion(currentUser.getRegion());
+            caze.setDistrict(currentUser.getDistrict());
+            caze.setDisease(Disease.UNDEFINED);
+            caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+            caze.setPointOfEntry(ConfigProvider.getUser().getPointOfEntry());
+        } else if (currentUser.getHealthFacility() != null) {
             caze.setRegion(currentUser.getHealthFacility().getRegion());
             caze.setDistrict(currentUser.getHealthFacility().getDistrict());
             caze.setCommunity(currentUser.getHealthFacility().getCommunity());
             caze.setHealthFacility(currentUser.getHealthFacility());
+            caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
         } else {
             caze.setRegion(currentUser.getRegion());
             caze.setDistrict(currentUser.getDistrict());
             caze.setCommunity(currentUser.getCommunity());
+            caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
         }
 
         return caze;
@@ -244,7 +262,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return newCase;
     }
 
-    public Case transferCase(Case caseToTransfer) throws DaoException {
+    public Case transferCase(Case caseToTransfer, boolean referFromPointOfEntry) throws DaoException {
         Case caze = queryForIdWithEmbedded(caseToTransfer.getId());
 
         Facility facility = caseToTransfer.getHealthFacility();
@@ -255,12 +273,14 @@ public class CaseDao extends AbstractAdoDao<Case> {
         User surveillanceOfficer = caseToTransfer.getSurveillanceOfficer();
 
         // If the facility has changed, add a previous hospitalization
-        if (!caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
+        if (!referFromPointOfEntry && !caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
             caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze));
             caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
             caze.getHospitalization().setAdmissionDate(new Date());
             caze.getHospitalization().setDischargeDate(null);
             caze.getHospitalization().setIsolated(null);
+        } else {
+            caze.getHospitalization().setAdmissionDate(new Date());
         }
 
         // If the district has changed and there is exactly one surveillance officer assigned to that district,
@@ -515,7 +535,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
     public List<Case> queryByCriteria(CaseCriteria criteria, long offset, long limit) {
         try {
-            return buildQueryBuilder(criteria).orderBy(Case.LOCAL_CHANGE_DATE, false)
+            return buildQueryBuilder(criteria).orderBy(Case.REPORT_DATE, false)
                     .offset(offset).limit(limit).query();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform queryByCriteria on Case");
@@ -546,6 +566,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
         if (criteria.getEpiWeekTo() != null) {
             where.and().le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo()));
+        }
+        if (criteria.getCaseOrigin() != null) {
+            where.and().eq(Case.CASE_ORIGIN, criteria.getCaseOrigin());
         }
         if (!StringUtils.isEmpty(criteria.getTextFilter())) {
             String[] textFilters = criteria.getTextFilter().split("\\s+");

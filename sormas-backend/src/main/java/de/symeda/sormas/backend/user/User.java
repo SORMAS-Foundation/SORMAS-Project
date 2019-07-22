@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -66,6 +67,7 @@ public class User extends AbstractDomainObject {
 	public static final String USER_ROLES = "userRoles";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String LABORATORY = "laboratory";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 
 	private String userName;
@@ -90,6 +92,8 @@ public class User extends AbstractDomainObject {
 	private Facility healthFacility;
 	// laboratory of lab user
 	private Facility laboratory;
+	// point of entry of POE users
+	private PointOfEntry pointOfEntry;
 	
 	private User associatedOfficer;
 	
@@ -253,6 +257,14 @@ public class User extends AbstractDomainObject {
 		this.laboratory = laboratory;
 	}
 
+	@ManyToOne(cascade = {})
+	public PointOfEntry getPointOfEntry() {
+		return pointOfEntry;
+	}
+	public void setPointOfEntry(PointOfEntry pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
+	}
+	
 	@Enumerated(EnumType.STRING)
 	public Disease getLimitedDisease() {
 		return limitedDisease;

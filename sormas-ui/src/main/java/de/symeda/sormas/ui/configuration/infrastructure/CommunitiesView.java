@@ -63,7 +63,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private Button resetButton;
-	
+
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private CommunitiesGrid grid;
@@ -73,7 +73,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 		super(VIEW_NAME);
 
 		criteria = ViewModelProviders.of(CommunitiesView.class).get(CommunityCriteria.class);		
-		
+
 		grid = new CommunitiesGrid();
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
@@ -85,15 +85,17 @@ public class CommunitiesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
-		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(VaadinIcons.TABLE);
-		addHeaderComponent(exportButton);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(VaadinIcons.TABLE);
+			addHeaderComponent(exportButton);
 
-		StreamResource streamResource = new GridExportStreamResource(grid, "sormas_communities", "sormas_communities_" + DateHelper.formatDateForExport(new Date()) + ".csv", CommunitiesGrid.EDIT_BTN_ID);
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(exportButton);
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_communities", "sormas_communities_" + DateHelper.formatDateForExport(new Date()) + ".csv", CommunitiesGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
@@ -154,7 +156,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 			navigateTo(null);
 		});
 		filterLayout.addComponent(resetButton);
-		
+
 		return filterLayout;
 	}
 
@@ -169,18 +171,18 @@ public class CommunitiesView extends AbstractConfigurationView {
 		updateFilterComponents();
 		grid.reload();
 	}
-	
+
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
+
 		searchField.setValue(criteria.getNameLike());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
-		
+
 		applyingCriteria = false;
 	}
-	
+
 }

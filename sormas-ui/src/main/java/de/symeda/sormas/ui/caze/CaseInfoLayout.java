@@ -80,8 +80,8 @@ public class CaseInfoLayout extends HorizontalLayout {
 			}
 			
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
-				addDescLabel(leftColumnLayout, caseDto.getClinicianDetails(),
-						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICIAN_DETAILS));
+				addDescLabel(leftColumnLayout, caseDto.getClinicianName(),
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICIAN_NAME));
 			}
 		}
 		this.addComponent(leftColumnLayout);

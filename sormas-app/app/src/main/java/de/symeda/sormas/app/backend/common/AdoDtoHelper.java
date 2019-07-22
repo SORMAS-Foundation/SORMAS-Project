@@ -77,7 +77,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
         pullEntities(false);
 
-        return pushEntities();
+        return pushEntities(false);
     }
 
     public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException {
@@ -173,10 +173,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     /**
      * @return true: another pull is needed, because data has been changed on the server
      */
-    public boolean pushEntities() throws DaoException, ServerConnectionException, ServerCommunicationException {
+    public boolean pushEntities(boolean onlyNewEntities) throws DaoException, ServerConnectionException, ServerCommunicationException {
         final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
-        final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
+        final List<ADO> modifiedAdos =
+                onlyNewEntities ? dao.queryForNull(ADO.CHANGE_DATE) : dao.queryForEq(ADO.MODIFIED, true);
 
         List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
         for (ADO ado : modifiedAdos) {

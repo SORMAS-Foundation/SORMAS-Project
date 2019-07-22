@@ -33,6 +33,7 @@ import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
 import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
+import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
@@ -66,6 +67,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 					HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+			menu.addView(PointsOfEntryView.VIEW_NAME, I18nProperties.getPrefixCaption("View", 
+					PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 		}
 
 //		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {
@@ -89,6 +92,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
 			navigator.addView(HealthFacilitiesView.VIEW_NAME, HealthFacilitiesView.class);
 			navigator.addView(LaboratoriesView.VIEW_NAME, LaboratoriesView.class);
+			navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
 		}
 		
 //		if (LoginHelper.hasUserRight(UserRight.USER_RIGHTS_MANAGE)) {

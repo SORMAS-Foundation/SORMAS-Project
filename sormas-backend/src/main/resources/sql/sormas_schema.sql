@@ -3374,3 +3374,179 @@ UPDATE public.facility SET publicownership=false WHERE publicownership IS NULL;
 ALTER TABLE public.facility ALTER COLUMN publicownership SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (155, 'Added missing not null to publicownership #1198');
+
+-- 2019-06-28 Add fields and tables for points of entry and port health info #985
+CREATE TABLE pointofentry(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	pointofentrytype varchar(255),
+	name varchar(512),
+	region_id bigint,
+	district_id bigint,
+	latitude double precision,
+	longitude double precision,
+	active boolean, 
+	primary key(id)
+);
+ALTER TABLE pointofentry OWNER TO sormas_user;
+ALTER TABLE pointofentry ADD CONSTRAINT fk_pointofentry_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE pointofentry ADD CONSTRAINT fk_pointofentry_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+
+ALTER TABLE cases ADD COLUMN caseorigin varchar(255);
+ALTER TABLE cases ADD COLUMN pointofentry_id bigint;
+ALTER TABLE cases ADD COLUMN pointofentrydetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN pointofentry_id bigint;
+ALTER TABLE cases_history ADD COLUMN pointofentrydetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN caseorigin varchar(255);
+UPDATE cases SET caseorigin = 'IN_COUNTRY';
+
+ALTER TABLE cases ADD CONSTRAINT fk_cases_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry (id);
+
+ALTER TABLE users ADD COLUMN pointofentry_id bigint;
+ALTER TABLE users_history ADD COLUMN pointofentry_id bigint;
+
+ALTER TABLE users ADD CONSTRAINT fk_users_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry (id);
+
+CREATE TABLE porthealthinfo(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	airlinename varchar(512),
+	flightnumber varchar(512),
+	departuredatetime timestamp,
+	arrivaldatetime timestamp,
+	freeseating varchar(255),
+	seatnumber varchar(512),
+	departureairport varchar(512),
+	numberoftransitstops integer,
+	transitstopdetails1 varchar(512),
+	transitstopdetails2 varchar(512),
+	transitstopdetails3 varchar(512),
+	transitstopdetails4 varchar(512),
+	transitstopdetails5 varchar(512),
+	vesselname varchar(512),
+	vesseldetails varchar(512),
+	portofdeparture varchar(512),
+	lastportofcall varchar(512),
+	conveyancetype varchar(255),
+	conveyancetypedetails varchar(512),
+	departurelocation varchar(512),
+	finaldestination varchar(512),
+	details varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE porthealthinfo OWNER TO sormas_user;
+
+CREATE TABLE porthealthinfo_history (LIKE porthealthinfo);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON porthealthinfo
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'porthealthinfo_history', true);
+ALTER TABLE porthealthinfo_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN porthealthinfo_id bigint;
+ALTER TABLE cases_history ADD COLUMN porthealthinfo_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_porthealthinfo_id FOREIGN KEY (porthealthinfo_id) REFERENCES porthealthinfo (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (156, 'Add fields and tables for points of entry and port health info #985');
+
+-- 2019-07-16 Change types of AdditionalTest columns to double #1200
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgasph TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgaspco2 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgaspao2 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgashco3 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN gasoxygentherapy TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN altsgpt TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN astsgot TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN creatinine TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN potassium TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN urea TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN haemoglobin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN totalbilirubin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN conjbilirubin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN wbccount TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN platelets TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN prothrombintime TYPE real;
+
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgasph TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgaspco2 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgaspao2 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgashco3 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN gasoxygentherapy TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN altsgpt TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN astsgot TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN creatinine TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN potassium TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN urea TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN haemoglobin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN totalbilirubin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN conjbilirubin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN wbccount TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN platelets TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN prothrombintime TYPE real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (157, 'Change types of AdditionalTest columns to double #1200');
+
+-- 2019-07-19 Add clinician phone and email #1190
+ALTER TABLE cases ADD COLUMN clinicianphone varchar(512);
+ALTER TABLE cases ADD COLUMN clinicianemail varchar(512);
+ALTER TABLE cases_history ADD COLUMN clinicianphone varchar(512);
+ALTER TABLE cases_history ADD COLUMN clinicianemail varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (158, 'Add clinician phone and email #1190');
+
+-- 2019-07-19 Fix Hibernate "feature" that throws an error when using functions without a return value #1228
+DROP FUNCTION export_database(text, text);
+DROP FUNCTION export_database_join(text, text, text, text, text);
+
+CREATE FUNCTION export_database(table_name text, file_path text)
+	RETURNS INTEGER
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || '
+				) TO 
+					' || quote_literal(file_path) || '
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+			RETURN 1;
+		END;
+	$BODY$
+;
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
+	RETURNS INTEGER
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(file_path) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+			RETURN 1;
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (159, 'Fix Hibernate "feature" that throws an error when using functions without a return value #1228');

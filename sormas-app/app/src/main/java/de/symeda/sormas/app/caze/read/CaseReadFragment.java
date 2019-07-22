@@ -23,8 +23,10 @@ import android.view.View;
 import android.webkit.WebView;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
@@ -32,6 +34,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
@@ -51,6 +54,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
     private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
         setVisibilityByDisease(CaseDataDto.class, record.getDisease(), contentBinding.mainContent);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
+        InfrastructureHelper.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
         // Vaccination date
         if (isVisibleAllowed(CaseDataDto.class, record.getDisease(), contentBinding.caseDataVaccination)) {
@@ -63,6 +67,21 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
         // Pregnancy
         if (record.getPerson().getSex() != Sex.FEMALE) {
             contentBinding.caseDataPregnant.setVisibility(GONE);
+        }
+
+        // Port Health fields
+        if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
+            contentBinding.caseDataCaseOrigin.setVisibility(GONE);
+            contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+        } else {
+            if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+                if (record.getHealthFacility() == null) {
+                    contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+                    contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
+                }
+            } else {
+                contentBinding.pointOfEntryFieldsLayout.setVisibility(GONE);
+            }
         }
 
         // Button panel

@@ -22,7 +22,9 @@ public interface Validations {
 	public static String importFacilityNotUniqueInDistrict = "importFacilityNotUniqueInDistrict";
 	public static String importInvalidDate = "importInvalidDate";
 	public static String importLineTooLong = "importLineTooLong";
+	public static String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	public static String importRegionNotUnique = "importRegionNotUnique";
+	public static String importUnexpectedError = "importUnexpectedError";
 	public static String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	public static String noCommunityInDistrict = "noCommunityInDistrict";
 	public static String noDistrictInRegion = "noDistrictInRegion";
