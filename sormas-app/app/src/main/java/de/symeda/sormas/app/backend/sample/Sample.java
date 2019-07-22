@@ -37,6 +37,7 @@ import javax.persistence.Transient;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleLabType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -98,6 +99,10 @@ public class Sample extends AbstractDomainObject {
 
     @Column(length = 512)
     private String labDetails;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SampleLabType labType;
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date shipmentDate;
@@ -234,6 +239,14 @@ public class Sample extends AbstractDomainObject {
 
     public void setLabDetails(String labDetails) {
         this.labDetails = labDetails;
+    }
+
+    public SampleLabType getLabType() {
+        return labType;
+    }
+
+    public void setLabType(SampleLabType labType) {
+        this.labType = labType;
     }
 
     public Date getShipmentDate() {

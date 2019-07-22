@@ -37,8 +37,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleLabType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
@@ -70,6 +72,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.loc(ADDITIONAL_TESTING_INFO_LOC) +
 			LayoutUtil.loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
 			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS) +
+			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.LAB_TYPE) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED),
 			LayoutUtil.divs(LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)),
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED),
@@ -86,13 +89,13 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 	@Override
 	protected void addFields() {
 		addField(SampleDto.SAMPLE_CODE, TextField.class);
-		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
+		TextField labSampleId = addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		DateField shipmentDate = addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
-		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
+		TextField shipmentDetails = addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);		
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
@@ -101,8 +104,17 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
+		ComboBox labType = addField(SampleDto.LAB_TYPE, ComboBox.class);
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
+		
+		//hidding for labType
+		shipped.setVisible(false);
+		shipmentDate.setVisible(false);
+		shipmentDetails.setVisible(false);
+		received.setVisible(false);
+		receivedDate.setVisible(false);
+		labSampleId.setVisible(false);
 
 		initializeRequestedTests();
 		
@@ -148,6 +160,25 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 					getFieldGroup(), received, Arrays.asList(true), Arrays.asList(SampleDto.RECEIVED_DATE,
 							SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
 					true);
+		});
+		
+		labType.addValueChangeListener(e -> {
+			SampleLabType labTypeVal = (SampleLabType) e.getProperty().getValue();
+			if (labTypeVal == SampleLabType.EXTERNAL) {
+				shipped.setVisible(true);
+				shipmentDate.setVisible(true);
+				shipmentDetails.setVisible(true);
+				received.setVisible(true);
+				receivedDate.setVisible(true);
+				labSampleId.setVisible(true);
+			} else {
+				shipped.setVisible(false);
+				shipmentDate.setVisible(false);
+				shipmentDetails.setVisible(false);
+				received.setVisible(false);
+				receivedDate.setVisible(false);
+				labSampleId.setVisible(false);
+			}
 		});
 
 		shipped.addValueChangeListener(event -> {

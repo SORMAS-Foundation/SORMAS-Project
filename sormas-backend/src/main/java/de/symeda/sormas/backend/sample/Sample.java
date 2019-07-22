@@ -42,6 +42,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleLabType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
@@ -100,6 +101,7 @@ public class Sample extends AbstractDomainObject {
 	private Float reportLatLonAccuracy;
 
 	private SampleMaterial sampleMaterial;
+	private SampleLabType labType;
 	private String sampleMaterialText;
 	private Facility lab;
 	private String labDetails;
@@ -194,6 +196,15 @@ public class Sample extends AbstractDomainObject {
 	}
 	public void setSampleMaterialText(String sampleMaterialText) {
 		this.sampleMaterialText = sampleMaterialText;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	@JoinColumn(nullable = false)
+	public SampleLabType getLabType() {
+		return labType;
+	}
+	public void setLabType(SampleLabType labType) {
+		this.labType = labType;
 	}
 
 	@ManyToOne(cascade = {})
