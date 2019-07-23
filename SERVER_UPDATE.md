@@ -6,7 +6,9 @@ SORMAS releases starting from 1.21.0 contain a script that automatically updates
 * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
 
 ## Version Specifics
-You'll have to execute these commands before (and, sometimes, after) updating the server when you update to one of these versions.
+You'll have to execute these commands before (and, sometimes, after) updating the server when you update to one of these versions. In order to do this, you have to open the PSQL console and connect to the SORMAS database:  
+``sudo -u postgres psql``  
+``\c sormas_db``
 
 * Version 1.23.0 (before updating the server):  
 ``ALTER FUNCTION export_database(text, text) OWNER TO sormas_user;``  
