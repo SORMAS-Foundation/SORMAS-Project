@@ -31,6 +31,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
@@ -166,31 +167,28 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
             contentBinding.caseDataHealthFacility.setRequired(false);
             contentBinding.caseDataHealthFacilityDetails.setRequired(false);
-        } else {
+        } else if (DatabaseHelper.getPointOfEntryDao().hasEntriesInDistrict()){
             if (record.getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
                 contentBinding.caseDataPointOfEntry.setRequired(false);
                 contentBinding.caseDataPointOfEntry.setVisibility(GONE);
             } else {
                 contentBinding.caseDataHealthFacility.setRequired(false);
-                contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
             }
             contentBinding.caseDataCaseOrigin.addValueChangedListener(e -> {
                 if (e.getValue() == CaseOrigin.IN_COUNTRY) {
                     contentBinding.caseDataPointOfEntry.setVisibility(GONE);
-                    contentBinding.healthFacilityFieldsLayout.setVisibility(VISIBLE);
-                    InfrastructureHelper.setHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
                     contentBinding.caseDataPointOfEntry.setRequired(false);
                     contentBinding.caseDataPointOfEntry.setValue(null);
                     contentBinding.caseDataHealthFacility.setRequired(true);
                 } else {
-                    contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
                     contentBinding.caseDataPointOfEntry.setVisibility(VISIBLE);
-                    InfrastructureHelper.setPointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
                     contentBinding.caseDataHealthFacility.setRequired(false);
-                    contentBinding.caseDataHealthFacility.setValue(null);
                     contentBinding.caseDataPointOfEntry.setRequired(true);
                 }
             });
+        } else {
+            contentBinding.caseDataCaseOrigin.setVisibility(GONE);
+            contentBinding.caseDataPointOfEntry.setVisibility(GONE);
         }
     }
 

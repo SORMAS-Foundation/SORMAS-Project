@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -58,6 +59,8 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -108,6 +111,8 @@ public class StartupShutdownService {
 	@EJB
 	private FacilityService facilityService;
 	@EJB
+	private PointOfEntryService pointOfEntryService;
+	@EJB
 	private ImportFacadeEjbLocal importFacade;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
@@ -131,6 +136,8 @@ public class StartupShutdownService {
 		importAdministrativeDivisions(countryName);
 		
 		facilityService.importFacilities(countryName);
+		
+		importConstantPointsOfEntry();
 
 		initDefaultUsers();
 		
@@ -161,6 +168,36 @@ public class StartupShutdownService {
 		communityService.importCommunities(countryName, regions);		
 	}
 
+	private void importConstantPointsOfEntry() {
+		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_AIRPORT_UUID) == null) {
+			PointOfEntry otherAirport = new PointOfEntry();
+			otherAirport.setName("OTHER_AIRPORT");
+			otherAirport.setUuid(PointOfEntryDto.OTHER_AIRPORT_UUID);
+			otherAirport.setActive(true);
+			pointOfEntryService.persist(otherAirport);
+		}
+		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_SEAPORT_UUID) == null) {
+			PointOfEntry otherSeaport = new PointOfEntry();
+			otherSeaport.setName("OTHER_SEAPORT");
+			otherSeaport.setUuid(PointOfEntryDto.OTHER_SEAPORT_UUID);
+			otherSeaport.setActive(true);
+			pointOfEntryService.persist(otherSeaport);
+		}
+		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID) == null) {
+			PointOfEntry otherGC = new PointOfEntry();
+			otherGC.setName("OTHER_GROUND_CROSSING");
+			otherGC.setUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID);
+			otherGC.setActive(true);
+			pointOfEntryService.persist(otherGC);
+		}
+		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_POE_UUID) == null) {
+			PointOfEntry otherPoe = new PointOfEntry();
+			otherPoe.setName("OTHER_POE");
+			otherPoe.setUuid(PointOfEntryDto.OTHER_POE_UUID);
+			otherPoe.setActive(true);
+			pointOfEntryService.persist(otherPoe);
+		}
+	}
 
 	private void initDefaultUsers() {
 		if (userService.getAll().isEmpty()) {

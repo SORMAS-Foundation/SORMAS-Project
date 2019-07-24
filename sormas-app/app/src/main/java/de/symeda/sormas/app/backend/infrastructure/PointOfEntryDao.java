@@ -30,6 +30,7 @@ import java.util.List;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.region.District;
 
 public class PointOfEntryDao extends AbstractAdoDao<PointOfEntry> {
@@ -58,6 +59,24 @@ public class PointOfEntryDao extends AbstractAdoDao<PointOfEntry> {
             return pointsOfEntry;
         } catch (SQLException | IllegalArgumentException e) {
             Log.e(getTableName(), "Could not perform getByDistrict");
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Checks whether the database contains at least one active point of entry within the user's district.
+     */
+    public boolean hasEntriesInDistrict() {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.and(
+                    where.eq(PointOfEntry.DISTRICT + "_id", ConfigProvider.getUser().getDistrict().getId()),
+                    where.eq(AbstractDomainObject.SNAPSHOT, false),
+                    where.ne(PointOfEntry.ACTIVE, false));
+            return builder.queryForFirst() != null;
+        } catch (SQLException | IllegalArgumentException e) {
+            Log.e(getTableName(), "Could not perform hasEntriesInDistrict");
             throw new RuntimeException(e);
         }
     }
