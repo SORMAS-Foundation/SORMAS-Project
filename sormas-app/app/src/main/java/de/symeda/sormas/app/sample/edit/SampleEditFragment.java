@@ -29,6 +29,7 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleLabType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -49,6 +50,7 @@ import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
 
@@ -62,6 +64,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private List<Item> sampleMaterialList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
+    private List<Item> labTypeList;
     private List<String> requestedPathogenTests;
     private List<String> requestedAdditionalTests = new ArrayList<>();
 
@@ -140,6 +143,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
+        labTypeList = DataUtils.getEnumItems(SampleLabType.class, true);
 
         requestedPathogenTests = new ArrayList<>();
         for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
@@ -184,6 +188,17 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                     contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
                 } else {
                     contentBinding.sampleLabDetails.hideField(true);
+                }
+            }
+        });
+        contentBinding.sampleLabType.initializeSpinner(labTypeList, new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                SampleLabType labType = (SampleLabType) field.getValue();
+                if (labType != null && labType.equals(SampleLabType.EXTERNAL)) {
+                    showLabExternal(contentBinding, VISIBLE);
+                } else {
+                    showLabExternal(contentBinding, GONE);
                 }
             }
         });
@@ -243,6 +258,17 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
             contentBinding.additionalTestingLayout.setVisibility(GONE);
         }
+    }
+
+    void showLabExternal(FragmentSampleEditLayoutBinding contentBinding, int show){
+        contentBinding.sampleShipped.setVisibility(show);
+        contentBinding.sampleShipmentDate.setVisibility(show);
+        contentBinding.sampleReceived.setVisibility(show);
+
+        if(show== VISIBLE && record!=null && record.isShipped())
+            contentBinding.sampleShipmentDetails.setVisibility(show);
+        else
+            contentBinding.sampleShipmentDetails.setVisibility(show);
     }
 
     @Override

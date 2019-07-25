@@ -25,6 +25,7 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleLabType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.user.UserRight;
@@ -41,6 +42,7 @@ import de.symeda.sormas.app.databinding.FragmentSampleNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class
 SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sample, Sample> {
@@ -52,6 +54,7 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
     private List<Item> sampleMaterialList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
+    private List<Item> labTypeList;
 
     // Instance methods
 
@@ -78,6 +81,7 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
+        labTypeList = DataUtils.getEnumItems(SampleLabType.class, true);
     }
 
     @Override
@@ -106,6 +110,17 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
                 }
             }
         });
+        contentBinding.sampleLabType.initializeSpinner(labTypeList, new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                SampleLabType labType = (SampleLabType) field.getValue();
+                if (labType != null && labType.equals(SampleLabType.EXTERNAL)) {
+                    showLabExternal(contentBinding, VISIBLE);
+                } else {
+                    showLabExternal(contentBinding, GONE);
+                }
+            }
+        });
 
         contentBinding.sampleRequestedPathogenTests.removeItem(PathogenTestType.OTHER);
 
@@ -117,6 +132,16 @@ SampleNewFragment extends BaseEditFragment<FragmentSampleNewLayoutBinding, Sampl
         // Initialize ControlDateFields and ControlDateTimeFields
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
         contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
+    }
+
+    void showLabExternal(FragmentSampleNewLayoutBinding contentBinding, int show){
+        contentBinding.sampleShipped.setVisibility(show);
+        contentBinding.sampleShipmentDate.setVisibility(show);
+
+        if(show== VISIBLE && record!=null && record.isShipped())
+            contentBinding.sampleShipmentDetails.setVisibility(show);
+        else
+            contentBinding.sampleShipmentDetails.setVisibility(show);
     }
 
     @Override

@@ -101,7 +101,7 @@ public class Sample extends AbstractDomainObject {
     private String labDetails;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private SampleLabType labType;
 
     @DatabaseField(dataType = DataType.DATE_LONG)
