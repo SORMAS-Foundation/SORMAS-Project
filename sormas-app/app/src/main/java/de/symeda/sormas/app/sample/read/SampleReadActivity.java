@@ -72,8 +72,6 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Sample activityRootData) {
-//        return SampleReadFragment.newInstance(activityRootData);
-
         SampleSection section = SampleSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {

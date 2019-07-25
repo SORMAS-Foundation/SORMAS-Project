@@ -84,17 +84,6 @@ public class SampleListActivity extends PagedBaseListActivity {
             model.getSampleCriteria().shipmentStatus(statusFilters[((PageMenuItem) p).getKey()]);
             model.notifyCriteriaUpdated();
         });
-
-
-//        try {
-////            (new PathogenTestDtoHelper()).repullEntities();
-//        } catch (DaoException e) {
-//            e.printStackTrace();
-//        } catch (ServerCommunicationException e) {
-//            e.printStackTrace();
-//        } catch (ServerConnectionException e) {
-//            e.printStackTrace();
-//        }
     }
 
     @Override

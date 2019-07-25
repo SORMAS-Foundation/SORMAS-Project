@@ -69,8 +69,6 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestType(source.getTestType());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-
-        //newly added
         target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
@@ -92,7 +90,6 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 
-        //newly added
         if(source.getLab() != null) {
             Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getLab().getId());
             target.setLab(FacilityDtoHelper.toReferenceDto(lab));

@@ -27,8 +27,8 @@ import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 
 public enum SampleSection implements StatusElaborator {
 
-    SAMPLE_INFO( R.string.caption_sample_information, R.drawable.ic_drawer_contact_blue_24dp),
-    PATHOGEN_TESTS( R.string.heading_pathogen_tests_list, R.drawable.ic_recent_actors_black_24dp);
+    SAMPLE_INFO( R.string.caption_sample_information, R.drawable.ic_drawer_sample_blue_24dp),
+    PATHOGEN_TESTS( R.string.heading_pathogen_tests_list, R.drawable.ic_petri_dish_fill_blue_24);
 
     private int friendlyNameResourceId;
     private int iconResourceId;
