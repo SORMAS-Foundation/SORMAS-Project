@@ -44,6 +44,7 @@ public class ImportProgressLayout extends VerticalLayout {
 	private Label successfulImportsLabel;
 	private Label importErrorsLabel;
 	private Label importSkipsLabel;
+	private Label importDuplicatesLabel;
 	private Button closeCancelButton;
 	private HorizontalLayout infoLayout;
 	private Label infoLabel;
@@ -61,6 +62,7 @@ public class ImportProgressLayout extends VerticalLayout {
 	private int successfulImportsCount;
 	private int importErrorsCount;
 	private int importSkipsCount;
+	private int importDuplicatesCount;
 	private int totalCount;
 	
 	private UI currentUI;
@@ -104,6 +106,9 @@ public class ImportProgressLayout extends VerticalLayout {
 		importErrorsLabel = new Label(String.format(I18nProperties.getCaption(Captions.importErrors), 0));
 		CssStyles.style(importErrorsLabel, CssStyles.LABEL_CRITICAL);
 		progressInfoLayout.addComponent(importErrorsLabel);
+		importDuplicatesLabel = new Label(String.format(I18nProperties.getCaption(Captions.importDuplicates), 0));
+		CssStyles.style(importDuplicatesLabel, CssStyles.LABEL_WARNING);
+		progressInfoLayout.addComponent(importDuplicatesLabel);
 		importSkipsLabel = new Label(String.format(I18nProperties.getCaption(Captions.importSkips), 0));
 		CssStyles.style(importSkipsLabel, CssStyles.LABEL_MINOR);
 		progressInfoLayout.addComponent(importSkipsLabel);
@@ -148,9 +153,12 @@ public class ImportProgressLayout extends VerticalLayout {
 				} else if (result == ImportResult.ERROR) {
 					importErrorsCount++;
 					importErrorsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importErrors), importErrorsCount));
-				} else {
+				} else if (result == ImportResult.SKIPPED) {
 					importSkipsCount++;
 					importSkipsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importSkips), importSkipsCount));
+				} else if (result == ImportResult.DUPLICATE) {
+					importDuplicatesCount++;
+					importDuplicatesLabel.setValue(String.format(I18nProperties.getCaption(Captions.importDuplicates), importDuplicatesCount));
 				}
 				processedImportsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importProcessed), processedImportsCount, totalCount));
 				progressBar.setValue((float) processedImportsCount / (float) totalCount);

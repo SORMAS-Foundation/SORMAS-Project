@@ -204,6 +204,7 @@ public interface Strings {
 	public static String headingPersonData = "headingPersonData";
 	public static String headingPersonInformation = "headingPersonInformation";
 	public static String headingPersonOccupation = "headingPersonOccupation";
+	public static String headingPickOrCreateCase = "headingPickOrCreateCase";
 	public static String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	public static String headingPointOfEntryImport = "headingPointOfEntryImport";
 	public static String headingPointOfEntryInformation = "headingPointOfEntryInformation";
@@ -255,6 +256,7 @@ public interface Strings {
 	public static String infoNoAdditionalTests = "infoNoAdditionalTests";
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
+	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";

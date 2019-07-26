@@ -20,17 +20,23 @@ package de.symeda.sormas.api.caze;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 
 public class CaseIndexDto implements Serializable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	public static final String I18N_PREFIX = "CaseData";
-	
+
 	public static final String UUID = "uuid";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
@@ -50,6 +56,8 @@ public class CaseIndexDto implements Serializable {
 	public static final String POINT_OF_ENTRY_NAME = "pointOfEntryName";
 	public static final String SURVEILLANCE_OFFICER_UUID = "surveillanceOfficerUuid";
 	public static final String OUTCOME = "outcome";
+	public static final String SEX = "sex";
+	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
 
 	private String uuid;
 	private String epidNumber;
@@ -70,12 +78,15 @@ public class CaseIndexDto implements Serializable {
 	private String pointOfEntryName;
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
-	
+	private Sex sex;
+	private String ageAndBirthDate;
+
 	public CaseIndexDto(String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid, 
 			String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
-			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome) {
+			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
+			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.personFirstName = personFirstName;
@@ -95,8 +106,9 @@ public class CaseIndexDto implements Serializable {
 		this.pointOfEntryName = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 		this.outcome = outcome;
+		this.ageAndBirthDate = PersonHelper.getAgeAndBirthdateString(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
 	}
-	
+
 	public String getEpidNumber() {
 		return epidNumber;
 	}
@@ -205,11 +217,23 @@ public class CaseIndexDto implements Serializable {
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
 	}
+	public Sex getSex() {
+		return sex;
+	}
+	public void setSex(Sex sex) {
+		this.sex = sex;
+	}
+	public String getAgeAndBirthDate() {
+		return ageAndBirthDate;
+	}
+	public void setAgeAndBirthDate(String ageAndBirthDate) {
+		this.ageAndBirthDate = ageAndBirthDate;
+	}
 
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), getPersonFirstName(), getPersonLastName());
 	}
-	
+
 	@Override
 	public String toString() {
 		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
@@ -222,5 +246,5 @@ public class CaseIndexDto implements Serializable {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
-	
+
 }

@@ -122,4 +122,6 @@ public interface CaseFacade {
 	
 	String generateEpidNumber(CaseReferenceDto caze);
 	
+	List<CaseIndexDto> getSimilarCases(CaseCriteria criteria, String userUuid);
+	
 }

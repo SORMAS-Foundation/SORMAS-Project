@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
@@ -43,6 +45,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -65,7 +68,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
@@ -271,7 +273,6 @@ public class CaseController {
 	}
 
 	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonReferenceDto person, Disease disease, ContactDto contact, EventParticipantDto eventParticipant) {
-
 		CaseCreateForm createForm = new CaseCreateForm(UserRight.CASE_CREATE);
 		CaseDataDto caze = createNewCase(person, disease);
 		createForm.setValue(caze);
@@ -318,14 +319,19 @@ public class CaseController {
 						Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					} else {
-						ControllerProvider.getPersonController().selectOrCreatePerson(
-								createForm.getPersonFirstName(), createForm.getPersonLastName(), 
-								person -> {
-									if (person != null) {
-										dto.setPerson(person);
+						selectOrCreate(dto, createForm.getPersonFirstName(), createForm.getPersonLastName(),
+								uuid -> {
+									if (uuid == null) {		
+										PersonDto person = PersonDto.build();
+										person.setFirstName(createForm.getPersonFirstName());
+										person.setLastName(createForm.getPersonLastName());
+										person = FacadeProvider.getPersonFacade().savePerson(person);
+										dto.setPerson(person.toReference());
 										FacadeProvider.getCaseFacade().saveCase(dto);
 										Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+									} else {
+										navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 									}
 								});
 					}
@@ -334,6 +340,41 @@ public class CaseController {
 		});
 
 		return editView;
+	}
+	
+	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName, Consumer<String> selectedCaseUuidConsumer) {
+		CaseCriteria criteria = new CaseCriteria()
+				.firstName(personFirstName)
+				.lastName(personLastName)
+				.disease(caseDto.getDisease())
+				.region(caseDto.getRegion())
+				.reportDate(caseDto.getReportDate());
+		
+		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria, UserProvider.getCurrent().getUuid());
+		
+		if (similarCases.size() > 0) {
+			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(similarCases);
+			pickOrCreateField.setWidth(1024, Unit.PIXELS);
+			
+			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
+			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+			component.addCommitListener(() -> {
+				CaseIndexDto pickedCase = pickOrCreateField.getValue();
+				if (pickedCase != null) {
+					selectedCaseUuidConsumer.accept(pickedCase.getUuid());
+				} else {
+					selectedCaseUuidConsumer.accept(null);
+				}
+			});
+			
+			pickOrCreateField.setSelectionChangeCallback((commitAllowed) -> {
+				component.getCommitButton().setEnabled(commitAllowed);
+			});
+			
+			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateCase));
+		} else {
+			selectedCaseUuidConsumer.accept(null);
+		}
 	}
 
 	public CommitDiscardWrapperComponent<? extends Component> getCaseCombinedEditComponent(final String caseUuid, final ViewMode viewMode) {

@@ -3550,3 +3550,8 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 ;
 
 INSERT INTO schema_version (version_number, comment) VALUES (159, 'Fix Hibernate "feature" that throws an error when using functions without a return value #1228');
+
+-- 2019-07-24 Add pg_trgm extension for String matching #757
+CREATE EXTENSION pg_trgm;
+
+INSERT INTO schema_version (version_number, comment) VALUES (160, 'Add pg_trgm extension for String matching #757');

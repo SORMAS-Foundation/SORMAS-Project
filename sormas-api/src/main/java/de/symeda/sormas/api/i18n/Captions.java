@@ -73,6 +73,7 @@ public interface Captions {
 	public static String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	public static String caseCasesList = "caseCasesList";
 	public static String caseContacts = "caseContacts";
+	public static String caseCreateCase = "caseCreateCase";
 	public static String CaseData = "CaseData";
 	public static String CaseData_caseClassification = "CaseData.caseClassification";
 	public static String CaseData_caseOfficer = "CaseData.caseOfficer";
@@ -157,6 +158,7 @@ public interface Captions {
 	public static String caseImportErrorDescription = "caseImportErrorDescription";
 	public static String caseImportMergeCase = "caseImportMergeCase";
 	public static String caseNewCase = "caseNewCase";
+	public static String casePickCase = "casePickCase";
 	public static String CasePreviousHospitalization = "CasePreviousHospitalization";
 	public static String CasePreviousHospitalization_admissionAndDischargeDate = "CasePreviousHospitalization.admissionAndDischargeDate";
 	public static String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";
@@ -499,6 +501,7 @@ public interface Captions {
 	public static String importDownloadErrorReport = "importDownloadErrorReport";
 	public static String importDownloadImportGuide = "importDownloadImportGuide";
 	public static String importDownloadImportTemplate = "importDownloadImportTemplate";
+	public static String importDuplicates = "importDuplicates";
 	public static String importErrorDescription = "importErrorDescription";
 	public static String importErrors = "importErrors";
 	public static String importImportData = "importImportData";
@@ -623,6 +626,7 @@ public interface Captions {
 	public static String Person_presentCondition = "Person.presentCondition";
 	public static String Person_sex = "Person.sex";
 	public static String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
+	public static String personAgeAndBirthdate = "personAgeAndBirthdate";
 	public static String personCreateNew = "personCreateNew";
 	public static String personFindMatching = "personFindMatching";
 	public static String personSelect = "personSelect";

@@ -22,6 +22,7 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
@@ -114,6 +115,12 @@ public class PersonHelper {
 			birthDate = birthDate.replaceAll("y+", birthdateYYYY != null ? birthdateYYYY.toString() : "");
 			return birthDate;
 		}
+	}
+	
+	public static String getAgeAndBirthdateString(Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
+		String ageStr = ApproximateAgeHelper.formatApproximateAge(age, ageType);
+		String birthdateStr = formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY);
+		return !StringUtils.isEmpty(ageStr) ? (ageStr + (!StringUtils.isEmpty(birthdateStr) ? " (" + birthdateStr + ")" : "")) : !StringUtils.isEmpty(birthdateStr) ? birthdateStr : "";
 	}
 
 	private static double getSimilarity(String str1, String str2) {
