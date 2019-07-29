@@ -454,6 +454,5 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 		
 		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
-	}
-	
+	}	
 }

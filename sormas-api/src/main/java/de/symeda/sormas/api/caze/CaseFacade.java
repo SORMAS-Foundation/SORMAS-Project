@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -123,6 +124,10 @@ public interface CaseFacade {
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid);
 	
 	String generateEpidNumber(CaseReferenceDto caze);
+
+	CaseDataDto mergeCase(String leadUuid, String otherUuid);
+
+	<T extends EntityDto> T mergeDto(T lead, T other);
 	
 	List<CaseIndexDto> getSimilarCases(CaseCriteria criteria, String userUuid);
 	

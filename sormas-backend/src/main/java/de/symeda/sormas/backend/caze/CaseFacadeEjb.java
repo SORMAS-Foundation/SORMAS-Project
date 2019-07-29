@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
@@ -60,6 +64,7 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -82,6 +87,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -99,6 +105,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -2501,6 +2508,46 @@ public class CaseFacadeEjb implements CaseFacade {
 		groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" BETWEEN ")
 				.append(number).append(" AND ").append(number + increase).append(" THEN '").append(lowerNumberString)
 				.append("-").append(higherNumberString).append("' ");
+	}
+
+	@Override
+	public CaseDataDto mergeCase(String leadUuid, String otherUuid) {
+
+		CaseDataDto lead = getCaseDataByUuid(leadUuid);
+		CaseDataDto other = getCaseDataByUuid(otherUuid);
+
+		return mergeDto(lead, other);
+	}
+
+	@Override
+	public <T extends EntityDto> T mergeDto(T lead, T other) {
+
+		try {
+			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class)
+					.getPropertyDescriptors();
+
+			for (PropertyDescriptor pd : pds) {
+				// Skip properties without a read or write method
+				if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
+					continue;
+				}
+
+				Object leadProperty = pd.getReadMethod().invoke(lead);
+				Object otherProperty = pd.getReadMethod().invoke(other);
+
+				// Write other-property into lead-property, if lead-property is null
+				if (leadProperty == null) {
+					pd.getWriteMethod().invoke(lead, otherProperty);
+				} else if (pd.getClass().isInstance(EntityDto.class)) {
+
+					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty));
+				}
+			}
+		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException("Exception when trying to merge dto: " + e.getMessage(), e.getCause());
+		}
+
+		return lead;
 	}
 
 	@LocalBean
