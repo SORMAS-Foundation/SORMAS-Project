@@ -55,6 +55,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -66,6 +67,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -76,6 +78,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -112,7 +115,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertEquals(null, contact.getFollowUpUntil());
 	}
-	
+
 	@Test
 	public void testMovingCaseUpdatesTaskAssigneeAndCreatesPreviousHospitalization() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -128,8 +131,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		TaskDto doneTask = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.DONE,
 				caze.toReference(), null, null, new Date(), user.toReference());
 
-		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
-		
+		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community",
+				"New Facility");
+
 		caze.setRegion(new RegionReferenceDto(newRDCF.region.getUuid()));
 		caze.setDistrict(new DistrictReferenceDto(newRDCF.district.getUuid()));
 		caze.setCommunity(new CommunityReferenceDto(newRDCF.community.getUuid()));
@@ -168,10 +172,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
-		CaseCriteria caseCriteria = new CaseCriteria()
-				.region(caze.getRegion()).district(caze.getDistrict()).disease(caze.getDisease())
-				.newCaseDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1), NewCaseDateType.MOST_RELEVANT);
-		
+		CaseCriteria caseCriteria = new CaseCriteria().region(caze.getRegion()).district(caze.getDistrict())
+				.disease(caze.getDisease()).newCaseDateBetween(DateHelper.subtractDays(new Date(), 1),
+						DateHelper.addDays(new Date(), 1), NewCaseDateType.MOST_RELEVANT);
+
 		List<DashboardCaseDto> dashboardCaseDtos = getCaseFacade().getCasesForDashboard(caseCriteria, user.getUuid());
 
 		// List should have one entry
@@ -206,15 +210,16 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 
-		
-		List<CaseIndexDto> results = getCaseFacade().getIndexList(user.getUuid(), null, 0, 100, Arrays.asList(
-				new SortProperty(CaseIndexDto.DISEASE), new SortProperty(CaseIndexDto.PERSON_FIRST_NAME), new SortProperty(CaseIndexDto.DISTRICT_NAME),
-				new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME), new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
+		List<CaseIndexDto> results = getCaseFacade().getIndexList(user.getUuid(), null, 0, 100,
+				Arrays.asList(new SortProperty(CaseIndexDto.DISEASE), new SortProperty(CaseIndexDto.PERSON_FIRST_NAME),
+						new SortProperty(CaseIndexDto.DISTRICT_NAME),
+						new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME),
+						new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
 
 		// List should have one entry
 		assertEquals(1, results.size());
 	}
-	
+
 	@Test
 	public void testGetExportList() {
 
@@ -222,12 +227,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
-		
+
 		EpiDataTravelDto travel = new EpiDataTravelDto();
 		travel.setUuid(DataHelper.createUuid());
 		travel.setTravelDestination("Ghana");
@@ -236,18 +241,20 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.getEpiData().getTravels().add(travel);
 		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
-		
-		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+
+		creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD,
+				rdcf.facility);
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
-		
+
 		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, 0, 100);
 
 		// List should have one entry
 		assertEquals(1, results.size());
-		
-		// Make sure that everything that is added retrospectively (symptoms, sample dates, lab results, address, travel history) is present
+
+		// Make sure that everything that is added retrospectively (symptoms, sample
+		// dates, lab results, address, travel history) is present
 		CaseExportDto exportDto = results.get(0);
-		//assertTrue(StringUtils.isNotEmpty(exportDto.getSymptoms()));
+		// assertTrue(StringUtils.isNotEmpty(exportDto.getSymptoms()));
 		assertTrue(StringUtils.isNotEmpty(exportDto.getSampleDates()));
 		assertTrue(StringUtils.isNotEmpty(exportDto.getLabResults()));
 		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
@@ -267,12 +274,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze.toReference(),
-				new Date(), new Date());
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
+				caze.toReference(), new Date(), new Date());
 		TaskDto task = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
 				caze.toReference(), null, null, new Date(), user.toReference());
-		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD,
-				rdcf.facility);
+		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(),
+				SampleMaterial.BLOOD, rdcf.facility);
 
 		// Database should contain the created case, contact, task and sample
 		assertNotNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
@@ -379,7 +386,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		exception.expect(OutdatedEntityException.class);
 		firstCase = getCaseFacade().saveCase(firstCase);
 	}
-	
+
 	@Test
 	public void testArchiveAndDearchiveCase() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -389,20 +396,20 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		Date testStartDate = new Date();
-		
+
 		// getAllActiveCases and getAllUuids should return length 1
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids(user.getUuid()).size());
-		
+
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
-		
+
 		// getAllActiveCases and getAllUuids should return length 0
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
 		assertEquals(0, getCaseFacade().getAllActiveUuids(user.getUuid()).size());
-		
+
 		// getArchivedUuidsSince should return length 1
 		assertEquals(1, getCaseFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
-		
+
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 
 		// getAllActiveCases and getAllUuids should return length 1
@@ -424,12 +431,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setApproximateAgeReferenceDate(new Date());
 		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
 		cazePerson = getPersonFacade().savePerson(cazePerson);
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
-		criteria.years(Arrays.asList(new Year(caze.getSymptoms().getOnsetDate().getYear() + 1900), new Year(caze.getSymptoms().getOnsetDate().getYear() + 1901)), StatisticsCaseAttribute.ONSET_TIME);
+		criteria.years(
+				Arrays.asList(new Year(caze.getSymptoms().getOnsetDate().getYear() + 1900),
+						new Year(caze.getSymptoms().getOnsetDate().getYear() + 1901)),
+				StatisticsCaseAttribute.ONSET_TIME);
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
 		List<Object[]> results = getCaseFacade().queryCaseCount(criteria, null, null, null, null);
@@ -445,14 +455,93 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
-		
+
 		Calendar calendar = Calendar.getInstance();
 		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-		
+
 		assertEquals("COU-REG-DIS-" + year + "-01", caze.getEpidNumber());
 
 		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
-		
+
 		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
-	}	
+	}
+
+	@Test
+	public void testMergeCase() throws Exception {
+		throw new RuntimeException("not yet implemented");
+	}
+
+	@Test
+	public void testMergeDto() throws Exception {
+		
+		//Test simple values
+		{
+			VisitDto leadDto = new VisitDto();
+			VisitDto otherDto = new VisitDto();
+			
+			//lead and other have different values
+			Double reportLat = 1.234;
+			leadDto.setReportLat(reportLat);
+			otherDto.setReportLat(2.345);
+			
+			//lead has value, other has not
+			Double reportLon = 3.456;
+			leadDto.setReportLon(reportLon);
+			
+			//lead has no value, other has
+			Float reportLatLonAccuracy = (float) 4.567;
+			otherDto.setReportLatLonAccuracy(reportLatLonAccuracy);
+
+			VisitDto merged = getCaseFacade().mergeDto(leadDto, otherDto);
+			
+			//Check no values
+			assertNull(merged.getDisease());
+			
+			//Check 'lead and other have different values'
+			assertEquals(reportLat, merged.getReportLat());
+			
+			//Check 'lead has value, other has not'
+			assertEquals(reportLon, merged.getReportLon());
+			
+			//Check 'lead has no value, other has'
+			assertEquals(reportLatLonAccuracy, merged.getReportLatLonAccuracy());
+		}
+		
+		//
+			CaseDataDto leadCaseDto = new CaseDataDto();
+			CaseDataDto otherCaseDto = new CaseDataDto();
+			
+			SymptomsDto leadSymptomsDto = new SymptomsDto();
+			SymptomsDto otherSymptomsDto = new SymptomsDto();
+			
+			//lead and other have different values
+			SymptomState abdominalPain = SymptomState.NO;
+			leadSymptomsDto.setAbdominalPain(abdominalPain);
+			otherSymptomsDto.setAbdominalPain(SymptomState.UNKNOWN);
+			
+			//lead has value, other has not
+			SymptomState alteredConsciousness = SymptomState.YES;
+			leadSymptomsDto.setAlteredConsciousness(alteredConsciousness);
+			
+			//lead has no value, other has
+			SymptomState anorexiaAppetiteLoss = SymptomState.UNKNOWN;
+			otherSymptomsDto.setAnorexiaAppetiteLoss(anorexiaAppetiteLoss);
+			
+			leadCaseDto.setSymptoms(leadSymptomsDto);
+			otherCaseDto.setSymptoms(otherSymptomsDto);
+			
+			CaseDataDto merged = getCaseFacade().mergeDto(leadCaseDto, otherCaseDto);
+			
+			//Check no values
+			assertNull(merged.getSymptoms().getBackache());
+			
+			//Check 'lead and other have different values'
+			assertEquals(abdominalPain, merged.getSymptoms().getAbdominalPain());
+			
+			//Check 'lead has value, other has not'
+			assertEquals(alteredConsciousness, merged.getSymptoms().getAlteredConsciousness());
+			
+			//Check 'lead has no value, other has'
+			assertEquals(anorexiaAppetiteLoss, merged.getSymptoms().getAnorexiaAppetiteLoss());
+	}
 }

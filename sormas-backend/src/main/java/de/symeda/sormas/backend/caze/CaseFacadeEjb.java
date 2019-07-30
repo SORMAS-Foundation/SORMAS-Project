@@ -2538,7 +2538,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				// Write other-property into lead-property, if lead-property is null
 				if (leadProperty == null) {
 					pd.getWriteMethod().invoke(lead, otherProperty);
-				} else if (pd.getClass().isInstance(EntityDto.class)) {
+				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 
 					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty));
 				}
