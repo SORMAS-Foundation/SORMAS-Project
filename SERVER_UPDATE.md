@@ -16,6 +16,8 @@ You'll have to execute these commands before (and, sometimes, after) updating th
 * Version 1.23.0 (after updating the server):  
 ``ALTER FUNCTION export_database(text, text) OWNER TO postgres;``  
 ``ALTER FUNCTION export_database_join(text, text, text, text, text) OWNER TO postgres;``
+* Version 1.24.0:
+``CREATE EXTENSION pg_trgm;``
 
 ## Automatic Server Update
 * Navigate to the  folder containing the unzipped deploy files:
