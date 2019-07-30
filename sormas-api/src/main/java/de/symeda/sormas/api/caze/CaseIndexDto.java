@@ -20,8 +20,6 @@ package de.symeda.sormas.api.caze;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -29,7 +27,6 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 
 public class CaseIndexDto implements Serializable {
 

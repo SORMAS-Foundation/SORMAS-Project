@@ -98,6 +98,7 @@ public class CaseController {
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(CasesView.VIEW_NAME, CasesView.class);
+		navigator.addView(MergeCasesView.VIEW_NAME, MergeCasesView.class);
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 		navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
 		navigator.addView(MaternalHistoryView.VIEW_NAME, MaternalHistoryView.class);
@@ -137,6 +138,11 @@ public class CaseController {
 
 	public void navigateToIndex() {
 		String navigationState = CasesView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+	
+	public void navigateToMergeCasesView() {
+		String navigationState = MergeCasesView.VIEW_NAME;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 

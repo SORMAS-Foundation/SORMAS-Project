@@ -685,7 +685,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CaseIndexDto> getSimilarCases(CaseCriteria criteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
 		Root<Case> root = cq.from(Case.class);
@@ -722,6 +722,73 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.where(filter);
 
 		return em.createQuery(cq).setParameter("name", criteria.getFirstName() + " " + criteria.getLastName()).getResultList();
+	}
+	
+	@Override
+	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> root = cq.from(Case.class);
+		Root<Case> root2 = cq.from(Case.class);
+		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Person> person2 = root2.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
+		Join<Case, Region> region2 = root2.join(Case.REGION, JoinType.LEFT);
+
+		Predicate userFilter = caseService.createUserFilter(cb, cq, root, user);
+		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
+		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
+		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
+		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
+		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), 0.6D);
+		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
+		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
+		Predicate reportDateFilter = cb.lessThanOrEqualTo(
+				cb.abs(
+						cb.diff(
+								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
+								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
+				new Long(2592000) // 30 days in seconds
+				);
+		Predicate creationDateFilter = cb.greaterThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
+					
+		Predicate filter = userFilter;
+		
+		if (filter != null) {
+			filter = cb.and(filter, nameSimilarityFilter);
+		} else {
+			filter = nameSimilarityFilter;
+		}
+		filter = cb.and(filter, diseaseFilter);
+		filter = cb.and(filter, regionFilter);
+		filter = cb.and(filter, reportDateFilter);
+		filter = cb.and(filter, creationDateFilter);
+		
+		cq.where(filter);
+		cq.multiselect(
+				root.get(Case.UUID),
+				root2.get(Case.UUID));
+		
+		List<Object[]> foundUuids = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
+		
+		List<CaseIndexDto[]> resultList = new ArrayList<>();
+		for (Object[] uuidPair : foundUuids) {
+			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
+			Root<Case> indexRoot = indexCq.from(Case.class);
+			CaseIndexDto[] dtoPair = new CaseIndexDto[2];
+			indexCq.where(cb.equal(indexRoot.get(Case.UUID), uuidPair[0]));
+			selectIndexDtoFields(indexCq, indexRoot);
+			CaseIndexDto firstCase = em.createQuery(indexCq).getSingleResult();
+			dtoPair[0] = firstCase;
+			indexCq.where(cb.equal(indexRoot.get(Case.UUID), uuidPair[1]));
+			CaseIndexDto secondCase = em.createQuery(indexCq).getSingleResult();
+			dtoPair[1] = secondCase;
+			resultList.add(dtoPair);
+		}
+	
+		return resultList;
 	}
 	
 	private void selectIndexDtoFields(CriteriaQuery<CaseIndexDto> cq, Root<Case> root) {

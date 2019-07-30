@@ -63,7 +63,7 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
 				query -> {
-					return (int)FacadeProvider.getCaseFacade().count(
+					return (int) FacadeProvider.getCaseFacade().count(
 						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
 				});
 		setDataProvider(dataProvider);

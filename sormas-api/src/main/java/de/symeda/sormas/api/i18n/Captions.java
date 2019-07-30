@@ -22,11 +22,14 @@ public interface Captions {
 	public static String actionDelete = "actionDelete";
 	public static String actionDeselectAll = "actionDeselectAll";
 	public static String actionDiscard = "actionDiscard";
+	public static String actionDismiss = "actionDismiss";
 	public static String actionGenerate = "actionGenerate";
 	public static String actionImport = "actionImport";
 	public static String actionLogout = "actionLogout";
+	public static String actionMerge = "actionMerge";
 	public static String actionNewEntry = "actionNewEntry";
 	public static String actionOkay = "actionOkay";
+	public static String actionPick = "actionPick";
 	public static String actionResetFilters = "actionResetFilters";
 	public static String actionSave = "actionSave";
 	public static String actionSelectAll = "actionSelectAll";
@@ -71,6 +74,7 @@ public interface Captions {
 	public static String bulkInvestigationStatus = "bulkInvestigationStatus";
 	public static String bulkLostToFollowUp = "bulkLostToFollowUp";
 	public static String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
+	public static String caseBackToDirectory = "caseBackToDirectory";
 	public static String caseCasesList = "caseCasesList";
 	public static String caseContacts = "caseContacts";
 	public static String caseCreateCase = "caseCreateCase";
@@ -157,6 +161,7 @@ public interface Captions {
 	public static String CaseHospitalization_previousHospitalizations = "CaseHospitalization.previousHospitalizations";
 	public static String caseImportErrorDescription = "caseImportErrorDescription";
 	public static String caseImportMergeCase = "caseImportMergeCase";
+	public static String caseMergeDuplicates = "caseMergeDuplicates";
 	public static String caseNewCase = "caseNewCase";
 	public static String casePickCase = "casePickCase";
 	public static String CasePreviousHospitalization = "CasePreviousHospitalization";
@@ -1020,6 +1025,7 @@ public interface Captions {
 	public static String View_cases_epidata = "View.cases.epidata";
 	public static String View_cases_hospitalization = "View.cases.hospitalization";
 	public static String View_cases_maternalhistory = "View.cases.maternalhistory";
+	public static String View_cases_merge = "View.cases.merge";
 	public static String View_cases_person = "View.cases.person";
 	public static String View_cases_porthealthinfo = "View.cases.porthealthinfo";
 	public static String View_cases_sub = "View.cases.sub";

@@ -9,27 +9,41 @@ $v-grid-cell-focused-border: none !default;
 
 @mixin sormas-grid {
   
-  .v-grid {
+  .v-grid,
+  .v-treegrid {
   
-    .v-grid-tablewrapper, .v-grid-header-deco, .v-grid-footer-deco, .v-grid-scroller {
+    .v-grid-tablewrapper, .v-grid-header-deco, .v-grid-footer-deco, .v-grid-scroller, 
+    .v-treegrid-tablewrapper, v.treegrid-header-deco, .v-treegrid-footer-deco, .v-treegrid-scroller {
       border-left: none;
       border-right: none;
     }
-    .v-grid-scroller {
+    .v-grid-scroller,
+    .v-treegrid-scroller {
       border-top: none;
     }
     
-    .v-grid-row {
+    .v-grid-row,
+    .v-treegrid-row {
     
       > td, > th {
         background-color: inherit;
       }
       
-      &.v-grid-row-selected > td, &.v-grid-row-selected > th {
+      &.v-grid-row-selected > td, &.v-grid-row-selected > th,
+      &.v-treegrid-row-selected > td, &.v-treegrid-row.selected > th {
         background-color: $v-focus-color;
       }
+      
+      &.v-treegrid-even-row > td, &.v-treegrid-even-row > th {
+      	background-color: $v-focus-light-color;
+      }
+      
+      &.v-treegrid-uneven-row > td, &.v-treegrid-uneven-row > th {
+      	background-color: inherit;
+      }
     
-      .v-grid-cell {
+      .v-grid-cell,
+      .v-treegrid-cell {
       
         padding: 3px 6px;
       
@@ -76,16 +90,19 @@ $v-grid-cell-focused-border: none !default;
 	  font-size: 10px;
     }
      
-    .v-grid-header {
+    .v-grid-header,
+    .v-treegrid-header {
     
       background-color: $v-background-color; 
 
-	  .v-grid-cell {
+	  .v-grid-cell,
+	  .v-treegrid-cell {
 	    border-left: none;
 	    border-bottom: none;
       }
       
-      .v-grid-column-header-content {
+      .v-grid-column-header-content,
+      .v-treegrid-column-header-content {
         text-transform: uppercase;
         font-weight: 600;
 	    border-bottom: $v-border;

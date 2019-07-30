@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -263,6 +265,14 @@ public class CasesView extends AbstractView {
 			exportButton.addClickListener(e -> {
 				warningLabel.setVisible(!criteria.hasAnyFilterActive());
 			});
+		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
+			Button mergeDuplicatesButton = new Button(I18nProperties.getCaption(Captions.caseMergeDuplicates));
+			mergeDuplicatesButton.setId("mergeDuplicates");
+			mergeDuplicatesButton.setIcon(VaadinIcons.COMPRESS_SQUARE);
+			mergeDuplicatesButton.addClickListener(e -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+			addHeaderComponent(mergeDuplicatesButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
