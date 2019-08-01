@@ -2511,12 +2511,22 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto mergeCase(String leadUuid, String otherUuid) {
+	public void mergeCase(String leadUuid, String otherUuid) {
 
-		CaseDataDto lead = getCaseDataByUuid(leadUuid);
-		CaseDataDto other = getCaseDataByUuid(otherUuid);
+		CaseDataDto leadCase = getCaseDataByUuid(leadUuid);
+		CaseDataDto otherCase = getCaseDataByUuid(otherUuid);
 
-		return mergeDto(lead, other);
+		CaseDataDto mergedCase = mergeDto(leadCase, otherCase);
+		
+		saveCase(mergedCase);
+		
+		PersonDto leadPerson = personFacade.getPersonByUuid(leadCase.getPerson().getUuid());
+		PersonDto otherPerson = personFacade.getPersonByUuid(otherCase.getPerson().getUuid());
+		
+		PersonDto mergedPerson = mergeDto(leadPerson, otherPerson);
+		
+		personFacade.savePerson(mergedPerson);
+		
 	}
 
 	@Override

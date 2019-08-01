@@ -73,6 +73,7 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -80,7 +81,12 @@ import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -467,81 +473,140 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergeCase() throws Exception {
-		throw new RuntimeException("not yet implemented");
+	public void testMergeCase() {
+
+		// 1. Create
+		
+		// Create leadCase
+		UserDto leadUser = creator.createUser("", "", "", "", "");
+		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
+		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
+		RDCF leadRdcf = creator.createRDCF();
+		CaseDataDto leadCase = creator.createCase(leadUserReference, leadPersonReference, Disease.DENGUE,
+				CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), leadRdcf);
+		leadCase.setClinicianEmail("mail");
+		getCaseFacade().saveCase(leadCase);
+
+		// Create otherCase
+		UserDto otherUser = creator.createUser("", "", "", "", "");
+		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
+		PersonDto otherPerson = creator.createPerson("Max", "Smith");
+		otherPerson.setBirthWeight(2);
+		getPersonFacade().savePerson(otherPerson);
+		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
+		RDCF otherRdcf = creator.createRDCF();
+		CaseDataDto otherCase = creator.createCase(otherUserReference, otherPersonReference, Disease.CHOLERA,
+				CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), otherRdcf);
+		otherCase.setClinicianName("name");
+		getCaseFacade().saveCase(otherCase);
+
+		// 2. Merge
+		
+		getCaseFacade().mergeCase(leadCase.getUuid(), otherCase.getUuid());
+
+		// 3. Test
+		
+		CaseDataDto mergedCase = getCaseFacade().getCaseDataByUuid(leadCase.getUuid());
+
+		// Check no values
+		assertNull(mergedCase.getClassificationComment());
+
+		// Check 'lead and other have different values'
+		assertEquals(leadCase.getDisease(), mergedCase.getDisease());
+
+		// Check 'lead has value, other has not'
+		assertEquals(leadCase.getClinicianEmail(), mergedCase.getClinicianEmail());
+
+		// Check 'lead has no value, other has'
+		assertEquals(otherCase.getClinicianName(), mergedCase.getClinicianName());
+
+		PersonDto mergedPerson = getPersonFacade().getPersonByUuid(mergedCase.getPerson().getUuid());
+
+		// Check no values
+		assertNull(mergedPerson.getBirthdateDD());
+
+		// Check 'lead and other have different values'
+		assertEquals(leadPerson.getFirstName(), mergedPerson.getFirstName());
+
+		// Check 'lead has value, other has not'
+		assertEquals(leadPerson.getLastName(), mergedPerson.getLastName());
+
+		// Check 'lead has no value, other has'
+		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
 	}
 
 	@Test
 	public void testMergeDto() throws Exception {
-		
-		//Test simple values
+
+		// Test simple values
 		{
 			VisitDto leadDto = new VisitDto();
 			VisitDto otherDto = new VisitDto();
-			
-			//lead and other have different values
+
+			// lead and other have different values
 			Double reportLat = 1.234;
 			leadDto.setReportLat(reportLat);
 			otherDto.setReportLat(2.345);
-			
-			//lead has value, other has not
+
+			// lead has value, other has not
 			Double reportLon = 3.456;
 			leadDto.setReportLon(reportLon);
-			
-			//lead has no value, other has
+
+			// lead has no value, other has
 			Float reportLatLonAccuracy = (float) 4.567;
 			otherDto.setReportLatLonAccuracy(reportLatLonAccuracy);
 
 			VisitDto merged = getCaseFacade().mergeDto(leadDto, otherDto);
-			
-			//Check no values
+
+			// Check no values
 			assertNull(merged.getDisease());
-			
-			//Check 'lead and other have different values'
+
+			// Check 'lead and other have different values'
 			assertEquals(reportLat, merged.getReportLat());
-			
-			//Check 'lead has value, other has not'
+
+			// Check 'lead has value, other has not'
 			assertEquals(reportLon, merged.getReportLon());
-			
-			//Check 'lead has no value, other has'
+
+			// Check 'lead has no value, other has'
 			assertEquals(reportLatLonAccuracy, merged.getReportLatLonAccuracy());
 		}
-		
-		//
-			CaseDataDto leadCaseDto = new CaseDataDto();
-			CaseDataDto otherCaseDto = new CaseDataDto();
-			
-			SymptomsDto leadSymptomsDto = new SymptomsDto();
-			SymptomsDto otherSymptomsDto = new SymptomsDto();
-			
-			//lead and other have different values
-			SymptomState abdominalPain = SymptomState.NO;
-			leadSymptomsDto.setAbdominalPain(abdominalPain);
-			otherSymptomsDto.setAbdominalPain(SymptomState.UNKNOWN);
-			
-			//lead has value, other has not
-			SymptomState alteredConsciousness = SymptomState.YES;
-			leadSymptomsDto.setAlteredConsciousness(alteredConsciousness);
-			
-			//lead has no value, other has
-			SymptomState anorexiaAppetiteLoss = SymptomState.UNKNOWN;
-			otherSymptomsDto.setAnorexiaAppetiteLoss(anorexiaAppetiteLoss);
-			
-			leadCaseDto.setSymptoms(leadSymptomsDto);
-			otherCaseDto.setSymptoms(otherSymptomsDto);
-			
-			CaseDataDto merged = getCaseFacade().mergeDto(leadCaseDto, otherCaseDto);
-			
-			//Check no values
-			assertNull(merged.getSymptoms().getBackache());
-			
-			//Check 'lead and other have different values'
-			assertEquals(abdominalPain, merged.getSymptoms().getAbdominalPain());
-			
-			//Check 'lead has value, other has not'
-			assertEquals(alteredConsciousness, merged.getSymptoms().getAlteredConsciousness());
-			
-			//Check 'lead has no value, other has'
-			assertEquals(anorexiaAppetiteLoss, merged.getSymptoms().getAnorexiaAppetiteLoss());
+
+		// Test complex subDto
+		CaseDataDto leadCaseDto = new CaseDataDto();
+		CaseDataDto otherCaseDto = new CaseDataDto();
+
+		SymptomsDto leadSymptomsDto = new SymptomsDto();
+		SymptomsDto otherSymptomsDto = new SymptomsDto();
+
+		// lead and other have different values
+		SymptomState abdominalPain = SymptomState.NO;
+		leadSymptomsDto.setAbdominalPain(abdominalPain);
+		otherSymptomsDto.setAbdominalPain(SymptomState.UNKNOWN);
+
+		// lead has value, other has not
+		SymptomState alteredConsciousness = SymptomState.YES;
+		leadSymptomsDto.setAlteredConsciousness(alteredConsciousness);
+
+		// lead has no value, other has
+		SymptomState anorexiaAppetiteLoss = SymptomState.UNKNOWN;
+		otherSymptomsDto.setAnorexiaAppetiteLoss(anorexiaAppetiteLoss);
+
+		leadCaseDto.setSymptoms(leadSymptomsDto);
+		otherCaseDto.setSymptoms(otherSymptomsDto);
+
+		CaseDataDto merged = getCaseFacade().mergeDto(leadCaseDto, otherCaseDto);
+
+		// Check no values
+		assertNull(merged.getSymptoms().getBackache());
+
+		// Check 'lead and other have different values'
+		assertEquals(abdominalPain, merged.getSymptoms().getAbdominalPain());
+
+		// Check 'lead has value, other has not'
+		assertEquals(alteredConsciousness, merged.getSymptoms().getAlteredConsciousness());
+
+		// Check 'lead has no value, other has'
+		assertEquals(anorexiaAppetiteLoss, merged.getSymptoms().getAnorexiaAppetiteLoss());
 	}
 }

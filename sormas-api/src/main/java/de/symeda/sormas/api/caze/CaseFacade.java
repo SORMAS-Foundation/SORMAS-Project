@@ -125,7 +125,7 @@ public interface CaseFacade {
 	
 	String generateEpidNumber(CaseReferenceDto caze);
 
-	CaseDataDto mergeCase(String leadUuid, String otherUuid);
+	void mergeCase(String leadUuid, String otherUuid);
 
 	<T extends EntityDto> T mergeDto(T lead, T other);
 	
