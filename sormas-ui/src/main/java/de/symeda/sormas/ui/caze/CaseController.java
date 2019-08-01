@@ -301,64 +301,22 @@ public class CaseController {
 				if (!createForm.getFieldGroup().isModified()) {
 					final CaseDataDto dto = createForm.getValue();
 
-					if (contact != null) {
-						// automatically change the contact status to "converted"
-						contact.setContactStatus(ContactStatus.CONVERTED);
-						FacadeProvider.getContactFacade().saveContact(contact);
-					}
-					// #1115: pre-fill the case symptoms based on the last visit of the contact (if
-					// existent)
-					if (person != null && disease != null) {
-
-						VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByPerson(person, disease,
-								java.time.LocalDate.now());
-						if (lastVisit != null) {
-							caze.setSymptoms(lastVisit.getSymptoms());
-							System.out.println("Found and saved visit's symptom");
-						} else {
-							System.out.println("No visit found for person:" + person.getUuid() + " || disease:"
-									+ disease.getName());
-						}
-						EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), UserRight.CASE_EDIT,
-								ViewMode.NORMAL);
-						caze.setEpiData(epiDataForm.getValue());
-					} else {
-						System.out.println("Person and Disease not found");
-					}
-
 					if (contact != null || eventParticipant != null) {
 						// use the person of the contact or event participant the case is created for
-						dto.setPerson(person);
-						CaseDataDto savedCase = FacadeProvider.getCaseFacade().saveCase(dto);
-						if (eventParticipant != null) {
-							// retrieve the event participant just in case it has been changed during case
-							// saving
-							EventParticipantDto updatedEventParticipant = FacadeProvider.getEventParticipantFacade()
-									.getEventParticipantByUuid(eventParticipant.getUuid());
-							// set resulting case on event participant and save it
-							updatedEventParticipant.setResultingCase(savedCase.toReference());
-							FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
-						}
-						if (contact != null) {
-							// retrieve the contact just in case it has been changed during case saving
-							ContactDto updatedContact = FacadeProvider.getContactFacade()
-									.getContactByUuid(contact.getUuid());
-							// set resulting case on contact and save it
-							updatedContact.setResultingCase(savedCase.toReference());
-							FacadeProvider.getContactFacade().saveContact(updatedContact);
-						}
+						CaseDataDto convertedCase = FacadeProvider.getCaseFacade().convertContactToCase(dto, contact,
+								person, disease, eventParticipant);
 						Notification.show(I18nProperties.getString(Strings.messageCaseCreated),
 								Type.ASSISTIVE_NOTIFICATION);
-						navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
+						navigateToView(CasePersonView.VIEW_NAME, convertedCase.getUuid(), null);
 					} else {
 						ControllerProvider.getPersonController().selectOrCreatePerson(createForm.getPersonFirstName(),
 								createForm.getPersonLastName(), person -> {
 									if (person != null) {
-										dto.setPerson(person);
-										FacadeProvider.getCaseFacade().saveCase(dto);
+										CaseDataDto convertedCase = FacadeProvider.getCaseFacade()
+												.convertContactToCase(dto, contact, person, disease, eventParticipant);
 										Notification.show(I18nProperties.getString(Strings.messageCaseCreated),
 												Type.ASSISTIVE_NOTIFICATION);
-										navigateToView(CasePersonView.VIEW_NAME, dto.getUuid(), null);
+										navigateToView(CasePersonView.VIEW_NAME, convertedCase.getUuid(), null);
 									}
 								});
 					}

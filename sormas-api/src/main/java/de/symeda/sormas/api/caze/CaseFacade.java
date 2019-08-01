@@ -26,6 +26,8 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -70,6 +72,10 @@ public interface CaseFacade {
 	CaseDataDto saveAndTransferCase(CaseDataDto caze);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
+	
+	CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant);
+	
+	CaseDataDto convertContactToCase(CaseDataDto caseData, ContactDto contact, PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant);
 	
 	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria, String userUuid);
 
