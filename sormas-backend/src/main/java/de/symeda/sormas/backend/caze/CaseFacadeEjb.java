@@ -1373,7 +1373,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					// reflection to call the setters of the new symptoms object with the getters
 					// from the one in the visit
 					for (PropertyDescriptor pd : Introspector.getBeanInfo(SymptomsDto.class).getPropertyDescriptors()) {
-						if (pd.getReadMethod() != null && !"class".equals(pd.getName())) {
+						if (pd.getWriteMethod() != null && !"class".equals(pd.getName()) && !"uuid".equals(pd.getName()) ) {
 							try {
 								pd.getWriteMethod().invoke(newSymptoms, pd.getReadMethod().invoke(oldSymptoms));
 							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -1386,7 +1386,6 @@ public class CaseFacadeEjb implements CaseFacade {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 				caseData.setSymptoms(newSymptoms);
 				System.out.println("Found and saved visit's symptom");
 			} else {
