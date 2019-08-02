@@ -734,8 +734,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> root2 = cq.from(Case.class);
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Person> person2 = root2.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
-		Join<Case, Region> region2 = root2.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = root.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Case, District> district2 = root2.join(Case.DISTRICT, JoinType.LEFT);
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root, user);
 		Predicate criteriaFilter = criteria != null ? caseService.buildCriteriaFilter(criteria, cb, root) : null;
@@ -743,9 +743,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), 0.6D);
+		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), 0.65D);
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
-		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
+		Predicate districtFilter = cb.equal(district.get(District.ID), district2.get(District.ID));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 				cb.abs(
 						cb.diff(
@@ -768,7 +768,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			filter = nameSimilarityFilter;
 		}
 		filter = cb.and(filter, diseaseFilter);
-		filter = cb.and(filter, regionFilter);
+		filter = cb.and(filter, districtFilter);
 		filter = cb.and(filter, reportDateFilter);
 		filter = cb.and(filter, creationDateFilter);
 		
