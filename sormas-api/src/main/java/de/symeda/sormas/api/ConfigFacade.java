@@ -45,6 +45,8 @@ public interface ConfigFacade {
 	String getTempFilesPath();
 	
 	String getGeneratedFilesPath();
+	
+	String getCustomFilesPath();
 
 	char getCsvSeparator();
 

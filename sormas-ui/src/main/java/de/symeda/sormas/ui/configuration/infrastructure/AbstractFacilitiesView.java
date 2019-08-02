@@ -47,7 +47,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -2015225571046243640L;
-	
+
 	private FacilityCriteria criteria;
 
 	// Filter
@@ -56,7 +56,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
 	private Button resetButton;	
-	
+
 	//	private HorizontalLayout headerLayout;
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
@@ -66,10 +66,10 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 	protected AbstractFacilitiesView(String viewName, boolean showLaboratories) {
 		super(viewName);
-		
+
 		criteria = ViewModelProviders.of(AbstractFacilitiesView.class).get(FacilityCriteria.class);
 		criteria.type(showLaboratories ? FacilityType.LABORATORY : null);
-		
+
 		grid = new FacilitiesGrid();
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
@@ -82,11 +82,13 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		exportButton = new Button(I18nProperties.getCaption(Captions.export));
-		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(VaadinIcons.TABLE);
-		addHeaderComponent(exportButton);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(VaadinIcons.TABLE);
+			addHeaderComponent(exportButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button();
@@ -157,7 +159,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 			navigateTo(criteria);
 		});
 		filterLayout.addComponent(communityFilter);
-		
+
 		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
@@ -187,13 +189,13 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		applyingCriteria = true;
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
+
 		searchField.setValue(criteria.getNameCityLike());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		communityFilter.setValue(criteria.getCommunity());
-		
+
 		applyingCriteria = false;
 	}
-	
+
 }

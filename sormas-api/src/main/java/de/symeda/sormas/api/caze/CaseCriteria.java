@@ -22,6 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -34,6 +35,17 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
+	public static final String CREATION_DATE_FROM = "creationDateFrom";
+	public static final String CREATION_DATE_TO = "creationDateTo";
+	public static final String DISEASE = "disease";
+	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
+	public static final String REPORTING_USER_LIKE = "reportingUserLike";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
+	public static final String NEW_CASE_DATE_FROM = "newCaseDateFrom";
+	public static final String NEW_CASE_DATE_TO = "newCaseDateTo";
+	
 	private UserRole reportingUserRole;
 	private Disease disease;
 	private CaseOutcome outcome;
@@ -43,15 +55,26 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private FacilityReferenceDto healthFacility;
+	private PointOfEntryReferenceDto pointOfEntry;
 	private UserReferenceDto surveillanceOfficer;
 	private Date newCaseDateFrom;
 	private Date newCaseDateTo;
+	private Date creationDateFrom;
+	private Date creationDateTo;
 	private NewCaseDateType newCaseDateType;
 	private PersonReferenceDto person;
 	private Boolean mustHaveNoGeoCoordinates;
+	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean archived;
 	private String nameUuidEpidNumberLike;
-
+	private String reportingUserLike;
+	private CaseOrigin caseOrigin;
+	
+	// Criteria for similarity detection
+	private String firstName;
+	private String lastName;
+	private Date reportDate;
+	
 	@Override
 	public CaseCriteria clone() {
 		try {
@@ -75,10 +98,19 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 		return this;
 	}
 	
-	public CaseOutcome getOutcome( ){
+	public CaseOutcome getOutcome() {
 		return outcome;
 	}
 
+	public CaseCriteria caseOrigin(CaseOrigin caseOrigin) {
+		this.caseOrigin = caseOrigin;
+		return this;
+	}
+	
+	public CaseOrigin getCaseOrigin() {
+		return caseOrigin;
+	}
+	
 	public CaseCriteria disease(Disease disease) {
 		this.disease = disease;
 		return this;
@@ -161,6 +193,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 		return mustHaveNoGeoCoordinates;
 	}
 	
+	public CaseCriteria mustBePortHealthCaseWithoutFacility(Boolean mustBePortHealthCaseWithoutFacility) {
+		this.mustBePortHealthCaseWithoutFacility = mustBePortHealthCaseWithoutFacility;
+		return this;
+	}
+	
+	public Boolean isMustBePortHealthCaseWithoutFacility() {
+		return mustBePortHealthCaseWithoutFacility;
+	}
+	
 	public CaseCriteria caseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 		return this;
@@ -196,6 +237,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
 	}
+	
+	public CaseCriteria pointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
+		return this;
+	}
+	
+	public PointOfEntryReferenceDto getPointOfEntry() {
+		return pointOfEntry;
+	}
 
 	public CaseCriteria surveillanceOfficer(UserReferenceDto surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
@@ -227,4 +277,103 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	public String getNameUuidEpidNumberLike() {
 		return nameUuidEpidNumberLike;
 	}
+	
+	public CaseCriteria reportingUserLike(String reportingUserLike) {
+		this.reportingUserLike = reportingUserLike;
+		return this;
+	}
+	
+	@IgnoreForUrl
+	public String getReportingUserLike() {
+		return reportingUserLike;
+	}
+
+	@IgnoreForUrl
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public CaseCriteria firstName(String firstName) {
+		this.firstName = firstName;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getLastName() {
+		return lastName;
+	}
+
+	public CaseCriteria lastName(String lastName) {
+		this.lastName = lastName;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public CaseCriteria reportDate(Date reportDate) {
+		this.reportDate = reportDate;
+		return this;
+	}
+
+	public Date getCreationDateFrom() {
+		return creationDateFrom;
+	}
+
+	public CaseCriteria creationDateFrom(Date creationDateFrom) {
+		this.creationDateFrom = creationDateFrom;
+		return this;
+	}
+
+	public Date getCreationDateTo() {
+		return creationDateTo;
+	}
+
+	public CaseCriteria creationDateTo(Date creationDateTo) {
+		this.creationDateTo = creationDateTo;
+		return this;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
+	}
+
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
+	}
+
+	public void setCreationDateFrom(Date creationDateFrom) {
+		this.creationDateFrom = creationDateFrom;
+	}
+
+	public void setCreationDateTo(Date creationDateTo) {
+		this.creationDateTo = creationDateTo;
+	}
+
+	public void setNameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
+		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
+	}
+
+	public void setReportingUserLike(String reportingUserLike) {
+		this.reportingUserLike = reportingUserLike;
+	}
+
+	public void setNewCaseDateFrom(Date newCaseDateFrom) {
+		this.newCaseDateFrom = newCaseDateFrom;
+	}
+
+	public void setNewCaseDateTo(Date newCaseDateTo) {
+		this.newCaseDateTo = newCaseDateTo;
+	}
+
+	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
+		this.newCaseDateType = newCaseDateType;
+	}
+	
 }

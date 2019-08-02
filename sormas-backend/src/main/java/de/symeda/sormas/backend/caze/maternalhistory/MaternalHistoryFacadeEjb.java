@@ -5,8 +5,6 @@ import java.sql.Timestamp;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
@@ -18,13 +16,9 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "MaternalHistoryFacade")
 public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
 	
 	@EJB
 	MaternalHistoryService service;

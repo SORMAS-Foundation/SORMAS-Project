@@ -299,7 +299,7 @@ public class CaseBackendTest {
         caze.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.SECOND_FACILITY_UUID));
 
         try {
-            caseDao.transferCase(caze);
+            caseDao.transferCase(caze, false);
         } catch (DaoException e) {
             throw new RuntimeException();
         }

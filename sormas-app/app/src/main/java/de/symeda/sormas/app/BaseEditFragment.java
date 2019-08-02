@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.OnRebindCallback;
@@ -114,7 +116,6 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
             @Override
             public void onInflate(ViewStub stub, View inflated) {
-                //onLayoutBindingHelper(stub, inflated);
 
                 contentViewStubBinding = DataBindingUtil.bind(inflated);
                 contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
@@ -148,27 +149,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         prepareFragmentData();
         vsChildFragmentFrame.inflate();
 
-//        jobTask = new DefaultAsyncTask(getContext()) {
-//            @Override
-//            public void onPreExecute() {
-//                getBaseActivity().showPreloader();
-//            }
-//
-//            @Override
-//            public void doInBackground(final TaskResultHolder resultHolder) {
-//                prepareFragmentData();
-//            }
-//
-//            @Override
-//            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-//                getBaseActivity().hidePreloader();
-//
-//                if (taskResult.getResultStatus().isFailed())
-//                    return;
-//
-//                vsChildFragmentFrame.inflate();
-//            }
-//        }.executeOnThreadPool();
+        getBaseEditActivity().processActionbarMenu();
 
         return rootView;
     }

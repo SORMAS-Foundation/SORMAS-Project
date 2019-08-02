@@ -50,6 +50,13 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
+                android:id="@+id/origin_filter"
+                app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_ORIGIN)}"
+                app:showCaption="false"
+                app:value="@={criteria.caseOrigin}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/disease_filter"
                 app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE)}"
                 app:showCaption="false"

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.infrastructure.PointOfEntryType" />
+        <import type="de.symeda.sormas.api.caze.porthealthinfo.ConveyanceType" />
+        <import type="de.symeda.sormas.api.infrastructure.InfrastructureHelper" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo" />
+        <variable name="pointOfEntry" type="de.symeda.sormas.app.backend.infrastructure.PointOfEntry" />
+        <variable name="pointOfEntryDetails" type="java.lang.String" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/pointOfEntry_pointOfEntryType"
+                    app:value="@{pointOfEntry.pointOfEntryType}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_pointOfEntry"
+                    app:value="@{InfrastructureHelper.buildPointOfEntryString(pointOfEntry.uuid, pointOfEntry.name, pointOfEntryDetails)}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_vesselName"
+                app:value="@={data.vesselName}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.SEAPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_vesselDetails"
+                app:value="@={data.vesselDetails}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.SEAPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_portOfDeparture"
+                app:value="@={data.portOfDeparture}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.SEAPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_lastPortOfCall"
+                app:value="@={data.lastPortOfCall}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.SEAPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_airlineName"
+                app:value="@={data.airlineName}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.AIRPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_flightNumber"
+                app:value="@={data.flightNumber}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.AIRPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_departureAirport"
+                app:value="@={data.departureAirport}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.AIRPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlDateTimeField
+                android:id="@+id/portHealthInfo_departureDateTime"
+                app:value="@={data.departureDateTime}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.AIRPORT}"
+                app:goneIfNotValue2="@{PointOfEntryType.SEAPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/portHealthInfo_freeSeating"
+                    app:value="@={data.freeSeating}"
+                    app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                    app:goneIfNotValue="@{PointOfEntryType.AIRPORT}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/portHealthInfo_seatNumber"
+                    app:value="@={data.seatNumber}"
+                    app:dependencyParentField="@{portHealthInfoFreeSeating}"
+                    app:dependencyParentValue="@{YesNoUnknown.NO}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlDateTimeField
+                android:id="@+id/portHealthInfo_arrivalDateTime"
+                app:value="@={data.arrivalDateTime}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.AIRPORT}"
+                app:goneIfNotValue2="@{PointOfEntryType.SEAPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/portHealthInfo_numberOfTransitStops"
+                app:value="@={data.numberOfTransitStops}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.AIRPORT}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_transitStopDetails1"
+                app:value="@={data.transitStopDetails1}"
+                app:dependencyParentField="@{portHealthInfoNumberOfTransitStops}"
+                app:dependencyParentMinValue="@{1}"
+                app:dependencyParentMaxValue="@{5}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_transitStopDetails2"
+                app:value="@={data.transitStopDetails2}"
+                app:dependencyParentField="@{portHealthInfoNumberOfTransitStops}"
+                app:dependencyParentMinValue="@{2}"
+                app:dependencyParentMaxValue="@{5}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_transitStopDetails3"
+                app:value="@={data.transitStopDetails3}"
+                app:dependencyParentField="@{portHealthInfoNumberOfTransitStops}"
+                app:dependencyParentMinValue="@{3}"
+                app:dependencyParentMaxValue="@{5}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_transitStopDetails4"
+                app:value="@={data.transitStopDetails4}"
+                app:dependencyParentField="@{portHealthInfoNumberOfTransitStops}"
+                app:dependencyParentMinValue="@{4}"
+                app:dependencyParentMaxValue="@{5}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_transitStopDetails5"
+                app:value="@={data.transitStopDetails5}"
+                app:dependencyParentField="@{portHealthInfoNumberOfTransitStops}"
+                app:dependencyParentMinValue="@{5}"
+                app:dependencyParentMaxValue="@{5}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/portHealthInfo_conveyanceType"
+                app:value="@={data.conveyanceType}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.GROUND_CROSSING}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_conveyanceTypeDetails"
+                app:value="@={data.conveyanceTypeDetails}"
+                app:dependencyParentField="@{portHealthInfoConveyanceType}"
+                app:dependencyParentValue="@{ConveyanceType.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_departureLocation"
+                app:value="@={data.departureLocation}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.GROUND_CROSSING}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_finalDestination"
+                app:value="@={data.finalDestination}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.GROUND_CROSSING}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/portHealthInfo_details"
+                app:value="@={data.details}"
+                app:goneIfVariable="@{pointOfEntry.pointOfEntryType}"
+                app:goneIfNotValue="@{PointOfEntryType.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

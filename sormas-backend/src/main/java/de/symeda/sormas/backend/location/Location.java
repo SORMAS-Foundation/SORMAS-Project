@@ -19,6 +19,8 @@ package de.symeda.sormas.backend.location;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
 import de.symeda.auditlog.api.Audited;
@@ -85,6 +87,7 @@ public class Location extends AbstractDomainObject {
 	}
 
 	@Column(length = 255)
+	@Enumerated(EnumType.STRING)
 	public AreaType getAreaType() {
 		return areaType;
 	}

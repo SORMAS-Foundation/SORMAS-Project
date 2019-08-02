@@ -67,11 +67,6 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/sample_sampleCode"
-                app:value="@={data.sampleCode}"
-                style="@style/ControlSingleColumnStyle" />
-
             <de.symeda.sormas.app.component.controls.ControlDateTimeField
                 android:id="@+id/sample_sampleDateTime"
                 app:dateHint="@string/caption_date_of_sampling"
@@ -132,7 +127,6 @@
                 android:id="@+id/sample_pathogenTestingRequested"
                 app:useBoolean="true"
                 app:value="@={data.pathogenTestingRequested}"
-                app:required="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
@@ -162,7 +156,6 @@
                     android:id="@+id/sample_additionalTestingRequested"
                     app:useBoolean="true"
                     app:value="@={data.additionalTestingRequested}"
-                    app:required="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField

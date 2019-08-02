@@ -71,7 +71,7 @@ public class MaternalHistory extends AbstractDomainObject {
 	public void setConjunctivitis(YesNoUnknown conjunctivitis) {
 		this.conjunctivitis = conjunctivitis;
 	}
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getConjunctivitisOnset() {
 		return conjunctivitisOnset;
 	}
@@ -91,7 +91,7 @@ public class MaternalHistory extends AbstractDomainObject {
 	public void setMaculopapularRash(YesNoUnknown maculopapularRash) {
 		this.maculopapularRash = maculopapularRash;
 	}
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getMaculopapularRashOnset() {
 		return maculopapularRashOnset;
 	}
@@ -111,7 +111,7 @@ public class MaternalHistory extends AbstractDomainObject {
 	public void setSwollenLymphs(YesNoUnknown swollenLymphs) {
 		this.swollenLymphs = swollenLymphs;
 	}
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getSwollenLymphsOnset() {
 		return swollenLymphsOnset;
 	}
@@ -131,7 +131,7 @@ public class MaternalHistory extends AbstractDomainObject {
 	public void setArthralgiaArthritis(YesNoUnknown arthralgiaArthritis) {
 		this.arthralgiaArthritis = arthralgiaArthritis;
 	}
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getArthralgiaArthritisOnset() {
 		return arthralgiaArthritisOnset;
 	}
@@ -151,7 +151,7 @@ public class MaternalHistory extends AbstractDomainObject {
 	public void setOtherComplications(YesNoUnknown otherComplications) {
 		this.otherComplications = otherComplications;
 	}
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getOtherComplicationsOnset() {
 		return otherComplicationsOnset;
 	}
@@ -178,7 +178,7 @@ public class MaternalHistory extends AbstractDomainObject {
 	public void setRubella(YesNoUnknown rubella) {
 		this.rubella = rubella;
 	}
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getRubellaOnset() {
 		return rubellaOnset;
 	}
@@ -192,7 +192,7 @@ public class MaternalHistory extends AbstractDomainObject {
 	public void setRashExposure(YesNoUnknown rashExposure) {
 		this.rashExposure = rashExposure;
 	}
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getRashExposureDate() {
 		return rashExposureDate;
 	}

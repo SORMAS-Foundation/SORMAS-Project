@@ -38,5 +38,4 @@ public class DashboardController {
 			navigator.addView(ContactsDashboardView.VIEW_NAME, ContactsDashboardView.class);
 		}
 	}
-	
 }

@@ -48,22 +48,22 @@ public class AdditionalTest extends AbstractDomainObject {
 	private SimpleTestResultType haemoglobinuria;
 	private SimpleTestResultType proteinuria;
 	private SimpleTestResultType hematuria;
-	private Integer arterialVenousGasPH;
-	private Integer arterialVenousGasPco2;
-	private Integer arterialVenousGasPao2;
-	private Integer arterialVenousGasHco3;
-	private Integer gasOxygenTherapy;
-	private Integer altSgpt;
-	private Integer astSgot;
-	private Integer creatinine;
-	private Integer potassium;
-	private Integer urea;
-	private Integer haemoglobin;
-	private Integer totalBilirubin;
-	private Integer conjBilirubin;
-	private Integer wbcCount;
-	private Integer platelets;
-	private Integer prothrombinTime;
+	private Float arterialVenousGasPH;
+	private Float arterialVenousGasPco2;
+	private Float arterialVenousGasPao2;
+	private Float arterialVenousGasHco3;
+	private Float gasOxygenTherapy;
+	private Float altSgpt;
+	private Float astSgot;
+	private Float creatinine;
+	private Float potassium;
+	private Float urea;
+	private Float haemoglobin;
+	private Float totalBilirubin;
+	private Float conjBilirubin;
+	private Float wbcCount;
+	private Float platelets;
+	private Float prothrombinTime;
 	private String otherTestResults;
 
 	@ManyToOne(cascade = {})
@@ -108,115 +108,115 @@ public class AdditionalTest extends AbstractDomainObject {
 		this.hematuria = hematuria;
 	}
 	
-	public Integer getArterialVenousGasPH() {
+	public Float getArterialVenousGasPH() {
 		return arterialVenousGasPH;
 	}
-	public void setArterialVenousGasPH(Integer arterialVenousGasPH) {
+	public void setArterialVenousGasPH(Float arterialVenousGasPH) {
 		this.arterialVenousGasPH = arterialVenousGasPH;
 	}
 	
-	public Integer getArterialVenousGasPco2() {
+	public Float getArterialVenousGasPco2() {
 		return arterialVenousGasPco2;
 	}
-	public void setArterialVenousGasPco2(Integer arterialVenousGasPco2) {
+	public void setArterialVenousGasPco2(Float arterialVenousGasPco2) {
 		this.arterialVenousGasPco2 = arterialVenousGasPco2;
 	}
 	
-	public Integer getArterialVenousGasPao2() {
+	public Float getArterialVenousGasPao2() {
 		return arterialVenousGasPao2;
 	}
-	public void setArterialVenousGasPao2(Integer arterialVenousGasPao2) {
+	public void setArterialVenousGasPao2(Float arterialVenousGasPao2) {
 		this.arterialVenousGasPao2 = arterialVenousGasPao2;
 	}
 	
-	public Integer getArterialVenousGasHco3() {
+	public Float getArterialVenousGasHco3() {
 		return arterialVenousGasHco3;
 	}
-	public void setArterialVenousGasHco3(Integer arterialVenousGasHco3) {
+	public void setArterialVenousGasHco3(Float arterialVenousGasHco3) {
 		this.arterialVenousGasHco3 = arterialVenousGasHco3;
 	}
 	
-	public Integer getGasOxygenTherapy() {
+	public Float getGasOxygenTherapy() {
 		return gasOxygenTherapy;
 	}
-	public void setGasOxygenTherapy(Integer gasOxygenTherapy) {
+	public void setGasOxygenTherapy(Float gasOxygenTherapy) {
 		this.gasOxygenTherapy = gasOxygenTherapy;
 	}
 	
-	public Integer getAltSgpt() {
+	public Float getAltSgpt() {
 		return altSgpt;
 	}
-	public void setAltSgpt(Integer altSgpt) {
+	public void setAltSgpt(Float altSgpt) {
 		this.altSgpt = altSgpt;
 	}
 	
-	public Integer getAstSgot() {
+	public Float getAstSgot() {
 		return astSgot;
 	}
-	public void setAstSgot(Integer astSgot) {
+	public void setAstSgot(Float astSgot) {
 		this.astSgot = astSgot;
 	}
 	
-	public Integer getCreatinine() {
+	public Float getCreatinine() {
 		return creatinine;
 	}
-	public void setCreatinine(Integer creatinine) {
+	public void setCreatinine(Float creatinine) {
 		this.creatinine = creatinine;
 	}
 	
-	public Integer getPotassium() {
+	public Float getPotassium() {
 		return potassium;
 	}
-	public void setPotassium(Integer potassium) {
+	public void setPotassium(Float potassium) {
 		this.potassium = potassium;
 	}
 	
-	public Integer getUrea() {
+	public Float getUrea() {
 		return urea;
 	}
-	public void setUrea(Integer urea) {
+	public void setUrea(Float urea) {
 		this.urea = urea;
 	}
 	
-	public Integer getHaemoglobin() {
+	public Float getHaemoglobin() {
 		return haemoglobin;
 	}
-	public void setHaemoglobin(Integer haemoglobin) {
+	public void setHaemoglobin(Float haemoglobin) {
 		this.haemoglobin = haemoglobin;
 	}
 	
-	public Integer getTotalBilirubin() {
+	public Float getTotalBilirubin() {
 		return totalBilirubin;
 	}
-	public void setTotalBilirubin(Integer totalBilirubin) {
+	public void setTotalBilirubin(Float totalBilirubin) {
 		this.totalBilirubin = totalBilirubin;
 	}
 	
-	public Integer getConjBilirubin() {
+	public Float getConjBilirubin() {
 		return conjBilirubin;
 	}
-	public void setConjBilirubin(Integer conjBilirubin) {
+	public void setConjBilirubin(Float conjBilirubin) {
 		this.conjBilirubin = conjBilirubin;
 	}
 	
-	public Integer getWbcCount() {
+	public Float getWbcCount() {
 		return wbcCount;
 	}
-	public void setWbcCount(Integer wbcCount) {
+	public void setWbcCount(Float wbcCount) {
 		this.wbcCount = wbcCount;
 	}
 	
-	public Integer getPlatelets() {
+	public Float getPlatelets() {
 		return platelets;
 	}
-	public void setPlatelets(Integer platelets) {
+	public void setPlatelets(Float platelets) {
 		this.platelets = platelets;
 	}
 	
-	public Integer getProthrombinTime() {
+	public Float getProthrombinTime() {
 		return prothrombinTime;
 	}
-	public void setProthrombinTime(Integer prothrombinTime) {
+	public void setProthrombinTime(Float prothrombinTime) {
 		this.prothrombinTime = prothrombinTime;
 	}
 

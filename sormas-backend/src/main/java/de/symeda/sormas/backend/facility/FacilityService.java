@@ -46,10 +46,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter.FacilityConsumer;
 
-/**
- * @author Christopher Riedel
- *
- */
 @Stateless
 @LocalBean
 public class FacilityService extends AbstractAdoService<Facility> {
@@ -439,7 +435,11 @@ public class FacilityService extends AbstractAdoService<Facility> {
 				}
 			}
 		}
-		filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
+		if (facilityCriteria.getType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
+		} else {
+			filter = and(cb, filter, cb.isNull(from.get(Facility.TYPE)));
+		}
 		return filter;
 	}
 }

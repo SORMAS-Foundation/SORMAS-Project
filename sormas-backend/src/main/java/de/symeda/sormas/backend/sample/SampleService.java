@@ -35,7 +35,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRole;
@@ -242,33 +241,18 @@ public class SampleService extends AbstractAdoService<Sample> {
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
 
 		Predicate filter = createUserFilterWithoutCase(cb, cq, samplePath, user);
 
 		// whoever created the case the sample is associated with or is assigned to it
 		// is allowed to access it
-		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
+		Join<Case,Case> casePath = samplePath.join(Sample.ASSOCIATED_CASE);
 
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, (From<Case,Case>)casePath, user);
+		Predicate caseFilter = caseService.createUserFilter(cb, cq, casePath, user);
 		filter = or(cb, filter, caseFilter);
 
-		return filter;
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample, Sample> samplePath, CaseCriteria caseCriteria, User user) {
-		Predicate filter = createUserFilterWithoutCase(cb, cq, samplePath, user);
-		
-		Path<Case> casePath = samplePath.get(Sample.ASSOCIATED_CASE);
-		
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, (From<Case, Case>) casePath, user);
-		filter = or(cb, filter, caseFilter);
-		
-		Predicate caseCriteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, (From<Case, Case>) casePath);
-		filter = and(cb, filter, caseCriteriaFilter);
-		
 		return filter;
 	}
 

@@ -122,4 +122,8 @@ public interface CaseFacade {
 	
 	String generateEpidNumber(CaseReferenceDto caze);
 	
+	List<CaseIndexDto> getSimilarCases(CaseCriteria criteria, String userUuid);
+	
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid);
+	
 }

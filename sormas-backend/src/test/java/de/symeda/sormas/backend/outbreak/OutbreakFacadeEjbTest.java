@@ -28,17 +28,17 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 
-	private RDCF rdcf;
+	private RDCFEntities rdcf;
 
 	@Override
 	public void resetMocks() {
 		super.resetMocks();
 
-		rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup",
 				UserRole.SURVEILLANCE_SUPERVISOR);
 

@@ -30,10 +30,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
-import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
-import de.symeda.sormas.api.therapy.PrescriptionDto;
-import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
@@ -48,6 +44,7 @@ import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
@@ -111,14 +108,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 case Complete:
                     pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
-                    pullMissingAndDeleteInvalidData();
+                    pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
                     pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
                     repullData();
-                    pullMissingAndDeleteInvalidData();
+                    pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     ConfigProvider.setRepullNeeded(false);
                     break;
@@ -308,6 +305,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new DistrictDtoHelper().pullEntities(false);
         new CommunityDtoHelper().pullEntities(false);
         new FacilityDtoHelper().pullEntities(false);
+        new PointOfEntryDtoHelper().pullEntities(false);
         new UserDtoHelper().pullEntities(false);
         new DiseaseClassificationDtoHelper().pullEntities(false);
         new DiseaseConfigurationDtoHelper().pullEntities(false);
@@ -349,12 +347,29 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void pullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
+    private void pushNewPullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
-        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidData");
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pushNewPullMissingAndDeleteInvalidData");
 
         // order is important, due to dependencies (e.g. case & person)
+
+        // first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
+        // Example: Case is created using an existing person, meanwhile user loses access to the person
+        new PersonDtoHelper().pushEntities(true);
+        new CaseDtoHelper().pushEntities(true);
+        new EventDtoHelper().pushEntities(true);
+        new EventParticipantDtoHelper().pushEntities(true);
+        new SampleDtoHelper().pushEntities(true);
+        new PathogenTestDtoHelper().pushEntities(true);
+        new AdditionalTestDtoHelper().pushEntities(true);
+        new ContactDtoHelper().pushEntities(true);
+        new VisitDtoHelper().pushEntities(true);
+        new TaskDtoHelper().pushEntities(true);
+        new WeeklyReportDtoHelper().pushEntities(true);
+        new PrescriptionDtoHelper().pushEntities(true);
+        new TreatmentDtoHelper().pushEntities(true);
+        new ClinicalVisitDtoHelper().pushEntities(true);
 
         // weekly reports and entries
         List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
@@ -436,6 +451,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // user role config
         List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
         DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
+        // points of entry
+        List<String> pointOfEntryUuids = executeUuidCall(RetroProvider.getPointOfEntryFacade().pullUuids());
+        DatabaseHelper.getPointOfEntryDao().deleteInvalid(pointOfEntryUuids);
         // facilities
         List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
         DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
@@ -455,6 +473,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new DistrictDtoHelper().pullMissing(districtUuids);
         new CommunityDtoHelper().pullMissing(communityUuids);
         new FacilityDtoHelper().pullMissing(facilityUuids);
+        new PointOfEntryDtoHelper().pullMissing(pointOfEntryUuids);
         new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
         new UserDtoHelper().pullMissing(userUuids);
         new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
