@@ -26,12 +26,14 @@ import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -2517,18 +2519,19 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto otherCase = getCaseDataByUuid(otherUuid);
 
 		CaseDataDto mergedCase = mergeDto(leadCase, otherCase);
-		
+
 		saveCase(mergedCase);
-		
+
 		PersonDto leadPerson = personFacade.getPersonByUuid(leadCase.getPerson().getUuid());
 		PersonDto otherPerson = personFacade.getPersonByUuid(otherCase.getPerson().getUuid());
-		
+
 		PersonDto mergedPerson = mergeDto(leadPerson, otherPerson);
-		
+
 		personFacade.savePerson(mergedPerson);
-		
+
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends EntityDto> T mergeDto(T lead, T other) {
 
@@ -2547,13 +2550,25 @@ public class CaseFacadeEjb implements CaseFacade {
 
 				// Write other-property into lead-property, if lead-property is null
 				if (leadProperty == null) {
+
+					if (List.class.isAssignableFrom(pd.getPropertyType())) {
+
+						for (EntityDto entry : (List<EntityDto>) otherProperty) {
+							entry.setUuid(UUID.randomUUID().toString());
+						}
+					}
+
 					pd.getWriteMethod().invoke(lead, otherProperty);
+
 				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 
 					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty));
+
 				}
 			}
-		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+		} catch (IntrospectionException | InvocationTargetException |
+
+				IllegalAccessException e) {
 			throw new RuntimeException("Exception when trying to merge dto: " + e.getMessage(), e.getCause());
 		}
 

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -476,7 +478,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testMergeCase() {
 
 		// 1. Create
-		
+
 		// Create leadCase
 		UserDto leadUser = creator.createUser("", "", "", "", "");
 		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
@@ -502,11 +504,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().saveCase(otherCase);
 
 		// 2. Merge
-		
+
 		getCaseFacade().mergeCase(leadCase.getUuid(), otherCase.getUuid());
 
 		// 3. Test
-		
+
 		CaseDataDto mergedCase = getCaseFacade().getCaseDataByUuid(leadCase.getUuid());
 
 		// Check no values
@@ -573,40 +575,95 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		}
 
 		// Test complex subDto
-		CaseDataDto leadCaseDto = new CaseDataDto();
-		CaseDataDto otherCaseDto = new CaseDataDto();
+		{
+			CaseDataDto leadCaseDto = new CaseDataDto();
+			CaseDataDto otherCaseDto = new CaseDataDto();
 
-		SymptomsDto leadSymptomsDto = new SymptomsDto();
-		SymptomsDto otherSymptomsDto = new SymptomsDto();
+			SymptomsDto leadSymptomsDto = new SymptomsDto();
+			SymptomsDto otherSymptomsDto = new SymptomsDto();
 
-		// lead and other have different values
-		SymptomState abdominalPain = SymptomState.NO;
-		leadSymptomsDto.setAbdominalPain(abdominalPain);
-		otherSymptomsDto.setAbdominalPain(SymptomState.UNKNOWN);
+			// lead and other have different values
+			SymptomState abdominalPain = SymptomState.NO;
+			leadSymptomsDto.setAbdominalPain(abdominalPain);
+			otherSymptomsDto.setAbdominalPain(SymptomState.UNKNOWN);
 
-		// lead has value, other has not
-		SymptomState alteredConsciousness = SymptomState.YES;
-		leadSymptomsDto.setAlteredConsciousness(alteredConsciousness);
+			// lead has value, other has not
+			SymptomState alteredConsciousness = SymptomState.YES;
+			leadSymptomsDto.setAlteredConsciousness(alteredConsciousness);
 
-		// lead has no value, other has
-		SymptomState anorexiaAppetiteLoss = SymptomState.UNKNOWN;
-		otherSymptomsDto.setAnorexiaAppetiteLoss(anorexiaAppetiteLoss);
+			// lead has no value, other has
+			SymptomState anorexiaAppetiteLoss = SymptomState.UNKNOWN;
+			otherSymptomsDto.setAnorexiaAppetiteLoss(anorexiaAppetiteLoss);
 
-		leadCaseDto.setSymptoms(leadSymptomsDto);
-		otherCaseDto.setSymptoms(otherSymptomsDto);
+			leadCaseDto.setSymptoms(leadSymptomsDto);
+			otherCaseDto.setSymptoms(otherSymptomsDto);
 
-		CaseDataDto merged = getCaseFacade().mergeDto(leadCaseDto, otherCaseDto);
+			CaseDataDto merged = getCaseFacade().mergeDto(leadCaseDto, otherCaseDto);
 
-		// Check no values
-		assertNull(merged.getSymptoms().getBackache());
+			// Check no values
+			assertNull(merged.getSymptoms().getBackache());
 
-		// Check 'lead and other have different values'
-		assertEquals(abdominalPain, merged.getSymptoms().getAbdominalPain());
+			// Check 'lead and other have different values'
+			assertEquals(abdominalPain, merged.getSymptoms().getAbdominalPain());
 
-		// Check 'lead has value, other has not'
-		assertEquals(alteredConsciousness, merged.getSymptoms().getAlteredConsciousness());
+			// Check 'lead has value, other has not'
+			assertEquals(alteredConsciousness, merged.getSymptoms().getAlteredConsciousness());
 
-		// Check 'lead has no value, other has'
-		assertEquals(anorexiaAppetiteLoss, merged.getSymptoms().getAnorexiaAppetiteLoss());
+			// Check 'lead has no value, other has'
+			assertEquals(anorexiaAppetiteLoss, merged.getSymptoms().getAnorexiaAppetiteLoss());
+		}
+
+		// Test List
+		{
+			HospitalizationDto leadDto = new HospitalizationDto();
+			HospitalizationDto otherDto = new HospitalizationDto();
+
+			PreviousHospitalizationDto subDto1 = new PreviousHospitalizationDto();
+			PreviousHospitalizationDto subDto2 = new PreviousHospitalizationDto();
+
+			// lead and other have different values
+			ArrayList<PreviousHospitalizationDto> leadList1 = new ArrayList<PreviousHospitalizationDto>();
+			leadList1.add(subDto1);
+			
+			ArrayList<PreviousHospitalizationDto> otherList1 = new ArrayList<PreviousHospitalizationDto>();
+			otherList1.add(subDto2);
+
+			// lead has values, other has not
+			ArrayList<PreviousHospitalizationDto> leadList2 = new ArrayList<PreviousHospitalizationDto>();
+			leadList2.add(subDto1);
+			leadList2.add(subDto2);
+
+			// lead has no values, other has
+			ArrayList<PreviousHospitalizationDto> otherList2 = new ArrayList<PreviousHospitalizationDto>();
+			otherList2.add(subDto1);
+			otherList2.add(subDto2);
+
+			// Check no values
+			HospitalizationDto merged = getCaseFacade().mergeDto(leadDto, otherDto);
+			assertTrue(merged.getPreviousHospitalizations().isEmpty());
+
+			// Check 'lead and other have different values'
+			leadDto.setPreviousHospitalizations(leadList1);
+			otherDto.setPreviousHospitalizations(otherList1);
+			merged = getCaseFacade().mergeDto(leadDto, otherDto);
+			assertEquals(leadList1.size(), merged.getPreviousHospitalizations().size());
+			assertEquals(leadList1.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
+
+			// Check 'lead has value, other has not'
+			leadDto.setPreviousHospitalizations(leadList2);
+			otherDto.setPreviousHospitalizations(null);
+			merged = getCaseFacade().mergeDto(leadDto, otherDto);
+			assertEquals(leadList2.size(), merged.getPreviousHospitalizations().size());
+			assertEquals(leadList2.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
+			assertEquals(leadList2.get(1).getUuid(), merged.getPreviousHospitalizations().get(1).getUuid());
+			
+			// Check 'lead has no value, other has'
+			leadDto.setPreviousHospitalizations(null);
+			otherDto.setPreviousHospitalizations(otherList2);
+			merged = getCaseFacade().mergeDto(leadDto, otherDto);
+			assertEquals(otherList2.size(), merged.getPreviousHospitalizations().size());
+			assertEquals(otherList2.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
+			assertEquals(otherList2.get(1).getUuid(), merged.getPreviousHospitalizations().get(1).getUuid());
+		}
 	}
 }
