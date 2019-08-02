@@ -96,6 +96,7 @@ public interface Strings {
 	public static String headingAnimalContacts = "headingAnimalContacts";
 	public static String headingArchiveCase = "headingArchiveCase";
 	public static String headingArchiveEvent = "headingArchiveEvent";
+	public static String headingCaseComparison = "headingCaseComparison";
 	public static String headingCaseData = "headingCaseData";
 	public static String headingCaseImport = "headingCaseImport";
 	public static String headingCasesArchived = "headingCasesArchived";
@@ -106,6 +107,7 @@ public interface Strings {
 	public static String headingChangePathogenTestResult = "headingChangePathogenTestResult";
 	public static String headingClinicalMeasurements = "headingClinicalMeasurements";
 	public static String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
+	public static String headingComparisonCase = "headingComparisonCase";
 	public static String headingComplications = "headingComplications";
 	public static String headingConfirmArchiving = "headingConfirmArchiving";
 	public static String headingConfirmDearchiving = "headingConfirmDearchiving";
@@ -179,6 +181,7 @@ public interface Strings {
 	public static String headingLoginFailed = "headingLoginFailed";
 	public static String headingMaternalHistory = "headingMaternalHistory";
 	public static String headingMedicalInformation = "headingMedicalInformation";
+	public static String headingMergeGuide = "headingMergeGuide";
 	public static String headingMissingDateFilter = "headingMissingDateFilter";
 	public static String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	public static String headingMyTasks = "headingMyTasks";
@@ -253,6 +256,11 @@ public interface Strings {
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
+	public static String infoMergingActionsDescription = "infoMergingActionsDescription";
+	public static String infoMergingDismissDescription = "infoMergingDismissDescription";
+	public static String infoMergingIntroduction = "infoMergingIntroduction";
+	public static String infoMergingMergeDescription = "infoMergingMergeDescription";
+	public static String infoMergingPickDescription = "infoMergingPickDescription";
 	public static String infoNoAdditionalTests = "infoNoAdditionalTests";
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
@@ -408,7 +416,6 @@ public interface Strings {
 	public static String or = "or";
 	public static String previousPeriod = "previousPeriod";
 	public static String promptCasesDateFrom = "promptCasesDateFrom";
-	public static String promptCasesDateTo = "promptCasesDateTo";
 	public static String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	public static String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
 	public static String promptCasesSearchField = "promptCasesSearchField";
@@ -418,6 +425,8 @@ public interface Strings {
 	public static String promptContactEpiWeekFrom = "promptContactEpiWeekFrom";
 	public static String promptContactEpiWeekTo = "promptContactEpiWeekTo";
 	public static String promptContactsSearchField = "promptContactsSearchField";
+	public static String promptCreationDateFrom = "promptCreationDateFrom";
+	public static String promptDateTo = "promptDateTo";
 	public static String promptDisease = "promptDisease";
 	public static String promptDistrict = "promptDistrict";
 	public static String promptNamePhoneEmail = "promptNamePhoneEmail";

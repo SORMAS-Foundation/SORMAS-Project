@@ -16,7 +16,9 @@ public interface Captions {
 	public static String actionClear = "actionClear";
 	public static String actionClearAll = "actionClearAll";
 	public static String actionClose = "actionClose";
+	public static String actionCompare = "actionCompare";
 	public static String actionConfirm = "actionConfirm";
+	public static String actionConfirmFilters = "actionConfirmFilters";
 	public static String actionCreate = "actionCreate";
 	public static String actionDearchive = "actionDearchive";
 	public static String actionDelete = "actionDelete";
@@ -163,6 +165,8 @@ public interface Captions {
 	public static String caseImportMergeCase = "caseImportMergeCase";
 	public static String caseMergeDuplicates = "caseMergeDuplicates";
 	public static String caseNewCase = "caseNewCase";
+	public static String caseNewCaseDate = "caseNewCaseDate";
+	public static String caseOpenMergeGuide = "caseOpenMergeGuide";
 	public static String casePickCase = "casePickCase";
 	public static String CasePreviousHospitalization = "CasePreviousHospitalization";
 	public static String CasePreviousHospitalization_admissionAndDischargeDate = "CasePreviousHospitalization.admissionAndDischargeDate";
@@ -246,6 +250,7 @@ public interface Captions {
 	public static String contactResumeFollowUp = "contactResumeFollowUp";
 	public static String contactShowActive = "contactShowActive";
 	public static String contactShowArchived = "contactShowArchived";
+	public static String creationDate = "creationDate";
 	public static String dashboardAlive = "dashboardAlive";
 	public static String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
 	public static String dashboardCanceledFollowUp = "dashboardCanceledFollowUp";

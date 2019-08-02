@@ -738,6 +738,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Region> region2 = root2.join(Case.REGION, JoinType.LEFT);
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root, user);
+		Predicate criteriaFilter = criteria != null ? caseService.buildCriteriaFilter(criteria, cb, root) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
@@ -752,10 +753,15 @@ public class CaseFacadeEjb implements CaseFacade {
 								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
 				new Long(2592000) // 30 days in seconds
 				);
-		Predicate creationDateFilter = cb.greaterThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
+		Predicate creationDateFilter = cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
 					
 		Predicate filter = userFilter;
 		
+		if (filter != null) {
+			filter = cb.and(filter, criteriaFilter);
+		} else {
+			filter = criteriaFilter;
+		}
 		if (filter != null) {
 			filter = cb.and(filter, nameSimilarityFilter);
 		} else {
@@ -770,6 +776,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.multiselect(
 				root.get(Case.UUID),
 				root2.get(Case.UUID));
+		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
 		
 		List<Object[]> foundUuids = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
 		

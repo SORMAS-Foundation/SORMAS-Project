@@ -7,11 +7,11 @@ import java.util.List;
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.TreeGrid;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -21,10 +21,12 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
@@ -75,48 +77,70 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 				}
 			}
 		});
+		
+//		this.addSortListener(e -> {
+//			TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
+//			dataProvider.refreshAll();
+//			TreeData<CaseIndexDto> data = dataProvider.getTreeData();
+//		});
 	}
 	
 	@SuppressWarnings("unchecked")
 	private HorizontalLayout buildButtonLayout(CaseIndexDto caze) {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSpacing(false);
-		Button mergeButton;
-		Button pickButton;
-		Button dismissButton = null;
+		Button btnMerge;
+		Button btnPick;
+		Button btnDismiss = null;
+		Button btnCompare = null;
 		
 		if (rootCases.contains(caze)) {
-			mergeButton = new Button(I18nProperties.getCaption(Captions.actionMerge));
-			CssStyles.style(mergeButton, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
-			pickButton = new Button(I18nProperties.getCaption(Captions.actionPick));
-			CssStyles.style(pickButton, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
-			dismissButton = new Button(I18nProperties.getCaption(Captions.actionDismiss));
-			dismissButton.setIcon(VaadinIcons.CLOSE);
-			dismissButton.addClickListener(e -> {
+			btnMerge = new Button(I18nProperties.getCaption(Captions.actionMerge));
+			CssStyles.style(btnMerge, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
+			btnPick = new Button(I18nProperties.getCaption(Captions.actionPick));
+			CssStyles.style(btnPick, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
+			btnDismiss = new Button(I18nProperties.getCaption(Captions.actionDismiss));
+			btnDismiss.setIcon(VaadinIcons.CLOSE);
+			btnDismiss.addClickListener(e -> {
 				TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
 				dataProvider.getTreeData().removeItem(caze);
 				dataProvider.refreshAll();
 			});
 		} else {
-			mergeButton = new Button("");
-			CssStyles.style(mergeButton, CssStyles.HSPACE_RIGHT_5);
-			pickButton = new Button("");
-			CssStyles.style(pickButton, CssStyles.HSPACE_RIGHT_5);
+			btnMerge = new Button("");
+			CssStyles.style(btnMerge, CssStyles.HSPACE_RIGHT_5);
+			btnPick = new Button("");
+			CssStyles.style(btnPick, CssStyles.HSPACE_RIGHT_5);
+			btnCompare = new Button(I18nProperties.getCaption(Captions.actionCompare));
+			btnCompare.setIcon(VaadinIcons.EXCHANGE);
+			btnCompare.addClickListener(e -> {
+				TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
+				buildAndOpenCaseComparisonWindow(dataProvider.getTreeData().getParent(caze).getUuid(), caze.getUuid());
+			});
 		}
 
-		mergeButton.setIcon(VaadinIcons.COMPRESS_SQUARE);
-		pickButton.setIcon(VaadinIcons.CHECK);
+		btnMerge.setIcon(VaadinIcons.COMPRESS_SQUARE);
+		btnPick.setIcon(VaadinIcons.CHECK);
 	
-		layout.addComponents(mergeButton, pickButton);
-		if (dismissButton != null) {
-			layout.addComponent(dismissButton);
+		layout.addComponents(btnMerge, btnPick);
+		if (btnDismiss != null) {
+			layout.addComponent(btnDismiss);
+		}
+		if (btnCompare != null) {
+			layout.addComponent(btnCompare);
 		}
 		
 		return layout;
 	}
-	
-	
-	
+
+	private void buildAndOpenCaseComparisonWindow(String firstCaseUuid, String secondCaseUuid) {
+		CaseComparisonLayout layout = new CaseComparisonLayout(firstCaseUuid, secondCaseUuid);
+		layout.setWidth(1024, Unit.PIXELS);
+		Window window = VaadinUiUtil.showPopupWindow(layout);
+		window.setHeight(95, Unit.PERCENTAGE);
+		window.setCaption(I18nProperties.getString(Strings.headingCaseComparison));
+	}
+
 	@SuppressWarnings("unchecked")
 	public void reload() {
 		rootCases = new ArrayList<>();
@@ -124,6 +148,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		
 		TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
 		TreeData<CaseIndexDto> data = dataProvider.getTreeData();
+		data.clear();
 		
 		List<CaseIndexDto[]> casePairs = FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, UserProvider.getCurrent().getUuid());
 		for (CaseIndexDto[] casePair : casePairs) {
