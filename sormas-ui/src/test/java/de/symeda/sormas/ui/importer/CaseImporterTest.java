@@ -1,11 +1,15 @@
 package de.symeda.sormas.ui.importer;
 
+import java.io.IOException;
+
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.vaadin.server.VaadinServletRequest;
 
+import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.ui.AbstractBeanTest;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,8 +35,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 //		CurrentInstance.set(UI.class, new SormasUI());
 //	}
 
-//	@Test
-//	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException {
+	@Test
+	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException {
 //		UserReferenceDto user = UserProvider.getCurrent().getUserReference();
 //		
 //		new TestDataCreator().createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
@@ -121,7 +125,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 //			assertEquals(6, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
 //			assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
 //		});
-//	}
+	}
 	
 //	private OutputStreamWriter createPseudoOutputStream() {
 //		return new OutputStreamWriter(new OutputStream() {
