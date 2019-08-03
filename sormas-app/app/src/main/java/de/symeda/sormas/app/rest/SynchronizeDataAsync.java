@@ -106,13 +106,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     synchronizeChangedData();
                     break;
                 case Complete:
-                    pullInfrastructure();
+                    pullInfrastructure(); // do before missing, because we may have a completely empty database
                     pullMissingAndDeleteInvalidInfrastructure();
                     pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
-                    pullInfrastructure();
+                    pullInfrastructure(); // do before missing, because we may have a completely empty database
                     pullMissingAndDeleteInvalidInfrastructure();
                     repullData();
                     pushNewPullMissingAndDeleteInvalidData();
@@ -166,6 +166,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             if (newSyncMode != null) {
 
                 Log.w(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
+
+                SormasApplication application = (SormasApplication) context.getApplicationContext();
+                Tracker tracker = application.getDefaultTracker();
+                ErrorReportingHelper.sendCaughtException(tracker, e, null, true, "WARNING");
 
                 syncMode = newSyncMode;
                 doInBackground(params);

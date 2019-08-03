@@ -160,7 +160,10 @@ public final class RetroProvider {
         AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        httpClient.readTimeout(5 * 60, TimeUnit.SECONDS); // for infrastructure data - actually 30 seconds should be enough...
+        httpClient.connectTimeout(20, TimeUnit.SECONDS);
+        httpClient.readTimeout(60, TimeUnit.SECONDS); // for infrastructure data
+        httpClient.writeTimeout(30, TimeUnit.SECONDS);
+
         // adds "Accept-Encoding: gzip" by default
         httpClient.addInterceptor(interceptor);
         for (Interceptor additionalInterceptor : additionalInterceptors) {
