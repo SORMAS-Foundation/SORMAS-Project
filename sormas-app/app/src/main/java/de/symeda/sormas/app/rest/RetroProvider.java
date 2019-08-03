@@ -21,8 +21,9 @@ package de.symeda.sormas.app.rest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,10 +40,9 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
-import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
@@ -59,7 +59,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -181,26 +180,14 @@ public final class RetroProvider {
 
     private void updateLocale() throws ServerCommunicationException, ServerConnectionException {
         Response<String> localeResponse;
+        infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
+        Call<String> localeCall = infoFacadeRetro.getLocale();
         try {
-            infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
-            AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
-
-                @Override
-                protected Response<String> doInBackground(Void... params) {
-                    Call<String> localeCall = infoFacadeRetro.getLocale();
-                    try {
-                        return localeCall.execute();
-                    } catch (IOException e) {
-                        Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
-                        // wrap the exception message inside a response object
-                        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
-                    }
-                }
-            };
-            localeResponse = asyncTask.execute().get();
-
-        } catch (InterruptedException | ExecutionException e) {
-            throw new ServerCommunicationException(e);
+            localeResponse = localeCall.execute();
+        } catch (IOException e) {
+            Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
+            // wrap the exception message inside a response object
+            localeResponse = Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
         }
 
         if (localeResponse.isSuccessful()) {
@@ -215,28 +202,15 @@ public final class RetroProvider {
     private void checkCompatibility() throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
 
         Response<CompatibilityCheckResponse> compatibilityResponse;
+        // make call to get version info
+        infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
+        Call<CompatibilityCheckResponse> compatibilityCall = infoFacadeRetro.isCompatibleToApi(InfoProvider.get().getVersion());
         try {
-
-            // make call to get version info
-            infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
-            AsyncTask<Void, Void, Response<CompatibilityCheckResponse>> asyncTask = new AsyncTask<Void, Void, Response<CompatibilityCheckResponse>>() {
-
-                @Override
-                protected Response<CompatibilityCheckResponse> doInBackground(Void... params) {
-                    Call<CompatibilityCheckResponse> compatibilityCall = infoFacadeRetro.isCompatibleToApi(InfoProvider.get().getVersion());
-                    try {
-                        return compatibilityCall.execute();
-                    } catch (IOException e) {
-                        Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
-                        // wrap the exception message inside a response object
-                        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
-                    }
-                }
-            };
-            compatibilityResponse = asyncTask.execute().get();
-
-        } catch (InterruptedException | ExecutionException e) {
-            throw new ServerCommunicationException(e);
+            compatibilityResponse = compatibilityCall.execute();
+        } catch (IOException e) {
+            Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
+            // wrap the exception message inside a response object
+            compatibilityResponse = Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
         }
 
         if (compatibilityResponse.isSuccessful()) {
@@ -347,7 +321,7 @@ public final class RetroProvider {
                 RetroProvider.connect(getApplicationReference().get());
                 versionCompatible = true;
                 if (matchExactVersion) {
-                    RetroProvider.matchAppAndApiVersions();
+                    RetroProvider.matchAppAndApiVersions(getInfoFacade());
                 }
             }
 
@@ -371,30 +345,15 @@ public final class RetroProvider {
         instance = null;
     }
 
-    public static void matchAppAndApiVersions() throws NoConnectionException, ServerCommunicationException, ServerConnectionException, ApiVersionException {
-        matchAppAndApiVersions(getInfoFacade());
-    }
-
     private static void matchAppAndApiVersions(final InfoFacadeRetro infoFacadeRetro) throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
         // Retrieve the version
         Response<String> versionResponse;
+        Call<String> versionCall = infoFacadeRetro.getVersion();
         try {
-            AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
-
-                @Override
-                protected Response<String> doInBackground(Void... params) {
-                    Call<String> versionCall = infoFacadeRetro.getVersion();
-                    try {
-                        return versionCall.execute();
-                    } catch (IOException e) {
-                        // wrap the exception message inside a response object
-                        return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
-                    }
-                }
-            };
-            versionResponse = asyncTask.execute().get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new ServerCommunicationException(e);
+            versionResponse = versionCall.execute();
+        } catch (IOException e) {
+            // wrap the exception message inside a response object
+            versionResponse = Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
         }
 
         if (versionResponse.isSuccessful()) {
@@ -404,24 +363,12 @@ public final class RetroProvider {
             if (!serverApiVersion.equals(appApiVersion)) {
                 // Retrieve the app URL
                 Response<String> appUrlResponse;
+                Call<String> appUrlCall = infoFacadeRetro.getAppUrl(InfoProvider.get().getVersion());
                 try {
-                    AsyncTask<Void, Void, Response<String>> asyncTask = new AsyncTask<Void, Void, Response<String>>() {
-
-                        @Override
-                        protected Response<String> doInBackground(Void... params) {
-                            Call<String> versionCall = infoFacadeRetro.getAppUrl(InfoProvider.get().getVersion());
-                            try {
-                                return versionCall.execute();
-                            } catch (IOException e) {
-                                // wrap the exception message inside a response object
-                                return Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
-                            }
-                        }
-                    };
-                    appUrlResponse = asyncTask.execute().get();
-
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new ServerCommunicationException(e);
+                    appUrlResponse = appUrlCall.execute();
+                } catch (IOException e) {
+                    // wrap the exception message inside a response object
+                    appUrlResponse = Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
                 }
 
                 if (appUrlResponse.isSuccessful()) {

@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -29,6 +28,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
@@ -61,7 +61,6 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
 import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
 import de.symeda.sormas.app.core.TaskNotificationService;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -107,14 +106,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     synchronizeChangedData();
                     break;
                 case Complete:
-                    pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
+                    pullMissingAndDeleteInvalidInfrastructure();
                     pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
-                    pullMissingAndDeleteInvalidInfrastructure();
                     pullInfrastructure();
+                    pullMissingAndDeleteInvalidInfrastructure();
                     repullData();
                     pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
@@ -455,6 +454,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidInfrastructure");
 
+        // TODO get a count first and only retrieve all uuids when count is different?
+
         // users
         List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
         DatabaseHelper.getUserDao().deleteInvalid(userUuids);
@@ -516,7 +517,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     TaskNotificationService.doTaskNotification(context);
                 }
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public enum SyncMode {
