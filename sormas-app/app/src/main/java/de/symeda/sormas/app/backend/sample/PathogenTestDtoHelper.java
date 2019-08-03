@@ -24,6 +24,7 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -40,17 +41,17 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
     }
 
     @Override
-    protected Call<List<PathogenTestDto>> pullAllSince(long since) {
+    protected Call<List<PathogenTestDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getSampleTestFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<PathogenTestDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<PathogenTestDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getSampleTestFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<PathogenTestDto> PathogenTestDtos) {
+    protected Call<List<PushResult>> pushAll(List<PathogenTestDto> PathogenTestDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Can't change sample tests in app");
     }
 

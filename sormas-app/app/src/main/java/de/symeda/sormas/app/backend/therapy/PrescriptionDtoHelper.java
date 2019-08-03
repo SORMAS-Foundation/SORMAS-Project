@@ -25,6 +25,7 @@ import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -43,17 +44,17 @@ public class PrescriptionDtoHelper extends AdoDtoHelper<Prescription, Prescripti
     }
 
     @Override
-    protected Call<List<PrescriptionDto>> pullAllSince(long since) {
+    protected Call<List<PrescriptionDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getPrescriptionFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<PrescriptionDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<PrescriptionDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getPrescriptionFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<PrescriptionDto> prescriptionDtos) {
+    protected Call<List<PushResult>> pushAll(List<PrescriptionDto> prescriptionDtos) throws NoConnectionException {
         return RetroProvider.getPrescriptionFacade().pushAll(prescriptionDtos);
     }
 

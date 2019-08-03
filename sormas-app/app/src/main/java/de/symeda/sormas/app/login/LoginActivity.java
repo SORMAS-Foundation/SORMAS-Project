@@ -30,10 +30,13 @@ import android.view.View;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.ActivityLoginLayoutBinding;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -177,46 +180,66 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         // try to connect -> validates login and version
         if (checkLoginAndVersion && ConfigProvider.getUsername() != null) {
             RetroProvider.connectAsyncHandled(this, true, true,
-                    new Consumer<Boolean>() {
-                        @Override
-                        public void accept(Boolean result) {
-                            if (ConfigProvider.getUser() != null || RetroProvider.isConnected()) {
-                                processLogin(false);
-                            } else {
-                                if (progressDialog != null && progressDialog.isShowing()) {
-                                    progressDialog.dismiss();
-                                    progressDialog = null;
-                                }
+                    result -> {
+                        RetroProvider.disconnect();
+                        if (ConfigProvider.getUser() != null || RetroProvider.isConnected()) {
+                            processLogin(false);
+                        } else {
+                            if (progressDialog != null && progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                                progressDialog = null;
                             }
                         }
                     });
-            return;
         }
+        else {
+            boolean hideProgressDialog = true;
+            if (ConfigProvider.getUsername() != null) { // valid login?
 
-        boolean hideProgressDialog = true;
-        if (ConfigProvider.getUsername() != null) {
-            // valid login
-            if (ConfigProvider.getUser() == null
-                    || DatabaseHelper.getCaseDao().isEmpty()
-                    || ConfigProvider.isRepullNeeded()) {
-                // no user or data yet? sync...
-                SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this, new SyncCallback() {
-                    @Override
-                    public void call(boolean syncFailed, String syncFailedMessage) {
-                        if (ConfigProvider.getUser() != null) {
-                            openLandingActivity();
-                        }
-                    }
-                });
-                hideProgressDialog = false;
-            } else {
-                openLandingActivity();
+                if (ConfigProvider.getUser() == null
+                        || DatabaseHelper.getCaseDao().isEmpty()
+                        || ConfigProvider.isRepullNeeded()) {
+
+                    // no user or data yet? sync...
+
+                    RetroProvider.connectAsyncHandled(this, false, false,
+                            result -> {
+                                if (result) {
+                                    SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, LoginActivity.this,
+                                            (syncFailed, syncFailedMessage) -> {
+
+                                                RetroProvider.disconnect();
+
+                                                if (syncFailed) {
+                                                    NotificationHelper.showNotification(LoginActivity.this, NotificationType.ERROR, syncFailedMessage);
+                                                }
+
+                                                if (ConfigProvider.getUser() != null) {
+                                                    openLandingActivity();
+                                                }
+
+                                                if (progressDialog != null && progressDialog.isShowing()) {
+                                                    progressDialog.dismiss();
+                                                    progressDialog = null;
+                                                }
+                                            });
+                                } else {
+                                    if (progressDialog != null && progressDialog.isShowing()) {
+                                        progressDialog.dismiss();
+                                        progressDialog = null;
+                                    }
+                                }
+                            });
+                    hideProgressDialog = false;
+                } else {
+                    openLandingActivity();
+                }
             }
-        }
 
-        if (hideProgressDialog && progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-            progressDialog = null;
+            if (hideProgressDialog && progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
         }
     }
 

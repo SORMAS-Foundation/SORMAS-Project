@@ -61,6 +61,7 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
 import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
 import de.symeda.sormas.app.core.TaskNotificationService;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
 import retrofit2.Call;
@@ -135,7 +136,19 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             syncFailedMessage = e.getMessage(context);
             RetroProvider.disconnect();
 
-        } catch (Exception e) {
+        } catch (NoConnectionException | ServerCommunicationException e) {
+
+            Log.e(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
+
+            SormasApplication application = (SormasApplication) context.getApplicationContext();
+            Tracker tracker = application.getDefaultTracker();
+            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+
+            syncFailed = true;
+            syncFailedMessage = DatabaseHelper.getContext().getString(R.string.error_server_communication);
+            RetroProvider.disconnect();
+
+        } catch (RuntimeException | DaoException e) {
 
             SyncMode newSyncMode = null;
             switch (syncMode) {
@@ -192,7 +205,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 DatabaseHelper.getClinicalVisitDao().isAnyModified();
     }
 
-    private void synchronizeChangedData() throws DaoException, ServerConnectionException, ServerCommunicationException {
+    private void synchronizeChangedData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
@@ -260,7 +273,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             clinicalVisitDtoHelper.pullEntities(true);
     }
 
-    private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
+    private void repullData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
@@ -299,7 +312,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         clinicalVisitDtoHelper.repullEntities();
     }
 
-    private void pullInfrastructure() throws DaoException, ServerConnectionException, ServerCommunicationException {
+    private void pullInfrastructure() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 
         new RegionDtoHelper().pullEntities(false);
         new DistrictDtoHelper().pullEntities(false);
@@ -319,7 +332,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserRoleConfigDtoHelper().pullEntities(false);
     }
 
-    private void pullAndRemoveArchivedUuidsSince(Date since) throws ServerConnectionException, ServerCommunicationException {
+    private void pullAndRemoveArchivedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
 
         try {
@@ -347,7 +360,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void pushNewPullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
+    private void pushNewPullMissingAndDeleteInvalidData() throws NoConnectionException, ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pushNewPullMissingAndDeleteInvalidData");
@@ -437,7 +450,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
     }
 
-    private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException, ServerCommunicationException, DaoException {
+    private void pullMissingAndDeleteInvalidInfrastructure() throws NoConnectionException, ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidInfrastructure");
@@ -491,33 +504,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         }
         return response.body();
     }
-
-    /**
-     * Does the call and meanwhile displays a progress dialog.
-     * Should only be called when the user has manually triggered the synchronization.
-     *
-     * @param context
-     * @param callback
-     */
-    public static ProgressDialog callWithProgressDialog(SyncMode syncMode, final Context context, final SyncCallback callback) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.heading_synchronization),
-                context.getString(R.string.info_synchronizing), true);
-
-        call(syncMode, context, new SyncCallback() {
-            @Override
-            public void call(boolean syncFailed, String syncFailedMessage) {
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-                if (callback != null) {
-                    callback.call(syncFailed, syncFailedMessage);
-                }
-            }
-        });
-
-        return progressDialog;
-    }
-
 
     public static void call(SyncMode syncMode, final Context context, final SyncCallback callback) {
         new SynchronizeDataAsync(syncMode, context) {

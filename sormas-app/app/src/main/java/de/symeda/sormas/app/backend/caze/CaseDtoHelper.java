@@ -52,6 +52,7 @@ import de.symeda.sormas.app.backend.therapy.Therapy;
 import de.symeda.sormas.app.backend.therapy.TherapyDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -76,17 +77,17 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     }
 
     @Override
-    protected Call<List<CaseDataDto>> pullAllSince(long since) {
+    protected Call<List<CaseDataDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getCaseFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<CaseDataDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<CaseDataDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getCaseFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<CaseDataDto> caseDataDtos) {
+    protected Call<List<PushResult>> pushAll(List<CaseDataDto> caseDataDtos) throws NoConnectionException {
         return RetroProvider.getCaseFacade().pushAll(caseDataDtos);
     }
 

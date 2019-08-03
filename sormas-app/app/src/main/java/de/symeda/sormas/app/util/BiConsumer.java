@@ -18,6 +18,6 @@
 
 package de.symeda.sormas.app.util;
 
-public interface Consumer<T> {
-    void accept(T t);
+public interface BiConsumer<T,U> {
+    void accept(T t, U u);
 }

@@ -67,6 +67,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.AppUpdateController;
+import de.symeda.sormas.app.util.BiConsumer;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import okhttp3.Credentials;
@@ -264,6 +265,10 @@ public final class RetroProvider {
 
     public static void connect(Context context) throws ApiVersionException, ServerConnectionException, ServerCommunicationException {
 
+        if (RetroProvider.isConnected()) {
+            throw new IllegalStateException("Connection already established.");
+        }
+
         if (!isConnectedToNetwork(context)) {
             throw new ServerConnectionException(600);
         }
@@ -277,96 +282,96 @@ public final class RetroProvider {
     }
 
     public static void connectAsyncHandled(FragmentActivity activity, final boolean showUpgradePrompt, final boolean matchExactVersion, final Consumer<Boolean> callback) {
+
         if (!(activity instanceof NotificationContext)) {
             throw new UnsupportedOperationException("Activity needs to implement NotificationContext: " + activity.toString());
         }
 
-        if (!RetroProvider.isConnected()) {
-            new DefaultAsyncTask(activity.getApplicationContext()) {
+        WeakReference<FragmentActivity> activityReference = new WeakReference<>(activity);
 
-                WeakReference<FragmentActivity> activityReference;
-                boolean versionCompatible = false;
-
-                @Override
-                protected void doInBackground(TaskResultHolder resultHolder) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
-                    RetroProvider.connect(getApplicationReference().get());
-                    versionCompatible = true;
-                    if (matchExactVersion) {
-                        RetroProvider.matchAppAndApiVersions();
-                    }
-                }
-
-                @Override
-                protected AsyncTaskResult handleException(Exception e) {
-                    if (e instanceof ServerConnectionException
-                            || e instanceof ApiVersionException)
-                        return new AsyncTaskResult<>(e); // expected exceptions
-                    return super.handleException(e);
-                }
-
-                @Override
-                protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                    if (taskResult.getResultStatus().isSuccess()) {
-                        callback.accept(true);
+        connectAsync(activity.getApplicationContext(), matchExactVersion, (result, versionCompatible) -> {
+            if (result.getResultStatus().isSuccess()) {
+                callback.accept(true);
+            } else {
+                if (result.getError() instanceof ApiVersionException) {
+                    ApiVersionException e = (ApiVersionException) result.getError();
+                    if (showUpgradePrompt
+                            && !DataHelper.isNullOrEmpty(e.getAppUrl())
+                            && activityReference.get() != null) {
+                        boolean canWorkOffline = ConfigProvider.getUser() != null;
+                        AppUpdateController.getInstance().updateApp(activityReference.get(), e.getAppUrl(), e.getVersion(), versionCompatible || canWorkOffline,
+                                new Callback() {
+                                    @Override
+                                    public void call() {
+                                        callback.accept(false);
+                                    }
+                                });
                     } else {
-                        if (taskResult.getError() instanceof ApiVersionException) {
-                            ApiVersionException e = (ApiVersionException) taskResult.getError();
-                            if (showUpgradePrompt
-                                    && !DataHelper.isNullOrEmpty(e.getAppUrl())
-                                    && activityReference.get() != null) {
-                                boolean canWorkOffline = ConfigProvider.getUser() != null;
-                                AppUpdateController.getInstance().updateApp(activityReference.get(), e.getAppUrl(), e.getVersion(), versionCompatible || canWorkOffline,
-                                        new Callback() {
-                                            @Override
-                                            public void call() {
-                                                callback.accept(false);
-                                            }
-                                        });
-                            } else {
-                                if (activityReference.get() != null) {
-                                    NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR, e.getMessage());
-                                }
-                                callback.accept(false);
-                            }
-                        } else if (taskResult.getError() instanceof ServerConnectionException) {
-                            ServerConnectionException exception = (ServerConnectionException)taskResult.getError();
-
-                            if (exception.getCustomHtmlErrorCode() == 401 || exception.getCustomHtmlErrorCode() == 403) {
-                                // could not authenticate or user does not have access to the app
-                                ConfigProvider.clearUsernameAndPassword();
-                            }
-
-                            if (activityReference.get() != null) {
-                                NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR,
-                                        exception.getMessage(activityReference.get().getApplicationContext()));
-                            }
-                            callback.accept(false);
-                        } else {
-                            if (activityReference.get() != null) {
-                                NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR,
-                                        activityReference.get().getResources().getString(R.string.error_server_connection));
-                            }
-                            callback.accept(false);
+                        if (activityReference.get() != null) {
+                            NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR, e.getMessage());
                         }
+                        callback.accept(false);
                     }
-                }
+                } else if (result.getError() instanceof ServerConnectionException) {
+                    ServerConnectionException exception = (ServerConnectionException)result.getError();
 
-                private DefaultAsyncTask init(FragmentActivity activity) {
-                    activityReference = new WeakReference<>(activity);
-                    return this;
+                    if (exception.getCustomHtmlErrorCode() == 401 || exception.getCustomHtmlErrorCode() == 403) {
+                        // could not authenticate or user does not have access to the app
+                        ConfigProvider.clearUsernameAndPassword();
+                    }
+
+                    if (activityReference.get() != null) {
+                        NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR,
+                                exception.getMessage(activityReference.get().getApplicationContext()));
+                    }
+                    callback.accept(false);
+                } else {
+                    if (activityReference.get() != null) {
+                        NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR,
+                                activityReference.get().getResources().getString(R.string.error_server_connection));
+                    }
+                    callback.accept(false);
                 }
-            }.init(activity).executeOnThreadPool();
-        } else {
-            callback.accept(true);
-        }
+            }
+        });
     }
 
+    public static void connectAsync(Context context, final boolean matchExactVersion, final BiConsumer<AsyncTaskResult<TaskResultHolder>, Boolean> callback) {
+
+        new DefaultAsyncTask(context) {
+
+            boolean versionCompatible = false;
+
+            @Override
+            protected void doInBackground(TaskResultHolder resultHolder) throws NoConnectionException, ServerConnectionException, ServerCommunicationException, ApiVersionException {
+                RetroProvider.connect(getApplicationReference().get());
+                versionCompatible = true;
+                if (matchExactVersion) {
+                    RetroProvider.matchAppAndApiVersions();
+                }
+            }
+
+            @Override
+            protected AsyncTaskResult handleException(Exception e) {
+                if (e instanceof ServerConnectionException
+                        || e instanceof ApiVersionException)
+                    return new AsyncTaskResult<>(e); // expected exceptions
+                return super.handleException(e);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                callback.accept(taskResult, versionCompatible);
+            }
+
+        }.executeOnThreadPool();
+    }
 
     public static void disconnect() {
         instance = null;
     }
 
-    public static void matchAppAndApiVersions() throws ServerCommunicationException, ServerConnectionException, ApiVersionException {
+    public static void matchAppAndApiVersions() throws NoConnectionException, ServerCommunicationException, ServerConnectionException, ApiVersionException {
         matchAppAndApiVersions(getInfoFacade());
     }
 
@@ -430,11 +435,13 @@ public final class RetroProvider {
         }
     }
 
-    public static InfoFacadeRetro getInfoFacade() {
+    public static InfoFacadeRetro getInfoFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         return instance.infoFacadeRetro;
     }
 
-    public static CaseFacadeRetro getCaseFacade() {
+    public static CaseFacadeRetro getCaseFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.caseFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.caseFacadeRetro == null) {
@@ -445,7 +452,8 @@ public final class RetroProvider {
         return instance.caseFacadeRetro;
     }
 
-    public static PersonFacadeRetro getPersonFacade() {
+    public static PersonFacadeRetro getPersonFacade()throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.personFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.personFacadeRetro == null) {
@@ -456,7 +464,8 @@ public final class RetroProvider {
         return instance.personFacadeRetro;
     }
 
-    public static CommunityFacadeRetro getCommunityFacade() {
+    public static CommunityFacadeRetro getCommunityFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.communityFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.communityFacadeRetro == null) {
@@ -467,7 +476,8 @@ public final class RetroProvider {
         return instance.communityFacadeRetro;
     }
 
-    public static DistrictFacadeRetro getDistrictFacade() {
+    public static DistrictFacadeRetro getDistrictFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.districtFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.districtFacadeRetro == null) {
@@ -478,7 +488,8 @@ public final class RetroProvider {
         return instance.districtFacadeRetro;
     }
 
-    public static RegionFacadeRetro getRegionFacade() {
+    public static RegionFacadeRetro getRegionFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.regionFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.regionFacadeRetro == null) {
@@ -489,7 +500,8 @@ public final class RetroProvider {
         return instance.regionFacadeRetro;
     }
 
-    public static FacilityFacadeRetro getFacilityFacade() {
+    public static FacilityFacadeRetro getFacilityFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.facilityFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.facilityFacadeRetro == null) {
@@ -500,7 +512,8 @@ public final class RetroProvider {
         return instance.facilityFacadeRetro;
     }
 
-    public static PointOfEntryFacadeRetro getPointOfEntryFacade() {
+    public static PointOfEntryFacadeRetro getPointOfEntryFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.pointOfEntryFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.pointOfEntryFacadeRetro == null) {
@@ -511,7 +524,8 @@ public final class RetroProvider {
         return instance.pointOfEntryFacadeRetro;
     }
 
-    public static UserFacadeRetro getUserFacade() {
+    public static UserFacadeRetro getUserFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.userFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.userFacadeRetro == null) {
@@ -522,7 +536,8 @@ public final class RetroProvider {
         return instance.userFacadeRetro;
     }
 
-    public static TaskFacadeRetro getTaskFacade() {
+    public static TaskFacadeRetro getTaskFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.taskFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.taskFacadeRetro == null) {
@@ -533,7 +548,8 @@ public final class RetroProvider {
         return instance.taskFacadeRetro;
     }
 
-    public static ContactFacadeRetro getContactFacade() {
+    public static ContactFacadeRetro getContactFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.contactFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.contactFacadeRetro == null) {
@@ -544,7 +560,8 @@ public final class RetroProvider {
         return instance.contactFacadeRetro;
     }
 
-    public static VisitFacadeRetro getVisitFacade() {
+    public static VisitFacadeRetro getVisitFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.visitFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.visitFacadeRetro == null) {
@@ -555,7 +572,8 @@ public final class RetroProvider {
         return instance.visitFacadeRetro;
     }
 
-    public static EventFacadeRetro getEventFacade() {
+    public static EventFacadeRetro getEventFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.eventFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.eventFacadeRetro == null) {
@@ -566,7 +584,8 @@ public final class RetroProvider {
         return instance.eventFacadeRetro;
     }
 
-    public static SampleFacadeRetro getSampleFacade() {
+    public static SampleFacadeRetro getSampleFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.sampleFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.sampleFacadeRetro == null) {
@@ -577,7 +596,8 @@ public final class RetroProvider {
         return instance.sampleFacadeRetro;
     }
 
-    public static PathogenTestFacadeRetro getSampleTestFacade() {
+    public static PathogenTestFacadeRetro getSampleTestFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.pathogenTestFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.pathogenTestFacadeRetro == null) {
@@ -588,7 +608,8 @@ public final class RetroProvider {
         return instance.pathogenTestFacadeRetro;
     }
 
-    public static EventParticipantFacadeRetro getEventParticipantFacade() {
+    public static EventParticipantFacadeRetro getEventParticipantFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.eventParticipantFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.eventParticipantFacadeRetro == null) {
@@ -599,7 +620,8 @@ public final class RetroProvider {
         return instance.eventParticipantFacadeRetro;
     }
 
-    public static WeeklyReportFacadeRetro getWeeklyReportFacade() {
+    public static WeeklyReportFacadeRetro getWeeklyReportFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.weeklyReportFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.weeklyReportFacadeRetro == null) {
@@ -610,7 +632,8 @@ public final class RetroProvider {
         return instance.weeklyReportFacadeRetro;
     }
 
-    public static OutbreakFacadeRetro getOutbreakFacade() {
+    public static OutbreakFacadeRetro getOutbreakFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.outbreakFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.outbreakFacadeRetro == null) {
@@ -621,7 +644,8 @@ public final class RetroProvider {
         return instance.outbreakFacadeRetro;
     }
 
-    public static ClassificationFacadeRetro getClassificationFacade() {
+    public static ClassificationFacadeRetro getClassificationFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.classificationFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.classificationFacadeRetro == null) {
@@ -632,7 +656,8 @@ public final class RetroProvider {
         return instance.classificationFacadeRetro;
     }
 
-    public static UserRoleConfigFacadeRetro getUserRoleConfigFacade() {
+    public static UserRoleConfigFacadeRetro getUserRoleConfigFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.userRoleConfigFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.userRoleConfigFacadeRetro == null) {
@@ -643,7 +668,8 @@ public final class RetroProvider {
         return instance.userRoleConfigFacadeRetro;
     }
 
-    public static PrescriptionFacadeRetro getPrescriptionFacade() {
+    public static PrescriptionFacadeRetro getPrescriptionFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.prescriptionFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.prescriptionFacadeRetro == null) {
@@ -654,7 +680,8 @@ public final class RetroProvider {
         return instance.prescriptionFacadeRetro;
     }
 
-    public static TreatmentFacadeRetro getTreatmentFacade() {
+    public static TreatmentFacadeRetro getTreatmentFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.treatmentFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.treatmentFacadeRetro == null) {
@@ -665,7 +692,8 @@ public final class RetroProvider {
         return instance.treatmentFacadeRetro;
     }
 
-    public static AdditionalTestFacadeRetro getAdditionalTestFacade() {
+    public static AdditionalTestFacadeRetro getAdditionalTestFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.additionalTestFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.additionalTestFacadeRetro == null) {
@@ -676,7 +704,8 @@ public final class RetroProvider {
         return instance.additionalTestFacadeRetro;
     }
 
-    public static ClinicalVisitFacadeRetro getClinicalVisitFacade() {
+    public static ClinicalVisitFacadeRetro getClinicalVisitFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.clinicalVisitFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.clinicalVisitFacadeRetro == null) {
@@ -687,7 +716,8 @@ public final class RetroProvider {
         return instance.clinicalVisitFacadeRetro;
     }
 
-    public static DiseaseConfigurationFacadeRetro getDiseaseConfigurationFacade() {
+    public static DiseaseConfigurationFacadeRetro getDiseaseConfigurationFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
         if (instance.diseaseConfigurationFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
                 if (instance.diseaseConfigurationFacadeRetro == null) {

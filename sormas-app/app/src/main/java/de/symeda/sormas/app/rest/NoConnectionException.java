@@ -16,8 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.util;
+package de.symeda.sormas.app.rest;
 
-public interface Consumer<T> {
-    void accept(T t);
+/**
+ * Thrown when no connection is established for RetroProvider
+ */
+public class NoConnectionException extends Exception {
+
+    public NoConnectionException() {
+    }
 }
