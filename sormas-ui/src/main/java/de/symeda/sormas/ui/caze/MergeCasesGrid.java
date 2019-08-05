@@ -7,9 +7,13 @@ import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -21,11 +25,13 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
@@ -98,6 +104,30 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		
 		TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
 		TreeData<CaseIndexDto> data = dataProvider.getTreeData();
+		
+		btnPick.addClickListener(e -> {
+			VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingConfirmMerging),
+					new Label(I18nProperties.getString(Strings.confirmationPickCaseAndDeleteOther)),
+					I18nProperties.getCaption(Captions.actionConfirm),
+					I18nProperties.getCaption(Captions.actionCancel),
+					640,
+					confirmed -> {
+						if (confirmed.booleanValue()) {
+							CaseIndexDto caseToDelete = data.getParent(caze) != null ? data.getParent(caze) : data.getChildren(caze).get(0);
+							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToDelete.getUuid(), caze.getUuid(), UserProvider.getCurrent().getUuid());
+							dataProvider.getTreeData().removeItem(caze);
+							dataProvider.refreshAll();
+							
+							if (!data.contains(caseToDelete)) {
+								new Notification(I18nProperties.getString(Strings.messageCaseDuplicateDeleted), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
+							} else {
+								new Notification(I18nProperties.getString(Strings.errorCaseDuplicateDeletion), Type.ERROR_MESSAGE).show(Page.getCurrent());
+							}
+						}
+					}
+			);
+		});
 		
 		if (data.getParent(caze) == null) {
 			CssStyles.style(btnMerge, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);

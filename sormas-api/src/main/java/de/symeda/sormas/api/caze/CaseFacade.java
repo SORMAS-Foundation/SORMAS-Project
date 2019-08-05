@@ -104,7 +104,9 @@ public interface CaseFacade {
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid);
 	
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
-
+	
+	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid);
+	
 	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
 			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB);
 	

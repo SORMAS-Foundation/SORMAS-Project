@@ -134,8 +134,9 @@ public class VaadinUiUtil {
 		}
 		popupWindow.setCaption(caption);
 
-		VerticalLayout layout = new VerticalLayout();	
+		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
+		content.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(content);
 
 		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
@@ -164,7 +165,7 @@ public class VaadinUiUtil {
 
 		layout.addComponent(confirmationComponent);
 		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
-		layout.setSizeUndefined();
+		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setSpacing(true);
 		popupWindow.setContent(layout);
 

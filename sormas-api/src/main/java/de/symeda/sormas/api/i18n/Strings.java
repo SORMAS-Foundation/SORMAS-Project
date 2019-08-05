@@ -51,6 +51,7 @@ public interface Strings {
 	public static String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	public static String confirmationDeleteVisits = "confirmationDeleteVisits";
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
+	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	public static String done = "done";
 	public static String edit = "edit";
 	public static String entityAdditionalTest = "entityAdditionalTest";
@@ -80,6 +81,7 @@ public interface Strings {
 	public static String entityTreatments = "entityTreatments";
 	public static String epiWeek = "epiWeek";
 	public static String errorAccessDenied = "errorAccessDenied";
+	public static String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	public static String errorEntityOutdated = "errorEntityOutdated";
 	public static String errorInvalidValue = "errorInvalidValue";
 	public static String errorNoAccessToWeb = "errorNoAccessToWeb";
@@ -112,6 +114,7 @@ public interface Strings {
 	public static String headingConfirmArchiving = "headingConfirmArchiving";
 	public static String headingConfirmDearchiving = "headingConfirmDearchiving";
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
+	public static String headingConfirmMerging = "headingConfirmMerging";
 	public static String headingContactData = "headingContactData";
 	public static String headingContactFollowUp = "headingContactFollowUp";
 	public static String headingContactInformation = "headingContactInformation";
@@ -286,6 +289,7 @@ public interface Strings {
 	public static String messageCaseArchived = "messageCaseArchived";
 	public static String messageCaseCreated = "messageCaseCreated";
 	public static String messageCaseDearchived = "messageCaseDearchived";
+	public static String messageCaseDuplicateDeleted = "messageCaseDuplicateDeleted";
 	public static String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
 	public static String messageCasesArchived = "messageCasesArchived";
 	public static String messageCaseSaved = "messageCaseSaved";

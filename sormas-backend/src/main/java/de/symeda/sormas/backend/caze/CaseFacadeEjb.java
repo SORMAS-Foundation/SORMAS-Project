@@ -743,7 +743,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), 0.65D);
+		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), 0.4D);
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
 		Predicate districtFilter = cb.equal(district.get(District.ID), district2.get(District.ID));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
@@ -1322,6 +1322,16 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// Delete the case
 		caseService.delete(caze);
+	}
+	
+	@Override
+	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid) {
+		Case caze = caseService.getByUuid(caseUuid);
+		Case duplicateOfCase = caseService.getByUuid(duplicateOfCaseUuid);
+		caze.setDuplicateOf(duplicateOfCase);
+		caseService.ensurePersisted(caze);
+		
+		deleteCase(new CaseReferenceDto(caseUuid), userUuid);
 	}
 
 	@Override

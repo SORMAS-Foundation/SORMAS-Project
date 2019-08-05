@@ -734,7 +734,7 @@ public class Case extends AbstractDomainObject {
 		this.creationVersion = creationVersion;
 	}
 	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(cascade = {}, fetch = FetchType.LAZY)
 	@AuditedIgnore
 	public Case getDuplicateOf() {
 		return duplicateOf;
