@@ -260,7 +260,7 @@ public interface Strings {
 	public static String infoImportSimilarity = "infoImportSimilarity";
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
 	public static String infoMergingActionsDescription = "infoMergingActionsDescription";
-	public static String infoMergingDismissDescription = "infoMergingDismissDescription";
+	public static String infoMergingHideDescription = "infoMergingHideDescription";
 	public static String infoMergingIntroduction = "infoMergingIntroduction";
 	public static String infoMergingMergeDescription = "infoMergingMergeDescription";
 	public static String infoMergingPickDescription = "infoMergingPickDescription";

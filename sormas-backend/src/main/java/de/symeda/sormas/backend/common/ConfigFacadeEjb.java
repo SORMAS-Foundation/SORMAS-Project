@@ -63,6 +63,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_KEY = "sms.auth.key";
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 	
+	public static final String CASE_NAME_SIMILARITY_THRESHOLD = "casenamesimilaritythreshold";
+	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
 
@@ -81,6 +83,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	protected boolean getBoolean(String name, boolean defaultValue) {
 		return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
+	}
+	
+	protected double getDouble(String name, double defaultValue) {
+		return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
 	}
 
 	@Override
@@ -162,6 +168,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(SMS_AUTH_SECRET, "");
 	}
 
+	@Override
+	public double getCaseNameSimilarityThreshold() {
+		return getDouble(CASE_NAME_SIMILARITY_THRESHOLD, 0.65D);
+	}
+	
 	@Override
 	public char getCsvSeparator() {
 		String seperatorString = getProperty(CSV_SEPARATOR, ",");

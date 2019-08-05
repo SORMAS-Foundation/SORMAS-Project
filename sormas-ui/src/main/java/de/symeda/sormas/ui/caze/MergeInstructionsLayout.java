@@ -41,12 +41,12 @@ public class MergeInstructionsLayout extends VerticalLayout {
 		lblPickDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblPickDescription);
 
-		Label lblHeadingDismiss = new Label(I18nProperties.getCaption(Captions.actionDismiss));
-		CssStyles.style(lblHeadingDismiss, CssStyles.H3);
-		addComponent(lblHeadingDismiss);
-		Label lblDismissDescription = new Label(I18nProperties.getString(Strings.infoMergingDismissDescription));
-		lblDismissDescription.setWidth(100, Unit.PERCENTAGE);
-		addComponent(lblDismissDescription);
+		Label lblHeadingHide = new Label(I18nProperties.getCaption(Captions.actionHide));
+		CssStyles.style(lblHeadingHide, CssStyles.H3);
+		addComponent(lblHeadingHide);
+		Label lblHideDescription = new Label(I18nProperties.getString(Strings.infoMergingHideDescription));
+		lblHideDescription.setWidth(100, Unit.PERCENTAGE);
+		addComponent(lblHideDescription);
 	}
 	
 }

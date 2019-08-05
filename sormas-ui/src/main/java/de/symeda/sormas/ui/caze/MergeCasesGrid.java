@@ -62,9 +62,8 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 			return link;
 		}).setId(COLUMN_UUID);
 		
-		setColumns(COLUMN_UUID, CaseIndexDto.EPID_NUMBER, COLUMN_DISEASE, CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME,
-				CaseIndexDto.INVESTIGATION_STATUS, CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, CaseIndexDto.AGE_AND_BIRTH_DATE,
-				CaseIndexDto.SEX, CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
+		setColumns(COLUMN_UUID, COLUMN_DISEASE, CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
+				CaseIndexDto.AGE_AND_BIRTH_DATE, CaseIndexDto.SEX, CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME,
 				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, COLUMN_ACTIONS);
 
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
@@ -100,7 +99,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		btnMerge.setIcon(VaadinIcons.COMPRESS_SQUARE);
 		Button btnPick = new Button(I18nProperties.getCaption(Captions.actionPick));
 		btnPick.setIcon(VaadinIcons.CHECK);
-		Button btnDismiss = null;
+		Button btnHide = null;
 		
 		TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
 		TreeData<CaseIndexDto> data = dataProvider.getTreeData();
@@ -132,9 +131,9 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		if (data.getParent(caze) == null) {
 			CssStyles.style(btnMerge, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
 			CssStyles.style(btnPick, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
-			btnDismiss = new Button(I18nProperties.getCaption(Captions.actionDismiss));
-			btnDismiss.setIcon(VaadinIcons.CLOSE);
-			btnDismiss.addClickListener(e -> {
+			btnHide = new Button(I18nProperties.getCaption(Captions.actionHide));
+			btnHide.setIcon(VaadinIcons.CLOSE);
+			btnHide.addClickListener(e -> {
 				dataProvider.getTreeData().removeItem(caze);
 				dataProvider.refreshAll();
 			});
@@ -144,8 +143,8 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		}
 	
 		layout.addComponents(btnMerge, btnPick);
-		if (btnDismiss != null) {
-			layout.addComponent(btnDismiss);
+		if (btnHide != null) {
+			layout.addComponent(btnHide);
 		}
 		
 		return layout;

@@ -200,6 +200,7 @@ public class CaseController {
 
 	private CaseDataDto createNewCase(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = CaseDataDto.build(person, disease);
+		caze.setReportDate(null);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
@@ -360,7 +361,7 @@ public class CaseController {
 		
 		if (similarCases.size() > 0) {
 			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(similarCases);
-			pickOrCreateField.setWidth(1024, Unit.PIXELS);
+			pickOrCreateField.setWidth(1280, Unit.PIXELS);
 			
 			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
 			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
