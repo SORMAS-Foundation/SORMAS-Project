@@ -135,6 +135,7 @@ import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -194,8 +195,10 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLoca
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
+import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb;
+import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
@@ -2515,64 +2518,82 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public void mergeCase(String leadUuid, String otherUuid) {
 
-		CaseDataDto leadCase = getCaseDataByUuid(leadUuid);
-		CaseDataDto otherCase = getCaseDataByUuid(otherUuid);
+		// 1 Merge Dtos
+		// 1.1 Case
+		CaseDataDto leadCaseData = getCaseDataByUuid(leadUuid);
+		CaseDataDto otherCaseData = getCaseDataByUuid(otherUuid);
 
-		CaseDataDto mergedCase = mergeDto(leadCase, otherCase);
+		CaseDataDto mergedCase = DtoHelper.mergeDto(leadCaseData, otherCaseData);
 
 		saveCase(mergedCase);
 
-		PersonDto leadPerson = personFacade.getPersonByUuid(leadCase.getPerson().getUuid());
-		PersonDto otherPerson = personFacade.getPersonByUuid(otherCase.getPerson().getUuid());
+		// 1.2 Person
+		PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
+		PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
 
-		PersonDto mergedPerson = mergeDto(leadPerson, otherPerson);
+		PersonDto mergedPerson = DtoHelper.mergeDto(leadPerson, otherPerson);
 
 		personFacade.savePerson(mergedPerson);
 
-	}
+		// 2 Change CaseReference
+		Case leadCase = caseService.getByUuid(leadUuid);
+		Case otherCase = caseService.getByUuid(otherUuid);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends EntityDto> T mergeDto(T lead, T other) {
+		// 2.1 Contacts
 
-		try {
-			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class)
-					.getPropertyDescriptors();
+		List<Contact> contacts = contactService.getAllByCase(otherCase);
 
-			for (PropertyDescriptor pd : pds) {
-				// Skip properties without a read or write method
-				if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
-					continue;
-				}
+		for (Contact contact : contacts) {
 
-				Object leadProperty = pd.getReadMethod().invoke(lead);
-				Object otherProperty = pd.getReadMethod().invoke(other);
-
-				// Write other-property into lead-property, if lead-property is null
-				if (leadProperty == null) {
-
-					if (List.class.isAssignableFrom(pd.getPropertyType())) {
-
-						for (EntityDto entry : (List<EntityDto>) otherProperty) {
-							entry.setUuid(UUID.randomUUID().toString());
-						}
-					}
-
-					pd.getWriteMethod().invoke(lead, otherProperty);
-
-				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
-
-					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty));
-
-				}
-			}
-		} catch (IntrospectionException | InvocationTargetException |
-
-				IllegalAccessException e) {
-			throw new RuntimeException("Exception when trying to merge dto: " + e.getMessage(), e.getCause());
+			contact.setCaze(leadCase);
+			contactService.ensurePersisted(contact);
 		}
 
-		return lead;
+		// 2.2 Samples
+		List<Sample> samples = sampleService.getAllByCase(otherCase);
+
+		for (Sample sample : samples) {
+
+			sample.setAssociatedCase(leadCase);
+			sampleService.ensurePersisted(sample);
+		}
+
+		// 2.3 Tasks
+		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(otherCase.getUuid())));
+		for (Task task : tasks) {
+
+			task.setCaze(leadCase);
+			taskService.ensurePersisted(task);
+		}
+
+		// 3 Change Therapy Reference
+		// 3.1 Treatments
+		List<Treatment> treatments = treatmentService.findBy(new TreatmentCriteria().therapy(new TherapyReferenceDto(otherCase.getTherapy().getUuid())));
+
+		for (Treatment treatment : treatments) {
+
+			treatment.setTherapy(leadCase.getTherapy());
+			treatmentService.ensurePersisted(treatment);
+		}
+
+		// 3.2 Prescriptions
+		List<Prescription> prescriptions = prescriptionService.findBy(new PrescriptionCriteria().therapy(new TherapyReferenceDto(otherCase.getTherapy().getUuid())));
+
+		for (Prescription prescription : prescriptions) {
+
+			prescription.setTherapy(leadCase.getTherapy());
+			prescriptionService.ensurePersisted(prescription);
+		}
+
+		// 4 Change Clinical Course Reference
+		// 4.1 Clinical Visits
+		List<ClinicalVisit> clinicalVisits = clinicalVisitService.findBy(new ClinicalVisitCriteria().clinicalCourse(new ClinicalCourseReferenceDto(otherCase.getClinicalCourse().getUuid())));
+
+		for (ClinicalVisit clinicalVisit : clinicalVisits) {
+
+			clinicalVisit.setClinicalCourse(leadCase.getClinicalCourse());
+			clinicalVisitService.ensurePersisted(clinicalVisit);
+		}
 	}
 
 	@LocalBean

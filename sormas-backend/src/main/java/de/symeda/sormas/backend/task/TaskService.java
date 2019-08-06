@@ -101,7 +101,7 @@ public class TaskService extends AbstractAdoService<Task> {
 
 		return em.createQuery(cq).getResultList();
 	}
-
+	
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */

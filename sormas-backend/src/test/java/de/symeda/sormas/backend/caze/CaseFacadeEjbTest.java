@@ -45,15 +45,18 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -69,11 +72,12 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.therapy.PrescriptionDto;
+import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -81,12 +85,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -501,6 +502,18 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto otherCase = creator.createCase(otherUserReference, otherPersonReference, Disease.CHOLERA,
 				CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), otherRdcf);
 		otherCase.setClinicianName("name");
+		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
+		ContactDto contact = creator.createContact(otherUserReference, otherUserReference, otherPersonReference,
+				otherCaseReference, new Date(), new Date());
+		Region region = creator.createRegion("");
+		District district = creator.createDistrict("", region);
+		SampleDto sample = creator.createSample(otherCaseReference, otherUserReference,
+				creator.createFacility("", region, district, creator.createCommunity("", district)));
+		TaskDto task = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
+				otherCaseReference, new ContactReferenceDto(), new EventReferenceDto(), new Date(), otherUserReference);
+		TreatmentDto treatment = creator.createTreatment(otherCase);
+		PrescriptionDto prescription = creator.createPrescription(otherCase);
+		ClinicalVisitDto visit = creator.createClinicalVisit(otherCase);
 		getCaseFacade().saveCase(otherCase);
 
 		// 2. Merge
@@ -536,134 +549,40 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// Check 'lead has no value, other has'
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
-	}
 
-	@Test
-	public void testMergeDto() throws Exception {
+		// 4. Test Reference Changes
+		// 4.1 Contacts
+		List<String> contactUuids = new ArrayList<String>();
+		contactUuids.add(contact.getUuid());
+		assertEquals(leadCase.getUuid(), getContactFacade().getByUuids(contactUuids).get(0).getCaze().getUuid());
 
-		// Test simple values
-		{
-			VisitDto leadDto = new VisitDto();
-			VisitDto otherDto = new VisitDto();
+		// 4.2 Samples
+		List<String> sampleUuids = new ArrayList<String>();
+		sampleUuids.add(sample.getUuid());
+		assertEquals(leadCase.getUuid(),
+				getSampleFacade().getByUuids(sampleUuids).get(0).getAssociatedCase().getUuid());
 
-			// lead and other have different values
-			Double reportLat = 1.234;
-			leadDto.setReportLat(reportLat);
-			otherDto.setReportLat(2.345);
+		// 4.3 Tasks
+		List<String> taskUuids = new ArrayList<String>();
+		taskUuids.add(task.getUuid());
+		assertEquals(leadCase.getUuid(), getTaskFacade().getByUuids(taskUuids).get(0).getCaze().getUuid());
 
-			// lead has value, other has not
-			Double reportLon = 3.456;
-			leadDto.setReportLon(reportLon);
+		// 4.4 Treatments
+		List<String> treatmentUuids = new ArrayList<String>();
+		treatmentUuids.add(treatment.getUuid());
+		assertEquals(leadCase.getTherapy().getUuid(),
+				getTreatmentFacade().getByUuids(treatmentUuids).get(0).getTherapy().getUuid());
 
-			// lead has no value, other has
-			Float reportLatLonAccuracy = (float) 4.567;
-			otherDto.setReportLatLonAccuracy(reportLatLonAccuracy);
+		// 4.5 Prescriptions
+		List<String> prescriptionUuids = new ArrayList<String>();
+		prescriptionUuids.add(prescription.getUuid());
+		assertEquals(leadCase.getTherapy().getUuid(),
+				getPrescriptionFacade().getByUuids(prescriptionUuids).get(0).getTherapy().getUuid());
 
-			VisitDto merged = getCaseFacade().mergeDto(leadDto, otherDto);
-
-			// Check no values
-			assertNull(merged.getDisease());
-
-			// Check 'lead and other have different values'
-			assertEquals(reportLat, merged.getReportLat());
-
-			// Check 'lead has value, other has not'
-			assertEquals(reportLon, merged.getReportLon());
-
-			// Check 'lead has no value, other has'
-			assertEquals(reportLatLonAccuracy, merged.getReportLatLonAccuracy());
-		}
-
-		// Test complex subDto
-		{
-			CaseDataDto leadCaseDto = new CaseDataDto();
-			CaseDataDto otherCaseDto = new CaseDataDto();
-
-			SymptomsDto leadSymptomsDto = new SymptomsDto();
-			SymptomsDto otherSymptomsDto = new SymptomsDto();
-
-			// lead and other have different values
-			SymptomState abdominalPain = SymptomState.NO;
-			leadSymptomsDto.setAbdominalPain(abdominalPain);
-			otherSymptomsDto.setAbdominalPain(SymptomState.UNKNOWN);
-
-			// lead has value, other has not
-			SymptomState alteredConsciousness = SymptomState.YES;
-			leadSymptomsDto.setAlteredConsciousness(alteredConsciousness);
-
-			// lead has no value, other has
-			SymptomState anorexiaAppetiteLoss = SymptomState.UNKNOWN;
-			otherSymptomsDto.setAnorexiaAppetiteLoss(anorexiaAppetiteLoss);
-
-			leadCaseDto.setSymptoms(leadSymptomsDto);
-			otherCaseDto.setSymptoms(otherSymptomsDto);
-
-			CaseDataDto merged = getCaseFacade().mergeDto(leadCaseDto, otherCaseDto);
-
-			// Check no values
-			assertNull(merged.getSymptoms().getBackache());
-
-			// Check 'lead and other have different values'
-			assertEquals(abdominalPain, merged.getSymptoms().getAbdominalPain());
-
-			// Check 'lead has value, other has not'
-			assertEquals(alteredConsciousness, merged.getSymptoms().getAlteredConsciousness());
-
-			// Check 'lead has no value, other has'
-			assertEquals(anorexiaAppetiteLoss, merged.getSymptoms().getAnorexiaAppetiteLoss());
-		}
-
-		// Test List
-		{
-			HospitalizationDto leadDto = new HospitalizationDto();
-			HospitalizationDto otherDto = new HospitalizationDto();
-
-			PreviousHospitalizationDto subDto1 = new PreviousHospitalizationDto();
-			PreviousHospitalizationDto subDto2 = new PreviousHospitalizationDto();
-
-			// lead and other have different values
-			ArrayList<PreviousHospitalizationDto> leadList1 = new ArrayList<PreviousHospitalizationDto>();
-			leadList1.add(subDto1);
-			
-			ArrayList<PreviousHospitalizationDto> otherList1 = new ArrayList<PreviousHospitalizationDto>();
-			otherList1.add(subDto2);
-
-			// lead has values, other has not
-			ArrayList<PreviousHospitalizationDto> leadList2 = new ArrayList<PreviousHospitalizationDto>();
-			leadList2.add(subDto1);
-			leadList2.add(subDto2);
-
-			// lead has no values, other has
-			ArrayList<PreviousHospitalizationDto> otherList2 = new ArrayList<PreviousHospitalizationDto>();
-			otherList2.add(subDto1);
-			otherList2.add(subDto2);
-
-			// Check no values
-			HospitalizationDto merged = getCaseFacade().mergeDto(leadDto, otherDto);
-			assertTrue(merged.getPreviousHospitalizations().isEmpty());
-
-			// Check 'lead and other have different values'
-			leadDto.setPreviousHospitalizations(leadList1);
-			otherDto.setPreviousHospitalizations(otherList1);
-			merged = getCaseFacade().mergeDto(leadDto, otherDto);
-			assertEquals(leadList1.size(), merged.getPreviousHospitalizations().size());
-			assertEquals(leadList1.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
-
-			// Check 'lead has value, other has not'
-			leadDto.setPreviousHospitalizations(leadList2);
-			otherDto.setPreviousHospitalizations(null);
-			merged = getCaseFacade().mergeDto(leadDto, otherDto);
-			assertEquals(leadList2.size(), merged.getPreviousHospitalizations().size());
-			assertEquals(leadList2.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
-			assertEquals(leadList2.get(1).getUuid(), merged.getPreviousHospitalizations().get(1).getUuid());
-			
-			// Check 'lead has no value, other has'
-			leadDto.setPreviousHospitalizations(null);
-			otherDto.setPreviousHospitalizations(otherList2);
-			merged = getCaseFacade().mergeDto(leadDto, otherDto);
-			assertEquals(otherList2.size(), merged.getPreviousHospitalizations().size());
-			assertEquals(otherList2.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
-			assertEquals(otherList2.get(1).getUuid(), merged.getPreviousHospitalizations().get(1).getUuid());
-		}
+		// 4.6 Clinical Visits
+		List<String> visitUuids = new ArrayList<String>();
+		visitUuids.add(visit.getUuid());
+		assertEquals(leadCase.getClinicalCourse().getUuid(),
+				getClinicalVisitFacade().getByUuids(visitUuids).get(0).getClinicalCourse().getUuid());
 	}
 }

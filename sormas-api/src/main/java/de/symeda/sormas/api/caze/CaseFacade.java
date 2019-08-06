@@ -126,8 +126,6 @@ public interface CaseFacade {
 	String generateEpidNumber(CaseReferenceDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
-
-	<T extends EntityDto> T mergeDto(T lead, T other);
 	
 	List<CaseIndexDto> getSimilarCases(CaseCriteria criteria, String userUuid);
 	
