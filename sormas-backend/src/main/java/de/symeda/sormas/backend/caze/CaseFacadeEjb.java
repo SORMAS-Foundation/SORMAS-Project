@@ -1114,6 +1114,20 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 		}
+		
+		// Set Yes/No/Unknown fields associated with embedded lists to Yes if the lists are not empty
+		if (!newCase.getHospitalization().getPreviousHospitalizations().isEmpty() && YesNoUnknown.YES != newCase.getHospitalization().getHospitalizedPreviously()) {
+			newCase.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
+		}
+		if (!newCase.getEpiData().getBurials().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getBurialAttended()) {
+			newCase.getEpiData().setBurialAttended(YesNoUnknown.YES);
+		}
+		if (!newCase.getEpiData().getTravels().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getTraveled()) {
+			newCase.getEpiData().setTraveled(YesNoUnknown.YES);
+		}
+		if (!newCase.getEpiData().getGatherings().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getGatheringAttended()) {
+			newCase.getEpiData().setGatheringAttended(YesNoUnknown.YES);
+		}
 
 		// Send an email to all responsible supervisors when the case classification has
 		// changed

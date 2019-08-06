@@ -183,18 +183,21 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		});
 		burialsField.addValueChangeListener(e -> {
 			updateBurialsHint(burialAttendedField, burialsField);
+			burialAttendedField.setEnabled(burialsField.getValue() == null || burialsField.getValue().size() == 0);
 		});
 		gatheringAttendedField.addValueChangeListener(e -> {
 			updateGatheringsHint(gatheringAttendedField, gatheringsField);
 		});
 		gatheringsField.addValueChangeListener(e -> {
 			updateGatheringsHint(gatheringAttendedField, gatheringsField);
+			gatheringAttendedField.setEnabled(gatheringsField.getValue() == null || gatheringsField.getValue().size() == 0);
 		});
 		traveledField.addValueChangeListener(e -> {
 			updateTravelsHint(traveledField, travelsField);
 		});
 		travelsField.addValueChangeListener(e -> {
 			updateTravelsHint(traveledField, travelsField);
+			traveledField.setEnabled(travelsField.getValue() == null || travelsField.getValue().size() == 0);
 		});
 	}
 	

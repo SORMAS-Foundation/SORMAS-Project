@@ -65,7 +65,7 @@ public final class DtoHelper {
 				Object otherProperty = pd.getReadMethod().invoke(other);
 
 				// Write other-property into lead-property, if lead-property is null
-				if (leadProperty == null) {
+				if (leadProperty == null || (List.class.isAssignableFrom(pd.getPropertyType()) && ((List<?>) leadProperty).isEmpty())) {
 
 					if (List.class.isAssignableFrom(pd.getPropertyType())) {
 

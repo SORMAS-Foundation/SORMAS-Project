@@ -3558,3 +3558,8 @@ ALTER TABLE cases_history ADD COLUMN duplicateof_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_duplicateof_id FOREIGN KEY (duplicateof_id) REFERENCES cases(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (160, 'Add duplicateOf column to case #1232');
+
+-- 2019-08-06 Remove person_id from clinicalvisit_history table
+ALTER TABLE clinicalvisit_history DROP COLUMN person_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (161, 'Remove person_id from clinicalvisit_history table');

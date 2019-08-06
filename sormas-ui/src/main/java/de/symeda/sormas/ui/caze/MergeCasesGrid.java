@@ -114,7 +114,8 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 					confirmed -> {
 						if (confirmed.booleanValue()) {
 							CaseIndexDto caseToMergeAndDelete = data.getParent(caze) != null ? data.getParent(caze) : data.getChildren(caze).get(0);
-							// Call backend merge method
+							FacadeProvider.getCaseFacade().mergeCase(caze.getUuid(), caseToMergeAndDelete.getUuid());
+							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(), caze.getUuid(), UserProvider.getCurrent().getUuid());
 							
 							if (FacadeProvider.getCaseFacade().getReferenceByUuid(caseToMergeAndDelete.getUuid()) == null) {
 								data.removeItem(data.getParent(caze) == null ? caze : data.getParent(caze));
