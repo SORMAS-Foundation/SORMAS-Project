@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         super.onResume();
 
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-            checkLoginUpdateAndInitialSync();
+            checkLoginAndDoUpdateAndInitialSync();
         }
 
         if (ConfigProvider.getUser() != null) {
@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-            checkLoginUpdateAndInitialSync();
+            checkLoginAndDoUpdateAndInitialSync();
         }
     }
 
@@ -167,7 +167,8 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             RetroProvider.connectAsyncHandled(this, true, true,
                     result -> {
                         if (Boolean.TRUE.equals(result)) {
-                            checkLoginUpdateAndInitialSync();
+                            RetroProvider.disconnect();
+                            checkLoginAndDoUpdateAndInitialSync();
                         } else {
                             // if we could not connect to the server, the user can't sign in - no matter the reason
                             ConfigProvider.clearUsernameAndPassword();
@@ -177,7 +178,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         }
     }
 
-    private void checkLoginUpdateAndInitialSync() {
+    private void checkLoginAndDoUpdateAndInitialSync() {
 
         if (ConfigProvider.getUsername() == null) return;
 
