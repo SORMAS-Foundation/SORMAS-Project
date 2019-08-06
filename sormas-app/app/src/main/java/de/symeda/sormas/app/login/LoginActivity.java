@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
         super.onResume();
 
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-            processLogin();
+            checkLoginUpdateAndInitialSync();
         }
 
         if (ConfigProvider.getUser() != null) {
@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-            processLogin();
+            checkLoginUpdateAndInitialSync();
         }
     }
 
@@ -139,8 +139,10 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
     public void loginDefaultUser(View view) {
 
-        ConfigProvider.setUsernameAndPassword(SormasProperties.getUserNameDefault(), SormasProperties.getUserPasswordDefault());
-        processLogin();
+        binding.userUserName.setValue(SormasProperties.getUserNameDefault());
+        binding.userPassword.setValue(SormasProperties.getUserPasswordDefault());
+
+        login(view);
     }
 
     /**
@@ -161,11 +163,21 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             binding.userPassword.enableErrorState(R.string.message_empty_password);
         } else {
             ConfigProvider.setUsernameAndPassword(userName, password);
-            processLogin();
+
+            RetroProvider.connectAsyncHandled(this, true, true,
+                    result -> {
+                        if (Boolean.TRUE.equals(result)) {
+                            checkLoginUpdateAndInitialSync();
+                        } else {
+                            // if we could not connect to the server, the user can't sign in - no matter the reason
+                            ConfigProvider.clearUsernameAndPassword();
+                        }
+                    }
+            );
         }
     }
 
-    private void processLogin() {
+    private void checkLoginUpdateAndInitialSync() {
 
         if (ConfigProvider.getUsername() == null) return;
 
@@ -180,8 +192,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                     if (Boolean.TRUE.equals(result)) {
 
                         boolean needsSync = ConfigProvider.getUser() == null
-                                || DatabaseHelper.getCaseDao().isEmpty()
-                                || ConfigProvider.isRepullNeeded();
+                                || DatabaseHelper.getCaseDao().isEmpty();
 
                         if (needsSync) {
                             SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, getApplicationContext(),
@@ -200,6 +211,8 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
                                         if (ConfigProvider.getUser() != null) {
                                             openLandingActivity();
+                                        } else {
+                                            binding.signInLayout.setVisibility(View.VISIBLE);
                                         }
                                     });
                         } else {
@@ -217,6 +230,12 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                         if (progressDialog != null && progressDialog.isShowing()) {
                             progressDialog.dismiss();
                             progressDialog = null;
+                        }
+
+                        if (ConfigProvider.getUser() != null) {
+                            openLandingActivity();
+                        } else {
+                            binding.signInLayout.setVisibility(View.VISIBLE);
                         }
                     }
                 });
