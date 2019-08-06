@@ -25,6 +25,7 @@ import android.util.Log;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -58,7 +59,9 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
@@ -69,10 +72,12 @@ import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.BiConsumer;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -81,6 +86,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class RetroProvider {
 
+    private static int lastConnectionId = 0;
     private static RetroProvider instance = null;
 
     private final Context context;
@@ -112,7 +118,9 @@ public final class RetroProvider {
     private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
     private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
 
-    private RetroProvider(Context context, Interceptor... additionalInterceptors) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
+    private RetroProvider(Context context) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
+
+        lastConnectionId = this.hashCode();
 
         this.context = context;
 
@@ -166,9 +174,22 @@ public final class RetroProvider {
 
         // adds "Accept-Encoding: gzip" by default
         httpClient.addInterceptor(interceptor);
-        for (Interceptor additionalInterceptor : additionalInterceptors) {
-            httpClient.addInterceptor(additionalInterceptor);
-        }
+
+        // header for logging purposes
+        httpClient.addInterceptor(chain -> {
+
+            Request original = chain.request();
+            Request.Builder builder = original.newBuilder();
+
+            User user = ConfigProvider.getUser();
+            if (user != null) {
+                builder.header("User", DataHelper.getShortUuid(user.getUuid()));
+                builder.header("Connection", String.valueOf(lastConnectionId)); // not sure if this is a good solution
+            }
+
+            builder.method(original.method(), original.body());
+            return chain.proceed(builder.build());
+        });
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(ConfigProvider.getServerRestUrl())
@@ -180,6 +201,8 @@ public final class RetroProvider {
 
         updateLocale();
     }
+
+    public static int getLastConnectionId() { return lastConnectionId; }
 
     private void updateLocale() throws ServerCommunicationException, ServerConnectionException {
         Response<String> localeResponse;

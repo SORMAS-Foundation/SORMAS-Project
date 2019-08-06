@@ -84,6 +84,7 @@ public class SormasApplication extends Application implements Application.Activi
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
         tracker = analytics.newTracker(PROPERTY_ID);
         tracker.enableExceptionReporting(true);
+        tracker.setAnonymizeIp(false);
 
         // Enable the forwarding of uncaught exceptions to Google Analytics
         Thread.UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();

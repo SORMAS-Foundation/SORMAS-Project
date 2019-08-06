@@ -94,7 +94,8 @@ Here are some things that you should do to configure the Apache server as a prox
 
         ErrorLog /var/log/apache2/error.log
         LogLevel warn
-        CustomLog /var/log/apache2/access.log combined
+        LogFormat "%h %l %u %t \"%r\" %>s %b _%D_ \"%{User}i\"  \"%{Connection}i\"  \"%{Referer}i\" \"%{User-agent}i\"" combined_ext
+        CustomLog /var/log/apache2/access.log combined_ext
 * SSL key config:
 
         SSLEngine on
