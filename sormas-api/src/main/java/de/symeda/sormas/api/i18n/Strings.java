@@ -51,6 +51,7 @@ public interface Strings {
 	public static String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	public static String confirmationDeleteVisits = "confirmationDeleteVisits";
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
+	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	public static String done = "done";
 	public static String edit = "edit";
@@ -82,6 +83,7 @@ public interface Strings {
 	public static String epiWeek = "epiWeek";
 	public static String errorAccessDenied = "errorAccessDenied";
 	public static String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
+	public static String errorCaseMerging = "errorCaseMerging";
 	public static String errorEntityOutdated = "errorEntityOutdated";
 	public static String errorInvalidValue = "errorInvalidValue";
 	public static String errorNoAccessToWeb = "errorNoAccessToWeb";
@@ -112,6 +114,7 @@ public interface Strings {
 	public static String headingComparisonCase = "headingComparisonCase";
 	public static String headingComplications = "headingComplications";
 	public static String headingConfirmArchiving = "headingConfirmArchiving";
+	public static String headingConfirmChoice = "headingConfirmChoice";
 	public static String headingConfirmDearchiving = "headingConfirmDearchiving";
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
 	public static String headingConfirmMerging = "headingConfirmMerging";
@@ -259,9 +262,8 @@ public interface Strings {
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
-	public static String infoMergingActionsDescription = "infoMergingActionsDescription";
+	public static String infoMergingExplanation = "infoMergingExplanation";
 	public static String infoMergingHideDescription = "infoMergingHideDescription";
-	public static String infoMergingIntroduction = "infoMergingIntroduction";
 	public static String infoMergingMergeDescription = "infoMergingMergeDescription";
 	public static String infoMergingPickDescription = "infoMergingPickDescription";
 	public static String infoNoAdditionalTests = "infoNoAdditionalTests";
@@ -297,6 +299,7 @@ public interface Strings {
 	public static String messageCasesDearchived = "messageCasesDearchived";
 	public static String messageCasesDeleted = "messageCasesDeleted";
 	public static String messageCasesEdited = "messageCasesEdited";
+	public static String messageCasesMerged = "messageCasesMerged";
 	public static String messageCaseTransfered = "messageCaseTransfered";
 	public static String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	public static String messageCheckInputData = "messageCheckInputData";
