@@ -93,6 +93,7 @@ public final class RetroProvider {
     private DistrictFacadeRetro districtFacadeRetro;
     private RegionFacadeRetro regionFacadeRetro;
     private FacilityFacadeRetro facilityFacadeRetro;
+    private PointOfEntryFacadeRetro pointOfEntryFacadeRetro;
     private UserFacadeRetro userFacadeRetro;
     private TaskFacadeRetro taskFacadeRetro;
     private ContactFacadeRetro contactFacadeRetro;
@@ -497,6 +498,17 @@ public final class RetroProvider {
             }
         }
         return instance.facilityFacadeRetro;
+    }
+
+    public static PointOfEntryFacadeRetro getPointOfEntryFacade() {
+        if (instance.pointOfEntryFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.pointOfEntryFacadeRetro == null) {
+                    instance.pointOfEntryFacadeRetro = instance.retrofit.create(PointOfEntryFacadeRetro.class);
+                }
+            }
+        }
+        return instance.pointOfEntryFacadeRetro;
     }
 
     public static UserFacadeRetro getUserFacade() {

@@ -31,10 +31,10 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class PathogenTestListEntry extends HorizontalLayout {
@@ -56,16 +56,13 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
 
-		// very hacky: clean up when needed elsewhere!
 		HorizontalLayout topLabelLayout = new HorizontalLayout();
 		topLabelLayout.setSpacing(false);
 		topLabelLayout.setMargin(false);
 		topLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		labelLayout.addComponent(topLabelLayout);
-		String htmlTop = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
-				DataHelper.toStringNullable(pathogenTest.getTestType()))
-				+ LayoutUtil.div(DataHelper.toStringNullable(pathogenTest.getTestResultText()));
-		Label labelTopLeft = new Label(htmlTop, ContentMode.HTML);
+		Label labelTopLeft = new Label(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
+		CssStyles.style(labelTopLeft, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		topLabelLayout.addComponent(labelTopLeft);
 
 		if (pathogenTest.getTestResultVerified()) {
@@ -77,27 +74,31 @@ public class PathogenTestListEntry extends HorizontalLayout {
 			topLabelLayout.addComponent(labelTopRight);
 			topLabelLayout.setComponentAlignment(labelTopRight, Alignment.TOP_RIGHT);
 		}
+		
+		if (!DataHelper.isNullOrEmpty(pathogenTest.getTestResultText())) {
+			Label resultTextLabel = new Label(pathogenTest.getTestResultText());
+			labelLayout.addComponent(resultTextLabel);
+		}
 
 		HorizontalLayout middleLabelLayout = new HorizontalLayout();
 		middleLabelLayout.setSpacing(false);
 		middleLabelLayout.setMargin(false);
 		middleLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		labelLayout.addComponent(middleLabelLayout);
-		String htmlLeft = LayoutUtil.div(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
-		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
+		Label labelLeft = new Label(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
 		middleLabelLayout.addComponent(labelLeft);
 
-		String htmlRight = LayoutUtil.div(DateHelper.formatLocalShortDateTime(pathogenTest.getTestDateTime()));
-		Label labelRight = new Label(htmlRight, ContentMode.HTML);
+		Label labelRight = new Label(DateHelper.formatLocalShortDateTime(pathogenTest.getTestDateTime()));
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
 		middleLabelLayout.addComponent(labelRight);
 		middleLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);
 
-		String htmlBottom = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE
-				+ " " + (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE ? CssStyles.LABEL_CRITICAL : 
-					(pathogenTest.getTestResult() == PathogenTestResultType.INDETERMINATE ? CssStyles.LABEL_WARNING : "")),
-				DataHelper.toStringNullable(pathogenTest.getTestResult()));
-		Label labelBottom = new Label(htmlBottom, ContentMode.HTML);
+		Label labelBottom = new Label(DataHelper.toStringNullable(pathogenTest.getTestResult()));
+		CssStyles.style(labelBottom, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+		if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE)
+			CssStyles.style(labelBottom, CssStyles.LABEL_CRITICAL);
+		else
+			CssStyles.style(labelBottom, CssStyles.LABEL_WARNING);
 		labelLayout.addComponent(labelBottom);
 	}
 

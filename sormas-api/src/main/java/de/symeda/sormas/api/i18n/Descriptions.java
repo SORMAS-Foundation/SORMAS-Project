@@ -10,5 +10,7 @@ public interface Descriptions {
 	public static String descDistrictFilter = "descDistrictFilter";
 	public static String descExportButton = "descExportButton";
 	public static String descFacilityFilter = "descFacilityFilter";
+	public static String descPointOfEntryFilter = "descPointOfEntryFilter";
+	public static String descCaseFilterPortHealthWithoutFacility = "descCaseFilterPortHealthWithoutFacility";
 
 }

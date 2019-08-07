@@ -33,6 +33,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -56,7 +57,8 @@ public class SampleListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label tasksHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.entitySamples)), ContentMode.HTML);
+		Label tasksHeader = new Label(I18nProperties.getString(Strings.entitySamples));
+		tasksHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(tasksHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {

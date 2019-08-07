@@ -29,25 +29,26 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
+import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -76,6 +77,7 @@ public class Case extends AbstractDomainObject {
     public static final String HEALTH_FACILITY = "healthFacility_id";
     public static final String OUTCOME = "outcome";
     public static final String EPID_NUMBER = "epidNumber";
+    public static final String CASE_ORIGIN = "caseOrigin";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;
@@ -125,6 +127,12 @@ public class Case extends AbstractDomainObject {
     @Column(length = 512)
     private String healthFacilityDetails;
 
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private PointOfEntry pointOfEntry;
+
+    @Column(length = 512)
+    private String pointOfEntryDetails;
+
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Symptoms symptoms;
 
@@ -139,8 +147,12 @@ public class Case extends AbstractDomainObject {
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private User surveillanceOfficer;
+    @Column(length = 512, name = "clinicianDetails")
+    private String clinicianName;
     @Column(length = 512)
-    private String clinicianDetails;
+    private String clinicianPhone;
+    @Column(length = 512)
+    private String clinicianEmail;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
     private User caseOfficer;
 
@@ -187,6 +199,9 @@ public class Case extends AbstractDomainObject {
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private MaternalHistory maternalHistory;
 
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private PortHealthInfo portHealthInfo;
+
     @Deprecated
     @Column
     private Long contactOfficer_id;
@@ -210,6 +225,17 @@ public class Case extends AbstractDomainObject {
     private HospitalWardType notifyingClinic;
     @Column(length = 512)
     private String notifyingClinicDetails;
+
+    @Enumerated(EnumType.STRING)
+    private CaseOrigin caseOrigin;
+
+    @Column(length = 32)
+    @DatabaseField(columnName = "versionCreated")
+    private String creationVersion;
+
+    public boolean isUnreferredPortHealthCase() {
+        return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
+    }
 
     public Person getPerson() {
         return person;
@@ -347,12 +373,28 @@ public class Case extends AbstractDomainObject {
         this.surveillanceOfficer = surveillanceOfficer;
     }
 
-    public String getClinicianDetails() {
-        return clinicianDetails;
+    public String getClinicianName() {
+        return clinicianName;
     }
 
-    public void setClinicianDetails(String clinicianDetails) {
-        this.clinicianDetails = clinicianDetails;
+    public void setClinicianName(String clinicianName) {
+        this.clinicianName = clinicianName;
+    }
+
+    public String getClinicianPhone() {
+        return clinicianPhone;
+    }
+
+    public void setClinicianPhone(String clinicianPhone) {
+        this.clinicianPhone = clinicianPhone;
+    }
+
+    public String getClinicianEmail() {
+        return clinicianEmail;
+    }
+
+    public void setClinicianEmail(String clinicianEmail) {
+        this.clinicianEmail = clinicianEmail;
     }
 
     public User getCaseOfficer() {
@@ -473,6 +515,14 @@ public class Case extends AbstractDomainObject {
 
     public void setMaternalHistory(MaternalHistory maternalHistory) {
         this.maternalHistory = maternalHistory;
+    }
+
+    public PortHealthInfo getPortHealthInfo() {
+        return portHealthInfo;
+    }
+
+    public void setPortHealthInfo(PortHealthInfo portHealthInfo) {
+        this.portHealthInfo = portHealthInfo;
     }
 
     public Double getReportLat() {
@@ -600,4 +650,37 @@ public class Case extends AbstractDomainObject {
     public void setNotifyingClinicDetails(String notifyingClinicDetails) {
         this.notifyingClinicDetails = notifyingClinicDetails;
     }
+
+    public PointOfEntry getPointOfEntry() {
+        return pointOfEntry;
+    }
+
+    public void setPointOfEntry(PointOfEntry pointOfEntry) {
+        this.pointOfEntry = pointOfEntry;
+    }
+
+    public String getPointOfEntryDetails() {
+        return pointOfEntryDetails;
+    }
+
+    public void setPointOfEntryDetails(String pointOfEntryDetails) {
+        this.pointOfEntryDetails = pointOfEntryDetails;
+    }
+
+    public CaseOrigin getCaseOrigin() {
+        return caseOrigin;
+    }
+
+    public void setCaseOrigin(CaseOrigin caseOrigin) {
+        this.caseOrigin = caseOrigin;
+    }
+
+    public String getCreationVersion() {
+        return creationVersion;
+    }
+
+    public void setCreationVersion(String creationVersion) {
+        this.creationVersion = creationVersion;
+    }
+
 }

@@ -39,9 +39,11 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 	public LaboratoriesView() {
 		super(VIEW_NAME, true);
 
-		StreamResource streamResource = new GridExportStreamResource(grid, "sormas_laboratories", "sormas_laboratories_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(exportButton);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_laboratories", "sormas_laboratories_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton.setCaption(I18nProperties.getCaption(Captions.actionNewEntry));

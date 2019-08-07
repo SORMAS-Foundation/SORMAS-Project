@@ -38,9 +38,6 @@ import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.ServerConnectionException;
 import retrofit2.Call;
 
-/**
- * Created by Martin Wahnschaffe on 27.07.2016.
- */
 public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 
     @Override

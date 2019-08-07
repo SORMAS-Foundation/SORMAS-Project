@@ -94,6 +94,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
         target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
         target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
+        target.setPointOfEntry(DatabaseHelper.getPointOfEntryDao().getByReferenceDto(source.getPointOfEntry()));
 
         target.setAssociatedOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssociatedOfficer()));
         target.setLimitedDisease(source.getLimitedDisease());

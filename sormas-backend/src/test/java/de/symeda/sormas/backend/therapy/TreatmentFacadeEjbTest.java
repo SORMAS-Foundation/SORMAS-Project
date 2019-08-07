@@ -15,13 +15,13 @@ import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testTreatmentDeletion() {
-		RDCF rdcf = creator.createRDCF();
+		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf, UserRole.ADMIN);
 		PersonDto casePerson = creator.createPerson("Case", "Person");
@@ -39,7 +39,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testTreatmentIndexListGeneration() {
-		RDCF rdcf = creator.createRDCF();
+		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);

@@ -13,6 +13,7 @@ WITH (
   OIDS=FALSE
 );
 
+ALTER TABLE schema_version OWNER TO sormas_user;
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -24,11 +25,6 @@ SET client_min_messages = warning;
 -- TOC entry 483 (class 2612 OID 11574)
 -- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: postgres
 --
-
-CREATE OR REPLACE PROCEDURAL LANGUAGE plpgsql;
-
-
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO postgres;
 
 SET search_path = public, pg_catalog;
 
@@ -625,11 +621,6 @@ ALTER TABLE ONLY users
 -- Dependencies: 5
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 ALTER TABLE person ADD COLUMN phoneowner character varying(255);
   
@@ -1259,7 +1250,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (36, 'Epidemiologica
 
 CREATE TEMP TABLE tmp_caseids AS SELECT cases.id AS caseid, nextval('entity_seq') AS epiid FROM cases WHERE cases.epidata_id IS NULL;
 INSERT INTO epidata (id, changedate, creationdate, uuid) 
-	SELECT epiid, now(), now(), uuid_in(md5(random()::text || clock_timestamp()::text)::cstring) FROM tmp_caseids;
+	SELECT epiid, now(), now(), uuid_in(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS cstring)) FROM tmp_caseids;
 UPDATE cases SET epidata_id = epiid FROM tmp_caseids t where cases.id = t.caseid;
 DROP TABLE tmp_caseids;
 
@@ -1378,8 +1369,6 @@ ALTER TABLE hospitalization ADD COLUMN changedateofembeddedlists timestamp witho
 INSERT INTO schema_version (version_number, comment) VALUES (48, 'Change data for embedded lists (epidata and hospitalization');
 
 -- 2017-06-20 data history for future reporting (postgres temporal tables) #170
-
-CREATE EXTENSION temporal_tables;
 
 ALTER TABLE cases ADD COLUMN sys_period tstzrange;
 UPDATE cases SET sys_period=tstzrange(creationdate, null);
@@ -2158,7 +2147,7 @@ BEGIN
 
 	_id = nextval('entity_seq');
 	-- this is not the same format as we are using in code (which is base32 with 4 seperators)
-	_uuid = upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29));
+	_uuid = upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29));
 
 	IF ((SELECT facility.id FROM facility WHERE facility.name = _name AND facility.region_id = _region_id AND facility.district_id = _district_id) IS NOT NULL) THEN
 		RAISE EXCEPTION 'facility % allready exists in district', _name;
@@ -2179,7 +2168,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (96, 'SQL function t
 -- 2018-03-05 Add upgrade column to schema_version for backend upgrade logic #402
 ALTER TABLE schema_version ADD COLUMN upgradeNeeded boolean NOT NULL DEFAULT false;
 UPDATE schema_version SET upgradeNeeded=true WHERE version_number=95;
-GRANT SELECT, UPDATE ON TABLE schema_version TO sormas_user;
+-- fixed 2019-06-25 #1126
+GRANT ALL ON TABLE schema_version TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (97, 'Add upgrade column to schema_version for backend upgrade logic #402');
 
@@ -2270,7 +2260,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (102, 'Case age fiel
 -- 1st of january is always in week 1
 CREATE OR REPLACE FUNCTION epi_week (indate timestamp)
 RETURNS integer AS 
-$$
+$result$
 DECLARE year integer;
 	doy integer;
 	doy_end integer;
@@ -2286,7 +2276,7 @@ BEGIN
    -- week day of first day in next year
    -- isodow: The day of the week as Monday (1) to Sunday (7)
    isodow_start_next := date_part('isodow', date ((year+1) || '-01-01'));
-   -- end of date year?
+   -- check end of date year
    -- DOY 31.12 - DOY < DOY(01.01.Y+1)
    if (doy_end - doy < isodow_start_next-1) THEN
 	-- falls into next epi year
@@ -2301,13 +2291,13 @@ BEGIN
    
    RETURN epi_week;
 END;
-$$ 
+$result$
 LANGUAGE plpgsql;
 
 -- see epi_week
 CREATE OR REPLACE FUNCTION epi_year (indate timestamp)
 RETURNS integer AS 
-$$
+$result$
 DECLARE year integer;
 	doy integer;
 	doy_end integer;
@@ -2328,7 +2318,7 @@ BEGIN
    
    RETURN epi_year;
 END;
-$$ 
+$result$ 
 LANGUAGE plpgsql;
 
 -- e.g. SELECT epi_week('2015-12-27'), epi_year('2015-12-27'); -- 52-2015
@@ -2369,7 +2359,7 @@ UPDATE visit SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 UPDATE visit_history SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 UPDATE weeklyreportentry SET disease = 'NEW_INFLUENCA' where disease = 'AVIAN_INFLUENCA';
 
-INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');-- 2018-05-31 Add description field for other health facility to previous hospitalizations and person occupations #549
+INSERT INTO schema_version (version_number, comment) VALUES (105, 'Case data changes for automatic case classification #628');
 
 -- 2018-06-01 Add description field for other health facility to previous hospitalizations and person occupations #549
 
@@ -3051,13 +3041,13 @@ DECLARE new_health_conditions_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
 LOOP
-INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
 UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
 END LOOP;
 FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
 LOOP
-INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
-INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
 UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
 END LOOP;
 END;
@@ -3081,13 +3071,13 @@ DECLARE new_health_conditions_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE therapy_id IS NULL
 LOOP
-INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
+INSERT INTO therapy(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_therapy_id;
 UPDATE cases SET therapy_id = new_therapy_id WHERE id = rec.id;
 END LOOP;
 FOR rec IN SELECT id FROM public.cases WHERE clinicalcourse_id IS NULL
 LOOP
-INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
-INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
+INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_health_conditions_id;
+INSERT INTO clinicalcourse(id, uuid, creationdate, changedate, healthconditions_id) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now(), new_health_conditions_id) RETURNING id INTO new_clinical_course_id;
 UPDATE cases SET clinicalcourse_id = new_clinical_course_id WHERE id = rec.id;
 END LOOP;
 END;
@@ -3314,7 +3304,7 @@ DECLARE new_maternalhistory_id INTEGER;
 BEGIN
 FOR rec IN SELECT id FROM public.cases WHERE maternalhistory_id IS NULL
 LOOP
-INSERT INTO maternalhistory(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(md5(random()::text || clock_timestamp()::text)::uuid::text, 3, 29)), now(), now()) RETURNING id INTO new_maternalhistory_id;
+INSERT INTO maternalhistory(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_maternalhistory_id;
 UPDATE cases SET maternalhistory_id = new_maternalhistory_id WHERE id = rec.id;
 END LOOP;
 END;
@@ -3345,3 +3335,218 @@ ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthcommunity_id FOREIGN KEY
 ALTER TABLE person ADD CONSTRAINT fk_person_placeofbirthfacility_id FOREIGN KEY (placeofbirthfacility_id) REFERENCES facility (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (151, 'Add new fields for Congenital Rubella #1133');
+
+-- 2019-06-25 Add version case was created #1106
+ALTER TABLE cases ADD COLUMN versioncreated varchar(32);
+
+INSERT INTO schema_version (version_number, comment) VALUES (152, 'Add version case was created #1106');
+
+-- 2019-07-01 Fixed problems in database schema #1198
+UPDATE public.location SET areatype='URBAN' WHERE areatype='0';
+UPDATE public.location SET areatype='RURAL' WHERE areatype='1';
+
+UPDATE public.symptoms SET congenitalGlaucoma='YES' WHERE congenitalGlaucoma='0';
+UPDATE public.symptoms SET congenitalGlaucoma='NO' WHERE congenitalGlaucoma='1';
+UPDATE public.symptoms SET congenitalGlaucoma='UNKNOWN' WHERE congenitalGlaucoma='2';
+
+UPDATE public.symptoms SET lesionsResembleImg1='YES' WHERE lesionsResembleImg1='0';
+UPDATE public.symptoms SET lesionsResembleImg1='NO' WHERE lesionsResembleImg1='1';
+UPDATE public.symptoms SET lesionsResembleImg1='UNKNOWN' WHERE lesionsResembleImg1='2';
+UPDATE public.symptoms SET lesionsResembleImg2='YES' WHERE lesionsResembleImg2='0';
+UPDATE public.symptoms SET lesionsResembleImg2='NO' WHERE lesionsResembleImg2='1';
+UPDATE public.symptoms SET lesionsResembleImg2='UNKNOWN' WHERE lesionsResembleImg2='2';
+UPDATE public.symptoms SET lesionsResembleImg3='YES' WHERE lesionsResembleImg3='0';
+UPDATE public.symptoms SET lesionsResembleImg3='NO' WHERE lesionsResembleImg3='1';
+UPDATE public.symptoms SET lesionsResembleImg3='UNKNOWN' WHERE lesionsResembleImg3='2';
+UPDATE public.symptoms SET lesionsResembleImg4='YES' WHERE lesionsResembleImg4='0';
+UPDATE public.symptoms SET lesionsResembleImg4='NO' WHERE lesionsResembleImg4='1';
+UPDATE public.symptoms SET lesionsResembleImg4='UNKNOWN' WHERE lesionsResembleImg4='2';
+
+INSERT INTO schema_version (version_number, comment) VALUES (153, 'Fixed problems in database schema #1198');
+
+-- 2019-07-02 Renamed version case was created #1106
+ALTER TABLE cases RENAME COLUMN versioncreated TO creationversion;
+
+INSERT INTO schema_version (version_number, comment) VALUES (154, 'Renamed version case was created #1106');
+
+-- 2019-07-03 Added missing not null to publicownership #1198
+UPDATE public.facility SET publicownership=false WHERE publicownership IS NULL;
+ALTER TABLE public.facility ALTER COLUMN publicownership SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (155, 'Added missing not null to publicownership #1198');
+
+-- 2019-06-28 Add fields and tables for points of entry and port health info #985
+CREATE TABLE pointofentry(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	pointofentrytype varchar(255),
+	name varchar(512),
+	region_id bigint,
+	district_id bigint,
+	latitude double precision,
+	longitude double precision,
+	active boolean, 
+	primary key(id)
+);
+ALTER TABLE pointofentry OWNER TO sormas_user;
+ALTER TABLE pointofentry ADD CONSTRAINT fk_pointofentry_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE pointofentry ADD CONSTRAINT fk_pointofentry_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+
+ALTER TABLE cases ADD COLUMN caseorigin varchar(255);
+ALTER TABLE cases ADD COLUMN pointofentry_id bigint;
+ALTER TABLE cases ADD COLUMN pointofentrydetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN pointofentry_id bigint;
+ALTER TABLE cases_history ADD COLUMN pointofentrydetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN caseorigin varchar(255);
+UPDATE cases SET caseorigin = 'IN_COUNTRY';
+
+ALTER TABLE cases ADD CONSTRAINT fk_cases_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry (id);
+
+ALTER TABLE users ADD COLUMN pointofentry_id bigint;
+ALTER TABLE users_history ADD COLUMN pointofentry_id bigint;
+
+ALTER TABLE users ADD CONSTRAINT fk_users_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry (id);
+
+CREATE TABLE porthealthinfo(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	airlinename varchar(512),
+	flightnumber varchar(512),
+	departuredatetime timestamp,
+	arrivaldatetime timestamp,
+	freeseating varchar(255),
+	seatnumber varchar(512),
+	departureairport varchar(512),
+	numberoftransitstops integer,
+	transitstopdetails1 varchar(512),
+	transitstopdetails2 varchar(512),
+	transitstopdetails3 varchar(512),
+	transitstopdetails4 varchar(512),
+	transitstopdetails5 varchar(512),
+	vesselname varchar(512),
+	vesseldetails varchar(512),
+	portofdeparture varchar(512),
+	lastportofcall varchar(512),
+	conveyancetype varchar(255),
+	conveyancetypedetails varchar(512),
+	departurelocation varchar(512),
+	finaldestination varchar(512),
+	details varchar(512),
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE porthealthinfo OWNER TO sormas_user;
+
+CREATE TABLE porthealthinfo_history (LIKE porthealthinfo);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON porthealthinfo
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'porthealthinfo_history', true);
+ALTER TABLE porthealthinfo_history OWNER TO sormas_user;
+
+ALTER TABLE cases ADD COLUMN porthealthinfo_id bigint;
+ALTER TABLE cases_history ADD COLUMN porthealthinfo_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_porthealthinfo_id FOREIGN KEY (porthealthinfo_id) REFERENCES porthealthinfo (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (156, 'Add fields and tables for points of entry and port health info #985');
+
+-- 2019-07-16 Change types of AdditionalTest columns to double #1200
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgasph TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgaspco2 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgaspao2 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN arterialvenousgashco3 TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN gasoxygentherapy TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN altsgpt TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN astsgot TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN creatinine TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN potassium TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN urea TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN haemoglobin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN totalbilirubin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN conjbilirubin TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN wbccount TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN platelets TYPE real;
+ALTER TABLE additionaltest ALTER COLUMN prothrombintime TYPE real;
+
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgasph TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgaspco2 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgaspao2 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN arterialvenousgashco3 TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN gasoxygentherapy TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN altsgpt TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN astsgot TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN creatinine TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN potassium TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN urea TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN haemoglobin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN totalbilirubin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN conjbilirubin TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN wbccount TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN platelets TYPE real;
+ALTER TABLE additionaltest_history ALTER COLUMN prothrombintime TYPE real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (157, 'Change types of AdditionalTest columns to double #1200');
+
+-- 2019-07-19 Add clinician phone and email #1190
+ALTER TABLE cases ADD COLUMN clinicianphone varchar(512);
+ALTER TABLE cases ADD COLUMN clinicianemail varchar(512);
+ALTER TABLE cases_history ADD COLUMN clinicianphone varchar(512);
+ALTER TABLE cases_history ADD COLUMN clinicianemail varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (158, 'Add clinician phone and email #1190');
+
+-- 2019-07-19 Fix Hibernate "feature" that throws an error when using functions without a return value #1228
+DROP FUNCTION export_database(text, text);
+DROP FUNCTION export_database_join(text, text, text, text, text);
+
+CREATE FUNCTION export_database(table_name text, file_path text)
+	RETURNS INTEGER
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || '
+				) TO 
+					' || quote_literal(file_path) || '
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+			RETURN 1;
+		END;
+	$BODY$
+;
+
+CREATE FUNCTION export_database_join(table_name text, join_table_name text, column_name text, join_column_name text, file_path text)
+	RETURNS INTEGER
+	LANGUAGE plpgsql
+	SECURITY DEFINER
+	AS $BODY$
+		BEGIN
+			EXECUTE '
+				COPY (SELECT * FROM 
+					' || quote_ident(table_name) || ' 
+				INNER JOIN 
+					' || quote_ident(join_table_name) || ' 
+				ON 
+					' || column_name || ' 
+				= 
+					' || join_column_name || ' 
+				) TO 
+					' || quote_literal(file_path) || ' 
+				WITH (
+					FORMAT CSV, DELIMITER '';'', HEADER
+				);
+			';
+			RETURN 1;
+		END;
+	$BODY$
+;
+
+INSERT INTO schema_version (version_number, comment) VALUES (159, 'Fix Hibernate "feature" that throws an error when using functions without a return value #1228');

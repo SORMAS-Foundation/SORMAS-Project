@@ -18,12 +18,12 @@
 package de.symeda.sormas.ui.task;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -33,7 +33,6 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class TaskListEntry extends HorizontalLayout {
@@ -42,62 +41,89 @@ public class TaskListEntry extends HorizontalLayout {
 	private Button editButton;
 
 	public TaskListEntry(TaskIndexDto task) {
+		
+		this.task = task;
 
 		setMargin(false);
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 
-		this.task = task;
+		HorizontalLayout topLayout = new HorizontalLayout();
+		topLayout.setMargin(false);
+		topLayout.setSpacing(false);
+		topLayout.setWidth(100, Unit.PERCENTAGE);
+		addComponent(topLayout);
+		setExpandRatio(topLayout, 1);
+		
+		// TOP LEFT
+		VerticalLayout topLeftLayout = new VerticalLayout();
+				
+		topLeftLayout.setMargin(false);
+		topLeftLayout.setSpacing(false);
+	
+		Label taskTypeLabel = new Label(DataHelper.toStringNullable(task.getTaskType()));
+		CssStyles.style(taskTypeLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+		topLeftLayout.addComponent(taskTypeLabel);
+		
+		Label suggestedStartLabel = new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START)
+				+ ": " + DateHelper.formatLocalShortDate(task.getSuggestedStart()));
+		topLeftLayout.addComponent(suggestedStartLabel);
+		
+		Label dueDateLabel = new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.DUE_DATE)
+				+ ": " + DateHelper.formatLocalShortDate(task.getDueDate()));
+		topLeftLayout.addComponent(dueDateLabel);		
+		
+		topLayout.addComponent(topLeftLayout);
 
-		HorizontalLayout labelLayout = new HorizontalLayout();
-		labelLayout.setMargin(false);
-		labelLayout.setSpacing(false);
-		labelLayout.setWidth(100, Unit.PERCENTAGE);
-		addComponent(labelLayout);
-		setExpandRatio(labelLayout, 1);
+		// TOP RIGHT
+		VerticalLayout topRightLayout = new VerticalLayout();
 
-		// very hacky: clean up when needed elsewher!
-		String htmlLeft = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
-				task.getTaskType().toString())
-				+ LayoutUtil.div(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START)
-						+ ": " + DateHelper.formatLocalShortDate(task.getSuggestedStart()))
-				+ LayoutUtil.div(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.DUE_DATE) + ": "
-						+ DateHelper.formatLocalShortDate(task.getDueDate()));
-		Label labelLeft = new Label(htmlLeft, ContentMode.HTML);
-		labelLeft.setWidth(100, Unit.PERCENTAGE);
-		labelLayout.addComponent(labelLeft);
+		topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
+		topRightLayout.setMargin(false);
+		topRightLayout.setSpacing(false);
+		
+		Label statusLabel = new Label(DataHelper.toStringNullable(task.getTaskStatus()));
+		CssStyles.style(statusLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+		topRightLayout.addComponent(statusLabel);
+		
+		Label priorityLabel = new Label(DataHelper.toStringNullable(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.PRIORITY) + ": " + task.getPriority()));
+		if (TaskPriority.HIGH == task.getPriority()) {
+			priorityLabel.addStyleName(CssStyles.LABEL_IMPORTANT);
+		} else if (TaskPriority.NORMAL == task.getPriority()) {
+			priorityLabel.addStyleName(CssStyles.LABEL_NEUTRAL);				
+		}
+		topRightLayout.addComponent(priorityLabel);
+		
+		Label userLabel = new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.ASSIGNEE_USER) + ": "
+				+ task.getAssigneeUser().getCaption());
+		topRightLayout.addComponent(userLabel);
 
-		String htmlRight = LayoutUtil.divCss(CssStyles.LABEL_BOLD + " " + CssStyles.LABEL_UPPERCASE,
-				DataHelper.toStringNullable(task.getTaskStatus()))
-				+ LayoutUtil.divCss(
-						TaskPriority.HIGH == task.getPriority() ? CssStyles.LABEL_IMPORTANT
-								: (TaskPriority.NORMAL == task.getPriority() ? CssStyles.LABEL_NEUTRAL : ""),
-						I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.PRIORITY) + ": "
-								+ DataHelper.toStringNullable(task.getPriority()))
-				+ LayoutUtil.div(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.ASSIGNEE_USER) + ": "
-						+ task.getAssigneeUser().getCaption());
-		Label labelRight = new Label(htmlRight, ContentMode.HTML);
-		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
-		labelRight.setWidth(100, Unit.PERCENTAGE);
-		labelLayout.addComponent(labelRight);
-		labelLayout.setComponentAlignment(labelRight, Alignment.MIDDLE_RIGHT);
+		topLayout.addComponent(topRightLayout);
+		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
 
+		String statusStyle;
 		switch (task.getTaskStatus()) {
 		case DONE:
-			labelLeft.addStyleName(CssStyles.LABEL_DONE);
-			labelRight.addStyleName(CssStyles.LABEL_DONE);
+			statusStyle = CssStyles.LABEL_DONE;
 			break;
 		case NOT_EXECUTABLE:
-			labelLeft.addStyleName(CssStyles.LABEL_NOT);
-			labelRight.addStyleName(CssStyles.LABEL_NOT);
+			statusStyle = CssStyles.LABEL_NOT;
 			break;
 		case REMOVED:
-			labelLeft.addStyleName(CssStyles.LABEL_DISCARDED);
-			labelRight.addStyleName(CssStyles.LABEL_DISCARDED);
+			statusStyle = CssStyles.LABEL_DISCARDED;
 			break;
-		case PENDING:
-			break;
+		default:
+			statusStyle = null;
+		}
+
+		if (statusStyle != null) {
+			taskTypeLabel.addStyleName(statusStyle);
+			suggestedStartLabel.addStyleName(statusStyle);
+			dueDateLabel.addStyleName(statusStyle);
+			statusLabel.addStyleName(statusStyle);
+			priorityLabel.addStyleName(statusStyle);
+			userLabel.addStyleName(statusStyle);
 		}
 	}
 

@@ -17,10 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.importer;
 
-public enum CaseImportResult {
+public enum ImportResult {
 	
 	SUCCESS,
 	ERROR,
-	SKIPPED;
+	SKIPPED,
+	DUPLICATE;
 
 }

@@ -17,50 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.importer;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 
 public class ImportSimilarityResult {
 
-	private final PersonIndexDto matchingPerson;
-	private final CaseDataDto matchingCase;
-	private final boolean usePerson;
-	private final boolean useCase;
-	private final boolean skip;
-	private final boolean cancelImport;
+	private final CaseIndexDto matchingCase;
+	private final ImportSimilarityResultOption resultOption;
 	
-	public ImportSimilarityResult(PersonIndexDto matchingPerson, CaseDataDto matchingCase, boolean usePerson, boolean useCase,
-			boolean skip, boolean cancelImport) {
-		this.matchingPerson = matchingPerson;
+	public ImportSimilarityResult(CaseIndexDto matchingCase, ImportSimilarityResultOption resultOption) {
 		this.matchingCase = matchingCase;
-		this.usePerson = usePerson;
-		this.useCase = useCase;
-		this.skip = skip;
-		this.cancelImport = cancelImport;
+		this.resultOption = resultOption;
 	}
 
-	public PersonIndexDto getMatchingPerson() {
-		return matchingPerson;
-	}
-
-	public CaseDataDto getMatchingCase() {
+	public CaseIndexDto getMatchingCase() {
 		return matchingCase;
 	}
-
-	public boolean isUsePerson() {
-		return usePerson;
-	}
-
-	public boolean isUseCase() {
-		return useCase;
-	}
-
-	public boolean isSkip() {
-		return skip;
-	}
-
-	public boolean isCancelImport() {
-		return cancelImport;
+	
+	public ImportSimilarityResultOption getResultOption() {
+		return resultOption;
 	}
 	
 }

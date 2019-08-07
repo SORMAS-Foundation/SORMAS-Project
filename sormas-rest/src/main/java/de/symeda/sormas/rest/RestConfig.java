@@ -27,10 +27,10 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
  * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>
  */
 @ApplicationPath("*")
-public class RestApplication extends ResourceConfig  {
+public class RestConfig extends ResourceConfig  {
 	
-	public RestApplication() {
-        super(RestApplication.class);
+	public RestConfig() {
+        super(RestConfig.class);
         
         // Resources.
         packages(getClass().getPackage().getName());

@@ -689,6 +689,7 @@ public class ContactService extends AbstractAdoService<Contact> {
 			From<Contact, Contact> contactPath, User user) {
 		// National users can access all contacts in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}

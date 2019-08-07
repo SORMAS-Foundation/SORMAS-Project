@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public final class SymptomsHelper {
 
@@ -48,45 +49,33 @@ public final class SymptomsHelper {
 		}
 		return x;
 	}
-
-	private static List<Integer> getIntegerValues(int min, int max) {
-		return getIntegerValues(min, max, 1);
-	}
-	
-	private static List<Integer> getIntegerValues(int min, int max, int step) {
-		List<Integer> x = new ArrayList<>();
-		for (int i = min; i <= max; i += step) {
-			x.add(i);
-		}
-		return x;
-	}
 	
 	public static List<Integer> getBloodPressureValues() {
-		return getIntegerValues(0, 300);
+		return DataHelper.buildIntegerList(0, 300);
 	}
 
 	public static List<Integer> getHeartRateValues() {
-		return getIntegerValues(0, 300);
+		return DataHelper.buildIntegerList(0, 300);
 	}
 
 	public static List<Integer> getRespiratoryRateValues() {
-		return getIntegerValues(0, 80);
+		return DataHelper.buildIntegerList(0, 80);
 	}
 
 	public static List<Integer> getGlasgowComaScaleValues() {
-		return getIntegerValues(3, 15);
+		return DataHelper.buildIntegerList(3, 15);
 	}
 
 	public static List<Integer> getWeightValues() {
-		return getIntegerValues(0, 50000, 10);
+		return DataHelper.buildIntegerList(0, 50000, 10);
 	}
 
 	public static List<Integer> getHeightValues() {
-		return getIntegerValues(0, 250);
+		return DataHelper.buildIntegerList(0, 250);
 	}
 
 	public static List<Integer> getMidUpperArmCircumferenceValues() {
-		return getIntegerValues(100, 10000, 10);
+		return DataHelper.buildIntegerList(100, 10000, 10);
 	}
 
 	public static String getTemperatureString(float value) {

@@ -31,6 +31,10 @@ public interface ImportFacade {
 	 */
 	void generateCaseImportTemplateFile() throws IOException;
 	
+	void generatePointOfEntryImportTemplateFile() throws IOException;
+	
 	String getCaseImportTemplateFilePath();
+	
+	String getPointOfEntryImportTemplateFilePath();
 	
 }

@@ -27,6 +27,7 @@
         <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <variable name="caseOriginClass" type="Class" />
     </data>
 
 
@@ -44,6 +45,13 @@
             android:id="@+id/main_content">
 
             <requestFocus/>
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/caseData_caseOrigin"
+                app:enumClass="@{caseOriginClass}"
+                app:value="@={data.caseOrigin}"
+                app:required="true"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/caseData_firstName"
@@ -113,6 +121,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/health_facility_fields_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -134,6 +143,18 @@
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/caseData_healthFacilityDetails"
                 app:value="@={data.healthFacilityDetails}"
+                app:required="true"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/caseData_pointOfEntry"
+                app:value="@={data.pointOfEntry}"
+                app:required="true"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/caseData_pointOfEntryDetails"
+                app:value="@={data.pointOfEntryDetails}"
                 app:required="true"
                 style="@style/ControlSingleColumnStyle" />
 

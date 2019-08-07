@@ -18,9 +18,15 @@
 
 package de.symeda.sormas.app;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
+
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -224,15 +230,14 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return true;
     }
 
-    private void processActionbarMenu() {
-        if (activeFragment == null)
-            return;
+    public void processActionbarMenu() {
+        boolean hasFragementView = activeFragment != null;
 
         if (saveMenu != null)
-            saveMenu.setVisible(activeFragment.isShowSaveAction());
+            saveMenu.setVisible(hasFragementView && activeFragment.isShowSaveAction());
 
         if (newMenu != null)
-            newMenu.setVisible(activeFragment.isShowNewAction());
+            newMenu.setVisible(hasFragementView && activeFragment.isShowNewAction());
     }
 
     public MenuItem getSaveMenu() {

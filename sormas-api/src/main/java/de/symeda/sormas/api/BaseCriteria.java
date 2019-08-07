@@ -113,7 +113,6 @@ public abstract class BaseCriteria implements Serializable {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void fromUrlParams(String urlParams) {
-
 		Map<String, List<String>> params = splitQuery(urlParams);
 
 		try {
@@ -131,8 +130,14 @@ public abstract class BaseCriteria implements Serializable {
 				}
 
 				Class<?> type = getter.getReturnType();
-				Method setter = getClass().getMethod(propertyName, type);
-
+				
+				Method setter;
+				try {
+					setter = getClass().getMethod(propertyName, type);
+				} catch (NoSuchMethodException e) {
+					setter = getClass().getMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), type);
+				}
+				
 				if (params.containsKey(propertyName)) {
 					List<String> fieldParams = params.get(propertyName);
 

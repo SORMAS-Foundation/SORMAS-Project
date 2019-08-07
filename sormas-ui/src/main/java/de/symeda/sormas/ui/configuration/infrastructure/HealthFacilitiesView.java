@@ -39,9 +39,11 @@ public class HealthFacilitiesView extends AbstractFacilitiesView {
 	public HealthFacilitiesView() {
 		super(VIEW_NAME, false);
 
-		StreamResource streamResource = new GridExportStreamResource(grid, "sormas_health_facilities", "sormas_health_facilities_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(exportButton);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_health_facilities", "sormas_health_facilities_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton.setCaption(I18nProperties.getCaption(Captions.actionNewEntry));

@@ -35,7 +35,8 @@ public enum Disease implements StatisticsGroupingKey {
 	UNSPECIFIED_VHF(true, true, true, 21),
 	WEST_NILE_FEVER(true, false, false, 0),
 	YELLOW_FEVER(true, true, false, 6),
-	OTHER(true, true, true, 21);
+	OTHER(true, true, true, 21),
+	UNDEFINED(true, true, true, 0);
 	
 	private boolean defaultActive;
 	private boolean defaultPrimary;
