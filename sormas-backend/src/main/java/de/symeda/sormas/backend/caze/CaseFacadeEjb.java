@@ -1206,7 +1206,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			// increase it by 1
 			String suffixString = highestEpidNumber.substring(highestEpidNumber.lastIndexOf('-'));
 			// Remove all non-digits from the suffix to ignore earlier input errors
-			suffixString = suffixString.replaceAll("[^\\d.]", "");
+			suffixString = suffixString.replaceAll("[^\\d]", "");
 			if (suffixString.isEmpty()) {
 				// If the suffix is empty now, that means there is not yet an epid number with a
 				// suffix containing numbers

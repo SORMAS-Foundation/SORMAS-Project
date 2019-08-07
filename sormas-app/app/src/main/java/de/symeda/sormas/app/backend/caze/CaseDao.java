@@ -182,7 +182,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
         Case caze = super.build();
         caze.setPerson(person);
 
-        caze.setReportDate(new Date());
         User user = ConfigProvider.getUser();
         caze.setReportingUser(user);
 

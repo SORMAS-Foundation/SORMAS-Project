@@ -93,6 +93,7 @@ public class TestEntityCreator {
         caze.setHealthFacility(facility);
         caze.setCaseClassification(caseClassification);
         caze.setInvestigationStatus(investigationStatus);
+        caze.setReportDate(new Date());
 
         try {
             DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
