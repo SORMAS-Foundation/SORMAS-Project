@@ -66,7 +66,7 @@ public class ErrorReportingHelper {
         User user = ConfigProvider.getUser();
         if (user != null && user.getUuid() != null) {
             // user
-            builder.setCustomDimension(1, DataHelper.getShortUuid(user.getUuid()));
+            builder.setCustomDimension(1, user.getUuid());
         }
         // connection
         builder.setCustomDimension(2, String.valueOf(RetroProvider.getLastConnectionId()));
@@ -114,9 +114,6 @@ public class ErrorReportingHelper {
         }
         if (entityClass != null) {
             description.append(" - Entity: " + entityClass.getSimpleName() + ": " + entityUuid);
-        }
-        if (ConfigProvider.getUser() != null && ConfigProvider.getUser().getUuid() != null) {
-            description.append(" - User: " + ConfigProvider.getUser().getUuid());
         }
         if (ConfigProvider.getServerRestUrl() != null) {
             description.append(" - System: " + ConfigProvider.getServerRestUrl());
