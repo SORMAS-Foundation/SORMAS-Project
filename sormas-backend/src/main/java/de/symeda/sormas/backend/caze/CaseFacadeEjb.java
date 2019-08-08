@@ -17,23 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -66,7 +60,6 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -78,6 +71,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -89,7 +83,6 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -107,7 +100,6 @@ import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -198,8 +190,8 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb;
-import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
+import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -696,8 +688,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getSimilarCases(CaseCriteria criteria, String userUuid) {
+	public List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
+		CaseCriteria caseCriteria = criteria.getCaseCriteria();
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
@@ -711,8 +704,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, cb.parameter(String.class, "name"), nameSimilarityExpr), 0.6D);
-		Predicate diseaseFilter = criteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), criteria.getDisease()) : null;
-		Predicate regionFilter = criteria.getRegion() != null ? cb.equal(region.get(Region.UUID), criteria.getRegion().getUuid()) : null;
+		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
+		Predicate regionFilter = caseCriteria.getRegion() != null ? cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()) : null;
 		Predicate reportDateFilter = criteria.getReportDate() != null ? cb.between(root.get(Case.REPORT_DATE), DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30)) : null;
 
 		Predicate filter = userFilter;
@@ -764,7 +757,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						cb.diff(
 								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
 								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
-				new Long(2592000) // 30 days in seconds
+				new Long(30 * 24 * 60 * 60) // 30 days
 				);
 		Predicate creationDateFilter = cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
 					
@@ -794,18 +787,19 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Object[]> foundUuids = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
 		
 		List<CaseIndexDto[]> resultList = new ArrayList<>();
-		for (Object[] uuidPair : foundUuids) {
-			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
-			Root<Case> indexRoot = indexCq.from(Case.class);
-			CaseIndexDto[] dtoPair = new CaseIndexDto[2];
-			indexCq.where(cb.equal(indexRoot.get(Case.UUID), uuidPair[0]));
-			selectIndexDtoFields(indexCq, indexRoot);
-			CaseIndexDto firstCase = em.createQuery(indexCq).getSingleResult();
-			dtoPair[0] = firstCase;
-			indexCq.where(cb.equal(indexRoot.get(Case.UUID), uuidPair[1]));
-			CaseIndexDto secondCase = em.createQuery(indexCq).getSingleResult();
-			dtoPair[1] = secondCase;
-			resultList.add(dtoPair);
+		List<CaseIndexDto> parentList = new ArrayList<>();
+		List<CaseIndexDto> childrenList = new ArrayList<>();
+
+		CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
+		Root<Case> indexRoot = indexCq.from(Case.class);
+		indexCq.where(indexRoot.get(Case.UUID).in(foundUuids.stream().map(uuids -> uuids[0]).collect(Collectors.toList())));
+		selectIndexDtoFields(indexCq, indexRoot);
+		parentList = em.createQuery(indexCq).getResultList();
+		indexCq.where(indexRoot.get(Case.UUID).in(foundUuids.stream().map(uuids -> uuids[1]).collect(Collectors.toList())));
+		childrenList = em.createQuery(indexCq).getResultList();
+		
+		for (int i = 0; i < parentList.size(); i++) {
+			resultList.add(new CaseIndexDto[] {parentList.get(i), childrenList.get(i)});
 		}
 	
 		return resultList;

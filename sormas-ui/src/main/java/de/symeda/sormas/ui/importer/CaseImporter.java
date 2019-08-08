@@ -37,6 +37,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -133,11 +134,13 @@ public class CaseImporter extends DataImporter {
 				
 				CaseImportLock LOCK = new CaseImportLock();
 				synchronized (LOCK) {
-					CaseCriteria criteria = new CaseCriteria()
+					CaseCriteria caseCriteria = new CaseCriteria()
+							.disease(newCase.getDisease())
+							.region(newCase.getRegion());
+					CaseSimilarityCriteria criteria = new CaseSimilarityCriteria()
 							.firstName(newPerson.getFirstName())
 							.lastName(newPerson.getLastName())
-							.disease(newCase.getDisease())
-							.region(newCase.getRegion())
+							.caseCriteria(caseCriteria)
 							.reportDate(newCase.getReportDate());
 					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria, currentUser.getUuid());
 

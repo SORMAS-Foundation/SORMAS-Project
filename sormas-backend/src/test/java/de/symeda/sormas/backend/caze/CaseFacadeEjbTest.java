@@ -36,7 +36,6 @@ import org.junit.rules.ExpectedException;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -46,6 +45,7 @@ import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -477,7 +477,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testMergeCase() {
-
 		// 1. Create
 
 		// Create leadCase
@@ -585,4 +584,53 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(leadCase.getClinicalCourse().getUuid(),
 				getClinicalVisitFacade().getByUuids(visitUuids).get(0).getClinicalCourse().getUuid());
 	}
+
+//	@Test
+//	public void testGetSimilarCases() {
+//		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+//		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+//				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+//		PersonDto cazePerson = creator.createPerson("Case", "Person");
+//		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, 
+//				CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
+//		
+//		// 1: Same disease, same region, similar name, report date in range
+//		CaseCriteria caseCriteria = new CaseCriteria()
+//				.disease(caze.getDisease())
+//				.region(caze.getRegion());
+//		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria()
+//				.firstName("Person")
+//				.lastName("Case")
+//				.caseCriteria(caseCriteria)
+//				.reportDate(new Date());
+//		
+//		assertEquals(1, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
+//		
+//		// 2: Different disease
+//		caseCriteria.disease(Disease.LASSA);
+//		
+//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
+//		
+//		// 3: Different region
+//		RDCFEntities rdcfDifferent = creator.createRDCFEntities("Other region", "Other district", "Other community", "Other facility");
+//		caseCriteria.disease(Disease.EVD);
+//		caseCriteria.region(new RegionReferenceDto(rdcf.region.getUuid()));
+//
+//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
+//		
+//		// 4: Non-similar name
+//		caseCriteria.region(caze.getRegion());
+//		criteria.firstName("Different");
+//		criteria.lastName("Name");
+//
+//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
+//		
+//		// 5: Region date out of range
+//		criteria.firstName("Person");
+//		criteria.lastName("Case");
+//		criteria.reportDate(DateHelper.subtractDays(new Date(), 60));
+//
+//		assertEquals(0, getCaseFacade().getSimilarCases(criteria, user.getUuid()).size());
+//	}
+	
 }

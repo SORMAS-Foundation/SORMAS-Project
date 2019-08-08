@@ -50,6 +50,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -350,11 +351,13 @@ public class CaseController {
 	}
 	
 	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName, Consumer<String> selectedCaseUuidConsumer) {
-		CaseCriteria criteria = new CaseCriteria()
+		CaseCriteria caseCriteria = new CaseCriteria()
+				.disease(caseDto.getDisease())
+				.region(caseDto.getRegion());
+		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria()
 				.firstName(personFirstName)
 				.lastName(personLastName)
-				.disease(caseDto.getDisease())
-				.region(caseDto.getRegion())
+				.caseCriteria(caseCriteria)
 				.reportDate(caseDto.getReportDate());
 		
 		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria, UserProvider.getCurrent().getUuid());

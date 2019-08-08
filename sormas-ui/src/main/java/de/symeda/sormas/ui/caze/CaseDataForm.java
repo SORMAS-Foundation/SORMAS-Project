@@ -38,7 +38,6 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -291,9 +290,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		addValueChangeListener(e -> {
-			PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(getValue().getPerson().getUuid());
-			CaseCriteria criteria = new CaseCriteria().firstName(personDto.getFirstName()).lastName(personDto.getLastName()).disease(getValue().getDisease()).region(getValue().getRegion());
-			
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
 
 			// Replace classification user if case has been automatically classified

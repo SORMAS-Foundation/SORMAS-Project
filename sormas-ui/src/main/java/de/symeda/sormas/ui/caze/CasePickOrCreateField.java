@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -119,8 +118,14 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 		addCreateCaseComponent();
 		
 		setInternalValue(super.getInternalValue());
-		pickCase.setValue(null);
-		grid.setEnabled(false);
+		
+		if (similarCases.size() == 1) {
+			pickCase.setValue(PICK_CASE);
+			grid.select(similarCases.get(0));
+		} else {
+			pickCase.setValue(null);
+			grid.setEnabled(false);
+		}
 
 		return mainLayout;
 	}
