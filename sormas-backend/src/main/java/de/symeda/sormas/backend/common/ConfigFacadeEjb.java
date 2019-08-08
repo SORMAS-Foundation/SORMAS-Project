@@ -170,7 +170,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public double getCaseNameSimilarityThreshold() {
-		return getDouble(CASE_NAME_SIMILARITY_THRESHOLD, 0.65D);
+		return getDouble(CASE_NAME_SIMILARITY_THRESHOLD, 0.6D);
 	}
 	
 	@Override
