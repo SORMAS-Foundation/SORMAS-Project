@@ -17,6 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.util;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.UUID;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -41,4 +48,46 @@ public final class DtoHelper {
 		dto.setUuid(entity.getUuid());
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <T extends EntityDto> T mergeDto(T lead, T other) {
+
+		try {
+			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class)
+					.getPropertyDescriptors();
+
+			for (PropertyDescriptor pd : pds) {
+				// Skip properties without a read or write method
+				if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
+					continue;
+				}
+
+				Object leadProperty = pd.getReadMethod().invoke(lead);
+				Object otherProperty = pd.getReadMethod().invoke(other);
+
+				// Write other-property into lead-property, if lead-property is null
+				if (leadProperty == null || (List.class.isAssignableFrom(pd.getPropertyType()) && ((List<?>) leadProperty).isEmpty())) {
+
+					if (List.class.isAssignableFrom(pd.getPropertyType())) {
+
+						for (EntityDto entry : (List<EntityDto>) otherProperty) {
+							entry.setUuid(UUID.randomUUID().toString());
+						}
+					}
+
+					pd.getWriteMethod().invoke(lead, otherProperty);
+
+				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
+
+					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty));
+
+				}
+			}
+		} catch (IntrospectionException | InvocationTargetException |
+
+				IllegalAccessException e) {
+			throw new RuntimeException("Exception when trying to merge dto: " + e.getMessage(), e.getCause());
+		}
+
+		return lead;
+	}
 }

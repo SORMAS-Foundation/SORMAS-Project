@@ -116,7 +116,6 @@ public enum ApproximateAgeType {
 		}
 		
 		public static String getAgeGroupFromAge(Integer age, ApproximateAgeType ageType) {
-			
 			Integer ageYears = ApproximateAgeHelper.getAgeYears(age, ageType);
 			if (ageYears == null) {
 				return null;
@@ -126,10 +125,9 @@ public enum ApproximateAgeType {
 			if (lowerAgeBoundary >= 120) {
 				return "120+";
 			} else {
-				return lowerAgeBoundary + ".." + (lowerAgeBoundary + 4);
+				return lowerAgeBoundary + "--" + (lowerAgeBoundary + 4);
 			}
 		}
 	}
+	
 }
-
-

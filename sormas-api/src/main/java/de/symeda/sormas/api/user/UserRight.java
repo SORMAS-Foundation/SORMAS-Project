@@ -179,6 +179,9 @@ public enum UserRight {
 			POE_SUPERVISOR,
 			CONTACT_SUPERVISOR
 			),
+	CASE_MERGE(
+			ADMIN
+			),
 	SAMPLE_CREATE(
 			ADMIN,
 			NATIONAL_USER,

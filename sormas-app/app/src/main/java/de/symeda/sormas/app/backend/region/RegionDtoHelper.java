@@ -24,6 +24,7 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -43,17 +44,17 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
     }
 
     @Override
-    protected Call<List<RegionDto>> pullAllSince(long since) {
+    protected Call<List<RegionDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getRegionFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<RegionDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<RegionDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getRegionFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<RegionDto> regionDtos) {
+    protected Call<List<PushResult>> pushAll(List<RegionDto> regionDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
 

@@ -94,12 +94,6 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
         return applicationReference;
     }
 
-    @Deprecated
-    public AsyncTask execute(ITaskResultCallback resultCallback) {
-        this.resultCallback = resultCallback;
-        return executeOnThreadPool();
-    }
-
     public AsyncTask executeOnThreadPool() {
         executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         return this;

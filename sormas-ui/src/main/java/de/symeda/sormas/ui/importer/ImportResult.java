@@ -21,6 +21,7 @@ public enum ImportResult {
 	
 	SUCCESS,
 	ERROR,
-	SKIPPED;
+	SKIPPED,
+	DUPLICATE;
 
 }

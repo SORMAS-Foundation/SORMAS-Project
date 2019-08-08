@@ -25,8 +25,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.rest.RetroProvider;
 
 public class ErrorReportingHelper {
 
@@ -55,10 +58,20 @@ public class ErrorReportingHelper {
      */
     public static void sendCaughtException(Tracker tracker, Exception e, Class entityClass, String entityUuid, boolean fatal, String... additionalInformation) {
 
-        tracker.send(new HitBuilders.ExceptionBuilder()
-                .setDescription(buildErrorReportDescription(e, entityClass, entityUuid, additionalInformation))
-                .setFatal(fatal)
-                .build());
+        HitBuilders.ExceptionBuilder builder = new HitBuilders.ExceptionBuilder();
+
+        builder.setFatal(fatal)
+                .setDescription(buildErrorReportDescription(e, entityClass, entityUuid, additionalInformation));
+
+        User user = ConfigProvider.getUser();
+        if (user != null && user.getUuid() != null) {
+            // user
+            builder.setCustomDimension(1, user.getUuid());
+        }
+        // connection
+        builder.setCustomDimension(2, String.valueOf(RetroProvider.getLastConnectionId()));
+
+        tracker.send(builder.build());
     }
 
     /**
@@ -101,9 +114,6 @@ public class ErrorReportingHelper {
         }
         if (entityClass != null) {
             description.append(" - Entity: " + entityClass.getSimpleName() + ": " + entityUuid);
-        }
-        if (ConfigProvider.getUser() != null && ConfigProvider.getUser().getUuid() != null) {
-            description.append(" - User: " + ConfigProvider.getUser().getUuid());
         }
         if (ConfigProvider.getServerRestUrl() != null) {
             description.append(" - System: " + ConfigProvider.getServerRestUrl());

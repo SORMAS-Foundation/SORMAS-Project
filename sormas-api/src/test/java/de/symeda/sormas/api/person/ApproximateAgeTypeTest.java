@@ -25,12 +25,12 @@ public class ApproximateAgeTypeTest {
 	
 	@Test
 	public void testAgeGroupCalculation() {
-		assertEquals("0..4", ApproximateAgeHelper.getAgeGroupFromAge(380, ApproximateAgeType.DAYS));
-		assertEquals("0..4", ApproximateAgeHelper.getAgeGroupFromAge(7, ApproximateAgeType.MONTHS));
-		assertEquals("5..9", ApproximateAgeHelper.getAgeGroupFromAge(7, ApproximateAgeType.YEARS));
-		assertEquals("20..24", ApproximateAgeHelper.getAgeGroupFromAge(20, ApproximateAgeType.YEARS));
-		assertEquals("20..24", ApproximateAgeHelper.getAgeGroupFromAge(24, ApproximateAgeType.YEARS));
-		assertEquals("0..4", ApproximateAgeHelper.getAgeGroupFromAge(2, ApproximateAgeType.YEARS));
+		assertEquals("0--4", ApproximateAgeHelper.getAgeGroupFromAge(380, ApproximateAgeType.DAYS));
+		assertEquals("0--4", ApproximateAgeHelper.getAgeGroupFromAge(7, ApproximateAgeType.MONTHS));
+		assertEquals("5--9", ApproximateAgeHelper.getAgeGroupFromAge(7, ApproximateAgeType.YEARS));
+		assertEquals("20--24", ApproximateAgeHelper.getAgeGroupFromAge(20, ApproximateAgeType.YEARS));
+		assertEquals("20--24", ApproximateAgeHelper.getAgeGroupFromAge(24, ApproximateAgeType.YEARS));
+		assertEquals("0--4", ApproximateAgeHelper.getAgeGroupFromAge(2, ApproximateAgeType.YEARS));
 		assertEquals("120+", ApproximateAgeHelper.getAgeGroupFromAge(121, ApproximateAgeType.YEARS));
 	}
 }

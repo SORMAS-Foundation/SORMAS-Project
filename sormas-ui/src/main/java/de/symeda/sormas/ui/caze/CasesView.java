@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -183,6 +185,7 @@ public class CasesView extends AbstractView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
 			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
+			exportButton.setId("export");
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true); 
@@ -193,6 +196,7 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(exportButton);
 
 			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
+			basicExportButton.setId("basicExport");
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setIcon(VaadinIcons.TABLE);
@@ -204,6 +208,7 @@ public class CasesView extends AbstractView {
 			fileDownloader.extend(basicExportButton);
 
 			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+			extendedExportButton.setId("extendedExport");
 			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
@@ -228,6 +233,7 @@ public class CasesView extends AbstractView {
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
 			Button sampleExportButton = new Button(I18nProperties.getCaption(Captions.exportSamples));
+			sampleExportButton.setId("sampleExport");
 			sampleExportButton.setDescription(I18nProperties.getString(Strings.infoSampleExport));
 			sampleExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			sampleExportButton.setIcon(VaadinIcons.FILE_TEXT);
@@ -260,9 +266,18 @@ public class CasesView extends AbstractView {
 				warningLabel.setVisible(!criteria.hasAnyFilterActive());
 			});
 		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
+			Button mergeDuplicatesButton = new Button(I18nProperties.getCaption(Captions.caseMergeDuplicates));
+			mergeDuplicatesButton.setId("mergeDuplicates");
+			mergeDuplicatesButton.setIcon(VaadinIcons.COMPRESS_SQUARE);
+			mergeDuplicatesButton.addClickListener(e -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+			addHeaderComponent(mergeDuplicatesButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.caseNewCase));
+			createButton.setId("create");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
@@ -285,6 +300,7 @@ public class CasesView extends AbstractView {
 		{
 			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				caseOriginFilter = new ComboBox();
+				caseOriginFilter.setId(CaseDataDto.CASE_ORIGIN);
 				caseOriginFilter.setWidth(140, Unit.PIXELS);
 				caseOriginFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_ORIGIN));
 				caseOriginFilter.addItems((Object[]) CaseOrigin.values());
@@ -300,6 +316,7 @@ public class CasesView extends AbstractView {
 			}
 
 			outcomeFilter = new ComboBox();
+			outcomeFilter.setId(CaseDataDto.OUTCOME);
 			outcomeFilter.setWidth(140, Unit.PIXELS);
 			outcomeFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
 			outcomeFilter.addItems((Object[]) CaseOutcome.values());
@@ -310,6 +327,7 @@ public class CasesView extends AbstractView {
 			firstFilterRowLayout.addComponent(outcomeFilter);
 
 			diseaseFilter = new ComboBox();
+			diseaseFilter.setId(CaseDataDto.DISEASE);
 			diseaseFilter.setWidth(140, Unit.PIXELS);
 			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray());
@@ -320,6 +338,7 @@ public class CasesView extends AbstractView {
 			firstFilterRowLayout.addComponent(diseaseFilter);
 
 			classificationFilter = new ComboBox();
+			classificationFilter.setId(CaseDataDto.CASE_CLASSIFICATION);
 			classificationFilter.setWidth(140, Unit.PIXELS);
 			classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 			classificationFilter.addItems((Object[])CaseClassification.values());
@@ -330,6 +349,7 @@ public class CasesView extends AbstractView {
 			firstFilterRowLayout.addComponent(classificationFilter);
 
 			searchField = new TextField();
+			searchField.setId("search");
 			searchField.setWidth(200, Unit.PIXELS);
 			searchField.setNullRepresentation("");
 			searchField.setInputPrompt(I18nProperties.getString(Strings.promptCasesSearchField));
@@ -342,6 +362,7 @@ public class CasesView extends AbstractView {
 			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
 
 			resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
+			resetButton.setId("reset");
 			resetButton.setVisible(false);
 			resetButton.addClickListener(event -> {
 				ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
@@ -533,7 +554,7 @@ public class CasesView extends AbstractView {
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
 			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekTo));
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));
-			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateTo));
+			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptDateTo));
 			dateFilterRowLayout.addComponent(weekAndDateFilter);
 			dateFilterRowLayout.addComponent(applyButton);
 

@@ -198,7 +198,8 @@ public class CaseDataDto extends EntityDto {
 	private ClinicalCourseDto clinicalCourse;
 	private MaternalHistoryDto maternalHistory;
 	private String creationVersion;
-	private PortHealthInfoDto portHealthInfo;	private CaseOrigin caseOrigin;
+	private PortHealthInfoDto portHealthInfo;
+	private CaseOrigin caseOrigin;
 	private PointOfEntryReferenceDto pointOfEntry;
 	private String pointOfEntryDetails;
 
@@ -227,7 +228,8 @@ public class CaseDataDto extends EntityDto {
 	}
 
 	/**
-	 * Returns true if the case is an original point of entry case and has not yet been assigned a health facility.
+	 * Returns true if the case is an original point of entry case and has not yet
+	 * been assigned a health facility.
 	 */
 	public boolean isUnreferredPortHealthCase() {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;

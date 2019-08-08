@@ -28,6 +28,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -46,17 +47,17 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
     }
 
     @Override
-    protected Call<List<EventParticipantDto>> pullAllSince(long since) {
+    protected Call<List<EventParticipantDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getEventParticipantFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<EventParticipantDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<EventParticipantDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getEventParticipantFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<EventParticipantDto> eventParticipantDtos) {
+    protected Call<List<PushResult>> pushAll(List<EventParticipantDto> eventParticipantDtos) throws NoConnectionException {
         return RetroProvider.getEventParticipantFacade().pushAll(eventParticipantDtos);
     }
 

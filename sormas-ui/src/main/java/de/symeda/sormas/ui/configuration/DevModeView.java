@@ -44,6 +44,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -258,6 +259,7 @@ public class DevModeView extends AbstractConfigurationView {
 
 			// region & facility
 			FacilityDto healthFacility = healthFacilities.get(random.nextInt(healthFacilities.size()));
+			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 			caze.setRegion(healthFacility.getRegion());
 			caze.setDistrict(healthFacility.getDistrict());
 			caze.setCommunity(healthFacility.getCommunity());

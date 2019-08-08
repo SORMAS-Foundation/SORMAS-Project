@@ -87,27 +87,20 @@ public class TaskNotificationService extends Service {
         // don't sync, when user is currently editing data
         BaseActivity activeActivity = BaseActivity.getActiveActivity();
         if (activeActivity == null || !activeActivity.isEditing()) {
+            // only when we do have a user and there is currently no other connection
+            if (ConfigProvider.getUser() != null
+                    && !RetroProvider.isConnected()) {
 
-            if (ConfigProvider.getUser() != null) {
-                // only when we do have a user
-                if (!RetroProvider.isConnected()) {
-                    try {
-                        RetroProvider.connect(getApplicationContext());
-                    } catch (ServerConnectionException | ServerCommunicationException | ApiVersionException e) {
-                        // do nothing
-                    }
-                }
+                RetroProvider.connectAsync(getApplicationContext(), false,
+                        (result, versionCompatible) -> {
 
-                if (RetroProvider.isConnected()) {
-                    SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, this, new SyncCallback() {
-                        @Override
-                        public void call(boolean syncFailed, String syncFailedMessage) {
-                            if (syncFailed) {
-                                RetroProvider.disconnect();
+                            if (result.getResultStatus().isSuccess()) {
+                                SynchronizeDataAsync.call(SynchronizeDataAsync.SyncMode.Changes, this,
+                                        (syncFailed, syncFailedMessage) -> {
+                                            RetroProvider.disconnect();
+                                        });
                             }
-                        }
-                    });
-                }
+                        });
             }
         }
 

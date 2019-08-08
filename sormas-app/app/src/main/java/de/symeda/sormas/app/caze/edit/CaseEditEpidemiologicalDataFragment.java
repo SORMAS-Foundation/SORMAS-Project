@@ -264,6 +264,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         } else {
             getContentBinding().epiDataGatheringAttended.disableWarningState();
         }
+
+        getContentBinding().epiDataGatheringAttended.setEnabled(getGatherings().size() == 0);
     }
 
     private ObservableArrayList<EpiDataBurial> getBurials() {
@@ -299,6 +301,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         } else {
             getContentBinding().epiDataBurialAttended.disableWarningState();
         }
+
+        getContentBinding().epiDataBurialAttended.setEnabled(getBurials().size() == 0);
     }
 
     private ObservableArrayList<EpiDataTravel> getTravels() {
@@ -334,6 +338,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         } else {
             getContentBinding().epiDataTraveled.disableWarningState();
         }
+
+        getContentBinding().epiDataTraveled.setEnabled(getTravels().size() == 0);
     }
 
     // Overrides

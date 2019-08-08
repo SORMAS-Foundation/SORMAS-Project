@@ -26,6 +26,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
 /**
@@ -51,17 +52,17 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
     }
 
     @Override
-    protected Call<List<EpiDataBurialDto>> pullAllSince(long since) {
+    protected Call<List<EpiDataBurialDto>> pullAllSince(long since) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<EpiDataBurialDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<EpiDataBurialDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<EpiDataBurialDto> epiDataBurialDtos) {
+    protected Call<List<PushResult>> pushAll(List<EpiDataBurialDto> epiDataBurialDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

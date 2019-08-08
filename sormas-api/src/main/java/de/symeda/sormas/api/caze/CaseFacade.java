@@ -104,7 +104,9 @@ public interface CaseFacade {
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid);
 	
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
-
+	
+	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid);
+	
 	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
 			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB);
 	
@@ -121,5 +123,11 @@ public interface CaseFacade {
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid);
 	
 	String generateEpidNumber(CaseReferenceDto caze);
+
+	void mergeCase(String leadUuid, String otherUuid);
+	
+	List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria, String userUuid);
+	
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid);
 	
 }

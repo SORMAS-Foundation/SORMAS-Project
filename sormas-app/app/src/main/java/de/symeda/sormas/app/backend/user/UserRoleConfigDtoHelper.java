@@ -23,6 +23,7 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserRoleConfigDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -39,17 +40,17 @@ public class UserRoleConfigDtoHelper extends AdoDtoHelper<UserRoleConfig, UserRo
     }
 
     @Override
-    protected Call<List<UserRoleConfigDto>> pullAllSince(long since) {
+    protected Call<List<UserRoleConfigDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getUserRoleConfigFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<UserRoleConfigDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<UserRoleConfigDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is read-only");
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<UserRoleConfigDto> communityDtos) {
+    protected Call<List<PushResult>> pushAll(List<UserRoleConfigDto> communityDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is read-onl");
     }
 

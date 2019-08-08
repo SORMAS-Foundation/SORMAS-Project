@@ -29,6 +29,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -51,17 +52,17 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
     }
 
     @Override
-    protected Call<List<EventDto>> pullAllSince(long since) {
+    protected Call<List<EventDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getEventFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<EventDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<EventDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getEventFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<EventDto> eventDtos) {
+    protected Call<List<PushResult>> pushAll(List<EventDto> eventDtos) throws NoConnectionException {
         return RetroProvider.getEventFacade().pushAll(eventDtos);
     }
 

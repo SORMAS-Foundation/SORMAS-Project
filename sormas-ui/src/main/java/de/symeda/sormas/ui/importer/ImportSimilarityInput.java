@@ -20,23 +20,23 @@ package de.symeda.sormas.ui.importer;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonNameDto;
 
 public class ImportSimilarityInput {
-	
-	private final List<PersonNameDto> persons;
+
 	private final CaseDataDto caze;
 	private final PersonDto person;
+	private final List<CaseIndexDto> similarCases;
 	
-	public ImportSimilarityInput(List<PersonNameDto> persons, CaseDataDto caze, PersonDto person) {
-		this.persons = persons;
+	public ImportSimilarityInput(CaseDataDto caze, PersonDto person, List<CaseIndexDto> similarCases) {
+		this.similarCases = similarCases;
 		this.caze = caze;
 		this.person = person;
 	}
 
-	public List<PersonNameDto> getPersons() {
-		return persons;
+	public List<CaseIndexDto> getSimilarCases() {
+		return similarCases;
 	}
 
 	public CaseDataDto getCaze() {

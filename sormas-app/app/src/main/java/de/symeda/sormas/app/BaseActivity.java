@@ -575,6 +575,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         if (!checkActiveUser()) return;
 
+        if (RetroProvider.isConnected()) {
+            NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, "Background synchronization already in progress.");
+
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
+
+            return;
+        }
+
         if (showProgressDialog) {
             if (progressDialog == null || !progressDialog.isShowing()) {
                 boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
@@ -588,11 +602,18 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             }
         }
 
-        if (!RetroProvider.isConnected()) {
-            RetroProvider.connectAsyncHandled(this, showUpgradePrompt, false,
-                    new Consumer<Boolean>() {
-                        @Override
-                        public void accept(Boolean result) {
+        final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
+        final long syncLogCountBefore = syncLogDao.countOf();
+
+        RetroProvider.connectAsyncHandled(this, showUpgradePrompt, false,
+                result -> {
+
+                    if (Boolean.TRUE.equals(result)) {
+
+                        if (beforeSyncCallback != null) beforeSyncCallback.call();
+
+                        SynchronizeDataAsync.call(syncMode, getApplicationContext(), (syncFailed, syncFailedMessage) -> {
+
                             if (swipeRefreshLayout != null) {
                                 swipeRefreshLayout.setRefreshing(false);
                             }
@@ -601,67 +622,38 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                                 progressDialog = null;
                             }
 
-                            if (Boolean.TRUE.equals(result)) {
-                                // try again
-                                synchronizeData(syncMode, showUpgradePrompt, showProgressDialog, swipeRefreshLayout, resultCallback, beforeSyncCallback);
+                            BaseActivity.this.onResume();
+
+                            long syncLogCountAfter = syncLogDao.countOf();
+
+                            if (!syncFailed) {
+                                if (syncLogCountAfter > syncLogCountBefore) {
+                                    showConflictSnackbar();
+                                } else if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
+                                    NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, R.string.message_sync_not_synchronized);
+                                } else {
+                                    NotificationHelper.showNotification(BaseActivity.this, NotificationType.SUCCESS, R.string.message_sync_success);
+                                }
                             } else {
+                                NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
                                 checkActiveUser();
                             }
-                        }
-                    });
-            return;
-        }
 
-        final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
-        final long syncLogCountBefore = syncLogDao.countOf();
+                            RetroProvider.disconnect();
 
-        if (RetroProvider.isConnected()) {
+                            if (resultCallback != null) resultCallback.call();
+                        });
 
-            if (beforeSyncCallback != null) beforeSyncCallback.call();
-
-            SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed, String syncFailedMessage) {
-
-                    if (swipeRefreshLayout != null) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                    if (progressDialog != null && progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                        progressDialog = null;
-                    }
-
-                    BaseActivity.this.onResume();
-
-                    long syncLogCountAfter = syncLogDao.countOf();
-
-                    if (!syncFailed) {
-                        if (syncLogCountAfter > syncLogCountBefore) {
-                            showConflictSnackbar();
-                        } else if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
-                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, R.string.message_sync_not_synchronized);
-                        } else {
-                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.SUCCESS, R.string.message_sync_success);
-                        }
                     } else {
-                        NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
-                        checkActiveUser();
+                        if (swipeRefreshLayout != null) {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                        if (progressDialog != null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                            progressDialog = null;
+                        }
                     }
-
-                    RetroProvider.disconnect();
-
-                    if (resultCallback != null) resultCallback.call();
-                }
-            });
-        } else {
-            if (swipeRefreshLayout != null) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-                progressDialog = null;
-            }
-        }
+                });
     }
 
     private void showConflictSnackbar() {
