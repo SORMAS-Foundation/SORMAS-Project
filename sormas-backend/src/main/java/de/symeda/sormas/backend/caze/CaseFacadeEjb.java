@@ -749,7 +749,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), FacadeProvider.getConfigFacade().getCaseNameSimilarityThreshold());
+		Predicate nameSimilarityFilter = cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), FacadeProvider.getConfigFacade().getCaseNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
 		Predicate districtFilter = cb.equal(district.get(District.ID), district2.get(District.ID));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
