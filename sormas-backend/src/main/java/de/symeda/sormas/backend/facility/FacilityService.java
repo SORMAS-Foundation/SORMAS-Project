@@ -199,10 +199,14 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		// values is null
 		filter = cb.and(filter, cb.or(cb.isNull(from.get(Facility.TYPE)),
 				cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
-		if (community != null) {
-			filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
-		} else if (district != null) {
-			filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), district));
+
+		// Don't check for district and community equality when searching for constant facilities
+		if (!FacilityDto.OTHER_FACILITY.equals(name) && !FacilityDto.NO_FACILITY.equals(name)) {
+			if (community != null) {
+				filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
+			} else if (district != null) {
+				filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), district));
+			}
 		}
 
 		cq.where(filter);
