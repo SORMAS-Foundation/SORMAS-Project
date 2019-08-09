@@ -78,12 +78,6 @@
 				<include name="*" />
 			</fileset>
 		</copy>
-		
-		<copy todir="${collect.root.path}">
-			<fileset dir="update">
-				<include name="*" />
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="collect-serverlibs" description="serverlibs für server setup bereitstellen">

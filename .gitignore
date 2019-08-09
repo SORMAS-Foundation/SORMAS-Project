@@ -21,3 +21,4 @@ deploy
 /sormas-app/keystore.properties
 /sormas-app/java_pid21052.hprof
 bin
+/sormas-base/setup/setup.log
