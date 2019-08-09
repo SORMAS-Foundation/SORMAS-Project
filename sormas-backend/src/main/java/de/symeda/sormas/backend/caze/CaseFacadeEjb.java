@@ -785,25 +785,27 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
 
 		List<Object[]> foundUuids = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
-
 		List<CaseIndexDto[]> resultList = new ArrayList<>();
-		List<Object> parentUuids = foundUuids.stream().map(uuids -> uuids[0]).collect(Collectors.toList());
-		List<Object> childrenUuids = foundUuids.stream().map(uuids -> uuids[1]).collect(Collectors.toList());
-		List<CaseIndexDto> parentList = new ArrayList<>();
-		List<CaseIndexDto> childrenList = new ArrayList<>();
 
-		CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
-		Root<Case> indexRoot = indexCq.from(Case.class);
-		indexCq.where(indexRoot.get(Case.UUID).in(parentUuids));
-		selectIndexDtoFields(indexCq, indexRoot);
-		parentList = em.createQuery(indexCq).getResultList();
-		parentList.sort(Comparator.comparing(indexDto -> parentUuids.indexOf(((CaseIndexDto) indexDto).getUuid())));
-		indexCq.where(indexRoot.get(Case.UUID).in(childrenUuids));
-		childrenList = em.createQuery(indexCq).getResultList();
-		childrenList.sort(Comparator.comparing(indexDto -> childrenUuids.indexOf(((CaseIndexDto) indexDto).getUuid())));
+		if (!foundUuids.isEmpty()) {
+			List<Object> parentUuids = foundUuids.stream().map(uuids -> uuids[0]).collect(Collectors.toList());
+			List<Object> childrenUuids = foundUuids.stream().map(uuids -> uuids[1]).collect(Collectors.toList());
+			List<CaseIndexDto> parentList = new ArrayList<>();
+			List<CaseIndexDto> childrenList = new ArrayList<>();
 
-		for (int i = 0; i < parentList.size(); i++) {
-			resultList.add(new CaseIndexDto[] {parentList.get(i), childrenList.get(i)});
+			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
+			Root<Case> indexRoot = indexCq.from(Case.class);
+			indexCq.where(indexRoot.get(Case.UUID).in(parentUuids));
+			selectIndexDtoFields(indexCq, indexRoot);
+			parentList = em.createQuery(indexCq).getResultList();
+			parentList.sort(Comparator.comparing(indexDto -> parentUuids.indexOf(((CaseIndexDto) indexDto).getUuid())));
+			indexCq.where(indexRoot.get(Case.UUID).in(childrenUuids));
+			childrenList = em.createQuery(indexCq).getResultList();
+			childrenList.sort(Comparator.comparing(indexDto -> childrenUuids.indexOf(((CaseIndexDto) indexDto).getUuid())));
+
+			for (int i = 0; i < parentList.size(); i++) {
+				resultList.add(new CaseIndexDto[] {parentList.get(i), childrenList.get(i)});
+			}
 		}
 
 		return resultList;
