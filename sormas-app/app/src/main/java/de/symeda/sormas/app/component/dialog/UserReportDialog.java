@@ -20,16 +20,17 @@ package de.symeda.sormas.app.component.dialog;
 
 import android.content.Context;
 import android.os.AsyncTask;
-
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import android.os.Bundle;
 
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.BoolResult;
+import de.symeda.sormas.app.core.FirebaseEvent;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.DefaultAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -75,13 +76,12 @@ public class UserReportDialog extends AbstractDialog {
                     public void doInBackground(TaskResultHolder resultHolder) {
                         try {
                             String description = contentBinding.userReportMessage.getValue();
-                            Tracker tracker = ((SormasApplication) getActivity().getApplication()).getDefaultTracker();
-                            tracker.send(new HitBuilders.EventBuilder()
-                                    .setCategory("User Report")
-                                    .setAction("Error Report")
-                                    .setLabel("Location: " + viewName + (uuid!=null?" - UUID: " + uuid:"") + (ConfigProvider.getUser()!=null?" - User: " + ConfigProvider.getUser().getUuid():"") + " - Description: " + description)
-                                    .build());
-                            resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.message_report_sent)));
+
+                            Bundle eventBundle = new Bundle();
+                            eventBundle.putString(FirebaseAnalytics.Param.CONTENT, description);
+                            ((BaseActivity) getActivity()).getFirebaseAnalytics().logEvent(FirebaseEvent.USER_ERROR_REPORT, eventBundle);
+
+                            resultHolder.setResultStatus(new BoolResult(true,  getActivity().getResources().getString(R.string.message_report_sent)));
                         } catch (Exception ex) {
                             resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.message_report_not_sent)));
                         }

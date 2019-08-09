@@ -29,11 +29,9 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.core.content.FileProvider;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 
@@ -49,7 +47,6 @@ public class AppUpdateController {
     public final static int INSTALL_RESULT =  99;
 
     private static AppUpdateController instance = null;
-
     private ProgressDialog progressDialog;
     private ConfirmationDialog displayedDialog;
     private boolean allowDismiss;
@@ -57,7 +54,6 @@ public class AppUpdateController {
     private String fileName;
     private FragmentActivity activity;
     private Callback dismissCallback;
-    private Tracker tracker;
 
     private AppUpdateController() { }
 
@@ -128,7 +124,7 @@ public class AppUpdateController {
         this.allowDismiss = allowDismiss;
         this.appUrl = appUrl;
         this.dismissCallback = dismissCallback;
-        this.tracker = ((SormasApplication) activity.getApplication()).getDefaultTracker();
+
         this.fileName = appUrl.substring(appUrl.lastIndexOf("/"));
 
         // Check if the required version has already been downloaded
@@ -157,12 +153,6 @@ public class AppUpdateController {
             displayedDialog = buildInstallFailedDialog();
             displayedDialog.show();
         } else {
-            tracker.send(new HitBuilders.EventBuilder()
-                    .setCategory("App Update Error")
-                    .setAction("File Deletion or Renaming")
-                    .setLabel("Failed to delete or rename an incompletely downloaded apk for user: " + ConfigProvider.getUser().getUuid())
-                    .build());
-
             displayedDialog = buildInstallNotPossibleDialog();
             displayedDialog.show();
         }

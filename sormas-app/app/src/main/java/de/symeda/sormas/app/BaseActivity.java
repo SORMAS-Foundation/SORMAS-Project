@@ -25,14 +25,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +36,17 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.Tracker;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.crashlytics.android.Crashlytics;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,9 +79,7 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.NavigationHelper;
-import de.symeda.sormas.app.util.SyncCallback;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -87,7 +87,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     public static final String TAG = BaseActivity.class.getSimpleName();
 
-    protected Tracker tracker;
+    private FirebaseAnalytics firebaseAnalytics;
 
     private View rootView;
     private ProgressBar preloader;
@@ -99,7 +99,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     // footer menu
     protected PageMenuControl pageMenu = null;
-    private List<PageMenuItem> pageItems = new ArrayList();
+    private List<PageMenuItem> pageItems = new ArrayList<>();
     private PageMenuItem activePageItem = null;
     private int activePageKey = 0;
     private boolean finishInsteadOfUpNav;
@@ -150,8 +150,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseAnalytics.setUserId(ConfigProvider.getUser().getUuid());
+        Crashlytics.setUserIdentifier(ConfigProvider.getUser().getUuid());
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
         if (isAccessNeeded() && !ConfigProvider.isAccessGranted()) {
@@ -784,4 +785,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
     }
+
+    public FirebaseAnalytics getFirebaseAnalytics() {
+        return firebaseAnalytics;
+    }
+
 }

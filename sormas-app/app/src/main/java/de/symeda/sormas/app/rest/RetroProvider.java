@@ -25,7 +25,6 @@ import android.util.Log;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -42,7 +41,6 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
@@ -59,7 +57,6 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -72,9 +69,7 @@ import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.BiConsumer;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 import okhttp3.Credentials;
-import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
