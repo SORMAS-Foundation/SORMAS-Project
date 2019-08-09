@@ -245,7 +245,7 @@ echo "Configuring domain and database..."
 
 # General domain settings
 ${ASADMIN} delete-jvm-options -Xmx512m
-${ASADMIN} create-jvm-options -Xmx2048m
+${ASADMIN} create-jvm-options -Xmx4096m
 
 # JDBC pool
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
