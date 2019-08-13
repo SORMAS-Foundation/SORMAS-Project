@@ -22,5 +22,25 @@
 				height: 8px;
 			}
 		}
+		
+		&.spacious {
+		
+		  	&.v-margin-top {
+    			padding-top: 36px;
+  			}
+		  	&.v-margin-bottom {
+    			padding-bottom: 36px;
+  			}
+		  	&.v-margin-left {
+    			padding-left: 36px;
+  			}
+		  	&.v-margin-right {
+    			padding-right: 36px;
+  			}
+			.v-spacing {
+				width: 36px;
+				height: 36px;
+			}
+		}
 	}
 }
