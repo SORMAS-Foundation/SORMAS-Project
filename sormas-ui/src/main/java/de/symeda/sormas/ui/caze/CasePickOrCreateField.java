@@ -67,6 +67,10 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 			if (e.getProperty().getValue() != null) {
 				createCase.setValue(null);
 				grid.setEnabled(true);
+				if (similarCases.size() == 1) {
+					pickCase.setValue(PICK_CASE);
+					grid.select(similarCases.get(0));
+				}
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(grid.getSelectedRow() != null);
 				}
@@ -117,15 +121,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 		addAndConfigureGrid();
 		addCreateCaseComponent();
 		
-		setInternalValue(super.getInternalValue());
-		
-		if (similarCases.size() == 1) {
-			pickCase.setValue(PICK_CASE);
-			grid.select(similarCases.get(0));
-		} else {
-			pickCase.setValue(null);
-			grid.setEnabled(false);
-		}
+		grid.setEnabled(false);
 
 		return mainLayout;
 	}

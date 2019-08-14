@@ -56,6 +56,6 @@ public interface ConfigFacade {
 
 	boolean isDevMode();
 	
-	double getCaseNameSimilarityThreshold();
+	double getNameSimilarityThreshold();
 	
 }

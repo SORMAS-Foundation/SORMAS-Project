@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableList;
 import android.graphics.Typeface;
+import android.text.Html;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -499,7 +501,7 @@ public class TextViewBindingAdapters {
         } else {
             String valueFormat = textField.getContext().getResources().getString(R.string.person_name_format);
 
-            if (valueFormat != null && valueFormat.trim() != "") {
+            if (valueFormat != null && !valueFormat.trim().equals("")) {
                 textField.setText(String.format(valueFormat, person.getFirstName(), person.getLastName().toUpperCase()));
             } else {
                 textField.setText(person.toString());
@@ -802,6 +804,22 @@ public class TextViewBindingAdapters {
             textField.setText(defaultValue);
         } else {
             textField.setText(facility.toString());
+        }
+    }
+
+    @BindingAdapter(value = {"facilityValue", "facilityDetailsValue", "prependValue", "valueFormat"})
+    public static void setFacilityValue(TextView textField, Facility facility, String facilityDetails, String prependValue, String valueFormat) {
+        String value;
+        if (FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {
+            value = facility.getName() + " (" + facilityDetails + ")";
+        } else {
+            value = facility.getName();
+        }
+
+        if (valueFormat != null && !valueFormat.trim().equals("")) {
+            textField.setText(String.format(valueFormat, prependValue, value));
+        } else {
+            textField.setText(prependValue + ": " + value);
         }
     }
 
