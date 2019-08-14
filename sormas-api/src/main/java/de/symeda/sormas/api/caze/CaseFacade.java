@@ -73,6 +73,8 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
+	CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease);
+	
 	CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant);
 	
 	CaseDataDto convertContactToCase(CaseDataDto caseData, ContactDto contact, PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant);

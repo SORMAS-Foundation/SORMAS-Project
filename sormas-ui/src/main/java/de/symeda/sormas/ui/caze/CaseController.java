@@ -318,7 +318,7 @@ public class CaseController {
 					CaseDataDto convertedCaseDto = FacadeProvider.getCaseFacade().convertContactToCase(dto, contact,
 							person, disease, eventParticipant);
 
-					if (contact != null || eventParticipant != null) {
+					if (contact != null) {
 						// used the person of the contact or event participant the case is created for
 						Notification.show(I18nProperties.getString(Strings.messageCaseCreated),
 								Type.ASSISTIVE_NOTIFICATION);

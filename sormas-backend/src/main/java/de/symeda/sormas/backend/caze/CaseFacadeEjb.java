@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -356,7 +357,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 	}
 
@@ -698,7 +699,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CaseIndexDto> getSimilarCases(CaseCriteria criteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
 		Root<Case> root = cq.from(Case.class);
@@ -706,17 +707,25 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
 
 		selectIndexDtoFields(cq, root);
-		
+
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root, user);
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, cb.parameter(String.class, "name"), nameSimilarityExpr), 0.6D);
-		Predicate diseaseFilter = criteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), criteria.getDisease()) : null;
-		Predicate regionFilter = criteria.getRegion() != null ? cb.equal(region.get(Region.UUID), criteria.getRegion().getUuid()) : null;
-		Predicate reportDateFilter = criteria.getReportDate() != null ? cb.between(root.get(Case.REPORT_DATE), DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30)) : null;
+		Predicate nameSimilarityFilter = cb.gt(
+				cb.function("word_similarity", double.class, cb.parameter(String.class, "name"), nameSimilarityExpr),
+				0.6D);
+		Predicate diseaseFilter = criteria.getDisease() != null
+				? cb.equal(root.get(Case.DISEASE), criteria.getDisease())
+				: null;
+		Predicate regionFilter = criteria.getRegion() != null
+				? cb.equal(region.get(Region.UUID), criteria.getRegion().getUuid())
+				: null;
+		Predicate reportDateFilter = criteria.getReportDate() != null ? cb.between(root.get(Case.REPORT_DATE),
+				DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30))
+				: null;
 
 		Predicate filter = userFilter;
-		
+
 		if (filter != null) {
 			filter = cb.and(userFilter, nameSimilarityFilter);
 		} else {
@@ -731,16 +740,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (reportDateFilter != null) {
 			filter = cb.and(filter, reportDateFilter);
 		}
-		
+
 		cq.where(filter);
 
-		return em.createQuery(cq).setParameter("name", criteria.getFirstName() + " " + criteria.getLastName()).getResultList();
+		return em.createQuery(cq).setParameter("name", criteria.getFirstName() + " " + criteria.getLastName())
+				.getResultList();
 	}
-	
+
 	@Override
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
@@ -756,20 +766,21 @@ public class CaseFacadeEjb implements CaseFacade {
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), 0.6D);
+		Predicate nameSimilarityFilter = cb
+				.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), 0.6D);
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
 		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
-		Predicate reportDateFilter = cb.lessThanOrEqualTo(
-				cb.abs(
-						cb.diff(
-								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
-								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
+		Predicate reportDateFilter = cb.lessThanOrEqualTo(cb.abs(cb.diff(
+				cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"),
+						root.get(Case.REPORT_DATE)),
+				cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"),
+						root2.get(Case.REPORT_DATE)))),
 				new Long(2592000) // 30 days in seconds
-				);
+		);
 		Predicate creationDateFilter = cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
-					
+
 		Predicate filter = userFilter;
-		
+
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -784,15 +795,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		filter = cb.and(filter, regionFilter);
 		filter = cb.and(filter, reportDateFilter);
 		filter = cb.and(filter, creationDateFilter);
-		
+
 		cq.where(filter);
-		cq.multiselect(
-				root.get(Case.UUID),
-				root2.get(Case.UUID));
+		cq.multiselect(root.get(Case.UUID), root2.get(Case.UUID));
 		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
-		
-		List<Object[]> foundUuids = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
-		
+
+		List<Object[]> foundUuids = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch")
+				.getResultList();
+
 		List<CaseIndexDto[]> resultList = new ArrayList<>();
 		for (Object[] uuidPair : foundUuids) {
 			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
@@ -807,10 +817,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			dtoPair[1] = secondCase;
 			resultList.add(dtoPair);
 		}
-	
+
 		return resultList;
 	}
-	
+
 	private void selectIndexDtoFields(CriteriaQuery<CaseIndexDto> cq, Root<Case> root) {
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
@@ -827,19 +837,20 @@ public class CaseFacadeEjb implements CaseFacade {
 				district.get(District.NAME), facility.get(Facility.UUID), facility.get(Facility.NAME),
 				root.get(Case.HEALTH_FACILITY_DETAILS), pointOfEntry.get(PointOfEntry.UUID),
 				pointOfEntry.get(PointOfEntry.NAME), root.get(Case.POINT_OF_ENTRY_DETAILS),
-				surveillanceOfficer.get(User.UUID), root.get(Case.OUTCOME),
-				person.get(Person.APPROXIMATE_AGE), person.get(Person.APPROXIMATE_AGE_TYPE),
-				person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY));
+				surveillanceOfficer.get(User.UUID), root.get(Case.OUTCOME), person.get(Person.APPROXIMATE_AGE),
+				person.get(Person.APPROXIMATE_AGE_TYPE), person.get(Person.BIRTHDATE_DD),
+				person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY));
 	}
-	
-	private void setIndexDtoSortingOrder(CriteriaBuilder cb, CriteriaQuery<CaseIndexDto> cq, Root<Case> root, List<SortProperty> sortProperties) {
+
+	private void setIndexDtoSortingOrder(CriteriaBuilder cb, CriteriaQuery<CaseIndexDto> cq, Root<Case> root,
+			List<SortProperty> sortProperties) {
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = root.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = root.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, PointOfEntry> pointOfEntry = root.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = root.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
-		
+
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
@@ -1529,6 +1540,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease) {
+		return convertContactToCase(new CaseDataDto(), contact, person, disease, null);
+	}
+
+	@Override
 	public CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease,
 			EventParticipantDto eventParticipant) {
 		return convertContactToCase(new CaseDataDto(), contact, person, disease, eventParticipant);
@@ -1537,12 +1553,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public CaseDataDto convertContactToCase(CaseDataDto caseData, ContactDto contact, PersonReferenceDto person,
 			Disease disease, EventParticipantDto eventParticipant) {
-		if (contact != null) {
-			// automatically change the contact status to "converted"
-			contact.setContactStatus(ContactStatus.CONVERTED);
-			FacadeProvider.getContactFacade().saveContact(contact);
-		}
-		// #1115: pre-fill the case symptoms based on the last visit of the contact (if  existent)
+		// #1115: pre-fill the case symptoms based on the last visit of the contact (if
+		// existent)
 		if (disease != null && person != null) {
 
 			VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByPerson(person, disease,
@@ -1554,18 +1566,17 @@ public class CaseFacadeEjb implements CaseFacade {
 				try {
 					// reflection to call the setters of the new symptoms object with the getters
 					// from the one in the visit
-					for (PropertyDescriptor pd : Introspector.getBeanInfo(SymptomsDto.class).getPropertyDescriptors()) {
-						if (pd.getWriteMethod() != null && !"class".equals(pd.getName()) && !"uuid".equals(pd.getName()) ) {
+					for (PropertyDescriptor pd : Introspector.getBeanInfo(SymptomsDto.class, EntityDto.class)
+							.getPropertyDescriptors()) {
+						if (pd.getWriteMethod() != null) {
 							try {
 								pd.getWriteMethod().invoke(newSymptoms, pd.getReadMethod().invoke(oldSymptoms));
 							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
 					}
 				} catch (IntrospectionException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				caseData.setSymptoms(newSymptoms);
@@ -1577,8 +1588,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			System.out.println("Person and Disease not found");
 		}
-		
-		if(person!=null)
+
+		if (person != null)
 			caseData.setPerson(person);
 		CaseDataDto savedCase = FacadeProvider.getCaseFacade().saveCase(caseData);
 		if (eventParticipant != null) {
@@ -1593,6 +1604,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (contact != null) {
 			// retrieve the contact just in case it has been changed during case saving
 			ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+			// automatically change the contact status to "converted"
+			updatedContact.setContactStatus(ContactStatus.CONVERTED);
 			// set resulting case on contact and save it
 			updatedContact.setResultingCase(savedCase.toReference());
 			FacadeProvider.getContactFacade().saveContact(updatedContact);
