@@ -102,6 +102,11 @@ Here are some things that you should do to configure the Apache server as a prox
         SSLCertificateFile    /etc/ssl/certs/your.sormas.server.url.crt
         SSLCertificateKeyFile /etc/ssl/private/your.sormas.server.url.key
         SSLCertificateChainFile /etc/ssl/certs/your.sormas.server.url.ca-bundle
+		
+        # disable weak ciphers and old TLS/SSL
+        SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+        SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE$
+        SSLHonorCipherOrder off		
 * Add a proxy pass to the local port:
 
 		ProxyRequests Off
@@ -116,6 +121,19 @@ Here are some things that you should do to configure the Apache server as a prox
 		# Disable Caching
 		Header always set Cache-Control "no-cache, no-store, must-revalidate, private"
 		Header always set Pragma "no-cache"
+		
+		Header always set Content-Security-Policy \
+            "default-src 'none'; \
+            object-src 'self'; \
+            script-src 'self' 'unsafe-inline' 'unsafe-eval'; \
+            connect-src https://fonts.googleapis.com https://fonts.gstatic.com 'self'; \
+            img-src *; \
+            style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; \
+            font-src https://fonts.gstatic.com 'self'; \
+            frame-src 'self'; \
+            worker-src 'self'; \
+            manifest-src 'self'; \
+            frame-ancestors 'self'		
 
 		# The Content-Type header was either missing or empty.
 		# Ensure each page is setting the specific and appropriate content-type value for the content being delivered.
