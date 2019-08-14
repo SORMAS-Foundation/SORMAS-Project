@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.24.0-SNAPSHOT</version>
+	<version>1.25.0-SNAPSHOT</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -30,7 +32,8 @@
 	<dependencyManagement>
 		<dependencies>
 
-			<!-- Baseline for tests, so that in all projects in any case the test libs are available -->
+			<!-- Baseline for tests, so that in all projects in any case the test 
+				libs are available -->
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
@@ -58,11 +61,11 @@
 				<version>1.10.19</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
-		    	<groupId>org.hibernate</groupId>
-		    	<artifactId>hibernate-core</artifactId>
-		    	<version>5.4.3.Final</version>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>5.4.3.Final</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -88,12 +91,12 @@
 				<version>0.2.Final</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
 			<dependency>
-			    <groupId>org.apache.poi</groupId>
-			    <artifactId>poi-ooxml</artifactId>
-			    <version>3.17</version>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>3.17</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -127,6 +130,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.github.mpkorstanje</groupId>
+				<artifactId>simmetrics-core</artifactId>
+				<version>4.1.1</version>
+			</dependency>
+
+			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
 				<version>2.9.4</version>
@@ -140,11 +149,11 @@
 				<version>2.0.1.Final</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<dependency>
-			    <groupId>org.glassfish</groupId>
-			    <artifactId>javax.el</artifactId>
-			    <version>3.0.0</version>
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.el</artifactId>
+				<version>3.0.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -166,7 +175,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-    			<version>42.2.6</version>
+				<version>42.2.6</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -245,7 +254,7 @@
 				<version>${vaadin.version}</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.vaadin.addons</groupId>
 				<artifactId>popupbutton</artifactId>
@@ -253,9 +262,9 @@
 			</dependency>
 
 			<dependency>
-			   <groupId>org.vaadin.addons</groupId>
-			   <artifactId>extended-token-field</artifactId>
-			   <version>0.3.0</version>
+				<groupId>org.vaadin.addons</groupId>
+				<artifactId>extended-token-field</artifactId>
+				<version>0.3.0</version>
 			</dependency>
 
 			<dependency>
@@ -550,7 +559,7 @@
 				</pluginRepository>
 			</pluginRepositories>
 		</profile>
-		
+
 		<profile>
 			<!-- Profile to build also the app -->
 			<id>with-app</id>

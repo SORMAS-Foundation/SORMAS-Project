@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.vaadin.event.UIEvents.PollListener;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -50,6 +52,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private Consumer<Boolean> externalExpandListener;
 	private SubMenu carouselMenu;
 	private List<Disease> diseases;
+	private Registration pollRegistration;
 
 	public SurveillanceDiseaseCarouselLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -165,22 +168,6 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 			this.changeAutoSlideOption(autoSlide.getValue());
 		});
 
-		// set timer for slideshow
-		SormasUI.getCurrent().addPollListener(e -> {
-			Disease selectedDisease = dashboardDataProvider.getDisease();
-			int nextDiseaseIndex = 0;
-
-			if (selectedDisease != null) {
-				nextDiseaseIndex = diseases.indexOf(selectedDisease) + 1;
-
-				if (nextDiseaseIndex >= diseases.size()) {
-					nextDiseaseIndex = 0;
-				}
-			}
-
-			this.setActiveDisease(diseases.get(nextDiseaseIndex));
-		});
-
 		// enabled by default
 		autoSlide.setValue(true);
 
@@ -196,12 +183,44 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		this.dashboardDataProvider.setDisease(disease);
 		refresh();
 	}
+	
+	@Override
+	public void detach() {
+		super.detach();
+		
+		// deactivate polling
+		changeAutoSlideOption(false);
+	}
 
 	private void changeAutoSlideOption(boolean isActivated) {
+		
 		if (isActivated) {
 			SormasUI.getCurrent().setPollInterval(1000 * 90);
+
+			// set timer for slideshow
+			if (pollRegistration == null) {
+				pollRegistration = SormasUI.getCurrent().addPollListener(e -> {
+					Disease selectedDisease = dashboardDataProvider.getDisease();
+					int nextDiseaseIndex = 0;
+	
+					if (selectedDisease != null) {
+						nextDiseaseIndex = diseases.indexOf(selectedDisease) + 1;
+	
+						if (nextDiseaseIndex >= diseases.size()) {
+							nextDiseaseIndex = 0;
+						}
+					}
+	
+					this.setActiveDisease(diseases.get(nextDiseaseIndex));
+				});
+			}
 		} else {
 			SormasUI.getCurrent().setPollInterval(-1);
+			
+			if (pollRegistration != null) {
+				pollRegistration.remove();
+				pollRegistration = null;
+			}
 		}
 	}
 

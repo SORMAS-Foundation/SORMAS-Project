@@ -41,6 +41,8 @@ import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.databinding.DialogRootLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 
+import static android.view.View.GONE;
+
 /**
  * This should probably inherit from DialogFragment
  */
@@ -109,7 +111,7 @@ public abstract class AbstractDialog implements NotificationContext {
         binding.notificationFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                v.setVisibility(View.GONE);
+                v.setVisibility(GONE);
             }
         });
 
@@ -193,15 +195,11 @@ public abstract class AbstractDialog implements NotificationContext {
     }
 
     private void bindDialog(final ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(BR.dialog, this)) {
-            Log.e(TAG, "There is no variable 'dialog' in layout " + layoutName);
-        }
+        binding.setVariable(BR.dialog, this);
     }
 
     private void bindConfig(final ViewDataBinding binding, String layoutName) {
-        if (!binding.setVariable(BR.config, this.config)) {
-            Log.e(TAG, "There is no variable 'config' in layout " + layoutName);
-        }
+        binding.setVariable(BR.config, this.config);
     }
 
     protected void onPositiveClick() {

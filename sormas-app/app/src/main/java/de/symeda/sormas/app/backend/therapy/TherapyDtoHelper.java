@@ -24,6 +24,7 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
 public class TherapyDtoHelper extends AdoDtoHelper<Therapy, TherapyDto> {
@@ -39,17 +40,17 @@ public class TherapyDtoHelper extends AdoDtoHelper<Therapy, TherapyDto> {
     }
 
     @Override
-    protected Call<List<TherapyDto>> pullAllSince(long since) {
+    protected Call<List<TherapyDto>> pullAllSince(long since) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<TherapyDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<TherapyDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<TherapyDto> therapyDtos) {
+    protected Call<List<PushResult>> pushAll(List<TherapyDto> therapyDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

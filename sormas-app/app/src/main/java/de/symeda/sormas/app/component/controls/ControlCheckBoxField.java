@@ -63,26 +63,23 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
     // Instance methods
 
     private void setUpOnFocusChangeListener() {
-        input.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!v.isEnabled()) {
-                    return;
+        input.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!v.isEnabled()) {
+                return;
+            }
+
+            showOrHideNotifications(hasFocus);
+
+            if (hasFocus) {
+                changeVisualState(VisualState.FOCUSED);
+                if (onClickListener != null) {
+                    input.setOnClickListener(onClickListener);
                 }
-
-                showOrHideNotifications(hasFocus);
-
-                if (hasFocus) {
-                    changeVisualState(VisualState.FOCUSED);
-                    if (onClickListener != null) {
-                        input.setOnClickListener(onClickListener);
-                    }
+            } else {
+                if (hasError) {
+                    changeVisualState(VisualState.ERROR);
                 } else {
-                    if (hasError) {
-                        changeVisualState(VisualState.ERROR);
-                    } else {
-                        changeVisualState(VisualState.NORMAL);
-                    }
+                    changeVisualState(VisualState.NORMAL);
                 }
             }
         });
@@ -93,15 +90,12 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
             return;
         }
 
-        onClickListener = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!v.isEnabled()) {
-                    return;
-                }
-
-                showOrHideNotifications(v.hasFocus());
+        onClickListener = v -> {
+            if (!v.isEnabled()) {
+                return;
             }
+
+            showOrHideNotifications(v.hasFocus());
         };
     }
 
@@ -153,21 +147,18 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        input = (CheckBox) this.findViewById(R.id.checkbox);
+        input = this.findViewById(R.id.checkbox);
         input.setImeOptions(getImeOptions());
         input.setTextAlignment(getTextAlignment());
         if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
             input.setGravity(getGravity());
         }
 
-        input.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (inverseBindingListener != null) {
-                    inverseBindingListener.onChange();
-                }
-                onValueChanged();
+        input.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (inverseBindingListener != null) {
+                inverseBindingListener.onChange();
             }
+            onValueChanged();
         });
 
         setUpOnFocusChangeListener();
@@ -220,14 +211,6 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
         if (state == VisualState.ERROR) {
             setStateColor(labelColor, labelColor);
-            return;
-        }
-
-        int uncheckedStateColor = getResources().getColor(R.color.colorControlNormal);
-        int checkedStateColor = getResources().getColor(R.color.colorControlActivated);
-
-        if (state == VisualState.FOCUSED || state == VisualState.NORMAL) {
-            setStateColor(checkedStateColor, uncheckedStateColor);
         }
     }
 

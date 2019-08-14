@@ -52,6 +52,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -205,6 +206,7 @@ public class CaseController {
 
 	private CaseDataDto createNewCase(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = CaseDataDto.build(person, disease);
+		caze.setReportDate(null);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
@@ -348,21 +350,24 @@ public class CaseController {
 
 		return editView;
 	}
-
-	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName,
-			Consumer<String> selectedCaseUuidConsumer) {
-		CaseCriteria criteria = new CaseCriteria().firstName(personFirstName).lastName(personLastName)
-				.disease(caseDto.getDisease()).region(caseDto.getRegion()).reportDate(caseDto.getReportDate());
-
-		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria,
-				UserProvider.getCurrent().getUuid());
-
+	
+	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName, Consumer<String> selectedCaseUuidConsumer) {
+		CaseCriteria caseCriteria = new CaseCriteria()
+				.disease(caseDto.getDisease())
+				.region(caseDto.getRegion());
+		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria()
+				.firstName(personFirstName)
+				.lastName(personLastName)
+				.caseCriteria(caseCriteria)
+				.reportDate(caseDto.getReportDate());
+		
+		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria, UserProvider.getCurrent().getUuid());
+		
 		if (similarCases.size() > 0) {
 			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(similarCases);
-			pickOrCreateField.setWidth(1024, Unit.PIXELS);
-
-			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(
-					pickOrCreateField);
+			pickOrCreateField.setWidth(1280, Unit.PIXELS);
+			
+			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
 			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 			component.addCommitListener(() -> {
 				CaseIndexDto pickedCase = pickOrCreateField.getValue();

@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
@@ -52,6 +51,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 		icon.setWidth(35, Unit.PIXELS);
 		infoLayout.addComponent(icon);
 		Label infoLabel = new Label(I18nProperties.getString(Strings.infoPickOrCreateCase));
+		infoLabel.setContentMode(ContentMode.HTML);
 		infoLayout.addComponent(infoLabel);
 		infoLayout.setExpandRatio(infoLabel, 1);
 		mainLayout.addComponent(infoLayout);
@@ -67,6 +67,10 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 			if (e.getProperty().getValue() != null) {
 				createCase.setValue(null);
 				grid.setEnabled(true);
+				if (similarCases.size() == 1) {
+					pickCase.setValue(PICK_CASE);
+					grid.select(similarCases.get(0));
+				}
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(grid.getSelectedRow() != null);
 				}
@@ -117,8 +121,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 		addAndConfigureGrid();
 		addCreateCaseComponent();
 		
-		setInternalValue(super.getInternalValue());
-		pickCase.setValue(PICK_CASE);
+		grid.setEnabled(false);
 
 		return mainLayout;
 	}

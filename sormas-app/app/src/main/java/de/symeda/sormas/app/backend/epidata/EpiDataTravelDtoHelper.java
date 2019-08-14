@@ -23,6 +23,7 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
 /**
@@ -45,17 +46,17 @@ public class EpiDataTravelDtoHelper extends AdoDtoHelper<EpiDataTravel, EpiDataT
     }
 
     @Override
-    protected Call<List<EpiDataTravelDto>> pullAllSince(long since) {
+    protected Call<List<EpiDataTravelDto>> pullAllSince(long since) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<EpiDataTravelDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<EpiDataTravelDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<EpiDataTravelDto> epiDataTravelDtos) {
+    protected Call<List<PushResult>> pushAll(List<EpiDataTravelDto> epiDataTravelDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

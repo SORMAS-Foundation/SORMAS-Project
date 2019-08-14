@@ -21,35 +21,19 @@ package de.symeda.sormas.app;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
-
-import com.google.android.gms.analytics.ExceptionReporter;
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
 
 import java.util.Locale;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.core.VibrationHelper;
 import de.symeda.sormas.app.util.LocationService;
-import de.symeda.sormas.app.util.UncaughtExceptionParser;
 
 public class SormasApplication extends Application implements Application.ActivityLifecycleCallbacks {
-    private static final String PROPERTY_ID = "UA-98128295-1";
-
-    private Tracker tracker;
-
-    synchronized public Tracker getDefaultTracker() {
-        return tracker;
-    }
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -79,16 +63,6 @@ public class SormasApplication extends Application implements Application.Activi
         ConfigProvider.setAccessGranted(false);
 
         TaskNotificationService.startTaskNotificationAlarm(this);
-
-        // Initialize the tracker that is used to send information to Google Analytics
-        GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-        tracker = analytics.newTracker(PROPERTY_ID);
-        tracker.enableExceptionReporting(true);
-
-        // Enable the forwarding of uncaught exceptions to Google Analytics
-        Thread.UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
-        ExceptionReporter reporter = (ExceptionReporter) handler;
-        reporter.setExceptionParser(new UncaughtExceptionParser());
 
         super.onCreate();
 

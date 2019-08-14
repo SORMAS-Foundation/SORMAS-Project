@@ -44,7 +44,6 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
-	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 
 	@SuppressWarnings("unchecked")
 	public CaseGrid() {
@@ -72,18 +71,12 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 			DiseaseHelper.toString(caze.getDisease(), caze.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(CaseIndexDto.DISEASE);
-		
-		Column<CaseIndexDto, String> pendingTasksColumn = addColumn(caze -> 
-			String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat), 
-				FacadeProvider.getTaskFacade().getPendingTaskCountByCase(caze.toReference())));
-		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
-		pendingTasksColumn.setSortable(false);
 
 		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
 				CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
 				CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
-				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, NUMBER_OF_PENDING_TASKS);
+				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE);
 
 
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());

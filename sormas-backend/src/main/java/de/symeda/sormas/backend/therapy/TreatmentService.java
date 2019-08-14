@@ -20,6 +20,7 @@ import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless

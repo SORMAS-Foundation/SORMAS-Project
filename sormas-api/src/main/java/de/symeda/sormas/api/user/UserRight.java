@@ -180,8 +180,7 @@ public enum UserRight {
 			CONTACT_SUPERVISOR
 			),
 	CASE_MERGE(
-			ADMIN,
-			NATIONAL_USER
+			ADMIN
 			),
 	SAMPLE_CREATE(
 			ADMIN,

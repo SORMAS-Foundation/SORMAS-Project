@@ -30,6 +30,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -52,17 +53,17 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     }
 
     @Override
-    protected Call<List<ContactDto>> pullAllSince(long since) {
+    protected Call<List<ContactDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getContactFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<ContactDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<ContactDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getContactFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<ContactDto> contactDtos) {
+    protected Call<List<PushResult>> pushAll(List<ContactDto> contactDtos) throws NoConnectionException {
         return RetroProvider.getContactFacade().pushAll(contactDtos);
     }
 

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 ext.sormasVersion = getVersionName()
 ext.keystoreProperties = loadKeystoreProperties()
@@ -73,16 +74,20 @@ dependencies {
     def paging_version = "2.1.0"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha03'
-    implementation 'com.google.android.material:material:1.1.0-alpha05'
+    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+    implementation 'com.google.android.material:material:1.1.0-alpha09'
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.j256.ormlite:ormlite-core:5.1'
     implementation 'com.j256.ormlite:ormlite-android:5.1'
     implementation 'javax.persistence:persistence-api:1.0.2'
+    implementation 'com.google.firebase:firebase-core:17.0.1'
+    implementation 'com.google.firebase:firebase-perf:18.0.1'
+    implementation 'com.google.firebase:firebase-config:18.0.0'
+    implementation 'com.google.firebase:firebase-analytics:17.0.1'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation "de.symeda.sormas:sormas-api:$sormasVersion"
-    implementation 'com.google.android.gms:play-services-analytics:16.0.8'
     implementation 'com.googlecode:openbeans:1.0'
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
     implementation(name: 'CircleProgress-v1.2.1', ext: 'aar')
@@ -96,14 +101,16 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
     testImplementation 'org.robolectric:robolectric:3.0'
     testImplementation 'org.mockito:mockito-core:1.10.19'
-    androidTestImplementation 'androidx.annotation:annotation:1.0.2'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
 apply plugin: 'org.sonarqube'
 
 sonarqube {

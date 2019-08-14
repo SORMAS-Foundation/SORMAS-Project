@@ -187,6 +187,7 @@ public class Case extends AbstractDomainObject {
 	
 	private boolean archived;
 	private String creationVersion;
+	private Case duplicateOf;
 	
 	private CaseOrigin caseOrigin;
 	private PointOfEntry pointOfEntry;
@@ -733,6 +734,16 @@ public class Case extends AbstractDomainObject {
 		this.creationVersion = creationVersion;
 	}
 	
+	@OneToOne(cascade = {}, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public Case getDuplicateOf() {
+		return duplicateOf;
+	}
+
+	public void setDuplicateOf(Case duplicateOf) {
+		this.duplicateOf = duplicateOf;
+	}
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	public CaseClassification getSystemCaseClassification() {

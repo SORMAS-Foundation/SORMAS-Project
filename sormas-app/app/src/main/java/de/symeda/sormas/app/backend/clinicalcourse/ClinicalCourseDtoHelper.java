@@ -25,6 +25,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
 public class ClinicalCourseDtoHelper extends AdoDtoHelper<ClinicalCourse, ClinicalCourseDto> {
@@ -42,17 +43,17 @@ public class ClinicalCourseDtoHelper extends AdoDtoHelper<ClinicalCourse, Clinic
     }
 
     @Override
-    protected Call<List<ClinicalCourseDto>> pullAllSince(long since) {
+    protected Call<List<ClinicalCourseDto>> pullAllSince(long since) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<ClinicalCourseDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<ClinicalCourseDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<ClinicalCourseDto> clinicalCourseDtos) {
+    protected Call<List<PushResult>> pushAll(List<ClinicalCourseDto> clinicalCourseDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

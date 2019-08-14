@@ -26,6 +26,7 @@ public interface Captions {
 	public static String actionDiscard = "actionDiscard";
 	public static String actionDismiss = "actionDismiss";
 	public static String actionGenerate = "actionGenerate";
+	public static String actionHide = "actionHide";
 	public static String actionImport = "actionImport";
 	public static String actionLogout = "actionLogout";
 	public static String actionMerge = "actionMerge";

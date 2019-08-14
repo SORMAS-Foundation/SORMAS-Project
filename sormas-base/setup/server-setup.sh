@@ -19,6 +19,10 @@
 
 #!/bin/bash
 
+rm setup.log
+exec > >(tee -ia setup.log)
+exec 2> >(tee -ia setup.log)
+
 echo "# SORMAS SERVER SETUP"
 echo "# Welcome to the SORMAS server setup routine. This script will guide you through the setup of your server."
 echo "# If anything goes wrong, please consult the server setup guide or get in touch with the developers."
@@ -72,7 +76,6 @@ PORT_ADMIN=6048
 DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
 
 # DB
-DB_SERVER=localhost
 DB_PORT=5432
 DB_NAME=sormas_db
 DB_NAME_AUDIT=sormas_audit_db
@@ -98,8 +101,8 @@ echo "Payara home: ${PAYARA_HOME}"
 echo "Domain directory: ${DOMAIN_DIR}"
 echo "Base port: ${PORT_BASE}"
 echo "Admin port: ${PORT_ADMIN}"
-
-read -p "--- Press [Enter] to continue or [Strg+C] to cancel and adjust the values..."
+echo "---"
+read -p "Press [Enter] to continue or [Strg+C] to cancel and adjust the values..."
 
 if [ -d "$DOMAIN_DIR" ]; then
 	echo "The directory/domain $DOMAIN_DIR already exists. Please remove it and restart the script."
@@ -187,13 +190,6 @@ else
 	exit 1
 fi
 
-if [ ${LINUX} = true ]; then
-	PSQL="sudo -u postgres psql"
-else
-	echo "--- Enter the name install path of Postgres on your system (e.g. \"C:\\Program Files\\PostgreSQL\\10.0\":"
-	read -r PSQL
-	PSQL="${PSQL}/bin/psql.exe"
-fi
 # Set up the database
 echo "Starting database setup..."
 
@@ -202,7 +198,7 @@ if [ -z "${DB_PW}" ]; then
 	read DB_PW
 fi
 
-${PSQL} -p ${DB_PORT} -U postgres <<-EOF
+cat > setup.sql <<-EOF
 CREATE USER $DB_USER WITH PASSWORD '$DB_PW' CREATEDB;
 CREATE DATABASE $DB_NAME WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
 CREATE DATABASE $DB_NAME_AUDIT WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
@@ -220,7 +216,24 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
 ALTER TABLE IF EXISTS schema_version OWNER TO $DB_USER;
 EOF
 
-echo "Database setup completed."
+if [ ${LINUX} = true ]; then
+	su - postgres -c "psql -p ${DB_PORT} -f setup.sql"
+else
+	echo "--- Enter the name install path of Postgres on your system (default: \"C:\\Program Files\\PostgreSQL\\10\":"
+	read -r PSQL
+	if [ -z "${PSQL}" ]; then
+		PSQL="C:/Program Files/PostgreSQL/10"
+	fi
+	PSQL="${PSQL}"/bin/psql.exe
+	echo "--- Enter the password for the 'postgres' user of your database"
+	read -r DB_PG_PW
+	"${PSQL}" --no-password --file=setup.sql postgresql://postgres:${DB_PG_PW}@localhost:${DB_PORT}/postgres
+fi
+
+rm setup.sql
+
+echo "---"
+read -p "Database setup completed. Please check the output for any error. Press [Enter] to continue or [Strg+C] to cancel."
 
 # Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
@@ -245,14 +258,14 @@ echo "Configuring domain and database..."
 
 # General domain settings
 ${ASADMIN} delete-jvm-options -Xmx512m
-${ASADMIN} create-jvm-options -Xmx2048m
+${ASADMIN} create-jvm-options -Xmx4096m
 
 # JDBC pool
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=localhost:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
 
 # Pool for audit log
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_SERVER}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=localhost:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
 
 ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --fromaddress ${MAIL_FROM} mail/MailSession
@@ -309,11 +322,20 @@ if [ ${DEV_SYSTEM} != true ]; then
 	${ASADMIN} set-hazelcast-configuration --enabled=false
 fi
 
-read -p "--- Press [Enter] to continue..."
-
-${PAYARA_HOME}/bin/asadmin stop-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
+# don't stop the domain, because we need it running for the update script
+#read -p "--- Press [Enter] to continue..."
+#${PAYARA_HOME}/bin/asadmin stop-domain --domaindir ${DOMAINS_HOME} ${DOMAIN_NAME}
 
 echo "Server setup completed."
+echo "Commands to start and stop the domain: "
+if [ ${LINUX} = true ]; then
+	echo "service payara-sormas start"
+	echo "service payara-sormas stop"
+else 
+	echo "${DOMAIN_DIR}/start-payara-sormas.sh"
+	echo "${DOMAIN_DIR}/stop-payara-sormas.sh"
+fi
+echo "---"
 echo "Please make sure to perform the following steps:"
 echo "  - Adjust the sormas.properties file to your system"
 echo "  - Execute the sormas-update.sh file to populate the database and deploy the server"

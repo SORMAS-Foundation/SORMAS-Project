@@ -28,6 +28,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.ServerConnectionException;
@@ -49,17 +50,17 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     }
 
     @Override
-    protected Call<List<CommunityDto>> pullAllSince(long since) {
+    protected Call<List<CommunityDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getCommunityFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<CommunityDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<CommunityDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getCommunityFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<CommunityDto> communityDtos) {
+    protected Call<List<PushResult>> pushAll(List<CommunityDto> communityDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
 
@@ -77,7 +78,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
     }
 
     @Override
-    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
         databaseWasEmpty = DatabaseHelper.getCommunityDao().countOf() == 0;
         try {
             super.pullEntities(markAsRead);

@@ -126,7 +126,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txtPatientName"
+                        android:id="@+id/case_person_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowPrimaryTextSize"

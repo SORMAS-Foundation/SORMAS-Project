@@ -33,6 +33,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -182,7 +184,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
         Case caze = super.build();
         caze.setPerson(person);
 
-        caze.setReportDate(new Date());
         User user = ConfigProvider.getUser();
         caze.setReportingUser(user);
 
@@ -522,6 +523,32 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Delete case
         deleteCascade(caze);
+    }
+
+    public List<Case> getSimilarCases(CaseSimilarityCriteria criteria) {
+        try {
+            QueryBuilder<Case, Long> queryBuilder = queryBuilder();
+
+            Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+            where.and().eq(Case.DISEASE, criteria.getCaseCriteria().getDisease());
+            where.and().eq(Case.REGION + "_id", criteria.getCaseCriteria().getRegion());
+            where.and().between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
+
+            queryBuilder.setWhere(where);
+            List<Case> potentiallySimilarCases = queryBuilder.orderBy(Case.CREATION_DATE, false).query();
+            List<Case> similarCases = new ArrayList<>();
+
+            for (Case caze : potentiallySimilarCases) {
+                if (PersonHelper.areNamesSimilar(caze.getPerson().getFirstName() + " " + caze.getPerson().getLastName(), criteria.getFirstName() + " " + criteria.getLastName())) {
+                    similarCases.add(caze);
+                }
+            }
+
+            return similarCases;
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getSimilarCases on Case");
+            throw new RuntimeException(e);
+        }
     }
 
     public long countByCriteria(CaseCriteria criteria) {

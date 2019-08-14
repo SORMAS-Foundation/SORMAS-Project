@@ -70,11 +70,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
 	
-	// Criteria for similarity detection
-	private String firstName;
-	private String lastName;
-	private Date reportDate;
-	
 	@Override
 	public CaseCriteria clone() {
 		try {
@@ -286,36 +281,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	@IgnoreForUrl
 	public String getReportingUserLike() {
 		return reportingUserLike;
-	}
-
-	@IgnoreForUrl
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public CaseCriteria firstName(String firstName) {
-		this.firstName = firstName;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public String getLastName() {
-		return lastName;
-	}
-
-	public CaseCriteria lastName(String lastName) {
-		this.lastName = lastName;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public Date getReportDate() {
-		return reportDate;
-	}
-
-	public CaseCriteria reportDate(Date reportDate) {
-		this.reportDate = reportDate;
-		return this;
 	}
 
 	public Date getCreationDateFrom() {

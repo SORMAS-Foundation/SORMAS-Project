@@ -27,6 +27,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.app.backend.region.Region;
 
 public class CaseCriteria implements Serializable {
 
@@ -38,6 +39,7 @@ public class CaseCriteria implements Serializable {
     private EpiWeek epiWeekFrom;
     private EpiWeek epiWeekTo;
     private CaseOrigin caseOrigin;
+    private Region region;
 
     public CaseCriteria setTextFilter(String textFilter) {
         this.textFilter = textFilter;
@@ -108,6 +110,15 @@ public class CaseCriteria implements Serializable {
 
     public CaseCriteria setCaseOrigin(CaseOrigin caseOrigin) {
         this.caseOrigin = caseOrigin;
+        return this;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public CaseCriteria setRegion(Region region) {
+        this.region = region;
         return this;
     }
 }
