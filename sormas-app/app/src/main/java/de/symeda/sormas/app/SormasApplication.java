@@ -24,6 +24,9 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 import java.util.Locale;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -34,6 +37,9 @@ import de.symeda.sormas.app.core.VibrationHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class SormasApplication extends Application implements Application.ActivityLifecycleCallbacks {
+
+    private FirebaseAnalytics firebaseAnalytics;
+    private boolean firebaseUserIdSet;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -61,6 +67,9 @@ public class SormasApplication extends Application implements Application.Activi
 
         // Make sure the Enter Pin Activity is shown when the app has just started
         ConfigProvider.setAccessGranted(false);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        FirebaseRemoteConfig.getInstance().fetch();
 
         TaskNotificationService.startTaskNotificationAlarm(this);
 
@@ -112,4 +121,19 @@ public class SormasApplication extends Application implements Application.Activi
         } while (finishActivity != null);
     }
 
+    public FirebaseAnalytics getFirebaseAnalytics() {
+        return firebaseAnalytics;
+    }
+
+    public void setFirebaseAnalytics(FirebaseAnalytics firebaseAnalytics) {
+        this.firebaseAnalytics = firebaseAnalytics;
+    }
+
+    public boolean isFirebaseUserIdSet() {
+        return firebaseUserIdSet;
+    }
+
+    public void setFirebaseUserIdSet(boolean firebaseUserIdSet) {
+        this.firebaseUserIdSet = firebaseUserIdSet;
+    }
 }

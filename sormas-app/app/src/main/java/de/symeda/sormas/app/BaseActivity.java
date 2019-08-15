@@ -47,6 +47,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -86,8 +87,6 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 public abstract class BaseActivity extends AppCompatActivity implements NotificationContext {
 
     public static final String TAG = BaseActivity.class.getSimpleName();
-
-    private FirebaseAnalytics firebaseAnalytics;
 
     private View rootView;
     private ProgressBar preloader;
@@ -149,10 +148,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        firebaseAnalytics.setUserId(ConfigProvider.getUser().getUuid());
-        Crashlytics.setUserIdentifier(ConfigProvider.getUser().getUuid());
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
         if (isAccessNeeded() && !ConfigProvider.isAccessGranted()) {
@@ -784,10 +779,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
-    }
-
-    public FirebaseAnalytics getFirebaseAnalytics() {
-        return firebaseAnalytics;
     }
 
 }
