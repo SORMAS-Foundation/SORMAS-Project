@@ -34,6 +34,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.core.VibrationHelper;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class SormasApplication extends Application implements Application.ActivityLifecycleCallbacks {
@@ -70,6 +71,7 @@ public class SormasApplication extends Application implements Application.Activi
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         FirebaseRemoteConfig.getInstance().fetch();
+        NotificationHelper.createNotificationChannels(this);
 
         TaskNotificationService.startTaskNotificationAlarm(this);
 
@@ -125,15 +127,4 @@ public class SormasApplication extends Application implements Application.Activi
         return firebaseAnalytics;
     }
 
-    public void setFirebaseAnalytics(FirebaseAnalytics firebaseAnalytics) {
-        this.firebaseAnalytics = firebaseAnalytics;
-    }
-
-    public boolean isFirebaseUserIdSet() {
-        return firebaseUserIdSet;
-    }
-
-    public void setFirebaseUserIdSet(boolean firebaseUserIdSet) {
-        this.firebaseUserIdSet = firebaseUserIdSet;
-    }
 }
