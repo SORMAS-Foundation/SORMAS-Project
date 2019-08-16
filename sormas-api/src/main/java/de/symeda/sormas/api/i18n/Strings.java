@@ -53,6 +53,7 @@ public interface Strings {
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
+	public static String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	public static String done = "done";
 	public static String edit = "edit";
 	public static String entityAdditionalTest = "entityAdditionalTest";
@@ -118,6 +119,7 @@ public interface Strings {
 	public static String headingConfirmDearchiving = "headingConfirmDearchiving";
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
 	public static String headingConfirmMerging = "headingConfirmMerging";
+	public static String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
 	public static String headingContactData = "headingContactData";
 	public static String headingContactFollowUp = "headingContactFollowUp";
 	public static String headingContactInformation = "headingContactInformation";
@@ -307,6 +309,7 @@ public interface Strings {
 	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";
 	public static String messageClinicalVisitSaved = "messageClinicalVisitSaved";
 	public static String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
+	public static String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	public static String messageContactCreated = "messageContactCreated";
 	public static String messageContactSaved = "messageContactSaved";
 	public static String messageContactsDeleted = "messageContactsDeleted";

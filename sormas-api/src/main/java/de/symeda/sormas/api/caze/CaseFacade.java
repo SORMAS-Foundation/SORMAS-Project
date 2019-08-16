@@ -130,4 +130,6 @@ public interface CaseFacade {
 	
 	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid);
 	
+	void updateCompleteness(String caseUuid);
+	
 }

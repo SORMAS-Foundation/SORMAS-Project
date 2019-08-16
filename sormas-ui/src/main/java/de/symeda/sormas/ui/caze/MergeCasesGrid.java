@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 
 	public static final String COLUMN_DISEASE = Captions.columnDiseaseShort;
 	public static final String COLUMN_ACTIONS = "actions";
+	public static final String COLUMN_COMPLETENESS = "completenessValue";
 	public static final String COLUMN_UUID = "uuidLink";
 	
 	private CaseCriteria criteria;
@@ -57,6 +59,22 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		}).setId(COLUMN_ACTIONS);
 		
 		addComponentColumn(indexDto -> {
+			Label label = new Label(indexDto.getCompleteness() != null ? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %" : "-");
+			if (indexDto.getCompleteness() != null) {
+				if (indexDto.getCompleteness() < 0.25f) {
+					CssStyles.style(label, CssStyles.LABEL_CRITICAL);
+				} else if (indexDto.getCompleteness() < 0.5f) {
+					CssStyles.style(label, CssStyles.LABEL_IMPORTANT);
+				} else if (indexDto.getCompleteness() < 0.75f) {
+					CssStyles.style(label, CssStyles.LABEL_RELEVANT);
+				} else {
+					CssStyles.style(label, CssStyles.LABEL_POSITIVE);
+				}
+			}
+			return label;
+		}).setId(COLUMN_COMPLETENESS);
+		
+		addComponentColumn(indexDto -> {
 			Link link = new Link(DataHelper.getShortUuid(indexDto.getUuid()), new ExternalResource(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + CaseDataView.VIEW_NAME + "/" + indexDto.getUuid()));
 			link.setTargetName("_blank");
 			return link;
@@ -64,7 +82,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		
 		setColumns(COLUMN_UUID, COLUMN_DISEASE, CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
 				CaseIndexDto.AGE_AND_BIRTH_DATE, CaseIndexDto.SEX, CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME,
-				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, COLUMN_ACTIONS);
+				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS, COLUMN_ACTIONS);
 
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
@@ -75,6 +93,8 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		}
 		getColumn(COLUMN_ACTIONS).setCaption("");
 		getColumn(COLUMN_UUID).setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.UUID));
+		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
+		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 		
 		this.setStyleGenerator(new StyleGenerator<CaseIndexDto>() {
 			@Override
@@ -118,8 +138,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(), caze.getUuid(), UserProvider.getCurrent().getUuid());
 							
 							if (FacadeProvider.getCaseFacade().getReferenceByUuid(caseToMergeAndDelete.getUuid()) == null) {
-								data.removeItem(data.getParent(caze) == null ? caze : data.getParent(caze));
-								dataProvider.refreshAll();
+								reload();
 								new Notification(I18nProperties.getString(Strings.messageCasesMerged), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
 							} else {
 								new Notification(I18nProperties.getString(Strings.errorCaseMerging), Type.ERROR_MESSAGE).show(Page.getCurrent());
@@ -153,7 +172,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 //			);
 //		});
 		
-		if (data.getParent(caze) == null) {
+		if (data.getParent(caze) == null) {        
 			CssStyles.style(btnMerge, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
 //			CssStyles.style(btnPick, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
 			btnHide = new Button(I18nProperties.getCaption(Captions.actionHide));
@@ -190,6 +209,19 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		}
 		
 		dataProvider.refreshAll();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void calculateCompletenessValues() {
+		TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
+		TreeData<CaseIndexDto> data = dataProvider.getTreeData();
+		
+		for (CaseIndexDto parent : data.getRootItems()) {
+			FacadeProvider.getCaseFacade().updateCompleteness(parent.getUuid());
+			FacadeProvider.getCaseFacade().updateCompleteness(data.getChildren(parent).get(0).getUuid());
+		}
+		
+		reload();
 	}
 	
 	public void setCriteria(CaseCriteria criteria) {

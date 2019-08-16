@@ -78,6 +78,7 @@ public interface Captions {
 	public static String bulkLostToFollowUp = "bulkLostToFollowUp";
 	public static String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	public static String caseBackToDirectory = "caseBackToDirectory";
+	public static String caseCalculateCompleteness = "caseCalculateCompleteness";
 	public static String caseCasesList = "caseCasesList";
 	public static String caseContacts = "caseContacts";
 	public static String caseCreateCase = "caseCreateCase";
@@ -93,6 +94,7 @@ public interface Captions {
 	public static String CaseData_clinicianEmail = "CaseData.clinicianEmail";
 	public static String CaseData_clinicianName = "CaseData.clinicianName";
 	public static String CaseData_clinicianPhone = "CaseData.clinicianPhone";
+	public static String CaseData_completeness = "CaseData.completeness";
 	public static String CaseData_contactOfficer = "CaseData.contactOfficer";
 	public static String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	public static String CaseData_diseaseDetails = "CaseData.diseaseDetails";

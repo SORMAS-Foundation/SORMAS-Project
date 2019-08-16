@@ -4,7 +4,11 @@ import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -65,7 +69,13 @@ public class MergeCasesView extends AbstractView {
 		btnOpenGuide.setIcon(VaadinIcons.QUESTION);
 		btnOpenGuide.addClickListener(e -> buildAndOpenMergeInstructions());
 		addHeaderComponent(btnOpenGuide);
-		
+
+		Button btnCalculateCompleteness = new Button(I18nProperties.getCaption(Captions.caseCalculateCompleteness));
+		btnCalculateCompleteness.setId("calculateCompleteness");
+		btnCalculateCompleteness.setIcon(VaadinIcons.CALC);
+		btnCalculateCompleteness.addClickListener(e -> showCalculateCompletenessWindow());
+		addHeaderComponent(btnCalculateCompleteness);
+
 		Button btnBack = new Button(I18nProperties.getCaption(Captions.caseBackToDirectory));
 		btnBack.setId("backToDirectory");
 		btnBack.setIcon(VaadinIcons.ARROW_BACKWARD);
@@ -73,13 +83,25 @@ public class MergeCasesView extends AbstractView {
 		btnBack.addClickListener(e -> ControllerProvider.getCaseController().navigateToIndex());
 		addHeaderComponent(btnBack);
 	}
-	
+
 	private void buildAndOpenMergeInstructions() {
 		Window window = VaadinUiUtil.showPopupWindow(new MergeInstructionsLayout());
 		window.setWidth(1024, Unit.PIXELS);
 		window.setCaption(I18nProperties.getString(Strings.headingMergeGuide));
 	}
-	
+
+	private void showCalculateCompletenessWindow() {
+		VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmUpdateCompleteness), 
+				new Label(I18nProperties.getString(Strings.confirmationUpdateCompleteness)), 
+				I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
+					if (e.booleanValue() == true) {
+						grid.calculateCompletenessValues();
+						new Notification(I18nProperties.getString(Strings.headingCasesArchived),
+								I18nProperties.getString(Strings.messageCompletenessValuesUpdated), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					}
+				});
+	}
+
 	@Override
 	public void enter(ViewChangeEvent event) {
 		grid.reload();
