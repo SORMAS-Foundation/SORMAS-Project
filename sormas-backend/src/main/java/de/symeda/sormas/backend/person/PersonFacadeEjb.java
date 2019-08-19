@@ -312,7 +312,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
 			for (Case personCase : personCases) {
 				CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-				if (newPerson.getApproximateAgeType() == ApproximateAgeType.MONTHS) {
+				if (newPerson.getApproximateAge() == null) {
+					personCase.setCaseAge(null);
+				} else if (newPerson.getApproximateAgeType() == ApproximateAgeType.MONTHS) {
 					personCase.setCaseAge(0);
 				} else {
 					Date now = new Date();

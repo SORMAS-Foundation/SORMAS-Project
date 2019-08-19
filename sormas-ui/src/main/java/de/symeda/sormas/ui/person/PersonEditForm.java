@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -55,6 +56,7 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -180,9 +182,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
 		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
+		approximateAgeField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, approximateAgeField.getCaption()));
 		ComboBox approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
 		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
 
+		approximateAgeField.addValidator(new ApproximateAgeValidator(approximateAgeField, approximateAgeTypeField, I18nProperties.getValidationError(Validations.softApproximateAgeTooHigh)));
+		
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
