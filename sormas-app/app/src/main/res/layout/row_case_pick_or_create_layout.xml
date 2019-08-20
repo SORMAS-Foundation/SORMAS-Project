@@ -67,9 +67,8 @@
             android:textSize="@dimen/row_entry_secondary_text_size"
             android:textColor="@color/row_entry_secondary_text"
             app:value="@{data.epidNumber}"
-            app:prependValue="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER)}"
-            app:defaultValue='@{@string/value_not_available}'
-            app:valueFormat='@{@string/title_detail_format}' />
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER)}"
+            app:defaultValue='@{@string/value_not_available}' />
 
         <TextView
             android:id="@+id/report_date"
@@ -79,7 +78,7 @@
             android:textSize="@dimen/row_entry_secondary_text_size"
             android:textColor="@color/row_entry_secondary_text"
             app:dateValue="@{data.reportDate}"
-            app:prependValue="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE)}"
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE)}"
             app:defaultValue='@{@string/value_not_available}' />
 
         <TextView
@@ -91,8 +90,8 @@
             android:textColor="@color/row_entry_secondary_text"
             app:facilityValue="@{data.healthFacility}"
             app:facilityDetailsValue="@{data.healthFacilityDetails}"
-            app:prependValue="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY)}"
-            app:valueFormat='@{@string/title_detail_format}' />
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY)}"
+            app:defaultValue='@{@string/value_not_available}' />
 
         <TextView
             android:id="@+id/case_classification"
@@ -101,10 +100,9 @@
             android:gravity="top"
             android:textSize="@dimen/row_entry_secondary_text_size"
             android:textColor="@color/row_entry_secondary_text"
-            app:value="@{data.caseClassification}"
-            app:prependValue="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION)}"
-            app:defaultValue='@{@string/value_not_available}'
-            app:valueFormat='@{@string/title_detail_format}' />
+            app:enumValue="@{data.caseClassification}"
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION)}"
+            app:defaultValue='@{@string/value_not_available}' />
 
         <TextView
             android:id="@+id/outcome"
@@ -113,10 +111,9 @@
             android:gravity="top"
             android:textSize="@dimen/row_entry_secondary_text_size"
             android:textColor="@color/row_entry_secondary_text"
-            app:value="@{data.outcome}"
-            app:prependValue="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME)}"
-            app:defaultValue='@{@string/value_not_available}'
-            app:valueFormat='@{@string/title_detail_format}' />
+            app:enumValue="@{data.outcome}"
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME)}"
+            app:defaultValue='@{@string/value_not_available}' />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -129,10 +126,9 @@
                 android:layout_alignParentStart="true"
                 android:textSize="@dimen/row_entry_secondary_text_size"
                 android:textColor="@color/row_entry_secondary_text"
-                app:value="@{data.getPerson().getSex()}"
-                app:prependValue="@{I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX)}"
-                app:defaultValue='@{@string/value_not_available}'
-                app:valueFormat='@{@string/title_detail_format}' />
+                app:enumValue="@{data.getPerson().getSex()}"
+                app:valueCaption="@{I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX)}"
+                app:defaultValue='@{@string/value_not_available}' />
 
             <TextView
                 android:id="@+id/person_approximateAge"
@@ -141,10 +137,9 @@
                 android:layout_alignParentEnd="true"
                 android:textSize="@dimen/row_entry_secondary_text_size"
                 android:textColor="@color/row_entry_secondary_text"
-                app:ageWithDateValue="@{data.getPerson()}"
-                app:prependValue="@{I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE)}"
-                app:defaultValue='@{@string/value_not_available}'
-                app:valueFormat='@{@string/age_with_dob_and_prepend_format}' />
+                app:ageDateValue="@{data.getPerson()}"
+                app:valueCaption="@{I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE)}"
+                app:defaultValue='@{@string/value_not_available}' />
 
         </RelativeLayout>
 

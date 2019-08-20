@@ -35,6 +35,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -116,6 +117,37 @@ public class TextViewBindingAdapters {
                 textField.setText(prependValue + ": " + val);
             }
         }
+    }
+
+    @BindingAdapter(value={"value", "valueCaption", "defaultValue"})
+    public static void setValueWithCaption(TextView view, String value, String valueCaption, String defaultValue) {
+        StringBuilder valBuilder = new StringBuilder();
+        valBuilder.append("<b>").append(valueCaption).append(": </b>");
+        if (StringUtils.isEmpty(value)) {
+            view.setText(Html.fromHtml(valBuilder.append(defaultValue).toString()));
+        } else {
+            view.setText(Html.fromHtml(valBuilder.append(value).toString()));
+        }
+    }
+
+    @BindingAdapter(value={"dateValue", "valueCaption", "defaultValue"})
+    public static void setDateValueWithCaption(TextView view, Date date, String valueCaption, String defaultValue) {
+        setValueWithCaption(view, DateHelper.formatLocalShortDate(date), valueCaption, defaultValue);
+    }
+
+    @BindingAdapter(value={"facilityValue", "facilityDetailsValue", "valueCaption", "defaultValue"})
+    public static void setFacilityValueWithCaption(TextView view, Facility facility, String facilityDetailsValue, String valueCaption, String defaultValue) {
+        setValueWithCaption(view, FacilityHelper.buildFacilityString(facility.getUuid(), facility.getName(), facilityDetailsValue), valueCaption, defaultValue);
+    }
+
+    @BindingAdapter(value={"enumValue", "valueCaption", "defaultValue"})
+    public static void setEnumValueWithCaption(TextView view, Enum enumValue, String valueCaption, String defaultValue) {
+        setValueWithCaption(view, enumValue != null ? enumValue.toString() : null, valueCaption, defaultValue);
+    }
+
+    @BindingAdapter(value={"ageDateValue", "valueCaption", "defaultValue"})
+    public static void setAgeDateValueWithCaption(TextView view, Person person, String valueCaption, String defaultValue) {
+        setValueWithCaption(view, PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()), valueCaption, defaultValue);
     }
 
     @BindingAdapter(value={"value", "prependValue", "appendValue", "valueFormat", "defaultValue"}, requireAll=true)

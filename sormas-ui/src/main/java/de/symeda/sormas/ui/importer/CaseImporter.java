@@ -361,6 +361,7 @@ public class CaseImporter extends DataImporter {
 				component.addDiscardListener(discardListener);
 				component.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+				component.getCommitButton().setEnabled(false);
 
 				Button skipButton = new Button(I18nProperties.getCaption(Captions.actionSkip));
 				skipButton.addClickListener(e -> {
