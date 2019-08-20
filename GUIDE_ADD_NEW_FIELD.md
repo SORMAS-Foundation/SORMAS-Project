@@ -35,7 +35,7 @@ The SORMAS API is the heart of the data schema. Accordingly, this is where you h
    Symptoms.soreThroat = Sore throat/pharyngitis
    ```
 5. *Very important*: We have now officially made a change to the API which likely means that old versions are no longer fully compatible.
-   When data with the new field is send to a mobile device with an old version, it will not now about the field and the data is lost on the device.
+   When data with the new field is sent to a mobile device with an old version, it will not know about the field and the data is lost on the device.
    When the data is send back to the server the empty field may override any existing data and it's now also lost on the server itself.
    To avoid this the following has to be done:
    * Open the InfoProvider.getMinimumRequiredVersion method.

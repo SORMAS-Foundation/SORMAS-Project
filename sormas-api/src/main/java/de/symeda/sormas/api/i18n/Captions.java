@@ -266,6 +266,7 @@ public interface Captions {
 	public static String dashboardCaseFatalityRate = "dashboardCaseFatalityRate";
 	public static String dashboardCaseFatalityRateShort = "dashboardCaseFatalityRateShort";
 	public static String dashboardCasesIn = "dashboardCasesIn";
+	public static String dashboardComparedTo = "dashboardComparedTo";
 	public static String dashboardComparedToPreviousPeriod = "dashboardComparedToPreviousPeriod";
 	public static String dashboardCompletedFollowUp = "dashboardCompletedFollowUp";
 	public static String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
@@ -274,6 +275,7 @@ public interface Captions {
 	public static String dashboardConvertedToCase = "dashboardConvertedToCase";
 	public static String dashboardCooperative = "dashboardCooperative";
 	public static String dashboardCustom = "dashboardCustom";
+	public static String dashboardCustomPeriod = "dashboardCustomPeriod";
 	public static String dashboardData = "dashboardData";
 	public static String dashboardDead = "dashboardDead";
 	public static String dashboardDiscarded = "dashboardDiscarded";
@@ -333,6 +335,7 @@ public interface Captions {
 	public static String dashboardReceived = "dashboardReceived";
 	public static String dashboardRemoved = "dashboardRemoved";
 	public static String dashboardRumor = "dashboardRumor";
+	public static String dashboardSelectPeriod = "dashboardSelectPeriod";
 	public static String dashboardShipped = "dashboardShipped";
 	public static String dashboardShowAllDiseases = "dashboardShowAllDiseases";
 	public static String dashboardShowCases = "dashboardShowCases";
