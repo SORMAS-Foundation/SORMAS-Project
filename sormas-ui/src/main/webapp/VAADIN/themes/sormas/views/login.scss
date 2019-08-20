@@ -68,6 +68,7 @@ $login-background-image: null !default;
       top: 0;
       right: 0;
       height: 100%;
+      overflow: auto;
       padding: $v-layout-margin;
       padding-right: 0px;
       @include animation(valo-animate-in-fade 1s 1s backwards);
@@ -105,9 +106,12 @@ $login-background-image: null !default;
   // No top menu on the login view, login screen layout changes
   .v-ui[width-range~="0-960px"] {
 
+	.login-screen-back {
+	  height: auto; 	
+	}
+ 
     .login-screen {
       height: auto;
-      min-height: 100%;
       display: inline;
 
       .login-information {

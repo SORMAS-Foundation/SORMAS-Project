@@ -82,7 +82,6 @@ public class LoginScreen extends CssLayout {
         titleLayout.addComponent(image);
         titleLayout.addComponent(title);
         loginFormLayout.addComponent(titleLayout);
-
         
         Label header = new Label("Login");
         CssStyles.style(header, CssStyles.H2);
@@ -156,18 +155,24 @@ public class LoginScreen extends CssLayout {
 		CssStyles.style(innerLayout, CssStyles.LAYOUT_SPACIOUS);
 		innerLayout.setSizeUndefined();
 		innerLayout.setSpacing(false);
-		
 
 		Image img = new Image(null, new ThemeResource("img/sormas-logo-big-text.png"));
 		img.setWidth(320, Unit.PIXELS);
 		innerLayout.addComponent(img);
 		innerLayout.setComponentAlignment(img, Alignment.TOP_CENTER);
 
-		Label loginInfoText = new Label("Surveillance,<br>Outbreak Response Management<br>and Analysis System", ContentMode.HTML);
-		loginInfoText.setWidth(320, Unit.PIXELS);
-		CssStyles.style(loginInfoText, CssStyles.H2, CssStyles.VSPACE_TOP_NONE);
-		innerLayout.addComponent(loginInfoText);
-		innerLayout.setComponentAlignment(loginInfoText, Alignment.TOP_CENTER);
+		Label fullNameText = new Label("Surveillance,<br>Outbreak Response Management<br>and Analysis System<br>", ContentMode.HTML);
+		fullNameText.setWidth(320, Unit.PIXELS);
+		CssStyles.style(fullNameText, CssStyles.H2, CssStyles.LABEL_PRIMARY, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
+		innerLayout.addComponent(fullNameText);
+		innerLayout.setComponentAlignment(fullNameText, Alignment.TOP_CENTER);
+		
+		Label missionText = new Label("\u2022 Disease Prevention<br>\u2022 Disease Detection<br>\u2022 Outbreak Response", ContentMode.HTML);
+		missionText.setWidth(320, Unit.PIXELS);
+		CssStyles.style(missionText, CssStyles.H2, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
+		innerLayout.addComponent(missionText);
+		innerLayout.setComponentAlignment(missionText, Alignment.TOP_CENTER);
+		
 		loginSidebarLayout.addComponent(innerLayout);
 		
 		Label htmlLabel = new Label();
