@@ -368,6 +368,7 @@ public class CaseController {
 			
 			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
 			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+			component.getCommitButton().setEnabled(false);
 			component.addCommitListener(() -> {
 				CaseIndexDto pickedCase = pickOrCreateField.getValue();
 				if (pickedCase != null) {

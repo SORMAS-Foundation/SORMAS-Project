@@ -63,7 +63,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_KEY = "sms.auth.key";
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 	
-	public static final String CASE_NAME_SIMILARITY_THRESHOLD = "casenamesimilaritythreshold";
+	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
@@ -169,8 +169,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public double getCaseNameSimilarityThreshold() {
-		return getDouble(CASE_NAME_SIMILARITY_THRESHOLD, 0.6D);
+	public double getNameSimilarityThreshold() {
+		return getDouble(NAME_SIMILARITY_THRESHOLD, 0.4D);
 	}
 	
 	@Override

@@ -6,9 +6,21 @@ $login-background-image: null !default;
 
 
 @mixin sormas-login-view {
+	
+  .login-screen-back {
+    background: #FFFFFF;
+    background-image: url(../img/world.png);
+    background-size: cover;
+ 	background-position: center;
+ 	
+    display: flex;
+    width: 100%;
+    height: 100%; 	
+    min-height: 460px;
+  }
 	  
   .login-screen {
-    background: #EFF5FC;
+    background-color: rgba(27,84,154,0.9);
     display: flex;
     justify-content: space-between;
 
@@ -21,73 +33,6 @@ $login-background-image: null !default;
 
     width: 100%;
     height: 100%;
-
-    .login-form {
-      @include valo-panel-style;
-      width: auto !important;
-      border: none;
-      padding: $v-layout-margin;
-      @include valo-animate-in-fade($duration: 1s);
-      top: 50%;
-      left: 50%;
-      margin: 0;
-      margin-right: -50%;
-      display: inline-block;
-      position: absolute;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
-    }
-
-    .login-information {
-      top: 0;
-      left: 0;
-      width: $login-info-width;
-      height: 100%;
-      background: $v-selection-color; // For IE8
-      background-color: rgba($v-selection-color, $login-info-opacity);
-      padding: $v-layout-margin;
-      color: valo-font-color($v-selection-color, 0.9);
-      @include animation(valo-animate-in-fade 1s 1s backwards);
-      flex:0 0 auto;
-
-      h1 {
-        color: inherit;
-      }
-    }
-    
-    .login-sidebar {
-      top: 0;
-      right: 0;
-      height: 100%;
-      padding: $v-layout-margin;
-      padding-right: 0px;
-      @include animation(valo-animate-in-fade 1s 1s backwards);
-      flex:0 0 auto;
-      
-      .headline-container {
-      	background-color: rgba(0, 90, 156, 0.7);
-      	margin-bottom: 30px;
-      	
-      	h2 {
-      	  color: #FFF;
-      	  padding: 10px;
-      	}
-      }
-      
-      .content-container {
-      	padding-right: 20px;
-      	
-      	.logo {
-      	  width: 250px;
-      	  margin-bottom: 30px;
-      	}
-      }
-    }
-    
-    .login-details {
-      padding-left: 21px;
-      padding-right: 21px;
-    }
 
     .login-form-container {
       height: 100%;
@@ -102,14 +47,71 @@ $login-background-image: null !default;
         height: 100%;
       }
     }
+
+    .login-form {
+      @include valo-panel-style;
+      width: auto !important;
+      border: none;
+      @include valo-animate-in-fade($duration: 1s);
+      top: 50%;
+      left: 50%;
+      margin: 0;
+      margin-right: -50%;
+      display: inline-block;
+      position: absolute;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .login-sidebar {
+      background: #FFFFFF;
+      top: 0;
+      right: 0;
+      height: 100%;
+      overflow: auto;
+      padding: $v-layout-margin;
+      padding-right: 0px;
+      @include animation(valo-animate-in-fade 1s 1s backwards);
+      flex:0 0 auto;
+      
+      .v-widget {
+        display: block;
+      }
+      
+      .headline-container {
+      	background-color: rgba(0, 90, 156, 0.7);
+      	margin-bottom: 30px;
+      	
+      	h2 {
+      	  color: #FFF;
+      	  padding: 10px;
+      	}
+      }
+      
+      .content-container {
+      	padding-right: 20px;
+      	text-align: center;
+      	
+      	.logo {
+      	  width: 250px;
+      	  margin-bottom: 30px;
+      	}
+      }
+    }
+    
+    .login-details {
+    }
   }
   
   // No top menu on the login view, login screen layout changes
   .v-ui[width-range~="0-960px"] {
 
+	.login-screen-back {
+	  height: auto; 	
+	}
+ 
     .login-screen {
       height: auto;
-      min-height: 100%;
       display: inline;
 
       .login-information {

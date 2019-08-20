@@ -22,17 +22,13 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.android.gms.analytics.Tracker;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
@@ -139,9 +135,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
             Log.e(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
 
-            SormasApplication application = (SormasApplication) context.getApplicationContext();
-            Tracker tracker = application.getDefaultTracker();
-            ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+            ErrorReportingHelper.sendCaughtException(e);
 
             syncFailed = true;
             syncFailedMessage = DatabaseHelper.getContext().getString(R.string.error_server_communication);
@@ -167,9 +161,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
                 Log.w(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
 
-                SormasApplication application = (SormasApplication) context.getApplicationContext();
-                Tracker tracker = application.getDefaultTracker();
-                ErrorReportingHelper.sendCaughtException(tracker, e, null, true, "WARNING");
+                ErrorReportingHelper.sendCaughtException(e);
 
                 syncMode = newSyncMode;
                 doInBackground(params);
@@ -178,9 +170,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
                 Log.e(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
 
-                SormasApplication application = (SormasApplication) context.getApplicationContext();
-                Tracker tracker = application.getDefaultTracker();
-                ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+                ErrorReportingHelper.sendCaughtException(e);
 
                 syncFailed = true;
                 syncFailedMessage = DatabaseHelper.getContext().getString(R.string.error_synchronization);

@@ -29,9 +29,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.crashlytics.android.Crashlytics;
+
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -179,7 +182,6 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     }
 
     private void checkLoginAndDoUpdateAndInitialSync() {
-
         if (ConfigProvider.getUsername() == null) return;
 
         if (progressDialog == null || !progressDialog.isShowing()) {
@@ -211,6 +213,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                                         }
 
                                         if (ConfigProvider.getUser() != null) {
+                                            initializeFirebase();
                                             openLandingActivity();
                                         } else {
                                             binding.signInLayout.setVisibility(View.VISIBLE);
@@ -225,6 +228,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                                 progressDialog = null;
                             }
 
+                            initializeFirebase();
                             openLandingActivity();
                         }
                     } else {
@@ -234,6 +238,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                         }
 
                         if (ConfigProvider.getUser() != null) {
+                            initializeFirebase();
                             openLandingActivity();
                         } else {
                             binding.signInLayout.setVisibility(View.VISIBLE);
@@ -242,8 +247,12 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                 });
     }
 
-    private void openLandingActivity() {
+    private void initializeFirebase() {
+        ((SormasApplication) getApplication()).getFirebaseAnalytics().setUserId(ConfigProvider.getUser().getUuid());
+        Crashlytics.setUserIdentifier(ConfigProvider.getUser().getUuid());
+    }
 
+    private void openLandingActivity() {
         if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
             NavigationHelper.goToContacts(LoginActivity.this);
         } else {

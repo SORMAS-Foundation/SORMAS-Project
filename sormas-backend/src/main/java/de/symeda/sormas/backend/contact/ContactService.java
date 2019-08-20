@@ -150,6 +150,17 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public int getContactCountByCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.get(Contact.CAZE), caze));
+
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
+	
 	public List<Contact> getAllByCase(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

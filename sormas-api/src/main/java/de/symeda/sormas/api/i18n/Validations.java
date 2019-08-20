@@ -37,6 +37,7 @@ public interface Validations {
 	public static String phoneNumberValidation = "phoneNumberValidation";
 	public static String required = "required";
 	public static String softAddEntryToList = "softAddEntryToList";
+	public static String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
 	public static String specifyFirstName = "specifyFirstName";
 	public static String specifyLastName = "specifyLastName";
 	public static String userNameNotUnique = "userNameNotUnique";

@@ -30,7 +30,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -138,6 +137,17 @@ public class SampleService extends AbstractAdoService<Sample> {
 		return resultList;
 	}
 
+	public int getSampleCountByCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Sample> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.get(Sample.ASSOCIATED_CASE), caze));
+
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
+	
 	public int getReceivedSampleCountByCase(Case caze) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);

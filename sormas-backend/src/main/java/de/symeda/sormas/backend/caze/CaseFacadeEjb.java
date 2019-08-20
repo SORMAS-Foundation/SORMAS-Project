@@ -703,7 +703,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root, user);
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("similarity", double.class, cb.parameter(String.class, "name"), nameSimilarityExpr), FacadeProvider.getConfigFacade().getCaseNameSimilarityThreshold());
+		Predicate nameSimilarityFilter = cb.gt(cb.function("similarity", double.class, cb.parameter(String.class, "name"), nameSimilarityExpr), FacadeProvider.getConfigFacade().getNameSimilarityThreshold());
 		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
 		Predicate regionFilter = caseCriteria.getRegion() != null ? cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()) : null;
 		Predicate reportDateFilter = criteria.getReportDate() != null ? cb.between(root.get(Case.REPORT_DATE), DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30)) : null;
@@ -740,8 +740,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> root2 = cq.from(Case.class);
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Person> person2 = root2.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, District> district = root.join(Case.DISTRICT, JoinType.LEFT);
-		Join<Case, District> district2 = root2.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
+		Join<Case, Region> region2 = root2.join(Case.REGION, JoinType.LEFT);
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root, user);
 		Predicate criteriaFilter = criteria != null ? caseService.buildCriteriaFilter(criteria, cb, root) : null;
@@ -749,9 +749,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), FacadeProvider.getConfigFacade().getCaseNameSimilarityThreshold());
+		Predicate nameSimilarityFilter = cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), FacadeProvider.getConfigFacade().getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
-		Predicate districtFilter = cb.equal(district.get(District.ID), district2.get(District.ID));
+		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 				cb.abs(
 						cb.diff(
@@ -774,41 +774,71 @@ public class CaseFacadeEjb implements CaseFacade {
 			filter = nameSimilarityFilter;
 		}
 		filter = cb.and(filter, diseaseFilter);
-		filter = cb.and(filter, districtFilter);
+		filter = cb.and(filter, regionFilter);
 		filter = cb.and(filter, reportDateFilter);
 		filter = cb.and(filter, creationDateFilter);
 
 		cq.where(filter);
 		cq.multiselect(
-				root.get(Case.UUID),
-				root2.get(Case.UUID));
+				root.get(Case.ID),
+				root2.get(Case.ID));
 		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
 
-		List<Object[]> foundUuids = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
+		List<Object[]> foundIds = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
 		List<CaseIndexDto[]> resultList = new ArrayList<>();
 
-		if (!foundUuids.isEmpty()) {
-			List<Object> parentUuids = foundUuids.stream().map(uuids -> uuids[0]).collect(Collectors.toList());
-			List<Object> childrenUuids = foundUuids.stream().map(uuids -> uuids[1]).collect(Collectors.toList());
-			List<CaseIndexDto> parentList = new ArrayList<>();
-			List<CaseIndexDto> childrenList = new ArrayList<>();
-
-			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
-			Root<Case> indexRoot = indexCq.from(Case.class);
-			indexCq.where(indexRoot.get(Case.UUID).in(parentUuids));
-			selectIndexDtoFields(indexCq, indexRoot);
-			parentList = em.createQuery(indexCq).getResultList();
-			parentList.sort(Comparator.comparing(indexDto -> parentUuids.indexOf(((CaseIndexDto) indexDto).getUuid())));
-			indexCq.where(indexRoot.get(Case.UUID).in(childrenUuids));
-			childrenList = em.createQuery(indexCq).getResultList();
-			childrenList.sort(Comparator.comparing(indexDto -> childrenUuids.indexOf(((CaseIndexDto) indexDto).getUuid())));
-
-			for (int i = 0; i < parentList.size(); i++) {
-				resultList.add(new CaseIndexDto[] {parentList.get(i), childrenList.get(i)});
+		if (!foundIds.isEmpty()) {
+//			List<Object> parentIds = foundIds.stream().map(ids -> ids[0]).collect(Collectors.toList());
+//			List<Object> childrenIds = foundIds.stream().map(ids -> ids[1]).collect(Collectors.toList());
+//			List<CaseIndexDto> parentList = new ArrayList<>();
+//			List<CaseIndexDto> childrenList = new ArrayList<>();
+//
+//			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
+//			Root<Case> indexRoot = indexCq.from(Case.class);
+//			selectIndexDtoFields(indexCq, indexRoot);
+//			indexCq.where(indexRoot.get(Case.ID).in(parentIds));
+//			parentList = em.createQuery(indexCq).getResultList();
+//			indexCq.where(indexRoot.get(Case.ID).in(childrenIds));
+//			childrenList = em.createQuery(indexCq).getResultList();
+//
+//			for (Object[] idPair : foundIds) {
+//				CaseIndexDto parent = parentList.stream().filter(c -> c.getId() == (long) idPair[0]).findFirst().get();
+//				CaseIndexDto child = childrenList.stream().filter(c -> c.getId() == (long) idPair[1]).findFirst().get();
+//				
+//				if (parent.getCompleteness() == null && child.getCompleteness() == null
+//						|| parent.getCompleteness() != null && (child.getCompleteness() == null 
+//						|| (parent.getCompleteness() >= child.getCompleteness()))) {
+//					resultList.add(new CaseIndexDto[] {parent, child});
+//				} else {
+//					resultList.add(new CaseIndexDto[] {child, parent});
+//				}
+//			}
+			for (Object[] idPair : foundIds) {
+				CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
+				Root<Case> indexRoot = indexCq.from(Case.class);
+				selectIndexDtoFields(indexCq, indexRoot);
+				indexCq.where(cb.equal(indexRoot.get(Case.ID), idPair[0]));
+				CaseIndexDto parent = em.createQuery(indexCq).setMaxResults(1).getSingleResult();
+				indexCq.where(cb.equal(indexRoot.get(Case.ID), idPair[1]));
+				CaseIndexDto child = em.createQuery(indexCq).setMaxResults(1).getSingleResult();
+				
+				if (parent.getCompleteness() == null && child.getCompleteness() == null
+						|| parent.getCompleteness() != null && (child.getCompleteness() == null 
+						|| (parent.getCompleteness() >= child.getCompleteness()))) {
+					resultList.add(new CaseIndexDto[] {parent, child});
+				} else {
+					resultList.add(new CaseIndexDto[] {child, parent});
+				}
 			}
 		}
 
 		return resultList;
+	}
+	
+	public void updateCompleteness(String caseUuid) {
+		Case caze = caseService.getByUuid(caseUuid);
+		caze.setCompleteness(calculateCompleteness(caze));
+		caseService.ensurePersisted(caze);
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<CaseIndexDto> cq, Root<Case> root) {
@@ -819,7 +849,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, PointOfEntry> pointOfEntry = root.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = root.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
-		cq.multiselect(root.get(Case.UUID), root.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME),
+		cq.multiselect(root.get(AbstractDomainObject.ID), root.get(Case.UUID), root.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME),
 				person.get(Person.LAST_NAME), root.get(Case.DISEASE), root.get(Case.DISEASE_DETAILS),
 				root.get(Case.CASE_CLASSIFICATION), root.get(Case.INVESTIGATION_STATUS),
 				person.get(Person.PRESENT_CONDITION), root.get(Case.REPORT_DATE),
@@ -829,7 +859,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				pointOfEntry.get(PointOfEntry.NAME), root.get(Case.POINT_OF_ENTRY_DETAILS),
 				surveillanceOfficer.get(User.UUID), root.get(Case.OUTCOME),
 				person.get(Person.APPROXIMATE_AGE), person.get(Person.APPROXIMATE_AGE_TYPE),
-				person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY));
+				person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY),
+				person.get(Person.SEX), root.get(Case.COMPLETENESS));
 	}
 
 	private void setIndexDtoSortingOrder(CriteriaBuilder cb, CriteriaQuery<CaseIndexDto> cq, Root<Case> root, List<SortProperty> sortProperties) {
@@ -845,6 +876,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case CaseIndexDto.ID:
 				case CaseIndexDto.UUID:
 				case CaseIndexDto.EPID_NUMBER:
 				case CaseIndexDto.DISEASE:
@@ -854,6 +886,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				case CaseIndexDto.REPORT_DATE:
 				case CaseIndexDto.CREATION_DATE:
 				case CaseIndexDto.OUTCOME:
+				case CaseIndexDto.COMPLETENESS:
 					expression = root.get(sortProperty.propertyName);
 					break;
 				case CaseIndexDto.PERSON_FIRST_NAME:
@@ -1128,6 +1161,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!newCase.getEpiData().getGatherings().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getGatheringAttended()) {
 			newCase.getEpiData().setGatheringAttended(YesNoUnknown.YES);
 		}
+		
+		// Update completeness value
+		newCase.setCompleteness(calculateCompleteness(newCase));
 
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
@@ -1174,7 +1210,40 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 		}
-
+	}
+	
+	private float calculateCompleteness(Case caze) {
+		float completeness = 0f;
+		
+		if (InvestigationStatus.DONE.equals(caze.getInvestigationStatus())) {
+			completeness += 0.2f;
+		}
+		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
+			completeness += 0.2f;
+		}
+		if (sampleService.getSampleCountByCase(caze) > 0) {
+			completeness += 0.15f;
+		}
+		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
+			completeness += 0.15f;
+		}
+		if (contactService.getContactCountByCase(caze) > 0) {
+			completeness += 0.10f;
+		}
+		if (!CaseOutcome.NO_OUTCOME.equals(caze.getOutcome())) {
+			completeness += 0.05f;
+		}
+		if (caze.getPerson().getBirthdateYYYY() != null || caze.getPerson().getApproximateAge() != null) {
+			completeness += 0.05f;
+		}
+		if (caze.getPerson().getSex() != null) {
+			completeness += 0.05f;
+		}
+		if (caze.getSymptoms().getOnsetDate() != null) {
+			completeness += 0.05f;
+		}
+		
+		return completeness;
 	}
 
 	@Override

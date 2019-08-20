@@ -32,11 +32,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -311,7 +309,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		return resultList;	
 	}
 	
-	@SuppressWarnings("unchecked")
 	private List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
@@ -606,6 +603,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
+		
 		// Send an email to the lab user when a sample has been shipped to his lab
 		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
 			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());

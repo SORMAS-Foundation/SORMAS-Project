@@ -326,34 +326,34 @@
              Optionally, register AnalyticsReceiver and AnalyticsService to support background
              dispatching on non-Google Play devices
         -->
-        <receiver
-            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
-            </intent-filter>
-        </receiver>
+        <!--<receiver-->
+            <!--android:name="com.google.android.gms.analytics.AnalyticsReceiver"-->
+            <!--android:enabled="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
-        <service
-            android:name="com.google.android.gms.analytics.AnalyticsService"
-            android:enabled="true"
-            android:exported="false" />
+        <!--<service-->
+            <!--android:name="com.google.android.gms.analytics.AnalyticsService"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="false" />-->
 
         <!--
              Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
              installation campaign reporting
         -->
-        <receiver
-            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
+        <!--<receiver-->
+            <!--android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"-->
+            <!--android:exported="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.android.vending.INSTALL_REFERRER" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="de.symeda.sormas.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -361,10 +361,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
-        <service
-            android:name=".core.TaskNotificationService"
-            android:enabled="true" />
+        <!--<service android:name="com.google.android.gms.analytics.CampaignTrackingService" />-->
+        <!--<service-->
+            <!--android:name=".core.TaskNotificationService"-->
+            <!--android:enabled="true" />-->
 
     </application>
 

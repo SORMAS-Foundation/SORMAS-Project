@@ -53,6 +53,7 @@ public interface Strings {
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
+	public static String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	public static String done = "done";
 	public static String edit = "edit";
 	public static String entityAdditionalTest = "entityAdditionalTest";
@@ -112,12 +113,14 @@ public interface Strings {
 	public static String headingClinicalMeasurements = "headingClinicalMeasurements";
 	public static String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
 	public static String headingComparisonCase = "headingComparisonCase";
+	public static String headingCompleteness = "headingCompleteness";
 	public static String headingComplications = "headingComplications";
 	public static String headingConfirmArchiving = "headingConfirmArchiving";
 	public static String headingConfirmChoice = "headingConfirmChoice";
 	public static String headingConfirmDearchiving = "headingConfirmDearchiving";
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
 	public static String headingConfirmMerging = "headingConfirmMerging";
+	public static String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
 	public static String headingContactData = "headingContactData";
 	public static String headingContactFollowUp = "headingContactFollowUp";
 	public static String headingContactInformation = "headingContactInformation";
@@ -166,6 +169,7 @@ public interface Strings {
 	public static String headingEventsArchived = "headingEventsArchived";
 	public static String headingEventsDearchived = "headingEventsDearchived";
 	public static String headingEventsDeleted = "headingEventsDeleted";
+	public static String headingExplanationOfTerms = "headingExplanationOfTerms";
 	public static String headingExportFailed = "headingExportFailed";
 	public static String headingFilters = "headingFilters";
 	public static String headingFollowUpCanceled = "headingFollowUpCanceled";
@@ -174,6 +178,7 @@ public interface Strings {
 	public static String headingFollowUpStatusChanged = "headingFollowUpStatusChanged";
 	public static String headingHealthConditions = "headingHealthConditions";
 	public static String headingHospitalization = "headingHospitalization";
+	public static String headingHowToMergeCases = "headingHowToMergeCases";
 	public static String headingImportCases = "headingImportCases";
 	public static String headingImportCsvFile = "headingImportCsvFile";
 	public static String headingImportedCaseInfo = "headingImportedCaseInfo";
@@ -182,6 +187,7 @@ public interface Strings {
 	public static String headingImportFailed = "headingImportFailed";
 	public static String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	public static String headingInformationSource = "headingInformationSource";
+	public static String headingIntroduction = "headingIntroduction";
 	public static String headingLaboratorySample = "headingLaboratorySample";
 	public static String headingLocation = "headingLocation";
 	public static String headingLoginFailed = "headingLoginFailed";
@@ -245,6 +251,7 @@ public interface Strings {
 	public static String infoAddTestsToSample = "infoAddTestsToSample";
 	public static String infoBasicExport = "infoBasicExport";
 	public static String infoCanceledBy = "infoCanceledBy";
+	public static String infoCaseCompleteness = "infoCaseCompleteness";
 	public static String infoCaseDate = "infoCaseDate";
 	public static String infoCaseIncidence = "infoCaseIncidence";
 	public static String infoCaseMap = "infoCaseMap";
@@ -258,6 +265,7 @@ public interface Strings {
 	public static String infoDownloadImportGuide = "infoDownloadImportGuide";
 	public static String infoDownloadImportTemplate = "infoDownloadImportTemplate";
 	public static String infoExportNoFilters = "infoExportNoFilters";
+	public static String infoHowToMergeCases = "infoHowToMergeCases";
 	public static String infoImportCsvFile = "infoImportCsvFile";
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
@@ -307,6 +315,7 @@ public interface Strings {
 	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";
 	public static String messageClinicalVisitSaved = "messageClinicalVisitSaved";
 	public static String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
+	public static String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	public static String messageContactCreated = "messageContactCreated";
 	public static String messageContactSaved = "messageContactSaved";
 	public static String messageContactsDeleted = "messageContactsDeleted";

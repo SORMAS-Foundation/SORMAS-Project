@@ -112,6 +112,7 @@ public final class CssStyles {
 	
 	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";
+	public static final String LAYOUT_SPACIOUS = "spacious";
 	public static final String BACKGROUND_ROUNDED_CORNERS = "background-rounded-corners";
 	public static final String BACKGROUND_CRITERIA = "background-criteria";
 	public static final String BACKGROUND_SUB_CRITERIA = "background-sub-criteria";

@@ -78,6 +78,7 @@ public class Case extends AbstractDomainObject {
     public static final String OUTCOME = "outcome";
     public static final String EPID_NUMBER = "epidNumber";
     public static final String CASE_ORIGIN = "caseOrigin";
+    public static final String REGION = "region";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;

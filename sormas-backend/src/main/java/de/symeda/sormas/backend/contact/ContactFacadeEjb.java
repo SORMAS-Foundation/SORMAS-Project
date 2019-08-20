@@ -183,7 +183,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
-		
 		Contact entity = fromDto(dto);
 
 		// taking this out because it may lead to server problems
@@ -197,6 +196,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		contactService.updateFollowUpUntilAndStatus(entity);
 		contactService.udpateContactStatus(entity);
+		
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
 		
 		return toDto(entity);
 	}
@@ -243,6 +244,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			taskService.delete(task);
 		}
 		contactService.delete(contact);
+		
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(contact.getCaze()), contact.getCaze());
 	}
 	
 	@Override
