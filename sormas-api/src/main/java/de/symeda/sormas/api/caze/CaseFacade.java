@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -49,7 +50,7 @@ public interface CaseFacade {
 	
 	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, int first, int max, List<SortProperty> sortProperties);
 	
-	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
+	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, ExportType exportType, int first, int max);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     

@@ -27,6 +27,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -36,7 +37,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
 
 import org.slf4j.Logger;
@@ -229,24 +229,31 @@ public class ExportFacadeEjb implements ExportFacade {
 		}
 
 		// Create a zip containing all created .csv files
-		return createZipFromCsvFiles(databaseTables, date, randomNumber);
+		return createZipFromCsvFiles(databaseTables.stream().map(t -> t.getFileName()).collect(Collectors.toList()), date, randomNumber);
 	}
 
+	@Override
+	public String generateZipArchive(String date, int randomNumber) {
+		Path path = new File(configFacade.getTempFilesPath()).toPath();
+		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + DateHelper.formatDateForExport(new Date()) + "_" + new Random().nextInt(Integer.MAX_VALUE) + ".zip";
+		Path filePath = path.resolve(fileName);
+		String zipPath = filePath.toString();
+		return zipPath;
+	}
+	
 	/**
 	 * Creates a zip by collecting all .csv files that match the file names of the passed databaseTables plus
 	 * the date and randomNumber suffixes. The zip is stored in the same export folder that contains the .csv files
 	 * and its file path is returned.
 	 */
-	private String createZipFromCsvFiles(List<DatabaseTable> databaseTables, String date, int randomNumber) throws ExportErrorException {
-		Path path = new File(configFacade.getTempFilesPath()).toPath();
-		String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + date + "_" + randomNumber + ".zip";
-		Path filePath = path.resolve(name);
-		String zipPath = filePath.toString();
+	private String createZipFromCsvFiles(List<String> fileNames, String date, int randomNumber) throws ExportErrorException {
+		Path tempPath = new File(configFacade.getTempFilesPath()).toPath();
+		String zipPath = generateZipArchive(date, randomNumber);
 		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream( new FileOutputStream(zipPath)))) {
-			for (DatabaseTable databaseTable : databaseTables) {
-				name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + databaseTable.getFileName() + "_" + date + "_" + randomNumber + ".csv";
-				filePath = path.resolve(name);
-				zos.putNextEntry(new ZipEntry(databaseTable.getFileName() + ".csv"));
+			for (String fileName : fileNames) {
+				String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
+				Path filePath = tempPath.resolve(name);
+				zos.putNextEntry(new ZipEntry(fileName + ".csv"));
 				byte[] bytes = Files.readAllBytes(filePath);
 				zos.write(bytes, 0, bytes.length);
 				zos.closeEntry();

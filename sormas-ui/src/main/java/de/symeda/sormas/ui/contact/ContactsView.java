@@ -177,7 +177,7 @@ public class ContactsView extends AbstractView {
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
 
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class,
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
 					(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,

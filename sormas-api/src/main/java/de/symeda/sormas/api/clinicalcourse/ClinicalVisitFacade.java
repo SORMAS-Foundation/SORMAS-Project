@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.caze.CaseCriteria;
+
 @Remote
 public interface ClinicalVisitFacade {
 
@@ -23,5 +25,7 @@ public interface ClinicalVisitFacade {
 	List<ClinicalVisitDto> getByUuids(List<String> uuids);
 	
 	List<String> getAllActiveUuids(String userUuid);
+	
+	List<ClinicalVisitExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max);
 	
 }

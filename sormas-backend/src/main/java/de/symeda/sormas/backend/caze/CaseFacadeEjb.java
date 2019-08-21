@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -125,10 +126,13 @@ import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -290,6 +294,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private PortHealthInfoFacadeEjbLocal portHealthInfoFacade;
+	@EJB
+	private HealthConditionsService healthConditionsService;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -353,7 +359,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max) {
+	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, ExportType exportType, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseExportDto> cq = cb.createQuery(CaseExportDto.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -361,6 +367,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Hospitalization> hospitalization = caze.join(Case.HOSPITALIZATION, JoinType.LEFT);
 		Join<Case, EpiData> epiData = caze.join(Case.EPI_DATA, JoinType.LEFT);
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		Join<Case, ClinicalCourse> clinicalCourse = caze.join(Case.CLINICAL_COURSE, JoinType.LEFT);
+		Join<ClinicalCourse, HealthConditions> healthConditions = clinicalCourse.join(ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT);
 		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Community> community = caze.join(Case.COMMUNITY, JoinType.LEFT);
@@ -368,8 +376,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Person, Facility> occupationFacility = person.join(Person.OCCUPATION_FACILITY, JoinType.LEFT);
 
 		cq.multiselect(caze.get(Case.ID), person.get(Person.ID), epiData.get(EpiData.ID), symptoms.get(Symptoms.ID),
-				hospitalization.get(Hospitalization.ID), district.get(District.ID), caze.get(Case.UUID),
-				caze.get(Case.EPID_NUMBER), caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS),
+				hospitalization.get(Hospitalization.ID), district.get(District.ID), healthConditions.get(HealthConditions.ID), 
+				caze.get(Case.UUID), caze.get(Case.EPID_NUMBER), caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS),
 				person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME), person.get(Person.SEX),
 				person.get(Person.APPROXIMATE_AGE), person.get(Person.APPROXIMATE_AGE_TYPE),
 				person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY),
@@ -412,11 +420,36 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (CaseExportDto exportDto : resultList) {
 			// TODO: Speed up this code, e.g. by persisting symptoms, lab results, etc. as a
 			// String in the database
-			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
-			exportDto.setSampleTaken(
-					(sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
-			exportDto.setSampleDates(sampleDates);
-			exportDto.setLabResults(pathogenTestService.getPathogenTestResultsForCase(exportDto.getId()));
+			if (exportType == ExportType.CASE_SURVEILLANCE) {
+				List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
+				exportDto.setSampleTaken(
+						(sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
+				exportDto.setSampleDates(sampleDates);
+				exportDto.setLabResults(pathogenTestService.getPathogenTestResultsForCase(exportDto.getId()));
+
+				// Build travel history - done here to avoid transforming EpiDataTravel to
+				// EpiDataTravelDto
+				List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
+				StringBuilder travelHistoryBuilder = new StringBuilder();
+				for (int i = 0; i < travels.size(); i++) {
+					EpiDataTravel travel = travels.get(i);
+					if (i > 0) {
+						travelHistoryBuilder.append(", ");
+					}
+					travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(travel.getTravelType(),
+							travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo()));
+				}
+				if (travelHistoryBuilder.length() == 0 && exportDto.getTraveled() != null) {
+					travelHistoryBuilder.append(exportDto.getTraveled());
+				}
+				exportDto.setTravelHistory(travelHistoryBuilder.toString());
+			} else if (exportType == ExportType.CASE_MANAGEMENT) {
+				exportDto.setNumberOfPrescriptions(prescriptionService.getPrescriptionCountByCase(exportDto.getId()));
+				exportDto.setNumberOfTreatments(treatmentService.getTreatmentCountByCase(exportDto.getId()));
+				exportDto.setNumberOfClinicalVisits(clinicalVisitService.getClinicalVisitCountByCase(exportDto.getId()));
+				exportDto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(healthConditionsService.getById(exportDto.getHealthConditionsId())));
+			}
+
 			// exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
 			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
 			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
@@ -424,23 +457,6 @@ public class CaseFacadeEjb implements CaseFacade {
 					.getSourceCaseClassifications(exportDto.getId());
 			exportDto.setMaxSourceCaseClassifcation(sourceCaseClassifications.stream()
 					.filter(c -> c != CaseClassification.NO_CASE).max(Comparator.naturalOrder()).orElse(null));
-
-			// Build travel history - done here to avoid transforming EpiDataTravel to
-			// EpiDataTravelDto
-			List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
-			StringBuilder travelHistoryBuilder = new StringBuilder();
-			for (int i = 0; i < travels.size(); i++) {
-				EpiDataTravel travel = travels.get(i);
-				if (i > 0) {
-					travelHistoryBuilder.append(", ");
-				}
-				travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(travel.getTravelType(),
-						travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo()));
-			}
-			if (travelHistoryBuilder.length() == 0 && exportDto.getTraveled() != null) {
-				travelHistoryBuilder.append(exportDto.getTraveled());
-			}
-			exportDto.setTravelHistory(travelHistoryBuilder.toString());
 
 			// Place of initial detection
 			PreviousHospitalization firstPrevHosp = previousHospitalizationService
@@ -788,31 +804,31 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<CaseIndexDto[]> resultList = new ArrayList<>();
 
 		if (!foundIds.isEmpty()) {
-//			List<Object> parentIds = foundIds.stream().map(ids -> ids[0]).collect(Collectors.toList());
-//			List<Object> childrenIds = foundIds.stream().map(ids -> ids[1]).collect(Collectors.toList());
-//			List<CaseIndexDto> parentList = new ArrayList<>();
-//			List<CaseIndexDto> childrenList = new ArrayList<>();
-//
-//			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
-//			Root<Case> indexRoot = indexCq.from(Case.class);
-//			selectIndexDtoFields(indexCq, indexRoot);
-//			indexCq.where(indexRoot.get(Case.ID).in(parentIds));
-//			parentList = em.createQuery(indexCq).getResultList();
-//			indexCq.where(indexRoot.get(Case.ID).in(childrenIds));
-//			childrenList = em.createQuery(indexCq).getResultList();
-//
-//			for (Object[] idPair : foundIds) {
-//				CaseIndexDto parent = parentList.stream().filter(c -> c.getId() == (long) idPair[0]).findFirst().get();
-//				CaseIndexDto child = childrenList.stream().filter(c -> c.getId() == (long) idPair[1]).findFirst().get();
-//				
-//				if (parent.getCompleteness() == null && child.getCompleteness() == null
-//						|| parent.getCompleteness() != null && (child.getCompleteness() == null 
-//						|| (parent.getCompleteness() >= child.getCompleteness()))) {
-//					resultList.add(new CaseIndexDto[] {parent, child});
-//				} else {
-//					resultList.add(new CaseIndexDto[] {child, parent});
-//				}
-//			}
+			//			List<Object> parentIds = foundIds.stream().map(ids -> ids[0]).collect(Collectors.toList());
+			//			List<Object> childrenIds = foundIds.stream().map(ids -> ids[1]).collect(Collectors.toList());
+			//			List<CaseIndexDto> parentList = new ArrayList<>();
+			//			List<CaseIndexDto> childrenList = new ArrayList<>();
+			//
+			//			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
+			//			Root<Case> indexRoot = indexCq.from(Case.class);
+			//			selectIndexDtoFields(indexCq, indexRoot);
+			//			indexCq.where(indexRoot.get(Case.ID).in(parentIds));
+			//			parentList = em.createQuery(indexCq).getResultList();
+			//			indexCq.where(indexRoot.get(Case.ID).in(childrenIds));
+			//			childrenList = em.createQuery(indexCq).getResultList();
+			//
+			//			for (Object[] idPair : foundIds) {
+			//				CaseIndexDto parent = parentList.stream().filter(c -> c.getId() == (long) idPair[0]).findFirst().get();
+			//				CaseIndexDto child = childrenList.stream().filter(c -> c.getId() == (long) idPair[1]).findFirst().get();
+			//				
+			//				if (parent.getCompleteness() == null && child.getCompleteness() == null
+			//						|| parent.getCompleteness() != null && (child.getCompleteness() == null 
+			//						|| (parent.getCompleteness() >= child.getCompleteness()))) {
+			//					resultList.add(new CaseIndexDto[] {parent, child});
+			//				} else {
+			//					resultList.add(new CaseIndexDto[] {child, parent});
+			//				}
+			//			}
 			for (Object[] idPair : foundIds) {
 				CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
 				Root<Case> indexRoot = indexCq.from(Case.class);
@@ -821,7 +837,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				CaseIndexDto parent = em.createQuery(indexCq).setMaxResults(1).getSingleResult();
 				indexCq.where(cb.equal(indexRoot.get(Case.ID), idPair[1]));
 				CaseIndexDto child = em.createQuery(indexCq).setMaxResults(1).getSingleResult();
-				
+
 				if (parent.getCompleteness() == null && child.getCompleteness() == null
 						|| parent.getCompleteness() != null && (child.getCompleteness() == null 
 						|| (parent.getCompleteness() >= child.getCompleteness()))) {
@@ -834,7 +850,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return resultList;
 	}
-	
+
 	public void updateCompleteness(String caseUuid) {
 		Case caze = caseService.getByUuid(caseUuid);
 		caze.setCompleteness(calculateCompleteness(caze));
@@ -1161,7 +1177,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!newCase.getEpiData().getGatherings().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getGatheringAttended()) {
 			newCase.getEpiData().setGatheringAttended(YesNoUnknown.YES);
 		}
-		
+
 		// Update completeness value
 		newCase.setCompleteness(calculateCompleteness(newCase));
 
@@ -1211,10 +1227,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
-	
+
 	private float calculateCompleteness(Case caze) {
 		float completeness = 0f;
-		
+
 		if (InvestigationStatus.DONE.equals(caze.getInvestigationStatus())) {
 			completeness += 0.2f;
 		}
@@ -1242,7 +1258,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getSymptoms().getOnsetDate() != null) {
 			completeness += 0.05f;
 		}
-		
+
 		return completeness;
 	}
 

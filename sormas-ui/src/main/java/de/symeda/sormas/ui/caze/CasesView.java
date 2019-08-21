@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -46,12 +45,12 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -191,7 +190,7 @@ public class CasesView extends AbstractView {
 			exportLayout.setSpacing(true); 
 			exportLayout.setMargin(true);
 			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			exportLayout.setWidth(200, Unit.PIXELS);
+			exportLayout.setWidth(250, Unit.PIXELS);
 			exportButton.setContent(exportLayout);
 			addHeaderComponent(exportButton);
 
@@ -215,8 +214,8 @@ public class CasesView extends AbstractView {
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
 
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, ExportType.CASE_SURVEILLANCE, 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), ExportType.CASE_SURVEILLANCE, start, max), 
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
@@ -232,6 +231,20 @@ public class CasesView extends AbstractView {
 					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
+				Button caseManagementExportButton = new Button(I18nProperties.getCaption(Captions.exportCaseManagement));
+				caseManagementExportButton.setId("caseManagementExport");
+				caseManagementExportButton.setDescription(I18nProperties.getString(Strings.infoCaseManagementExport));
+				caseManagementExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				caseManagementExportButton.setIcon(VaadinIcons.FILE_TEXT);
+				caseManagementExportButton.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(caseManagementExportButton);
+
+				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(UserProvider.getCurrent().getUuid(), grid.getCriteria(),
+						"sormas_case_management_" + DateHelper.formatDateForExport(new Date()) + ".zip");
+				new FileDownloader(caseManagementExportStreamResource).extend(caseManagementExportButton);
+			}
+
 			Button sampleExportButton = new Button(I18nProperties.getCaption(Captions.exportSamples));
 			sampleExportButton.setId("sampleExport");
 			sampleExportButton.setDescription(I18nProperties.getString(Strings.infoSampleExport));
@@ -240,7 +253,7 @@ public class CasesView extends AbstractView {
 			sampleExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(sampleExportButton);
 
-			StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class,
+			StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class, null,
 					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(SampleExportDto.I18N_PREFIX, propertyId,
@@ -266,7 +279,7 @@ public class CasesView extends AbstractView {
 				warningLabel.setVisible(!criteria.hasAnyFilterActive());
 			});
 		}
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
 			Button mergeDuplicatesButton = new Button(I18nProperties.getCaption(Captions.caseMergeDuplicates));
 			mergeDuplicatesButton.setId("mergeDuplicates");

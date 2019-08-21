@@ -254,6 +254,7 @@ public interface Strings {
 	public static String infoCaseCompleteness = "infoCaseCompleteness";
 	public static String infoCaseDate = "infoCaseDate";
 	public static String infoCaseIncidence = "infoCaseIncidence";
+	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoContactDashboard = "infoContactDashboard";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";

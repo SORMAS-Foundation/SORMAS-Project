@@ -148,6 +148,9 @@ public interface Captions {
 	public static String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	public static String CaseExport_labResults = "CaseExport.labResults";
 	public static String CaseExport_maxSourceCaseClassifcation = "CaseExport.maxSourceCaseClassifcation";
+	public static String CaseExport_numberOfClinicalVisits = "CaseExport.numberOfClinicalVisits";
+	public static String CaseExport_numberOfPrescriptions = "CaseExport.numberOfPrescriptions";
+	public static String CaseExport_numberOfTreatments = "CaseExport.numberOfTreatments";
 	public static String CaseExport_sampleDates = "CaseExport.sampleDates";
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
@@ -478,6 +481,7 @@ public interface Captions {
 	public static String eventShowArchived = "eventShowArchived";
 	public static String export = "export";
 	public static String exportBasic = "exportBasic";
+	public static String exportCaseManagement = "exportCaseManagement";
 	public static String exportDetailed = "exportDetailed";
 	public static String exportInfrastructureData = "exportInfrastructureData";
 	public static String exportSamples = "exportSamples";
