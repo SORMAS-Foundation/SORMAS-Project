@@ -1016,7 +1016,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
-		if (caze.getCaseOrigin() == CaseOrigin.IN_COUNTRY && caze.getHealthFacility() == null) {
+		if ((caze.getCaseOrigin() == null || caze.getCaseOrigin() == CaseOrigin.IN_COUNTRY) && caze.getHealthFacility() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacility));
 		}
 		if (caze.getDisease() == null) {

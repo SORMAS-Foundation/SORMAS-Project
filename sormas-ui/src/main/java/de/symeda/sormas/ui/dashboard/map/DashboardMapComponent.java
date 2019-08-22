@@ -167,8 +167,8 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
 			showCases = true;
-			showContacts = true;
-			showEvents = true;
+			showContacts = false;
+			showEvents = false;
 			showConfirmedContacts = true;
 			showUnconfirmedContacts = true;
 		} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
