@@ -525,13 +525,13 @@ public class DashboardMapComponent extends VerticalLayout {
 			{
 				contactsKeyLayout.setSpacing(false);
 				contactsKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, I18nProperties.getCaption(Captions.dashboardLastVisitLt24));
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, I18nProperties.getCaption(Captions.dashboardNotAContact));
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, I18nProperties.getCaption(Captions.dashboardLastVisitLt48));
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, I18nProperties.getCaption(Captions.dashboardUnconfirmedContact));
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, I18nProperties.getCaption(Captions.dashboardLastVisitGt48));
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, I18nProperties.getCaption(Captions.dashboardConfirmedContact));
 				contactsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(contactsKeyLayout);
@@ -971,19 +971,34 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 
 			MarkerIcon icon;
-			Date lastVisitDateTime = contact.getLastVisitDateTime();
-			long currentTime = new Date().getTime();
-			if (lastVisitDateTime != null) {
-				// 1000 ms = 1 second; 3600 seconds = 1 hour
-				if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 48) {
-					icon = MarkerIcon.CONTACT_LONG_OVERDUE;
-				} else if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 24) {
-					icon = MarkerIcon.CONTACT_OVERDUE;
-				} else {
-					icon = MarkerIcon.CONTACT_OK;
-				}
-			} else {
+			// #1274 Temporarily disabled because it severely impacts the performance of the Dashboard
+			//			Date lastVisitDateTime = contact.getLastVisitDateTime();
+			//			long currentTime = new Date().getTime();
+			//			if (lastVisitDateTime != null) {
+			//				// 1000 ms = 1 second; 3600 seconds = 1 hour
+			//				if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 48) {
+			//					icon = MarkerIcon.CONTACT_LONG_OVERDUE;
+			//				} else if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 24) {
+			//					icon = MarkerIcon.CONTACT_OVERDUE;
+			//				} else {
+			//					icon = MarkerIcon.CONTACT_OK;
+			//				}
+			//			} else {
+			//				icon = MarkerIcon.CONTACT_LONG_OVERDUE;
+			//			}
+			switch (contact.getContactClassification()) {
+			case CONFIRMED:
 				icon = MarkerIcon.CONTACT_LONG_OVERDUE;
+				break;
+			case UNCONFIRMED:
+				icon = MarkerIcon.CONTACT_OVERDUE;
+				break;
+			case NO_CONTACT:
+				icon = MarkerIcon.CONTACT_OK;
+				break;
+			default:
+				icon = MarkerIcon.CONTACT_OK;
+				break;
 			}
 
 			LeafletMarker marker = new LeafletMarker();

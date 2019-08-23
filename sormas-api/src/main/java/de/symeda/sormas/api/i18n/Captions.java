@@ -196,6 +196,8 @@ public interface Captions {
 	public static String ClinicalVisit_visitDateTime = "ClinicalVisit.visitDateTime";
 	public static String ClinicalVisit_visitingPerson = "ClinicalVisit.visitingPerson";
 	public static String ClinicalVisit_visitRemarks = "ClinicalVisit.visitRemarks";
+	public static String ClinicalVisitExport_caseName = "ClinicalVisitExport.caseName";
+	public static String ClinicalVisitExport_caseUuid = "ClinicalVisitExport.caseUuid";
 	public static String clinicalVisitNewClinicalVisit = "clinicalVisitNewClinicalVisit";
 	public static String columnAdditionalTests = "columnAdditionalTests";
 	public static String columnDiseaseShort = "columnDiseaseShort";
@@ -268,6 +270,7 @@ public interface Captions {
 	public static String dashboardCompletedFollowUp = "dashboardCompletedFollowUp";
 	public static String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
 	public static String dashboardConfirmed = "dashboardConfirmed";
+	public static String dashboardConfirmedContact = "dashboardConfirmedContact";
 	public static String dashboardConvertedToCase = "dashboardConvertedToCase";
 	public static String dashboardCooperative = "dashboardCooperative";
 	public static String dashboardCustom = "dashboardCustom";
@@ -350,6 +353,7 @@ public interface Captions {
 	public static String dashboardTwoDays = "dashboardTwoDays";
 	public static String dashboardUnavailable = "dashboardUnavailable";
 	public static String dashboardUnconfirmed = "dashboardUnconfirmed";
+	public static String dashboardUnconfirmedContact = "dashboardUnconfirmedContact";
 	public static String dashboardUncooperative = "dashboardUncooperative";
 	public static String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
@@ -691,6 +695,8 @@ public interface Captions {
 	public static String Prescription_route = "Prescription.route";
 	public static String Prescription_routeDetails = "Prescription.routeDetails";
 	public static String Prescription_typeOfDrug = "Prescription.typeOfDrug";
+	public static String PrescriptionExport_caseName = "PrescriptionExport.caseName";
+	public static String PrescriptionExport_caseUuid = "PrescriptionExport.caseUuid";
 	public static String prescriptionNewPrescription = "prescriptionNewPrescription";
 	public static String region = "region";
 	public static String Region_epidCode = "Region.epidCode";
@@ -1012,6 +1018,8 @@ public interface Captions {
 	public static String Treatment_treatmentType = "Treatment.treatmentType";
 	public static String Treatment_typeOfDrug = "Treatment.typeOfDrug";
 	public static String treatmentCreateTreatment = "treatmentCreateTreatment";
+	public static String TreatmentExport_caseName = "TreatmentExport.caseName";
+	public static String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	public static String treatmentNewTreatment = "treatmentNewTreatment";
 	public static String treatmentOpenPrescription = "treatmentOpenPrescription";
 	public static String unknown = "unknown";
