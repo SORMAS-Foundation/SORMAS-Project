@@ -44,6 +44,16 @@ public class PointOfEntryDto extends EntityDto {
 				OTHER_GROUND_CROSSING_UUID.equals(getUuid()) || OTHER_POE_UUID.equals(getUuid());
 	}
 	
+	public boolean isNameOtherPointOfEntry() {
+		return isNameOtherPointOfEntry(getName());
+	}
+
+	public static boolean isNameOtherPointOfEntry(String name) {
+		return OTHER_AIRPORT.equals(name) || OTHER_SEAPORT.equals(name) ||
+				OTHER_GROUND_CROSSING.equals(name) || OTHER_POE.equals(name);
+	}
+	
+	
 	public PointOfEntryType getPointOfEntryType() {
 		return pointOfEntryType;
 	}

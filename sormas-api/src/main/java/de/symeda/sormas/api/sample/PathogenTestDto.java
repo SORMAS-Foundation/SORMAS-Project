@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -77,7 +78,16 @@ public class PathogenTestDto extends EntityDto {
 		pathogenTest.setLabUser(currentUser.toReference());
 		return pathogenTest;
 	}
-	
+
+	public static PathogenTestDto build(SampleReferenceDto sample, UserReferenceDto currentUser) {
+		PathogenTestDto pathogenTest = new PathogenTestDto();
+		pathogenTest.setUuid(DataHelper.createUuid());
+		pathogenTest.setSample(sample);
+		pathogenTest.setLabUser(currentUser);
+		return pathogenTest;
+	}
+
+	@ImportIgnore
 	public SampleReferenceDto getSample() {
 		return sample;
 	}

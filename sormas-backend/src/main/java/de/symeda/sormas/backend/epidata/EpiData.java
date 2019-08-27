@@ -35,7 +35,6 @@ import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ImportIgnore;
 
 @Entity
 @Audited
@@ -115,7 +114,6 @@ public class EpiData extends AbstractDomainObject {
 	private String placeOfLastExposure;
 	private AnimalCondition animalCondition;
 
-	@ImportIgnore
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getBurialAttended() {
 		return burialAttended;
@@ -124,7 +122,6 @@ public class EpiData extends AbstractDomainObject {
 		this.burialAttended = burialAttended;
 	}
 
-	@ImportIgnore
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getGatheringAttended() {
 		return gatheringAttended;
@@ -133,7 +130,6 @@ public class EpiData extends AbstractDomainObject {
 		this.gatheringAttended = gatheringAttended;
 	}
 
-	@ImportIgnore
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getTraveled() {
 		return traveled;
@@ -306,7 +302,6 @@ public class EpiData extends AbstractDomainObject {
 	 * This change date has to be set whenever one of the embedded lists is modified: !oldList.equals(newList)
 	 * @return
 	 */
-	@ImportIgnore
 	public Date getChangeDateOfEmbeddedLists() {
 		return changeDateOfEmbeddedLists;
 	}

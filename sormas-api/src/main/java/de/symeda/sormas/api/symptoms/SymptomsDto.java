@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.Diseases;
@@ -495,6 +496,7 @@ public class SymptomsDto extends EntityDto {
 		return temperatureSource;
 	}
 	@Order(20)
+	@ImportIgnore
 	public Boolean getSymptomatic() {
 		return symptomatic;
 	}
@@ -510,6 +512,7 @@ public class SymptomsDto extends EntityDto {
 	public String getOnsetSymptom() {
 		return onsetSymptom;
 	}
+	@ImportIgnore
 	public String getPatientIllLocation() {
 		return patientIllLocation;
 	}

@@ -33,7 +33,6 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.hospitalization.AccommodationType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ImportIgnore;
 
 @Entity
 @Audited
@@ -97,7 +96,6 @@ public class Hospitalization extends AbstractDomainObject {
 		this.isolationDate = isolationDate;
 	}
 
-	@ImportIgnore
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getHospitalizedPreviously() {
 		return hospitalizedPreviously;
@@ -126,7 +124,6 @@ public class Hospitalization extends AbstractDomainObject {
 	 * This change date has to be set whenever one of the embedded lists is modified: !oldList.equals(newList)
 	 * @return
 	 */
-	@ImportIgnore
 	public Date getChangeDateOfEmbeddedLists() {
 		return changeDateOfEmbeddedLists;
 	}

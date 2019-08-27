@@ -21,7 +21,9 @@ public interface Validations {
 	public static String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";
 	public static String importFacilityNotUniqueInDistrict = "importFacilityNotUniqueInDistrict";
 	public static String importInvalidDate = "importInvalidDate";
+	public static String importLabNotUnique = "importLabNotUnique";
 	public static String importLineTooLong = "importLineTooLong";
+	public static String importPointOfEntryNotUniqueInDistrict = "importPointOfEntryNotUniqueInDistrict";
 	public static String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	public static String importRegionNotUnique = "importRegionNotUnique";
 	public static String importUnexpectedError = "importUnexpectedError";
@@ -41,11 +43,14 @@ public interface Validations {
 	public static String specifyFirstName = "specifyFirstName";
 	public static String specifyLastName = "specifyLastName";
 	public static String userNameNotUnique = "userNameNotUnique";
+	public static String validCase = "validCase";
 	public static String validCommunity = "validCommunity";
 	public static String validDisease = "validDisease";
 	public static String validDistrict = "validDistrict";
 	public static String validFacility = "validFacility";
+	public static String validPointOfEntry = "validPointOfEntry";
 	public static String validRegion = "validRegion";
+	public static String validSample = "validSample";
 	public static String visitAfterFollowUp = "visitAfterFollowUp";
 	public static String visitBeforeContactReport = "visitBeforeContactReport";
 	public static String visitBeforeLastContactDate = "visitBeforeLastContactDate";

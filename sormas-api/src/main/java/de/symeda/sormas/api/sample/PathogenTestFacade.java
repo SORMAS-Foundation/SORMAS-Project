@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface PathogenTestFacade {
@@ -49,5 +50,7 @@ public interface PathogenTestFacade {
 	void deletePathogenTest(PathogenTestReferenceDto pathogenTestRef, String userUuid);
 	
 	boolean hasPathogenTest(SampleReferenceDto sample);
+	
+	void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException;
 	
 }

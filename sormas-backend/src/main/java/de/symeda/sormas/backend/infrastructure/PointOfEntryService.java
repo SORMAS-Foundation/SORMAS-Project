@@ -56,6 +56,20 @@ public class PointOfEntryService extends AbstractAdoService<PointOfEntry> {
 		
 		return pointsOfEntry;
 	}
+	
+	public List<PointOfEntry> getByName(String name, District district) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
+		Root<PointOfEntry> from = cq.from(getElementClass());
+		
+		Predicate filter = cb.equal(from.get(PointOfEntry.NAME), name);
+		if (!PointOfEntryDto.isNameOtherPointOfEntry(name)) {
+			filter = cb.and(filter, cb.equal(from.get(PointOfEntry.DISTRICT), district));
+		}
+		
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
 
 	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> pointOfEntry) {
 		Predicate filter = null;
