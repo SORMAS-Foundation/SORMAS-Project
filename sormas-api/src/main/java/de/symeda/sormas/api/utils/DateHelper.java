@@ -520,6 +520,13 @@ public final class DateHelper {
 		calendar.setTime(date);
 		return getEpiWeekWithCorrectYear(calendar);
 	}
+	
+	public static EpiWeek getEpiWeekYearBefore(EpiWeek epiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear() - 1);
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+		return getEpiWeek(calendar.getTime());
+	}
 
 	/**
 	 * Returns the epi week for the week before the given date according to the

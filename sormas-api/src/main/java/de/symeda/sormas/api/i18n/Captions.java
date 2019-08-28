@@ -277,6 +277,7 @@ public interface Captions {
 	public static String dashboardCustom = "dashboardCustom";
 	public static String dashboardCustomPeriod = "dashboardCustomPeriod";
 	public static String dashboardData = "dashboardData";
+	public static String dashboardDayBefore = "dashboardDayBefore";
 	public static String dashboardDead = "dashboardDead";
 	public static String dashboardDiscarded = "dashboardDiscarded";
 	public static String dashboardDiseaseBurdenInfo = "dashboardDiseaseBurdenInfo";
@@ -329,12 +330,16 @@ public interface Captions {
 	public static String dashboardOutbreak = "dashboardOutbreak";
 	public static String dashboardOutbreakDistricts = "dashboardOutbreakDistricts";
 	public static String dashboardPending = "dashboardPending";
+	public static String dashboardPeriodBefore = "dashboardPeriodBefore";
 	public static String dashboardPositive = "dashboardPositive";
 	public static String dashboardPossible = "dashboardPossible";
 	public static String dashboardProbable = "dashboardProbable";
 	public static String dashboardReceived = "dashboardReceived";
 	public static String dashboardRemoved = "dashboardRemoved";
 	public static String dashboardRumor = "dashboardRumor";
+	public static String dashboardSameDayLastYear = "dashboardSameDayLastYear";
+	public static String dashboardSamePeriodLastYear = "dashboardSamePeriodLastYear";
+	public static String dashboardSameWeekLastYear = "dashboardSameWeekLastYear";
 	public static String dashboardSelectPeriod = "dashboardSelectPeriod";
 	public static String dashboardShipped = "dashboardShipped";
 	public static String dashboardShowAllDiseases = "dashboardShowAllDiseases";
@@ -360,6 +365,7 @@ public interface Captions {
 	public static String dashboardUncooperative = "dashboardUncooperative";
 	public static String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
+	public static String dashboardWeekBefore = "dashboardWeekBefore";
 	public static String dashboardYesterday = "dashboardYesterday";
 	public static String devModeCaseCount = "devModeCaseCount";
 	public static String devModeDisease = "devModeDisease";

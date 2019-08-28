@@ -74,7 +74,6 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		dateFilterOptionFilter.select(DateFilterOption.EPI_WEEK);
 		if (showCaption) {
 			dateFilterOptionFilter.setCaption(I18nProperties.getCaption(Captions.dashboardCustomPeriod));
-			CssStyles.style(dateFilterOptionFilter, CssStyles.FORCE_CAPTION);
 		}
 
 		dateFilterOptionFilter.addValueChangeListener(e -> {

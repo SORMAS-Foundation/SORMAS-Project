@@ -37,7 +37,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 
 public class DashboardDataProvider {
@@ -46,7 +45,6 @@ public class DashboardDataProvider {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
-	private DateFilterOption dateFilterOption;
 	private Date fromDate;
 	private Date toDate;
 	private Date previousFromDate;
@@ -74,10 +72,6 @@ public class DashboardDataProvider {
 	public void refreshData() {
 		// Update the entities lists according to the filters
 		String userUuid = UserProvider.getCurrent().getUuid();
-
-		int period = DateHelper.getDaysBetween(fromDate, toDate);
-		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
-		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
 		
 		// Disease burden
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
@@ -87,7 +81,6 @@ public class DashboardDataProvider {
 	}
 
 	private void refreshDataForSelectedDisease () {
-
 		// Update the entities lists according to the filters
 		String userUuid = UserProvider.getCurrent().getUuid();
 		
@@ -99,12 +92,9 @@ public class DashboardDataProvider {
 					previousFromDate, previousToDate, userUuid));
 		}
 
-		if (this.disease == null)
+		if (this.disease == null) {
 			return;
-
-		int period = DateHelper.getDaysBetween(fromDate, toDate);
-		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
-		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
+		}
 		
 		// Cases
 		CaseCriteria caseCriteria = new CaseCriteria();
@@ -267,14 +257,6 @@ public class DashboardDataProvider {
 		this.disease = disease;
 		
 		this.refreshDataForSelectedDisease();
-	}
-
-	public DateFilterOption getDateFilterOption() {
-		return dateFilterOption;
-	}
-
-	public void setDateFilterOption(DateFilterOption dateFilterOption) {
-		this.dateFilterOption = dateFilterOption;
 	}
 
 	public Date getFromDate() {
