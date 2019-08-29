@@ -431,12 +431,9 @@ public class CaseController {
 		caseEditForm.setValue(caze);
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(caseEditForm, caseEditForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				CaseDataDto cazeDto = caseEditForm.getValue();   
-				saveCase(cazeDto);
-			}
+		editView.addCommitListener(() -> {
+			CaseDataDto cazeDto = caseEditForm.getValue(); 
+			saveCase(cazeDto);
 		});
 
 		appendSpecialCommands(caze, editView);
@@ -539,24 +536,6 @@ public class CaseController {
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveCaseButton);
 			editView.getButtonsPanel().setComponentAlignment(archiveCaseButton, Alignment.BOTTOM_LEFT);
-		}
-
-		// Initialize 'Transfer case' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER) && !caze.isUnreferredPortHealthCase()) {
-			Button transferCaseButton = new Button();
-			transferCaseButton.setCaption(I18nProperties.getCaption(Captions.caseTransferCase));
-			transferCaseButton.addClickListener(new ClickListener() {
-				private static final long serialVersionUID = 1L;
-				@Override
-				public void buttonClick(ClickEvent event) {
-					editView.commit();
-					CaseDataDto cazeDto = findCase(caze.getUuid());
-					transferCase(cazeDto);
-				}
-			});
-
-			editView.getButtonsPanel().addComponentAsFirst(transferCaseButton);
-			editView.getButtonsPanel().setComponentAlignment(transferCaseButton, Alignment.BOTTOM_LEFT);
 		}
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.isUnreferredPortHealthCase()) {
