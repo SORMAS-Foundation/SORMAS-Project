@@ -36,6 +36,7 @@ import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -62,7 +63,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	// "Outbreak Districts" elements
 	private Label outbreakDistrictCountLabel;
-	private Label lastReportedCommunityLabel;
+	private Label lastReportedDistrictLabel;
 	
 	// "Case Fatality" elements
 	private Label caseFatalityRateValue;
@@ -146,7 +147,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		
 		layout.addComponent(createCaseFatalityComponent());
 		
-		layout.addComponent(this.createLastReportedCommunityComponent());
+		layout.addComponent(this.createLastReportedDistrictComponent());
 		
 		layout.addComponent(createOutbreakDistrictComponent());
 		
@@ -210,18 +211,18 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		return component;
 	}
 	
-	private Layout createLastReportedCommunityComponent() {
+	private Layout createLastReportedDistrictComponent() {
 		HorizontalLayout component = new HorizontalLayout();
 		component.setMargin(false);
 		component.setSpacing(false);
 
 		// value
-		lastReportedCommunityLabel = new Label("NONE");
-		CssStyles.style(lastReportedCommunityLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
-		component.addComponent(lastReportedCommunityLabel);
+		lastReportedDistrictLabel = new Label(I18nProperties.getString(Strings.none).toUpperCase());
+		CssStyles.style(lastReportedDistrictLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
+		component.addComponent(lastReportedDistrictLabel);
 		
 		// title
-		Label titleLabel = new Label(I18nProperties.getCaption("Last Reported " + I18nProperties.getCaption(Captions.community)));
+		Label titleLabel = new Label(I18nProperties.getCaption(I18nProperties.getCaption(Captions.dashboardLastReportedDistrict)));
 		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
 		component.addComponent(titleLabel);
 		
@@ -318,7 +319,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		
 		updateCaseComponent(disease);
 		updateCaseFatalityComponent(disease);
-		updateLastReportedCommunityComponent(disease);
+		updateLastReportedDistrictComponent(disease);
 		updateOutbreakDistrictComponent(disease);
 		updateEventComponent(disease);
 		updateTestResultComponent(disease);
@@ -386,9 +387,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		caseFatalityRateValue.setValue(fatalityRate + "%");
 	}
 
-	private void updateLastReportedCommunityComponent(Disease disease) {
-		String community = dashboardDataProvider.getLastReportedCommunity();
-		lastReportedCommunityLabel.setValue(DataHelper.isNullOrEmpty(community) ? "NONE" : community);
+	private void updateLastReportedDistrictComponent(Disease disease) {
+		String district = dashboardDataProvider.getLastReportedDistrict();
+		lastReportedDistrictLabel.setValue(DataHelper.isNullOrEmpty(district) ? I18nProperties.getString(Strings.none).toUpperCase() : district);
 	}
 
 	private void updateOutbreakDistrictComponent(Disease disease) {

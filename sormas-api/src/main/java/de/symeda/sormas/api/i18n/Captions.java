@@ -298,6 +298,8 @@ public interface Captions {
 	public static String dashboardHigh = "dashboardHigh";
 	public static String dashboardIndeterminate = "dashboardIndeterminate";
 	public static String dashboardInvestigated = "dashboardInvestigated";
+	public static String dashboardLastReport = "dashboardLastReport";
+	public static String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
 	public static String dashboardLastVisitGt48 = "dashboardLastVisitGt48";
 	public static String dashboardLastVisitLt24 = "dashboardLastVisitLt24";
 	public static String dashboardLastVisitLt48 = "dashboardLastVisitLt48";

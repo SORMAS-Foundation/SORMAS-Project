@@ -61,7 +61,7 @@ public class DashboardDataProvider {
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
 	private Long outbreakDistrictCount = 0L;
-	private String lastReportedCommunity = "";
+	private String lastReportedDistrict = "";
 	private List<DashboardEventDto> events = new ArrayList<>();
 	private List<DashboardEventDto> previousEvents = new ArrayList<>();
 	private Map<PathogenTestResultType, Long> testResultCountByResultType;
@@ -100,6 +100,7 @@ public class DashboardDataProvider {
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
 		setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+		setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, userUuid));
 		
 		caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
 		setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
@@ -121,12 +122,8 @@ public class DashboardDataProvider {
 		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
 				disease, previousFromDate, previousToDate, userUuid));
 		setTestResultCountByResultType(FacadeProvider.getPathogenTestFacade().getTestResultCountByResultType(region, district, disease, fromDate, toDate, userUuid));
-		
-		// Outbreaks
+	
 		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate), userUuid));
-		
-		// lastReportedCommunity
-		setLastReportedCommunity(FacadeProvider.getCaseFacade().getLastReportedCommunityName(caseCriteria, userUuid));
 	}
 	
 	public List<DashboardCaseDto> getCases() {
@@ -225,12 +222,12 @@ public class DashboardDataProvider {
 		this.outbreakDistrictCount = districtCount;
 	}	
 
-	public String getLastReportedCommunity () {
-		return this.lastReportedCommunity;
+	public String getLastReportedDistrict () {
+		return this.lastReportedDistrict;
 	}
 
-	public void setLastReportedCommunity (String community) {
-		this.lastReportedCommunity = community;
+	public void setLastReportedDistrict (String district) {
+		this.lastReportedDistrict = district;
 	}	
 
 	public RegionReferenceDto getRegion() {

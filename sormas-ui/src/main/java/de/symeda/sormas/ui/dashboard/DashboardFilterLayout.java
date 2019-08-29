@@ -78,6 +78,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private Button btnPeriodBefore;
 	private Button btnPeriodLastYear;
 	private Button activeComparisonButton;
+	
+	private Runnable dateFilterChangeCallback;
 
 	public DashboardFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
 		this.dashboardView = dashboardView;
@@ -406,6 +408,9 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		dashboardDataProvider.setFromDate(from);
 		dashboardDataProvider.setToDate(to);
 		updateComparisonDates();
+		if (dateFilterChangeCallback != null) {
+			dateFilterChangeCallback.run();
+		}
 	}
 
 	private void updateComparisonDates() {
@@ -435,6 +440,14 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		LAST_WEEK,
 		THIS_YEAR,
 		CUSTOM;
+	}
+
+	public Runnable getDateFilterChangeCallback() {
+		return dateFilterChangeCallback;
+	}
+
+	public void setDateFilterChangeCallback(Runnable dateFilterChangeCallback) {
+		this.dateFilterChangeCallback = dateFilterChangeCallback;
 	}
 
 }

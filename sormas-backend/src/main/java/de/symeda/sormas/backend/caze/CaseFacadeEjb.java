@@ -655,8 +655,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
 
-		if (filter != null)
+		if (filter != null) {
 			cq.where(filter);
+		}
 
 		cq.groupBy(caze.get(Case.DISEASE));
 		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
@@ -668,13 +669,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultMap;
 	}
 
-	public Map<Disease, Community> getLastReportedCommunityByDisease(CaseCriteria caseCriteria, String userUuid) {
+	public Map<Disease, District> getLastReportedDistrictByDisease(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
-		Join<Case, Community> communityJoin = caze.join(Case.COMMUNITY, JoinType.LEFT);
+		Join<Case, District> districtJoin = caze.join(Case.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
@@ -685,18 +686,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		Expression<Number> maxReportDate = cb.max(caze.get(Case.REPORT_DATE));
-		cq.multiselect(caze.get(Case.DISEASE), communityJoin, maxReportDate);
-		cq.groupBy(caze.get(Case.DISEASE), communityJoin);
+		cq.multiselect(caze.get(Case.DISEASE), districtJoin, maxReportDate);
+		cq.groupBy(caze.get(Case.DISEASE), districtJoin);
 		cq.orderBy(cb.desc(maxReportDate));
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<Disease, Community> resultMap = new HashMap<Disease, Community>();
+		Map<Disease, District> resultMap = new HashMap<Disease, District>();
 		for (Object[] e : results) {
 			Disease disease = (Disease) e[0];
 			if (!resultMap.containsKey(disease)) {
-				Community community = (Community) e[1];
-				resultMap.put(disease, community);
+				District district = (District) e[1];
+				resultMap.put(disease, district);
 			}
 		}
 
@@ -946,27 +947,26 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public String getLastReportedCommunityName(CaseCriteria caseCriteria, String userUuid) {
+	public String getLastReportedDistrictName(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
-		Join<Case, Community> community = caze.join(Case.COMMUNITY, JoinType.LEFT);
+		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
 		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
 
-		if (filter != null)
+		if (filter != null) {
 			cq.where(filter);
+		}
 
-		cq.select(community.get(Community.NAME));
+		cq.select(district.get(District.NAME));
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
 
-		TypedQuery<String> query = em.createQuery(cq);
-		query.setFirstResult(0);
-		query.setMaxResults(1);
+		TypedQuery<String> query = em.createQuery(cq).setMaxResults(1);
 		try {
 			return query.getSingleResult();
 		} catch (NoResultException e) {

@@ -392,6 +392,7 @@ public interface Strings {
 	public static String messageWrongFileType = "messageWrongFileType";
 	public static String mmhg = "mmhg";
 	public static String no = "no";
+	public static String none = "none";
 	public static String notAnswered = "notAnswered";
 	public static String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	public static String notificationCaseClassificationChangedSubject = "notificationCaseClassificationChangedSubject";

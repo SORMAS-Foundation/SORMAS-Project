@@ -82,7 +82,7 @@ public interface CaseFacade {
 	
 	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, String userUuid);
 	
-	String getLastReportedCommunityName(CaseCriteria caseCriteria, String userUuid);
+	String getLastReportedDistrictName(CaseCriteria caseCriteria, String userUuid);
 	
 	/**
 	 * @param fromDate optional

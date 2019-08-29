@@ -181,4 +181,8 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		diseaseTileViewLayout.refresh(isShowingAllDiseases ? 0 : 6);
 		diseaseDifferenceComponent.refresh(isShowingAllDiseases ? 0 : 10);
 	}
+	
+	public void updateDifferenceComponentSubHeader() {
+		diseaseDifferenceComponent.updateSubHeader();
+	}
 }

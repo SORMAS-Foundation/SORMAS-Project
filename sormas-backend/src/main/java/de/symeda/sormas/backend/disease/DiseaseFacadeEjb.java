@@ -39,7 +39,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseCon
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
 
 /**
  * Provides the application configuration settings
@@ -85,11 +85,11 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		//outbreaks
 		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to), userUuid);
 				
-		//last report community
-		Map<Disease, Community> lastReportedCommunities = caseFacade.getLastReportedCommunityByDisease(caseCriteria, userUuid);
+		//last report district
+		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, userUuid);
 		
 		//case fatalities
-		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(regionRef, districtRef, from, to);
+		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, userUuid);
 		
 		//previous cases
 		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);		
@@ -102,11 +102,11 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 			Long eventCount = events.getOrDefault(disease, 0L);
 			Long outbreakDistrictCount = outbreakDistrictsCount.getOrDefault(disease, 0L);
 			Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
-			Community lastReportedCommunity = lastReportedCommunities.getOrDefault(disease, null);
+			District lastReportedDistrict = lastReportedDistricts.getOrDefault(disease, null);
 			
-			String lastReportedCommunityName = lastReportedCommunity == null ? "" : lastReportedCommunity.getName();
+			String lastReportedDistrictName = lastReportedDistrict == null ? "" : lastReportedDistrict.getName();
 			
-			return new DiseaseBurdenDto(disease, caseCount, previousCaseCount, eventCount, outbreakDistrictCount, caseFatalityCount, lastReportedCommunityName);
+			return new DiseaseBurdenDto(disease, caseCount, previousCaseCount, eventCount, outbreakDistrictCount, caseFatalityCount, lastReportedDistrictName);
 			
 		}).collect(Collectors.toList());
 		

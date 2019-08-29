@@ -1000,7 +1000,7 @@ public final class DateHelper {
 		String endDateString = endDate != null ? formatLocalDate(endDate) : "?";
 		if (startDate == null && endDate == null) {
 			return "";
-		} else if (startDate != null && startDate.equals(endDate)) {
+		} else if (startDate != null && DateHelper.isSameDay(startDate, endDate)) {
 			return startDateString;
 		} else {
 			return startDateString + " - " + endDateString;
