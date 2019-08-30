@@ -317,7 +317,8 @@ public final class CssStyles {
 			return "background-disease-congenital-rubella";
 		case UNDEFINED:
 			return "background-disease-undefined";
-			
+		case HUMAN_RABIES:
+			return "background-disease-rabies";
 		default:
 			throw new IllegalArgumentException(disease.toString());
 		}
