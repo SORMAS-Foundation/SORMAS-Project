@@ -3569,3 +3569,10 @@ ALTER TABLE cases ADD COLUMN completeness real;
 ALTER TABLE cases_history ADD COLUMN completeness real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completeness value to case #1253');
+
+-- 2016-10-18; #982 additions to meningitis
+
+ALTER TABLE pathogentest ADD COLUMN serotype varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN serotype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (163, 'Additional fields for meningitis');

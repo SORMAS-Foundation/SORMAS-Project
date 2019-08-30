@@ -183,7 +183,7 @@ public class PathogenTest extends AbstractDomainObject {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 	
-	@Column(length=512)
+	@Column(length=255)
 	public String getSerotype() {
 		return serotype;
 	}
