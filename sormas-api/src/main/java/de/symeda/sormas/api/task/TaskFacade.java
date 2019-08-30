@@ -62,7 +62,7 @@ public interface TaskFacade {
 
 	long count(String userUuid, TaskCriteria criteria);
 	
-	List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	void sendNewAndDueTaskMessages();
 }

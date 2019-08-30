@@ -25,9 +25,11 @@ public interface Captions {
 	public static String actionDeselectAll = "actionDeselectAll";
 	public static String actionDiscard = "actionDiscard";
 	public static String actionDismiss = "actionDismiss";
+	public static String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	public static String actionGenerate = "actionGenerate";
 	public static String actionHide = "actionHide";
 	public static String actionImport = "actionImport";
+	public static String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	public static String actionLogout = "actionLogout";
 	public static String actionMerge = "actionMerge";
 	public static String actionNewEntry = "actionNewEntry";

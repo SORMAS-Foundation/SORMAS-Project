@@ -43,7 +43,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -56,7 +55,7 @@ public class TaskGridComponent extends VerticalLayout {
 	private TaskCriteria criteria;
 	
 	private TaskGrid grid;    
-	private AbstractView tasksView;
+	private TasksView tasksView;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
@@ -64,13 +63,15 @@ public class TaskGridComponent extends VerticalLayout {
 	private ComboBox statusFilter;
 	private Button resetButton;
 	
+	MenuBar bulkOperationsDropdown;
+	
 	private VerticalLayout gridLayout;
 
 	private Button switchArchivedActiveButton;
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
-	public TaskGridComponent(Label viewTitleLabel, AbstractView tasksView) {
+	public TaskGridComponent(Label viewTitleLabel, TasksView tasksView) {
 		setSizeFull();
 		setMargin(false);
 
@@ -80,8 +81,7 @@ public class TaskGridComponent extends VerticalLayout {
 		
 		criteria = ViewModelProviders.of(TasksView.class).get(TaskCriteria.class);
 		
-		grid = new TaskGrid();
-		grid.setCriteria(criteria);
+		grid = new TaskGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createAssigneeFilterBar());
@@ -170,18 +170,19 @@ public class TaskGridComponent extends VerticalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				MenuBar bulkOperationsDropdown = new MenuBar();	
+				bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getTaskController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
-							grid.reload();
+							tasksView.navigateTo(criteria);
 						}
 					});
 				};
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
-				
+				bulkOperationsDropdown.setVisible(tasksView.getViewConfiguration().isInEagerMode());
+
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 		}
@@ -280,6 +281,14 @@ public class TaskGridComponent extends VerticalLayout {
 
 	public TaskGrid getGrid() {
 		return grid;
+	}
+
+	public MenuBar getBulkOperationsDropdown() {
+		return bulkOperationsDropdown;
+	}
+	
+	public TaskCriteria getCriteria() {
+		return criteria;
 	}
 
 }

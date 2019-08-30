@@ -17,11 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import java.util.stream.Collectors;
-
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -31,7 +29,6 @@ import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
@@ -45,25 +42,20 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 	private static final String CASE_ID = Captions.EventParticipant_caseId;
 
 	@SuppressWarnings("unchecked")
-	public EventParticipantsGrid() {
+	public EventParticipantsGrid(EventParticipantCriteria criteria) {
 		super(EventParticipantIndexDto.class);
 		setSizeFull();
-		
+
+		setInEagerMode(true);
+		setCriteria(criteria);
+		ListDataProvider<EventParticipantIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);
         }
-		
-		DataProvider<EventParticipantIndexDto, EventParticipantCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getEventParticipantFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getEventParticipantFacade().count(query.getFilter().orElse(null));
-				});
-		setDataProvider(dataProvider);
 
 		Column<EventParticipantIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);

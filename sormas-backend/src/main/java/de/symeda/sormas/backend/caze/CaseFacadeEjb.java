@@ -334,7 +334,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, int first, int max,
+	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
@@ -355,7 +355,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 
 	@Override

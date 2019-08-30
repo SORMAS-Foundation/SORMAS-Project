@@ -19,22 +19,21 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.HashMap;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.v7.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -45,18 +44,17 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -71,7 +69,7 @@ public class SampleGridComponent extends VerticalLayout {
 	private SampleCriteria criteria;
 
 	private SampleGrid grid;
-	private AbstractView samplesView;
+	private SamplesView samplesView;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
@@ -85,6 +83,7 @@ public class SampleGridComponent extends VerticalLayout {
 	private ComboBox labFilter;
 	TextField searchField;
 	private Button resetButton;
+	MenuBar bulkOperationsDropdown;
 
 	private VerticalLayout gridLayout;
 
@@ -92,7 +91,7 @@ public class SampleGridComponent extends VerticalLayout {
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
-	public SampleGridComponent(Label viewTitleLabel, AbstractView samplesView) {
+	public SampleGridComponent(Label viewTitleLabel, SamplesView samplesView) {
 		setSizeFull();
 		setMargin(false);
 
@@ -105,8 +104,7 @@ public class SampleGridComponent extends VerticalLayout {
 			criteria.archived(false);
 		}
 
-		grid = new SampleGrid();
-		grid.setCriteria(criteria);
+		grid = new SampleGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createShipmentFilterBar());
@@ -287,18 +285,19 @@ public class SampleGridComponent extends VerticalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				MenuBar bulkOperationsDropdown = new MenuBar();	
+				bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
-							grid.reload();
+							samplesView.navigateTo(criteria);
 						}
 					});
 				};
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
-
+				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
+				
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 		}
@@ -418,4 +417,16 @@ public class SampleGridComponent extends VerticalLayout {
 		} 
 	}
 
+	public TextField getSearchField() {
+		return searchField;
+	}
+
+	public MenuBar getBulkOperationsDropdown() {
+		return bulkOperationsDropdown;
+	}
+	
+	public SampleCriteria getCriteria() {
+		return criteria;
+	}
+	
 }
