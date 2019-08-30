@@ -82,6 +82,8 @@ public interface Captions {
 	public static String caseBackToDirectory = "caseBackToDirectory";
 	public static String caseCalculateCompleteness = "caseCalculateCompleteness";
 	public static String caseCasesList = "caseCasesList";
+	public static String caseCaseTransfer = "caseCaseTransfer";
+	public static String caseCaseTransferOrDataCorrection = "caseCaseTransferOrDataCorrection";
 	public static String caseContacts = "caseContacts";
 	public static String caseCreateCase = "caseCreateCase";
 	public static String CaseData = "CaseData";
@@ -140,6 +142,7 @@ public interface Captions {
 	public static String CaseData_vaccinationDate = "CaseData.vaccinationDate";
 	public static String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	public static String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
+	public static String caseDataCorrection = "caseDataCorrection";
 	public static String CaseExport_address = "CaseExport.address";
 	public static String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";

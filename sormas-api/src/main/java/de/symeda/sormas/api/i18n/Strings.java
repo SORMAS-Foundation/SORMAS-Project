@@ -305,6 +305,7 @@ public interface Strings {
 	public static String messageCasesArchived = "messageCasesArchived";
 	public static String messageCaseSaved = "messageCaseSaved";
 	public static String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";
+	public static String messageCaseTransferOrDataCorrection = "messageCaseTransferOrDataCorrection";
 	public static String messageCasesDearchived = "messageCasesDearchived";
 	public static String messageCasesDeleted = "messageCasesDeleted";
 	public static String messageCasesEdited = "messageCasesEdited";
