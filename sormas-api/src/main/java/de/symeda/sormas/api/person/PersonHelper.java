@@ -28,13 +28,15 @@ import de.symeda.sormas.api.utils.DateHelper;
 
 public class PersonHelper {
 
+	public static final double NAME_SIMILARITY_THRESHOLD = 0.5D;
+	
 	/**
 	 * Calculates the trigram distance between both names and returns true
 	 * if the similarity is high enough to consider them a possible match.
 	 * Used a default of 0.6 for the threshold.
 	 */
 	public static boolean areNamesSimilar(String firstName, String secondName) {	
-		return StringMetrics.qGramsDistance().compare(firstName, secondName) >= 0.5D;
+		return StringMetrics.qGramsDistance().compare(firstName, secondName) >= NAME_SIMILARITY_THRESHOLD;
 	}
 	
 	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {

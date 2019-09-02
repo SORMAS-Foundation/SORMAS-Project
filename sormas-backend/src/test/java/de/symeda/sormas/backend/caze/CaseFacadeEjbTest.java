@@ -36,6 +36,7 @@ import org.junit.rules.ExpectedException;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -255,7 +256,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				rdcf.facility);
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, 0, 100);
+		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, ExportType.CASE_SURVEILLANCE, 0, 100);
 
 		// List should have one entry
 		assertEquals(1, results.size());

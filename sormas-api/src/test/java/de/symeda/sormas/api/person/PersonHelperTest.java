@@ -53,7 +53,7 @@ public class PersonHelperTest {
 		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 		
 		firstName = "Dan Van";
-		secondName = "Gan Zan";
+		secondName = "Gan Van";
 
 		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 	}
@@ -66,7 +66,7 @@ public class PersonHelperTest {
 		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
 		
 		firstName = "Jonathan Lee Sterling";
-		secondName = "Jonathan Lee Langston";
+		secondName = "John Lee Langston";
 
 		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
 		

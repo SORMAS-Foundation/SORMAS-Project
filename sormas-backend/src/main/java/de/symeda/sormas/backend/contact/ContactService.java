@@ -150,6 +150,17 @@ public class ContactService extends AbstractAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public int getContactCountByCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.get(Contact.CAZE), caze));
+
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
+	
 	public List<Contact> getAllByCase(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -331,13 +342,14 @@ public class ContactService extends AbstractAdoService<Contact> {
 					person.get(Person.LAST_NAME), casePerson.get(Person.FIRST_NAME), casePerson.get(Person.LAST_NAME));
 
 			result = em.createQuery(cq).getResultList();
-			for (MapContactDto mapContactDto : result) {
-				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(mapContactDto.getUuid()),
-						VisitStatus.COOPERATIVE);
-				if (lastVisit != null) {
-					mapContactDto.setLastVisitDateTime(lastVisit.getVisitDateTime());
-				}
-			}
+			// #1274 Temporarily disabled because it severely impacts the performance of the Dashboard
+//			for (MapContactDto mapContactDto : result) {
+//				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(mapContactDto.getUuid()),
+//						VisitStatus.COOPERATIVE);
+//				if (lastVisit != null) {
+//					mapContactDto.setLastVisitDateTime(lastVisit.getVisitDateTime());
+//				}
+//			}
 		} else {
 			result = Collections.emptyList();
 		}

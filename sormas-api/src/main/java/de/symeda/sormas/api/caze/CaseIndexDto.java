@@ -34,6 +34,7 @@ public class CaseIndexDto implements Serializable {
 
 	public static final String I18N_PREFIX = "CaseData";
 
+	public static final String ID = "id";
 	public static final String UUID = "uuid";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
@@ -55,7 +56,9 @@ public class CaseIndexDto implements Serializable {
 	public static final String OUTCOME = "outcome";
 	public static final String SEX = "sex";
 	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
+	public static final String COMPLETENESS = "completeness";
 
+	private long id;
 	private String uuid;
 	private String epidNumber;
 	private String personFirstName;
@@ -77,13 +80,15 @@ public class CaseIndexDto implements Serializable {
 	private CaseOutcome outcome;
 	private Sex sex;
 	private String ageAndBirthDate;
+	private Float completeness;
 
-	public CaseIndexDto(String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
+	public CaseIndexDto(long id, String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid, 
 			String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
-			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
+			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Float completeness) {
+		this.id = id;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.personFirstName = personFirstName;
@@ -104,8 +109,16 @@ public class CaseIndexDto implements Serializable {
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 		this.outcome = outcome;
 		this.ageAndBirthDate = PersonHelper.getAgeAndBirthdateString(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
+		this.sex = sex;
+		this.completeness = completeness;
 	}
 
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getEpidNumber() {
 		return epidNumber;
 	}
@@ -226,6 +239,12 @@ public class CaseIndexDto implements Serializable {
 	public void setAgeAndBirthDate(String ageAndBirthDate) {
 		this.ageAndBirthDate = ageAndBirthDate;
 	}
+	public Float getCompleteness() {
+		return completeness;
+	}
+	public void setCompleteness(Float completeness) {
+		this.completeness = completeness;
+	}
 
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), getPersonFirstName(), getPersonLastName());
@@ -235,7 +254,7 @@ public class CaseIndexDto implements Serializable {
 	public String toString() {
 		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
 	}
-
+	
 	public String getUuid() {
 		return uuid;
 	}

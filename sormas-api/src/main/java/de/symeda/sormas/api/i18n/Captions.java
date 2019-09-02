@@ -78,6 +78,7 @@ public interface Captions {
 	public static String bulkLostToFollowUp = "bulkLostToFollowUp";
 	public static String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	public static String caseBackToDirectory = "caseBackToDirectory";
+	public static String caseCalculateCompleteness = "caseCalculateCompleteness";
 	public static String caseCasesList = "caseCasesList";
 	public static String caseContacts = "caseContacts";
 	public static String caseCreateCase = "caseCreateCase";
@@ -93,6 +94,7 @@ public interface Captions {
 	public static String CaseData_clinicianEmail = "CaseData.clinicianEmail";
 	public static String CaseData_clinicianName = "CaseData.clinicianName";
 	public static String CaseData_clinicianPhone = "CaseData.clinicianPhone";
+	public static String CaseData_completeness = "CaseData.completeness";
 	public static String CaseData_contactOfficer = "CaseData.contactOfficer";
 	public static String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	public static String CaseData_diseaseDetails = "CaseData.diseaseDetails";
@@ -146,6 +148,9 @@ public interface Captions {
 	public static String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	public static String CaseExport_labResults = "CaseExport.labResults";
 	public static String CaseExport_maxSourceCaseClassifcation = "CaseExport.maxSourceCaseClassifcation";
+	public static String CaseExport_numberOfClinicalVisits = "CaseExport.numberOfClinicalVisits";
+	public static String CaseExport_numberOfPrescriptions = "CaseExport.numberOfPrescriptions";
+	public static String CaseExport_numberOfTreatments = "CaseExport.numberOfTreatments";
 	public static String CaseExport_sampleDates = "CaseExport.sampleDates";
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
@@ -191,6 +196,8 @@ public interface Captions {
 	public static String ClinicalVisit_visitDateTime = "ClinicalVisit.visitDateTime";
 	public static String ClinicalVisit_visitingPerson = "ClinicalVisit.visitingPerson";
 	public static String ClinicalVisit_visitRemarks = "ClinicalVisit.visitRemarks";
+	public static String ClinicalVisitExport_caseName = "ClinicalVisitExport.caseName";
+	public static String ClinicalVisitExport_caseUuid = "ClinicalVisitExport.caseUuid";
 	public static String clinicalVisitNewClinicalVisit = "clinicalVisitNewClinicalVisit";
 	public static String columnAdditionalTests = "columnAdditionalTests";
 	public static String columnDiseaseShort = "columnDiseaseShort";
@@ -263,6 +270,7 @@ public interface Captions {
 	public static String dashboardCompletedFollowUp = "dashboardCompletedFollowUp";
 	public static String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
 	public static String dashboardConfirmed = "dashboardConfirmed";
+	public static String dashboardConfirmedContact = "dashboardConfirmedContact";
 	public static String dashboardConvertedToCase = "dashboardConvertedToCase";
 	public static String dashboardCooperative = "dashboardCooperative";
 	public static String dashboardCustom = "dashboardCustom";
@@ -345,6 +353,7 @@ public interface Captions {
 	public static String dashboardTwoDays = "dashboardTwoDays";
 	public static String dashboardUnavailable = "dashboardUnavailable";
 	public static String dashboardUnconfirmed = "dashboardUnconfirmed";
+	public static String dashboardUnconfirmedContact = "dashboardUnconfirmedContact";
 	public static String dashboardUncooperative = "dashboardUncooperative";
 	public static String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
@@ -476,6 +485,7 @@ public interface Captions {
 	public static String eventShowArchived = "eventShowArchived";
 	public static String export = "export";
 	public static String exportBasic = "exportBasic";
+	public static String exportCaseManagement = "exportCaseManagement";
 	public static String exportDetailed = "exportDetailed";
 	public static String exportInfrastructureData = "exportInfrastructureData";
 	public static String exportSamples = "exportSamples";
@@ -685,6 +695,8 @@ public interface Captions {
 	public static String Prescription_route = "Prescription.route";
 	public static String Prescription_routeDetails = "Prescription.routeDetails";
 	public static String Prescription_typeOfDrug = "Prescription.typeOfDrug";
+	public static String PrescriptionExport_caseName = "PrescriptionExport.caseName";
+	public static String PrescriptionExport_caseUuid = "PrescriptionExport.caseUuid";
 	public static String prescriptionNewPrescription = "prescriptionNewPrescription";
 	public static String region = "region";
 	public static String Region_epidCode = "Region.epidCode";
@@ -1006,6 +1018,8 @@ public interface Captions {
 	public static String Treatment_treatmentType = "Treatment.treatmentType";
 	public static String Treatment_typeOfDrug = "Treatment.typeOfDrug";
 	public static String treatmentCreateTreatment = "treatmentCreateTreatment";
+	public static String TreatmentExport_caseName = "TreatmentExport.caseName";
+	public static String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	public static String treatmentNewTreatment = "treatmentNewTreatment";
 	public static String treatmentOpenPrescription = "treatmentOpenPrescription";
 	public static String unknown = "unknown";

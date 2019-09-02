@@ -51,6 +51,7 @@ import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.report.ReportActivity;
 import de.symeda.sormas.app.rest.ApiVersionException;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -166,18 +167,18 @@ public class TaskNotificationService extends Service {
                 content.append(task.getCreatorComment());
             }
 
-            Notification notification = new NotificationCompat.Builder(context)
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NotificationHelper.NOTIFICATION_CHANNEL_TASKS_ID)
                     .setTicker(r.getString(R.string.heading_task_notification))
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setContentTitle(task.getTaskType().toString() + (caze != null ? " (" + caze.getDisease().toShortString() + ")" : contact != null ? " (" + contact.getCaseDisease().toShortString() + ")" : ""))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
-                    .build();
+                    .setContentIntent(pi);
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             int notificationId = task.getId().intValue();
-            notificationManager.notify(notificationId, notification);
+            notificationManager.notify(notificationId, notificationBuilder.build());
 
             break; // @TODO implement notification grouping
         }
@@ -201,17 +202,18 @@ public class TaskNotificationService extends Service {
                     PendingIntent pi = PendingIntent.getActivity(context, notificationId, notificationIntent, 0);
 
                     String title = context.getResources().getString(R.string.action_submit_report);
-                    Notification notification = new NotificationCompat.Builder(context)
+
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NotificationHelper.NOTIFICATION_CHANNEL_TASKS_ID)
                             .setTicker(title)
                             .setSmallIcon(R.mipmap.ic_launcher_foreground)
                             .setContentTitle(title)
                             .setContentText(context.getResources().getString(R.string.hint_weekly_report_confirmation_required))
                             .setContentIntent(pi)
                             .setAutoCancel(true)
-                            .build();
+                            .setContentIntent(pi);
 
                     NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-                    notificationManager.notify(notificationId, notification);
+                    notificationManager.notify(notificationId, notificationBuilder.build());
                 }
             }
         }

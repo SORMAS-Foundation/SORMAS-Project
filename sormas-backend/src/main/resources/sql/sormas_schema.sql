@@ -3563,3 +3563,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (160, 'Add duplicate
 ALTER TABLE clinicalvisit_history DROP COLUMN person_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (161, 'Remove person_id from clinicalvisit_history table');
+
+-- 2019-08-15 Add completeness value to case #1253
+ALTER TABLE cases ADD COLUMN completeness real;
+ALTER TABLE cases_history ADD COLUMN completeness real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completeness value to case #1253');

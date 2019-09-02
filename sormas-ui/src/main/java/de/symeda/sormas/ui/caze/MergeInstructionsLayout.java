@@ -16,17 +16,25 @@ public class MergeInstructionsLayout extends VerticalLayout {
 		setMargin(true);
 		setSpacing(false);
 		
+		Label lblHeadingIntroduction = new Label(I18nProperties.getString(Strings.headingIntroduction));
+		CssStyles.style(lblHeadingIntroduction, CssStyles.H2);
+		addComponent(lblHeadingIntroduction);		
 		Label lblIntroduction = new Label(I18nProperties.getString(Strings.infoMergingExplanation));
 		CssStyles.style(lblIntroduction, CssStyles.VSPACE_4);
 		lblIntroduction.setContentMode(ContentMode.HTML);
 		lblIntroduction.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblIntroduction);
 		
+		Label lblHeadingHowTo = new Label(I18nProperties.getString(Strings.headingHowToMergeCases));
+		CssStyles.style(lblHeadingHowTo, CssStyles.H2);
+		addComponent(lblHeadingHowTo);
+		Label lblHowTo = new Label(I18nProperties.getString(Strings.infoHowToMergeCases));
+		addComponent(lblHowTo);
+		
 		Label lblHeadingMerge = new Label(I18nProperties.getCaption(Captions.actionMerge));
 		CssStyles.style(lblHeadingMerge, CssStyles.H3);
 		addComponent(lblHeadingMerge);
 		Label lblMergeDescription = new Label(I18nProperties.getString(Strings.infoMergingMergeDescription));
-		CssStyles.style(lblMergeDescription, CssStyles.VSPACE_4);
 		lblMergeDescription.setContentMode(ContentMode.HTML);
 		lblMergeDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblMergeDescription);
@@ -43,9 +51,22 @@ public class MergeInstructionsLayout extends VerticalLayout {
 		CssStyles.style(lblHeadingHide, CssStyles.H3);
 		addComponent(lblHeadingHide);
 		Label lblHideDescription = new Label(I18nProperties.getString(Strings.infoMergingHideDescription));
+		CssStyles.style(lblHideDescription, CssStyles.VSPACE_4);
 		lblHideDescription.setWidth(100, Unit.PERCENTAGE);
 		lblHideDescription.setContentMode(ContentMode.HTML);
 		addComponent(lblHideDescription);
+		
+		Label lblHeadingTermsDefinition = new Label(I18nProperties.getString(Strings.headingExplanationOfTerms));
+		CssStyles.style(lblHeadingTermsDefinition, CssStyles.H2);
+		addComponent(lblHeadingTermsDefinition);
+		
+		Label lblHeadingCompleteness = new Label(I18nProperties.getString(Strings.headingCompleteness));
+		CssStyles.style(lblHeadingCompleteness, CssStyles.H3, CssStyles.VSPACE_TOP_5);
+		addComponent(lblHeadingCompleteness);
+		Label lblCompletenessDescription = new Label(I18nProperties.getString(Strings.infoCaseCompleteness));
+		lblCompletenessDescription.setContentMode(ContentMode.HTML);
+		lblCompletenessDescription.setWidth(100, Unit.PERCENTAGE);
+		addComponent(lblCompletenessDescription);
 	}
 	
 }

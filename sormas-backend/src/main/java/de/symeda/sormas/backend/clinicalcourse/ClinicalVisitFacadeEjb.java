@@ -15,22 +15,29 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
+import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -54,6 +61,10 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
 	private ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private SymptomsService symptomsService;
 
 	//	private String countPositiveSymptomsQuery;
 	
@@ -203,6 +214,43 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		}
 		
 		return service.getAllActiveUuids(user);
+	}
+	
+	@Override
+	public List<ClinicalVisitExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ClinicalVisitExportDto> cq = cb.createQuery(ClinicalVisitExportDto.class);
+		Root<ClinicalVisit> clinicalVisit = cq.from(ClinicalVisit.class);
+		Join<ClinicalVisit, Symptoms> symptoms = clinicalVisit.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);
+		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = clinicalVisit.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
+		Join<ClinicalCourse, Case> caze = clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		
+		cq.multiselect(
+				caze.get(Case.UUID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				clinicalVisit.get(ClinicalVisit.DISEASE),
+				clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME),
+				clinicalVisit.get(ClinicalVisit.VISIT_REMARKS),
+				clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
+				symptoms.get(Symptoms.ID));
+		
+		User user = userService.getByUuid(userUuid);
+		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit, user);
+		Join<Case, Case> casePath = clinicalCourse.join(ClinicalCourse.CASE);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(criteria, cb, casePath);
+		filter = cb.and(filter, criteriaFilter);
+		cq.where(filter);
+		cq.orderBy(cb.desc(caze.get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));
+		
+		List<ClinicalVisitExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		
+		for (ClinicalVisitExportDto exportDto : resultList) {
+			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
+		}
+		
+		return resultList;
 	}
 	
 	public static ClinicalVisitDto toDto(ClinicalVisit source) {

@@ -29,6 +29,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.core.BoolResult;
 import de.symeda.sormas.app.core.FirebaseEvent;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -79,7 +80,7 @@ public class UserReportDialog extends AbstractDialog {
 
                             Bundle eventBundle = new Bundle();
                             eventBundle.putString(FirebaseAnalytics.Param.CONTENT, description);
-                            ((BaseActivity) getActivity()).getFirebaseAnalytics().logEvent(FirebaseEvent.USER_ERROR_REPORT, eventBundle);
+                            ((SormasApplication) getActivity().getApplication()).getFirebaseAnalytics().logEvent(FirebaseEvent.USER_ERROR_REPORT, eventBundle);
 
                             resultHolder.setResultStatus(new BoolResult(true,  getActivity().getResources().getString(R.string.message_report_sent)));
                         } catch (Exception ex) {

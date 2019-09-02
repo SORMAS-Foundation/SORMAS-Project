@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "760056161360",
+    "firebase_url": "https://fir-sormas.firebaseio.com",
+    "project_id": "firebase-sormas",
+    "storage_bucket": "firebase-sormas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760056161360:android:6fafcdbe8a96d8fd",
+        "android_client_info": {
+          "package_name": "de.symeda.sormas.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760056161360-35bvjna1alheasb8m6e1dkb2al2nqbea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANSALdHZnRqG9iLez51K9wzvQ-DvmpXDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760056161360-35bvjna1alheasb8m6e1dkb2al2nqbea.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760056161360:android:9a973478a96fa8e7",
+        "android_client_info": {
+          "package_name": "de.symeda.sormas.app.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760056161360-35bvjna1alheasb8m6e1dkb2al2nqbea.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANSALdHZnRqG9iLez51K9wzvQ-DvmpXDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760056161360-35bvjna1alheasb8m6e1dkb2al2nqbea.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

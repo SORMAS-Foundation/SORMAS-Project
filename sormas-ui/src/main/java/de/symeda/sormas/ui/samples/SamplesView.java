@@ -89,7 +89,7 @@ public class SamplesView extends AbstractView {
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
 			
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class,
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class, null,
 					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(UserProvider.getCurrent().getUuid(), sampleListComponent.getGrid().getCriteria(), start, max), 
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(SampleExportDto.I18N_PREFIX, propertyId,

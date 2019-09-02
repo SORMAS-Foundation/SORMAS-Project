@@ -24,10 +24,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
@@ -37,6 +39,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -44,14 +47,15 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -78,6 +82,10 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class CaseImporter extends DataImporter {
 
+	private String firstSampleColumnName;
+	private String firstPathogenTestColumnName;
+	private boolean currentEntityHasEntries;
+
 	public CaseImporter(File inputFile, UserReferenceDto currentUser, UI currentUI) throws IOException {
 		this(inputFile, null, currentUser, currentUI);
 	}
@@ -88,23 +96,60 @@ public class CaseImporter extends DataImporter {
 	}
 
 	@Override
-	protected void importDataFromCsvLine(String[] nextLine, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException {
+	protected void importDataFromCsvLine(String[] nextLine, List<String> entityHeaders, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (nextLine.length > headersLine.length) {
 			hasImportError = true;
 			writeImportError(nextLine, I18nProperties.getValidationError(Validations.importLineTooLong));
-			readNextLineFromCsv(headersLine, headers);
+			readNextLineFromCsv(entityHeaders, headersLine, headers);
 		}
 
 		final PersonDto newPersonTmp = PersonDto.build();
 		final CaseDataDto newCaseTmp = CaseDataDto.build(newPersonTmp.toReference(), null);
 		newCaseTmp.setReportingUser(currentUser);
 
-		boolean caseHasImportError = insertRowIntoData(nextLine, headers, false, new BiFunction<String, String[], Exception>() {
+		final List<SampleDto> samples = new ArrayList<>();
+		final List<PathogenTestDto> pathogenTests = new ArrayList<>();
+//		final Map<SampleDto, List<PathogenTestDto>> pathogenTests = new HashMap<>();
+
+		boolean caseHasImportError = insertRowIntoData(nextLine, entityHeaders, headers, false, new Function<ImportColumnInformation, Exception>() {
 			@Override
-			public Exception apply(String entry, String[] entryHeaderPath) {
+			public Exception apply(ImportColumnInformation importColumnInformation) {
 				try {
-					insertColumnEntryIntoData(newCaseTmp, newPersonTmp, entry, entryHeaderPath);
+					if (importColumnInformation.getEntityClass() == SampleDto.class) {
+						if (firstSampleColumnName == null) {
+							firstSampleColumnName = String.join(".", importColumnInformation.getEntryHeaderPath());
+						}
+						if (String.join(".", importColumnInformation.getEntryHeaderPath()).equals(firstSampleColumnName)) {
+							if (samples.size() > 0 && !currentEntityHasEntries) {
+								samples.remove(samples.size() - 1);
+							}
+							currentEntityHasEntries = false;
+							samples.add(SampleDto.buildSample(currentUser, new CaseReferenceDto(newCaseTmp.getUuid())));
+						}
+						if (!StringUtils.isEmpty(importColumnInformation.getEntry())) {
+							currentEntityHasEntries = true;
+							insertColumnEntryIntoSampleData(samples.get(samples.size() - 1), null, importColumnInformation.getEntry(), importColumnInformation.getEntryHeaderPath());
+						}
+					} else if (importColumnInformation.getEntityClass() == PathogenTestDto.class) {
+						if (firstPathogenTestColumnName == null) {
+							firstPathogenTestColumnName = String.join(".", importColumnInformation.getEntryHeaderPath());
+						}
+						SampleDto referenceSample = samples.get(samples.size() - 1);
+						if (String.join(".", importColumnInformation.getEntryHeaderPath()).equals(firstPathogenTestColumnName)) {
+							if (pathogenTests.size() > 0 && !currentEntityHasEntries) {
+								pathogenTests.remove(pathogenTests.size() - 1);
+							}
+							currentEntityHasEntries = false;
+							pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUser));
+						}
+						if (!StringUtils.isEmpty(importColumnInformation.getEntry())) {
+							currentEntityHasEntries = true;					
+							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), importColumnInformation.getEntry(), importColumnInformation.getEntryHeaderPath());
+						}
+					} else {
+						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, importColumnInformation.getEntry(), importColumnInformation.getEntryHeaderPath());
+					}
 				} catch (ImportErrorException | InvalidColumnException e) {
 					return e;
 				}
@@ -120,6 +165,12 @@ public class CaseImporter extends DataImporter {
 			try {
 				FacadeProvider.getPersonFacade().validate(newPerson);
 				FacadeProvider.getCaseFacade().validate(newCase);
+				for (SampleDto sample : samples) {
+					FacadeProvider.getSampleFacade().validate(sample);
+				}
+				for (PathogenTestDto pathogenTest : pathogenTests) {
+					FacadeProvider.getPathogenTestFacade().validate(pathogenTest);
+				}
 			} catch (ValidationRuntimeException e) {
 				hasImportError = true;
 				caseHasImportError = true;
@@ -131,7 +182,7 @@ public class CaseImporter extends DataImporter {
 			try {
 				CaseImportConsumer consumer = new CaseImportConsumer();
 				ImportSimilarityResultOption resultOption = null;
-				
+
 				CaseImportLock LOCK = new CaseImportLock();
 				synchronized (LOCK) {
 					CaseCriteria caseCriteria = new CaseCriteria()
@@ -160,20 +211,20 @@ public class CaseImporter extends DataImporter {
 							logger.error("InterruptedException when trying to perform LOCK.wait() in case import: " + e.getMessage());
 							throw e;
 						}
-						
+
 						if (consumer.result != null) {
 							resultOption = consumer.result.getResultOption();
 						}
-						
+
 						if (resultOption != null && resultOption != ImportSimilarityResultOption.SKIP && resultOption != ImportSimilarityResultOption.CANCEL && resultOption != ImportSimilarityResultOption.PICK) {
 							if (resultOption == ImportSimilarityResultOption.OVERRIDE && consumer.result.getMatchingCase() != null) {
 								final CaseDataDto matchingCaseTmp = FacadeProvider.getCaseFacade().getCaseDataByUuid(consumer.result.getMatchingCase().getUuid());
 								final PersonDto matchingCasePersonTmp = FacadeProvider.getPersonFacade().getPersonByUuid(matchingCaseTmp.getPerson().getUuid());
-								caseHasImportError = insertRowIntoData(nextLine, headers, true, new BiFunction<String, String[], Exception>() {
+								caseHasImportError = insertRowIntoData(nextLine, entityHeaders, headers, true, new Function<ImportColumnInformation, Exception>() {
 									@Override
-									public Exception apply(String entry, String[] entryHeaderPath) {
+									public Exception apply(ImportColumnInformation importColumnInformation) {
 										try {
-											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, entry, entryHeaderPath);
+											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, importColumnInformation.getEntry(), importColumnInformation.getEntryHeaderPath());
 										} catch (ImportErrorException | InvalidColumnException e) {
 											return e;
 										}
@@ -192,16 +243,16 @@ public class CaseImporter extends DataImporter {
 				if (caseHasImportError) {
 					// In case insertRowIntoCase when matching person/case has thrown an unexpected error
 					importedCallback.accept(ImportResult.ERROR);
-					readNextLineFromCsv(headersLine, headers);
+					readNextLineFromCsv(entityHeaders, headersLine, headers);
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.SKIP) {
 					// Reset the import result
 					consumer.result = null;
 					importedCallback.accept(ImportResult.SKIPPED);
-					readNextLineFromCsv(headersLine, headers);
+					readNextLineFromCsv(entityHeaders, headersLine, headers);
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.PICK) {
 					consumer.result = null;
 					importedCallback.accept(ImportResult.DUPLICATE);
-					readNextLineFromCsv(headersLine, headers);
+					readNextLineFromCsv(entityHeaders, headersLine, headers);
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.CANCEL) {
 					cancelAfterCurrent = true;
 					return;
@@ -209,24 +260,29 @@ public class CaseImporter extends DataImporter {
 					PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 					newCase.setPerson(savedPerson.toReference());
 					FacadeProvider.getCaseFacade().saveCase(newCase);
+					for (SampleDto sample : samples) {
+						FacadeProvider.getSampleFacade().saveSample(sample);
+					}
+					for (PathogenTestDto pathogenTest : pathogenTests) {
+						FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+					}
 					// Reset the import result
 					consumer.result = null;
 					importedCallback.accept(ImportResult.SUCCESS);
-					readNextLineFromCsv(headersLine, headers);
+					readNextLineFromCsv(entityHeaders, headersLine, headers);
 				}
 			} catch (ValidationRuntimeException e) {
 				hasImportError = true;
 				writeImportError(nextLine, e.getMessage());
 				importedCallback.accept(ImportResult.ERROR);
-				readNextLineFromCsv(headersLine, headers);
+				readNextLineFromCsv(entityHeaders, headersLine, headers);
 			}
 		} else {
 			importedCallback.accept(ImportResult.ERROR);
-			readNextLineFromCsv(headersLine, headers);
+			readNextLineFromCsv(entityHeaders, headersLine, headers);
 		}	
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void insertColumnEntryIntoData(CaseDataDto caze, PersonDto person, String entry, String[] entryHeaderPath) throws InvalidColumnException, ImportErrorException {
 		Object currentElement = caze;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
@@ -243,27 +299,8 @@ public class CaseImporter extends DataImporter {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
-					if (propertyType.isEnum()) {
-						pd.getWriteMethod().invoke(currentElement, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
-					} else if (propertyType.isAssignableFrom(Date.class)) {
-						pd.getWriteMethod().invoke(currentElement, DateHelper.parseDateWithException(entry));
-					} else if (propertyType.isAssignableFrom(Integer.class)) {
-						pd.getWriteMethod().invoke(currentElement, Integer.parseInt(entry));
-					} else if (propertyType.isAssignableFrom(Double.class)) {
-						pd.getWriteMethod().invoke(currentElement, Double.parseDouble(entry));
-					} else if (propertyType.isAssignableFrom(Float.class)) {
-						pd.getWriteMethod().invoke(currentElement, Float.parseFloat(entry));
-					} else if (propertyType.isAssignableFrom(Boolean.class)) {
-						pd.getWriteMethod().invoke(currentElement, Boolean.parseBoolean(entry));
-					} else if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-						List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry);
-						if (region.isEmpty()) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
-						} else if (region.size() > 1) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
-						} else {
-							pd.getWriteMethod().invoke(currentElement, region.get(0));
-						}
+					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, caze.getRegion());
 						if (district.isEmpty()) {
@@ -297,15 +334,59 @@ public class CaseImporter extends DataImporter {
 						} else {
 							pd.getWriteMethod().invoke(currentElement, facility.get(0));
 						}
-					} else if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
-						UserDto user = FacadeProvider.getUserFacade().getByUserName(entry);
-						if (user != null) {
-							pd.getWriteMethod().invoke(currentElement, user.toReference());
+					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
+						List<PointOfEntryReferenceDto> pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByName(entry, caze.getDistrict());
+						if (pointOfEntry.isEmpty()) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildHeaderPathString(entryHeaderPath)));
+						} else if (pointOfEntry.size() > 1) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importPointOfEntryNotUniqueInDistrict, entry, buildHeaderPathString(entryHeaderPath)));
 						} else {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
+							pd.getWriteMethod().invoke(currentElement, pointOfEntry.get(0));
 						}
-					} else if (propertyType.isAssignableFrom(String.class)) {
-						pd.getWriteMethod().invoke(currentElement, entry);
+					} else {
+						throw new UnsupportedOperationException (I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));
+					}
+				}
+			} catch (IntrospectionException e) {
+				throw new InvalidColumnException(buildHeaderPathString(entryHeaderPath));
+			} catch (InvocationTargetException | IllegalAccessException e) {
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, buildHeaderPathString(entryHeaderPath)));
+			} catch (IllegalArgumentException e) {
+				throw new ImportErrorException(entry, buildHeaderPathString(entryHeaderPath));
+			} catch (ParseException e) {
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, buildHeaderPathString(entryHeaderPath)));
+			} catch (ImportErrorException e) {
+				throw e;
+			} catch (Exception e) {
+				logger.error("Unexpected error when trying to import a case: " + e.getMessage());
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
+			}
+		}
+	}
+
+	private void insertColumnEntryIntoSampleData(SampleDto sample, PathogenTestDto test, String entry, String[] entryHeaderPath) throws InvalidColumnException, ImportErrorException {
+		Object currentElement = sample != null ? sample : test;
+		for (int i = 0; i < entryHeaderPath.length; i++) {
+			String headerPathElementName = entryHeaderPath[i];
+
+			try {
+				if (i != entryHeaderPath.length - 1) {
+					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
+				} else {
+					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
+					Class<?> propertyType = pd.getPropertyType();
+
+					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+						continue;
+					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
+						List<FacilityReferenceDto> lab = FacadeProvider.getFacilityFacade().getLaboratoriesByName(entry);
+						if (lab.isEmpty()) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
+						} else if (lab.size() > 1) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importLabNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, lab.get(0));
+						}
 					} else {
 						throw new UnsupportedOperationException (I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));
 					}
@@ -335,7 +416,7 @@ public class CaseImporter extends DataImporter {
 				pickOrImportField.setWidth(1024, Unit.PIXELS);
 
 				final CommitDiscardWrapperComponent<CasePickOrImportField> component = new CommitDiscardWrapperComponent<>(pickOrImportField);
-				
+
 				component.addCommitListener(new CommitListener() {
 					@Override
 					public void onCommit() {
@@ -361,6 +442,7 @@ public class CaseImporter extends DataImporter {
 				component.addDiscardListener(discardListener);
 				component.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+				component.getCommitButton().setEnabled(false);
 
 				Button skipButton = new Button(I18nProperties.getCaption(Captions.actionSkip));
 				skipButton.addClickListener(e -> {

@@ -32,11 +32,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -53,6 +51,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
@@ -67,6 +66,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -311,7 +311,25 @@ public class SampleFacadeEjb implements SampleFacade {
 		return resultList;	
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
+	public void validate(SampleDto sample) throws ValidationRuntimeException {
+		if (sample.getAssociatedCase() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCase));
+		}
+		if (sample.getSampleDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)));
+		}
+		if (sample.getReportDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORT_DATE_TIME)));
+		}
+		if (sample.getSampleMaterial() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
+		}
+		if (sample.getLab() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
+		}
+	}
+	
 	private List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
@@ -606,6 +624,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
+		
 		// Send an email to the lab user when a sample has been shipped to his lab
 		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
 			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());

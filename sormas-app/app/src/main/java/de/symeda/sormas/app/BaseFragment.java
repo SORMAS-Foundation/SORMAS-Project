@@ -60,7 +60,7 @@ public class BaseFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         SormasApplication application = (SormasApplication) getActivity().getApplication();
-        firebaseAnalytics = ((BaseActivity) getActivity()).getFirebaseAnalytics();
+        firebaseAnalytics = application.getFirebaseAnalytics();
     }
 
     @Override
