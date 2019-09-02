@@ -19,11 +19,13 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -157,6 +159,60 @@ public final class FieldHelper {
 //				}
 			}
 		});
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot,
+			final boolean clearOnHidden, Class fieldClass, Disease disease) {
+
+		Field sourceField = fieldGroup.getField(sourcePropertyId);
+		if (sourceField instanceof AbstractField<?>) {
+			((AbstractField) sourceField).setImmediate(true);
+		}
+
+		// initialize
+		{
+			boolean visible = sourceValues.contains(sourceField.getValue());
+			visible = visible != visibleWhenNot;
+			for (Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+//				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
+				targetField.setVisible(visible);
+				if (!visible && clearOnHidden && targetField.getValue() != null) {
+					targetField.clear();
+				}
+//				}
+			}
+		}
+
+		sourceField.addValueChangeListener(event -> {
+			boolean visible = sourceValues.contains(event.getProperty().getValue());
+			visible = visible != visibleWhenNot;
+			for (Object targetPropertyId : targetPropertyIds) {
+				Field targetField = fieldGroup.getField(targetPropertyId);
+//				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
+				targetField.setVisible(visible);
+				if (!visible && clearOnHidden && targetField.getValue() != null) {
+					targetField.clear();
+				}
+//				}
+			}
+		});
+	}
+	
+	private void ___ (Property.ValueChangeEvent event) {
+		boolean visible = sourceValues.contains(event.getProperty().getValue());
+		visible = visible != visibleWhenNot;
+		for (Object targetPropertyId : targetPropertyIds) {
+			Field targetField = fieldGroup.getField(targetPropertyId);
+//			if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
+			targetField.setVisible(visible);
+			if (!visible && clearOnHidden && targetField.getValue() != null) {
+				targetField.clear();
+			}
+//			}
+		}
 	}
 
 	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId, List<String> targetPropertyIds,
