@@ -31,6 +31,7 @@ import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -49,17 +50,17 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
     }
 
     @Override
-    protected Call<List<VisitDto>> pullAllSince(long since) {
+    protected Call<List<VisitDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getVisitFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<VisitDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<VisitDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getVisitFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<VisitDto> visitDtos) {
+    protected Call<List<PushResult>> pushAll(List<VisitDto> visitDtos) throws NoConnectionException {
         return RetroProvider.getVisitFacade().pushAll(visitDtos);
     }
 

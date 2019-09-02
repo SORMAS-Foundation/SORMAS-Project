@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.caze.CaseDataDto" />
+        <import type="de.symeda.sormas.api.person.PersonDto" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
+        <variable name="index" type="java.lang.Integer" />
+        <variable name="callback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+    <LinearLayout
+        android:tag="@string/tag_row_item_case_pick_or_create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+        android:paddingTop="@dimen/parentLayoutVerticalPadding"
+        android:paddingBottom="@dimen/parentLayoutVerticalPadding"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:orientation="vertical"
+        android:background="@drawable/selector_list_section_row_background"
+        android:elevation="2dp"
+        android:onClickListener="@{(view) -> callback.onClick(view, data)}">
+
+        <!--android:background="@drawable/selector_list_section_row_background"
+        android:background="@{data.isSelected? @drawable/selector_list_section_row_background_selected : @drawable/selector_list_section_row_background}"-->
+
+        <TextView
+            android:id="@+id/case_person_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
+            android:textSize="@dimen/listActivityRowPrimaryTextSize"
+            android:textColor="@color/listActivityRowPrimaryText"
+            android:fontFamily="sans-serif-medium"
+            android:scrollHorizontally="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:personValue="@{data.getPerson()}" />
+
+        <TextView
+            android:id="@+id/epid_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textSize="@dimen/row_entry_secondary_text_size"
+            android:textColor="@color/row_entry_secondary_text"
+            app:value="@{data.epidNumber}"
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER)}"
+            app:defaultValue='@{@string/value_not_available}' />
+
+        <TextView
+            android:id="@+id/report_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textSize="@dimen/row_entry_secondary_text_size"
+            android:textColor="@color/row_entry_secondary_text"
+            app:dateValue="@{data.reportDate}"
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE)}"
+            app:defaultValue='@{@string/value_not_available}' />
+
+        <TextView
+            android:id="@+id/health_facility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textSize="@dimen/row_entry_secondary_text_size"
+            android:textColor="@color/row_entry_secondary_text"
+            app:facilityValue="@{data.healthFacility}"
+            app:facilityDetailsValue="@{data.healthFacilityDetails}"
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY)}"
+            app:defaultValue='@{@string/value_not_available}' />
+
+        <TextView
+            android:id="@+id/case_classification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textSize="@dimen/row_entry_secondary_text_size"
+            android:textColor="@color/row_entry_secondary_text"
+            app:enumValue="@{data.caseClassification}"
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION)}"
+            app:defaultValue='@{@string/value_not_available}' />
+
+        <TextView
+            android:id="@+id/outcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textSize="@dimen/row_entry_secondary_text_size"
+            android:textColor="@color/row_entry_secondary_text"
+            app:enumValue="@{data.outcome}"
+            app:valueCaption="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME)}"
+            app:defaultValue='@{@string/value_not_available}' />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/person_sex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:textSize="@dimen/row_entry_secondary_text_size"
+                android:textColor="@color/row_entry_secondary_text"
+                app:enumValue="@{data.getPerson().getSex()}"
+                app:valueCaption="@{I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX)}"
+                app:defaultValue='@{@string/value_not_available}' />
+
+            <TextView
+                android:id="@+id/person_approximateAge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:textSize="@dimen/row_entry_secondary_text_size"
+                android:textColor="@color/row_entry_secondary_text"
+                app:ageDateValue="@{data.getPerson()}"
+                app:valueCaption="@{I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE)}"
+                app:defaultValue='@{@string/value_not_available}' />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</layout>

@@ -23,6 +23,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -152,21 +153,24 @@ public class EpiDataDto extends EntityDto {
 	private String placeOfLastExposure;
 	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
 	private AnimalCondition animalCondition;
-	
+
+	@ImportIgnore
 	public YesNoUnknown getBurialAttended() {
 		return burialAttended;
 	}
 	public void setBurialAttended(YesNoUnknown burialAttended) {
 		this.burialAttended = burialAttended;
 	}
-	
+
+	@ImportIgnore
 	public YesNoUnknown getGatheringAttended() {
 		return gatheringAttended;
 	}
 	public void setGatheringAttended(YesNoUnknown gatheringAttended) {
 		this.gatheringAttended = gatheringAttended;
 	}
-	
+
+	@ImportIgnore
 	public YesNoUnknown getTraveled() {
 		return traveled;
 	}
@@ -292,21 +296,24 @@ public class EpiDataDto extends EntityDto {
 	public void setFleaBite(YesNoUnknown fleaBite) {
 		this.fleaBite = fleaBite;
 	}
-	
+
+	@ImportIgnore
 	public List<EpiDataBurialDto> getBurials() {
 		return burials;
 	}
 	public void setBurials(List<EpiDataBurialDto> burials) {
 		this.burials = burials;
 	}
-	
+
+	@ImportIgnore
 	public List<EpiDataGatheringDto> getGatherings() {
 		return gatherings;
 	}
 	public void setGatherings(List<EpiDataGatheringDto> gatherings) {
 		this.gatherings = gatherings;
 	}
-	
+
+	@ImportIgnore
 	public List<EpiDataTravelDto> getTravels() {
 		return travels;
 	}

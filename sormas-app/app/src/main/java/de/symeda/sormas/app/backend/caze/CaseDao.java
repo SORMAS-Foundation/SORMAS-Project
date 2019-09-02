@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.app.backend.caze;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -28,23 +27,25 @@ import android.location.Location;
 import android.text.Html;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import androidx.core.app.NotificationCompat;
-
-import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -69,8 +70,8 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
-import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.therapy.Prescription;
@@ -80,7 +81,10 @@ import de.symeda.sormas.app.backend.therapy.TreatmentCriteria;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.LocationService;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class CaseDao extends AbstractAdoDao<Case> {
 
@@ -182,7 +186,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
         Case caze = super.build();
         caze.setPerson(person);
 
-        caze.setReportDate(new Date());
         User user = ConfigProvider.getUser();
         caze.setReportingUser(user);
 
@@ -407,18 +410,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
             PendingIntent pi = PendingIntent.getActivity(context, mergedCase.getId().intValue(), notificationIntent, 0);
             Resources r = context.getResources();
 
-            Notification notification = new NotificationCompat.Builder(context)
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NotificationHelper.NOTIFICATION_CHANNEL_CASE_CHANGES_ID)
                     .setTicker(r.getString(R.string.heading_case_disease_changed))
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setContentTitle(r.getString(R.string.heading_case_disease_changed))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
                     .setAutoCancel(true)
-                    .build();
+                    .setContentIntent(pi);
 
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             int notificationId = mergedCase.getId().intValue();
-            notificationManager.notify(notificationId, notification);
+            notificationManager.notify(notificationId, notificationBuilder.build());
         }
         return mergedCase;
     }
@@ -522,6 +525,32 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Delete case
         deleteCascade(caze);
+    }
+
+    public List<Case> getSimilarCases(CaseSimilarityCriteria criteria) {
+        try {
+            QueryBuilder<Case, Long> queryBuilder = queryBuilder();
+
+            Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+            where.and().eq(Case.DISEASE, criteria.getCaseCriteria().getDisease());
+            where.and().eq(Case.REGION + "_id", criteria.getCaseCriteria().getRegion());
+            where.and().between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
+
+            queryBuilder.setWhere(where);
+            List<Case> potentiallySimilarCases = queryBuilder.orderBy(Case.CREATION_DATE, false).query();
+            List<Case> similarCases = new ArrayList<>();
+
+            for (Case caze : potentiallySimilarCases) {
+                if (PersonHelper.areNamesSimilar(caze.getPerson().getFirstName() + " " + caze.getPerson().getLastName(), criteria.getFirstName() + " " + criteria.getLastName())) {
+                    similarCases.add(caze);
+                }
+            }
+
+            return similarCases;
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getSimilarCases on Case");
+            throw new RuntimeException(e);
+        }
     }
 
     public long countByCriteria(CaseCriteria criteria) {

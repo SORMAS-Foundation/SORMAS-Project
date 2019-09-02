@@ -28,6 +28,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -49,17 +50,17 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
     }
 
     @Override
-    protected Call<List<UserDto>> pullAllSince(long since) {
+    protected Call<List<UserDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getUserFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<UserDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<UserDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getUserFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<UserDto> userDtos) {
+    protected Call<List<PushResult>> pushAll(List<UserDto> userDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Can't change users in app");
     }
 

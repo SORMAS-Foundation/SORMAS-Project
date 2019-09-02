@@ -845,10 +845,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
                 // get the embedded entity
                 AbstractDomainObject embeddedAdo = (AbstractDomainObject) property.getReadMethod().invoke(ado);
-                AbstractAdoDao<? extends AbstractDomainObject> adoDao = DatabaseHelper.getAdoDao(embeddedAdo.getClass());
-                embeddedAdo = adoDao.queryForId(embeddedAdo.getId()); // refresh
-                // accept it
-                adoDao.acceptWithCast(embeddedAdo);
+                if (embeddedAdo != null) {
+                    AbstractAdoDao<? extends AbstractDomainObject> adoDao = DatabaseHelper.getAdoDao(embeddedAdo.getClass());
+                    embeddedAdo = adoDao.queryForId(embeddedAdo.getId()); // refresh
+                    // accept it
+                    adoDao.acceptWithCast(embeddedAdo);
+                }
             }
 
             ado.setModified(false);

@@ -101,7 +101,7 @@ public class TaskService extends AbstractAdoService<Task> {
 
 		return em.createQuery(cq).getResultList();
 	}
-
+	
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
@@ -188,7 +188,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = and(cb, filter, cb.notEqual(from.join(Task.ASSIGNEE_USER, JoinType.LEFT).get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Task.CAZE, JoinType.LEFT).get(User.UUID), taskCriteria.getCaze().getUuid()));
+			filter = and(cb, filter, cb.equal(from.join(Task.CAZE, JoinType.LEFT).get(Case.UUID), taskCriteria.getCaze().getUuid()));
 		}
 		if (taskCriteria.getContact() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Task.CONTACT, JoinType.LEFT).get(User.UUID), taskCriteria.getContact().getUuid()));

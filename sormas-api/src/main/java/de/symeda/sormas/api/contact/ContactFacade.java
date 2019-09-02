@@ -56,7 +56,7 @@ public interface ContactFacade {
 	
 	void deleteContact(ContactReferenceDto contactRef, String userUuid);
 
-	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, int first, int max,
+	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
 	List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef);

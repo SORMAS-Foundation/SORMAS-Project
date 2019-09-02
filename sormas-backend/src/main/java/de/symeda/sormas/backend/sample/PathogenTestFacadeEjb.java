@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
@@ -43,9 +44,11 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
@@ -186,10 +189,34 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@Override
 	public boolean hasPathogenTest(SampleReferenceDto sample) {
 		Sample sampleEntity = sampleService.getByReferenceDto(sample);
-		return pathogenTestService.hasPathogenTest(sampleEntity);
-		
+		return pathogenTestService.hasPathogenTest(sampleEntity);	
 	}
 
+	@Override
+	public void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException {
+		if (pathogenTest.getSample() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validSample));
+		}
+		if (pathogenTest.getTestType() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_TYPE)));
+		}
+		if (pathogenTest.getTestedDisease() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE)));
+		}
+		if (pathogenTest.getTestDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME)));
+		}
+		if (pathogenTest.getLab() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.LAB)));
+		}
+		if (pathogenTest.getTestResult() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT)));
+		}
+		if (pathogenTest.getTestResultVerified() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
+		}
+	}
+	
 	public PathogenTest fromDto(@NotNull PathogenTestDto source) {
 
 		PathogenTest target = pathogenTestService.getByUuid(source.getUuid());

@@ -20,7 +20,7 @@ package de.symeda.sormas.api.person;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.simmetrics.metrics.StringMetrics;
 
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -28,81 +28,15 @@ import de.symeda.sormas.api.utils.DateHelper;
 
 public class PersonHelper {
 
-	private final static double SIMILARITY_THRESHOLD = 0.65;
-	private final static double LOWER_THRESHOLD = 0.33;
-
+	public static final double NAME_SIMILARITY_THRESHOLD = 0.5D;
+	
 	/**
-	 * Calculates a modified Levenshtein distance between both names and returns true
+	 * Calculates the trigram distance between both names and returns true
 	 * if the similarity is high enough to consider them a possible match.
+	 * Used a default of 0.6 for the threshold.
 	 */
-	public static boolean areNamesSimilar(PersonNameDto firstPerson, String secondPersonFirstName, String secondPersonLastName) {
-		return areNamesSimilar(firstPerson.getFirstName() + " " + firstPerson.getLastName(), 
-				secondPersonFirstName + " " + secondPersonLastName);
-	}
-
-	/**
-	 * Calculates a modified Levenshtein distance between both names and returns true
-	 * if the similarity is high enough to consider them a possible match.
-	 */
-	public static boolean areNamesSimilar(String firstName, String secondName) {
-		firstName = firstName.toLowerCase();
-		secondName = secondName.toLowerCase();
-
-		// Split names at whitespaces and the symbols _ and -
-		String[] firstNameParts = StringUtils.split(firstName.trim(), " _-", 0);
-		String[] secondNameParts = StringUtils.split(secondName.trim(), " _-", 0);
-
-		if (firstNameParts.length <= secondNameParts.length) {
-			return getAverageSimilarity(firstNameParts, secondNameParts) >= SIMILARITY_THRESHOLD;
-		} else {
-			return getAverageSimilarity(secondNameParts, firstNameParts) >= SIMILARITY_THRESHOLD;
-		}
-	}
-
-	/**
-	 * Average similarity is calculated by comparing each element in the shorter name array with
-	 * each element in the longer name array. The highest achieved similarity is stored and
-	 * the element in the longer array with which this score was achieved is set to null to
-	 * make sure it can't be used again. After the comparison, the average of the achieved
-	 * scores is returned. If any part of the name deceeds the lower threshold, 0 is returned by
-	 * default.
-	 */
-	private static double getAverageSimilarity(String[] shorterArray, String[] longerArray) {
-		double[] similarityResults = new double[shorterArray.length];
-
-		for (int i = 0; i < shorterArray.length; i++) {
-			String str1 = shorterArray[i];
-			double highestValue = 0;
-			int entryPosition = -1;
-			for (int j = 0; j < longerArray.length; j++) {
-				if (longerArray[j] == null) {
-					continue;
-				}
-
-				String str2 = longerArray[j];
-				double levenshteinDistance = getSimilarity(str1, str2);				
-				if (levenshteinDistance > highestValue) {
-					highestValue = levenshteinDistance;
-					entryPosition = j;
-				}
-			}
-
-			if (highestValue < LOWER_THRESHOLD) {
-				return 0;
-			}
-
-			similarityResults[i] = highestValue;
-			if (entryPosition >= 0) {
-				longerArray[entryPosition] = null;
-			}
-		}
-
-		double totalDistance = 0;
-		for (double d : similarityResults) {
-			totalDistance += d;
-		}
-
-		return totalDistance / similarityResults.length;
+	public static boolean areNamesSimilar(String firstName, String secondName) {	
+		return StringMetrics.qGramsDistance().compare(firstName, secondName) >= NAME_SIMILARITY_THRESHOLD;
 	}
 	
 	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
@@ -121,21 +55,6 @@ public class PersonHelper {
 		String ageStr = ApproximateAgeHelper.formatApproximateAge(age, ageType);
 		String birthdateStr = formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY);
 		return !StringUtils.isEmpty(ageStr) ? (ageStr + (!StringUtils.isEmpty(birthdateStr) ? " (" + birthdateStr + ")" : "")) : !StringUtils.isEmpty(birthdateStr) ? birthdateStr : "";
-	}
-
-	private static double getSimilarity(String str1, String str2) {
-		if (str1 == null || str2 == null) {
-			return 0;
-		}
-
-		int len = Math.max(str1.length(), str2.length());
-		if (len == 0) {
-			return 0;
-		}
-
-		int levenshteinDistance = new LevenshteinDistance().apply(str1, str2);
-
-		return 1 - ((double) levenshteinDistance / (double) len);
 	}
 	
 	public static String buildBurialInfoString(Date burialDate, BurialConductor burialConductor, String burialPlaceDescription) {

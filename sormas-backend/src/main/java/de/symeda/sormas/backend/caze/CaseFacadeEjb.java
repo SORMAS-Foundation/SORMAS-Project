@@ -59,6 +59,8 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.ExportType;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -70,6 +72,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -123,9 +126,13 @@ import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -184,9 +191,11 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLoca
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
+import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
+import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -285,6 +294,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private PortHealthInfoFacadeEjbLocal portHealthInfoFacade;
+	@EJB
+	private HealthConditionsService healthConditionsService;
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 
@@ -323,7 +334,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, int first, int max,
+	public List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
@@ -343,12 +354,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
-		return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 
 	@Override
-	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max) {
+	public List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, ExportType exportType, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseExportDto> cq = cb.createQuery(CaseExportDto.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -356,6 +371,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Hospitalization> hospitalization = caze.join(Case.HOSPITALIZATION, JoinType.LEFT);
 		Join<Case, EpiData> epiData = caze.join(Case.EPI_DATA, JoinType.LEFT);
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		Join<Case, ClinicalCourse> clinicalCourse = caze.join(Case.CLINICAL_COURSE, JoinType.LEFT);
+		Join<ClinicalCourse, HealthConditions> healthConditions = clinicalCourse.join(ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT);
 		Join<Case, Region> region = caze.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Community> community = caze.join(Case.COMMUNITY, JoinType.LEFT);
@@ -363,8 +380,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Person, Facility> occupationFacility = person.join(Person.OCCUPATION_FACILITY, JoinType.LEFT);
 
 		cq.multiselect(caze.get(Case.ID), person.get(Person.ID), epiData.get(EpiData.ID), symptoms.get(Symptoms.ID),
-				hospitalization.get(Hospitalization.ID), district.get(District.ID), caze.get(Case.UUID),
-				caze.get(Case.EPID_NUMBER), caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS),
+				hospitalization.get(Hospitalization.ID), district.get(District.ID), healthConditions.get(HealthConditions.ID), 
+				caze.get(Case.UUID), caze.get(Case.EPID_NUMBER), caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS),
 				person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME), person.get(Person.SEX),
 				person.get(Person.APPROXIMATE_AGE), person.get(Person.APPROXIMATE_AGE_TYPE),
 				person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY),
@@ -407,11 +424,36 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (CaseExportDto exportDto : resultList) {
 			// TODO: Speed up this code, e.g. by persisting symptoms, lab results, etc. as a
 			// String in the database
-			List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
-			exportDto.setSampleTaken(
-					(sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
-			exportDto.setSampleDates(sampleDates);
-			exportDto.setLabResults(pathogenTestService.getPathogenTestResultsForCase(exportDto.getId()));
+			if (exportType == ExportType.CASE_SURVEILLANCE) {
+				List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
+				exportDto.setSampleTaken(
+						(sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
+				exportDto.setSampleDates(sampleDates);
+				exportDto.setLabResults(pathogenTestService.getPathogenTestResultsForCase(exportDto.getId()));
+
+				// Build travel history - done here to avoid transforming EpiDataTravel to
+				// EpiDataTravelDto
+				List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
+				StringBuilder travelHistoryBuilder = new StringBuilder();
+				for (int i = 0; i < travels.size(); i++) {
+					EpiDataTravel travel = travels.get(i);
+					if (i > 0) {
+						travelHistoryBuilder.append(", ");
+					}
+					travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(travel.getTravelType(),
+							travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo()));
+				}
+				if (travelHistoryBuilder.length() == 0 && exportDto.getTraveled() != null) {
+					travelHistoryBuilder.append(exportDto.getTraveled());
+				}
+				exportDto.setTravelHistory(travelHistoryBuilder.toString());
+			} else if (exportType == ExportType.CASE_MANAGEMENT) {
+				exportDto.setNumberOfPrescriptions(prescriptionService.getPrescriptionCountByCase(exportDto.getId()));
+				exportDto.setNumberOfTreatments(treatmentService.getTreatmentCountByCase(exportDto.getId()));
+				exportDto.setNumberOfClinicalVisits(clinicalVisitService.getClinicalVisitCountByCase(exportDto.getId()));
+				exportDto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(healthConditionsService.getById(exportDto.getHealthConditionsId())));
+			}
+
 			// exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
 			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
 			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
@@ -419,23 +461,6 @@ public class CaseFacadeEjb implements CaseFacade {
 					.getSourceCaseClassifications(exportDto.getId());
 			exportDto.setMaxSourceCaseClassifcation(sourceCaseClassifications.stream()
 					.filter(c -> c != CaseClassification.NO_CASE).max(Comparator.naturalOrder()).orElse(null));
-
-			// Build travel history - done here to avoid transforming EpiDataTravel to
-			// EpiDataTravelDto
-			List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
-			StringBuilder travelHistoryBuilder = new StringBuilder();
-			for (int i = 0; i < travels.size(); i++) {
-				EpiDataTravel travel = travels.get(i);
-				if (i > 0) {
-					travelHistoryBuilder.append(", ");
-				}
-				travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(travel.getTravelType(),
-						travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo()));
-			}
-			if (travelHistoryBuilder.length() == 0 && exportDto.getTraveled() != null) {
-				travelHistoryBuilder.append(exportDto.getTraveled());
-			}
-			exportDto.setTravelHistory(travelHistoryBuilder.toString());
 
 			// Place of initial detection
 			PreviousHospitalization firstPrevHosp = previousHospitalizationService
@@ -634,8 +659,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
 
-		if (filter != null)
+		if (filter != null) {
 			cq.where(filter);
+		}
 
 		cq.groupBy(caze.get(Case.DISEASE));
 		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
@@ -647,13 +673,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		return resultMap;
 	}
 
-	public Map<Disease, Community> getLastReportedCommunityByDisease(CaseCriteria caseCriteria, String userUuid) {
+	public Map<Disease, District> getLastReportedDistrictByDisease(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
-		Join<Case, Community> communityJoin = caze.join(Case.COMMUNITY, JoinType.LEFT);
+		Join<Case, District> districtJoin = caze.join(Case.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
@@ -664,18 +690,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		Expression<Number> maxReportDate = cb.max(caze.get(Case.REPORT_DATE));
-		cq.multiselect(caze.get(Case.DISEASE), communityJoin, maxReportDate);
-		cq.groupBy(caze.get(Case.DISEASE), communityJoin);
+		cq.multiselect(caze.get(Case.DISEASE), districtJoin, maxReportDate);
+		cq.groupBy(caze.get(Case.DISEASE), districtJoin);
 		cq.orderBy(cb.desc(maxReportDate));
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<Disease, Community> resultMap = new HashMap<Disease, Community>();
+		Map<Disease, District> resultMap = new HashMap<Disease, District>();
 		for (Object[] e : results) {
 			Disease disease = (Disease) e[0];
 			if (!resultMap.containsKey(disease)) {
-				Community community = (Community) e[1];
-				resultMap.put(disease, community);
+				District district = (District) e[1];
+				resultMap.put(disease, district);
 			}
 		}
 
@@ -683,9 +709,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getSimilarCases(CaseCriteria criteria, String userUuid) {
+	public List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+		CaseCriteria caseCriteria = criteria.getCaseCriteria();
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
 		Root<Case> root = cq.from(Case.class);
@@ -693,17 +720,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
 
 		selectIndexDtoFields(cq, root);
-		
+
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root, user);
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, cb.parameter(String.class, "name"), nameSimilarityExpr), 0.6D);
-		Predicate diseaseFilter = criteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), criteria.getDisease()) : null;
-		Predicate regionFilter = criteria.getRegion() != null ? cb.equal(region.get(Region.UUID), criteria.getRegion().getUuid()) : null;
+		Predicate nameSimilarityFilter = cb.gt(cb.function("similarity", double.class, cb.parameter(String.class, "name"), nameSimilarityExpr), FacadeProvider.getConfigFacade().getNameSimilarityThreshold());
+		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
+		Predicate regionFilter = caseCriteria.getRegion() != null ? cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()) : null;
 		Predicate reportDateFilter = criteria.getReportDate() != null ? cb.between(root.get(Case.REPORT_DATE), DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30)) : null;
 
 		Predicate filter = userFilter;
-		
+
 		if (filter != null) {
 			filter = cb.and(userFilter, nameSimilarityFilter);
 		} else {
@@ -718,16 +745,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (reportDateFilter != null) {
 			filter = cb.and(filter, reportDateFilter);
 		}
-		
+
 		cq.where(filter);
 
 		return em.createQuery(cq).setParameter("name", criteria.getFirstName() + " " + criteria.getLastName()).getResultList();
 	}
-	
+
 	@Override
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
@@ -743,7 +770,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(cb.function("word_similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), 0.6D);
+		Predicate nameSimilarityFilter = cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), FacadeProvider.getConfigFacade().getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
 		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
@@ -751,12 +778,12 @@ public class CaseFacadeEjb implements CaseFacade {
 						cb.diff(
 								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
 								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
-				new Long(2592000) // 30 days in seconds
+				new Long(30 * 24 * 60 * 60) // 30 days
 				);
 		Predicate creationDateFilter = cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
-					
+
 		Predicate filter = userFilter;
-		
+
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -771,33 +798,70 @@ public class CaseFacadeEjb implements CaseFacade {
 		filter = cb.and(filter, regionFilter);
 		filter = cb.and(filter, reportDateFilter);
 		filter = cb.and(filter, creationDateFilter);
-		
+
 		cq.where(filter);
 		cq.multiselect(
-				root.get(Case.UUID),
-				root2.get(Case.UUID));
+				root.get(Case.ID),
+				root2.get(Case.ID));
 		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
-		
-		List<Object[]> foundUuids = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
-		
+
+		List<Object[]> foundIds = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
 		List<CaseIndexDto[]> resultList = new ArrayList<>();
-		for (Object[] uuidPair : foundUuids) {
-			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
-			Root<Case> indexRoot = indexCq.from(Case.class);
-			CaseIndexDto[] dtoPair = new CaseIndexDto[2];
-			indexCq.where(cb.equal(indexRoot.get(Case.UUID), uuidPair[0]));
-			selectIndexDtoFields(indexCq, indexRoot);
-			CaseIndexDto firstCase = em.createQuery(indexCq).getSingleResult();
-			dtoPair[0] = firstCase;
-			indexCq.where(cb.equal(indexRoot.get(Case.UUID), uuidPair[1]));
-			CaseIndexDto secondCase = em.createQuery(indexCq).getSingleResult();
-			dtoPair[1] = secondCase;
-			resultList.add(dtoPair);
+
+		if (!foundIds.isEmpty()) {
+			//			List<Object> parentIds = foundIds.stream().map(ids -> ids[0]).collect(Collectors.toList());
+			//			List<Object> childrenIds = foundIds.stream().map(ids -> ids[1]).collect(Collectors.toList());
+			//			List<CaseIndexDto> parentList = new ArrayList<>();
+			//			List<CaseIndexDto> childrenList = new ArrayList<>();
+			//
+			//			CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
+			//			Root<Case> indexRoot = indexCq.from(Case.class);
+			//			selectIndexDtoFields(indexCq, indexRoot);
+			//			indexCq.where(indexRoot.get(Case.ID).in(parentIds));
+			//			parentList = em.createQuery(indexCq).getResultList();
+			//			indexCq.where(indexRoot.get(Case.ID).in(childrenIds));
+			//			childrenList = em.createQuery(indexCq).getResultList();
+			//
+			//			for (Object[] idPair : foundIds) {
+			//				CaseIndexDto parent = parentList.stream().filter(c -> c.getId() == (long) idPair[0]).findFirst().get();
+			//				CaseIndexDto child = childrenList.stream().filter(c -> c.getId() == (long) idPair[1]).findFirst().get();
+			//				
+			//				if (parent.getCompleteness() == null && child.getCompleteness() == null
+			//						|| parent.getCompleteness() != null && (child.getCompleteness() == null 
+			//						|| (parent.getCompleteness() >= child.getCompleteness()))) {
+			//					resultList.add(new CaseIndexDto[] {parent, child});
+			//				} else {
+			//					resultList.add(new CaseIndexDto[] {child, parent});
+			//				}
+			//			}
+			for (Object[] idPair : foundIds) {
+				CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
+				Root<Case> indexRoot = indexCq.from(Case.class);
+				selectIndexDtoFields(indexCq, indexRoot);
+				indexCq.where(cb.equal(indexRoot.get(Case.ID), idPair[0]));
+				CaseIndexDto parent = em.createQuery(indexCq).setMaxResults(1).getSingleResult();
+				indexCq.where(cb.equal(indexRoot.get(Case.ID), idPair[1]));
+				CaseIndexDto child = em.createQuery(indexCq).setMaxResults(1).getSingleResult();
+
+				if (parent.getCompleteness() == null && child.getCompleteness() == null
+						|| parent.getCompleteness() != null && (child.getCompleteness() == null 
+						|| (parent.getCompleteness() >= child.getCompleteness()))) {
+					resultList.add(new CaseIndexDto[] {parent, child});
+				} else {
+					resultList.add(new CaseIndexDto[] {child, parent});
+				}
+			}
 		}
-	
+
 		return resultList;
 	}
-	
+
+	public void updateCompleteness(String caseUuid) {
+		Case caze = caseService.getByUuid(caseUuid);
+		caze.setCompleteness(calculateCompleteness(caze));
+		caseService.ensurePersisted(caze);
+	}
+
 	private void selectIndexDtoFields(CriteriaQuery<CaseIndexDto> cq, Root<Case> root) {
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
@@ -806,7 +870,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, PointOfEntry> pointOfEntry = root.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = root.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
-		cq.multiselect(root.get(Case.UUID), root.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME),
+		cq.multiselect(root.get(AbstractDomainObject.ID), root.get(Case.UUID), root.get(Case.EPID_NUMBER), person.get(Person.FIRST_NAME),
 				person.get(Person.LAST_NAME), root.get(Case.DISEASE), root.get(Case.DISEASE_DETAILS),
 				root.get(Case.CASE_CLASSIFICATION), root.get(Case.INVESTIGATION_STATUS),
 				person.get(Person.PRESENT_CONDITION), root.get(Case.REPORT_DATE),
@@ -816,9 +880,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				pointOfEntry.get(PointOfEntry.NAME), root.get(Case.POINT_OF_ENTRY_DETAILS),
 				surveillanceOfficer.get(User.UUID), root.get(Case.OUTCOME),
 				person.get(Person.APPROXIMATE_AGE), person.get(Person.APPROXIMATE_AGE_TYPE),
-				person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY));
+				person.get(Person.BIRTHDATE_DD), person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY),
+				person.get(Person.SEX), root.get(Case.COMPLETENESS));
 	}
-	
+
 	private void setIndexDtoSortingOrder(CriteriaBuilder cb, CriteriaQuery<CaseIndexDto> cq, Root<Case> root, List<SortProperty> sortProperties) {
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
@@ -826,12 +891,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Facility> facility = root.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, PointOfEntry> pointOfEntry = root.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = root.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
-		
+
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case CaseIndexDto.ID:
 				case CaseIndexDto.UUID:
 				case CaseIndexDto.EPID_NUMBER:
 				case CaseIndexDto.DISEASE:
@@ -841,6 +907,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				case CaseIndexDto.REPORT_DATE:
 				case CaseIndexDto.CREATION_DATE:
 				case CaseIndexDto.OUTCOME:
+				case CaseIndexDto.COMPLETENESS:
 					expression = root.get(sortProperty.propertyName);
 					break;
 				case CaseIndexDto.PERSON_FIRST_NAME:
@@ -884,27 +951,26 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public String getLastReportedCommunityName(CaseCriteria caseCriteria, String userUuid) {
+	public String getLastReportedDistrictName(CaseCriteria caseCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
-		Join<Case, Community> community = caze.join(Case.COMMUNITY, JoinType.LEFT);
+		Join<Case, District> district = caze.join(Case.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
 		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
 
-		if (filter != null)
+		if (filter != null) {
 			cq.where(filter);
+		}
 
-		cq.select(community.get(Community.NAME));
+		cq.select(district.get(District.NAME));
 		cq.orderBy(cb.desc(caze.get(Case.REPORT_DATE)));
 
-		TypedQuery<String> query = em.createQuery(cq);
-		query.setFirstResult(0);
-		query.setMaxResults(1);
+		TypedQuery<String> query = em.createQuery(cq).setMaxResults(1);
 		try {
 			return query.getSingleResult();
 		} catch (NoResultException e) {
@@ -954,8 +1020,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
-		if (caze.getCaseOrigin() == CaseOrigin.IN_COUNTRY && caze.getHealthFacility() == null) {
+		if ((caze.getCaseOrigin() == null || caze.getCaseOrigin() == CaseOrigin.IN_COUNTRY) && caze.getHealthFacility() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacility));
+		}
+		if (CaseOrigin.POINT_OF_ENTRY.equals(caze.getCaseOrigin()) && caze.getPointOfEntry() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
 		}
 		if (caze.getDisease() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
@@ -972,14 +1041,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (caze.getCommunity() == null
 					&& facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict() != null
 					&& !facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict()
-							.equals(caze.getDistrict())) {
+					.equals(caze.getDistrict())) {
 				throw new ValidationRuntimeException(
 						I18nProperties.getValidationError(Validations.noFacilityInDistrict));
 			}
 			if (caze.getCommunity() != null
 					&& facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity() != null
 					&& !caze.getCommunity()
-							.equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity())) {
+					.equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity())) {
 				throw new ValidationRuntimeException(
 						I18nProperties.getValidationError(Validations.noFacilityInCommunity));
 			}
@@ -1102,6 +1171,23 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
+		// Set Yes/No/Unknown fields associated with embedded lists to Yes if the lists are not empty
+		if (!newCase.getHospitalization().getPreviousHospitalizations().isEmpty() && YesNoUnknown.YES != newCase.getHospitalization().getHospitalizedPreviously()) {
+			newCase.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
+		}
+		if (!newCase.getEpiData().getBurials().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getBurialAttended()) {
+			newCase.getEpiData().setBurialAttended(YesNoUnknown.YES);
+		}
+		if (!newCase.getEpiData().getTravels().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getTraveled()) {
+			newCase.getEpiData().setTraveled(YesNoUnknown.YES);
+		}
+		if (!newCase.getEpiData().getGatherings().isEmpty() && YesNoUnknown.YES != newCase.getEpiData().getGatheringAttended()) {
+			newCase.getEpiData().setGatheringAttended(YesNoUnknown.YES);
+		}
+
+		// Update completeness value
+		newCase.setCompleteness(calculateCompleteness(newCase));
+
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
@@ -1120,7 +1206,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					logger.error(String.format(
 							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
 									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
+									recipient.getUuid()));
 				}
 			}
 		}
@@ -1143,11 +1229,44 @@ public class CaseFacadeEjb implements CaseFacade {
 					logger.error(String.format(
 							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease. "
 									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
+									recipient.getUuid()));
 				}
 			}
 		}
+	}
 
+	private float calculateCompleteness(Case caze) {
+		float completeness = 0f;
+
+		if (InvestigationStatus.DONE.equals(caze.getInvestigationStatus())) {
+			completeness += 0.2f;
+		}
+		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
+			completeness += 0.2f;
+		}
+		if (sampleService.getSampleCountByCase(caze) > 0) {
+			completeness += 0.15f;
+		}
+		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
+			completeness += 0.15f;
+		}
+		if (contactService.getContactCountByCase(caze) > 0) {
+			completeness += 0.10f;
+		}
+		if (!CaseOutcome.NO_OUTCOME.equals(caze.getOutcome())) {
+			completeness += 0.05f;
+		}
+		if (caze.getPerson().getBirthdateYYYY() != null || caze.getPerson().getApproximateAge() != null) {
+			completeness += 0.05f;
+		}
+		if (caze.getPerson().getSex() != null) {
+			completeness += 0.05f;
+		}
+		if (caze.getSymptoms().getOnsetDate() != null) {
+			completeness += 0.05f;
+		}
+
+		return completeness;
 	}
 
 	@Override
@@ -1179,7 +1298,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			// increase it by 1
 			String suffixString = highestEpidNumber.substring(highestEpidNumber.lastIndexOf('-'));
 			// Remove all non-digits from the suffix to ignore earlier input errors
-			suffixString = suffixString.replaceAll("[^\\d.]", "");
+			suffixString = suffixString.replaceAll("[^\\d]", "");
 			if (suffixString.isEmpty()) {
 				// If the suffix is empty now, that means there is not yet an epid number with a
 				// suffix containing numbers
@@ -1309,19 +1428,29 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getTherapy() != null) {
 			TherapyReferenceDto therapy = new TherapyReferenceDto(caze.getTherapy().getUuid());
 			treatmentService.findBy(new TreatmentCriteria().therapy(therapy)).stream()
-					.forEach(t -> treatmentService.delete(t));
+			.forEach(t -> treatmentService.delete(t));
 			prescriptionService.findBy(new PrescriptionCriteria().therapy(therapy)).stream()
-					.forEach(p -> prescriptionService.delete(p));
+			.forEach(p -> prescriptionService.delete(p));
 		}
 		if (caze.getClinicalCourse() != null) {
 			ClinicalCourseReferenceDto clinicalCourse = new ClinicalCourseReferenceDto(
 					caze.getClinicalCourse().getUuid());
 			clinicalVisitService.findBy(new ClinicalVisitCriteria().clinicalCourse(clinicalCourse)).stream()
-					.forEach(c -> clinicalVisitService.delete(c));
+			.forEach(c -> clinicalVisitService.delete(c));
 		}
 
 		// Delete the case
 		caseService.delete(caze);
+	}
+
+	@Override
+	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid) {
+		Case caze = caseService.getByUuid(caseUuid);
+		Case duplicateOfCase = caseService.getByUuid(duplicateOfCaseUuid);
+		caze.setDuplicateOf(duplicateOfCase);
+		caseService.ensurePersisted(caze);
+
+		deleteCase(new CaseReferenceDto(caseUuid), userUuid);
 	}
 
 	@Override
@@ -1768,7 +1897,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				logger.error(String.format(
 						"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a case investigation. "
 								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-						recipient.getUuid()));
+								recipient.getUuid()));
 			}
 		}
 	}
@@ -1789,21 +1918,21 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append(" FROM ").append(Case.TABLE_NAME).append(" LEFT JOIN ").append(Symptoms.TABLE_NAME)
-				.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.SYMPTOMS).append("_id").append(" = ")
-				.append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ID);
+		.append(" ON ").append(Case.TABLE_NAME).append(".").append(Case.SYMPTOMS).append("_id").append(" = ")
+		.append(Symptoms.TABLE_NAME).append(".").append(Symptoms.ID);
 
 		if (subGroupingA == StatisticsCaseSubAttribute.REGION || subGroupingB == StatisticsCaseSubAttribute.REGION
 				|| caseCriteria.getRegions() != null) {
 			sqlBuilder.append(" LEFT JOIN ").append(Region.TABLE_NAME).append(" ON ").append(Case.TABLE_NAME)
-					.append(".").append(Case.REGION).append("_id").append(" = ").append(Region.TABLE_NAME).append(".")
-					.append(Region.ID);
+			.append(".").append(Case.REGION).append("_id").append(" = ").append(Region.TABLE_NAME).append(".")
+			.append(Region.ID);
 		}
 
 		if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT
 				|| caseCriteria.getDistricts() != null) {
 			sqlBuilder.append(" LEFT JOIN ").append(District.TABLE_NAME).append(" ON ").append(Case.TABLE_NAME)
-					.append(".").append(Case.DISTRICT).append("_id").append(" = ").append(District.TABLE_NAME)
-					.append(".").append(District.ID);
+			.append(".").append(Case.DISTRICT).append("_id").append(" = ").append(District.TABLE_NAME)
+			.append(".").append(District.ID);
 		}
 
 		if (groupingA == StatisticsCaseAttribute.SEX || groupingB == StatisticsCaseAttribute.SEX
@@ -1821,8 +1950,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				|| groupingB == StatisticsCaseAttribute.AGE_INTERVAL_BASIC || caseCriteria.getSexes() != null
 				|| caseCriteria.getAgeIntervals() != null) {
 			sqlBuilder.append(" LEFT JOIN ").append(Person.TABLE_NAME).append(" ON ").append(Case.TABLE_NAME)
-					.append(".").append(Case.PERSON).append("_id").append(" = ").append(Person.TABLE_NAME).append(".")
-					.append(Person.ID);
+			.append(".").append(Case.PERSON).append("_id").append(" = ").append(Person.TABLE_NAME).append(".")
+			.append(Person.ID);
 		}
 
 		// 2. Build filter based on caseCriteria
@@ -1934,7 +2063,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					subFilterBuilder.append(" OR ");
 				}
 				subFilterBuilder.append(Person.TABLE_NAME).append(".").append(Person.SEX).append(" IS ")
-						.append(caseCriteria.isSexUnknown() == true ? "NULL" : "NOT NULL");
+				.append(caseCriteria.isSexUnknown() == true ? "NULL" : "NOT NULL");
 			}
 
 			filterBuilder.append(subFilterBuilder);
@@ -1975,7 +2104,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					subFilterBuilder.append(" OR ");
 				}
 				subFilterBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" >= ?")
-						.append(filterBuilderParameters.size() + 1);
+				.append(filterBuilderParameters.size() + 1);
 				filterBuilderParameters.add(upperRangeBoundary);
 			}
 
@@ -2153,17 +2282,17 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			if (from != null && to != null) {
 				filterBuilder.append(tableName).append(".").append(fieldName).append(" BETWEEN ?")
-						.append(filterBuilderParameters.size() + 1);
+				.append(filterBuilderParameters.size() + 1);
 				filterBuilderParameters.add(from);
 				filterBuilder.append(" AND ?").append(filterBuilderParameters.size() + 1).append("");
 				filterBuilderParameters.add(to);
 			} else if (from != null) {
 				filterBuilder.append(tableName).append(".").append(fieldName).append(" >= ?")
-						.append(filterBuilderParameters.size() + 1);
+				.append(filterBuilderParameters.size() + 1);
 				filterBuilderParameters.add(from);
 			} else {
 				filterBuilder.append(tableName).append(".").append(fieldName).append(" <= ?")
-						.append(filterBuilderParameters.size() + 1);
+				.append(filterBuilderParameters.size() + 1);
 				filterBuilderParameters.add(to);
 			}
 		}
@@ -2179,7 +2308,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		filterBuilder.append("(CAST(EXTRACT(" + dateElementToExtract + " FROM ").append(tableName).append(".")
-				.append(fieldName).append(")  AS integer))").append(" IN ");
+		.append(fieldName).append(")  AS integer))").append(" IN ");
 		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
@@ -2202,7 +2331,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		filterBuilder.append("(epi_year(").append(tableName).append(".").append(fieldName).append(")").append(" * 100")
-				.append(" + epi_week(").append(tableName).append(".").append(fieldName).append("))").append(" IN ");
+		.append(" + epi_week(").append(tableName).append(".").append(fieldName).append("))").append(" IN ");
 		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
@@ -2214,8 +2343,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		filterBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
-				.append(" * 10) AS integer)) + (CAST(EXTRACT(QUARTER FROM ").append(tableName).append(".")
-				.append(fieldName).append(") AS integer))").append(" IN ");
+		.append(" * 10) AS integer)) + (CAST(EXTRACT(QUARTER FROM ").append(tableName).append(".")
+		.append(fieldName).append(") AS integer))").append(" IN ");
 		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
@@ -2227,8 +2356,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		filterBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
-				.append(" * 100) AS integer)) + (CAST(EXTRACT(MONTH FROM ").append(tableName).append(".")
-				.append(fieldName).append(") AS integer))").append(" IN ");
+		.append(" * 100) AS integer)) + (CAST(EXTRACT(MONTH FROM ").append(tableName).append(".")
+		.append(fieldName).append(") AS integer))").append(" IN ");
 		return appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
@@ -2275,29 +2404,29 @@ public class CaseFacadeEjb implements CaseFacade {
 		switch (grouping) {
 		case SEX:
 			groupingSelectPartBuilder.append(Person.TABLE_NAME).append(".").append(Person.SEX).append(" AS ")
-					.append(groupAlias);
+			.append(groupAlias);
 			break;
 		case DISEASE:
 			groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.DISEASE).append(" AS ")
-					.append(groupAlias);
+			.append(groupAlias);
 			break;
 		case CLASSIFICATION:
 			groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.CASE_CLASSIFICATION)
-					.append(" AS ").append(groupAlias);
+			.append(" AS ").append(groupAlias);
 			break;
 		case OUTCOME:
 			groupingSelectPartBuilder.append(Case.TABLE_NAME).append(".").append(Case.OUTCOME).append(" AS ")
-					.append(groupAlias);
+			.append(groupAlias);
 			break;
 		case REGION_DISTRICT: {
 			switch (subGrouping) {
 			case REGION:
 				groupingSelectPartBuilder.append(Region.TABLE_NAME).append(".").append(Region.UUID).append(" AS ")
-						.append(groupAlias);
+				.append(groupAlias);
 				break;
 			case DISTRICT:
 				groupingSelectPartBuilder.append(District.TABLE_NAME).append(".").append(District.UUID).append(" AS ")
-						.append(groupAlias);
+				.append(groupAlias);
 				break;
 			default:
 				throw new IllegalArgumentException(subGrouping.toString());
@@ -2389,34 +2518,34 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void extendGroupingBuilderWithDate(StringBuilder groupingBuilder, String dateToExtract, String tableName,
 			String fieldName, String groupAlias) {
 		groupingBuilder.append("(CAST(EXTRACT(" + dateToExtract + " FROM ").append(tableName).append(".")
-				.append(fieldName).append(") AS integer)) AS ").append(groupAlias);
+		.append(fieldName).append(") AS integer)) AS ").append(groupAlias);
 	}
 
 	private void extendGroupingBuilderWithEpiWeek(StringBuilder groupingBuilder, String tableName, String fieldName,
 			String groupAlias) {
 		groupingBuilder.append("epi_week(").append(tableName).append(".").append(fieldName).append(") AS ")
-				.append(groupAlias);
+		.append(groupAlias);
 	}
 
 	private void extendGroupingBuilderWithEpiWeekOfYear(StringBuilder groupingBuilder, String tableName,
 			String fieldName, String groupAlias) {
 		groupingBuilder.append("(epi_year(").append(tableName).append(".").append(fieldName).append(") * 100")
-				.append(" + epi_week(").append(tableName).append(".").append(fieldName).append(")) AS ")
-				.append(groupAlias);
+		.append(" + epi_week(").append(tableName).append(".").append(fieldName).append(")) AS ")
+		.append(groupAlias);
 	}
 
 	private void extendGroupingBuilderWithQuarterOfYear(StringBuilder groupingBuilder, String tableName,
 			String fieldName, String groupAlias) {
 		groupingBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName)
-				.append(") * 10) AS integer))").append(" + (CAST(EXTRACT(QUARTER FROM ").append(tableName).append(".")
-				.append(fieldName).append(") AS integer)) AS ").append(groupAlias);
+		.append(") * 10) AS integer))").append(" + (CAST(EXTRACT(QUARTER FROM ").append(tableName).append(".")
+		.append(fieldName).append(") AS integer)) AS ").append(groupAlias);
 	}
 
 	private void extendGroupingBuilderWithMonthOfYear(StringBuilder groupingBuilder, String tableName, String fieldName,
 			String groupAlias) {
 		groupingBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName)
-				.append(") * 100) AS integer))").append(" + (CAST(EXTRACT(MONTH FROM ").append(tableName).append(".")
-				.append(fieldName).append(") AS integer)) AS ").append(groupAlias);
+		.append(") * 100) AS integer))").append(" + (CAST(EXTRACT(MONTH FROM ").append(tableName).append(".")
+		.append(fieldName).append(") AS integer)) AS ").append(groupAlias);
 	}
 
 	private void extendGroupingBuilderWithAgeInterval(StringBuilder groupingBuilder, StatisticsCaseAttribute grouping,
@@ -2426,8 +2555,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		case AGE_INTERVAL_1_YEAR:
 			for (int i = 0; i < 80; i++) {
 				groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" = ")
-						.append(i < 10 ? "0" + i : i).append(" THEN ").append("'").append(i < 10 ? "0" + i : i)
-						.append("' ");
+				.append(i < 10 ? "0" + i : i).append(" THEN ").append("'").append(i < 10 ? "0" + i : i)
+				.append("' ");
 			}
 			break;
 		case AGE_INTERVAL_5_YEARS:
@@ -2447,8 +2576,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		case AGE_INTERVAL_CHILDREN_FINE:
 			for (int i = 0; i < 5; i++) {
 				groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" = ")
-						.append(i).append(" THEN ").append("'").append("0" + i).append("-").append("0" + i)
-						.append("' ");
+				.append(i).append(" THEN ").append("'").append("0" + i).append("-").append("0" + i)
+				.append("' ");
 			}
 			for (int i = 5; i < 30; i += 5) {
 				addAgeIntervalToStringBuilder(groupingBuilder, i, 4);
@@ -2470,7 +2599,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			addAgeIntervalToStringBuilder(groupingBuilder, 1, 3);
 			addAgeIntervalToStringBuilder(groupingBuilder, 5, 9);
 			groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
-					.append(" >= 15 THEN '15+' ");
+			.append(" >= 15 THEN '15+' ");
 			break;
 		default:
 			throw new IllegalArgumentException(grouping.toString());
@@ -2478,7 +2607,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (grouping != StatisticsCaseAttribute.AGE_INTERVAL_BASIC) {
 			groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE)
-					.append(" >= 80 THEN '80+' ");
+			.append(" >= 80 THEN '80+' ");
 		}
 		groupingBuilder.append("ELSE 'Unknown' END AS " + groupAlias);
 	}
@@ -2488,8 +2617,89 @@ public class CaseFacadeEjb implements CaseFacade {
 		String higherNumberString = number + increase < 10 ? "0" + (number + increase)
 				: String.valueOf(number + increase);
 		groupingBuilder.append("WHEN ").append(Case.TABLE_NAME).append(".").append(Case.CASE_AGE).append(" BETWEEN ")
-				.append(number).append(" AND ").append(number + increase).append(" THEN '").append(lowerNumberString)
-				.append("-").append(higherNumberString).append("' ");
+		.append(number).append(" AND ").append(number + increase).append(" THEN '").append(lowerNumberString)
+		.append("-").append(higherNumberString).append("' ");
+	}
+
+	@Override
+	public void mergeCase(String leadUuid, String otherUuid) {
+
+		// 1 Merge Dtos
+		// 1.1 Case
+		CaseDataDto leadCaseData = getCaseDataByUuid(leadUuid);
+		CaseDataDto otherCaseData = getCaseDataByUuid(otherUuid);
+
+		CaseDataDto mergedCase = DtoHelper.mergeDto(leadCaseData, otherCaseData);
+
+		saveCase(mergedCase);
+
+		// 1.2 Person
+		PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
+		PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
+
+		PersonDto mergedPerson = DtoHelper.mergeDto(leadPerson, otherPerson);
+
+		personFacade.savePerson(mergedPerson);
+
+		// 2 Change CaseReference
+		Case leadCase = caseService.getByUuid(leadUuid);
+		Case otherCase = caseService.getByUuid(otherUuid);
+
+		// 2.1 Contacts
+
+		List<Contact> contacts = contactService.getAllByCase(otherCase);
+
+		for (Contact contact : contacts) {
+
+			contact.setCaze(leadCase);
+			contactService.ensurePersisted(contact);
+		}
+
+		// 2.2 Samples
+		List<Sample> samples = sampleService.getAllByCase(otherCase);
+
+		for (Sample sample : samples) {
+
+			sample.setAssociatedCase(leadCase);
+			sampleService.ensurePersisted(sample);
+		}
+
+		// 2.3 Tasks
+		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(otherCase.getUuid())));
+		for (Task task : tasks) {
+
+			task.setCaze(leadCase);
+			taskService.ensurePersisted(task);
+		}
+
+		// 3 Change Therapy Reference
+		// 3.1 Treatments
+		List<Treatment> treatments = treatmentService.findBy(new TreatmentCriteria().therapy(new TherapyReferenceDto(otherCase.getTherapy().getUuid())));
+
+		for (Treatment treatment : treatments) {
+
+			treatment.setTherapy(leadCase.getTherapy());
+			treatmentService.ensurePersisted(treatment);
+		}
+
+		// 3.2 Prescriptions
+		List<Prescription> prescriptions = prescriptionService.findBy(new PrescriptionCriteria().therapy(new TherapyReferenceDto(otherCase.getTherapy().getUuid())));
+
+		for (Prescription prescription : prescriptions) {
+
+			prescription.setTherapy(leadCase.getTherapy());
+			prescriptionService.ensurePersisted(prescription);
+		}
+
+		// 4 Change Clinical Course Reference
+		// 4.1 Clinical Visits
+		List<ClinicalVisit> clinicalVisits = clinicalVisitService.findBy(new ClinicalVisitCriteria().clinicalCourse(new ClinicalCourseReferenceDto(otherCase.getClinicalCourse().getUuid())));
+
+		for (ClinicalVisit clinicalVisit : clinicalVisits) {
+
+			clinicalVisit.setClinicalCourse(leadCase.getClinicalCourse());
+			clinicalVisitService.ensurePersisted(clinicalVisit);
+		}
 	}
 
 	@LocalBean

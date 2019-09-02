@@ -121,6 +121,7 @@
     <string name="caption_case_samples">Case Samples</string>
     <string name="caption_case_tasks">Case Tasks</string>
     <string name="caption_case_treatments">Treatments</string>
+    <string name="caption_case_similarity_create">Create a new case</string>
     <string name="caption_changed_data_lost">Changed data lost during re-sync.</string>
     <string name="caption_clinical_measurements">Clinical Measurements</string>
     <string name="caption_clinical_visit_date">Date of Assessment</string>
@@ -236,6 +237,7 @@
     <string name="error_modified_list_entry_deleted">A list entry you modified was deleted:</string>
     <string name="error_server_connection">Could not connect to SORMAS server. Try again later.</string>
     <string name="error_synchronization">Synchronization failed. Please try again later.</string>
+    <string name="error_server_communication">Could not communicate with SORMAS server. Try again later.</string>
 
     <string name="heading_additional_medical_information">Additional Medical Information</string>
     <string name="heading_animal_contacts">Animal Contacts</string>
@@ -277,6 +279,7 @@
     <string name="heading_event_summary">Event Summary</string>
     <string name="heading_events_list">Event Listing</string>
     <string name="heading_existing_persons">Existing Persons</string>
+    <string name="heading_existing_cases">Existing Cases</string>
     <string name="heading_gathering">Gathering</string>
     <string name="heading_gps_activation">Turn On GPS</string>
     <string name="heading_gps_permission">Allow GPS Access</string>
@@ -295,6 +298,7 @@
     <string name="heading_person_involved">Person Involved</string>
     <string name="heading_person_involved_new">New Person Involved</string>
     <string name="heading_pick_or_create_person">Pick or create person</string>
+    <string name="heading_pick_or_create_case">Pick or Create a Case</string>
     <string name="heading_prescription">Prescription</string>
     <string name="heading_prescription_edit">Edit Prescription</string>
     <string name="heading_prescription_new">New Prescription</string>
@@ -387,6 +391,8 @@
     <string name="info_symptoms">Please select an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
     <string name="info_synchronizing">Synchronizing with SORMAS server...</string>
     <string name="info_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
+    <string name="info_pick_or_create_case">There is at least one existing case in the database that seems very similar to the one you are about to create. Please do one of the following:\n\n\u2022 Tap on a case that you <b>are sure</b> is the same case that you were about to create\n\u2022 Scroll to the bottom of this window and check the check box if you <b>are sure</b> that your case is a new case\n\nClick on the button in the bottom right to confirm your choice.</string>
+    <string name="info_case_creation_mark_check_box">This case is a <b>new case</b> and <b>not a duplicate</b> of one of the cases above</string>
 
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
@@ -438,10 +444,16 @@
     <string name="message_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
     <string name="message_weekly_report_submitted">Thank you for submitting your weekly report.</string>
 
+    <string name="notification_channel_tasks_name">New or Updated Tasks</string>
+    <string name="notification_channel_tasks_description">Receive a notification when a new task is assigned to you or a task assigned to you has been edited</string>
+    <string name="notification_channel_case_changes_name">Important Case Changes</string>
+    <string name="notification_channel_case_changes_description">Receive a notification when important details of your cases have changed</string>
+
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Yours: </string>
 
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
+    <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
 
     <string name="time_future_almost_two_years">within almost two years</string>
     <string name="time_future_one_day">tomorrow</string>

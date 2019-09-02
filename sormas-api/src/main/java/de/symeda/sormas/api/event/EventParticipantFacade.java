@@ -41,7 +41,7 @@ public interface EventParticipantFacade {
 
 	void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef, String userUuid);
 	
-	List<EventParticipantIndexDto> getIndexList(EventParticipantCriteria eventParticipantCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<EventParticipantIndexDto> getIndexList(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	long count(EventParticipantCriteria eventParticipantCriteria);
 	

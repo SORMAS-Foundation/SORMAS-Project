@@ -176,6 +176,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<FacilityReferenceDto> getLaboratoriesByName(String name) {
+		return facilityService.getLaboratoriesByName(name)
+				.stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
 
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {
 		if (entity == null) {

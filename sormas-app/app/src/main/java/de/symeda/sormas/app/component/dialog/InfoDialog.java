@@ -43,12 +43,7 @@ public class InfoDialog extends AlertDialog.Builder {
 
         this.layoutId = layoutId;
         this.data = data;
-        dismissCallback = new Callback() {
-            @Override
-            public void call() {
-                dialog.dismiss();
-            }
-        };
+        dismissCallback = () -> dialog.dismiss();
 
         binding = bindLayout(context);
 
@@ -64,7 +59,7 @@ public class InfoDialog extends AlertDialog.Builder {
     }
 
     private ViewDataBinding bindLayout(Context context) {
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (inflater == null) {
             return null;
         }

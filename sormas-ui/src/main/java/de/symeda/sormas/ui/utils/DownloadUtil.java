@@ -18,9 +18,12 @@
 package de.symeda.sormas.ui.utils;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -34,10 +37,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
@@ -50,10 +59,26 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ExportTarget;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.DatabaseTable;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.therapy.PrescriptionDto;
+import de.symeda.sormas.api.therapy.PrescriptionExportDto;
+import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.therapy.TreatmentExportDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -64,6 +89,7 @@ import de.symeda.sormas.ui.statistics.DatabaseExportView;
 public class DownloadUtil {
 
 	public static final int DETAILED_EXPORT_STEP_SIZE = 200;
+	private static final Logger logger = LoggerFactory.getLogger(DownloadUtil.class);
 
 	private DownloadUtil() {
 
@@ -133,9 +159,100 @@ public class DownloadUtil {
 		streamResource.setMIMEType(mimeType);
 		return streamResource;
 	}
+	
+	@SuppressWarnings("serial")
+	public static StreamResource createCaseManagementExportResource(String userUuid, CaseCriteria criteria, String exportFileName) {
+		StreamResource casesResource = createCsvExportStreamResource(CaseExportDto.class, ExportType.CASE_MANAGEMENT,
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(userUuid, criteria, ExportType.CASE_MANAGEMENT, start, max),
+				(propertyId,type) -> {
+					String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
+							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+									I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+											I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+													I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId,
+															I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId,
+																	I18nProperties.getPrefixCaption(HealthConditionsDto.I18N_PREFIX, propertyId)))))));
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+					}
+					return caption;
+				},
+				"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+		
+		StreamResource prescriptionsResource = createCsvExportStreamResource(PrescriptionExportDto.class, null,
+				(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(userUuid, criteria, start, max),
+				(propertyId,type) -> {
+					String caption = I18nProperties.getPrefixCaption(PrescriptionExportDto.I18N_PREFIX, propertyId,
+							I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, propertyId));
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+					}
+					return caption;
+				},
+				"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+
+		StreamResource treatmentsResource = createCsvExportStreamResource(TreatmentExportDto.class, null,
+				(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(userUuid, criteria, start, max),
+				(propertyId,type) -> {
+					String caption = I18nProperties.getPrefixCaption(TreatmentExportDto.I18N_PREFIX, propertyId,
+							I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, propertyId));
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+					}
+					return caption;
+				},
+				"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+		
+		StreamResource clinicalVisitsResource = createCsvExportStreamResource(ClinicalVisitExportDto.class, null,
+				(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(userUuid, criteria, start, max),
+				(propertyId,type) -> {
+					String caption = I18nProperties.getPrefixCaption(ClinicalVisitExportDto.I18N_PREFIX, propertyId,
+							I18nProperties.getPrefixCaption(ClinicalVisitDto.I18N_PREFIX, propertyId,
+									I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId)));
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+					}
+					return caption;
+				},
+				"sormas_clinical_assessments_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+		
+		StreamResource caseManagementStreamResource = new StreamResource(new StreamSource() {
+			@Override
+			public InputStream getStream() {
+				String zipFile = FacadeProvider.getExportFacade().generateZipArchive(DateHelper.formatDateForExport(new Date()), new Random().nextInt(Integer.MAX_VALUE));
+				try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)))) {
+					writeCsvToZip(zos, casesResource.getStreamSource(), "cases.csv");
+					writeCsvToZip(zos, prescriptionsResource.getStreamSource(), "prescriptions.csv");
+					writeCsvToZip(zos, treatmentsResource.getStreamSource(), "treatments.csv");
+					writeCsvToZip(zos, clinicalVisitsResource.getStreamSource(), "clinical_assessments.csv");
+					zos.close();
+					return new FileInputStream(new File(zipFile));
+				} catch (IOException e) {
+					logger.error("Failed to generate a zip file for case management export.");
+					return null;
+				}
+			}
+		}, exportFileName);
+		caseManagementStreamResource.setMIMEType("application/zip");
+		caseManagementStreamResource.setCacheTime(0);
+		return caseManagementStreamResource;
+	}
+	
+	private static void writeCsvToZip(ZipOutputStream zos, StreamSource source, String fileName) throws IOException {
+		zos.putNextEntry(new ZipEntry(fileName));
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int length;
+		InputStream input = source.getStream();
+		while ((length = input.read(buffer)) != -1) {
+			result.write(buffer, 0, length);
+		}
+		result.writeTo(zos);
+		zos.closeEntry();
+	}
 
 	@SuppressWarnings("serial")
-	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName) {
+	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, ExportType exportType, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName) {
 		StreamResource extendedStreamResource = new StreamResource(new StreamSource() {
 			@Override
 			public InputStream getStream() {
@@ -146,7 +263,9 @@ public class DownloadUtil {
 						// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
 						List<Method> readMethods = new ArrayList<Method>();
 						readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
-								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
+								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) 
+										&& m.isAnnotationPresent(Order.class)
+										&& (exportType == null || (m.isAnnotationPresent(ExportTarget.class) && Arrays.asList(m.getAnnotation(ExportTarget.class).exportTypes()).contains(exportType))))
 								.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
 										b.getAnnotationsByType(Order.class)[0].value()))
 								.collect(Collectors.toList()));
@@ -183,7 +302,6 @@ public class DownloadUtil {
 								}
 							}							
 						}
-						
 						
 						String[] fieldValues = new String[readMethods.size()];
 						for (int i = 0; i < readMethods.size(); i++) {

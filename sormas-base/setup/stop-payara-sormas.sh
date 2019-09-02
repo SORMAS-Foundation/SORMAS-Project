@@ -1,7 +1,6 @@
-#!/bin/sh
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2019 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2018 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #*******************************************************************************
 
-ASADMIN="../../payara5/bin/asadmin"
+#!/bin/bash
 
-${ASADMIN} stop-domain --domaindir ../  sormas
+DIR=$(dirname "$0")
+ASADMIN="${DIR}/../../payara5/bin/asadmin"
+${ASADMIN} stop-domain --domaindir "${DIR}/../" sormas

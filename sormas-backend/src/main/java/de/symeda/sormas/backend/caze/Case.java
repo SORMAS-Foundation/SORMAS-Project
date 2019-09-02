@@ -117,6 +117,7 @@ public class Case extends AbstractDomainObject {
 	public static final String CASE_ORIGIN = "caseOrigin";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
+	public static final String COMPLETENESS = "completeness";
 
 	private Person person;
 	private String description;
@@ -187,10 +188,13 @@ public class Case extends AbstractDomainObject {
 	
 	private boolean archived;
 	private String creationVersion;
+	private Case duplicateOf;
 	
 	private CaseOrigin caseOrigin;
 	private PointOfEntry pointOfEntry;
 	private String pointOfEntryDetails;
+	
+	private Float completeness;
 
 	private List<Task> tasks;
 
@@ -733,6 +737,16 @@ public class Case extends AbstractDomainObject {
 		this.creationVersion = creationVersion;
 	}
 	
+	@OneToOne(cascade = {}, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public Case getDuplicateOf() {
+		return duplicateOf;
+	}
+
+	public void setDuplicateOf(Case duplicateOf) {
+		this.duplicateOf = duplicateOf;
+	}
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	public CaseClassification getSystemCaseClassification() {
@@ -768,6 +782,14 @@ public class Case extends AbstractDomainObject {
 
 	public void setPointOfEntryDetails(String pointOfEntryDetails) {
 		this.pointOfEntryDetails = pointOfEntryDetails;
+	}
+
+	public Float getCompleteness() {
+		return completeness;
+	}
+
+	public void setCompleteness(Float completeness) {
+		this.completeness = completeness;
 	}
 
 }

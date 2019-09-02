@@ -28,6 +28,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -104,6 +105,14 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		return service.getByUuids(uuids)
 				.stream()
 				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district) {
+		return service.getByName(name, districtService.getByReferenceDto(district))
+				.stream()
+				.map(p -> toReferenceDto(p))
 				.collect(Collectors.toList());
 	}
 	

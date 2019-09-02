@@ -23,6 +23,7 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
 public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, HealthConditionsDto> {
@@ -38,17 +39,17 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
     }
 
     @Override
-    protected Call<List<HealthConditionsDto>> pullAllSince(long since) {
+    protected Call<List<HealthConditionsDto>> pullAllSince(long since) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<HealthConditionsDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<HealthConditionsDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<HealthConditionsDto> healthConditionDtos) {
+    protected Call<List<PushResult>> pushAll(List<HealthConditionsDto> healthConditionDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is embedded");
     }
 

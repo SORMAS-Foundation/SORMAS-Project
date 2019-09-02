@@ -36,7 +36,7 @@ public class DiseaseBurdenDto  implements Serializable {
 	public static final String OUTBREAK_DISTRICT_COUNT = "outbreakDistrictCount";
 	public static final String CASE_DEATH_COUNT = "caseDeathCount";
 	public static final String CASE_FATALITY_RATE = "caseFatalityRate";
-	public static final String LAST_REPORTED_COMMUNITY_NAME = "lastReportedCommunityName";
+	public static final String LAST_REPORTED_DISTRICT_NAME = "lastReportedDistrictName";
 	
 	private Disease disease;
 	private Long caseCount;
@@ -44,16 +44,16 @@ public class DiseaseBurdenDto  implements Serializable {
 	private Long eventCount;
 	private Long outbreakDistrictCount;
 	private Long caseDeathCount;
-	private String lastReportedCommunityName;
+	private String lastReportedDistrictName;
 	
-	public DiseaseBurdenDto(Disease disease, Long caseCount, Long previousCaseCount, Long eventCount, Long outbreakDistrictCount, Long caseDeathCount, String lastReportedCommunityName) {
+	public DiseaseBurdenDto(Disease disease, Long caseCount, Long previousCaseCount, Long eventCount, Long outbreakDistrictCount, Long caseDeathCount, String lastReportedDistrictName) {
 		this.disease = disease;
 		this.caseCount = caseCount;
 		this.previousCaseCount = previousCaseCount;
 		this.eventCount = eventCount;
 		this.outbreakDistrictCount = outbreakDistrictCount;
 		this.caseDeathCount = caseDeathCount;
-		this.lastReportedCommunityName = lastReportedCommunityName;
+		this.lastReportedDistrictName = lastReportedDistrictName;
 	}
 	
 	public Disease getDisease() {
@@ -121,11 +121,11 @@ public class DiseaseBurdenDto  implements Serializable {
 		return cfrPercentage;
 	}
 	
-	public String getLastReportedCommunityName() {
-		return lastReportedCommunityName;
+	public String getLastReportedDistrictName() {
+		return lastReportedDistrictName;
 	}
-	public void setLastReportedCommunityName(String name) {
-		this.lastReportedCommunityName = name;
+	public void setLastReportedDistrictName(String name) {
+		this.lastReportedDistrictName = name;
 	}
 	
 	public Boolean hasCount () {

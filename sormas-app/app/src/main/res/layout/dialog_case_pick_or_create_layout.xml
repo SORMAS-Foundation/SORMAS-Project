@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <variable name="similarCases" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.caze.Case&gt;" />
+        <variable name="similarCaseItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dialog_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/info_pick_or_create_case"
+                android:paddingStart="@dimen/rowListItemHorizontalMargin"
+                android:paddingEnd="@dimen/rowListItemHorizontalMargin"
+                style="@style/SubHeadingDescriptionStyle"
+                android:textSize="@dimen/defaultControlTextSize" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/formListSectionBackground"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_existing_cases"
+                    android:paddingBottom="@dimen/parentLayoutVerticalMargin"
+                    style="@style/SubHeadingCompactStyle" />
+
+                <LinearLayout
+                    android:id="@+id/existing_cases_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:clipToPadding="false"
+                    android:padding="@dimen/rowListItemParentPadding"
+                    app:entries="@{similarCases}"
+                    app:layout="@{@layout/row_case_pick_or_create_layout}"
+                    app:callback="@{similarCaseItemClickCallback}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/cb_create_case"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/rowListItemHorizontalMargin"
+                    android:layout_marginEnd="@dimen/rowListItemHorizontalMargin"
+                    app:showCaption="false" />
+
+                <TextView
+                    android:id="@+id/dialog_create_case_hint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/info_case_creation_mark_check_box"
+                    android:paddingStart="@dimen/rowListItemHorizontalMargin"
+                    android:paddingEnd="@dimen/rowListItemHorizontalMargin"
+                    android:layout_marginTop="6dp"
+                    style="@style/SubHeadingDescriptionStyle"
+                    android:textSize="@dimen/defaultControlTextSize" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>

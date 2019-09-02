@@ -18,12 +18,15 @@
 
 package de.symeda.sormas.app.core.notification;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
 import androidx.databinding.ViewDataBinding;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.View;
@@ -37,6 +40,30 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.NotificationContext;
 
 public class NotificationHelper {
+
+    // Notification channel names for system notifications
+    public static final String NOTIFICATION_CHANNEL_TASKS_ID = "channel_tasks";
+    public static final String NOTIFICATION_CHANNEL_CASE_CHANGES_ID = "channel_case_changes";
+
+    public static void createNotificationChannels(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(context, NOTIFICATION_CHANNEL_TASKS_ID, context.getString(R.string.notification_channel_tasks_name),
+                    context.getString(R.string.notification_channel_tasks_description), NotificationManager.IMPORTANCE_DEFAULT);
+            createNotificationChannel(context, NOTIFICATION_CHANNEL_CASE_CHANGES_ID, context.getString(R.string.notification_channel_case_changes_name),
+                    context.getString(R.string.notification_channel_case_changes_description), NotificationManager.IMPORTANCE_DEFAULT);
+        }
+    }
+
+    private static void createNotificationChannel(Context context, String id, CharSequence name, String description, int importance) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(id, name, importance);
+            channel.setDescription(description);
+            NotificationManager manager = context.getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+    }
+
+    // Internal notifications
 
     public static void showNotification(ViewDataBinding binding, NotificationType type, int messageResId) {
         showNotification(binding, NotificationPosition.TOP, type, messageResId);

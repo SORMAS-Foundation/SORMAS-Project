@@ -18,12 +18,14 @@
 
 package de.symeda.sormas.app.person.edit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeComparator;
 
 import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -68,7 +70,19 @@ final class PersonValidator {
             return false;
         };
 
+        ResultCallback<Boolean> approximateAgeCallback = () -> {
+            if (ApproximateAgeType.YEARS.equals(contentBinding.personApproximateAgeType.getValue())
+                    && !StringUtils.isEmpty(contentBinding.personApproximateAge.getValue())
+                    && Integer.valueOf(contentBinding.personApproximateAge.getValue()) >= 150) {
+                contentBinding.personApproximateAge.enableErrorState(I18nProperties.getValidationError(Validations.softApproximateAgeTooHigh));
+                return true;
+            }
+
+            return false;
+        };
+
         contentBinding.personDeathDate.setValidationCallback(deathDateCallback);
         contentBinding.personBurialDate.setValidationCallback(burialDateCallback);
+        contentBinding.personApproximateAge.setValidationCallback(approximateAgeCallback);
     }
 }

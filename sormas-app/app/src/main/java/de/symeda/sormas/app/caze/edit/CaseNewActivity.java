@@ -25,10 +25,7 @@ import android.view.Menu;
 
 import java.util.Calendar;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -40,16 +37,16 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.caze.CasePickOrCreateDialog;
 import de.symeda.sormas.app.caze.CaseSection;
+import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
-import de.symeda.sormas.app.util.Consumer;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -182,7 +179,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     public void saveData() {
-
         if (saveTask != null) {
             NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
@@ -200,14 +196,14 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             return;
         }
 
-        if (caze.getPerson().getId() == null) {
-            SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), person -> {
-                caze.setPerson(person);
+        CasePickOrCreateDialog.pickOrCreateCase(caze, pickedCase -> {
+            if (pickedCase.getUuid().equals(caze.getUuid())) {
                 saveDataInner(caze);
-            });
-        } else {
-            saveDataInner(caze);
-        }
+            } else {
+                finish();
+                CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
+            }
+        });
     }
 
     private void saveDataInner(final Case caseToSave) {

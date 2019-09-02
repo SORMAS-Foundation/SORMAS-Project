@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface SampleFacade {
@@ -38,7 +39,7 @@ public interface SampleFacade {
 	
 	int getReceivedSampleCountByCase(CaseReferenceDto caseRef);
 	
-	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, int first, int max);
 	
@@ -61,5 +62,7 @@ public interface SampleFacade {
 	List<DashboardSampleDto> getNewSamplesForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	void deleteSample(SampleReferenceDto sampleRef, String userUuid);
+	
+	void validate(SampleDto sample) throws ValidationRuntimeException;
 
 }

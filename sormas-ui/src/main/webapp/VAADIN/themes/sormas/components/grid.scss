@@ -34,12 +34,12 @@ $v-grid-cell-focused-border: none !default;
         background-color: $v-focus-color;
       }
       
-      &.v-treegrid-even-row > td, &.v-treegrid-even-row > th {
+      &.v-treegrid-parent-row > td, &.v-treegrid-parent-row > th {
       	background-color: $v-focus-light-color;
       }
       
-      &.v-treegrid-uneven-row > td, &.v-treegrid-uneven-row > th {
-      	background-color: inherit;
+      &.v-treegrid-child-row > td, &.v-treegrid-child-row > th {
+      	border-bottom: 3px solid #CDD8EC;
       }
     
       .v-grid-cell,

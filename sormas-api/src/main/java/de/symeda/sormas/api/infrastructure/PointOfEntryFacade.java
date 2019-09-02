@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -32,5 +33,7 @@ public interface PointOfEntryFacade {
 	List<String> getAllUuids(String userUuid);
 	
 	List<PointOfEntryDto> getByUuids(List<String> uuids);
+	
+	List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district);
 	
 }

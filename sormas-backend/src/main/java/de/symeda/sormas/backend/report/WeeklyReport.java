@@ -30,8 +30,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ImportIgnore;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -119,7 +119,6 @@ public class WeeklyReport extends AbstractDomainObject {
 	 * 
 	 * @return
 	 */
-	@ImportIgnore
 	public Date getChangeDateOfEmbeddedLists() {
 		return changeDateOfEmbeddedLists;
 	}

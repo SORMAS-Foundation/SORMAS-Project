@@ -32,6 +32,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -49,17 +50,17 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
     protected Class<TaskDto> getDtoClass() { return TaskDto.class; }
 
     @Override
-    protected Call<List<TaskDto>> pullAllSince(long since) {
+    protected Call<List<TaskDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getTaskFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<TaskDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<TaskDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getTaskFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<TaskDto> taskDtos) {
+    protected Call<List<PushResult>> pushAll(List<TaskDto> taskDtos) throws NoConnectionException {
         return RetroProvider.getTaskFacade().pushAll(taskDtos);
     }
 

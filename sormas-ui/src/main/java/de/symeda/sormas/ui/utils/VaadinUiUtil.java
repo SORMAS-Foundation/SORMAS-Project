@@ -19,9 +19,6 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.function.Consumer;
 
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.util.GeneratedPropertyContainer;
-import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
@@ -34,6 +31,9 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.GeneratedPropertyContainer;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -134,8 +134,9 @@ public class VaadinUiUtil {
 		}
 		popupWindow.setCaption(caption);
 
-		VerticalLayout layout = new VerticalLayout();	
+		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
+		content.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(content);
 
 		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
@@ -154,20 +155,13 @@ public class VaadinUiUtil {
 		confirmationComponent.getConfirmButton().setCaption(confirmCaption);
 		confirmationComponent.getCancelButton().setCaption(cancelCaption);
 
-		popupWindow.addCloseListener(new CloseListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void windowClose(CloseEvent e) {
-				confirmationComponent.getCancelButton().click();
-			}
-		});
-
 		layout.addComponent(confirmationComponent);
 		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
-		layout.setSizeUndefined();
+		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setSpacing(true);
 		popupWindow.setContent(layout);
-
+		popupWindow.setClosable(false);
+		
 		UI.getCurrent().addWindow(popupWindow);
 		return popupWindow;
 	}
