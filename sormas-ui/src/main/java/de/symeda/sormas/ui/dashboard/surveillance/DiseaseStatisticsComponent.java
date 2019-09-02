@@ -168,15 +168,15 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 			rateLayout.setMargin(false);
 			rateLayout.setSpacing(false);
 
-			// value
-			caseFatalityRateValue = new Label("00.0%");
-			CssStyles.style(caseFatalityRateValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
-			rateLayout.addComponent(caseFatalityRateValue);
-			
 			// title
 			Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardCaseFatalityRate));
 			CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
 			rateLayout.addComponent(titleLabel);
+			
+			// value
+			caseFatalityRateValue = new Label("00.0%");
+			CssStyles.style(caseFatalityRateValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_3, CssStyles.VSPACE_TOP_5);
+			rateLayout.addComponent(caseFatalityRateValue);
 			
 			component.addComponent(rateLayout);
 			component.setExpandRatio(rateLayout, 1);
@@ -216,15 +216,15 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		component.setMargin(false);
 		component.setSpacing(false);
 
-		// value
-		lastReportedDistrictLabel = new Label(I18nProperties.getString(Strings.none).toUpperCase());
-		CssStyles.style(lastReportedDistrictLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
-		component.addComponent(lastReportedDistrictLabel);
-		
 		// title
 		Label titleLabel = new Label(I18nProperties.getCaption(I18nProperties.getCaption(Captions.dashboardLastReportedDistrict)));
 		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
 		component.addComponent(titleLabel);
+		
+		// value
+		lastReportedDistrictLabel = new Label(I18nProperties.getString(Strings.none).toUpperCase());
+		CssStyles.style(lastReportedDistrictLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_3, CssStyles.VSPACE_TOP_5);
+		component.addComponent(lastReportedDistrictLabel);
 		
 		return component;
 	}
@@ -233,16 +233,16 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		HorizontalLayout component = new HorizontalLayout();
 		component.setMargin(false);
 		component.setSpacing(false);
-
-		// count
-		outbreakDistrictCountLabel = new Label();
-		CssStyles.style(outbreakDistrictCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_3, CssStyles.VSPACE_TOP_5);
-		component.addComponent(outbreakDistrictCountLabel);
 		
 		// title
 		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardOutbreakDistricts));
 		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
 		component.addComponent(titleLabel);
+
+		// count
+		outbreakDistrictCountLabel = new Label();
+		CssStyles.style(outbreakDistrictCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_3, CssStyles.VSPACE_TOP_5);
+		component.addComponent(outbreakDistrictCountLabel);
 		
 		return component;
 	}
