@@ -103,6 +103,12 @@ public class CasesView extends AbstractView {
 
 	public static final String VIEW_NAME = "cases";
 
+	/**
+	 * When the number of cases exceeds this amount, the user will be confronted with a warning when trying
+	 * to enter bulk edit mode.
+	 */
+	public static final int BULK_EDIT_MODE_WARNING_THRESHOLD = 1000;
+
 	private CaseCriteria criteria;
 	private ViewConfiguration viewConfiguration;
 
@@ -141,6 +147,8 @@ public class CasesView extends AbstractView {
 	private MenuBar bulkOperationsDropdown;
 	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
+	private Button btnEnterBulkEditMode;
+	private Button btnLeaveBulkEditMode;
 
 	private Button switchArchivedActiveButton;
 
@@ -282,30 +290,32 @@ public class CasesView extends AbstractView {
 				warningLabel.setVisible(!criteria.hasAnyFilterActive());
 			});
 		}
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+			btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
 			btnEnterBulkEditMode.setId("enterBulkEditMode");
 			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
-			
-			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+
+			btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
 			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
 			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(btnLeaveBulkEditMode);
-			
+
 			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
-				viewConfiguration.setInEagerMode(true);
-				btnEnterBulkEditMode.setVisible(false);
-				btnLeaveBulkEditMode.setVisible(true);
-				searchField.setEnabled(false);
-				reportingUserFilter.setEnabled(false);
-				grid.setEagerDataProvider();
-				grid.reload();
+				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
+					VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.actionEnterBulkEditMode), new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)), 
+							I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, (result) -> {
+								if (result.booleanValue() == true) {
+									enterBulkEditMode();
+								}
+							});
+				} else {
+					enterBulkEditMode();
+				}
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
@@ -336,6 +346,17 @@ public class CasesView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private void enterBulkEditMode() {
+		bulkOperationsDropdown.setVisible(true);
+		viewConfiguration.setInEagerMode(true);
+		btnEnterBulkEditMode.setVisible(false);
+		btnLeaveBulkEditMode.setVisible(true);
+		searchField.setEnabled(false);
+		reportingUserFilter.setEnabled(false);
+		grid.setEagerDataProvider();
+		grid.reload();
 	}
 
 	public VerticalLayout createFilterBar() {
