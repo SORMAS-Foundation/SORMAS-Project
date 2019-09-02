@@ -73,7 +73,7 @@ public class PathogenTest extends AbstractDomainObject {
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private String serotype;
-	private String cqValue;
+	private Float cqValue;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -193,11 +193,11 @@ public class PathogenTest extends AbstractDomainObject {
 		this.serotype = serotype;
 	}
 	
-	@Column(length=255)
-	public String getCqValue() {
+	@Column
+	public Float getCqValue() {
 		return cqValue;
 	}
-	public void setCqValue(String cqValue) {
+	public void setCqValue(Float cqValue) {
 		this.cqValue = cqValue;
 	}
 	

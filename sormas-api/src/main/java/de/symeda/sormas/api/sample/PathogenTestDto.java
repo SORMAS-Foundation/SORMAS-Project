@@ -72,7 +72,7 @@ public class PathogenTestDto extends EntityDto {
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private String serotype;
-	private String cqValue;
+	private Float cqValue;
 
 	public static PathogenTestDto build(SampleReferenceDto sample, UserDto currentUser) {
 		PathogenTestDto pathogenTest = new PathogenTestDto();
@@ -208,11 +208,11 @@ public class PathogenTestDto extends EntityDto {
 		this.serotype = serotype;
 	}
 
-	public String getCqValue() {
+	public Float getCqValue() {
 		return cqValue;
 	}
 
-	public void setCqValue(String cqValue) {
+	public void setCqValue(Float cqValue) {
 		this.cqValue = cqValue;
 	}
 
