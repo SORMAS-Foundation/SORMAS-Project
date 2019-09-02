@@ -114,7 +114,6 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		shipmentDetails.setVisible(false);
 		received.setVisible(false);
 		receivedDate.setVisible(false);
-		labSampleId.setVisible(false);
 
 		initializeRequestedTests();
 		
@@ -170,14 +169,12 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 				shipmentDetails.setVisible(true);
 				received.setVisible(true);
 				receivedDate.setVisible(true);
-				labSampleId.setVisible(true);
 			} else {
 				shipped.setVisible(false);
 				shipmentDate.setVisible(false);
 				shipmentDetails.setVisible(false);
 				received.setVisible(false);
 				receivedDate.setVisible(false);
-				labSampleId.setVisible(false);
 			}
 		});
 
