@@ -54,6 +54,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
 			LayoutUtil.fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") + 
 			LayoutUtil.fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
+			LayoutUtil.fluidRowLocs(PathogenTestDto.CQ_VALUE, "") + 
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT);
 
 	private final SampleDto sample;
@@ -89,7 +90,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		
 		addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
-		addField(PathogenTestDto.SEROTYPE, TextField.class).setVisible(false);;
+		addField(PathogenTestDto.SEROTYPE, TextField.class);
+		addField(PathogenTestDto.CQ_VALUE, TextField.class);
 		OptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, OptionGroup.class);
 		testResultVerifiedField.setRequired(true);
 		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
@@ -107,7 +109,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	        put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
 	    }};
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, serotypeVisibilityDependencies, true);
-//		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE), true);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.CQ_VALUE, PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.CQ_VALUE_DETECTION), true);
 		
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();

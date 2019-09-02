@@ -3575,4 +3575,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completen
 ALTER TABLE pathogentest ADD COLUMN serotype varchar(255);
 ALTER TABLE pathogentest_history ADD COLUMN serotype varchar(255);
 
+ALTER TABLE pathogentest ADD COLUMN cqvalue varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN cqvalue varchar(255);
+
 INSERT INTO schema_version (version_number, comment) VALUES (163, 'Additional fields for meningitis');

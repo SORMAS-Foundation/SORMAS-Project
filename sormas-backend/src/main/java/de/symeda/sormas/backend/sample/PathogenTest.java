@@ -57,6 +57,7 @@ public class PathogenTest extends AbstractDomainObject {
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
 	public static final String SEROTYPE = "serotype";
+	public static final String CQ_VALUE = "cqValue";
 	
 	private Sample sample;
 	private Disease testedDisease;
@@ -72,6 +73,7 @@ public class PathogenTest extends AbstractDomainObject {
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private String serotype;
+	private String cqValue;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -189,6 +191,14 @@ public class PathogenTest extends AbstractDomainObject {
 	}
 	public void setSerotype(String serotype) {
 		this.serotype = serotype;
+	}
+	
+	@Column(length=255)
+	public String getCqValue() {
+		return cqValue;
+	}
+	public void setCqValue(String cqValue) {
+		this.cqValue = cqValue;
 	}
 	
 }
