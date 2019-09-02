@@ -159,6 +159,7 @@ public interface Captions {
 	public static String CaseExport_sampleDates = "CaseExport.sampleDates";
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
+	public static String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	public static String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	public static String CaseHospitalization = "CaseHospitalization";

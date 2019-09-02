@@ -141,6 +141,7 @@ public class CasesView extends AbstractView {
 	private TextField reportingUserFilter;
 	private CheckBox casesWithoutGeoCoordsFilter;
 	private CheckBox portHealthCasesWithoutFacilityFilter;
+	private CheckBox casesWithCaseManagementData;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 
 	// Bulk operations
@@ -612,6 +613,18 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(portHealthCasesWithoutFacilityFilter);
 			}
+			
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+				casesWithCaseManagementData = new CheckBox();
+				CssStyles.style(casesWithCaseManagementData, CssStyles.CHECKBOX_FILTER_INLINE);
+				casesWithCaseManagementData.setCaption(I18nProperties.getCaption(Captions.caseFilterCasesWithCaseManagementData));
+				casesWithCaseManagementData.setDescription(I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithCaseManagementData));
+				casesWithCaseManagementData.addValueChangeListener(e -> {
+					criteria.mustHaveCaseManagementData((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(casesWithCaseManagementData);
+			}
 		}
 		filterLayout.addComponent(thirdFilterRowLayout);
 		thirdFilterRowLayout.setVisible(false);
@@ -831,6 +844,7 @@ public class CasesView extends AbstractView {
 		if (portHealthCasesWithoutFacilityFilter != null) {
 			portHealthCasesWithoutFacilityFilter.setValue(criteria.isMustBePortHealthCaseWithoutFacility());
 		}
+		casesWithCaseManagementData.setValue(criteria.isMustHaveCaseManagementData());
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());

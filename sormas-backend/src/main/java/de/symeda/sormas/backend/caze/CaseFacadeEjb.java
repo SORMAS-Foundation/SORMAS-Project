@@ -323,7 +323,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, root);
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, cq, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
@@ -347,7 +347,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, cq, caze);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
@@ -409,7 +409,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, cq, caze);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
@@ -513,7 +513,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, cq, caze);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -598,7 +598,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, cq, caze);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -627,7 +627,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, caze);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, cq, caze);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {
@@ -657,7 +657,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
-		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, cq, caze));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -683,7 +683,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
-		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, cq, caze));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -765,7 +765,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Region> region2 = root2.join(Case.REGION, JoinType.LEFT);
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root, user);
-		Predicate criteriaFilter = criteria != null ? caseService.buildCriteriaFilter(criteria, cb, root) : null;
+		Predicate criteriaFilter = criteria != null ? caseService.buildCriteriaFilter(criteria, cb, cq, root) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
@@ -961,7 +961,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 
-		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, caze));
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, cq, caze));
 
 		if (filter != null) {
 			cq.where(filter);
