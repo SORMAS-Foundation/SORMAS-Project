@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.function.Consumer;
 
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -308,7 +310,6 @@ public class CaseController {
 		if (contact != null) {
 			createForm.setDiseaseReadOnly(true);
 		}
-
 		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(
 				createForm, createForm.getFieldGroup());
 
@@ -350,24 +351,22 @@ public class CaseController {
 
 		return editView;
 	}
-	
-	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName, Consumer<String> selectedCaseUuidConsumer) {
-		CaseCriteria caseCriteria = new CaseCriteria()
-				.disease(caseDto.getDisease())
-				.region(caseDto.getRegion());
-		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria()
-				.firstName(personFirstName)
-				.lastName(personLastName)
-				.caseCriteria(caseCriteria)
-				.reportDate(caseDto.getReportDate());
-		
-		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria, UserProvider.getCurrent().getUuid());
-		
+
+	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName,
+			Consumer<String> selectedCaseUuidConsumer) {
+		CaseCriteria caseCriteria = new CaseCriteria().disease(caseDto.getDisease()).region(caseDto.getRegion());
+		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria().firstName(personFirstName)
+				.lastName(personLastName).caseCriteria(caseCriteria).reportDate(caseDto.getReportDate());
+
+		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria,
+				UserProvider.getCurrent().getUuid());
+
 		if (similarCases.size() > 0) {
 			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(similarCases);
 			pickOrCreateField.setWidth(1280, Unit.PIXELS);
-			
-			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
+
+			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(
+					pickOrCreateField);
 			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 			component.getCommitButton().setEnabled(false);
 			component.addCommitListener(() -> {
@@ -438,12 +437,9 @@ public class CaseController {
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
 				caseEditForm, caseEditForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				CaseDataDto cazeDto = caseEditForm.getValue();
-				saveCase(cazeDto);
-			}
+		editView.addCommitListener(() -> {
+			CaseDataDto cazeDto = caseEditForm.getValue();
+				checkIfPreviousHospitalisationNeededAndSaveCase(cazeDto);
 		});
 
 		appendSpecialCommands(caze, editView);
@@ -550,25 +546,6 @@ public class CaseController {
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveCaseButton);
 			editView.getButtonsPanel().setComponentAlignment(archiveCaseButton, Alignment.BOTTOM_LEFT);
-		}
-
-		// Initialize 'Transfer case' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER) && !caze.isUnreferredPortHealthCase()) {
-			Button transferCaseButton = new Button();
-			transferCaseButton.setCaption(I18nProperties.getCaption(Captions.caseTransferCase));
-			transferCaseButton.addClickListener(new ClickListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					editView.commit();
-					CaseDataDto cazeDto = findCase(caze.getUuid());
-					transferCase(cazeDto);
-				}
-			});
-
-			editView.getButtonsPanel().addComponentAsFirst(transferCaseButton);
-			editView.getButtonsPanel().setComponentAlignment(transferCaseButton, Alignment.BOTTOM_LEFT);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE)
@@ -715,36 +692,24 @@ public class CaseController {
 		return view;
 	}
 
-	public void transferCase(CaseDataDto caze) {
-		CaseFacilityChangeForm facilityChangeForm = new CaseFacilityChangeForm(UserRight.CASE_TRANSFER);
-		facilityChangeForm.setValue(caze);
-		CommitDiscardWrapperComponent<CaseFacilityChangeForm> facilityChangeView = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(
-				facilityChangeForm, facilityChangeForm.getFieldGroup());
-		facilityChangeView.getCommitButton().setCaption(I18nProperties.getCaption(Captions.caseTransferCase));
-		facilityChangeView.setMargin(true);
+	public void checkIfPreviousHospitalisationNeededAndSaveCase(CaseDataDto cazeDto) {
 
-		Window popupWindow = VaadinUiUtil.showPopupWindow(facilityChangeView);
-		popupWindow.setCaption(I18nProperties.getString(Strings.headingTransferCase));
+		if (cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid())
+				.getHealthFacility().getUuid())) {
 
-		facilityChangeView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!facilityChangeForm.getFieldGroup().isModified()) {
-					CaseDataDto dto = facilityChangeForm.getValue();
-					FacadeProvider.getCaseFacade().saveAndTransferCase(dto);
-					popupWindow.close();
-					Notification.show(I18nProperties.getString(Strings.messageCaseTransfered), Type.WARNING_MESSAGE);
-					SormasUI.refreshView();
-				}
-			}
-		});
-
-		Button cancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
-		cancelButton.setStyleName(ValoTheme.BUTTON_LINK);
-		cancelButton.addClickListener(e -> {
-			popupWindow.close();
-		});
-		facilityChangeView.getButtonsPanel().replaceComponent(facilityChangeView.getDiscardButton(), cancelButton);
+			VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.caseCaseTransferOrDataCorrection),
+					new Label(I18nProperties.getString(Strings.messageCaseTransferOrDataCorrection)),
+					I18nProperties.getCaption(Captions.caseCaseTransfer),
+					I18nProperties.getCaption(Captions.caseDataCorrection), 500, e -> {
+						if (e.booleanValue() == true) {
+							FacadeProvider.getCaseFacade().saveAndTransferCase(cazeDto);
+						} else {
+							saveCase(cazeDto);
+						}
+					});
+		}else {
+			saveCase(cazeDto);
+		}
 	}
 
 	public void referFromPointOfEntry(CaseDataDto caze) {

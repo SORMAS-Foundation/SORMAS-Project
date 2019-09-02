@@ -225,7 +225,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
@@ -307,8 +307,11 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 		}
 
-		List<SampleIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return resultList;	
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 	
 	@Override

@@ -293,7 +293,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
@@ -378,8 +378,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		order.add(cb.desc(task.get(Task.DUE_DATE)));
 		cq.orderBy(order);
 
-		List<TaskIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return resultList;
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 
 	@Override

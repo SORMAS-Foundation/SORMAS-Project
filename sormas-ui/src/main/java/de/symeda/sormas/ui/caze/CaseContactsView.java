@@ -55,6 +55,7 @@ import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -63,6 +64,7 @@ public class CaseContactsView extends AbstractCaseView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
 	private ContactCriteria criteria;
+	private ViewConfiguration viewConfiguration;
 	
 	private ContactGrid grid;  
 	
@@ -80,11 +82,12 @@ public class CaseContactsView extends AbstractCaseView {
 	public CaseContactsView() {
 		super(VIEW_NAME);
 		setSizeFull();
-		
+
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		viewConfiguration.setInEagerMode(true);
 		criteria = ViewModelProviders.of(CaseContactsView.class).get(ContactCriteria.class);
 		
-		grid = new ContactGrid();
-		grid.setCriteria(criteria);
+		grid = new ContactGrid(criteria, getClass());
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -187,8 +190,7 @@ public class CaseContactsView extends AbstractCaseView {
 			Command cancelFollowUpCommand = selectedItem -> {
 				ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
-						grid.deselectAll();
-						grid.reload();
+						navigateTo(criteria);
 					}
 				});
 			};
@@ -197,8 +199,7 @@ public class CaseContactsView extends AbstractCaseView {
 			Command lostToFollowUpCommand = selectedItem -> {
 				ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
-						grid.deselectAll();
-						grid.reload();
+						navigateTo(criteria);
 					}
 				});
 			};
@@ -207,8 +208,7 @@ public class CaseContactsView extends AbstractCaseView {
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getContactController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
-						grid.deselectAll();
-						grid.reload();
+						navigateTo(criteria);
 					}
 				});
 			};

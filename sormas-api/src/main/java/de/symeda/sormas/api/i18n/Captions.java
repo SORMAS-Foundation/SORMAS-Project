@@ -25,9 +25,11 @@ public interface Captions {
 	public static String actionDeselectAll = "actionDeselectAll";
 	public static String actionDiscard = "actionDiscard";
 	public static String actionDismiss = "actionDismiss";
+	public static String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	public static String actionGenerate = "actionGenerate";
 	public static String actionHide = "actionHide";
 	public static String actionImport = "actionImport";
+	public static String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	public static String actionLogout = "actionLogout";
 	public static String actionMerge = "actionMerge";
 	public static String actionNewEntry = "actionNewEntry";
@@ -80,6 +82,8 @@ public interface Captions {
 	public static String caseBackToDirectory = "caseBackToDirectory";
 	public static String caseCalculateCompleteness = "caseCalculateCompleteness";
 	public static String caseCasesList = "caseCasesList";
+	public static String caseCaseTransfer = "caseCaseTransfer";
+	public static String caseCaseTransferOrDataCorrection = "caseCaseTransferOrDataCorrection";
 	public static String caseContacts = "caseContacts";
 	public static String caseCreateCase = "caseCreateCase";
 	public static String CaseData = "CaseData";
@@ -138,6 +142,7 @@ public interface Captions {
 	public static String CaseData_vaccinationDate = "CaseData.vaccinationDate";
 	public static String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	public static String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
+	public static String caseDataCorrection = "caseDataCorrection";
 	public static String CaseExport_address = "CaseExport.address";
 	public static String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";
@@ -266,6 +271,7 @@ public interface Captions {
 	public static String dashboardCaseFatalityRate = "dashboardCaseFatalityRate";
 	public static String dashboardCaseFatalityRateShort = "dashboardCaseFatalityRateShort";
 	public static String dashboardCasesIn = "dashboardCasesIn";
+	public static String dashboardComparedTo = "dashboardComparedTo";
 	public static String dashboardComparedToPreviousPeriod = "dashboardComparedToPreviousPeriod";
 	public static String dashboardCompletedFollowUp = "dashboardCompletedFollowUp";
 	public static String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
@@ -274,7 +280,9 @@ public interface Captions {
 	public static String dashboardConvertedToCase = "dashboardConvertedToCase";
 	public static String dashboardCooperative = "dashboardCooperative";
 	public static String dashboardCustom = "dashboardCustom";
+	public static String dashboardCustomPeriod = "dashboardCustomPeriod";
 	public static String dashboardData = "dashboardData";
+	public static String dashboardDayBefore = "dashboardDayBefore";
 	public static String dashboardDead = "dashboardDead";
 	public static String dashboardDiscarded = "dashboardDiscarded";
 	public static String dashboardDiseaseBurdenInfo = "dashboardDiseaseBurdenInfo";
@@ -295,6 +303,8 @@ public interface Captions {
 	public static String dashboardHigh = "dashboardHigh";
 	public static String dashboardIndeterminate = "dashboardIndeterminate";
 	public static String dashboardInvestigated = "dashboardInvestigated";
+	public static String dashboardLastReport = "dashboardLastReport";
+	public static String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
 	public static String dashboardLastVisitGt48 = "dashboardLastVisitGt48";
 	public static String dashboardLastVisitLt24 = "dashboardLastVisitLt24";
 	public static String dashboardLastVisitLt48 = "dashboardLastVisitLt48";
@@ -327,12 +337,17 @@ public interface Captions {
 	public static String dashboardOutbreak = "dashboardOutbreak";
 	public static String dashboardOutbreakDistricts = "dashboardOutbreakDistricts";
 	public static String dashboardPending = "dashboardPending";
+	public static String dashboardPeriodBefore = "dashboardPeriodBefore";
 	public static String dashboardPositive = "dashboardPositive";
 	public static String dashboardPossible = "dashboardPossible";
 	public static String dashboardProbable = "dashboardProbable";
 	public static String dashboardReceived = "dashboardReceived";
 	public static String dashboardRemoved = "dashboardRemoved";
 	public static String dashboardRumor = "dashboardRumor";
+	public static String dashboardSameDayLastYear = "dashboardSameDayLastYear";
+	public static String dashboardSamePeriodLastYear = "dashboardSamePeriodLastYear";
+	public static String dashboardSameWeekLastYear = "dashboardSameWeekLastYear";
+	public static String dashboardSelectPeriod = "dashboardSelectPeriod";
 	public static String dashboardShipped = "dashboardShipped";
 	public static String dashboardShowAllDiseases = "dashboardShowAllDiseases";
 	public static String dashboardShowCases = "dashboardShowCases";
@@ -357,6 +372,7 @@ public interface Captions {
 	public static String dashboardUncooperative = "dashboardUncooperative";
 	public static String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
+	public static String dashboardWeekBefore = "dashboardWeekBefore";
 	public static String dashboardYesterday = "dashboardYesterday";
 	public static String devModeCaseCount = "devModeCaseCount";
 	public static String devModeDisease = "devModeDisease";
