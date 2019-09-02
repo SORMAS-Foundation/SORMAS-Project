@@ -50,6 +50,7 @@ public interface Strings {
 	public static String confirmationDeleteTasks = "confirmationDeleteTasks";
 	public static String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	public static String confirmationDeleteVisits = "confirmationDeleteVisits";
+	public static String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
@@ -310,6 +311,7 @@ public interface Strings {
 	public static String messageCasesEdited = "messageCasesEdited";
 	public static String messageCasesMerged = "messageCasesMerged";
 	public static String messageCaseTransfered = "messageCaseTransfered";
+	public static String messageCaseTransferOrDataCorrection = "messageCaseTransferOrDataCorrection";
 	public static String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	public static String messageCheckInputData = "messageCheckInputData";
 	public static String messageClinicalCourseSaved = "messageClinicalCourseSaved";
@@ -392,6 +394,7 @@ public interface Strings {
 	public static String messageWrongFileType = "messageWrongFileType";
 	public static String mmhg = "mmhg";
 	public static String no = "no";
+	public static String none = "none";
 	public static String notAnswered = "notAnswered";
 	public static String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	public static String notificationCaseClassificationChangedSubject = "notificationCaseClassificationChangedSubject";

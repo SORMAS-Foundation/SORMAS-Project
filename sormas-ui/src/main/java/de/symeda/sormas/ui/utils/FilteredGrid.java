@@ -13,40 +13,52 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	private static final long serialVersionUID = 8116377533153377424L;
 
 	private C criteria;
-	
-    public FilteredGrid(Class<T> beanType) {
-        super(beanType);
-    }
-	
+	private boolean inEagerMode;
+
+	public FilteredGrid(Class<T> beanType) {
+		super(beanType);
+	}
+
 	public C getCriteria() {
 		return criteria;
 	}
-	
+
 	public void setCriteria(C criteria) {
 		this.criteria = criteria;
-		getFilteredDataProvider().setFilter(criteria);
+		if (!inEagerMode) { 
+			getFilteredDataProvider().setFilter(criteria);
+		}
 	}
-	
+
+	public boolean isInEagerMode() {
+		return inEagerMode;
+	}
+
+	public void setInEagerMode(boolean inEagerMode) {
+		this.inEagerMode = inEagerMode;
+	}
+
 	@SuppressWarnings("unchecked")
 	public ConfigurableFilterDataProvider<T, Void, C> getFilteredDataProvider() {
-		return (ConfigurableFilterDataProvider<T, Void, C>)super.getDataProvider();
+		return (ConfigurableFilterDataProvider<T, Void, C>) super.getDataProvider();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setDataProvider(DataProvider<T, ?> dataProvider) {
-		if (!(dataProvider instanceof ConfigurableFilterDataProvider)) {
-			dataProvider = (ConfigurableFilterDataProvider<T, Void, C>)dataProvider.withConfigurableFilter();
+		if (!inEagerMode && !(dataProvider instanceof ConfigurableFilterDataProvider)) {
+			dataProvider = (ConfigurableFilterDataProvider<T, Void, C>) dataProvider.withConfigurableFilter();
 		}
 		super.setDataProvider(dataProvider);
 	}
-	
+
 	@Override
 	public void setDataProvider(FetchItemsCallback<T> fetchItems, SerializableSupplier<Integer> sizeCallback) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public int getItemCount() {
 		return getDataProvider().size(new Query<>());
 	}
+
 }

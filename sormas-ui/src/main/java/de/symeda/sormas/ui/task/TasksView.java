@@ -32,6 +32,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class TasksView extends AbstractView {
@@ -39,6 +40,7 @@ public class TasksView extends AbstractView {
 	public static final String VIEW_NAME = "tasks";
 	
 	private final TaskGridComponent taskListComponent;
+	private ViewConfiguration viewConfiguration;
 
     public TasksView() {
     	super(VIEW_NAME);
@@ -49,10 +51,42 @@ public class TasksView extends AbstractView {
     		taskCriteria.taskStatus(TaskStatus.PENDING);
     		ViewModelProviders.of(TasksView.class).get(TaskCriteria.class, taskCriteria);
     	}
-		
+
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
         taskListComponent = new TaskGridComponent(getViewTitleLabel(), this);
         addComponent(taskListComponent);
         
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+			btnEnterBulkEditMode.setId("enterBulkEditMode");
+			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnEnterBulkEditMode);
+			
+			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
+			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(btnLeaveBulkEditMode);
+			
+			btnEnterBulkEditMode.addClickListener(e -> {
+				taskListComponent.getBulkOperationsDropdown().setVisible(true);
+				viewConfiguration.setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				taskListComponent.getGrid().setEagerDataProvider();
+				taskListComponent.getGrid().reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				taskListComponent.getBulkOperationsDropdown().setVisible(false);
+				viewConfiguration.setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(taskListComponent.getCriteria());
+			});
+		}
+		
     	if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 	    	Button createButton = new Button(I18nProperties.getCaption(Captions.taskNewTask));
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -66,4 +100,9 @@ public class TasksView extends AbstractView {
     public void enter(ViewChangeEvent event) {
     	taskListComponent.reload(event);
     }
+	
+	public ViewConfiguration getViewConfiguration() {
+		return viewConfiguration;
+	}
+	
 }

@@ -232,7 +232,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
 		Root<Event> event = cq.from(Event.class);
@@ -308,8 +308,11 @@ public class EventFacadeEjb implements EventFacade {
 			cq.orderBy(cb.desc(event.get(Contact.CHANGE_DATE)));
 		}
 
-		List<EventIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return resultList;
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 
 	@Override

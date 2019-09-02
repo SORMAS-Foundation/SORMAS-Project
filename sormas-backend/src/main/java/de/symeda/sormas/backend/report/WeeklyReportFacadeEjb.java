@@ -273,7 +273,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 		if (!DataHelper.equal(target.getReportEntries(), entries)) {
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
-		target.setReportEntries(entries);
+		target.getReportEntries().clear();
+		target.getReportEntries().addAll(entries);
 
 		return target;
 	}
