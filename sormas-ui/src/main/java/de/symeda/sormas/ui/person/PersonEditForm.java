@@ -23,8 +23,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -56,6 +56,7 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -70,9 +71,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String ADDRESS_HEADER = "addressHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 
-	private Label occupationHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonOccupation)), ContentMode.HTML);
-	private Label addressHeader = new Label(LayoutUtil.h3(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS)), ContentMode.HTML);
-	private Label contactInformationHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingContactInformation)), ContentMode.HTML);
+	private Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
+	private Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
+	private Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
 
 	private Disease disease;
 	private String diseaseDetails;
@@ -110,7 +111,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					LayoutUtil.oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
 					LayoutUtil.oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
 					) +
-			LayoutUtil.loc(OCCUPATION_HEADER) +
+			LayoutUtil.loc( OCCUPATION_HEADER) +
 			LayoutUtil.divsCss(
 					CssStyles.VSPACE_3, 
 					LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
@@ -121,8 +122,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			LayoutUtil.loc(ADDRESS_HEADER) +
 			LayoutUtil.divsCss(
 					CssStyles.VSPACE_3,
-					LayoutUtil.fluidRowLocs(PersonDto.ADDRESS) +
-					LayoutUtil.loc(CONTACT_INFORMATION_HEADER) +
+					LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)) +
+			LayoutUtil.loc(CONTACT_INFORMATION_HEADER) +
+			LayoutUtil.divsCss(
+					CssStyles.VSPACE_3,
 					LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 					LayoutUtil.fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
 					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER))
@@ -137,6 +140,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.diseaseDetails = diseaseDetails;
 		this.viewMode = viewMode;
 
+		occupationHeader.addStyleName(CssStyles.H3);
+		addressHeader.addStyleName(CssStyles.H3);
+		contactInformationHeader.addStyleName(CssStyles.H3);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
@@ -176,9 +182,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
 		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
+		approximateAgeField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, approximateAgeField.getCaption()));
 		ComboBox approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
 		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
 
+		approximateAgeField.addValidator(new ApproximateAgeValidator(approximateAgeField, approximateAgeTypeField, I18nProperties.getValidationError(Validations.softApproximateAgeTooHigh)));
+		
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);

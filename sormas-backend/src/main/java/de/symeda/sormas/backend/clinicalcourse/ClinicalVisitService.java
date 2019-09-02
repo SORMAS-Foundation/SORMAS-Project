@@ -48,6 +48,17 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 		List<ClinicalVisit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
+
+	public int getClinicalVisitCountByCase(long caseId) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ClinicalVisit> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT).get(ClinicalCourse.CASE).get(Case.ID), caseId));
+
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
 	
 	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();

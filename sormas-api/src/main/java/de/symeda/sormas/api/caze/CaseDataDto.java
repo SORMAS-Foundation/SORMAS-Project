@@ -21,11 +21,14 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
+import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -75,6 +78,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String THERAPY = "therapy";
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
+	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION = "vaccination";
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
@@ -89,9 +93,14 @@ public class CaseDataDto extends EntityDto {
 	public static final String OUTCOME_DATE = "outcomeDate";
 	public static final String SEQUELAE = "sequelae";
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
-	public static final String CLINICIAN_DETAILS = "clinicianDetails";
+	public static final String CLINICIAN_NAME = "clinicianName";
+	public static final String CLINICIAN_PHONE = "clinicianPhone";
+	public static final String CLINICIAN_EMAIL = "clinicianEmail";
 	public static final String NOTIFYING_CLINIC = "notifyingClinic";
 	public static final String NOTIFYING_CLINIC_DETAILS = "notifyingClinicDetails";
+	public static final String CASE_ORIGIN = "caseOrigin";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -171,7 +180,9 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown smallpoxVaccinationReceived;
 	@Outbreaks
 	private UserReferenceDto surveillanceOfficer;
-	private String clinicianDetails;
+	private String clinicianName;
+	private String clinicianPhone;
+	private String clinicianEmail;
 	@Diseases({ Disease.CONGENITAL_RUBELLA })
 	private HospitalWardType notifyingClinic;
 	@Diseases({ Disease.CONGENITAL_RUBELLA })
@@ -187,7 +198,12 @@ public class CaseDataDto extends EntityDto {
 	private TherapyDto therapy;
 	private ClinicalCourseDto clinicalCourse;
 	private MaternalHistoryDto maternalHistory;
-	
+	private String creationVersion;
+	private PortHealthInfoDto portHealthInfo;
+	private CaseOrigin caseOrigin;
+	private PointOfEntryReferenceDto pointOfEntry;
+	private String pointOfEntryDetails;
+
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
 		caze.setUuid(DataHelper.createUuid());
@@ -198,16 +214,26 @@ public class CaseDataDto extends EntityDto {
 		caze.setTherapy(TherapyDto.build());
 		caze.setClinicalCourse(ClinicalCourseDto.build());
 		caze.setMaternalHistory(MaternalHistoryDto.build());
+		caze.setPortHealthInfo(PortHealthInfoDto.build());
 		caze.setDisease(disease);
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
 		caze.setReportDate(new Date());
+		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		return caze;
 	}
 
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
+	}
+
+	/**
+	 * Returns true if the case is an original point of entry case and has not yet
+	 * been assigned a health facility.
+	 */
+	public boolean isUnreferredPortHealthCase() {
+		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
 	}
 
 	public UserReferenceDto getReportingUser() {
@@ -354,12 +380,28 @@ public class CaseDataDto extends EntityDto {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	public String getClinicianDetails() {
-		return clinicianDetails;
+	public String getClinicianName() {
+		return clinicianName;
 	}
 
-	public void setClinicianDetails(String clinicianDetails) {
-		this.clinicianDetails = clinicianDetails;
+	public void setClinicianName(String clinicianName) {
+		this.clinicianName = clinicianName;
+	}
+
+	public String getClinicianPhone() {
+		return clinicianPhone;
+	}
+
+	public void setClinicianPhone(String clinicianPhone) {
+		this.clinicianPhone = clinicianPhone;
+	}
+
+	public String getClinicianEmail() {
+		return clinicianEmail;
+	}
+
+	public void setClinicianEmail(String clinicianEmail) {
+		this.clinicianEmail = clinicianEmail;
 	}
 
 	@Deprecated
@@ -427,19 +469,19 @@ public class CaseDataDto extends EntityDto {
 	public void setEpiData(EpiDataDto epiData) {
 		this.epiData = epiData;
 	}
-	
+
 	public TherapyDto getTherapy() {
 		return therapy;
 	}
-	
+
 	public void setTherapy(TherapyDto therapy) {
 		this.therapy = therapy;
 	}
-	
+
 	public ClinicalCourseDto getClinicalCourse() {
 		return clinicalCourse;
 	}
-	
+
 	public void setClinicalCourse(ClinicalCourseDto clinicalCourse) {
 		this.clinicalCourse = clinicalCourse;
 	}
@@ -450,6 +492,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setMaternalHistory(MaternalHistoryDto maternalHistory) {
 		this.maternalHistory = maternalHistory;
+	}
+
+	public PortHealthInfoDto getPortHealthInfo() {
+		return portHealthInfo;
+	}
+
+	public void setPortHealthInfo(PortHealthInfoDto portHealthInfo) {
+		this.portHealthInfo = portHealthInfo;
 	}
 
 	public YesNoUnknown getPregnant() {
@@ -587,5 +637,38 @@ public class CaseDataDto extends EntityDto {
 	public void setNotifyingClinicDetails(String notifyingClinicDetails) {
 		this.notifyingClinicDetails = notifyingClinicDetails;
 	}
-	
+
+	@ImportIgnore
+	public String getCreationVersion() {
+		return creationVersion;
+	}
+
+	public void setCreationVersion(String creationVersion) {
+		this.creationVersion = creationVersion;
+	}
+
+	public CaseOrigin getCaseOrigin() {
+		return caseOrigin;
+	}
+
+	public void setCaseOrigin(CaseOrigin caseOrigin) {
+		this.caseOrigin = caseOrigin;
+	}
+
+	public PointOfEntryReferenceDto getPointOfEntry() {
+		return pointOfEntry;
+	}
+
+	public void setPointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
+	}
+
+	public String getPointOfEntryDetails() {
+		return pointOfEntryDetails;
+	}
+
+	public void setPointOfEntryDetails(String pointOfEntryDetails) {
+		this.pointOfEntryDetails = pointOfEntryDetails;
+	}
+
 }

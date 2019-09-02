@@ -112,6 +112,7 @@ public final class CssStyles {
 	
 	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";
+	public static final String LAYOUT_SPACIOUS = "spacious";
 	public static final String BACKGROUND_ROUNDED_CORNERS = "background-rounded-corners";
 	public static final String BACKGROUND_CRITERIA = "background-criteria";
 	public static final String BACKGROUND_SUB_CRITERIA = "background-sub-criteria";
@@ -314,6 +315,9 @@ public final class CssStyles {
 			return "background-disease-yellow-fever";
 		case CONGENITAL_RUBELLA:
 			return "background-disease-congenital-rubella";
+		case UNDEFINED:
+			return "background-disease-undefined";
+			
 		default:
 			throw new IllegalArgumentException(disease.toString());
 		}

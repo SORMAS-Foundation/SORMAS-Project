@@ -17,22 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.LoginForm;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.UserRightsException;
 
 /**
@@ -49,68 +61,158 @@ public class LoginScreen extends CssLayout {
 	}
 
 	private void buildUI() {
-		addStyleName("login-screen");
+		addStyleName("login-screen-back");
+		CssLayout layout = new CssLayout();
+		layout.addStyleName("login-screen");
+		addComponent(layout);
 
 		// login form, centered in the available part of the screen
+		VerticalLayout loginFormLayout = new VerticalLayout();
+		CssStyles.style(loginFormLayout, "login-form", CssStyles.LAYOUT_SPACIOUS);
+		loginFormLayout.setMargin(true);
+		loginFormLayout.setSpacing(false);
+		
+        // header of the menu
+        final HorizontalLayout titleLayout = new HorizontalLayout();
+        titleLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        titleLayout.setSpacing(false);
+        Label title = new Label("SORMAS");
+        CssStyles.style(title, CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.HSPACE_LEFT_3);
+        Image image = new Image(null, new ThemeResource("img/sormas-logo.png"));
+        titleLayout.addComponent(image);
+        titleLayout.addComponent(title);
+        loginFormLayout.addComponent(titleLayout);
+        
+        Label header = new Label("Login");
+        CssStyles.style(header, CssStyles.H2);
+        loginFormLayout.addComponent(header);
+        
 		Component loginForm = buildLoginForm();
+		loginFormLayout.addComponent(loginForm);
+		loginFormLayout.addComponent(buildLoginDetailsLayout());
 
 		// layout to center login form when there is sufficient screen space
 		// - see the theme for how this is made responsive for various screen
 		// sizes
-		VerticalLayout centeringLayout = new VerticalLayout();
-		centeringLayout.setStyleName("centering-layout");
-		centeringLayout.addComponent(loginForm);
-		centeringLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
-
-		// information text about logging in
-		CssLayout loginInformation = buildLoginInformation();
-
-		addComponent(centeringLayout);
-		addComponent(loginInformation);
+		CssLayout loginLayout = new CssLayout();
+		loginLayout.setStyleName("login-form-container");
+		loginLayout.addComponent(loginFormLayout);
+		layout.addComponent(loginLayout);
+		
+		// custom html layout
+		Layout loginSidebarLayout = buildLoginSidebarLayout();
+		layout.addComponent(loginSidebarLayout);
 	}
 
 	private Component buildLoginForm() {
-		LoginForm loginForm = new LoginForm();
+		LoginForm loginForm = new LoginForm() {
+			@Override
+			protected TextField createUsernameField() {
+				TextField usernameField = super.createUsernameField();
+				usernameField.setWidth(100, Unit.PERCENTAGE);
+				return usernameField;
+			}
+			
+			@Override
+			protected PasswordField createPasswordField() {
+				PasswordField passwordField = super.createPasswordField();
+				passwordField.setWidth(100, Unit.PERCENTAGE);
+				return passwordField;
+			}
+
+			@Override
+			protected Button createLoginButton() {
+				Button loginButton = super.createLoginButton();
+				loginButton.setWidth(100, Unit.PERCENTAGE);
+				CssStyles.style(loginButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+				return loginButton;
+			}
+			
+			@Override
+			protected Component createContent(TextField userNameField, PasswordField passwordField,
+					Button loginButton) {
+				VerticalLayout contentLayout = (VerticalLayout)super.createContent(userNameField, passwordField, loginButton);
+				contentLayout.setMargin(false);
+				contentLayout.setSpacing(false);
+				return contentLayout;
+			}
+		};
 
 		loginForm.addLoginListener(event -> {
 			login(event.getLoginParameter("username").trim(), event.getLoginParameter("password"));
 		});
 
-		loginForm.addStyleName("login-form");
-		loginForm.setSizeUndefined();
+		loginForm.setWidth(240, Unit.PIXELS);
 
 		return loginForm;
 	}
-
-	private CssLayout buildLoginInformation() {
-		CssLayout loginInformation = new CssLayout();
-		loginInformation.setStyleName("login-information");
-
+	
+	private Layout buildLoginSidebarLayout() {
+		CssLayout loginSidebarLayout = new CssLayout();
+		loginSidebarLayout.setStyleName("login-sidebar");
+		
 		VerticalLayout innerLayout = new VerticalLayout();
-		innerLayout.setSizeFull();
+		CssStyles.style(innerLayout, CssStyles.LAYOUT_SPACIOUS);
+		innerLayout.setSizeUndefined();
+		innerLayout.setSpacing(false);
 
-		Image img = new Image(null, new ThemeResource("img/sormas-logo-big.png"));
-		img.setHeight(240, Unit.PIXELS);
+		Image img = new Image(null, new ThemeResource("img/sormas-logo-big-text.png"));
+		img.setWidth(320, Unit.PIXELS);
 		innerLayout.addComponent(img);
 		innerLayout.setComponentAlignment(img, Alignment.TOP_CENTER);
-		innerLayout.setExpandRatio(img, 0);
 
-		Label loginInfoText = new Label("<h1>SORMAS</h1>"
-				+ "<h2 style='color:white'>Surveillance, Outbreak Response Management and Analysis System</h2>"
-				+ "<h3 style='color:white; text-transform:uppercase'>&#9679; Disease Prevention<br>&#9679; Disease Detection<br>&#9679; Outbreak Response</h3>",
-				ContentMode.HTML);
-		loginInfoText.setWidth(100, Unit.PERCENTAGE);
-		innerLayout.addComponent(loginInfoText);
-		innerLayout.setExpandRatio(loginInfoText, 1);
+		Label fullNameText = new Label("Surveillance,<br>Outbreak Response Management<br>and Analysis System<br>", ContentMode.HTML);
+		fullNameText.setWidth(320, Unit.PIXELS);
+		CssStyles.style(fullNameText, CssStyles.H2, CssStyles.LABEL_PRIMARY, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
+		innerLayout.addComponent(fullNameText);
+		innerLayout.setComponentAlignment(fullNameText, Alignment.TOP_CENTER);
+		
+		Label missionText = new Label("\u2022 Disease Prevention<br>\u2022 Disease Detection<br>\u2022 Outbreak Response", ContentMode.HTML);
+		missionText.setWidth(320, Unit.PIXELS);
+		CssStyles.style(missionText, CssStyles.H2, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
+		innerLayout.addComponent(missionText);
+		innerLayout.setComponentAlignment(missionText, Alignment.TOP_CENTER);
+		
+		loginSidebarLayout.addComponent(innerLayout);
+		
+		Label htmlLabel = new Label();
+		htmlLabel.setContentMode(ContentMode.HTML);
+		
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
+		Path filePath = customHtmlDirectory.resolve("loginsidebar.html");
+		
+		try {
+			byte[] encoded = Files.readAllBytes(filePath);
+			htmlLabel.setValue(new String(encoded, "UTF-8"));
+		} catch (IOException e) {
+			htmlLabel.setValue("");
+		}
+		
+		loginSidebarLayout.addComponent(htmlLabel);
+		return loginSidebarLayout;
+	}
+	
+	private CssLayout buildLoginDetailsLayout() {
+		CssLayout loginDetailsLayout = new CssLayout();
+		loginDetailsLayout.setStyleName("login-details");
+		loginDetailsLayout.setWidth(100, Unit.PERCENTAGE);
+		
+		Label htmlLabel = new Label();
+		htmlLabel.setContentMode(ContentMode.HTML);
+		htmlLabel.setWidth(100, Unit.PERCENTAGE);
+		
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
+		Path filePath = customHtmlDirectory.resolve("logindetails.html");
 
-		Label loginInfoCopyright = new Label("© 2019 SORMAS. All Rights Reserved.");
-		loginInfoCopyright.setWidth(100, Unit.PERCENTAGE);
-		innerLayout.addComponent(loginInfoCopyright);
-		innerLayout.setExpandRatio(loginInfoCopyright, 0);
-		innerLayout.setComponentAlignment(loginInfoCopyright, Alignment.BOTTOM_LEFT);
-
-		loginInformation.addComponent(innerLayout);
-		return loginInformation;
+		try {
+			byte[] encoded = Files.readAllBytes(filePath);
+			htmlLabel.setValue(new String(encoded, "UTF-8"));
+		} catch (IOException e) {
+			htmlLabel.setValue("");
+		}
+		
+		loginDetailsLayout.addComponent(htmlLabel);
+		return loginDetailsLayout;
 	}
 
 	private void login(String username, String password) {

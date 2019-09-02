@@ -153,7 +153,7 @@ public class StatisticsCaseGrid extends Grid {
 					int columnIndex = columns.headMap((StatisticsGroupingKey) entry[entry.length - 1]).size() + 1;
 					row[columnIndex] = entry[0].toString();
 				}
-				totalAmountOfCases += (long) entry[0];
+				totalAmountOfCases += ((Number)entry[0]).longValue();
 			}
 			row[row.length - 1] = String.valueOf(totalAmountOfCases);
 			addRow(row);
@@ -173,12 +173,12 @@ public class StatisticsCaseGrid extends Grid {
 						currentRow[0] = entry[entry.length - 1].toString();
 						currentRow[1] = entry[0].toString();
 						rows.putIfAbsent((StatisticsGroupingKey) entry[entry.length - 1], currentRow);
-						columnTotals[columnTotals.length - 1] += (long) entry[0];
+						columnTotals[columnTotals.length - 1] += ((Number)entry[0]).longValue();
 					} else {
 						unknownRow = new Object[getColumns().size()];
 						unknownRow[0] = I18nProperties.getCaption(StatisticsHelper.UNKNOWN);
 						unknownRow[1] = entry[0].toString();
-						columnTotals[columnTotals.length - 1] += (long) entry[0];
+						columnTotals[columnTotals.length - 1] += ((Number)entry[0]).longValue();
 					}
 				} else {
 					// New grouping entry has been reached, add the current row to the rows map
@@ -220,7 +220,7 @@ public class StatisticsCaseGrid extends Grid {
 						currentRow[columnIndex] = entry[0].toString();
 					}
 					
-					columnTotals[columnIndex] += (long) entry[0];
+					columnTotals[columnIndex] += ((Number)entry[0]).longValue();
 				}
 			}
 

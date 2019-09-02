@@ -28,6 +28,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -44,17 +45,17 @@ public class DiseaseClassificationDtoHelper extends AdoDtoHelper<DiseaseClassifi
     }
 
     @Override
-    protected Call<List<DiseaseClassificationCriteriaDto>> pullAllSince(long since) {
+    protected Call<List<DiseaseClassificationCriteriaDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getClassificationFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<DiseaseClassificationCriteriaDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<DiseaseClassificationCriteriaDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is read-only");
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<DiseaseClassificationCriteriaDto> dtos) {
+    protected Call<List<PushResult>> pushAll(List<DiseaseClassificationCriteriaDto> dtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is read-only");
     }
 

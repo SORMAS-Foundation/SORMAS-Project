@@ -158,7 +158,7 @@ public class Contact extends AbstractDomainObject {
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn
 	public User getContactOfficer() {
 		return contactOfficer;
 	}

@@ -54,6 +54,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	public static final String TEMP_FILES_PATH = "temp.path";
 	public static final String GENERATED_FILES_PATH = "generated.path";
+	public static final String CUSTOM_FILES_PATH = "custom.path";
 	public static final String CSV_SEPARATOR = "csv.separator";
 	
 	public static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
@@ -61,6 +62,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_SENDER_NAME = "sms.sender.name";
 	public static final String SMS_AUTH_KEY = "sms.auth.key";
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
+	
+	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
@@ -80,6 +83,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	protected boolean getBoolean(String name, boolean defaultValue) {
 		return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
+	}
+	
+	protected double getDouble(String name, double defaultValue) {
+		return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
 	}
 
 	@Override
@@ -118,17 +125,22 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public String getTempFilesPath() {
-		return getProperty(TEMP_FILES_PATH, "/opt/sormas-temp/");
+		return getProperty(TEMP_FILES_PATH, "/opt/sormas/temp/");
 	}
 	
 	@Override
 	public String getGeneratedFilesPath() {
-		return getProperty(GENERATED_FILES_PATH, "/opt/sormas-generated/");
+		return getProperty(GENERATED_FILES_PATH, "/opt/sormas/generated/");
+	}
+	
+	@Override
+	public String getCustomFilesPath() {
+		return getProperty(CUSTOM_FILES_PATH, "/opt/sormas/custom/");
 	}
 	
 	@Override
 	public boolean isFeatureAutomaticCaseClassification() {
-		return getBoolean(FEATURE_AUTOMATIC_CASE_CLASSIFICATION, false);
+		return getBoolean(FEATURE_AUTOMATIC_CASE_CLASSIFICATION, true);
 	}
 
 	@Override
@@ -156,6 +168,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(SMS_AUTH_SECRET, "");
 	}
 
+	@Override
+	public double getNameSimilarityThreshold() {
+		return getDouble(NAME_SIMILARITY_THRESHOLD, 0.4D);
+	}
+	
 	@Override
 	public char getCsvSeparator() {
 		String seperatorString = getProperty(CSV_SEPARATOR, ",");

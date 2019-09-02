@@ -81,15 +81,17 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
-		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(VaadinIcons.TABLE);
-		addHeaderComponent(exportButton);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(VaadinIcons.TABLE);
+			addHeaderComponent(exportButton);
 
-		StreamResource streamResource = new GridExportStreamResource(grid, "sormas_districts", "sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv", DistrictsGrid.EDIT_BTN_ID);
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(exportButton);
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_districts", "sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv", DistrictsGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
@@ -162,7 +164,7 @@ public class DistrictsView extends AbstractConfigurationView {
 
 		searchField.setValue(criteria.getNameEpidLike());
 		regionFilter.setValue(criteria.getRegion());
-		
+
 		applyingCriteria = false;
 	}	
 

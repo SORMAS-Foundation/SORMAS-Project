@@ -23,7 +23,6 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -36,6 +35,7 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -54,17 +54,17 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
     }
 
     @Override
-    protected Call<List<PersonDto>> pullAllSince(long since) {
+    protected Call<List<PersonDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getPersonFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<PersonDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<PersonDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getPersonFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<PersonDto> personDtos) {
+    protected Call<List<PushResult>> pushAll(List<PersonDto> personDtos) throws NoConnectionException {
         return RetroProvider.getPersonFacade().pushAll(personDtos);
     }
 

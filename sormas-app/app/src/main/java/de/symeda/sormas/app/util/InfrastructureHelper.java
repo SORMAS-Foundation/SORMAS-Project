@@ -24,8 +24,10 @@ import java.util.List;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -65,6 +67,12 @@ public final class InfrastructureHelper {
                 : new ArrayList<>(), true);
     }
 
+    public static List<Item> loadPointsOfEntry(District district) {
+        return toItems(district != null
+                ? DatabaseHelper.getPointOfEntryDao().getByDistrict(district, true)
+                : new ArrayList<>(), true);
+    }
+
     public static void initializeRegionFields(final ControlSpinnerField regionField, List<Item> initialRegions,
                                               final ControlSpinnerField districtField, List<Item> initialDistricts,
                                               final ControlSpinnerField communityField, List<Item> initialCommunities) {
@@ -99,48 +107,57 @@ public final class InfrastructureHelper {
                                                 final ControlSpinnerField districtField, List<Item> districts,
                                                 final ControlSpinnerField communityField, List<Item> communities,
                                                 final ControlSpinnerField facilityField, List<Item> facilities) {
+        initializeFacilityFields(regionField, regions, districtField, districts, communityField, communities, facilityField, facilities, null, null);
+    }
 
-        regionField.initializeSpinner(regions, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                Region selectedRegion = (Region) field.getValue();
-                if (selectedRegion != null) {
-                    districtField.setSpinnerData(loadDistricts(selectedRegion), districtField.getValue());
-                } else {
-                    districtField.setSpinnerData(null);
+    public static void initializeFacilityFields(final ControlSpinnerField regionField, List<Item> regions,
+                                                final ControlSpinnerField districtField, List<Item> districts,
+                                                final ControlSpinnerField communityField, List<Item> communities,
+                                                final ControlSpinnerField facilityField, List<Item> facilities,
+                                                final ControlSpinnerField pointOfEntryField, List<Item> pointsOfEntry) {
+
+        regionField.initializeSpinner(regions, field -> {
+            Region selectedRegion = (Region) field.getValue();
+            if (selectedRegion != null) {
+                districtField.setSpinnerData(loadDistricts(selectedRegion), districtField.getValue());
+            } else {
+                districtField.setSpinnerData(null);
+            }
+        });
+
+        districtField.initializeSpinner(districts, field -> {
+            District selectedDistrict = (District) field.getValue();
+            if (selectedDistrict != null) {
+                communityField.setSpinnerData(loadCommunities(selectedDistrict), communityField.getValue());
+                facilityField.setSpinnerData(loadFacilities(selectedDistrict, null), facilityField.getValue());
+                if (pointOfEntryField != null) {
+                    pointOfEntryField.setSpinnerData(loadPointsOfEntry(selectedDistrict), pointOfEntryField.getValue());
+                }
+            } else {
+                communityField.setSpinnerData(null);
+                facilityField.setSpinnerData(null);
+                if (pointOfEntryField != null) {
+                    pointOfEntryField.setSpinnerData(null);
                 }
             }
         });
 
-        districtField.initializeSpinner(districts, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                District selectedDistrict = (District) field.getValue();
-                if (selectedDistrict != null) {
-                    communityField.setSpinnerData(loadCommunities(selectedDistrict), communityField.getValue());
-                    facilityField.setSpinnerData(loadFacilities(selectedDistrict, null), facilityField.getValue());
-                } else {
-                    communityField.setSpinnerData(null);
-                    facilityField.setSpinnerData(null);
-                }
-            }
-        });
-
-        communityField.initializeSpinner(communities, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                Community selectedCommunity = (Community) field.getValue();
-                if (selectedCommunity != null) {
-                    facilityField.setSpinnerData(loadFacilities(null, selectedCommunity));
-                } else if (districtField.getValue() != null) {
-                    facilityField.setSpinnerData(loadFacilities((District) districtField.getValue(), null));
-                } else {
-                    facilityField.setSpinnerData(null);
-                }
+        communityField.initializeSpinner(communities, field -> {
+            Community selectedCommunity = (Community) field.getValue();
+            if (selectedCommunity != null) {
+                facilityField.setSpinnerData(loadFacilities(null, selectedCommunity));
+            } else if (districtField.getValue() != null) {
+                facilityField.setSpinnerData(loadFacilities((District) districtField.getValue(), null));
+            } else {
+                facilityField.setSpinnerData(null);
             }
         });
 
         facilityField.initializeSpinner(facilities);
+
+        if (pointOfEntryField != null) {
+            pointOfEntryField.initializeSpinner(pointsOfEntry);
+        }
     }
 
     /**
@@ -149,15 +166,10 @@ public final class InfrastructureHelper {
      */
     public static void initializeHealthFacilityDetailsFieldVisibility(final ControlPropertyField healthFacilityField, final ControlPropertyField healthFacilityDetailsField) {
         setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField);
-        healthFacilityField.addValueChangedListener(new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField);
-            }
-        });
+        healthFacilityField.addValueChangedListener(field -> setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField));
     }
 
-    private static void setHealthFacilityDetailsFieldVisibility(ControlPropertyField healthFacilityField, ControlPropertyField healthFacilityDetailsField) {
+    public static void setHealthFacilityDetailsFieldVisibility(ControlPropertyField healthFacilityField, ControlPropertyField healthFacilityDetailsField) {
         Facility selectedFacility = (Facility) healthFacilityField.getValue();
 
         if (selectedFacility != null) {
@@ -185,4 +197,20 @@ public final class InfrastructureHelper {
             healthFacilityDetailsField.setVisibility(GONE);
         }
     }
+
+    public static void initializePointOfEntryDetailsFieldVisibility(final ControlPropertyField pointOfEntryField, final ControlPropertyField pointOfEntryDetailsField) {
+        setPointOfEntryDetailsFieldVisibility(pointOfEntryField, pointOfEntryDetailsField);
+        pointOfEntryField.addValueChangedListener(e -> setPointOfEntryDetailsFieldVisibility(pointOfEntryField, pointOfEntryDetailsField));
+    }
+
+    public static void setPointOfEntryDetailsFieldVisibility(final ControlPropertyField pointOfEntryField, final ControlPropertyField pointOfEntryDetailsField) {
+        PointOfEntry selectedPointOfEntry = (PointOfEntry) pointOfEntryField.getValue();
+        if (selectedPointOfEntry != null) {
+            pointOfEntryDetailsField.setVisibility(selectedPointOfEntry.getUuid().equals(PointOfEntryDto.OTHER_AIRPORT_UUID) || selectedPointOfEntry.getUuid().equals(PointOfEntryDto.OTHER_SEAPORT_UUID) ||
+                    selectedPointOfEntry.getUuid().equals(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID) || selectedPointOfEntry.getUuid().equals(PointOfEntryDto.OTHER_POE_UUID) ? VISIBLE : GONE);
+        } else {
+            pointOfEntryDetailsField.setVisibility(GONE);
+        }
+    }
+
 }

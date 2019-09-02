@@ -23,6 +23,7 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -39,17 +40,17 @@ public class DiseaseConfigurationDtoHelper extends AdoDtoHelper<DiseaseConfigura
     }
 
     @Override
-    protected Call<List<DiseaseConfigurationDto>> pullAllSince(long since) {
+    protected Call<List<DiseaseConfigurationDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getDiseaseConfigurationFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<DiseaseConfigurationDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<DiseaseConfigurationDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getDiseaseConfigurationFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<DiseaseConfigurationDto> dtos) {
+    protected Call<List<PushResult>> pushAll(List<DiseaseConfigurationDto> dtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is read-only");
     }
 

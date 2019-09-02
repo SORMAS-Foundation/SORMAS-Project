@@ -162,6 +162,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 
 		// National users can access all reports in the system
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}

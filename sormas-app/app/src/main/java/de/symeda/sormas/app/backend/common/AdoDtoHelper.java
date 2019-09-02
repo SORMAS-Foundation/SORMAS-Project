@@ -33,6 +33,7 @@ import java.util.concurrent.Callable;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.ServerConnectionException;
@@ -51,16 +52,16 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
     protected abstract Class<DTO> getDtoClass();
 
-    protected abstract Call<List<DTO>> pullAllSince(long since);
+    protected abstract Call<List<DTO>> pullAllSince(long since) throws NoConnectionException;
 
     /**
      * Explicitly pull missing entities.
      * This is needed, because entities are synced based on user access rights and these might change
      * e.g. when the district or region of a case is changed.
      */
-    protected abstract Call<List<DTO>> pullByUuids(List<String> uuids);
+    protected abstract Call<List<DTO>> pullByUuids(List<String> uuids) throws NoConnectionException;
 
-    protected abstract Call<List<PushResult>> pushAll(List<DTO> dtos);
+    protected abstract Call<List<PushResult>> pushAll(List<DTO> dtos) throws NoConnectionException;
 
     protected abstract void fillInnerFromDto(ADO ado, DTO dto);
 
@@ -73,14 +74,14 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
      * @return another pull needed?
      */
     public boolean pullAndPushEntities()
-            throws DaoException, ServerConnectionException, ServerCommunicationException {
+            throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
         pullEntities(false);
 
-        return pushEntities();
+        return pushEntities(false);
     }
 
-    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
         try {
             final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -105,7 +106,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         }
     }
 
-    public void repullEntities() throws DaoException, ServerCommunicationException, ServerConnectionException {
+    public void repullEntities() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
         try {
             final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -173,10 +174,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     /**
      * @return true: another pull is needed, because data has been changed on the server
      */
-    public boolean pushEntities() throws DaoException, ServerConnectionException, ServerCommunicationException {
+    public boolean pushEntities(boolean onlyNewEntities) throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
         final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
-        final List<ADO> modifiedAdos = dao.queryForEq(ADO.MODIFIED, true);
+        final List<ADO> modifiedAdos =
+                onlyNewEntities ? dao.queryForNull(ADO.CHANGE_DATE) : dao.queryForEq(ADO.MODIFIED, true);
 
         List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
         for (ADO ado : modifiedAdos) {
@@ -245,7 +247,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
         return !uuids.isEmpty();
     }
 
-    public void pullMissing(List<String> uuids) throws ServerCommunicationException, ServerConnectionException, DaoException {
+    public void pullMissing(List<String> uuids) throws ServerCommunicationException, ServerConnectionException, DaoException, NoConnectionException {
 
         final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
         uuids = dao.filterMissing(uuids);

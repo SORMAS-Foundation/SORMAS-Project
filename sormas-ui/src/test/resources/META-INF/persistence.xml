@@ -4,7 +4,8 @@
 
 	<persistence-unit name="beanTestPU" transaction-type="RESOURCE_LOCAL">
 
-		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<class>de.symeda.sormas.backend.caze.Case</class>
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
@@ -42,22 +43,27 @@
 		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
 		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
 		<class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
+		<class>de.symeda.sormas.backend.infrastructure.PointOfEntry</class>
+		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
 		<properties>
+      		<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
-			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:.;MODE=PostgreSQL" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE" />
+	    	<property name="javax.persistence.jdbc.user" value="sa" />
+	    	<property name="javax.persistence.jdbc.password" value="" />
 
-			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> 
+      		<property name="hibernate.hbm2ddl.auto" value="create-drop" />
+			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+      		<property name="show_sql" value="true"/>
+	    	
 			<!-- 			
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> 
 			<property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform"/>		
-			<property name="eclipselink.ddl-generation.output-mode" value="sql-script" />
-		    <property name="eclipselink.application-location" value="D:/workspaces/SORMAS" />
-		    <property name="eclipselink.create-ddl-jdbc-file-name" value="create.sql"/>			
-			<property name="eclipselink.target-database" value="PostgreSQL" /> 
 			 -->
 		</properties>
 	</persistence-unit>

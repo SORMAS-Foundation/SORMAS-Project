@@ -19,6 +19,7 @@ package de.symeda.sormas.api.user;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -71,5 +72,7 @@ public interface UserFacade {
 	UserDto getCurrentUser();
 	
 	UserReferenceDto getCurrentUserAsReference();
+
+	Set<UserRole> getValidRoles(String userName, String password);
 	
 }

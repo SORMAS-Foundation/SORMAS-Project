@@ -51,6 +51,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
@@ -65,6 +66,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -223,7 +225,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
@@ -305,8 +307,30 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 		}
 
-		List<SampleIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return resultList;	
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
+	}
+	
+	@Override
+	public void validate(SampleDto sample) throws ValidationRuntimeException {
+		if (sample.getAssociatedCase() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCase));
+		}
+		if (sample.getSampleDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)));
+		}
+		if (sample.getReportDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORT_DATE_TIME)));
+		}
+		if (sample.getSampleMaterial() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
+		}
+		if (sample.getLab() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
+		}
 	}
 	
 	private List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
@@ -372,14 +396,15 @@ public class SampleFacadeEjb implements SampleFacade {
 				);
 
 		User user = userService.getByUuid(userUuid);
-		Predicate filter = null;
+		Predicate filter = sampleService.createUserFilter(cb, cq, sample, user);
 
 		if (sampleCriteria != null) {
-			filter = sampleService.createUserFilter(cb, cq, sample, user);
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
-			filter = sampleService.createUserFilter(cb, cq, sample, caseCriteria, user);
+			Join<Case, Case> casePath = sample.join(Sample.ASSOCIATED_CASE);
+			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, casePath);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
 		if (filter != null) {
@@ -602,6 +627,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
+		
 		// Send an email to the lab user when a sample has been shipped to his lab
 		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
 			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());

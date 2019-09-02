@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -47,9 +48,9 @@ public interface CaseFacade {
 
 	long count(String userUuid, CaseCriteria caseCriteria);
 	
-	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
-	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
+	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, ExportType exportType, int first, int max);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
@@ -81,7 +82,7 @@ public interface CaseFacade {
 	
 	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, String userUuid);
 	
-	String getLastReportedCommunityName(CaseCriteria caseCriteria, String userUuid);
+	String getLastReportedDistrictName(CaseCriteria caseCriteria, String userUuid);
 	
 	/**
 	 * @param fromDate optional
@@ -104,7 +105,9 @@ public interface CaseFacade {
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid);
 	
 	void deleteCase(CaseReferenceDto caseRef, String userUuid);
-
+	
+	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid);
+	
 	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
 			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB);
 	
@@ -121,5 +124,13 @@ public interface CaseFacade {
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid);
 	
 	String generateEpidNumber(CaseReferenceDto caze);
+
+	void mergeCase(String leadUuid, String otherUuid);
+	
+	List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria, String userUuid);
+	
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid);
+	
+	void updateCompleteness(String caseUuid);
 	
 }

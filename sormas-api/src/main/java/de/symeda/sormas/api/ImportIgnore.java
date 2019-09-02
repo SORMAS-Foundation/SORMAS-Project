@@ -15,29 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.rest;
+package de.symeda.sormas.api;
 
-import javax.ws.rs.ApplicationPath;
-
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>
+ * Fields whose getters are annotated with this annotation are ignored when building .csv templates 
+ * and importing entities.
  */
-@ApplicationPath("*")
-public class RestApplication extends ResourceConfig  {
-	
-	public RestApplication() {
-        super(RestApplication.class);
-        
-        // Resources.
-        packages(getClass().getPackage().getName());
-        
-        // as described in https://jersey.github.io/documentation/latest/security.html
-        register(RolesAllowedDynamicFeature.class);
-        
-        register(JacksonFeature.class);
-    }
+@Target({
+	ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ImportIgnore {
+
 }

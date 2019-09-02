@@ -25,8 +25,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -170,6 +172,18 @@ public final class DataHelper {
 	
 	public static BigDecimal getTruncatedBigDecimal(BigDecimal number) {
 		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0,  RoundingMode.HALF_UP) : number;
+	}
+	
+	public static List<Integer> buildIntegerList(int min, int max) {
+		return buildIntegerList(min, max, 1);
+	}
+	
+	public static List<Integer> buildIntegerList(int min, int max, int step) {
+		List<Integer> x = new ArrayList<>();
+		for (int i = min; i <= max; i += step) {
+			x.add(i);
+		}
+		return x;
 	}
 	
 	public static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {

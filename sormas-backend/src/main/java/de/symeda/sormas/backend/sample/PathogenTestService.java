@@ -31,7 +31,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -249,9 +248,8 @@ public class PathogenTestService extends AbstractAdoService<PathogenTest> {
 			User user) {
 		// whoever created the sample the sample test is associated with is allowed to
 		// access it
-		Path<Sample> samplePath = sampleTestPath.get(PathogenTest.SAMPLE);
-		@SuppressWarnings("unchecked")
-		Predicate filter = sampleService.createUserFilter(cb, cq, (From<Sample, Sample>) samplePath, user);
+		Join<Sample, Sample> samplePath = sampleTestPath.join(PathogenTest.SAMPLE);
+		Predicate filter = sampleService.createUserFilter(cb, cq, samplePath, user);
 
 		return filter;
 	}

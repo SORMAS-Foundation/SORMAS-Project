@@ -231,6 +231,7 @@ VerticalLayout implements Buffered {
 	public Button getCommitButton() {
 		if (commitButton == null) {
 			commitButton = new Button(I18nProperties.getCaption(Captions.actionSave));
+			commitButton.setId("commit");
 			commitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
 			commitButton.addClickListener(new ClickListener() { 
@@ -253,6 +254,7 @@ VerticalLayout implements Buffered {
 	public Button getDiscardButton() {
 		if (discardButton == null) {
 			discardButton = new Button(I18nProperties.getCaption(Captions.actionDiscard));
+			discardButton.setId("discard");
 
 			discardButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
@@ -268,6 +270,7 @@ VerticalLayout implements Buffered {
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
 			deleteButton = new Button(I18nProperties.getCaption(Captions.actionDelete));
+			deleteButton.setId("delete");
 			CssStyles.style(deleteButton, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 			deleteButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;

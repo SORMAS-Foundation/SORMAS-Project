@@ -39,9 +39,6 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
-/**
- * Created by Martin Wahnschaffe on 22.07.2016.
- */
 public class FacilityDao extends AbstractAdoDao<Facility> {
 
     public FacilityDao(Dao<Facility,Long> innerDao) throws SQLException {

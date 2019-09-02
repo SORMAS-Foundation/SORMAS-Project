@@ -34,6 +34,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistoryDao;
+import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
+import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfoDao;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteriaDao;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
@@ -67,6 +69,8 @@ import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.HospitalizationDao;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalizationDao;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.outbreak.Outbreak;
@@ -118,7 +122,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 160;
+	public static final int DATABASE_VERSION = 165;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -160,6 +164,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, ClinicalCourse.class);
 			TableUtils.clearTable(connectionSource, HealthConditions.class);
 			TableUtils.clearTable(connectionSource, MaternalHistory.class);
+			TableUtils.clearTable(connectionSource, PortHealthInfo.class);
 			TableUtils.clearTable(connectionSource, Person.class);
 			TableUtils.clearTable(connectionSource, Symptoms.class);
 			TableUtils.clearTable(connectionSource, Task.class);
@@ -187,6 +192,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.clearTable(connectionSource, User.class);
 				TableUtils.clearTable(connectionSource, UserRoleConfig.class);
 				TableUtils.clearTable(connectionSource, DiseaseConfiguration.class);
+				TableUtils.clearTable(connectionSource, PointOfEntry.class);
 				TableUtils.clearTable(connectionSource, Facility.class);
 				TableUtils.clearTable(connectionSource, Community.class);
 				TableUtils.clearTable(connectionSource, District.class);
@@ -219,6 +225,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, District.class);
 			TableUtils.createTable(connectionSource, Community.class);
 			TableUtils.createTable(connectionSource, Facility.class);
+			TableUtils.createTable(connectionSource, PointOfEntry.class);
 			TableUtils.createTable(connectionSource, UserRoleConfig.class);
 			TableUtils.createTable(connectionSource, DiseaseConfiguration.class);
 			TableUtils.createTable(connectionSource, User.class);
@@ -232,6 +239,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, ClinicalCourse.class);
 			TableUtils.createTable(connectionSource, ClinicalVisit.class);
 			TableUtils.createTable(connectionSource, MaternalHistory.class);
+			TableUtils.createTable(connectionSource, PortHealthInfo.class);
 			TableUtils.createTable(connectionSource, Contact.class);
 			TableUtils.createTable(connectionSource, Visit.class);
 			TableUtils.createTable(connectionSource, Task.class);
@@ -1065,6 +1073,129 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN placeOfBirthFacilityDetails varchar(512);");
 					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN gestationAgeAtBirth integer;");
 					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN birthWeight integer;");
+				case 160:
+					currentVersion = 160;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN versionCreated varchar(32);");
+				case 161:
+					currentVersion = 161;
+					getDao(PointOfEntry.class).executeRaw("CREATE TABLE pointOfEntry(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"pointOfEntryType varchar(255)," +
+							"name varchar(512)," +
+							"region_id bigint REFERENCES region(id)," +
+							"district_id bigint REFERENCES district(id)," +
+							"latitude double precision," +
+							"longitude double precision," +
+							"active boolean," +
+							"UNIQUE(snapshot, uuid));");
+					getDao(PointOfEntry.class).executeRaw("CREATE TABLE portHealthInfo(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"airlineName varchar(512)," +
+							"flightNumber varchar(512)," +
+							"departureDateTime timestamp," +
+							"arrivalDateTime timestamp," +
+							"freeSeating varchar(255)," +
+							"seatNumber varchar(512)," +
+							"departureAirport varchar(512)," +
+							"numberOfTransitStops integer," +
+							"transitStopDetails1 varchar(512)," +
+							"transitStopDetails2 varchar(512)," +
+							"transitStopDetails3 varchar(512)," +
+							"transitStopDetails4 varchar(512)," +
+							"transitStopDetails5 varchar(512)," +
+							"vesselName varchar(512)," +
+							"vesselDetails varchar(512)," +
+							"portOfDeparture varchar(512)," +
+							"lastPortOfCall varchar(512)," +
+							"conveyanceType varchar(255)," +
+							"conveyanceTypeDetails varchar(512)," +
+							"departureLocation varchar(512)," +
+							"finalDestination varchar(512)," +
+							"details varchar(512)," +
+							"UNIQUE(snapshot, uuid));");
+					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN pointOfEntry_id bigint REFERENCES pointOfEntry(id);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN portHealthInfo_id bigint REFERENCES portHealthInfo(id);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN caseOrigin varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN pointOfEntry_id bigint REFERENCES pointOfEntry(id);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN pointOfEntryDetails varchar(512);");
+					getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Therapy.class).executeRaw("UPDATE therapy SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(ClinicalCourse.class).executeRaw("UPDATE clinicalCourse SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(HealthConditions.class).executeRaw("UPDATE healthConditions SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Symptoms.class).executeRaw("UPDATE symptoms SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+					getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				case 162:
+					currentVersion = 162;
+					getDao(AdditionalTest.class).executeRaw("ALTER TABLE additionalTest RENAME TO tmp_additionalTest");
+					getDao(AdditionalTest.class).executeRaw("CREATE TABLE additionalTest(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"sample_id bigint REFERENCES samples(id)," +
+							"testDateTime timestamp," +
+							"haemoglobinuria varchar(255)," +
+							"proteinuria varchar(255)," +
+							"hematuria varchar(255)," +
+							"arterialVenousGasPh real," +
+							"arterialVenousGasPco2 real," +
+							"arterialVenousGasPao2 real," +
+							"arterialVenousGasHco3 real," +
+							"gasOxygenTherapy real," +
+							"altSgpt real," +
+							"astSgot real," +
+							"creatinine real," +
+							"potassium real," +
+							"urea real," +
+							"haemoglobin real," +
+							"totalBilirubin real," +
+							"conjBilirubin real," +
+							"wbcCount real," +
+							"platelets real," +
+							"prothrombinTime real," +
+							"otherTestResults varchar(512)," +
+							"UNIQUE(snapshot, uuid));");
+					getDao(AdditionalTest.class).executeRaw("INSERT INTO additionalTest(id, uuid, changeDate, creationDate, lastOpenedDate, " +
+							"localChangeDate, modified, snapshot, sample_id, testDateTime, haemoglobinuria, proteinuria, hematuria, arterialVenousGasPh, " +
+							"arterialVenousGasPco2, arterialVenousGasPao2, arterialVenousGasHco3, gasOxygenTherapy, altSgpt, astSgot, creatinine, " +
+							"potassium, urea, haemoglobin, totalBilirubin, conjBilirubin, wbcCount, platelets, prothrombinTime, otherTestResults) " +
+							"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, sample_id, testDateTime, " +
+							"haemoglobinuria, proteinuria, hematuria, arterialVenousGasPh, arterialVenousGasPco2, arterialVenousGasPao2, arterialVenousGasHco3, " +
+							"gasOxygenTherapy, altSgpt, astSgot, creatinine, potassium, urea, haemoglobin, totalBilirubin, conjBilirubin, wbcCount, " +
+							"platelets, prothrombinTime, otherTestResults FROM tmp_additionalTest");
+					getDao(Sample.class).executeRaw("DROP TABLE tmp_additionalTest;");
+				case 163:
+					currentVersion = 163;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN clinicianPhone varchar(512);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN clinicianEmail varchar(512);");
+				case 164:
+					currentVersion = 164;
+					getDao(Case.class).executeRaw("DELETE FROM cases WHERE person_id IS NULL");
 
 					// ATTENTION: break should only be done after last version
 					break;
@@ -1088,12 +1219,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, ClinicalCourse.class, true);
 			TableUtils.dropTable(connectionSource, HealthConditions.class, true);
 			TableUtils.dropTable(connectionSource, MaternalHistory.class, true);
+			TableUtils.dropTable(connectionSource, PortHealthInfo.class, true);
 			TableUtils.dropTable(connectionSource, Person.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
 			TableUtils.dropTable(connectionSource, Region.class, true);
 			TableUtils.dropTable(connectionSource, District.class, true);
 			TableUtils.dropTable(connectionSource, Community.class, true);
 			TableUtils.dropTable(connectionSource, Facility.class, true);
+			TableUtils.dropTable(connectionSource, PointOfEntry.class, true);
 			TableUtils.dropTable(connectionSource, User.class, true);
 			TableUtils.dropTable(connectionSource, Symptoms.class, true);
 			TableUtils.dropTable(connectionSource, Task.class, true);
@@ -1151,6 +1284,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new PersonDao((Dao<Person, Long>) innerDao);
 				} else if (type.equals(Location.class)) {
 					dao = (AbstractAdoDao<ADO>) new LocationDao((Dao<Location, Long>) innerDao);
+				} else if (type.equals(PointOfEntry.class)) {
+					dao = (AbstractAdoDao<ADO>) new PointOfEntryDao((Dao<PointOfEntry, Long>) innerDao);
 				} else if (type.equals(Facility.class)) {
 					dao = (AbstractAdoDao<ADO>) new FacilityDao((Dao<Facility, Long>) innerDao);
 				} else if (type.equals(Region.class)) {
@@ -1175,6 +1310,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new ClinicalVisitDao((Dao<ClinicalVisit, Long>) innerDao);
 				} else if (type.equals(MaternalHistory.class)) {
 					dao = (AbstractAdoDao<ADO>) new MaternalHistoryDao((Dao<MaternalHistory, Long>) innerDao);
+				} else if (type.equals(PortHealthInfo.class)) {
+					dao = (AbstractAdoDao<ADO>) new PortHealthInfoDao((Dao<PortHealthInfo, Long>) innerDao);
 				} else if (type.equals(Task.class)) {
 					dao = (AbstractAdoDao<ADO>) new TaskDao((Dao<Task, Long>) innerDao);
 				} else if (type.equals(Contact.class)) {
@@ -1300,12 +1437,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (MaternalHistoryDao) getAdoDao(MaternalHistory.class);
 	}
 
+	public static PortHealthInfoDao getPortHealthInfoDao() {
+		return (PortHealthInfoDao) getAdoDao(PortHealthInfo.class);
+	}
+
 	public static PersonDao getPersonDao() {
 		return (PersonDao) getAdoDao(Person.class);
 	}
 
 	public static LocationDao getLocationDao() {
 		return (LocationDao) getAdoDao(Location.class);
+	}
+
+	public static PointOfEntryDao getPointOfEntryDao() {
+		return (PointOfEntryDao) getAdoDao(PointOfEntry.class);
 	}
 
 	public static FacilityDao getFacilityDao() {

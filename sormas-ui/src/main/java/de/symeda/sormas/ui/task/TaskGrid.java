@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
@@ -40,10 +41,12 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ReferenceDtoHtmlProvider;
 import de.symeda.sormas.ui.utils.ShortStringRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implements ItemClickListener<TaskIndexDto> {
@@ -51,26 +54,20 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 	private static final String EDIT_BTN_ID = "edit";
 	
 	@SuppressWarnings("unchecked")
-	public TaskGrid() {
+	public TaskGrid(TaskCriteria criteria) {
 		super(TaskIndexDto.class);
         setSizeFull();
-        
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			setSelectionMode(SelectionMode.MULTI);
+
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode());
+
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setCriteria(criteria);
+			setEagerDataProvider();
 		} else {
-			setSelectionMode(SelectionMode.NONE);
+			setLazyDataProvider();
+			setCriteria(criteria);
 		}
-		
-		DataProvider<TaskIndexDto,TaskCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getTaskFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int)FacadeProvider.getTaskFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
-		setDataProvider(dataProvider);
 		
 		Column<TaskIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
@@ -188,4 +185,25 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			ControllerProvider.getTaskController().edit(task, this::reload);
 		}
 	}
+	
+	public void setLazyDataProvider() {
+		DataProvider<TaskIndexDto,TaskCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getTaskFacade().getIndexList(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+							.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int)FacadeProvider.getTaskFacade().count(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.NONE);
+	}
+	
+	public void setEagerDataProvider() {
+		ListDataProvider<TaskIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getTaskFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
+	}
+	
 }

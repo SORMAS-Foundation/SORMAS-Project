@@ -22,16 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportEntryDto;
 import de.symeda.sormas.api.report.WeeklyReportReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataBurialDtoHelper;
-import de.symeda.sormas.app.backend.epidata.EpiDataGatheringDtoHelper;
-import de.symeda.sormas.app.backend.epidata.EpiDataTravelDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
@@ -40,6 +35,7 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -65,17 +61,17 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
     }
 
     @Override
-    protected Call<List<WeeklyReportDto>> pullAllSince(long since) {
+    protected Call<List<WeeklyReportDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getWeeklyReportFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<WeeklyReportDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<WeeklyReportDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getWeeklyReportFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<WeeklyReportDto> weeklyReportDtos) {
+    protected Call<List<PushResult>> pushAll(List<WeeklyReportDto> weeklyReportDtos) throws NoConnectionException {
         return RetroProvider.getWeeklyReportFacade().pushAll(weeklyReportDtos);
     }
 

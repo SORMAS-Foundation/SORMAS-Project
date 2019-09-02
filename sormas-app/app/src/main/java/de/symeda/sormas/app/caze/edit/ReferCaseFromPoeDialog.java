@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,25 +14,31 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.backend.common;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * Fields whose getters are annotated with this annotation are ignored when building .csv templates 
- * and importing entities.
- * 
- * @author Mate Strysewske
  */
-@Target({
-	ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface ImportIgnore {
+
+package de.symeda.sormas.app.caze.edit;
+
+import androidx.fragment.app.FragmentActivity;
+
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+
+public class ReferCaseFromPoeDialog extends MoveCaseDialog {
+
+    public static final String TAG = ReferCaseFromPoeDialog.class.getSimpleName();
+
+    ReferCaseFromPoeDialog(final FragmentActivity activity, Case caze) {
+        super(activity, caze, true, R.string.heading_refer_case_from_poe);
+    }
+
+    @Override
+    public int getPositiveButtonText() {
+        return R.string.action_refer_case_from_poe;
+    }
+
+    @Override
+    public int getErrorMessageText() {
+        return R.string.error_case_referring_from_poe;
+    }
 
 }

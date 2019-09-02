@@ -26,12 +26,14 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -163,7 +165,9 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Outbreak> outbreak = cq.from(getElementClass());
-		cq.groupBy(outbreak.get(Outbreak.DISTRICT));
+		
+		Join<Outbreak, District> regionJoin = outbreak.join(Outbreak.DISTRICT, JoinType.LEFT);
+		cq.groupBy(regionJoin);
 		
 		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
 		filter = and(cb, filter, createUserFilter(cb, cq, outbreak, user));

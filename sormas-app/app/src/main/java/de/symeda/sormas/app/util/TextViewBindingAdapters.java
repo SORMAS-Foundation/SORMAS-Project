@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableList;
 import android.graphics.Typeface;
+import android.text.Html;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,8 +32,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -53,6 +56,7 @@ import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
@@ -113,6 +117,37 @@ public class TextViewBindingAdapters {
                 textField.setText(prependValue + ": " + val);
             }
         }
+    }
+
+    @BindingAdapter(value={"value", "valueCaption", "defaultValue"})
+    public static void setValueWithCaption(TextView view, String value, String valueCaption, String defaultValue) {
+        StringBuilder valBuilder = new StringBuilder();
+        valBuilder.append("<b>").append(valueCaption).append(": </b>");
+        if (StringUtils.isEmpty(value)) {
+            view.setText(Html.fromHtml(valBuilder.append(defaultValue).toString()));
+        } else {
+            view.setText(Html.fromHtml(valBuilder.append(value).toString()));
+        }
+    }
+
+    @BindingAdapter(value={"dateValue", "valueCaption", "defaultValue"})
+    public static void setDateValueWithCaption(TextView view, Date date, String valueCaption, String defaultValue) {
+        setValueWithCaption(view, DateHelper.formatLocalShortDate(date), valueCaption, defaultValue);
+    }
+
+    @BindingAdapter(value={"facilityValue", "facilityDetailsValue", "valueCaption", "defaultValue"})
+    public static void setFacilityValueWithCaption(TextView view, Facility facility, String facilityDetailsValue, String valueCaption, String defaultValue) {
+        setValueWithCaption(view, FacilityHelper.buildFacilityString(facility.getUuid(), facility.getName(), facilityDetailsValue), valueCaption, defaultValue);
+    }
+
+    @BindingAdapter(value={"enumValue", "valueCaption", "defaultValue"})
+    public static void setEnumValueWithCaption(TextView view, Enum enumValue, String valueCaption, String defaultValue) {
+        setValueWithCaption(view, enumValue != null ? enumValue.toString() : null, valueCaption, defaultValue);
+    }
+
+    @BindingAdapter(value={"ageDateValue", "valueCaption", "defaultValue"})
+    public static void setAgeDateValueWithCaption(TextView view, Person person, String valueCaption, String defaultValue) {
+        setValueWithCaption(view, PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()), valueCaption, defaultValue);
     }
 
     @BindingAdapter(value={"value", "prependValue", "appendValue", "valueFormat", "defaultValue"}, requireAll=true)
@@ -498,7 +533,7 @@ public class TextViewBindingAdapters {
         } else {
             String valueFormat = textField.getContext().getResources().getString(R.string.person_name_format);
 
-            if (valueFormat != null && valueFormat.trim() != "") {
+            if (valueFormat != null && !valueFormat.trim().equals("")) {
                 textField.setText(String.format(valueFormat, person.getFirstName(), person.getLastName().toUpperCase()));
             } else {
                 textField.setText(person.toString());
@@ -801,6 +836,31 @@ public class TextViewBindingAdapters {
             textField.setText(defaultValue);
         } else {
             textField.setText(facility.toString());
+        }
+    }
+
+    @BindingAdapter(value = {"facilityValue", "facilityDetailsValue", "prependValue", "valueFormat"})
+    public static void setFacilityValue(TextView textField, Facility facility, String facilityDetails, String prependValue, String valueFormat) {
+        String value;
+        if (FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {
+            value = facility.getName() + " (" + facilityDetails + ")";
+        } else {
+            value = facility.getName();
+        }
+
+        if (valueFormat != null && !valueFormat.trim().equals("")) {
+            textField.setText(String.format(valueFormat, prependValue, value));
+        } else {
+            textField.setText(prependValue + ": " + value);
+        }
+    }
+
+    @BindingAdapter(value={"pointOfEntryValue", "defaultValue"}, requireAll=false)
+    public static void setPointOfEntryValue(TextView textField, PointOfEntry pointOfEntry, String defaultValue) {
+        if (pointOfEntry == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(pointOfEntry.toString());
         }
     }
 

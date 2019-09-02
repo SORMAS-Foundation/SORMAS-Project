@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -89,14 +90,16 @@ public class HospitalizationDto extends EntityDto {
 	public void setIsolationDate(Date isolationDate) {
 		this.isolationDate = isolationDate;
 	}
-	
+
+	@ImportIgnore
 	public YesNoUnknown getHospitalizedPreviously() {
 		return hospitalizedPreviously;
 	}
 	public void setHospitalizedPreviously(YesNoUnknown hospitalizedPreviously) {
 		this.hospitalizedPreviously = hospitalizedPreviously;
 	}
-	
+
+	@ImportIgnore
 	public List<PreviousHospitalizationDto> getPreviousHospitalizations() {
 		return previousHospitalizations;
 	}

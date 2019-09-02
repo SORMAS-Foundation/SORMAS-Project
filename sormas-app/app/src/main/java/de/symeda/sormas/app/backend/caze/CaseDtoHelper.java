@@ -25,6 +25,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistoryDtoHelper;
+import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfoDtoHelper;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -35,6 +36,8 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.HospitalizationDtoHelper;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
@@ -49,6 +52,7 @@ import de.symeda.sormas.app.backend.therapy.Therapy;
 import de.symeda.sormas.app.backend.therapy.TherapyDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
@@ -60,6 +64,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     private TherapyDtoHelper therapyDtoHelper = new TherapyDtoHelper();
     private ClinicalCourseDtoHelper clinicalCourseDtoHelper = new ClinicalCourseDtoHelper();
     private MaternalHistoryDtoHelper maternalHistoryDtoHelper = new MaternalHistoryDtoHelper();
+    private PortHealthInfoDtoHelper portHealthInfoDtoHelper = new PortHealthInfoDtoHelper();
 
     @Override
     protected Class<Case> getAdoClass() {
@@ -72,17 +77,17 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
     }
 
     @Override
-    protected Call<List<CaseDataDto>> pullAllSince(long since) {
+    protected Call<List<CaseDataDto>> pullAllSince(long since) throws NoConnectionException {
         return RetroProvider.getCaseFacade().pullAllSince(since);
     }
 
     @Override
-    protected Call<List<CaseDataDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<CaseDataDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getCaseFacade().pullByUuids(uuids);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<CaseDataDto> caseDataDtos) {
+    protected Call<List<PushResult>> pushAll(List<CaseDataDto> caseDataDtos) throws NoConnectionException {
         return RetroProvider.getCaseFacade().pushAll(caseDataDtos);
     }
 
@@ -114,15 +119,20 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
         target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
+        target.setPointOfEntry(DatabaseHelper.getPointOfEntryDao().getByReferenceDto(source.getPointOfEntry()));
+        target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 
         target.setHospitalization(hospitalizationDtoHelper.fillOrCreateFromDto(target.getHospitalization(), source.getHospitalization()));
         target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
         target.setTherapy(therapyDtoHelper.fillOrCreateFromDto(target.getTherapy(), source.getTherapy()));
         target.setClinicalCourse(clinicalCourseDtoHelper.fillOrCreateFromDto(target.getClinicalCourse(), source.getClinicalCourse()));
         target.setMaternalHistory(maternalHistoryDtoHelper.fillOrCreateFromDto(target.getMaternalHistory(), source.getMaternalHistory()));
+        target.setPortHealthInfo(portHealthInfoDtoHelper.fillOrCreateFromDto(target.getPortHealthInfo(), source.getPortHealthInfo()));
 
         target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
-        target.setClinicianDetails(source.getClinicianDetails());
+        target.setClinicianName(source.getClinicianName());
+        target.setClinicianPhone(source.getClinicianPhone());
+        target.setClinicianEmail(source.getClinicianEmail());
         target.setPregnant(source.getPregnant());
         target.setVaccination(source.getVaccination());
         target.setVaccinationDoses(source.getVaccinationDoses());
@@ -131,6 +141,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
         target.setVaccinationDate(source.getVaccinationDate());
         target.setEpidNumber(source.getEpidNumber());
+        target.setCaseOrigin(source.getCaseOrigin());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
@@ -142,6 +153,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setSequelaeDetails(source.getSequelaeDetails());
         target.setNotifyingClinic(source.getNotifyingClinic());
         target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+
+        target.setCreationVersion(source.getCreationVersion());
     }
 
     @Override
@@ -217,6 +230,14 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setCommunity(null);
         }
 
+        if (source.getPointOfEntry() != null) {
+            PointOfEntry pointOfEntry = DatabaseHelper.getPointOfEntryDao().queryForId(source.getPointOfEntry().getId());
+            target.setPointOfEntry(PointOfEntryDtoHelper.toReferenceDto(pointOfEntry));
+        } else {
+            target.setPointOfEntry(null);
+        }
+        target.setPointOfEntryDetails(source.getPointOfEntryDetails());
+
         if (source.getSurveillanceOfficer() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getSurveillanceOfficer().getId());
             target.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
@@ -258,7 +279,15 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
             target.setMaternalHistory(null);
         }
 
-        target.setClinicianDetails(source.getClinicianDetails());
+        if (source.getPortHealthInfo() != null) {
+            target.setPortHealthInfo(portHealthInfoDtoHelper.adoToDto(DatabaseHelper.getPortHealthInfoDao().queryForId(source.getPortHealthInfo().getId())));
+        } else {
+            target.setPortHealthInfo(null);
+        }
+
+        target.setClinicianName(source.getClinicianName());
+        target.setClinicianPhone(source.getClinicianPhone());
+        target.setClinicianEmail(source.getClinicianEmail());
         target.setPregnant(source.getPregnant());
         target.setVaccination(source.getVaccination());
         target.setVaccinationDoses(source.getVaccinationDoses());
@@ -267,6 +296,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
         target.setVaccinationDate(source.getVaccinationDate());
         target.setEpidNumber(source.getEpidNumber());
+        target.setCaseOrigin(source.getCaseOrigin());
 
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
@@ -278,6 +308,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setSequelaeDetails(source.getSequelaeDetails());
         target.setNotifyingClinic(source.getNotifyingClinic());
         target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+
+        target.setCreationVersion(source.getCreationVersion());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

@@ -76,6 +76,17 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 		
 		return em.createQuery(cq).getResultList();
 	}
+
+	public int getPrescriptionCountByCase(long caseId) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Prescription> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.join(Prescription.THERAPY, JoinType.LEFT).get(Therapy.CASE).get(Case.ID), caseId));
+
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
 	
 	public List<String> getAllActiveUuids(User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();

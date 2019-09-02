@@ -45,16 +45,22 @@ public class MoveCaseDialog extends AbstractDialog {
 
     public static final String TAG = MoveCaseDialog.class.getSimpleName();
 
-    private Case data;
-    private DialogMoveCaseLayoutBinding contentBinding;
+    protected Case data;
+    protected DialogMoveCaseLayoutBinding contentBinding;
+    private boolean referFromPointOfEntry;
 
     // Constructor
 
-    MoveCaseDialog(final FragmentActivity activity, Case caze) {
+    MoveCaseDialog(final FragmentActivity activity, Case caze, boolean referFromPointOfEntry, int headingResourceId) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_move_case_layout,
-                R.layout.dialog_root_two_button_panel_layout, R.string.heading_transfer_case, -1);
+                R.layout.dialog_root_two_button_panel_layout, headingResourceId, -1);
 
         this.data = caze;
+        this.referFromPointOfEntry = referFromPointOfEntry;
+    }
+
+    MoveCaseDialog(final FragmentActivity activity, Case caze) {
+        this(activity, caze, false, R.string.heading_transfer_case);
     }
 
     // Overrides
@@ -93,9 +99,9 @@ public class MoveCaseDialog extends AbstractDialog {
         }
 
         try {
-            DatabaseHelper.getCaseDao().transferCase(data);
+            DatabaseHelper.getCaseDao().transferCase(data, referFromPointOfEntry);
         } catch (DaoException e) {
-            NotificationHelper.showDialogNotification(MoveCaseDialog.this, ERROR, getContext().getResources().getString(R.string.error_case_transfer));
+            NotificationHelper.showDialogNotification(MoveCaseDialog.this, ERROR, getContext().getResources().getString(getErrorMessageText()));
             return;
         }
 
@@ -130,6 +136,10 @@ public class MoveCaseDialog extends AbstractDialog {
     @Override
     public int getPositiveButtonText() {
         return R.string.action_transfer_case;
+    }
+
+    public int getErrorMessageText() {
+        return R.string.error_case_transfer;
     }
 
 }

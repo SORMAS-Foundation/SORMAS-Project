@@ -36,6 +36,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -55,7 +56,8 @@ public class PathogenTestListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 
-		Label testsHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingTests)), ContentMode.HTML);
+		Label testsHeader = new Label(I18nProperties.getString(Strings.headingTests));
+		testsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(testsHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {

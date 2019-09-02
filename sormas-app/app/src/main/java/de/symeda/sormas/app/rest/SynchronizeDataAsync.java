@@ -18,25 +18,17 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.google.android.gms.analytics.Tracker;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
-import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
-import de.symeda.sormas.api.therapy.PrescriptionDto;
-import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
@@ -48,6 +40,7 @@ import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
@@ -109,16 +102,16 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     synchronizeChangedData();
                     break;
                 case Complete:
+                    pullInfrastructure(); // do before missing, because we may have a completely empty database
                     pullMissingAndDeleteInvalidInfrastructure();
-                    pullInfrastructure();
-                    pullMissingAndDeleteInvalidData();
+                    pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     break;
                 case CompleteAndRepull:
+                    pullInfrastructure(); // do before missing, because we may have a completely empty database
                     pullMissingAndDeleteInvalidInfrastructure();
-                    pullInfrastructure();
                     repullData();
-                    pullMissingAndDeleteInvalidData();
+                    pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     ConfigProvider.setRepullNeeded(false);
                     break;
@@ -138,7 +131,17 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             syncFailedMessage = e.getMessage(context);
             RetroProvider.disconnect();
 
-        } catch (Exception e) {
+        } catch (NoConnectionException | ServerCommunicationException e) {
+
+            Log.e(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
+
+            ErrorReportingHelper.sendCaughtException(e);
+
+            syncFailed = true;
+            syncFailedMessage = DatabaseHelper.getContext().getString(R.string.error_server_communication);
+            RetroProvider.disconnect();
+
+        } catch (RuntimeException | DaoException e) {
 
             SyncMode newSyncMode = null;
             switch (syncMode) {
@@ -158,6 +161,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
                 Log.w(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
 
+                ErrorReportingHelper.sendCaughtException(e);
+
                 syncMode = newSyncMode;
                 doInBackground(params);
 
@@ -165,9 +170,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
                 Log.e(getClass().getName(), "Error trying to synchronizing data in mode '" + syncMode + "'", e);
 
-                SormasApplication application = (SormasApplication) context.getApplicationContext();
-                Tracker tracker = application.getDefaultTracker();
-                ErrorReportingHelper.sendCaughtException(tracker, e, null, true);
+                ErrorReportingHelper.sendCaughtException(e);
 
                 syncFailed = true;
                 syncFailedMessage = DatabaseHelper.getContext().getString(R.string.error_synchronization);
@@ -195,7 +198,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 DatabaseHelper.getClinicalVisitDao().isAnyModified();
     }
 
-    private void synchronizeChangedData() throws DaoException, ServerConnectionException, ServerCommunicationException {
+    private void synchronizeChangedData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
@@ -263,7 +266,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             clinicalVisitDtoHelper.pullEntities(true);
     }
 
-    private void repullData() throws DaoException, ServerConnectionException, ServerCommunicationException {
+    private void repullData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
         EventDtoHelper eventDtoHelper = new EventDtoHelper();
@@ -302,12 +305,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         clinicalVisitDtoHelper.repullEntities();
     }
 
-    private void pullInfrastructure() throws DaoException, ServerConnectionException, ServerCommunicationException {
+    private void pullInfrastructure() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 
         new RegionDtoHelper().pullEntities(false);
         new DistrictDtoHelper().pullEntities(false);
         new CommunityDtoHelper().pullEntities(false);
         new FacilityDtoHelper().pullEntities(false);
+        new PointOfEntryDtoHelper().pullEntities(false);
         new UserDtoHelper().pullEntities(false);
         new DiseaseClassificationDtoHelper().pullEntities(false);
         new DiseaseConfigurationDtoHelper().pullEntities(false);
@@ -321,7 +325,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserRoleConfigDtoHelper().pullEntities(false);
     }
 
-    private void pullAndRemoveArchivedUuidsSince(Date since) throws ServerConnectionException, ServerCommunicationException {
+    private void pullAndRemoveArchivedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
 
         try {
@@ -349,12 +353,29 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void pullMissingAndDeleteInvalidData() throws ServerConnectionException, ServerCommunicationException, DaoException {
+    private void pushNewPullMissingAndDeleteInvalidData() throws NoConnectionException, ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
-        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidData");
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pushNewPullMissingAndDeleteInvalidData");
 
         // order is important, due to dependencies (e.g. case & person)
+
+        // first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
+        // Example: Case is created using an existing person, meanwhile user loses access to the person
+        new PersonDtoHelper().pushEntities(true);
+        new CaseDtoHelper().pushEntities(true);
+        new EventDtoHelper().pushEntities(true);
+        new EventParticipantDtoHelper().pushEntities(true);
+        new SampleDtoHelper().pushEntities(true);
+        new PathogenTestDtoHelper().pushEntities(true);
+        new AdditionalTestDtoHelper().pushEntities(true);
+        new ContactDtoHelper().pushEntities(true);
+        new VisitDtoHelper().pushEntities(true);
+        new TaskDtoHelper().pushEntities(true);
+        new WeeklyReportDtoHelper().pushEntities(true);
+        new PrescriptionDtoHelper().pushEntities(true);
+        new TreatmentDtoHelper().pushEntities(true);
+        new ClinicalVisitDtoHelper().pushEntities(true);
 
         // weekly reports and entries
         List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
@@ -422,10 +443,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
     }
 
-    private void pullMissingAndDeleteInvalidInfrastructure() throws ServerConnectionException, ServerCommunicationException, DaoException {
+    private void pullMissingAndDeleteInvalidInfrastructure() throws NoConnectionException, ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullMissingAndDeleteInvalidInfrastructure");
+
+        // TODO get a count first and only retrieve all uuids when count is different?
 
         // users
         List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
@@ -436,6 +459,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // user role config
         List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
         DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
+        // points of entry
+        List<String> pointOfEntryUuids = executeUuidCall(RetroProvider.getPointOfEntryFacade().pullUuids());
+        DatabaseHelper.getPointOfEntryDao().deleteInvalid(pointOfEntryUuids);
         // facilities
         List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
         DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
@@ -455,6 +481,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new DistrictDtoHelper().pullMissing(districtUuids);
         new CommunityDtoHelper().pullMissing(communityUuids);
         new FacilityDtoHelper().pullMissing(facilityUuids);
+        new PointOfEntryDtoHelper().pullMissing(pointOfEntryUuids);
         new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
         new UserDtoHelper().pullMissing(userUuids);
         new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
@@ -473,33 +500,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         return response.body();
     }
 
-    /**
-     * Does the call and meanwhile displays a progress dialog.
-     * Should only be called when the user has manually triggered the synchronization.
-     *
-     * @param context
-     * @param callback
-     */
-    public static ProgressDialog callWithProgressDialog(SyncMode syncMode, final Context context, final SyncCallback callback) {
-        final ProgressDialog progressDialog = ProgressDialog.show(context, context.getString(R.string.heading_synchronization),
-                context.getString(R.string.info_synchronizing), true);
-
-        call(syncMode, context, new SyncCallback() {
-            @Override
-            public void call(boolean syncFailed, String syncFailedMessage) {
-                if (progressDialog != null && progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-                if (callback != null) {
-                    callback.call(syncFailed, syncFailedMessage);
-                }
-            }
-        });
-
-        return progressDialog;
-    }
-
-
     public static void call(SyncMode syncMode, final Context context, final SyncCallback callback) {
         new SynchronizeDataAsync(syncMode, context) {
             @Override
@@ -511,7 +511,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                     TaskNotificationService.doTaskNotification(context);
                 }
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public enum SyncMode {

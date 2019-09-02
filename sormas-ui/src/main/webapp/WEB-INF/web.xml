@@ -1,40 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="klientenverwaltung_app" version="3.1">
-  <display-name>SORMAS Web Interface</display-name>
-  <security-role>
-    <role-name>USER</role-name>
-  </security-role>
-  <security-role>
-    <role-name>ADMIN</role-name>
-  </security-role>
-  <security-role>
-    <role-name>SURVEILLANCE_SUPERVISOR</role-name>
-  </security-role>
-  <security-role>
-    <role-name>CASE_SUPERVISOR</role-name>
-  </security-role>
-  <security-role>
-    <role-name>CONTACT_SUPERVISOR</role-name>
-  </security-role>
-  <security-role>
-    <role-name>EVENT_OFFICER</role-name>
-  </security-role>
-  <security-role>
-    <role-name>LAB_USER</role-name>
-  </security-role>
-  <security-role>
-    <role-name>EXTERNAL_LAB_USER</role-name>
-  </security-role>
-  <security-role>
-    <role-name>NATIONAL_USER</role-name>
-  </security-role>
-  <security-role>
-    <role-name>NATIONAL_OBSERVER</role-name>
-  </security-role>
-  <security-role>
-    <role-name>STATE_OBSERVER</role-name>
-  </security-role>
-  <security-role>
-    <role-name>DISTRICT_OBSERVER</role-name>
-  </security-role>
+<web-app id="sormas-ui-app"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 	xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+ 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" 
+ 	version="3.1">
+ 	
+	<display-name>SORMAS Web Interface</display-name>
+	
+	<security-role>
+	  <role-name>USER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>ADMIN</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>SURVEILLANCE_SUPERVISOR</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>CASE_SUPERVISOR</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>CONTACT_SUPERVISOR</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>EVENT_OFFICER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>LAB_USER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>EXTERNAL_LAB_USER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>NATIONAL_USER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>NATIONAL_OBSERVER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>STATE_OBSERVER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>DISTRICT_OBSERVER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>NATIONAL_CLINICIAN</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>POE_SUPERVISOR</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>POE_NATIONAL_USER</role-name>
+	</security-role>
+  	
+  	<!-- 
+  	<security-constraint>
+    	<web-resource-collection>
+        	<web-resource-name>public</web-resource-name>
+        	<url-pattern>/login/*</url-pattern>
+        	<url-pattern>/VAADIN/*</url-pattern>
+    	</web-resource-collection>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>private</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+	    <auth-constraint>
+      		<description>Only valid users are allowed</description>
+      		<role-name>USER</role-name>
+    	</auth-constraint>
+	</security-constraint> -->
 </web-app>

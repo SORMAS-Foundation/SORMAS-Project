@@ -147,27 +147,13 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER) || UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
-			showRegions = true;
-
+		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
+				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
+				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
 			map.setZoom(6);
 			GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 			map.setCenter(mapCenter.getLon(), mapCenter.getLat());
 		} else {
-			if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
-				showCases = true;
-				showContacts = true;
-				showEvents = true;
-				showConfirmedContacts = true;
-				showUnconfirmedContacts = true;
-			} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
-				showCases = false;
-				showContacts = true;
-				showEvents = false;
-				showConfirmedContacts = true;
-				showUnconfirmedContacts = true;
-			}
-
 			UserDto user = UserProvider.getCurrent().getUser();
 			if (user.getRegion() != null) {
 				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(user.getRegion());
@@ -177,6 +163,20 @@ public class DashboardMapComponent extends VerticalLayout {
 				map.setCenter(mapCenter.getLon(), mapCenter.getLat());
 			}
 			map.setZoom(6);
+		}
+
+		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
+			showCases = true;
+			showContacts = false;
+			showEvents = false;
+			showConfirmedContacts = true;
+			showUnconfirmedContacts = true;
+		} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			showCases = false;
+			showContacts = true;
+			showEvents = false;
+			showConfirmedContacts = true;
+			showUnconfirmedContacts = true;
 		}
 
 		this.setMargin(true);
@@ -394,6 +394,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				layersLayout.addComponent(showEventsCheckBox);
 
 				if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
+						|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
 						|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
 					OptionGroup regionMapVisualizationSelect = new OptionGroup();
 					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
@@ -524,13 +525,13 @@ public class DashboardMapComponent extends VerticalLayout {
 			{
 				contactsKeyLayout.setSpacing(false);
 				contactsKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, I18nProperties.getCaption(Captions.dashboardLastVisitLt24));
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, I18nProperties.getCaption(Captions.dashboardNotAContact));
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, I18nProperties.getCaption(Captions.dashboardLastVisitLt48));
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, I18nProperties.getCaption(Captions.dashboardUnconfirmedContact));
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, I18nProperties.getCaption(Captions.dashboardLastVisitGt48));
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, I18nProperties.getCaption(Captions.dashboardConfirmedContact));
 				contactsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(contactsKeyLayout);
@@ -970,19 +971,34 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 
 			MarkerIcon icon;
-			Date lastVisitDateTime = contact.getLastVisitDateTime();
-			long currentTime = new Date().getTime();
-			if (lastVisitDateTime != null) {
-				// 1000 ms = 1 second; 3600 seconds = 1 hour
-				if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 48) {
-					icon = MarkerIcon.CONTACT_LONG_OVERDUE;
-				} else if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 24) {
-					icon = MarkerIcon.CONTACT_OVERDUE;
-				} else {
-					icon = MarkerIcon.CONTACT_OK;
-				}
-			} else {
+			// #1274 Temporarily disabled because it severely impacts the performance of the Dashboard
+			//			Date lastVisitDateTime = contact.getLastVisitDateTime();
+			//			long currentTime = new Date().getTime();
+			//			if (lastVisitDateTime != null) {
+			//				// 1000 ms = 1 second; 3600 seconds = 1 hour
+			//				if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 48) {
+			//					icon = MarkerIcon.CONTACT_LONG_OVERDUE;
+			//				} else if (currentTime - lastVisitDateTime.getTime() >= 1000 * 3600 * 24) {
+			//					icon = MarkerIcon.CONTACT_OVERDUE;
+			//				} else {
+			//					icon = MarkerIcon.CONTACT_OK;
+			//				}
+			//			} else {
+			//				icon = MarkerIcon.CONTACT_LONG_OVERDUE;
+			//			}
+			switch (contact.getContactClassification()) {
+			case CONFIRMED:
 				icon = MarkerIcon.CONTACT_LONG_OVERDUE;
+				break;
+			case UNCONFIRMED:
+				icon = MarkerIcon.CONTACT_OVERDUE;
+				break;
+			case NO_CONTACT:
+				icon = MarkerIcon.CONTACT_OK;
+				break;
+			default:
+				icon = MarkerIcon.CONTACT_OK;
+				break;
 			}
 
 			LeafletMarker marker = new LeafletMarker();

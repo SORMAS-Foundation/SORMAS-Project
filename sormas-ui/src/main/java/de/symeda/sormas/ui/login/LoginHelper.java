@@ -17,43 +17,46 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
-import java.security.Principal;
-
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
+import javax.security.enterprise.AuthenticationStatus;
+import javax.security.enterprise.SecurityContext;
+import javax.security.enterprise.authentication.mechanism.http.AuthenticationParameters;
+import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.servlet.ServletException;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.UserRightsException;
 
 public final class LoginHelper {
 
-    public static boolean isUserSignedIn() {
-    	Principal principal = VaadinServletService.getCurrentServletRequest().getUserPrincipal();
-    	return principal != null;
-    }
-    
     public static boolean login(String username, String password) throws UserRightsException {
 
         if (username == null || username.isEmpty())
             return false;
-        
-        try {
-			VaadinServletService.getCurrentServletRequest().login(username, password);
-			// check user role
-			if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRole._USER)) {
-				VaadinServletService.getCurrentServletRequest().logout();
-				throw new UserRightsException(I18nProperties.getString(Strings.errorNoAccessToWeb));
-			}
-		} catch (ServletException e) {
-			return false;
-		}
 
-        return true;
+        BeanManager bm = CDI.current().getBeanManager();
+    	@SuppressWarnings("unchecked")
+		Bean<SecurityContext> securityContextBean = (Bean<SecurityContext>)bm.getBeans(SecurityContext.class).iterator().next();
+  	    CreationalContext<SecurityContext> ctx = bm.createCreationalContext(securityContextBean);
+    	SecurityContext securityContext = (SecurityContext) bm.getReference(securityContextBean, SecurityContext.class, ctx);
+        
+        AuthenticationParameters authentication = new AuthenticationParameters();
+        authentication.credential(new UsernamePasswordCredential(username, password));
+        authentication.newAuthentication(true);
+        authentication.setRememberMe(true);
+        AuthenticationStatus status = securityContext.authenticate(
+        		VaadinServletService.getCurrentServletRequest(),
+        		VaadinServletService.getCurrentResponse().getHttpServletResponse(), authentication);
+        
+        if (status == AuthenticationStatus.SUCCESS)
+        	return true;
+        return false;
     }
     
     public static boolean logout() {

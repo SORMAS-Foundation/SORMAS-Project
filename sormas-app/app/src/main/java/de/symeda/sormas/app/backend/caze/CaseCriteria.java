@@ -23,9 +23,11 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.app.backend.region.Region;
 
 public class CaseCriteria implements Serializable {
 
@@ -36,6 +38,8 @@ public class CaseCriteria implements Serializable {
     private CaseOutcome outcome;
     private EpiWeek epiWeekFrom;
     private EpiWeek epiWeekTo;
+    private CaseOrigin caseOrigin;
+    private Region region;
 
     public CaseCriteria setTextFilter(String textFilter) {
         this.textFilter = textFilter;
@@ -97,6 +101,24 @@ public class CaseCriteria implements Serializable {
 
     public CaseCriteria setEpiWeekTo(EpiWeek epiWeekTo) {
         this.epiWeekTo = epiWeekTo;
+        return this;
+    }
+
+    public CaseOrigin getCaseOrigin() {
+        return caseOrigin;
+    }
+
+    public CaseCriteria setCaseOrigin(CaseOrigin caseOrigin) {
+        this.caseOrigin = caseOrigin;
+        return this;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public CaseCriteria setRegion(Region region) {
+        this.region = region;
         return this;
     }
 }

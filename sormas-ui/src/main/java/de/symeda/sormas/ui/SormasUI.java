@@ -17,15 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import java.util.Properties;
-
+import javax.servlet.annotation.HttpConstraint;
+import javax.servlet.annotation.ServletSecurity;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
@@ -35,9 +34,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.ui.UserProvider.HasUserProvider;
 import de.symeda.sormas.ui.ViewModelProviders.HasViewModelProviders;
-import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.login.LoginScreen;
-import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 
 /**
@@ -54,6 +50,7 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 @Widgetset("de.symeda.sormas.SormasWidgetset")
 public class SormasUI extends UI implements HasUserProvider, HasViewModelProviders {
 
+	
 	private final UserProvider userProvider = new UserProvider();
 	private final ViewModelProviders viewModelProviders = new ViewModelProviders();
 
@@ -69,23 +66,7 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 
 		getPage().setTitle("SORMAS");
 
-		// XXX
-		// LoginHelper.login("SunkSesa", "Sunkanmi");
-
-		if (!LoginHelper.isUserSignedIn()) {
-
-			setContent(new LoginScreen(new LoginListener() {
-				@Override
-				public void loginSuccessful() {
-					initMainScreen();
-					// open view
-					getNavigator().navigateTo(getNavigator().getState());
-				}
-			}));
-
-		} else {
-			initMainScreen();
-		}
+		initMainScreen();
 	}
 
 	protected void initMainScreen() {
@@ -107,20 +88,11 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 		return viewModelProviders;
 	}
 
-	@WebServlet(urlPatterns = "/*", name = "SormasUIServlet", asyncSupported = true)
-	@VaadinServletConfiguration(ui = SormasUI.class, productionMode = false) // , resourceCacheTime = 0)
+	@WebServlet(urlPatterns = {"/*"}, name = "SormasUIServlet", asyncSupported = true)
+	@VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)
+	@ServletSecurity(@HttpConstraint(rolesAllowed = "USER"))
 	public static class SormasUIServlet extends VaadinServlet {
 
-		// private static final String VAADIN_RESOURCES = "/sormas-widgetset";
-
-		@Override
-		protected DeploymentConfiguration createDeploymentConfiguration(Properties initParameters) {
-
-			// initParameters.setProperty(Constants.PARAMETER_VAADIN_RESOURCES,
-			// VAADIN_RESOURCES);
-
-			return super.createDeploymentConfiguration(initParameters);
-		}
 	}
 	
 	public static void refreshView() {

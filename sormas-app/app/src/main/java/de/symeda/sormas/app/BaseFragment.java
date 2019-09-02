@@ -19,12 +19,13 @@
 package de.symeda.sormas.app;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.analytics.Tracker;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Diseases;
@@ -36,7 +37,7 @@ import static android.view.View.VISIBLE;
 
 public class BaseFragment extends Fragment {
 
-    protected Tracker tracker;
+    private FirebaseAnalytics firebaseAnalytics;
 
     public BaseActivity getBaseActivity() {
         return (BaseActivity) getActivity();
@@ -59,7 +60,7 @@ public class BaseFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         SormasApplication application = (SormasApplication) getActivity().getApplication();
-        tracker = application.getDefaultTracker();
+        firebaseAnalytics = application.getFirebaseAnalytics();
     }
 
     @Override
@@ -123,5 +124,9 @@ public class BaseFragment extends Fragment {
             }
         }
         return null;
+    }
+
+    public FirebaseAnalytics getFirebaseAnalytics() {
+        return firebaseAnalytics;
     }
 }

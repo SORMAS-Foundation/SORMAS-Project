@@ -98,9 +98,8 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AdditionalTest, AdditionalTest> additionalTestPath,
 			User user) {
 		// whoever created the sample the additional test is associated with is allowed to access it
-		Path<Sample> samplePath = additionalTestPath.get(AdditionalTest.SAMPLE);
-		@SuppressWarnings("unchecked")
-		Predicate filter = sampleService.createUserFilter(cb, cq, (From<Sample, Sample>) samplePath, user);
+		Join<Sample, Sample> sampleJoin = additionalTestPath.join(AdditionalTest.SAMPLE);
+		Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin, user);
 
 		return filter;
 	}

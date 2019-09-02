@@ -33,5 +33,7 @@ public interface ExportFacade {
 	 * to the zip archive that can then be used to offer it as a download.
 	 */
 	String generateDatabaseExportArchive(List<DatabaseTable> databaseTables) throws ExportErrorException, IOException;
+	
+	String generateZipArchive(String date, int randomNumber);
 
 }

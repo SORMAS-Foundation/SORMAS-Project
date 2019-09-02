@@ -48,6 +48,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserController {
@@ -158,7 +159,9 @@ public class UserController {
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
-		layout.addComponent(new Label("<h2>"+newPassword+"</h2>", ContentMode.HTML));
+		Label passwordLabel = new Label(newPassword);
+		passwordLabel.addStyleName(CssStyles.H2);
+		layout.addComponent(passwordLabel);
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
 		layout.setMargin(true);    	

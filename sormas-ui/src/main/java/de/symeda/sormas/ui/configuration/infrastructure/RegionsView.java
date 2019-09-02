@@ -48,9 +48,9 @@ public class RegionsView extends AbstractConfigurationView {
 	private static final long serialVersionUID = -3487830069266335042L;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/regions";
-	
+
 	private RegionCriteria criteria;
-	
+
 	// Filter
 	private TextField searchField;
 	private Button resetButton;
@@ -62,9 +62,9 @@ public class RegionsView extends AbstractConfigurationView {
 
 	public RegionsView() {
 		super(VIEW_NAME);
-		
+
 		criteria = ViewModelProviders.of(RegionsView.class).get(RegionCriteria.class);
-		
+
 		grid = new RegionsGrid();
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
@@ -76,15 +76,17 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
-		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(VaadinIcons.TABLE);
-		addHeaderComponent(exportButton);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			exportButton.setIcon(VaadinIcons.TABLE);
+			addHeaderComponent(exportButton);
 
-		StreamResource streamResource = new GridExportStreamResource(grid, "sormas_regions", "sormas_regions_" + DateHelper.formatDateForExport(new Date()) + ".csv", RegionsGrid.EDIT_BTN_ID);
-		FileDownloader fileDownloader = new FileDownloader(streamResource);
-		fileDownloader.extend(exportButton);
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_regions", "sormas_regions_" + DateHelper.formatDateForExport(new Date()) + ".csv", RegionsGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
@@ -138,16 +140,16 @@ public class RegionsView extends AbstractConfigurationView {
 		updateFilterComponents();
 		grid.reload();
 	}
-	
+
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
+
 		searchField.setValue(criteria.getNameEpidLike());
-		
+
 		applyingCriteria = false;
 	}
-	
+
 }

@@ -37,16 +37,16 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.caze.CasePickOrCreateDialog;
 import de.symeda.sormas.app.caze.CaseSection;
+import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
-import de.symeda.sormas.app.util.Consumer;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -179,7 +179,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     @Override
     public void saveData() {
-
         if (saveTask != null) {
             NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
@@ -197,17 +196,14 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             return;
         }
 
-        if (caze.getPerson().getId() == null) {
-            SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), new Consumer<Person>() {
-                @Override
-                public void accept(Person person) {
-                    caze.setPerson(person);
-                    saveDataInner(caze);
-                }
-            });
-        } else {
-            saveDataInner(caze);
-        }
+        CasePickOrCreateDialog.pickOrCreateCase(caze, pickedCase -> {
+            if (pickedCase.getUuid().equals(caze.getUuid())) {
+                saveDataInner(caze);
+            } else {
+                finish();
+                CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
+            }
+        });
     }
 
     private void saveDataInner(final Case caseToSave) {
@@ -256,7 +252,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
-                    CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.PERSON_INFO);
+                    CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO);
                 }
                 saveTask = null;
             }

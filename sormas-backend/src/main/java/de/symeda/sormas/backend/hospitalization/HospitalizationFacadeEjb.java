@@ -91,7 +91,6 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIsolationDate(source.getIsolationDate());
 		target.setLeftAgainstAdvice(source.getLeftAgainstAdvice());
 
-		// It would be better to merge with the existing hospitalizations
 		List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalizationDto prevDto : source.getPreviousHospitalizations()) {
 			PreviousHospitalization prevHosp = fromDto(prevDto);
@@ -101,7 +100,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		if (!DataHelper.equal(target.getPreviousHospitalizations(), previousHospitalizations)) {
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
-		target.setPreviousHospitalizations(previousHospitalizations);
+		target.getPreviousHospitalizations().clear();
+		target.getPreviousHospitalizations().addAll(previousHospitalizations);
 		
 		return hospitalization;
 	}

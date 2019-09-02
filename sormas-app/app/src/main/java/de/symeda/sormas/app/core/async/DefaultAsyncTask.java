@@ -34,8 +34,7 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
 
     // for error reporting
     private final WeakReference<SormasApplication> applicationReference;
-    private final Class entityClass;
-    private final String entityUuid;
+    AbstractDomainObject relatedEntity;
 
     private ITaskResultCallback resultCallback;
 
@@ -45,13 +44,7 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
 
     public DefaultAsyncTask(Context context, AbstractDomainObject relatedEntity) {
         this.applicationReference = new WeakReference<>((SormasApplication) context.getApplicationContext());
-        if (relatedEntity != null) {
-            entityClass = relatedEntity.getClass();
-            entityUuid = relatedEntity.getUuid();
-        } else {
-            entityClass = null;
-            entityUuid = "";
-        }
+        this.relatedEntity = relatedEntity;
     }
 
     protected abstract void doInBackground(TaskResultHolder resultHolder) throws Exception;
@@ -80,11 +73,10 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
 
     protected AsyncTaskResult handleException(Exception e) {
         Log.e(getClass().getName(), "Error executing an async task", e);
-        Log.e(getClass().getName(), "- root cause: ", ErrorReportingHelper.getRootCause(e));
 
         SormasApplication application = applicationReference.get();
         if (application != null) {
-            ErrorReportingHelper.sendCaughtException(application.getDefaultTracker(), e, entityClass, entityUuid, true);
+            ErrorReportingHelper.sendCaughtException(e, relatedEntity);
         }
 
         return new AsyncTaskResult<>(e);
@@ -92,12 +84,6 @@ public abstract class DefaultAsyncTask extends AsyncTask<Void, Void, AsyncTaskRe
 
     protected  WeakReference<SormasApplication> getApplicationReference() {
         return applicationReference;
-    }
-
-    @Deprecated
-    public AsyncTask execute(ITaskResultCallback resultCallback) {
-        this.resultCallback = resultCallback;
-        return executeOnThreadPool();
     }
 
     public AsyncTask executeOnThreadPool() {

@@ -33,14 +33,12 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.ServerConnectionException;
 import retrofit2.Call;
 
-/**
- * Created by Martin Wahnschaffe on 27.07.2016.
- */
 public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 
     @Override
@@ -54,25 +52,25 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
     }
 
     @Override
-    protected Call<List<FacilityDto>> pullAllSince(long since) {
+    protected Call<List<FacilityDto>> pullAllSince(long since) throws NoConnectionException {
         throw new UnsupportedOperationException("Use pullAllByRegionSince");
     }
 
     @Override
-    protected Call<List<FacilityDto>> pullByUuids(List<String> uuids) {
+    protected Call<List<FacilityDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
         return RetroProvider.getFacilityFacade().pullByUuids(uuids);
     }
 
-    protected Call<List<FacilityDto>> pullAllByRegionSince(Region region, long since) {
+    protected Call<List<FacilityDto>> pullAllByRegionSince(Region region, long since) throws NoConnectionException {
         return RetroProvider.getFacilityFacade().pullAllByRegionSince(region.getUuid(), since);
     }
 
-    protected Call<List<FacilityDto>> pullAllWithoutRegionSince(long since) {
+    protected Call<List<FacilityDto>> pullAllWithoutRegionSince(long since) throws NoConnectionException {
         return RetroProvider.getFacilityFacade().pullAllWithoutRegionSince(since);
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<FacilityDto> facilityDtos) {
+    protected Call<List<PushResult>> pushAll(List<FacilityDto> facilityDtos) throws NoConnectionException {
         throw new UnsupportedOperationException("Entity is infrastructure");
     }
 
@@ -85,7 +83,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
      * @throws IOException
      */
     @Override
-    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException {
+    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
         try {
             final FacilityDao facilityDao = DatabaseHelper.getFacilityDao();
 

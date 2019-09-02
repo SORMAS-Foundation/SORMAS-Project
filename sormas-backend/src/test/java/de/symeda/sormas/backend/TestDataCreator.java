@@ -34,10 +34,16 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -72,7 +78,7 @@ public class TestDataCreator {
 		this.beanTest = beanTest;
 	}
 	
-	public UserDto createUser(RDCF rdcf, UserRole... roles) {
+	public UserDto createUser(RDCFEntities rdcf, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
@@ -103,7 +109,7 @@ public class TestDataCreator {
 	}
 
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
-		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv",
 				"Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = createPerson("Case", "Person");
@@ -111,8 +117,14 @@ public class TestDataCreator {
 				InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
-	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf) {
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCFEntities rdcf) {
 		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
+	}
+
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
+			RDCFEntities rdcf) {
+		return createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
 	}
 	
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
@@ -124,10 +136,10 @@ public class TestDataCreator {
 		caze.getSymptoms().setOnsetDate(reportAndOnsetDate);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
-		caze.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));
-		caze.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		caze.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
-		caze.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));
+		caze.setRegion(rdcf.region);
+		caze.setDistrict(rdcf.district);
+		caze.setCommunity(rdcf.community);
+		caze.setHealthFacility(rdcf.facility);
 
 		caze = beanTest.getCaseFacade().saveCase(caze);
 
@@ -301,7 +313,7 @@ public class TestDataCreator {
 	
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, Disease testedDisease,
 			PathogenTestType testType, PathogenTestResultType resultType) {
-		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
 		SampleDto sample = createSample(new CaseReferenceDto(associatedCase.getUuid()), new Date(), new Date(),
 				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
 		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, testedDisease, new Date(), rdcf.facility,
@@ -320,14 +332,30 @@ public class TestDataCreator {
 	public RDCF createRDCF() {
 		return createRDCF("Region", "District", "Community", "Facility");
 	}
-	
+
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
 		Region region = createRegion(regionName);
 		District district = createDistrict(districtName, region);
 		Community community = createCommunity(communityName, district);
 		Facility facility = createFacility(facilityName, region, district, community);
 
-		return new RDCF(region, district, community, facility);
+		return new RDCF(new RegionReferenceDto(region.getUuid(), region.getName()),
+				new DistrictReferenceDto(district.getUuid(), district.getName()),
+				new CommunityReferenceDto(community.getUuid(), community.getName()),
+				new FacilityReferenceDto(facility.getUuid(), facility.getName()));
+	}
+
+	public RDCFEntities createRDCFEntities() {
+		return createRDCFEntities("Region", "District", "Community", "Facility");
+	}
+	
+	public RDCFEntities createRDCFEntities(String regionName, String districtName, String communityName, String facilityName) {
+		Region region = createRegion(regionName);
+		District district = createDistrict(districtName, region);
+		Community community = createCommunity(communityName, district);
+		Facility facility = createFacility(facilityName, region, district, community);
+
+		return new RDCFEntities(region, district, community, facility);
 	}
 
 	public Region createRegion(String regionName) {
@@ -361,6 +389,14 @@ public class TestDataCreator {
 		return community;
 	}
 
+	public CommunityDto createCommunity(String communityName, DistrictReferenceDto district) {
+		CommunityDto community = CommunityDto.build();
+		community.setName(communityName);
+		community.setDistrict(district);
+		beanTest.getCommunityFacade().saveCommunity(community);
+		return community;
+	}
+
 	public Facility createFacility(String facilityName, Region region, District district, Community community) {
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
@@ -373,21 +409,56 @@ public class TestDataCreator {
 
 		return facility;
 	}
+	
+	public FacilityDto createFacility(String facilityName, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community) {
+		FacilityDto facility = FacilityDto.build();
+		facility.setName(facilityName);
+		facility.setType(FacilityType.PRIMARY);
+		facility.setCommunity(community);
+		facility.setDistrict(district);
+		facility.setRegion(region);
+		beanTest.getFacilityFacade().saveFacility(facility);
+		return facility;
+	}
 
 	/**
-	 * TODO use DTOs instead
+	 * @deprecated Use RDCF instead
+	 * @author MartinWahnschaffe
+	 *
 	 */
-	public static class RDCF {
+	@Deprecated
+	public static class RDCFEntities {
 		public Region region;
 		public District district;
 		public Community community;
 		public Facility facility;
 
-		public RDCF(Region region, District district, Community community, Facility facility) {
+		public RDCFEntities(Region region, District district, Community community, Facility facility) {
 			this.region = region;
 			this.district = district;
 			this.community = community;
 			this.facility = facility;
+		}
+	}
+	
+	public static class RDCF {
+		public RegionReferenceDto region;
+		public DistrictReferenceDto district;
+		public CommunityReferenceDto community;
+		public FacilityReferenceDto facility;
+
+		public RDCF(RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility) {
+			this.region = region;
+			this.district = district;
+			this.community = community;
+			this.facility = facility;
+		}
+		
+		public RDCF(RDCFEntities rdcfEntities) {
+			this.region = new RegionReferenceDto(rdcfEntities.region.getUuid(), rdcfEntities.region.getName());
+			this.district = new DistrictReferenceDto(rdcfEntities.district.getUuid(), rdcfEntities.district.getName());
+			this.community = new CommunityReferenceDto(rdcfEntities.community.getUuid(), rdcfEntities.community.getName());
+			this.facility = new FacilityReferenceDto(rdcfEntities.facility.getUuid(), rdcfEntities.facility.getName());
 		}
 	}
 }

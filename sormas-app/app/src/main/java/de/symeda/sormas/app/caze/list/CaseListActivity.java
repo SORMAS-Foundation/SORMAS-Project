@@ -37,14 +37,17 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.Item;
@@ -55,6 +58,9 @@ import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.ErrorReportingHelper;
+
+import static android.view.View.GONE;
 
 public class CaseListActivity extends PagedBaseListActivity {
 
@@ -81,6 +87,13 @@ public class CaseListActivity extends PagedBaseListActivity {
                     if (recyclerView != null) {
                         recyclerView.scrollToPosition(0);
                     }
+                }
+            }
+            @Override
+            public void onItemRangeMoved(int positionStart, int toPosition, int itemCount) {
+                RecyclerView recyclerView = findViewById(R.id.recyclerViewForList);
+                if (recyclerView != null) {
+                    recyclerView.scrollToPosition(0);
                 }
             }
         });
@@ -164,6 +177,13 @@ public class CaseListActivity extends PagedBaseListActivity {
         List<Item> outcomes = DataUtils.getEnumItems(CaseOutcome.class);
         filterBinding.outcomeFilter.initializeSpinner(outcomes);
 
+        if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
+            filterBinding.originFilter.setVisibility(GONE);
+        } else {
+            List<Item> caseOrigins = DataUtils.getEnumItems(CaseOrigin.class);
+            filterBinding.originFilter.initializeSpinner(caseOrigins);
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         List<Item> epiWeeks = DataUtils.toItems(DateHelper.createEpiWeekList(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR)));
@@ -187,6 +207,7 @@ public class CaseListActivity extends PagedBaseListActivity {
             model.getCaseCriteria().setOutcome(null);
             model.getCaseCriteria().setEpiWeekFrom(null);
             model.getCaseCriteria().setEpiWeekTo(null);
+            model.getCaseCriteria().setCaseOrigin(null);
             filterBinding.invalidateAll();
             filterBinding.executePendingBindings();
             model.notifyCriteriaUpdated();

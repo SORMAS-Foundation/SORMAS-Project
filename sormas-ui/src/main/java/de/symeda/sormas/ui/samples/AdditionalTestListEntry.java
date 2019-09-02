@@ -59,8 +59,7 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 		if (additionalTest.hasArterialVenousGasValue()) {
 			labelLayout.addComponent(createFieldLabel(
 					I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_BLOOD_GAS),
-					""));
-			labelLayout.addComponent(new Label(additionalTest.buildArterialVenousGasValuesString()));
+					additionalTest.buildArterialVenousGasValuesString()));
 			if (additionalTest.getGasOxygenTherapy() != null) {
 				labelLayout.addComponent(new Label(I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.GAS_OXYGEN_THERAPY)
 						+ ": " + additionalTest.getGasOxygenTherapy()));
@@ -130,8 +129,7 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 	}
 
 	private Label createFieldLabel(String caption, String value) {
-		String html = "<b>" + caption.toUpperCase() + ":</b> " + value;
-		return new Label(html, ContentMode.HTML);
+		return new Label(caption.toUpperCase() + ": " + value);
 	}
 
 	public void addEditListener(ClickListener editClickListener) {

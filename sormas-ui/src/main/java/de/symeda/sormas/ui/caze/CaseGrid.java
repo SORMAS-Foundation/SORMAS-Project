@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -28,60 +29,51 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
-	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 
 	@SuppressWarnings("unchecked")
-	public CaseGrid() {
+	public CaseGrid(CaseCriteria criteria) {
 		super(CaseIndexDto.class);
 		setSizeFull();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			setSelectionMode(SelectionMode.MULTI);
-		} else {
-			setSelectionMode(SelectionMode.NONE);
-		}
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode());
 		
-		DataProvider<CaseIndexDto,CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getCaseFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int)FacadeProvider.getCaseFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
-		setDataProvider(dataProvider);
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setCriteria(criteria);
+			setEagerDataProvider();
+		} else {
+			setLazyDataProvider();
+			setCriteria(criteria);
+		}
 
 		Column<CaseIndexDto, String> diseaseShortColumn = addColumn(caze -> 
 			DiseaseHelper.toString(caze.getDisease(), caze.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(CaseIndexDto.DISEASE);
-		
-		Column<CaseIndexDto, String> pendingTasksColumn = addColumn(caze -> 
-			String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat), 
-				FacadeProvider.getTaskFacade().getPendingTaskCountByCase(caze.toReference())));
-		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
-		pendingTasksColumn.setSortable(false);
 
 		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
 				CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
 				CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
-				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME,
-				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, NUMBER_OF_PENDING_TASKS);
+				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
+				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE);
 
 
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
@@ -116,8 +108,38 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
 		}
+		
+		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
+		} else {
+			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
+				removeColumn(CaseIndexDto.POINT_OF_ENTRY_NAME);
+			} else if (getCriteria().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+				removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
+			}
+		}
 
 		getDataProvider().refreshAll();
+	}
+	
+	public void setLazyDataProvider() {
+		DataProvider<CaseIndexDto, CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getCaseFacade().getIndexList(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+							.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int) FacadeProvider.getCaseFacade().count(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.NONE);
+	}
+	
+	public void setEagerDataProvider() {
+		ListDataProvider<CaseIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getCaseFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
 	}
 	
 }

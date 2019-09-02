@@ -56,14 +56,14 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.util.DateHelper8;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 	@Test
 	public void testUpdateFollowUpUntilAndStatus() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
 				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -93,7 +93,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testUpdateContactStatus() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
 				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -122,7 +122,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testGenerateContactFollowUpTasks() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
@@ -148,7 +148,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testMapContactListCreation() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
@@ -168,7 +168,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testContactDeletion() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
@@ -195,7 +195,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testGetIndexList() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		String userUuid = user.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -210,7 +210,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 	@Test
 	public void testGetExportList() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		String userUuid = user.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -241,7 +241,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 	@Test
 	public void testArchiveOrDearchiveContact() {
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");

@@ -183,7 +183,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
-		
 		Contact entity = fromDto(dto);
 
 		// taking this out because it may lead to server problems
@@ -197,6 +196,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		contactService.updateFollowUpUntilAndStatus(entity);
 		contactService.udpateContactStatus(entity);
+		
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
 		
 		return toDto(entity);
 	}
@@ -243,6 +244,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			taskService.delete(task);
 		}
 		contactService.delete(contact);
+		
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(contact.getCaze()), contact.getCaze());
 	}
 	
 	@Override
@@ -351,7 +354,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactIndexDto> cq = cb.createQuery(ContactIndexDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -434,8 +437,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
 		}
 
-		List<ContactIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return resultList;
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 	
 	@Override

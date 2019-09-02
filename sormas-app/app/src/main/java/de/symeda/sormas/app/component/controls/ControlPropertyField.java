@@ -398,6 +398,26 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         }
     }
 
+    @BindingAdapter(value = {"dependencyParentField", "dependencyParentMinValue", "dependencyParentMaxValue", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
+    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Integer dependencyParentMinValue, Integer dependencyParentMaxValue, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
+        field.dependencyParentField = dependencyParentField;
+        field.dependencyParentValues = new ArrayList();
+        while (dependencyParentMinValue <= dependencyParentMaxValue) {
+            field.dependencyParentValues.add(dependencyParentMinValue);
+            dependencyParentMinValue += 1;
+        }
+
+        if (dependencyParentVisibility != null) {
+            field.dependencyParentVisibility = dependencyParentVisibility;
+        }
+
+        final ControlPropertyField thisField = field;
+        if (dependencyParentField != null) {
+            thisField.setVisibilityBasedOnParentField(false);
+            dependencyParentField.addValueChangedListener(field1 -> thisField.setVisibilityBasedOnParentField(dependencyParentClearOnHide != null ? dependencyParentClearOnHide : true));
+        }
+    }
+
     @BindingAdapter(value = {"visibilityChild"})
     public static void setVisibilityChild(ControlPropertyField field, View visibilityChild) {
         field.visibilityChild = visibilityChild;
@@ -409,6 +429,34 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
     @BindingAdapter(value = {"goneIfValue", "goneIfVariable"})
     public static void setGoneIf(ControlPropertyField field, Enum goneIfValue, Enum goneIfVariable) {
         if (goneIfVariable == goneIfValue) {
+            field.setVisibility(GONE);
+        }
+    }
+
+    @BindingAdapter(value = {"goneIfNotValue", "goneIfVariable"})
+    public static void setGoneIfNot(ControlPropertyField field, Enum goneIfNotValue, Enum goneIfVariable) {
+        if (goneIfVariable != goneIfNotValue) {
+            field.setVisibility(GONE);
+        }
+    }
+
+    @BindingAdapter(value = {"goneIfNotValue", "goneIfNotValue2", "goneIfVariable"})
+    public static void setGoneIfNot(ControlPropertyField field, Enum goneIfNotValue, Enum goneIfNotValue2, Enum goneIfVariable) {
+        if (goneIfVariable != goneIfNotValue && goneIfVariable != goneIfNotValue2) {
+            field.setVisibility(GONE);
+        }
+    }
+
+    @BindingAdapter(value = {"goneIfLessThanValue", "goneIfVariable"})
+    public static void setGoneIfLessThan(ControlPropertyField field, Integer goneIfLessThanValue, Integer goneIfVariable) {
+        if (goneIfVariable < goneIfLessThanValue) {
+            field.setVisibility(GONE);
+        }
+    }
+
+    @BindingAdapter(value = {"goneIfLessThanValue", "goneIfField"})
+    public static void setGoneIfLessThan(ControlPropertyField field, Integer goneIfLessThanValue, ControlPropertyField goneIfField) {
+        if (goneIfField.getValue() == null || (Integer) goneIfField.getValue() < goneIfLessThanValue) {
             field.setVisibility(GONE);
         }
     }

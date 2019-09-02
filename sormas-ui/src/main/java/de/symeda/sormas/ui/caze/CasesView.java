@@ -45,11 +45,13 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -60,6 +62,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -86,6 +89,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -99,7 +103,14 @@ public class CasesView extends AbstractView {
 
 	public static final String VIEW_NAME = "cases";
 
+	/**
+	 * When the number of cases exceeds this amount, the user will be confronted with a warning when trying
+	 * to enter bulk edit mode.
+	 */
+	public static final int BULK_EDIT_MODE_WARNING_THRESHOLD = 1000;
+
 	private CaseCriteria criteria;
+	private ViewConfiguration viewConfiguration;
 
 	private CaseGrid grid;    
 	private Button createButton;
@@ -109,11 +120,13 @@ public class CasesView extends AbstractView {
 	private VerticalLayout gridLayout;
 	private HorizontalLayout firstFilterRowLayout;
 	private HorizontalLayout secondFilterRowLayout;
+	private HorizontalLayout thirdFilterRowLayout;
 	private HorizontalLayout dateFilterRowLayout;
 
 	private String originalViewTitle;
 
 	// Filters
+	private ComboBox caseOriginFilter;
 	private ComboBox outcomeFilter;
 	private ComboBox diseaseFilter;
 	private ComboBox classificationFilter;
@@ -122,14 +135,20 @@ public class CasesView extends AbstractView {
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox facilityFilter;
+	private ComboBox pointOfEntryFilter;
 	private ComboBox officerFilter;
 	private ComboBox reportedByFilter;
+	private TextField reportingUserFilter;
 	private CheckBox casesWithoutGeoCoordsFilter;
+	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 
 	// Bulk operations
+	private MenuBar bulkOperationsDropdown;
 	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
+	private Button btnEnterBulkEditMode;
+	private Button btnLeaveBulkEditMode;
 
 	private Button switchArchivedActiveButton;
 
@@ -141,13 +160,13 @@ public class CasesView extends AbstractView {
 		super(VIEW_NAME);
 		originalViewTitle = getViewTitleLabel().getValue();
 
+		viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
 		if (criteria.getArchived() == null) {
 			criteria.archived(false);
 		}
 
-		grid = new CaseGrid();
-		grid.setCriteria(criteria);
+		grid = new CaseGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -176,16 +195,18 @@ public class CasesView extends AbstractView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
 			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
+			exportButton.setId("export");
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true); 
 			exportLayout.setMargin(true);
 			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			exportLayout.setWidth(200, Unit.PIXELS);
+			exportLayout.setWidth(250, Unit.PIXELS);
 			exportButton.setContent(exportLayout);
 			addHeaderComponent(exportButton);
 
 			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
+			basicExportButton.setId("basicExport");
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setIcon(VaadinIcons.TABLE);
@@ -197,14 +218,15 @@ public class CasesView extends AbstractView {
 			fileDownloader.extend(basicExportButton);
 
 			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+			extendedExportButton.setId("extendedExport");
 			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
 
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class,
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, ExportType.CASE_SURVEILLANCE, 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), ExportType.CASE_SURVEILLANCE, start, max), 
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
@@ -220,13 +242,29 @@ public class CasesView extends AbstractView {
 					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
+				Button caseManagementExportButton = new Button(I18nProperties.getCaption(Captions.exportCaseManagement));
+				caseManagementExportButton.setId("caseManagementExport");
+				caseManagementExportButton.setDescription(I18nProperties.getString(Strings.infoCaseManagementExport));
+				caseManagementExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				caseManagementExportButton.setIcon(VaadinIcons.FILE_TEXT);
+				caseManagementExportButton.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(caseManagementExportButton);
+
+				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(UserProvider.getCurrent().getUuid(), grid.getCriteria(),
+						"sormas_case_management_" + DateHelper.formatDateForExport(new Date()) + ".zip");
+				new FileDownloader(caseManagementExportStreamResource).extend(caseManagementExportButton);
+			}
+
 			Button sampleExportButton = new Button(I18nProperties.getCaption(Captions.exportSamples));
+			sampleExportButton.setId("sampleExport");
+			sampleExportButton.setDescription(I18nProperties.getString(Strings.infoSampleExport));
 			sampleExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			sampleExportButton.setIcon(VaadinIcons.FILE_TEXT);
 			sampleExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(sampleExportButton);
 
-			StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class,
+			StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class, null,
 					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(SampleExportDto.I18N_PREFIX, propertyId,
@@ -253,8 +291,54 @@ public class CasesView extends AbstractView {
 			});
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+			btnEnterBulkEditMode.setId("enterBulkEditMode");
+			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
+			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
+					VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.actionEnterBulkEditMode), new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)), 
+							I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, (result) -> {
+								if (result.booleanValue() == true) {
+									enterBulkEditMode();
+								}
+							});
+				} else {
+					enterBulkEditMode();
+				}
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				viewConfiguration.setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				searchField.setEnabled(true);
+				reportingUserFilter.setEnabled(true);
+				navigateTo(criteria);
+			});
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
+			Button mergeDuplicatesButton = new Button(I18nProperties.getCaption(Captions.caseMergeDuplicates));
+			mergeDuplicatesButton.setId("mergeDuplicates");
+			mergeDuplicatesButton.setIcon(VaadinIcons.COMPRESS_SQUARE);
+			mergeDuplicatesButton.addClickListener(e -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+			addHeaderComponent(mergeDuplicatesButton);
+		}
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.caseNewCase));
+			createButton.setId("create");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
@@ -262,6 +346,17 @@ public class CasesView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private void enterBulkEditMode() {
+		bulkOperationsDropdown.setVisible(true);
+		viewConfiguration.setInEagerMode(true);
+		btnEnterBulkEditMode.setVisible(false);
+		btnLeaveBulkEditMode.setVisible(true);
+		searchField.setEnabled(false);
+		reportingUserFilter.setEnabled(false);
+		grid.setEagerDataProvider();
+		grid.reload();
 	}
 
 	public VerticalLayout createFilterBar() {
@@ -275,7 +370,25 @@ public class CasesView extends AbstractView {
 		firstFilterRowLayout.setSpacing(true);
 		firstFilterRowLayout.setSizeUndefined();
 		{
+			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				caseOriginFilter = new ComboBox();
+				caseOriginFilter.setId(CaseDataDto.CASE_ORIGIN);
+				caseOriginFilter.setWidth(140, Unit.PIXELS);
+				caseOriginFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_ORIGIN));
+				caseOriginFilter.addItems((Object[]) CaseOrigin.values());
+				caseOriginFilter.addValueChangeListener(e -> {
+					criteria.caseOrigin(((CaseOrigin) e.getProperty().getValue()));
+					if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+						pointOfEntryFilter.setEnabled(e.getProperty().getValue() != CaseOrigin.IN_COUNTRY);
+						portHealthCasesWithoutFacilityFilter.setEnabled(e.getProperty().getValue() != CaseOrigin.IN_COUNTRY);
+					}
+					navigateTo(criteria);
+				});
+				firstFilterRowLayout.addComponent(caseOriginFilter);
+			}
+
 			outcomeFilter = new ComboBox();
+			outcomeFilter.setId(CaseDataDto.OUTCOME);
 			outcomeFilter.setWidth(140, Unit.PIXELS);
 			outcomeFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME));
 			outcomeFilter.addItems((Object[]) CaseOutcome.values());
@@ -286,6 +399,7 @@ public class CasesView extends AbstractView {
 			firstFilterRowLayout.addComponent(outcomeFilter);
 
 			diseaseFilter = new ComboBox();
+			diseaseFilter.setId(CaseDataDto.DISEASE);
 			diseaseFilter.setWidth(140, Unit.PIXELS);
 			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray());
@@ -296,6 +410,7 @@ public class CasesView extends AbstractView {
 			firstFilterRowLayout.addComponent(diseaseFilter);
 
 			classificationFilter = new ComboBox();
+			classificationFilter.setId(CaseDataDto.CASE_CLASSIFICATION);
 			classificationFilter.setWidth(140, Unit.PIXELS);
 			classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 			classificationFilter.addItems((Object[])CaseClassification.values());
@@ -306,6 +421,7 @@ public class CasesView extends AbstractView {
 			firstFilterRowLayout.addComponent(classificationFilter);
 
 			searchField = new TextField();
+			searchField.setId("search");
 			searchField.setWidth(200, Unit.PIXELS);
 			searchField.setNullRepresentation("");
 			searchField.setInputPrompt(I18nProperties.getString(Strings.promptCasesSearchField));
@@ -318,6 +434,7 @@ public class CasesView extends AbstractView {
 			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
 
 			resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
+			resetButton.setId("reset");
 			resetButton.setVisible(false);
 			resetButton.addClickListener(event -> {
 				ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
@@ -385,25 +502,51 @@ public class CasesView extends AbstractView {
 			}
 			secondFilterRowLayout.addComponent(districtFilter);
 
-			facilityFilter = new ComboBox();
-			facilityFilter.setWidth(140, Unit.PIXELS);
-			facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
-			facilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
-			facilityFilter.addValueChangeListener(e -> {
-				criteria.healthFacility(((FacilityReferenceDto)e.getProperty().getValue()));
-				navigateTo(criteria);
-			});
-			facilityFilter.setEnabled(false);
-			secondFilterRowLayout.addComponent(facilityFilter);
+			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				facilityFilter = new ComboBox();
+				facilityFilter.setWidth(140, Unit.PIXELS);
+				facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
+				facilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
+				facilityFilter.addValueChangeListener(e -> {
+					criteria.healthFacility(((FacilityReferenceDto)e.getProperty().getValue()));
+					navigateTo(criteria);
+				});
+				facilityFilter.setEnabled(false);
+				secondFilterRowLayout.addComponent(facilityFilter);
+			}
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+				pointOfEntryFilter = new ComboBox();
+				pointOfEntryFilter.setWidth(140, Unit.PIXELS);
+				pointOfEntryFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.POINT_OF_ENTRY));
+				pointOfEntryFilter.setDescription(I18nProperties.getDescription(Descriptions.descPointOfEntryFilter));
+				pointOfEntryFilter.addValueChangeListener(e -> {
+					criteria.pointOfEntry(((PointOfEntryReferenceDto) e.getProperty().getValue()));
+					navigateTo(criteria);
+				});
+				secondFilterRowLayout.addComponent(pointOfEntryFilter);
+			}
 
 			districtFilter.addValueChangeListener(e-> {
-				facilityFilter.removeAllItems();
-				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
-				if (district != null) {
-					facilityFilter.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(district, true));
-					facilityFilter.setEnabled(true);
-				} else {
-					facilityFilter.setEnabled(false);
+				if (facilityFilter != null) {
+					facilityFilter.removeAllItems();
+					DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+					if (district != null) {
+						facilityFilter.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(district, true));
+						facilityFilter.setEnabled(true);
+					} else {
+						facilityFilter.setEnabled(false);
+					}
+				}
+				if (pointOfEntryFilter != null) {
+					pointOfEntryFilter.removeAllItems();
+					DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+					if (district != null) {
+						pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllByDistrict(district.getUuid(), true));
+						pointOfEntryFilter.setEnabled(caseOriginFilter == null || caseOriginFilter.getValue() != CaseOrigin.IN_COUNTRY);
+					} else {
+						pointOfEntryFilter.setEnabled(false);
+					}
 				}
 			});
 
@@ -429,6 +572,25 @@ public class CasesView extends AbstractView {
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
 
+			reportingUserFilter = new TextField();
+			reportingUserFilter.setWidth(200, Unit.PIXELS);
+			reportingUserFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORTING_USER));
+			reportingUserFilter.setNullRepresentation("");
+			reportingUserFilter.addTextChangeListener(e -> {
+				criteria.reportingUserLike(e.getText());
+				grid.reload();
+			});
+			secondFilterRowLayout.addComponent(reportingUserFilter);
+		}
+		filterLayout.addComponent(secondFilterRowLayout);
+		secondFilterRowLayout.setVisible(false);
+
+		thirdFilterRowLayout = new HorizontalLayout();
+		thirdFilterRowLayout.setMargin(false);
+		thirdFilterRowLayout.setSpacing(true);
+		thirdFilterRowLayout.setSizeUndefined();
+		CssStyles.style(thirdFilterRowLayout, CssStyles.VSPACE_3);
+		{
 			casesWithoutGeoCoordsFilter = new CheckBox();
 			CssStyles.style(casesWithoutGeoCoordsFilter, CssStyles.CHECKBOX_FILTER_INLINE);
 			casesWithoutGeoCoordsFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterWithoutGeo));
@@ -437,10 +599,22 @@ public class CasesView extends AbstractView {
 				criteria.mustHaveNoGeoCoordinates((Boolean) e.getProperty().getValue());
 				navigateTo(criteria);
 			});
-			secondFilterRowLayout.addComponent(casesWithoutGeoCoordsFilter);
+			thirdFilterRowLayout.addComponent(casesWithoutGeoCoordsFilter);
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+				portHealthCasesWithoutFacilityFilter = new CheckBox();
+				CssStyles.style(portHealthCasesWithoutFacilityFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+				portHealthCasesWithoutFacilityFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterPortHealthWithoutFacility));
+				portHealthCasesWithoutFacilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descCaseFilterPortHealthWithoutFacility));
+				portHealthCasesWithoutFacilityFilter.addValueChangeListener(e -> {
+					criteria.mustBePortHealthCaseWithoutFacility((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(portHealthCasesWithoutFacilityFilter);
+			}
 		}
-		filterLayout.addComponent(secondFilterRowLayout);
-		secondFilterRowLayout.setVisible(false);
+		filterLayout.addComponent(thirdFilterRowLayout);
+		thirdFilterRowLayout.setVisible(false);
 
 		dateFilterRowLayout = new HorizontalLayout();
 		dateFilterRowLayout.setSpacing(true);
@@ -452,7 +626,7 @@ public class CasesView extends AbstractView {
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
 			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekTo));
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));
-			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateTo));
+			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptDateTo));
 			dateFilterRowLayout.addComponent(weekAndDateFilter);
 			dateFilterRowLayout.addComponent(applyButton);
 
@@ -539,7 +713,7 @@ public class CasesView extends AbstractView {
 
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				MenuBar bulkOperationsDropdown = new MenuBar();	
+				bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = selectedItem -> {
@@ -550,7 +724,7 @@ public class CasesView extends AbstractView {
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getCaseController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
-							grid.reload();
+							navigateTo(criteria);
 						}
 					});
 				};
@@ -559,7 +733,7 @@ public class CasesView extends AbstractView {
 				Command archiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
-							grid.reload();
+							navigateTo(criteria);
 						}
 					});
 				};
@@ -568,13 +742,14 @@ public class CasesView extends AbstractView {
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
-							grid.reload();
+							navigateTo(criteria);
 						}
 					});
 				};
 				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
+				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 		}
@@ -610,6 +785,7 @@ public class CasesView extends AbstractView {
 		expandFiltersButton.setVisible(!expanded);
 		collapseFiltersButton.setVisible(expanded);
 		secondFilterRowLayout.setVisible(expanded);
+		thirdFilterRowLayout.setVisible(expanded);
 		dateFilterRowLayout.setVisible(expanded);
 	}
 
@@ -632,7 +808,9 @@ public class CasesView extends AbstractView {
 
 		updateStatusButtons();
 		updateArchivedButton();
-
+		if (caseOriginFilter != null) {
+			caseOriginFilter.setValue(criteria.getCaseOrigin());
+		}
 		outcomeFilter.setValue(criteria.getOutcome());
 		diseaseFilter.setValue(criteria.getDisease());
 		classificationFilter.setValue(criteria.getCaseClassification());
@@ -640,16 +818,27 @@ public class CasesView extends AbstractView {
 		presentConditionFilter.setValue(criteria.getPresentCondition());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
-		facilityFilter.setValue(criteria.getHealthFacility());
+		if (facilityFilter != null) {
+			facilityFilter.setValue(criteria.getHealthFacility());
+		}
+		if (pointOfEntryFilter != null) {
+			pointOfEntryFilter.setValue(criteria.getPointOfEntry());
+		}
 		officerFilter.setValue(criteria.getSurveillanceOfficer());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
+		reportingUserFilter.setValue(criteria.getReportingUserLike());
 		casesWithoutGeoCoordsFilter.setValue(criteria.isMustHaveNoGeoCoordinates());
+		if (portHealthCasesWithoutFacilityFilter != null) {
+			portHealthCasesWithoutFacilityFilter.setValue(criteria.isMustBePortHealthCaseWithoutFacility());
+		}
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
 
 		boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
+				.anyMatch(f -> !f.isEmpty());
+		hasExpandedFilter |= FieldHelper.streamFields(thirdFilterRowLayout)
 				.anyMatch(f -> !f.isEmpty());
 		hasExpandedFilter |=  FieldHelper.streamFields(dateFilterRowLayout)
 				.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter())

@@ -15,6 +15,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -34,7 +35,8 @@ public class AdditionalTestListComponent extends VerticalLayout {
 		addComponent(list);
 		list.reload();
 		
-		Label testsHeader = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingAdditionalTests)), ContentMode.HTML);
+		Label testsHeader = new Label(I18nProperties.getString(Strings.headingAdditionalTests));
+		testsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(testsHeader);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE)) {

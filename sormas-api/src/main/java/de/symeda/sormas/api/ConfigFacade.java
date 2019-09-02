@@ -45,6 +45,8 @@ public interface ConfigFacade {
 	String getTempFilesPath();
 	
 	String getGeneratedFilesPath();
+	
+	String getCustomFilesPath();
 
 	char getCsvSeparator();
 
@@ -53,5 +55,7 @@ public interface ConfigFacade {
 	void validateAppUrls();
 
 	boolean isDevMode();
+	
+	double getNameSimilarityThreshold();
 	
 }

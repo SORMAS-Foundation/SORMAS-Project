@@ -7,7 +7,6 @@
 	<property name="deploy.serverlibs.path" value="${glassfish.domain.root}/lib" />
 	<property name="collect.root.path" value="../deploy" />
 	<property name="collect.serverlibs.path" value="${collect.root.path}/serverlibs" />
-	<property name="collect.sql.path" value="${collect.root.path}/sql" />
 
 	<property environment="env" />
 
@@ -65,7 +64,7 @@
 		</copy>
 	</target>
 
-	<target name="collect-setup" description="Collects setup scripts and config files">
+	<target name="collect-setup" description="Collects setup/update scripts and config files">
 
 		<delete failonerror="false" includeemptydirs="true">
 			<fileset dir="${collect.root.path}" casesensitive="false">
@@ -101,20 +100,6 @@
 		</copy>
 	</target>
 
-	<target name="collect-sql" description="SQL für server setup bereitstellen">
-
-		<delete failonerror="false" includeemptydirs="true">
-			<fileset dir="${collect.sql.path}" casesensitive="false">
-				<include name="**" />
-				<include name="**/*" />
-			</fileset>
-		</delete>
-
-		<copy todir="${collect.sql.path}">
-			<fileset dir="sql" />
-		</copy>
-	</target>
-
 	<target name="collect-artifacts" description="Collects artifacts">
 		<ant dir="../sormas-ear" target="3-collect" />
 		<ant dir="../sormas-ui" target="3-collect" />
@@ -126,10 +111,7 @@
 
 		<echo>Collecting serverlibs</echo>
 		<antcall target="collect-serverlibs" />
-
-		<echo>Collecting SQL</echo>
-		<antcall target="collect-sql" />
-
+		
 		<echo>Collecting config und scripts</echo>
 		<antcall target="collect-setup" />
 

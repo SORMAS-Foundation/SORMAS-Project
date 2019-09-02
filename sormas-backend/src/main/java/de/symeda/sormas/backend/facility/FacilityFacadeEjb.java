@@ -65,10 +65,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-/**
- * @author Christopher Riedel
- *
- */
 @Stateless(name = "FacilityFacade")
 public class FacilityFacadeEjb implements FacilityFacade {
 
@@ -176,6 +172,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	@Override
 	public List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef) {
 		return facilityService.getHealthFacilitiesByName(name, districtService.getByReferenceDto(districtRef), communityService.getByReferenceDto(communityRef))
+				.stream()
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<FacilityReferenceDto> getLaboratoriesByName(String name) {
+		return facilityService.getLaboratoriesByName(name)
 				.stream()
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());

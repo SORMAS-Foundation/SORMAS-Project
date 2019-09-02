@@ -208,8 +208,7 @@ public class SampleController {
 
 		ConfirmationComponent requestTaskComponent = VaadinUiUtil.buildYesNoConfirmationComponent();
 
-		Label description = new Label(I18nProperties.getString(Strings.messageCreateCollectionTask));
-		description.setContentMode(ContentMode.HTML);
+		Label description = new Label(I18nProperties.getString(Strings.messageCreateCollectionTask), ContentMode.HTML);
 		description.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(description);
 		layout.addComponent(requestTaskComponent);

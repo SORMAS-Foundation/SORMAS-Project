@@ -35,7 +35,6 @@ import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ImportIgnore;
 
 @Entity
 @Audited
@@ -187,7 +186,7 @@ public class Symptoms extends AbstractDomainObject {
 
 	// when adding new fields make sure to extend toHumanString
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getOnsetDate() {
 		return onsetDate;
 	}
@@ -196,7 +195,6 @@ public class Symptoms extends AbstractDomainObject {
 		this.onsetDate = onsetDate;
 	}
 
-	@ImportIgnore
 	@Column(length = 255)
 	public String getPatientIllLocation() {
 		return patientIllLocation;
@@ -206,7 +204,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.patientIllLocation = patientIllLocation;
 	}
 
-	@Column(columnDefinition = "float8")
+	@Column(columnDefinition = "float4")
 	public Float getTemperature() {
 		return temperature;
 	}
@@ -599,7 +597,6 @@ public class Symptoms extends AbstractDomainObject {
 		return seizures;
 	}
 
-	@ImportIgnore
 	public Boolean getSymptomatic() {
 		return symptomatic;
 	}
@@ -847,6 +844,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.lesionsAllOverBody = lesionsAllOverBody;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getLesionsResembleImg1() {
 		return lesionsResembleImg1;
 	}
@@ -855,6 +853,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.lesionsResembleImg1 = lesionsResembleImg1;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getLesionsResembleImg2() {
 		return lesionsResembleImg2;
 	}
@@ -863,6 +862,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.lesionsResembleImg2 = lesionsResembleImg2;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getLesionsResembleImg3() {
 		return lesionsResembleImg3;
 	}
@@ -871,6 +871,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.lesionsResembleImg3 = lesionsResembleImg3;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getLesionsResembleImg4() {
 		return lesionsResembleImg4;
 	}
@@ -879,7 +880,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.lesionsResembleImg4 = lesionsResembleImg4;
 	}
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getLesionsOnsetDate() {
 		return lesionsOnsetDate;
 	}
@@ -1207,6 +1208,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.unilateralCataracts = unilateralCataracts;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public SymptomState getCongenitalGlaucoma() {
 		return congenitalGlaucoma;
 	}

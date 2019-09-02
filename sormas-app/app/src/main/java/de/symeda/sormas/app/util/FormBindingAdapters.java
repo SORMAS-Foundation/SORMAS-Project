@@ -40,6 +40,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.controls.ControlLinkField;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.core.enumeration.PathogenTestResultTypeElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
@@ -139,6 +140,27 @@ public class FormBindingAdapters {
         } else if (o instanceof YesNoUnknown && YesNoUnknown.NO.equals(o)) {
             view.setVisibility(GONE);
         } else if (o instanceof SymptomState && SymptomState.NO.equals(o)) {
+            view.setVisibility(GONE);
+        }
+    }
+
+    @BindingAdapter(value = {"goneIfValue", "goneIfVariable"})
+    public static void setGoneIf(View view, Enum goneIfValue, Enum goneIfVariable) {
+        if (goneIfVariable == goneIfValue) {
+            view.setVisibility(GONE);
+        }
+    }
+
+    @BindingAdapter(value = {"goneIfNotValue", "goneIfVariable"})
+    public static void setGoneIfNot(View view, Enum goneIfNotValue, Enum goneIfVariable) {
+        if (goneIfVariable != goneIfNotValue) {
+            view.setVisibility(GONE);
+        }
+    }
+
+    @BindingAdapter(value = {"goneIfNotValue", "goneIfNotValue2", "goneIfVariable"})
+    public static void setGoneIfNot(View view, Enum goneIfNotValue, Enum goneIfNotValue2, Enum goneIfVariable) {
+        if (goneIfVariable != goneIfNotValue && goneIfVariable != goneIfNotValue2) {
             view.setVisibility(GONE);
         }
     }

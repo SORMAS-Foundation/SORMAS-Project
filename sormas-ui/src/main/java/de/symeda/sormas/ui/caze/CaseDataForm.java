@@ -23,7 +23,6 @@ import java.util.List;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -41,6 +40,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -53,8 +53,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -98,17 +99,20 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 									CaseDataDto.DENGUE_FEVER_TYPE)))
 			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE)
 			+ LayoutUtil.fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)
-			+ LayoutUtil.fluidRowLocs("", CaseDataDto.HEALTH_FACILITY_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
 			+ LayoutUtil.loc(MEDICAL_INFORMATION_LOC)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR)
 			+ LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL)
 			+ LayoutUtil.loc(PAPER_FORM_DATES_LOC)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE);
 
@@ -134,7 +138,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addFields(CaseDataDto.UUID, CaseDataDto.REPORT_DATE, CaseDataDto.REPORTING_USER,
 				CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE, 
 				CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_COMMENT,
-				CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS);
+				CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS, CaseDataDto.CLINICIAN_NAME,
+				CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
 		
 		// Button to automatically assign a new epid number
 		Button assignNewEpidNumberButton = new Button(I18nProperties.getCaption(Captions.actionAssignNewEpidNumber));
@@ -161,15 +166,46 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
 
-		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
-		addField(CaseDataDto.REGION, ComboBox.class);
+		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
+		
+		ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
 		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
-		addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		community.setNullSelectionAllowed(true);
 		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+		facility.setImmediate(true);
+		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+		facilityDetails.setVisible(false);
+
+		region.addValueChangeListener(e -> {
+			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
+			FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+		});
+		district.addValueChangeListener(e -> {
+			if (community.getValue() == null) {
+				FieldHelper.removeItems(facility);
+			}
+			FieldHelper.removeItems(community);
+			DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
+			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
+		});
+		community.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
+			FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
+				district.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
+					null);
+		});
+		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		facility.addValueChangeListener(e -> {
+			updateFacilityFields(facility, facilityDetails);
+		});
+		
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
-		TextField fClinicianDetails = addField(CaseDataDto.CLINICIAN_DETAILS, TextField.class);
-		fClinicianDetails.setInputPrompt(I18nProperties.getString(Strings.promptNamePhoneEmail));
+		addField(CaseDataDto.POINT_OF_ENTRY, ComboBox.class);
+		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addFields(CaseDataDto.PREGNANT,
 				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
@@ -181,18 +217,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Set requirements that don't need visibility changes and read only status
 
-		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME,
-				CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
-		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE,
-				CaseDataDto.COMMUNITY, CaseDataDto.SURVEILLANCE_OFFICER);
+		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT);
+		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
 		FieldHelper.setReadOnlyWhen(getFieldGroup(), CaseDataDto.INVESTIGATED_DATE, CaseDataDto.INVESTIGATION_STATUS, Arrays.asList(InvestigationStatus.PENDING), false);
-		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORTING_USER, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.REGION,
-				CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORTING_USER, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.POINT_OF_ENTRY, 
+				CaseDataDto.POINT_OF_ENTRY_DETAILS, CaseDataDto.CASE_ORIGIN);
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
-		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS,
-				CaseDataDto.INVESTIGATED_DATE);
-		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION,
-				CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
+		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
+		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
+		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER), CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS);
 
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
 		// dynamically setting the visibility
@@ -244,7 +277,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.NOTIFYING_CLINIC_DETAILS, 
 					CaseDataDto.NOTIFYING_CLINIC, Arrays.asList(HospitalWardType.OTHER), true);
 		}
-		setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS), CaseDataDto.CLINICIAN_DETAILS);
+		setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS), CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
 
 		// Other initializations
 
@@ -269,16 +302,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
-				String medicalInformationCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingMedicalInformation));
-				Label medicalInformationCaptionLabel = new Label(medicalInformationCaptionLayout);
-				medicalInformationCaptionLabel.setContentMode(ContentMode.HTML);
+				Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
+				medicalInformationCaptionLabel.addStyleName(CssStyles.H3);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
 				break;
 			}
 		}
 
-		Label paperFormDatesLabel = new Label(LayoutUtil.h3(I18nProperties.getString(Strings.headingPaperFormDates)));
-		paperFormDatesLabel.setContentMode(ContentMode.HTML);
+		Label paperFormDatesLabel = new Label(I18nProperties.getString(Strings.headingPaperFormDates));
+		paperFormDatesLabel.addStyleName(CssStyles.H3);
 		getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);
 
 		// Automatic case classification rules button - invisible for other diseases
@@ -307,49 +339,76 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			epidField.addValueChangeListener(f -> {
 				setEpidNumberError(epidField, assignNewEpidNumberButton, (String) f.getProperty().getValue());
 			});
-		});
-
-		district.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
-					.getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
-			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
-		});
-
-		facility.addValueChangeListener(e -> {
-			if (facility.getValue() != null) {
-				boolean otherHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid()
+			
+			// Set health facility details visibility and caption
+			if (getValue().getHealthFacility() != null) {
+				boolean otherHealthFacility = getValue().getHealthFacility().getUuid()
 						.equals(FacilityDto.OTHER_FACILITY_UUID);
-				boolean noneHealthFacility = ((FacilityReferenceDto) facility.getValue()).getUuid()
+				boolean noneHealthFacility = getValue().getHealthFacility().getUuid()
 						.equals(FacilityDto.NONE_FACILITY_UUID);
 				boolean detailsVisible = otherHealthFacility || noneHealthFacility;
 
-				if (isVisibleAllowed(healthFacilityDetails)) {
-					healthFacilityDetails.setVisible(detailsVisible);
+				if (isVisibleAllowed(facilityDetails)) {
+					facilityDetails.setVisible(detailsVisible);
 				}
 
 				if (otherHealthFacility) {
-					healthFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX,
+					facilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX,
 							CaseDataDto.HEALTH_FACILITY_DETAILS));
 				}
 				if (noneHealthFacility) {
-					healthFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX,
+					facilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX,
 							NONE_HEALTH_FACILITY_DETAILS));
 				}
-				if (!detailsVisible) {
-					if (!healthFacilityDetails.isReadOnly()) {
-						healthFacilityDetails.clear();
-					}
+			} else {
+				setVisible(false, CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
+			}
+			
+			// Set health facility/point of entry visibility based on case origin
+			if (getValue().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
+				setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
+				
+				if (getValue().getHealthFacility() == null) {
+					setVisible(false, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS);
 				}
 			} else {
-				healthFacilityDetails.setVisible(false);
-				if (!healthFacilityDetails.isReadOnly()) {
-					healthFacilityDetails.clear();
-				}
+				setRequired(true, CaseDataDto.HEALTH_FACILITY);
+				setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
+			}
+			
+			// Hide case origin from port health users
+			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
 		});
 	}
 
+	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
+		if (cbFacility.getValue() != null) {
+			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+
+			tfFacilityDetails.setVisible(visibleAndRequired);
+			tfFacilityDetails.setRequired(visibleAndRequired);
+
+			if (otherHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+			}
+			if (noneHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
+			}
+			if (!visibleAndRequired) {
+				tfFacilityDetails.clear();
+			}
+		} else {
+			tfFacilityDetails.setVisible(false);
+			tfFacilityDetails.setRequired(false);
+			tfFacilityDetails.clear();
+		}	
+	}
+	
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;

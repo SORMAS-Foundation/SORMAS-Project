@@ -72,15 +72,12 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
             return;
         }
 
-        personDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                if (personDialog.getSelectedPerson() != null && !personDialog.getSelectedPerson().getUuid().equals(person.getUuid())) {
-                    personDialog.dismiss();
-                    resultConsumer.accept(personDialog.getSelectedPerson());
-                } else {
-                    NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.info_select_create_person);
-                }
+        personDialog.setPositiveCallback(() -> {
+            if (personDialog.getSelectedPerson() != null && !personDialog.getSelectedPerson().getUuid().equals(person.getUuid())) {
+                personDialog.dismiss();
+                resultConsumer.accept(personDialog.getSelectedPerson());
+            } else {
+                NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.info_select_create_person);
             }
         });
 
@@ -207,7 +204,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
         setupControlListeners();
 
         if (!binding.setVariable(BR.data, person)) {
-            Log.e(TAG, "There is no variable 'person' in layout " + layoutName);
+            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
         }
 
         if (!binding.setVariable(BR.availablePersons, makeObservable(similarPersons))) {

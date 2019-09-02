@@ -60,7 +60,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 	
 	private static final String HTML_LAYOUT = LayoutUtil.divs(
 			LayoutUtil.divsCss(CssStyles.VSPACE_3,
-					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_CODE),
+					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME),//, SampleDto.SAMPLE_CODE),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)),
@@ -88,8 +88,8 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 
 	@Override
 	protected void addFields() {
-		addField(SampleDto.SAMPLE_CODE, TextField.class);
-		TextField labSampleId = addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
+//		addField(SampleDto.SAMPLE_CODE, TextField.class);
+		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);

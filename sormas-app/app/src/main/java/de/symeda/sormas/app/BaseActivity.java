@@ -25,14 +25,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +36,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.Tracker;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.crashlytics.android.Crashlytics;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,17 +80,13 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.NavigationHelper;
-import de.symeda.sormas.app.util.SyncCallback;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public abstract class BaseActivity extends AppCompatActivity implements NotificationContext {
 
     public static final String TAG = BaseActivity.class.getSimpleName();
-
-    protected Tracker tracker;
 
     private View rootView;
     private ProgressBar preloader;
@@ -99,7 +98,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
     // footer menu
     protected PageMenuControl pageMenu = null;
-    private List<PageMenuItem> pageItems = new ArrayList();
+    private List<PageMenuItem> pageItems = new ArrayList<>();
     private PageMenuItem activePageItem = null;
     private int activePageKey = 0;
     private boolean finishInsteadOfUpNav;
@@ -149,9 +148,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        SormasApplication application = (SormasApplication) getApplication();
-        tracker = application.getDefaultTracker();
 
         // Show the Enter Pin Activity if the user doesn't have access to the app
         if (isAccessNeeded() && !ConfigProvider.isAccessGranted()) {
@@ -575,6 +571,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         if (!checkActiveUser()) return;
 
+        if (RetroProvider.isConnected()) {
+            NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, "Background synchronization already in progress.");
+
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
+
+            return;
+        }
+
         if (showProgressDialog) {
             if (progressDialog == null || !progressDialog.isShowing()) {
                 boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();
@@ -588,11 +598,18 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             }
         }
 
-        if (!RetroProvider.isConnected()) {
-            RetroProvider.connectAsyncHandled(this, showUpgradePrompt, false,
-                    new Consumer<Boolean>() {
-                        @Override
-                        public void accept(Boolean result) {
+        final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
+        final long syncLogCountBefore = syncLogDao.countOf();
+
+        RetroProvider.connectAsyncHandled(this, showUpgradePrompt, false,
+                result -> {
+
+                    if (Boolean.TRUE.equals(result)) {
+
+                        if (beforeSyncCallback != null) beforeSyncCallback.call();
+
+                        SynchronizeDataAsync.call(syncMode, getApplicationContext(), (syncFailed, syncFailedMessage) -> {
+
                             if (swipeRefreshLayout != null) {
                                 swipeRefreshLayout.setRefreshing(false);
                             }
@@ -601,67 +618,38 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                                 progressDialog = null;
                             }
 
-                            if (Boolean.TRUE.equals(result)) {
-                                // try again
-                                synchronizeData(syncMode, showUpgradePrompt, showProgressDialog, swipeRefreshLayout, resultCallback, beforeSyncCallback);
+                            BaseActivity.this.onResume();
+
+                            long syncLogCountAfter = syncLogDao.countOf();
+
+                            if (!syncFailed) {
+                                if (syncLogCountAfter > syncLogCountBefore) {
+                                    showConflictSnackbar();
+                                } else if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
+                                    NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, R.string.message_sync_not_synchronized);
+                                } else {
+                                    NotificationHelper.showNotification(BaseActivity.this, NotificationType.SUCCESS, R.string.message_sync_success);
+                                }
                             } else {
+                                NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
                                 checkActiveUser();
                             }
-                        }
-                    });
-            return;
-        }
 
-        final SyncLogDao syncLogDao = DatabaseHelper.getSyncLogDao();
-        final long syncLogCountBefore = syncLogDao.countOf();
+                            RetroProvider.disconnect();
 
-        if (RetroProvider.isConnected()) {
+                            if (resultCallback != null) resultCallback.call();
+                        });
 
-            if (beforeSyncCallback != null) beforeSyncCallback.call();
-
-            SynchronizeDataAsync.call(syncMode, getApplicationContext(), new SyncCallback() {
-                @Override
-                public void call(boolean syncFailed, String syncFailedMessage) {
-
-                    if (swipeRefreshLayout != null) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                    if (progressDialog != null && progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                        progressDialog = null;
-                    }
-
-                    BaseActivity.this.onResume();
-
-                    long syncLogCountAfter = syncLogDao.countOf();
-
-                    if (!syncFailed) {
-                        if (syncLogCountAfter > syncLogCountBefore) {
-                            showConflictSnackbar();
-                        } else if (SynchronizeDataAsync.hasAnyUnsynchronizedData()) {
-                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, R.string.message_sync_not_synchronized);
-                        } else {
-                            NotificationHelper.showNotification(BaseActivity.this, NotificationType.SUCCESS, R.string.message_sync_success);
-                        }
                     } else {
-                        NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, syncFailedMessage);
-                        checkActiveUser();
+                        if (swipeRefreshLayout != null) {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                        if (progressDialog != null && progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                            progressDialog = null;
+                        }
                     }
-
-                    RetroProvider.disconnect();
-
-                    if (resultCallback != null) resultCallback.call();
-                }
-            });
-        } else {
-            if (swipeRefreshLayout != null) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-                progressDialog = null;
-            }
-        }
+                });
     }
 
     private void showConflictSnackbar() {
@@ -792,4 +780,5 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
     }
+
 }

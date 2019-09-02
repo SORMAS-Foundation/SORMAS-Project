@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Set;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -34,7 +35,7 @@ public class SampleDto extends EntityDto {
 	public static final String I18N_PREFIX = "Sample";
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
-	public static final String SAMPLE_CODE = "sampleCode";
+//	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -104,6 +105,7 @@ public class SampleDto extends EntityDto {
 	private String requestedOtherPathogenTests;
 	private String requestedOtherAdditionalTests;
 
+	@ImportIgnore
 	public CaseReferenceDto getAssociatedCase() {
 		return associatedCase;
 	}
@@ -112,6 +114,7 @@ public class SampleDto extends EntityDto {
 		this.associatedCase = associatedCase;
 	}
 
+	@ImportIgnore
 	public String getSampleCode() {
 		return sampleCode;
 	}
@@ -247,7 +250,8 @@ public class SampleDto extends EntityDto {
 	public void setSampleSource(SampleSource sampleSource) {
 		this.sampleSource = sampleSource;
 	}
-	
+
+	@ImportIgnore
 	public SampleReferenceDto getReferredTo() {
 		return referredTo;
 	}
@@ -280,6 +284,7 @@ public class SampleDto extends EntityDto {
 		this.pathogenTestResult = pathogenTestResult;
 	}
 
+	@ImportIgnore
 	public Boolean getPathogenTestingRequested() {
 		return pathogenTestingRequested;
 	}
@@ -288,6 +293,7 @@ public class SampleDto extends EntityDto {
 		this.pathogenTestingRequested = pathogenTestingRequested;
 	}
 
+	@ImportIgnore
 	public Boolean getAdditionalTestingRequested() {
 		return additionalTestingRequested;
 	}
@@ -296,6 +302,7 @@ public class SampleDto extends EntityDto {
 		this.additionalTestingRequested = additionalTestingRequested;
 	}
 
+	@ImportIgnore
 	public Set<PathogenTestType> getRequestedPathogenTests() {
 		return requestedPathogenTests;
 	}
@@ -304,6 +311,7 @@ public class SampleDto extends EntityDto {
 		this.requestedPathogenTests = requestedPathogenTests;
 	}
 
+	@ImportIgnore
 	public Set<AdditionalTestType> getRequestedAdditionalTests() {
 		return requestedAdditionalTests;
 	}
@@ -312,6 +320,7 @@ public class SampleDto extends EntityDto {
 		this.requestedAdditionalTests = requestedAdditionalTests;
 	}
 
+	@ImportIgnore
 	public String getRequestedOtherPathogenTests() {
 		return requestedOtherPathogenTests;
 	}
@@ -320,6 +329,7 @@ public class SampleDto extends EntityDto {
 		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
 	}
 
+	@ImportIgnore
 	public String getRequestedOtherAdditionalTests() {
 		return requestedOtherAdditionalTests;
 	}
@@ -355,6 +365,7 @@ public class SampleDto extends EntityDto {
 		return sample;
 	}
 
+	@ImportIgnore
 	public Double getReportLat() {
 		return reportLat;
 	}
@@ -363,6 +374,7 @@ public class SampleDto extends EntityDto {
 		this.reportLat = reportLat;
 	}
 
+	@ImportIgnore
 	public Double getReportLon() {
 		return reportLon;
 	}
@@ -371,6 +383,7 @@ public class SampleDto extends EntityDto {
 		this.reportLon = reportLon;
 	}
 
+	@ImportIgnore
 	public Float getReportLatLonAccuracy() {
 		return reportLatLonAccuracy;
 	}
