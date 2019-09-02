@@ -18,6 +18,9 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -98,7 +101,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TESTED_DISEASE_DETAILS, PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestDto.TEST_TYPE_TEXT), Arrays.asList(PathogenTestType.OTHER));
-		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE), true);
+		
+		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<Object, List<Object>> () {{
+	        put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CSM));
+	        put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
+	    }};
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, serotypeVisibilityDependencies, true);
+//		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE), true);
 		
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();

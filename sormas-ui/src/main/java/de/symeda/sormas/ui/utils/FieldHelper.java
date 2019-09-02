@@ -164,54 +164,48 @@ public final class FieldHelper {
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
 			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot,
-			final boolean clearOnHidden, Class fieldClass, Disease disease) {
+			final boolean clearOnHidden) {
 
-		Field sourceField = fieldGroup.getField(sourcePropertyId);
-		if (sourceField instanceof AbstractField<?>) {
-			((AbstractField) sourceField).setImmediate(true);
-		}
+		onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden);
 
-		// initialize
-		{
-			boolean visible = sourceValues.contains(sourceField.getValue());
-			visible = visible != visibleWhenNot;
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-//				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
-				targetField.setVisible(visible);
-				if (!visible && clearOnHidden && targetField.getValue() != null) {
-					targetField.clear();
-				}
-//				}
-			}
-		}
-
-		sourceField.addValueChangeListener(event -> {
-			boolean visible = sourceValues.contains(event.getProperty().getValue());
-			visible = visible != visibleWhenNot;
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-//				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
-				targetField.setVisible(visible);
-				if (!visible && clearOnHidden && targetField.getValue() != null) {
-					targetField.clear();
-				}
-//				}
-			}
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			fieldGroup.getField(sourcePropertyId).addValueChangeListener(event -> onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden));
 		});
 	}
 	
-	private void ___ (Property.ValueChangeEvent event) {
-		boolean visible = sourceValues.contains(event.getProperty().getValue());
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(final FieldGroup fieldGroup, String targetPropertyId,
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot,
+			final boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(final FieldGroup fieldGroup, String targetPropertyId,
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, false, clearOnHidden);
+	}
+	
+	private static void onValueChangedSetVisible (final FieldGroup fieldGroup, List<String> targetPropertyIds, 
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot, final boolean clearOnHidden) {
+		
+		//a workaround variable to be modified in the forEach lambda
+		boolean[] visible_ = { true }; 
+		
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			if (!sourceValues.contains(fieldGroup.getField(sourcePropertyId).getValue()))
+				visible_[0] = false;
+		});
+		
+		boolean visible = visible_[0];
 		visible = visible != visibleWhenNot;
+		
 		for (Object targetPropertyId : targetPropertyIds) {
 			Field targetField = fieldGroup.getField(targetPropertyId);
-//			if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
 			targetField.setVisible(visible);
 			if (!visible && clearOnHidden && targetField.getValue() != null) {
 				targetField.clear();
 			}
-//			}
 		}
 	}
 
