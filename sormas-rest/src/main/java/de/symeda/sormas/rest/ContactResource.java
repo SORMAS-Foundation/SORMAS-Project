@@ -59,7 +59,7 @@ public class ContactResource extends EntityDtoResource {
 		List<ContactDto> contacts = FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since),
 				userDto.getUuid());
 		return contacts;
-	}
+	} 
 
 	@POST
 	@Path("/query")

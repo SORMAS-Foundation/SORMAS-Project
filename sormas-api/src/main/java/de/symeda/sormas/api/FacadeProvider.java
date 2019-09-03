@@ -69,7 +69,7 @@ public class FacadeProvider {
 		} catch (NamingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-	}
+	} 
 
 	public static FacadeProvider get() {
 		if (instance == null) {
