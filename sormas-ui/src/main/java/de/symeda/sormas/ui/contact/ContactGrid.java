@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.contact;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.DiseaseHelper;
@@ -35,8 +37,10 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> {
@@ -46,26 +50,20 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
 	@SuppressWarnings("unchecked")
-	public ContactGrid() {
+	public <V extends View> ContactGrid(ContactCriteria criteria, Class<V> viewClass) {
 		super(ContactIndexDto.class);
 		setSizeFull();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			setSelectionMode(SelectionMode.MULTI);
-		} else {
-			setSelectionMode(SelectionMode.NONE);
-		}
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode());
 		
-		DataProvider<ContactIndexDto,ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getContactFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int)FacadeProvider.getContactFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
-		setDataProvider(dataProvider);
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setCriteria(criteria);
+			setEagerDataProvider();
+		} else {
+			setLazyDataProvider();
+			setCriteria(criteria);
+		}
 
 		Column<ContactIndexDto, String> diseaseShortColumn = addColumn(entry -> 
 			DiseaseHelper.toString(entry.getCaseDisease(), entry.getCaseDiseaseDetails()));
@@ -129,6 +127,27 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 
 		getDataProvider().refreshAll();
 	}
+	
+	public void setLazyDataProvider() {
+		DataProvider<ContactIndexDto,ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getContactFacade().getIndexList(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+							.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int)FacadeProvider.getContactFacade().count(
+						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.NONE);
+	}
+	
+	public void setEagerDataProvider() {
+		ListDataProvider<ContactIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getContactFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
+	}
+	
 }
 
 

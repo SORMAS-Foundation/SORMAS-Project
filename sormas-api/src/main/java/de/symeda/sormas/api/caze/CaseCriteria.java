@@ -65,6 +65,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	private PersonReferenceDto person;
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean mustBePortHealthCaseWithoutFacility;
+	private Boolean mustHaveCaseManagementData;
 	private Boolean archived;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
@@ -195,6 +196,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	
 	public Boolean isMustBePortHealthCaseWithoutFacility() {
 		return mustBePortHealthCaseWithoutFacility;
+	}
+	
+	public CaseCriteria mustHaveCaseManagementData(Boolean mustHaveCaseManagementData) {
+		this.mustHaveCaseManagementData = mustHaveCaseManagementData;
+		return this;
+	}
+	
+	public Boolean isMustHaveCaseManagementData() {
+		return mustHaveCaseManagementData;
 	}
 	
 	public CaseCriteria caseClassification(CaseClassification caseClassification) {

@@ -239,7 +239,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit, user);
 		Join<Case, Case> casePath = clinicalCourse.join(ClinicalCourse.CASE);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(criteria, cb, casePath);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(criteria, cb, cq, casePath);
 		filter = cb.and(filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(caze.get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));

@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -29,10 +29,10 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -59,8 +59,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
 		
-		grid = new EventParticipantsGrid();
-		grid.setCriteria(criteria);
+		grid = new EventParticipantsGrid(criteria);
 		
 		gridLayout = new VerticalLayout();
 		gridLayout.setSizeFull();
@@ -95,8 +94,7 @@ public class EventParticipantsView extends AbstractEventView {
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getEventParticipantController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
-						grid.deselectAll();
-						grid.reload();
+						navigateTo(criteria);
 					}
 				});
 			};

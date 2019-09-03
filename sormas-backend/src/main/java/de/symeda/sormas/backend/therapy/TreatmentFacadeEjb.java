@@ -161,7 +161,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = service.createUserFilter(cb, cq, treatment, user);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(criteria, cb, casePath);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(criteria, cb, cq, casePath);
 		filter = cb.and(filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(caze.get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));

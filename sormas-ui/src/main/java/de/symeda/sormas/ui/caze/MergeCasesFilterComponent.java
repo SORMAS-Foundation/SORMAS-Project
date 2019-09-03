@@ -5,10 +5,12 @@ import java.time.ZoneId;
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.LocalDateToDateConverter;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -51,13 +53,14 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private CaseCriteria criteria;
 	private Runnable filtersUpdatedCallback;
 
-	public MergeCasesFilterComponent(CaseCriteria criteria, Runnable filtersUpdatedCallback) {
+	private Label lblNumberOfDuplicates;
+	
+	public MergeCasesFilterComponent(CaseCriteria criteria) {
 		setSpacing(false);
 		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
 
 		this.criteria = criteria;
-		this.filtersUpdatedCallback = filtersUpdatedCallback;
 
 		addFirstRowLayout();
 		addSecondRowLayout();
@@ -120,6 +123,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private void addSecondRowLayout() {
 		secondRowLayout = new HorizontalLayout();
 		secondRowLayout.setMargin(false);
+		secondRowLayout.setWidth(100, Unit.PERCENTAGE);
 
 		cbRegion = new ComboBox<>();
 		cbDistrict = new ComboBox<>();
@@ -209,8 +213,23 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			filtersUpdatedCallback.run();
 		});
 		secondRowLayout.addComponent(btnResetFilters);
+		
+		lblNumberOfDuplicates = new Label("");
+		lblNumberOfDuplicates.setId("numberOfDuplicates");
+		CssStyles.style(lblNumberOfDuplicates, CssStyles.FORCE_CAPTION, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, CssStyles.LABEL_BOLD);
+		secondRowLayout.addComponent(lblNumberOfDuplicates);
+		secondRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.MIDDLE_RIGHT);
+		secondRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
 
 		addComponent(secondRowLayout);
+	}
+	
+	public void updateDuplicateCountLabel(int count) {
+		lblNumberOfDuplicates.setValue(String.format(I18nProperties.getCaption(Captions.caseNumberOfDuplicatesDetected), count));
+	}
+	
+	public void setFiltersUpdatedCallback(Runnable filtersUpdatedCallback) {
+		this.filtersUpdatedCallback = filtersUpdatedCallback;
 	}
 
 }

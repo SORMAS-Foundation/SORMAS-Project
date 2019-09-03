@@ -39,7 +39,7 @@ public interface SampleFacade {
 	
 	int getReceivedSampleCountByCase(CaseReferenceDto caseRef);
 	
-	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, int first, int max);
 	

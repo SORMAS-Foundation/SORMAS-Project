@@ -155,20 +155,13 @@ public class VaadinUiUtil {
 		confirmationComponent.getConfirmButton().setCaption(confirmCaption);
 		confirmationComponent.getCancelButton().setCaption(cancelCaption);
 
-		popupWindow.addCloseListener(new CloseListener() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void windowClose(CloseEvent e) {
-				confirmationComponent.getCancelButton().click();
-			}
-		});
-
 		layout.addComponent(confirmationComponent);
 		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setSpacing(true);
 		popupWindow.setContent(layout);
-
+		popupWindow.setClosable(false);
+		
 		UI.getCurrent().addWindow(popupWindow);
 		return popupWindow;
 	}

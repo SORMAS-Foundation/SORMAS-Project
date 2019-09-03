@@ -57,7 +57,7 @@ public interface EventFacade {
 
 	long count(String userUuid, EventCriteria eventCriteria);
 
-	List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, int first, int max,
+	List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
 	boolean isArchived(String caseUuid);

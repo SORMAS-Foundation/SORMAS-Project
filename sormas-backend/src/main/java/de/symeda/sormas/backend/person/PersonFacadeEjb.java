@@ -35,6 +35,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -57,7 +58,6 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -65,11 +65,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
@@ -77,7 +76,6 @@ import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
@@ -163,31 +161,28 @@ public class PersonFacadeEjb implements PersonFacade {
 	//		return resultList;
 	//	}
 	
-	public Map<Disease, Long> getDeathCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to) {
+	@Override
+	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Person> deceasedPerson = cq.from(Person.class);
-		cq.multiselect(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE), cb.count(deceasedPerson));
-		cq.groupBy(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE));
-
-		Predicate filter = cb.isNotNull(deceasedPerson.get(Person.CAUSE_OF_DEATH_DISEASE));
+		Root<Case> root = cq.from(Case.class);
+		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		
-		if (from != null || to != null)
-			filter = AbstractAdoService.and(cb, filter, cb.between(deceasedPerson.get(Person.DEATH_DATE), from, to));
+		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
+		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, cq, root));
+		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 		
-		if (districtRef != null)
-			filter = AbstractAdoService.and(cb, filter, cb.equal(deceasedPerson.join(Person.ADDRESS, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID), districtRef.getUuid()));
-		
-		else if (regionRef != null)
-			filter = AbstractAdoService.and(cb, filter, cb.equal(deceasedPerson.join(Person.ADDRESS, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).join(District.REGION, JoinType.LEFT).get(Region.UUID), regionRef.getUuid()));
-		
-		if (filter != null)
+		if (filter != null) {
 			cq.where(filter);
+		}
+		
+		cq.multiselect(person.get(Person.CAUSE_OF_DEATH_DISEASE), cb.count(person));
+		cq.groupBy(person.get(Person.CAUSE_OF_DEATH_DISEASE));
 		
 		List<Object[]> results = em.createQuery(cq).getResultList();
 		
-		Map<Disease, Long> outbreaks = results.stream().collect(
-				Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+		Map<Disease, Long> outbreaks = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
 		
 		return outbreaks;
 	}

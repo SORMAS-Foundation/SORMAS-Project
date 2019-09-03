@@ -49,6 +49,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -74,7 +75,9 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.Therapy;
+import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -116,7 +119,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
-		Predicate filter = buildCriteriaFilter(caseCriteria, cb, from);
+		Predicate filter = buildCriteriaFilter(caseCriteria, cb, cq, from);
 		filter = and(cb, filter, createUserFilter(cb, cq, from, user));
 
 		if (filter != null) {
@@ -603,7 +606,7 @@ public class CaseService extends AbstractAdoService<Case> {
 		return newCaseFilter;
 	}
 
-	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, From<Case, Case> from) {
+	public Predicate buildCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<Case, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
 		Predicate filter = null;
@@ -675,6 +678,23 @@ public class CaseService extends AbstractAdoService<Case> {
 					cb.and(
 							cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY),
 							cb.isNull(from.join(Case.HEALTH_FACILITY, JoinType.LEFT))));
+		}
+		if (caseCriteria.isMustHaveCaseManagementData() != null && caseCriteria.isMustHaveCaseManagementData() == true) {
+			Subquery<Prescription> prescriptionSubquery = cq.subquery(Prescription.class);
+			Root<Prescription> prescriptionRoot = prescriptionSubquery.from(Prescription.class);
+			prescriptionSubquery.select(prescriptionRoot).where(cb.equal(prescriptionRoot.get(Prescription.THERAPY), from.get(Case.THERAPY)));
+			Subquery<Treatment> treatmentSubquery = cq.subquery(Treatment.class);
+			Root<Treatment> treatmentRoot = treatmentSubquery.from(Treatment.class);
+			treatmentSubquery.select(treatmentRoot).where(cb.equal(treatmentRoot.get(Treatment.THERAPY), from.get(Case.THERAPY)));
+			Subquery<ClinicalVisit> clinicalVisitSubquery = cq.subquery(ClinicalVisit.class);
+			Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitSubquery.from(ClinicalVisit.class);
+			clinicalVisitSubquery.select(clinicalVisitRoot).where(cb.equal(clinicalVisitRoot.get(ClinicalVisit.CLINICAL_COURSE), from.get(Case.CLINICAL_COURSE)));
+			
+			filter = and(cb, filter,
+					cb.or(
+							cb.exists(prescriptionSubquery),
+							cb.exists(treatmentSubquery),
+							cb.exists(clinicalVisitSubquery)));
 		}
 		if (caseCriteria.getArchived() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), caseCriteria.getArchived()));
