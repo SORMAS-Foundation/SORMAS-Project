@@ -41,6 +41,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.clinicalcourse.edit.ClinicalVisitNewActivity;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.contact.edit.ContactNewActivity;
@@ -102,7 +103,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             menuItems.remove(CaseSection.HEALTH_CONDITIONS.ordinal());
         }
         if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
-        (caze != null && caze.getTherapy() == null)) {
+                (caze != null && caze.getTherapy() == null)) {
             menuItems.remove(CaseSection.TREATMENTS.ordinal());
             menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
         }
@@ -198,7 +199,27 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     public void saveData() {
-        saveData(parameter -> goToNextPage());
+        Case existingCase = DatabaseHelper.getCaseDao().queryUuidBasic(getStoredRootEntity().getUuid());
+        if (!existingCase.getHealthFacility().getUuid().equals(getStoredRootEntity().getHealthFacility().getUuid())) {
+            ConfirmationDialog transferCaseDialog = new ConfirmationDialog(this, R.string.heading_case_transfer, R.string.message_case_transfer_or_data_correction, R.string.action_transfer_case, R.string.action_data_correction);
+            // ??? transferCaseDialog.setCancelable(false);
+            transferCaseDialog.setPositiveCallback(() -> {
+                transferCaseDialog.dismiss();
+                try {
+                    DatabaseHelper.getCaseDao().transferCase(getStoredRootEntity(), false);
+                    goToNextPage();
+                } catch (DaoException e) {
+                    return;
+                }
+            });
+            transferCaseDialog.setNegativeCallback(() -> {
+                saveData(parameter -> goToNextPage());
+            });
+            transferCaseDialog.show();
+
+        } else {
+            saveData(parameter -> goToNextPage());
+        }
     }
 
     public void saveData(final Consumer<Case> successCallback) {

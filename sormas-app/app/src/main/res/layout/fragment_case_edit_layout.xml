@@ -74,7 +74,6 @@
                     android:id="@+id/caseData_caseClassification"
                     app:required="true"
                     app:value="@={data.caseClassification}"
-                    app:userEditRight="@{UserRight.CASE_CLASSIFY}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
@@ -215,14 +214,16 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_region"
-                        app:value="@{data.region}"
+                        app:value="@={data.region}"
+                        app:required="true"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_district"
-                        app:value="@{data.district}"
+                        app:value="@={data.district}"
+                        app:required="true"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
@@ -233,21 +234,23 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_community"
-                        app:value="@{data.community}"
+                        app:value="@={data.community}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_healthFacility"
-                        app:value="@{data.healthFacility}"
+                        app:value="@={data.healthFacility}"
+                        app:required="true"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_healthFacilityDetails"
-                    app:value="@{data.healthFacilityDetails}"
+                    app:value="@={data.healthFacilityDetails}"
+                    app:required="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
@@ -407,17 +410,6 @@
                 android:paddingTop="@dimen/buttonPanelVerticalMargin"
                 android:paddingBottom="@dimen/buttonPanelVerticalMargin"
                 android:elevation="16dp">
-
-                <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/transfer_case"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/controlHalfMarginBottom"
-                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
-                    app:iconStart="@drawable/ic_transfer_case_24dp"
-                    app:rounded="true"
-                    app:userViewRight="@{UserRight.CASE_TRANSFER}"
-                    android:text="@string/action_transfer_case" />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/refer_case_from_poe"
