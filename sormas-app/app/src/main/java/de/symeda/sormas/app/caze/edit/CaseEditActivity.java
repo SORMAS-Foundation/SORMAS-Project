@@ -201,22 +201,16 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public void saveData() {
         Case existingCase = DatabaseHelper.getCaseDao().queryUuidBasic(getStoredRootEntity().getUuid());
         if (!existingCase.getHealthFacility().getUuid().equals(getStoredRootEntity().getHealthFacility().getUuid())) {
-            ConfirmationDialog transferCaseDialog = new ConfirmationDialog(this, R.string.heading_case_transfer, R.string.message_case_transfer_or_data_correction, R.string.action_transfer_case, R.string.action_data_correction);
-            // ??? transferCaseDialog.setCancelable(false);
+            ConfirmationDialog transferCaseDialog = new ConfirmationDialog(this, R.string.heading_case_infrastructure_data_changed, R.string.message_case_infrastructure_data_changed, R.string.action_transfer_case, R.string.action_edit_data);
             transferCaseDialog.setPositiveCallback(() -> {
                 transferCaseDialog.dismiss();
-                try {
-                    DatabaseHelper.getCaseDao().transferCase(getStoredRootEntity(), false);
-                    goToNextPage();
-                } catch (DaoException e) {
-                    return;
-                }
+                DatabaseHelper.getCaseDao().createPreviousHospitalizationAndUpdateHospitalization(getStoredRootEntity(), existingCase);
+                saveData(parameter -> goToNextPage());
             });
             transferCaseDialog.setNegativeCallback(() -> {
                 saveData(parameter -> goToNextPage());
             });
             transferCaseDialog.show();
-
         } else {
             saveData(parameter -> goToNextPage());
         }
@@ -288,8 +282,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public void onDestroy() {
         super.onDestroy();
 
-        if (saveTask != null && !saveTask.isCancelled())
+        if (saveTask != null && !saveTask.isCancelled()) {
             saveTask.cancel(true);
+        }
     }
 
 }

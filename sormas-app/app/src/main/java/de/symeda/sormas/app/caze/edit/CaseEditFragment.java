@@ -130,9 +130,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (classificationCriteria == null || !classificationCriteria.hasAnyCriteria()) {
             contentBinding.showClassificationRules.setVisibility(GONE);
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CASE_TRANSFER) || record.getHealthFacility() == null) {
-            //contentBinding.transferCase.setVisibility(GONE);
-        }
         if (!ConfigProvider.hasUserRight(UserRight.CASE_REFER_FROM_POE) || record.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || record.getHealthFacility() != null) {
             contentBinding.referCaseFromPoe.setVisibility(GONE);
         }

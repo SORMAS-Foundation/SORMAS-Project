@@ -218,12 +218,14 @@
                         android:id="@+id/caseData_region"
                         app:value="@={data.region}"
                         app:required="true"
+                        app:userEditRight="@{UserRight.CASE_TRANSFER}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_district"
                         app:value="@={data.district}"
                         app:required="true"
+                        app:userEditRight="@{UserRight.CASE_TRANSFER}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
@@ -237,12 +239,14 @@
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_community"
                         app:value="@={data.community}"
+                        app:userEditRight="@{UserRight.CASE_TRANSFER}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_healthFacility"
                         app:value="@={data.healthFacility}"
                         app:required="true"
+                        app:userEditRight="@{UserRight.CASE_TRANSFER}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
@@ -251,6 +255,7 @@
                     android:id="@+id/caseData_healthFacilityDetails"
                     app:value="@={data.healthFacilityDetails}"
                     app:required="true"
+                    app:userEditRight="@{UserRight.CASE_TRANSFER}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

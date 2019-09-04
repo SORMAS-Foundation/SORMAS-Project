@@ -1370,29 +1370,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	/**
-	 * Updates the Hospitalization of the given Case when its Health Facility has
-	 * changed and adds a PreviousHospitalization with the information of the
-	 * current Hospitalization. DOES NOT update or save the existing Case in the
-	 * database, only manipulates the Case delivered as a parameter.
-	 */
-	@Override
-	public CaseDataDto saveAndTransferCase(CaseDataDto caze) {
-		Case existingCase = caseService.getByUuid(caze.getUuid());
-
-		// Only update Hospitalization when Health Facility has been changed
-		if (!existingCase.getHealthFacility().getUuid().equals(caze.getHealthFacility().getUuid())) {
-			caze.getHospitalization().getPreviousHospitalizations().add(HospitalizationFacadeEjbLocal.toDto(
-					previousHospitalizationService.buildPreviousHospitalizationFromHospitalization(existingCase)));
-			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
-			caze.getHospitalization().setAdmissionDate(new Date());
-			caze.getHospitalization().setDischargeDate(null);
-			caze.getHospitalization().setIsolated(null);
-		}
-
-		return saveCase(caze);
-	}
-
 	@Override
 	public void deleteCase(CaseReferenceDto caseRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);

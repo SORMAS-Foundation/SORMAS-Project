@@ -67,8 +67,6 @@ public interface CaseFacade {
 	CaseReferenceDto getReferenceByUuid(String uuid);
 	
 	List<String> getAllActiveUuids(String userUuid);
-	
-	CaseDataDto saveAndTransferCase(CaseDataDto caze);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	

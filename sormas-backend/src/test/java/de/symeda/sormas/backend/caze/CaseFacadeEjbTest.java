@@ -44,6 +44,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
@@ -149,7 +150,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setCommunity(new CommunityReferenceDto(newRDCF.community.getUuid()));
 		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid()));
 		caze.setSurveillanceOfficer(caseOfficer.toReference());
-		caze = getCaseFacade().saveAndTransferCase(caze);
+		CaseDataDto oldCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(caze, oldCase);
+		getCaseFacade().saveCase(caze);
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		pendingTask = getTaskFacade().getByUuid(pendingTask.getUuid());
