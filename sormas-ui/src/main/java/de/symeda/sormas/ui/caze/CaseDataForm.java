@@ -103,6 +103,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			+ LayoutUtil.loc(MEDICAL_INFORMATION_LOC)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.WHICH_VACCINE, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR)
 			+ LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE)
@@ -174,7 +175,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addFields(CaseDataDto.PREGNANT,
-				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
+				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE, CaseDataDto.WHICH_VACCINE, 
 				CaseDataDto.SMALLPOX_VACCINATION_SCAR,CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.VACCINATION_DATE);
 
 		// Set initial visibilities
@@ -225,6 +226,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DATE,
 					CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION,
+					Arrays.asList(Vaccination.VACCINATED), true);
+		}
+		if (isVisibleAllowed(CaseDataDto.WHICH_VACCINE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.WHICH_VACCINE, CaseDataDto.VACCINATION,
 					Arrays.asList(Vaccination.VACCINATED), true);
 		}
 		if (isVisibleAllowed(CaseDataDto.OUTCOME_DATE)) {

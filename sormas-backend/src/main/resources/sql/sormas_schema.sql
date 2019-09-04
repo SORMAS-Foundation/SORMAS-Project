@@ -3569,3 +3569,9 @@ ALTER TABLE cases ADD COLUMN completeness real;
 ALTER TABLE cases_history ADD COLUMN completeness real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completeness value to case #1253');
+
+-- 2019-09-04 Add new disease, human rabies
+ALTER TABLE cases ADD COLUMN whichvaccine varchar(512);
+ALTER TABLE cases_history ADD COLUMN whichvaccine varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add new disease, human rabies #834');

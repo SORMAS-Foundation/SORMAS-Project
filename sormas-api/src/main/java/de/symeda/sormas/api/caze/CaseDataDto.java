@@ -175,7 +175,7 @@ public class CaseDataDto extends EntityDto {
 	private Date vaccinationDate;
 	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
-	@Diseases({Disease.RABIES, Disease.OTHER})
+	@Diseases({ Disease.RABIES, Disease.OTHER })
 	@Outbreaks
 	private String whichVaccine;
 	@Diseases({ Disease.MONKEYPOX })
