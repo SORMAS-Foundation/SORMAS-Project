@@ -84,6 +84,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
 	public static final String VACCINATION_DATE = "vaccinationDate";
+	public static final String WHICH_VACCINE = "whichVaccine";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
 	public static final String EPID_NUMBER = "epidNumber";
@@ -174,6 +175,9 @@ public class CaseDataDto extends EntityDto {
 	private Date vaccinationDate;
 	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
+	@Diseases({Disease.RABIES, Disease.OTHER})
+	@Outbreaks
+	private String whichVaccine;
 	@Diseases({ Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({ Disease.MONKEYPOX })
@@ -556,6 +560,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setVaccinationDate(Date vaccinationDate) {
 		this.vaccinationDate = vaccinationDate;
+	}
+
+	public String getWhichVaccine() {
+		return whichVaccine;
+	}
+
+	public void setWhichVaccine(String whichVaccine) {
+		this.whichVaccine = whichVaccine;
 	}
 
 	public String getEpidNumber() {

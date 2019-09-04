@@ -102,6 +102,7 @@ public class Case extends AbstractDomainObject {
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
 	public static final String VACCINATION_DATE = "vaccinationDate";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
+	public static final String WHICH_VACCINE = "whichVaccine";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
@@ -174,6 +175,7 @@ public class Case extends AbstractDomainObject {
 	private String vaccinationDoses;
 	private VaccinationInfoSource vaccinationInfoSource;
 	private Date vaccinationDate;
+	private String whichVaccine;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
 
@@ -567,6 +569,15 @@ public class Case extends AbstractDomainObject {
 
 	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
 		this.vaccinationInfoSource = vaccinationInfoSource;
+	}
+
+	@Column(length = 512)
+	public String getWhichVaccine() {
+		return whichVaccine;
+	}
+
+	public void setWhichVaccine(String whichVaccine) {
+		this.whichVaccine = whichVaccine;
 	}
 
 	@Enumerated(EnumType.STRING)
