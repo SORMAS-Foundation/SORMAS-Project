@@ -31,8 +31,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.AnimalCondition;
+import de.symeda.sormas.api.epidata.KindOfExposure;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -110,6 +113,13 @@ public class EpiData extends AbstractDomainObject {
 	private String waterBodyDetails;
 	private YesNoUnknown tickBite;
 	private YesNoUnknown fleaBite;
+	private YesNoUnknown kindOfExposure;
+	private YesNoUnknown kindOfExposureBite;
+	private YesNoUnknown kindOfExposureTouch;
+	private YesNoUnknown kindOfExposureScratch;
+	private YesNoUnknown kindOfExposureLick;
+	private YesNoUnknown kindOfExposureOther;
+	private String kindOfExposureDetails;
 	private Date dateOfLastExposure;
 	private String placeOfLastExposure;
 	private AnimalCondition animalCondition;
@@ -248,6 +258,62 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setFleaBite(YesNoUnknown fleaBite) {
 		this.fleaBite = fleaBite;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposure() {
+		return kindOfExposure;
+	}
+	public void setKindOfExposure(YesNoUnknown kindOfExposure) {
+		this.kindOfExposure = kindOfExposure;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureBite() {
+		return kindOfExposureBite;
+	}
+	public void setKindOfExposureBite(YesNoUnknown kindOfExposureBite) {
+		this.kindOfExposureBite = kindOfExposureBite;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureTouch() {
+		return kindOfExposureTouch;
+	}
+	public void setKindOfExposureTouch(YesNoUnknown kindOfExposureTouch) {
+		this.kindOfExposureTouch = kindOfExposureTouch;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureScratch() {
+		return kindOfExposureScratch;
+	}
+	public void setKindOfExposureScratch(YesNoUnknown kindOfExposureScratch) {
+		this.kindOfExposureScratch = kindOfExposureScratch;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureLick() {
+		return kindOfExposureLick;
+	}
+	public void setKindOfExposureLick(YesNoUnknown kindOfExposureLick) {
+		this.kindOfExposureLick = kindOfExposureLick;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureOther() {
+		return kindOfExposureOther;
+	}
+	public void setKindOfExposureOther(YesNoUnknown kindOfExposureOther) {
+		this.kindOfExposureOther = kindOfExposureOther;
+	}
+	
+	@Column(length=512)
+	public String getKindOfExposureDetails() {
+		return kindOfExposureDetails;
+	}
+	public void setKindOfExposureDetails(String kindOfExposureDetails) {
+		this.kindOfExposureDetails = kindOfExposureDetails;
 	}
 	
 	@Temporal(TemporalType.TIMESTAMP)

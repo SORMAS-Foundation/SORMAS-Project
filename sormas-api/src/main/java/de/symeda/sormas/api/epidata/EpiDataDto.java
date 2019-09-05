@@ -51,6 +51,7 @@ public class EpiDataDto extends EntityDto {
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
 	public static final String TICK_BITE = "tickBite";
 	public static final String FLEA_BITE = "fleaBite";
+	public static final String KIND_OF_EXPOSURE = "kindOfExposure";
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
@@ -147,6 +148,20 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown tickBite;
 	@Diseases({Disease.PLAGUE,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown fleaBite;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposure;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureBite;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureTouch;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureScratch;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureLick;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureOther;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private String kindOfExposureDetails;
 	@Diseases({Disease.MONKEYPOX, Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private Date dateOfLastExposure;
 	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})	
@@ -267,6 +282,55 @@ public class EpiDataDto extends EntityDto {
 	}
 	public void setTickBite(YesNoUnknown tickBite) {
 		this.tickBite = tickBite;
+	}
+	
+	public YesNoUnknown getKindOfExposure() {
+		return kindOfExposure;
+	}
+	public void setKindOfExposure(YesNoUnknown kindOfExposure) {
+		this.kindOfExposure = kindOfExposure;
+	}
+	
+	public YesNoUnknown getKindOfExposureBite() {
+		return kindOfExposureBite;
+	}
+	public void setKindOfExposureBite(YesNoUnknown kindOfExposureBite) {
+		this.kindOfExposureBite = kindOfExposureBite;
+	}
+	
+	public YesNoUnknown getKindOfExposureTouch() {
+		return kindOfExposureTouch;
+	}
+	public void setKindOfExposureTouch(YesNoUnknown kindOfExposureTouch) {
+		this.kindOfExposureTouch = kindOfExposureTouch;
+	}
+	
+	public YesNoUnknown getKindOfExposureScratch() {
+		return kindOfExposureScratch;
+	}
+	public void setKindOfExposureScratch(YesNoUnknown kindOfExposureScratch) {
+		this.kindOfExposureScratch = kindOfExposureScratch;
+	}
+	
+	public YesNoUnknown getKindOfExposureLick() {
+		return kindOfExposureLick;
+	}
+	public void setKindOfExposureLick(YesNoUnknown kindOfExposureLick) {
+		this.kindOfExposureLick = kindOfExposureLick;
+	}
+	
+	public YesNoUnknown getKindOfExposureOther() {
+		return kindOfExposureOther;
+	}
+	public void setKindOfExposureOther(YesNoUnknown kindOfExposureOther) {
+		this.kindOfExposureOther = kindOfExposureOther;
+	}
+	
+	public String getKindOfExposureDetails() {
+		return kindOfExposureDetails;
+	}
+	public void setKindOfExposureDetails(String kindOfExposureDetails) {
+		this.kindOfExposureDetails = kindOfExposureDetails;
 	}
 	
 	public Date getDateOfLastExposure() {
