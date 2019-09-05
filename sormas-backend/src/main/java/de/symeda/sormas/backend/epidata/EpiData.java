@@ -33,7 +33,6 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.AnimalCondition;
-import de.symeda.sormas.api.epidata.KindOfExposure;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
