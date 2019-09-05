@@ -96,7 +96,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 							)
 					)
 			) +
-			LayoutUtil.fluidRowLoc(6, EpiDataDto.ANIMAL_VACCINATED) +
+			LayoutUtil.fluidRowLoc(6, EpiDataDto.ANIMAL_VACCINATION_STATUS) +
 			LayoutUtil.loc(ENVIRONMENTAL_LOC) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_BODY_DETAILS) +
@@ -148,7 +148,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.KIND_OF_EXPOSURE_SCRATCH, EpiDataDto.KIND_OF_EXPOSURE_LICK, 
 				EpiDataDto.KIND_OF_EXPOSURE_OTHER, EpiDataDto.KIND_OF_EXPOSURE_DETAILS);
 		
-		addField(EpiDataDto.ANIMAL_VACCINATED, OptionGroup.class);
+		addField(EpiDataDto.ANIMAL_VACCINATION_STATUS, OptionGroup.class);
 		
 		addFields(EpiDataDto.WATER_BODY, EpiDataDto.WATER_BODY_DETAILS, 
 				EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_SOURCE_OTHER, 

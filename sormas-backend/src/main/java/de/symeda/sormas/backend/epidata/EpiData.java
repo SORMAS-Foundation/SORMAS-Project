@@ -32,6 +32,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.Diseases;
@@ -75,7 +76,7 @@ public class EpiData extends AbstractDomainObject {
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
-	public static final String ANIMAL_VACCINATED = "animalVaccinated";
+	public static final String ANIMAL_VACCINATION_STATUS = "animalVaccinationStatus";
 	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
 	
 	
@@ -131,7 +132,7 @@ public class EpiData extends AbstractDomainObject {
 	private Date dateOfLastExposure;
 	private String placeOfLastExposure;
 	private AnimalCondition animalCondition;
-	private YesNoUnknown animalVaccinated;
+	private Vaccination animalVaccinationStatus;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getBurialAttended() {
@@ -340,7 +341,7 @@ public class EpiData extends AbstractDomainObject {
 	public void setPlaceOfLastExposure(String placeOfLastExposure) {
 		this.placeOfLastExposure = placeOfLastExposure;
 	}
-
+	
 	@Enumerated(EnumType.STRING)
 	public AnimalCondition getAnimalCondition() {
 		return animalCondition;
@@ -348,13 +349,13 @@ public class EpiData extends AbstractDomainObject {
 	public void setAnimalCondition(AnimalCondition animalCondition) {
 		this.animalCondition = animalCondition;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getAnimalVaccinated() {
-		return animalVaccinated;
+	public Vaccination getAnimalVaccinationStatus() {
+		return animalVaccinationStatus;
 	}
-	public void setAnimalVaccinated(YesNoUnknown animalVaccinated) {
-		this.animalVaccinated = animalVaccinated;
+	public void setAnimalVaccinationStatus(Vaccination animalVaccinationStatus) {
+		this.animalVaccinationStatus = animalVaccinationStatus;
 	}
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = EpiDataBurial.EPI_DATA)

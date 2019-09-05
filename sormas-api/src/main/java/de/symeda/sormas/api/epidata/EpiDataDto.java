@@ -24,6 +24,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -61,7 +62,7 @@ public class EpiDataDto extends EntityDto {
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
-	public static final String ANIMAL_VACCINATED = "animalVaccinated";
+	public static final String ANIMAL_VACCINATION_STATUS = "animalVaccinationStatus";
 	public static final String BURIALS = "burials";
 	public static final String GATHERINGS = "gatherings";
 	public static final String TRAVELS = "travels";
@@ -176,7 +177,7 @@ public class EpiDataDto extends EntityDto {
 	@Diseases({Disease.MONKEYPOX,Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private AnimalCondition animalCondition;
 	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
-	private YesNoUnknown animalVaccinated;
+	private Vaccination animalVaccinationStatus;
 
 	@ImportIgnore
 	public YesNoUnknown getBurialAttended() {
@@ -363,11 +364,11 @@ public class EpiDataDto extends EntityDto {
 		this.animalCondition = animalCondition;
 	}
 	
-	public YesNoUnknown getAnimalVaccinated() {
-		return animalVaccinated;
+	public Vaccination getAnimalVaccinationStatus() {
+		return animalVaccinationStatus;
 	}
-	public void setAnimalVaccinated(YesNoUnknown animalVaccinated) {
-		this.animalVaccinated = animalVaccinated;
+	public void setAnimalVaccinationStatus(Vaccination animalVaccinationStatus) {
+		this.animalVaccinationStatus = animalVaccinationStatus;
 	}
 	
 	public YesNoUnknown getFleaBite() {
