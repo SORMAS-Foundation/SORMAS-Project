@@ -22,6 +22,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public enum PathogenTestType {
 
+	ANTIBODY_DETECTION,
 	ANTIGEN_DETECTION,
 	RAPID_TEST,
 	CULTURE,
@@ -29,6 +30,8 @@ public enum PathogenTestType {
 	ISOLATION,
 	IGM_SERUM_ANTIBODY,
 	IGG_SERUM_ANTIBODY,
+	INCUBATION_TIME,
+	INDIRECT_FLUORESCENT_ANTIBODY, 
 	MICROSCOPY,
 	NEUTRALIZING_ANTIBODIES,
 	PCR_RT_PCR,
