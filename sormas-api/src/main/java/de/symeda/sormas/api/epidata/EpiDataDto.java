@@ -61,6 +61,7 @@ public class EpiDataDto extends EntityDto {
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
+	public static final String ANIMAL_VACCINATED = "animalVaccinated";
 	public static final String BURIALS = "burials";
 	public static final String GATHERINGS = "gatherings";
 	public static final String TRAVELS = "travels";
@@ -174,6 +175,8 @@ public class EpiDataDto extends EntityDto {
 	private String placeOfLastExposure;
 	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
 	private AnimalCondition animalCondition;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown animalVaccinated;
 
 	@ImportIgnore
 	public YesNoUnknown getBurialAttended() {
@@ -358,6 +361,13 @@ public class EpiDataDto extends EntityDto {
 	}
 	public void setAnimalCondition(AnimalCondition animalCondition) {
 		this.animalCondition = animalCondition;
+	}
+	
+	public YesNoUnknown getAnimalVaccinated() {
+		return animalVaccinated;
+	}
+	public void setAnimalVaccinated(YesNoUnknown animalVaccinated) {
+		this.animalVaccinated = animalVaccinated;
 	}
 	
 	public YesNoUnknown getFleaBite() {

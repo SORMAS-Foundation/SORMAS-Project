@@ -75,7 +75,9 @@ public class EpiData extends AbstractDomainObject {
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
+	public static final String ANIMAL_VACCINATED = "animalVaccinated";
 	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
+	
 	
 	private YesNoUnknown burialAttended;
 	private YesNoUnknown gatheringAttended;
@@ -129,6 +131,7 @@ public class EpiData extends AbstractDomainObject {
 	private Date dateOfLastExposure;
 	private String placeOfLastExposure;
 	private AnimalCondition animalCondition;
+	private YesNoUnknown animalVaccinated;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getBurialAttended() {
@@ -344,6 +347,14 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setAnimalCondition(AnimalCondition animalCondition) {
 		this.animalCondition = animalCondition;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAnimalVaccinated() {
+		return animalVaccinated;
+	}
+	public void setAnimalVaccinated(YesNoUnknown animalVaccinated) {
+		this.animalVaccinated = animalVaccinated;
 	}
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = EpiDataBurial.EPI_DATA)
