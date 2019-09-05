@@ -171,9 +171,9 @@ public class EpiDataDto extends EntityDto {
 	private String kindOfExposureDetails;
 	@Diseases({Disease.MONKEYPOX, Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private Date dateOfLastExposure;
-	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})	
+	@Diseases({Disease.MONKEYPOX,Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})	
 	private String placeOfLastExposure;
-	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.MONKEYPOX,Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private AnimalCondition animalCondition;
 	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown animalVaccinated;
