@@ -3574,4 +3574,22 @@ INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completen
 ALTER TABLE cases ADD COLUMN whichvaccine varchar(512);
 ALTER TABLE cases_history ADD COLUMN whichvaccine varchar(512);
 
+ALTER TABLE epidata ADD COLUMN whichvaccine varchar(255);
+ALTER TABLE epidata_history ADD COLUMN whichvaccine varchar(255);
+
+ALTER TABLE epidata ADD COLUMN kindOfExposure varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindOfExposure varchar(255);
+ALTER TABLE epidata ADD COLUMN kindOfExposureBite varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindOfExposureBite varchar(255);
+ALTER TABLE epidata ADD COLUMN kindOfExposureTouch varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindOfExposureTouch varchar(255);
+ALTER TABLE epidata ADD COLUMN kindOfExposureScratch varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindOfExposureScratch varchar(255);
+ALTER TABLE epidata ADD COLUMN kindOfExposureLick varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindOfExposureLick varchar(255);
+ALTER TABLE epidata ADD COLUMN kindOfExposureOther varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindOfExposureOther varchar(255);
+ALTER TABLE epidata ADD COLUMN kindOfExposureDetails varchar(512);
+ALTER TABLE epidata_history ADD COLUMN kindOfExposureDetails varchar(512);
+
 INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add new disease, human rabies #834');
