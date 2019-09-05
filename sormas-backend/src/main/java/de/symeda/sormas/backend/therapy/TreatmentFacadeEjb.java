@@ -13,14 +13,22 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.therapy.TreatmentExportDto;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -40,6 +48,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	private TherapyService therapyService;
 	@EJB
 	private PrescriptionService prescriptionService;
+	@EJB
+	private CaseService caseService;
 	
 	@Override
 	public List<TreatmentIndexDto> getIndexList(TreatmentCriteria criteria) {
@@ -123,6 +133,40 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		}
 		
 		return service.getAllActiveUuids(user);
+	}
+	
+	@Override
+	public List<TreatmentExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TreatmentExportDto> cq = cb.createQuery(TreatmentExportDto.class);
+		Root<Treatment> treatment = cq.from(Treatment.class);
+		Join<Treatment, Therapy> therapy = treatment.join(Treatment.THERAPY, JoinType.LEFT);
+		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
+		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+		
+		cq.multiselect(
+				caze.get(Case.UUID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				treatment.get(Treatment.TREATMENT_DATE_TIME),
+				treatment.get(Treatment.EXECUTING_CLINICIAN),
+				treatment.get(Treatment.TREATMENT_TYPE),
+				treatment.get(Treatment.TREATMENT_DETAILS),
+				treatment.get(Treatment.TYPE_OF_DRUG),
+				treatment.get(Treatment.DOSE),
+				treatment.get(Treatment.ROUTE),
+				treatment.get(Treatment.ROUTE_DETAILS),
+				treatment.get(Treatment.ADDITIONAL_NOTES));
+		
+		User user = userService.getByUuid(userUuid);
+		Predicate filter = service.createUserFilter(cb, cq, treatment, user);
+		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
+		Predicate criteriaFilter = caseService.buildCriteriaFilter(criteria, cb, cq, casePath);
+		filter = cb.and(filter, criteriaFilter);
+		cq.where(filter);
+		cq.orderBy(cb.desc(caze.get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
+		
+		return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 	}
 	
 	public static TreatmentDto toDto(Treatment source) {

@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
@@ -637,6 +638,7 @@ public class CaseDataDto extends EntityDto {
 		this.notifyingClinicDetails = notifyingClinicDetails;
 	}
 
+	@ImportIgnore
 	public String getCreationVersion() {
 		return creationVersion;
 	}

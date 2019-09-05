@@ -265,71 +265,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return newCase;
     }
 
-    public Case transferCase(Case caseToTransfer, boolean referFromPointOfEntry) throws DaoException {
-        Case caze = queryForIdWithEmbedded(caseToTransfer.getId());
-
-        Facility facility = caseToTransfer.getHealthFacility();
-        Community community = caseToTransfer.getCommunity();
-        District district = caseToTransfer.getDistrict();
-        Region region = caseToTransfer.getRegion();
-        String facilityDetails = caseToTransfer.getHealthFacilityDetails();
-        User surveillanceOfficer = caseToTransfer.getSurveillanceOfficer();
-
-        // If the facility has changed, add a previous hospitalization
-        if (!referFromPointOfEntry && !caze.getHealthFacility().getUuid().equals(facility.getUuid())) {
-            caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze));
-            caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
-            caze.getHospitalization().setAdmissionDate(new Date());
-            caze.getHospitalization().setDischargeDate(null);
-            caze.getHospitalization().setIsolated(null);
-        } else {
-            caze.getHospitalization().setAdmissionDate(new Date());
-        }
-
-        // If the district has changed and there is exactly one surveillance officer assigned to that district,
-        // assign them as the new surveillance officer; assign null otherwise
-        if (!caze.getDistrict().getUuid().equals(district.getUuid())) {
-            List<User> districtOfficers = DatabaseHelper.getUserDao().getByDistrictAndRole(district, UserRole.SURVEILLANCE_OFFICER, User.UUID);
-            if (districtOfficers.size() == 1) {
-                surveillanceOfficer = districtOfficers.get(0);
-            } else {
-                surveillanceOfficer = null;
-            }
-        }
-
-        caze.setRegion(region);
-        caze.setDistrict(district);
-        caze.setCommunity(community);
-        caze.setHealthFacility(facility);
-        caze.setHealthFacilityDetails(facilityDetails);
-        caze.setSurveillanceOfficer(surveillanceOfficer);
-
-        saveAndSnapshot(caze);
-
-        for (Task task : DatabaseHelper.getTaskDao().queryByCase(caze)) {
-            if (task.getTaskStatus() != TaskStatus.PENDING) {
-                continue;
-            }
-
-            if (surveillanceOfficer != null) {
-                task.setAssigneeUser(surveillanceOfficer);
-            } else {
-                // TODO roles? what happens when there are no supervisors? assignee user cannot be null
-                List<User> survSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(region, UserRole.SURVEILLANCE_SUPERVISOR);
-                List<User> caseSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(region, UserRole.CASE_SUPERVISOR);
-                if (survSupervisors.size() >= 1) {
-                    task.setAssigneeUser(survSupervisors.get(0));
-                } else if (caseSupervisors.size() >= 1) {
-                    task.setAssigneeUser(caseSupervisors.get(0));
-                } else {
-                    task.setAssigneeUser(null);
-                }
-            }
-
-            DatabaseHelper.getTaskDao().saveAndSnapshot(task);
-        }
-
-        return caze;
+    public void createPreviousHospitalizationAndUpdateHospitalization(Case caze, Case oldCase) {
+        caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze, oldCase));
+        caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
+        caze.getHospitalization().setAdmissionDate(new Date());
+        caze.getHospitalization().setDischargeDate(null);
+        caze.getHospitalization().setIsolated(null);
     }
 
     /**
@@ -439,7 +380,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     private void onCaseChanged(Case existingCase, Case changedCase) {
-
         if (existingCase == null) {
             // If a new case is created, use the last available location to update its report latitude and longitude
             Location location = LocationService.instance().getLocation();
@@ -448,12 +388,48 @@ public class CaseDao extends AbstractAdoDao<Case> {
                 changedCase.setReportLon(location.getLongitude());
                 changedCase.setReportLatLonAccuracy(location.getAccuracy());
             }
-        }
-        else {
+        } else {
             // classification
             if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
                 changedCase.setClassificationDate(new Date());
                 changedCase.setClassificationUser(ConfigProvider.getUser());
+            }
+
+            // If the district has changed, assign a new surveillance officer and re-assign tasks
+            if (!changedCase.getDistrict().getUuid().equals(existingCase.getUuid())) {
+                List<User> districtOfficers = DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+                if (districtOfficers.size() == 1) {
+                    changedCase.setSurveillanceOfficer(districtOfficers.get(0));
+                } else {
+                    changedCase.setSurveillanceOfficer(null);
+                }
+
+                for (Task task : DatabaseHelper.getTaskDao().queryByCase(existingCase)) {
+                    if (task.getTaskStatus() != TaskStatus.PENDING) {
+                        continue;
+                    }
+
+                    if (changedCase.getSurveillanceOfficer() != null) {
+                        task.setAssigneeUser(changedCase.getSurveillanceOfficer());
+                    } else {
+                        // TODO roles? what happens when there are no supervisors? assignee user cannot be null
+                        List<User> survSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+                        List<User> caseSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.CASE_SUPERVISOR);
+                        if (survSupervisors.size() >= 1) {
+                            task.setAssigneeUser(survSupervisors.get(0));
+                        } else if (caseSupervisors.size() >= 1) {
+                            task.setAssigneeUser(caseSupervisors.get(0));
+                        } else {
+                            task.setAssigneeUser(null);
+                        }
+                    }
+
+                    try {
+                        DatabaseHelper.getTaskDao().saveAndSnapshot(task);
+                    } catch (DaoException e) {
+                        Log.e(getTableName(), "Failed to save an updated task in onCaseChanged");
+                    }
+                }
             }
         }
     }

@@ -20,7 +20,6 @@ import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -48,6 +47,17 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 		
 		List<Treatment> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+
+	public int getTreatmentCountByCase(long caseId) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Treatment> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.join(Treatment.THERAPY, JoinType.LEFT).get(Therapy.CASE).get(Case.ID), caseId));
+
+		return em.createQuery(cq).getSingleResult().intValue();
 	}
 	
 	public List<Treatment> getAllActiveTreatmentsAfter(Date date, User user) {

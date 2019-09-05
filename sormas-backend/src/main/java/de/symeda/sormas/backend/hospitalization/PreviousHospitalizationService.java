@@ -49,34 +49,6 @@ public class PreviousHospitalizationService extends AbstractAdoService<PreviousH
 		throw new UnsupportedOperationException();
 	}
 
-	public PreviousHospitalization buildPreviousHospitalizationFromHospitalization(Case caze) {
-		PreviousHospitalization previousHospitalization = new PreviousHospitalization();
-		previousHospitalization.setUuid(DataHelper.createUuid());
-
-		Hospitalization hospitalization = caze.getHospitalization();
-
-		if (hospitalization.getAdmissionDate() != null) {
-			previousHospitalization.setAdmissionDate(hospitalization.getAdmissionDate());
-		} else {
-			previousHospitalization.setAdmissionDate(caze.getReportDate());
-		}
-
-		if (hospitalization.getDischargeDate() != null) {
-			previousHospitalization.setDischargeDate(hospitalization.getDischargeDate());
-		} else {
-			previousHospitalization.setDischargeDate(new Date());
-		}
-
-		previousHospitalization.setRegion(caze.getRegion());
-		previousHospitalization.setDistrict(caze.getDistrict());
-		previousHospitalization.setCommunity(caze.getCommunity());
-		previousHospitalization.setHealthFacility(caze.getHealthFacility());
-		previousHospitalization.setHospitalization(caze.getHospitalization());
-		previousHospitalization.setIsolated(hospitalization.getIsolated());
-
-		return previousHospitalization;
-	}
-
 	public PreviousHospitalization getInitialHospitalization(long hospitalizationId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PreviousHospitalization> cq = cb.createQuery(PreviousHospitalization.class);

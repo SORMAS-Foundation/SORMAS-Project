@@ -36,6 +36,7 @@ import org.junit.rules.ExpectedException;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -43,6 +44,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
@@ -148,7 +150,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setCommunity(new CommunityReferenceDto(newRDCF.community.getUuid()));
 		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid()));
 		caze.setSurveillanceOfficer(caseOfficer.toReference());
-		caze = getCaseFacade().saveAndTransferCase(caze);
+		CaseDataDto oldCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(caze, oldCase);
+		getCaseFacade().saveCase(caze);
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		pendingTask = getTaskFacade().getByUuid(pendingTask.getUuid());
@@ -255,7 +259,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				rdcf.facility);
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, 0, 100);
+		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, ExportType.CASE_SURVEILLANCE, 0, 100);
 
 		// List should have one entry
 		assertEquals(1, results.size());

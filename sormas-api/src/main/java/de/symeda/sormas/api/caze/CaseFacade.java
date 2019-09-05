@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -47,9 +48,9 @@ public interface CaseFacade {
 
 	long count(String userUuid, CaseCriteria caseCriteria);
 	
-	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<CaseIndexDto> getIndexList(String userUuid, CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
-	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
+	List<CaseExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, ExportType exportType, int first, int max);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
@@ -66,8 +67,6 @@ public interface CaseFacade {
 	CaseReferenceDto getReferenceByUuid(String uuid);
 	
 	List<String> getAllActiveUuids(String userUuid);
-	
-	CaseDataDto saveAndTransferCase(CaseDataDto caze);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
@@ -81,7 +80,7 @@ public interface CaseFacade {
 	
 	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, String userUuid);
 	
-	String getLastReportedCommunityName(CaseCriteria caseCriteria, String userUuid);
+	String getLastReportedDistrictName(CaseCriteria caseCriteria, String userUuid);
 	
 	/**
 	 * @param fromDate optional

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.importer;
 
+import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,14 +8,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,11 +31,17 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -59,7 +68,7 @@ public abstract class DataImporter {
 	public DataImporter(File inputFile, UserReferenceDto currentUser, UI currentUI) throws IOException {
 		this(inputFile, null, currentUser, currentUI);
 	}
-	
+
 	public DataImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
 		this.currentUser = currentUser;
 		this.currentUI = currentUI;
@@ -67,7 +76,7 @@ public abstract class DataImporter {
 		if (!inputFile.exists()) {
 			throw new FileNotFoundException("CSV file does not exist");
 		}
-		
+
 		if (errorReportWriter == null) {
 			Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
 			Path errorReportFilePath = exportDirectory.resolve(ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" 
@@ -79,7 +88,7 @@ public abstract class DataImporter {
 			if (errorReportFile.exists()) {
 				errorReportFile.delete();
 			}
-			
+
 			errorReportWriter = new FileWriter(errorReportFile.getPath());
 		}
 
@@ -118,8 +127,8 @@ public abstract class DataImporter {
 		}
 
 		try (CSVReader caseCountReader = CSVUtils.createCSVReader(inputReader, FacadeProvider.getConfigFacade().getCsvSeparator())) {
-			// Initialize with -1 to not count header line
-			importFileLength = -1;
+			// Initialize with -2 to not count header lines
+			importFileLength = -2;
 			while (caseCountReader.readNext() != null) {
 				importFileLength++;
 			}
@@ -130,6 +139,9 @@ public abstract class DataImporter {
 
 	public ImportResultStatus importAllData(Consumer<ImportResult> importedCallback) throws IOException, InvalidColumnException, InterruptedException {
 		this.importedCallback = importedCallback;
+
+		// Build dictionary of entity headers
+		List<String> entityHeaders = Arrays.asList(csvReader.readNext());
 
 		// Build dictionary of column paths
 		String[] headersLine = csvReader.readNext();
@@ -148,7 +160,7 @@ public abstract class DataImporter {
 		csvWriter.writeNext(columnNames.toArray(new String[columnNames.size()]));
 
 		// Create a new case for each line in the .csv file
-		readNextLineFromCsv(headersLine, headers);
+		readNextLineFromCsv(entityHeaders, headersLine, headers);
 
 		csvReader.close();
 		csvWriter.flush();
@@ -171,20 +183,76 @@ public abstract class DataImporter {
 		cancelAfterCurrent = true;
 	}
 
-	protected void readNextLineFromCsv(String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException {
+	protected void readNextLineFromCsv(List<String> entityHeaders, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException {
 		if (cancelAfterCurrent) {
 			return;
 		}
 
 		String[] nextLine = csvReader.readNext();
 		if (nextLine != null) {
-			importDataFromCsvLine(nextLine, headersLine, headers);
+			importDataFromCsvLine(nextLine, entityHeaders, headersLine, headers);
 		}
 	}
 
-	protected abstract void importDataFromCsvLine(String[] nextLine, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException;
+	protected abstract void importDataFromCsvLine(String[] nextLine, List<String> entityHeaders, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException;
 
-	protected boolean insertRowIntoData(String[] row, List<String[]> headers, boolean ignoreEmptyEntries, BiFunction<String, String[], Exception> insertCallback) throws IOException, InvalidColumnException {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath) throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
+		Class<?> propertyType = pd.getPropertyType();
+
+		if (propertyType.isEnum()) {
+			pd.getWriteMethod().invoke(element, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
+			return true;
+		}
+		if (propertyType.isAssignableFrom(Date.class)) {
+			pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry));
+			return true;
+		} 
+		if (propertyType.isAssignableFrom(Integer.class)) {
+			pd.getWriteMethod().invoke(element, Integer.parseInt(entry));
+			return true;
+		}
+		if (propertyType.isAssignableFrom(Double.class)) {
+			pd.getWriteMethod().invoke(element, Double.parseDouble(entry));
+			return true;
+		} 
+		if (propertyType.isAssignableFrom(Float.class)) {
+			pd.getWriteMethod().invoke(element, Float.parseFloat(entry));
+			return true;
+		} 
+		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
+			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
+			return true;
+		} 
+		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
+			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry);
+			if (region.isEmpty()) {
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
+			} else if (region.size() > 1) {
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, region.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
+			UserDto user = FacadeProvider.getUserFacade().getByUserName(entry);
+			if (user != null) {
+				pd.getWriteMethod().invoke(element, user.toReference());
+				return true;
+			} else {
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
+			}
+		}
+		if (propertyType.isAssignableFrom(String.class)) {
+			pd.getWriteMethod().invoke(element, entry);
+			return true;
+		}
+
+		return false;
+	}
+
+	protected boolean insertRowIntoData(String[] row, List<String> entityHeaders, List<String[]> headers, boolean ignoreEmptyEntries, Function<ImportColumnInformation, Exception> insertCallback) throws IOException, InvalidColumnException {
 		boolean dataHasImportError = false;
 
 		for (int i = 0; i < row.length; i++) {
@@ -200,7 +268,19 @@ public abstract class DataImporter {
 			}
 
 			if (!(ignoreEmptyEntries && (StringUtils.isEmpty(entry)))) {
-				Exception exception = insertCallback.apply(entry, entryHeaderPath);
+				Class<?> entityClass;
+				switch (entityHeaders.get(i)) {
+				case "Sample":
+					entityClass = SampleDto.class;
+					break;
+				case "PathogenTest":
+					entityClass = PathogenTestDto.class;
+					break;
+				default:
+					entityClass = CaseDataDto.class;
+					break;
+				}
+				Exception exception = insertCallback.apply(new ImportColumnInformation(entry, entryHeaderPath, entityClass));
 				if (exception != null) {
 					if (exception instanceof ImportErrorException) {
 						hasImportError = true;

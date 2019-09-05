@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,7 +28,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -48,7 +47,8 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		Label title = new Label(I18nProperties.getCaption(Captions.dashboardDiseaseDifference));
 		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
-		subtitleLabel = new Label(I18nProperties.getCaption(Captions.dashboardComparedToPreviousPeriod));
+		subtitleLabel = new Label();
+		updateSubHeader();
 
 		chart = new HighChart();
 		chart.setSizeFull();
@@ -91,42 +91,7 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		}
 	}
 
-	private void refreshChart(List<DiseaseBurdenDto> data) {
-		//express previous period in contextual, user-friendly text
-		//for subtitle and legend labels
-		String previousPeriodExpression = I18nProperties.getString(Strings.previousPeriod);
-		{
-			long now = new Date().getTime();
-			long fromDate = this.dashboardDataProvider.getFromDate().getTime();
-			long toDate = this.dashboardDataProvider.getToDate().getTime();
-			float millisecondsToDays = (1000 * 60 * 60 * 24);
-			
-			float diffBetweenFromAndToInDays = (toDate - fromDate) / millisecondsToDays;
-			float diffBetweenNowAndToInDays = (now - toDate) / millisecondsToDays;
-			
-			if (diffBetweenFromAndToInDays == 1) {
-				if (diffBetweenNowAndToInDays <= 0) //today
-					previousPeriodExpression = I18nProperties.getString(Strings.yesterday);
-				else if (diffBetweenNowAndToInDays < 1) //yesterday
-					previousPeriodExpression = I18nProperties.getString(Strings.lastTwoDays);
-			}
-			else if (diffBetweenFromAndToInDays == 7) {
-				if (diffBetweenNowAndToInDays <= 0) //this week
-					previousPeriodExpression = I18nProperties.getString(Strings.lastWeek);
-				else if (diffBetweenNowAndToInDays < 7) //last week
-					previousPeriodExpression = I18nProperties.getString(Strings.lastTwoWeeks);
-			}
-			else if (diffBetweenFromAndToInDays == 365) {
-				if (diffBetweenNowAndToInDays <= 0) //this year
-					previousPeriodExpression = I18nProperties.getString(Strings.lastYear);
-				else if (diffBetweenNowAndToInDays < 365)
-					previousPeriodExpression = I18nProperties.getString(Strings.lastTwoYears);
-			}
-		}
-		//~express prev...
-		
-		this.subtitleLabel.setValue(String.format(I18nProperties.getString(Strings.comparedTo), previousPeriodExpression));
-		
+	private void refreshChart(List<DiseaseBurdenDto> data) {	
 		int maxCasesDifference = data.stream().map(d -> Math.abs(d.getCasesDifference())).max(Long::compare).orElse(5L).intValue();
 		maxCasesDifference = Math.max(5, maxCasesDifference);
 		
@@ -187,6 +152,12 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		);
 
 		chart.setHcjs(hcjs.toString());
+	}
+	
+	public void updateSubHeader() {
+		subtitleLabel.setValue(String.format(I18nProperties.getCaption(Captions.dashboardComparedToPreviousPeriod),
+				DateHelper.buildPeriodString(dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate()),
+				DateHelper.buildPeriodString(dashboardDataProvider.getPreviousFromDate(), dashboardDataProvider.getPreviousToDate())));
 	}
 
 }

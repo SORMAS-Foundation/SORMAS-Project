@@ -22,7 +22,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class CaseLogic {
 	
@@ -57,6 +59,15 @@ public class CaseLogic {
 		}
 		
 		return Pattern.matches(EPID_PATTERN_COMPLETE, s);
+	}
+	
+	public static void createPreviousHospitalizationAndUpdateHospitalization(CaseDataDto caze, CaseDataDto oldCase) {
+		PreviousHospitalizationDto prevHosp = PreviousHospitalizationDto.build(oldCase);
+		caze.getHospitalization().getPreviousHospitalizations().add(prevHosp);
+		caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
+		caze.getHospitalization().setAdmissionDate(new Date());
+		caze.getHospitalization().setDischargeDate(null);
+		caze.getHospitalization().setIsolated(null);
 	}
 	
 }

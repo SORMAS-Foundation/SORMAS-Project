@@ -50,6 +50,7 @@ public interface Strings {
 	public static String confirmationDeleteTasks = "confirmationDeleteTasks";
 	public static String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	public static String confirmationDeleteVisits = "confirmationDeleteVisits";
+	public static String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
@@ -254,6 +255,7 @@ public interface Strings {
 	public static String infoCaseCompleteness = "infoCaseCompleteness";
 	public static String infoCaseDate = "infoCaseDate";
 	public static String infoCaseIncidence = "infoCaseIncidence";
+	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoContactDashboard = "infoContactDashboard";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
@@ -348,6 +350,7 @@ public interface Strings {
 	public static String messageImportInvalidColumn = "messageImportInvalidColumn";
 	public static String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	public static String messageImportSuccessful = "messageImportSuccessful";
+	public static String messageInfrastructureDataChanged = "messageInfrastructureDataChanged";
 	public static String messageLoginFailed = "messageLoginFailed";
 	public static String messageMissingDateFilter = "messageMissingDateFilter";
 	public static String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
@@ -391,6 +394,7 @@ public interface Strings {
 	public static String messageWrongFileType = "messageWrongFileType";
 	public static String mmhg = "mmhg";
 	public static String no = "no";
+	public static String none = "none";
 	public static String notAnswered = "notAnswered";
 	public static String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	public static String notificationCaseClassificationChangedSubject = "notificationCaseClassificationChangedSubject";

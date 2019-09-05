@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.caze;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,8 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 	public static final String COLUMN_UUID = "uuidLink";
 	
 	private CaseCriteria criteria;
+	
+	private List<String[]> hiddenUuidPairs;
 
 	@SuppressWarnings("unchecked")
 	public MergeCasesGrid() {
@@ -178,6 +181,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 			btnHide = new Button(I18nProperties.getCaption(Captions.actionHide));
 			btnHide.setIcon(VaadinIcons.CLOSE);
 			btnHide.addClickListener(e -> {
+				hiddenUuidPairs.add(new String[]{caze.getUuid(), data.getChildren(caze).get(0).getUuid()});
 				dataProvider.getTreeData().removeItem(caze);
 				dataProvider.refreshAll();
 			});
@@ -196,13 +200,28 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void reload() {		
+	public void reload() {
 		TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
 		TreeData<CaseIndexDto> data = dataProvider.getTreeData();
 		data.clear();
 		
+		if (hiddenUuidPairs == null) {
+			hiddenUuidPairs = new ArrayList<>();
+		}
+		
 		List<CaseIndexDto[]> casePairs = FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, UserProvider.getCurrent().getUuid());
 		for (CaseIndexDto[] casePair : casePairs) {
+			boolean uuidPairExists = false;
+			for (String[] hiddenUuidPair : hiddenUuidPairs) {
+				if (hiddenUuidPair[0].equals(casePair[0].getUuid()) && hiddenUuidPair[1].equals(casePair[1].getUuid())) {
+					uuidPairExists = true;
+				}
+			}
+			
+			if (uuidPairExists) {
+				continue;
+			}
+			
 			data.addItem(null, casePair[0]);
 			data.addItem(casePair[0], casePair[1]);
 			expand(casePair[0]);

@@ -213,6 +213,19 @@ public class FacilityService extends AbstractAdoService<Facility> {
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public List<Facility> getLaboratoriesByName(String name) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+
+		Predicate filter = cb.equal(from.get(Facility.NAME), name);
+		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
+		
+		cq.where(filter);
+		
+		return em.createQuery(cq).getResultList();
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Override

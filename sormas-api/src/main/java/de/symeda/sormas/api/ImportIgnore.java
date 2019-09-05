@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.api;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -26,8 +26,6 @@ import java.lang.annotation.Target;
 /**
  * Fields whose getters are annotated with this annotation are ignored when building .csv templates 
  * and importing entities.
- * 
- * @author Mate Strysewske
  */
 @Target({
 	ElementType.METHOD })
