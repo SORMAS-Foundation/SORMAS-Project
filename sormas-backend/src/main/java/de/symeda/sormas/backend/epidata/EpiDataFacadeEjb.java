@@ -102,6 +102,13 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setWaterBodyDetails(source.getWaterBodyDetails());
 		target.setTickBite(source.getTickBite());
 		target.setFleaBite(source.getFleaBite());
+		target.setKindOfExposure(source.getKindOfExposure());
+		target.setKindOfExposureBite(source.getKindOfExposureBite());
+		target.setKindOfExposureTouch(source.getKindOfExposureTouch());
+		target.setKindOfExposureScratch(source.getKindOfExposureScratch());
+		target.setKindOfExposureLick(source.getKindOfExposureLick());
+		target.setKindOfExposureOther(source.getKindOfExposureOther());
+		target.setKindOfExposureDetails(source.getKindOfExposureDetails());
 		target.setDateOfLastExposure(source.getDateOfLastExposure());
 		target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
 		target.setAnimalCondition(source.getAnimalCondition());
@@ -274,6 +281,13 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setWaterBodyDetails(source.getWaterBodyDetails());
 		target.setTickBite(source.getTickBite());
 		target.setFleaBite(source.getFleaBite());
+		target.setKindOfExposure(source.getKindOfExposure());
+		target.setKindOfExposureBite(source.getKindOfExposureBite());
+		target.setKindOfExposureTouch(source.getKindOfExposureTouch());
+		target.setKindOfExposureScratch(source.getKindOfExposureScratch());
+		target.setKindOfExposureLick(source.getKindOfExposureLick());
+		target.setKindOfExposureOther(source.getKindOfExposureOther());
+		target.setKindOfExposureDetails(source.getKindOfExposureDetails());
 		target.setDateOfLastExposure(source.getDateOfLastExposure());
 		target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
 		target.setAnimalCondition(source.getAnimalCondition());
