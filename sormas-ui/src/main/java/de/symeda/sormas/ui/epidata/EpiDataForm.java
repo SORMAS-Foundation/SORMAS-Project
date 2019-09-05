@@ -80,6 +80,22 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 							)
 					)
 			) +
+			LayoutUtil.fluidRowLoc(6, EpiDataDto.KIND_OF_EXPOSURE) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.fluidColumn(6, 0,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+									EpiDataDto.KIND_OF_EXPOSURE_BITE, 
+									EpiDataDto.KIND_OF_EXPOSURE_TOUCH, 
+									EpiDataDto.KIND_OF_EXPOSURE_SCRATCH)
+					),
+					LayoutUtil.fluidColumn(6, 0,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+									EpiDataDto.KIND_OF_EXPOSURE_LICK,
+									EpiDataDto.KIND_OF_EXPOSURE_OTHER, 
+									EpiDataDto.KIND_OF_EXPOSURE_DETAILS
+							)
+					)
+			) +
 			LayoutUtil.loc(ENVIRONMENTAL_LOC) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_BODY_DETAILS) +
@@ -123,7 +139,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.EATING_RAW_ANIMALS,EpiDataDto.EATING_RAW_ANIMALS_DETAILS,
 				EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.BIRDS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE, 
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
-				EpiDataDto.ANIMAL_CONDITION, EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE);
+				EpiDataDto.ANIMAL_CONDITION, 
+				EpiDataDto.KIND_OF_EXPOSURE_BITE, EpiDataDto.KIND_OF_EXPOSURE_TOUCH,
+				EpiDataDto.KIND_OF_EXPOSURE_SCRATCH, EpiDataDto.KIND_OF_EXPOSURE_LICK, 
+				EpiDataDto.KIND_OF_EXPOSURE_OTHER, EpiDataDto.KIND_OF_EXPOSURE_DETAILS,
+				EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE);
+		
+		OptionGroup kindOfExposureField = addField(EpiDataDto.KIND_OF_EXPOSURE, OptionGroup.class);
+		CssStyles.style(kindOfExposureField, CssStyles.ERROR_COLOR_PRIMARY);
 		
 		addFields(EpiDataDto.WATER_BODY, EpiDataDto.WATER_BODY_DETAILS, 
 				EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_SOURCE_OTHER, 

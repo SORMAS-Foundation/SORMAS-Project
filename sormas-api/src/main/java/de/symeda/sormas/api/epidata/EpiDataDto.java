@@ -52,6 +52,12 @@ public class EpiDataDto extends EntityDto {
 	public static final String TICK_BITE = "tickBite";
 	public static final String FLEA_BITE = "fleaBite";
 	public static final String KIND_OF_EXPOSURE = "kindOfExposure";
+	public static final String KIND_OF_EXPOSURE_BITE = "kindOfExposureBite";
+	public static final String KIND_OF_EXPOSURE_TOUCH = "kindOfExposureTouch";
+	public static final String KIND_OF_EXPOSURE_SCRATCH = "kindOfExposureScratch";
+	public static final String KIND_OF_EXPOSURE_LICK = "kindOfExposureLick";
+	public static final String KIND_OF_EXPOSURE_OTHER = "kindOfExposureOther";
+	public static final String KIND_OF_EXPOSURE_DETAILS = "kindOfExposureDetails";
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
