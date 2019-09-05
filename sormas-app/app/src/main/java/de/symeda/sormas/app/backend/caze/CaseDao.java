@@ -266,7 +266,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     public void createPreviousHospitalizationAndUpdateHospitalization(Case caze, Case oldCase) {
-        caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(oldCase));
+        caze.getHospitalization().getPreviousHospitalizations().add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze, oldCase));
         caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
         caze.getHospitalization().setAdmissionDate(new Date());
         caze.getHospitalization().setDischargeDate(null);

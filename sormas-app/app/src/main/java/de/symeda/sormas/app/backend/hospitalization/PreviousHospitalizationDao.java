@@ -63,7 +63,7 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
         return queryForEq(PreviousHospitalization.HOSPITALIZATION + "_id", hospitalization, PreviousHospitalization.CHANGE_DATE, false);
     }
 
-    public PreviousHospitalization buildPreviousHospitalizationFromHospitalization(Case caze) {
+    public PreviousHospitalization buildPreviousHospitalizationFromHospitalization(Case caze, Case oldCase) {
         PreviousHospitalization previousHospitalization = super.build();
         Hospitalization hospitalization = caze.getHospitalization();
 
@@ -79,11 +79,11 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
             previousHospitalization.setDischargeDate(new Date());
         }
 
-        previousHospitalization.setRegion(caze.getRegion());
-        previousHospitalization.setDistrict(caze.getDistrict());
-        previousHospitalization.setCommunity(caze.getCommunity());
-        previousHospitalization.setHealthFacility(caze.getHealthFacility());
-        previousHospitalization.setHealthFacilityDetails(caze.getHealthFacilityDetails());
+        previousHospitalization.setRegion(oldCase.getRegion());
+        previousHospitalization.setDistrict(oldCase.getDistrict());
+        previousHospitalization.setCommunity(oldCase.getCommunity());
+        previousHospitalization.setHealthFacility(oldCase.getHealthFacility());
+        previousHospitalization.setHealthFacilityDetails(oldCase.getHealthFacilityDetails());
         previousHospitalization.setHospitalization(caze.getHospitalization());
         previousHospitalization.setIsolated(hospitalization.getIsolated());
 
