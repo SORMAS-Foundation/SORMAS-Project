@@ -311,7 +311,6 @@ public interface Strings {
 	public static String messageCasesEdited = "messageCasesEdited";
 	public static String messageCasesMerged = "messageCasesMerged";
 	public static String messageCaseTransfered = "messageCaseTransfered";
-	public static String messageCaseTransferOrDataCorrection = "messageCaseTransferOrDataCorrection";
 	public static String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	public static String messageCheckInputData = "messageCheckInputData";
 	public static String messageClinicalCourseSaved = "messageClinicalCourseSaved";
