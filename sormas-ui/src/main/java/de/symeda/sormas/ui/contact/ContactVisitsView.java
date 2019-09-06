@@ -60,20 +60,6 @@ public class ContactVisitsView extends AbstractContactView {
 		setSizeFull();
 		
 		criteria = ViewModelProviders.of(ContactVisitsView.class).get(VisitCriteria.class);
-
-		grid = new VisitGrid();
-		grid.setCriteria(criteria);
-		
-		gridLayout = new VerticalLayout();
-		gridLayout.setSizeFull();
-		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
-
-		gridLayout.addComponent(createTopBar());
-		gridLayout.addComponent(grid);
-		gridLayout.setExpandRatio(grid, 1);
-
-		setSubComponent(gridLayout);
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -114,8 +100,7 @@ public class ContactVisitsView extends AbstractContactView {
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
-						grid.deselectAll();
-						grid.reload();
+						navigateTo(criteria);
 					}
 				});
 			};
@@ -132,7 +117,7 @@ public class ContactVisitsView extends AbstractContactView {
 			newButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			newButton.addClickListener(e -> {
 				ControllerProvider.getVisitController().createVisit(this.getContactRef(), 
-						r -> grid.reload());
+						r -> navigateTo(criteria));
 			});
 			topLayout.addComponent(newButton);
 			topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
@@ -169,6 +154,19 @@ public class ContactVisitsView extends AbstractContactView {
 		}
 
 		criteria.contact(getContactRef());
+		
+		if (grid == null) {
+			grid = new VisitGrid(criteria);
+			gridLayout = new VerticalLayout();
+			gridLayout.setSizeFull();
+			gridLayout.setMargin(true);
+			gridLayout.setSpacing(false);
+			gridLayout.addComponent(createTopBar());
+			gridLayout.addComponent(grid);
+			gridLayout.setExpandRatio(grid, 1);
+			setSubComponent(gridLayout);
+		}
+		
 		grid.reload();
 //		updateActiveStatusButtonCaption();
 	}
