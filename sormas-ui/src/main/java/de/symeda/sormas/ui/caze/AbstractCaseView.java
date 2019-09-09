@@ -109,6 +109,10 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			ControllerProvider.getCaseController().navigateToIndex();
 			return;
 		}
+		
+		if (FacadeProvider.getCaseFacade().isDeleted(caseRef.getUuid())) {
+			setEnabled(false);
+		}
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 

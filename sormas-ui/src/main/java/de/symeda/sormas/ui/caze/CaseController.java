@@ -448,6 +448,7 @@ public class CaseController {
 				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(),
 				UserRight.CASE_EDIT, viewMode);
 		caseEditForm.setValue(caze);
+
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
 				caseEditForm, caseEditForm.getFieldGroup());
 
@@ -652,6 +653,7 @@ public class CaseController {
 		SymptomsForm symptomsForm = new SymptomsForm(caseDataDto, caseDataDto.getDisease(), person,
 				SymptomsContext.CASE, UserRight.CASE_EDIT, viewMode);
 		symptomsForm.setValue(caseDataDto.getSymptoms());
+		
 		CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(
 				symptomsForm, symptomsForm.getFieldGroup());
 

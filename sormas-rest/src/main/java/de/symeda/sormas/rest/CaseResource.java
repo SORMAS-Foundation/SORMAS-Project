@@ -85,7 +85,7 @@ public class CaseResource extends EntityDtoResource {
 	}
 	
 	@GET
-	@Path("/deleted/{since]")
+	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());

@@ -95,6 +95,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 case Changes:
                     // infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
                     pullInfrastructure();
+                    // pull and remove deleted entities when the last time this has been doen is more than 24 hours ago
+                    if (ConfigProvider.getLastDeletedSyncDate() == null || DateHelper.getFullDaysBetween(ConfigProvider.getLastDeletedSyncDate(), new Date()) >= 1) {
+                        pullAndRemoveDeletedUuidsSince(ConfigProvider.getLastDeletedSyncDate());
+                    }
                     // pull and remove archived entities when the last time this has been done is more than 24 hours ago
                     if (ConfigProvider.getLastArchivedSyncDate() == null || DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
                         pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
@@ -350,6 +354,40 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             ConfigProvider.setLastArchivedSyncDate(new Date());
         } catch (SQLException e) {
             Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveArchivedUuidsSince failed: " + e.getMessage());
+        }
+    }
+
+    private void pullAndRemoveDeletedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullDeletedUuidsSince");
+
+        try {
+            // Cases
+            List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+            for (String caseUuid : caseUuids) {
+                DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+            }
+
+            // Events
+            List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+            for (String eventUuid : eventUuids) {
+                DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+            }
+
+            // Contacts
+            List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+            for (String contactUuid : contactUuids) {
+                DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+            }
+
+            // Samples
+            List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+            for (String sampleUuid : sampleUuids) {
+                DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
+            }
+
+            ConfigProvider.setLastDeletedSyncDate(new Date());
+        } catch (SQLException e) {
+            Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveDeletedUuidsSince failed: " + e.getMessage());
         }
     }
 

@@ -75,6 +75,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
@@ -464,6 +465,20 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
+	}
+
+	@Override
+	public boolean isDeleted(String contactUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> from = cq.from(Contact.class);
+
+		cq.where(cb.and(
+				cb.isTrue(from.get(Contact.DELETED)),
+				cb.equal(from.get(AbstractDomainObject.UUID), contactUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
 	}
 	
 	@Override

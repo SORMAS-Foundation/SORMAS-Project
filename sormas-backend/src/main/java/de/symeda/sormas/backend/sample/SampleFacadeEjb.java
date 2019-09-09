@@ -72,6 +72,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -644,6 +645,20 @@ public class SampleFacadeEjb implements SampleFacade {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean isDeleted(String sampleUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Sample> from = cq.from(Sample.class);
+
+		cq.where(cb.and(
+				cb.isTrue(from.get(Sample.DELETED)),
+				cb.equal(from.get(AbstractDomainObject.UUID), sampleUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
 	}
 
 	@LocalBean

@@ -38,4 +38,7 @@ public interface PathogenTestFacadeRetro {
     @GET("pathogentests/uuids")
     Call<List<String>> pullUuids();
 
+    @GET("pathogentests/deleted/{since}")
+    Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+
 }

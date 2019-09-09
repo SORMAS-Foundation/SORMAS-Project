@@ -68,5 +68,7 @@ public interface ContactFacade {
 	long count(String userUuid, ContactCriteria contactCriteria);
 	
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
+	
+	boolean isDeleted(String contactUuid);
 
 }

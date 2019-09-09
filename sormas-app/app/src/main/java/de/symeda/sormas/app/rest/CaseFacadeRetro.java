@@ -44,4 +44,8 @@ public interface CaseFacadeRetro {
 
     @GET("cases/archived/{since}")
     Call<List<String>> pullArchivedUuidsSince(@Path("since") long since);
+
+    @GET("cases/deleted/{since}")
+    Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+
 }

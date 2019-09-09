@@ -62,4 +62,6 @@ public interface SampleFacade {
 	
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
 
+	boolean isDeleted(String sampleUuid);
+	
 }

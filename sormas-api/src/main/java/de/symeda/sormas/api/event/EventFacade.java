@@ -56,6 +56,8 @@ public interface EventFacade {
 	
 	boolean isArchived(String caseUuid);
 	
+	boolean isDeleted(String eventUuid);
+	
 	void archiveOrDearchiveEvent(String eventUuid, boolean archive);
 	
 	List<String> getArchivedUuidsSince(String userUuid, Date since);

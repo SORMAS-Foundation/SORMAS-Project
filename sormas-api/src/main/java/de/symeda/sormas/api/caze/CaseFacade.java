@@ -90,6 +90,8 @@ public interface CaseFacade {
 	
 	boolean isArchived(String caseUuid);
 	
+	boolean isDeleted(String caseUuid);
+	
 	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 	
 	List<String> getArchivedUuidsSince(String userUuid, Date since);

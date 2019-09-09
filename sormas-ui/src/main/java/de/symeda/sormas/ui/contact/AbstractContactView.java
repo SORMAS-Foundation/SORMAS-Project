@@ -51,6 +51,10 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(params);
 		contactRef = FacadeProvider.getContactFacade().getReferenceByUuid(contact.getUuid());
 		
+		if (FacadeProvider.getContactFacade().isDeleted(contact.getUuid())) {
+			setEnabled(false);
+		}
+		
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));
 		menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactCaseContacts), contact.getCaze().getUuid(), true);

@@ -445,35 +445,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
         // Delete contacts, contact tasks and visits
         List<Contact> contacts = DatabaseHelper.getContactDao().getByCase(caze);
         for (Contact contact : contacts) {
-            List<Visit> visits = DatabaseHelper.getVisitDao().getByContact(contact);
-            for (Visit visit : visits) {
-                // Only delete the visit if no other contact with the same person and disease is present in the system;
-                // otherwise the visit might also be used in another contact
-                if (DatabaseHelper.getContactDao().getCountByPersonAndDisease(visit.getPerson(), visit.getDisease()) <= 1) {
-                    DatabaseHelper.getVisitDao().deleteCascade(visit);
-                }
-            }
-            List<Task> tasks = DatabaseHelper.getTaskDao().queryByContact(contact);
-            for (Task task : tasks) {
-                DatabaseHelper.getTaskDao().deleteCascade(task);
-            }
-
-            DatabaseHelper.getContactDao().deleteCascade(contact);
+            DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contact);
         }
 
         // Delete samples, pathogen tests and additional tests
         List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
         for (Sample sample : samples) {
-            List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
-            for (PathogenTest pathogenTest : pathogenTests) {
-                DatabaseHelper.getSampleTestDao().deleteCascade(pathogenTest);
-            }
-            List<AdditionalTest> additionalTests = DatabaseHelper.getAdditionalTestDao().queryBySample(sample);
-            for (AdditionalTest additionalTest : additionalTests) {
-                DatabaseHelper.getAdditionalTestDao().deleteCascade(additionalTest);
-            }
-
-            DatabaseHelper.getSampleDao().deleteCascade(sample);
+            DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sample);
         }
 
         // Delete case tasks
