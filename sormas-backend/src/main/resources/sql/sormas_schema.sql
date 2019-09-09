@@ -3569,3 +3569,19 @@ ALTER TABLE cases ADD COLUMN completeness real;
 ALTER TABLE cases_history ADD COLUMN completeness real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completeness value to case #1253');
+
+-- 2019-09-XX Add deleted flag to core entities #1268
+ALTER TABLE cases ADD COLUMN deleted boolean;
+ALTER TABLE cases_history ADD COLUMN deleted boolean;
+UPDATE cases SET deleted = false;
+ALTER TABLE contact ADD COLUMN deleted boolean;
+ALTER TABLE contact_history ADD COLUMN deleted boolean;
+UPDATE contact SET deleted = false;
+ALTER TABLE samples ADD COLUMN deleted boolean;
+ALTER TABLE samples_history ADD COLUMN deleted boolean;
+UPDATE samples SET deleted = false;
+ALTER TABLE pathogentest ADD COLUMN deleted boolean;
+ALTER TABLE pathogentest_history ADD COLUMN deleted boolean;
+UPDATE pathogentest SET deleted = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add deleted flag to core entities #1268');

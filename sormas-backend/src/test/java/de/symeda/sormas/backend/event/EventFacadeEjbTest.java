@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.event;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
@@ -61,7 +62,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testEventDeletion() {
-
+		Date since = new Date();
+		
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
@@ -76,10 +78,10 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getEventFacade().getEventByUuid(event.getUuid()));
 		assertNotNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 
-		getEventFacade().deleteEvent(event.toReference(), adminUuid);
+		getEventFacade().deleteEvent(event.getUuid(), adminUuid);
 
-		// Database should not contain the deleted event and event participant
-		assertNull(getEventFacade().getEventByUuid(event.getUuid()));
+		// Event should be marked as deleted; Event participant should be deleted
+		assertTrue(getEventFacade().getDeletedUuidsSince(user.getUuid(), since).contains(event.getUuid()));
 		assertNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 	}
 	

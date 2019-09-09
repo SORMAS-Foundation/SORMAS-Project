@@ -55,6 +55,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -78,6 +79,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -104,6 +106,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private MessagingService messagingService;
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(TaskFacadeEjb.class);
 
@@ -514,8 +518,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	@Override
 	public void deleteTask(TaskDto taskDto, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.TASK_DELETE)) {
+			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete tasks.");
 		}
 
 		Task task = taskService.getByUuid(taskDto.getUuid());

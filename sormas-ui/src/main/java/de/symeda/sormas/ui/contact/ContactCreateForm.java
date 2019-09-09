@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.contact;
 
 import org.joda.time.LocalDate;
 
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
@@ -28,7 +29,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -38,7 +38,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -50,8 +49,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String LAST_NAME = PersonDto.LAST_NAME;
 	
     private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(ContactDto.CAZE, ContactDto.LAST_CONTACT_DATE) +
 			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
+			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, "") +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
@@ -68,25 +67,21 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     
     @Override
 	protected void addFields() {
-
     	TextField firstName = addCustomField(FIRST_NAME, String.class, TextField.class);
     	TextField lastName = addCustomField(LAST_NAME, String.class, TextField.class);
-    	
-    	ComboBox caze = addField(ContactDto.CAZE, ComboBox.class);
-    	caze.addItems(FacadeProvider.getCaseFacade().getSelectableCases(UserProvider.getCurrent().getUserReference()));
-
+   
     	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
     	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
     	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
     	
-    	CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, caze, lastContactDate, contactProximity, relationToCase);
+    	CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, lastContactDate, contactProximity, relationToCase);
 
     	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
     	contactOfficerField.setNullSelectionAllowed(true);
     	
-    	setRequired(true, ContactDto.CAZE, FIRST_NAME, LAST_NAME);
+    	setRequired(true, FIRST_NAME, LAST_NAME);
     	
     	addValueChangeListener(e -> {
     		updateLastContactDateValidator();
@@ -116,11 +111,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     }
     
     public String getPersonFirstName() {
-    	return (String)getField(FIRST_NAME).getValue();
+    	return (String) getField(FIRST_NAME).getValue();
     }
 
     public String getPersonLastName() {
-    	return (String)getField(LAST_NAME).getValue();
+    	return (String) getField(LAST_NAME).getValue();
     }
 
 	@Override

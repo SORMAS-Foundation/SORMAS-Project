@@ -67,6 +67,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
 	private Boolean archived;
+	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
@@ -268,6 +269,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	
 	public Boolean getArchived() {
 		return archived;
+	}
+	
+	public CaseCriteria deleted(Boolean deleted) {
+		this.deleted = deleted;
+		return this;
+	}
+	
+	public Boolean getDeleted() {
+		return deleted;
 	}
 
 	/**

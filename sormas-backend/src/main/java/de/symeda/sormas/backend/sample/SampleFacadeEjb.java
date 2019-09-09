@@ -47,7 +47,6 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -62,6 +61,7 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -93,6 +93,7 @@ import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFac
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -135,6 +136,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private MessagingService messagingService;
 	@EJB
 	private LocationService locationService;
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
@@ -171,29 +174,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleDto> getAllByCase(CaseReferenceDto caseRef) {
-		if(caseRef == null) {
+	public List<String> getDeletedUuidsSince(String userUuid, Date since) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		Case caze = caseService.getByUuid(caseRef.getUuid());
-
-		return sampleService.getAllByCase(caze).stream()
-				.map(s -> toDto(s))
-				.collect(Collectors.toList());
+		return sampleService.getDeletedUuidsSince(user, since);
 	}
-
-	@Override
-	public int getReceivedSampleCountByCase(CaseReferenceDto caseRef) {
-		if (caseRef == null) {
-			return 0;
-		}
-
-		Case caze = caseService.getByUuid(caseRef.getUuid());
-
-		return sampleService.getReceivedSampleCountByCase(caze);
-	}
-
+	
 	@Override
 	public SampleDto getSampleByUuid(String uuid) {
 		return toDto(sampleService.getByUuid(uuid));
@@ -403,8 +393,9 @@ public class SampleFacadeEjb implements SampleFacade {
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
 			Join<Case, Case> casePath = sample.join(Sample.ASSOCIATED_CASE);
-			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, cq, casePath);
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, casePath);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = AbstractAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
 		}
 
 		if (filter != null) {
@@ -519,10 +510,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public void deleteSample(SampleReferenceDto sampleRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.SAMPLE_DELETE)) {
+			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete samples.");
 		}
-
+		
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample);
 

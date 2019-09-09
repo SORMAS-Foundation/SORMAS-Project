@@ -311,6 +311,12 @@ public class TestDataCreator {
 		return createPathogenTest(associatedCase, null, testType, resultType);
 	}
 	
+	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {
+		RDCFEntities rdcf = createRDCFEntities("LabRegion", "LabDistrict", "LabCommunity", "LabFacilty");
+		return createPathogenTest(sample, PathogenTestType.ANTIGEN_DETECTION, associatedCase.getDisease(), new Date(), rdcf.facility,
+				associatedCase.getReportingUser(), PathogenTestResultType.PENDING, "", false);
+	}
+	
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, Disease testedDisease,
 			PathogenTestType testType, PathogenTestResultType resultType) {
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");

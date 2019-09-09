@@ -125,19 +125,19 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 	public void setLazyDataProvider() {
 		DataProvider<CaseIndexDto, CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getCaseFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), UserProvider.getCurrent().getUuid(), 
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
 				query -> {
 					return (int) FacadeProvider.getCaseFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
+						query.getFilter().orElse(null), UserProvider.getCurrent().getUuid());
 				});
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 	
 	public void setEagerDataProvider() {
-		ListDataProvider<CaseIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getCaseFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		ListDataProvider<CaseIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getCaseFacade().getIndexList(getCriteria(), null, null, UserProvider.getCurrent().getUuid(), null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

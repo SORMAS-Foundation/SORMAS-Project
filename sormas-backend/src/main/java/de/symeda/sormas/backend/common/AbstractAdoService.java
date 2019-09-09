@@ -45,10 +45,6 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-/**
- * @author Martin Wahnschaffe
- * @param <ADO>
- */
 public abstract class AbstractAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());

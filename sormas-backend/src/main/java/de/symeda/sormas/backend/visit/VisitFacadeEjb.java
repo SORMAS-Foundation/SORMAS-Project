@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -64,7 +64,6 @@ import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -72,6 +71,7 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -94,6 +94,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
 	private MessagingService messagingService;
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
 
@@ -128,27 +130,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
-
-	@Override
-	public List<VisitDto> getAllByContact(ContactReferenceDto contactRef) {
-
-		Contact contact = contactService.getByReferenceDto(contactRef);
-
-		return visitService.getAllByContact(contact).stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<VisitDto> getAllByPerson(PersonReferenceDto personRef) {
-
-		Person person = personService.getByReferenceDto(personRef);
-
-		return visitService.getAllByPerson(person).stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
-
+	
 	@Override
 	public VisitDto getVisitByUuid(String uuid) {
 		return toDto(visitService.getByUuid(uuid));
@@ -173,13 +155,13 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public void deleteVisit(VisitReferenceDto visitRef, String userUuid) {
+	public void deleteVisit(String visitUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.VISIT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete visits.");
 		}
 
-		Visit visit = visitService.getByReferenceDto(visitRef);
+		Visit visit = visitService.getByUuid(visitUuid);
 		visitService.delete(visit);
 	}
 
@@ -198,7 +180,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		if (visitCriteria == null || visitCriteria.getContact() == null) {
 			return new ArrayList<>(); // Retrieving an index list independent of a contact is not possible
 		}
@@ -245,9 +227,12 @@ public class VisitFacadeEjb implements VisitFacade {
 		} else {
 			cq.orderBy(cb.desc(visit.get(Visit.VISIT_DATE_TIME)));
 		}
-		
-		List<VisitIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return resultList;
+
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 	
 	@Override

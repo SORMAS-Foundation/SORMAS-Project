@@ -34,6 +34,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Disease disease;
 	private UserRole reportingUserRole;
 	private Boolean archived;
+	private Boolean deleted = Boolean.FALSE;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Date reportedDateFrom;
@@ -66,6 +67,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public EventCriteria archived(Boolean archived) {
 		this.archived = archived;
 		return this;
+	}
+	public EventCriteria deleted(Boolean deleted) {
+		this.deleted = deleted;
+		return this;
+	}
+	public Boolean getDeleted() {
+		return deleted;
 	}
 	public EventCriteria region(RegionReferenceDto region) {
 		this.region = region;

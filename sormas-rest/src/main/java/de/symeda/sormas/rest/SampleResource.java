@@ -78,4 +78,14 @@ public class SampleResource extends EntityDtoResource {
 		List<String> uuids = FacadeProvider.getSampleFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
+	
+	@GET
+	@Path("/deleted/{since]")
+	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<String> uuids = FacadeProvider.getSampleFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
+		return uuids;
+	}
+	
 }

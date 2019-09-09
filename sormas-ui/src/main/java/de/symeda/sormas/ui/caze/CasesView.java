@@ -227,7 +227,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(extendedExportButton);
 
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, ExportType.CASE_SURVEILLANCE, 
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), ExportType.CASE_SURVEILLANCE, start, max), 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), ExportType.CASE_SURVEILLANCE, start, max, UserProvider.getCurrent().getUuid()), 
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,

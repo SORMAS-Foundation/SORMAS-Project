@@ -44,6 +44,7 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private SpecimenCondition specimenCondition;
 	private CaseReferenceDto caze;
 	private Boolean archived;
+	private Boolean deleted = Boolean.FALSE;
 	private String caseCodeIdLike;
 
 	public RegionReferenceDto getRegion() {
@@ -153,6 +154,16 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		this.archived = archived;
 		return this;
 	}
+	
+	public SampleCriteria deleted(Boolean deleted) {
+		this.deleted = deleted;
+		return this;
+	}
+	
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
 	
 	/**
 	 * returns all entries that match ALL of the passed words

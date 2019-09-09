@@ -23,7 +23,6 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -37,21 +36,17 @@ public interface VisitFacade {
 
 	VisitDto saveVisit(VisitDto dto);
 
-	List<VisitDto> getAllByPerson(PersonReferenceDto personRef);
-
-	List<VisitDto> getAllByContact(ContactReferenceDto contactRef);
-
 	List<String> getAllActiveUuids(String userUuid);
 
 	List<VisitDto> getByUuids(List<String> uuids);
 	
-	void deleteVisit(VisitReferenceDto visitRef, String userUuid);
+	void deleteVisit(String visitUuid, String userUuid);
 	
 	int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus);
 	
 	List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to);
 	
-	List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	long count(VisitCriteria visitCriteria);
 	

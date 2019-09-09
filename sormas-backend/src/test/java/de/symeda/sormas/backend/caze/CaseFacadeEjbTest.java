@@ -47,7 +47,6 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -67,6 +66,8 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -223,7 +224,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 
-		List<CaseIndexDto> results = getCaseFacade().getIndexList(user.getUuid(), null, 0, 100,
+		List<CaseIndexDto> results = getCaseFacade().getIndexList(null, 0, 100, user.getUuid(), 
 				Arrays.asList(new SortProperty(CaseIndexDto.DISEASE), new SortProperty(CaseIndexDto.PERSON_FIRST_NAME),
 						new SortProperty(CaseIndexDto.DISTRICT_NAME),
 						new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME),
@@ -259,7 +260,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				rdcf.facility);
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(user.getUuid(), null, ExportType.CASE_SURVEILLANCE, 0, 100);
+		List<CaseExportDto> results = getCaseFacade().getExportList(null, ExportType.CASE_SURVEILLANCE, 0, 100, user.getUuid());
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -276,7 +277,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testCaseDeletion() {
-
+		Date since = new Date();
+		
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -293,20 +295,26 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				caze.toReference(), null, null, new Date(), user.toReference());
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(),
 				SampleMaterial.BLOOD, rdcf.facility);
+		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), caze);
+		AdditionalTestDto additionalTest = creator.createAdditionalTest(sample.toReference());
 
 		// Database should contain the created case, contact, task and sample
 		assertNotNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
 		assertNotNull(getContactFacade().getContactByUuid(contact.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		assertNotNull(getSampleTestFacade().getByUuid(pathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
+		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
-		getCaseFacade().deleteCase(caze.toReference(), adminUuid);
+		getCaseFacade().deleteCase(caze.getUuid(), adminUuid);
 
-		// Database should not contain the deleted case, contact, task and sample
-		assertNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
-		assertNull(getContactFacade().getContactByUuid(contact.getUuid()));
+		// Deleted flag should be set for case, contact, sample and pathogen test; Task and additional test should be deleted
+		assertTrue(getCaseFacade().getDeletedUuidsSince(user.getUuid(), since).contains(caze.getUuid()));
+		assertTrue(getContactFacade().getDeletedUuidsSince(user.getUuid(), since).contains(contact.getUuid()));
+		assertTrue(getSampleFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(user.getUuid(), since).contains(pathogenTest.getUuid()));
+		assertNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
-		assertNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 	}
 
 	@Test

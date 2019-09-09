@@ -163,7 +163,7 @@ public class DownloadUtil {
 	@SuppressWarnings("serial")
 	public static StreamResource createCaseManagementExportResource(String userUuid, CaseCriteria criteria, String exportFileName) {
 		StreamResource casesResource = createCsvExportStreamResource(CaseExportDto.class, ExportType.CASE_MANAGEMENT,
-				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(userUuid, criteria, ExportType.CASE_MANAGEMENT, start, max),
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, ExportType.CASE_MANAGEMENT, start, max, userUuid),
 				(propertyId,type) -> {
 					String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,

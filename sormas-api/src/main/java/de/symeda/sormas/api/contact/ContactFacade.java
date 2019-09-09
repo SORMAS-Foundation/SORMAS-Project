@@ -27,23 +27,17 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.visit.VisitReferenceDto;
 
 @Remote
 public interface ContactFacade {
 
 	List<ContactDto> getAllActiveContactsAfter(Date date, String userUuid);
 	
-	List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
-	
 	ContactDto getContactByUuid(String uuid);
     
 	ContactDto saveContact(ContactDto dto);
 	
-	List<ContactReferenceDto> getSelectableContacts(UserReferenceDto user);
-
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllActiveUuids(String userUuid);
@@ -54,13 +48,11 @@ public interface ContactFacade {
 	
 	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos);
 	
-	void deleteContact(ContactReferenceDto contactRef, String userUuid);
+	void deleteContact(String contactUuid, String userUuid);
 
 	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
-	List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef);
-
 	List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria, int first, int max);
 	
 	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
@@ -74,6 +66,7 @@ public interface ContactFacade {
 	int getFollowUpUntilCount(ContactCriteria contactCriteria, String userUuid);
 
 	long count(String userUuid, ContactCriteria contactCriteria);
-
 	
+	List<String> getDeletedUuidsSince(String userUuid, Date since);
+
 }

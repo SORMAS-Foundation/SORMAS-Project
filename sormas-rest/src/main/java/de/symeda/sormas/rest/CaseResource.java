@@ -45,7 +45,6 @@ public class CaseResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<CaseDataDto> getAllCases(@Context SecurityContext sc, @PathParam("since") long since) {
-
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<CaseDataDto> cases = FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since),
@@ -56,7 +55,6 @@ public class CaseResource extends EntityDtoResource {
 	@POST
 	@Path("/query")
 	public List<CaseDataDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
-
 		List<CaseDataDto> result = FacadeProvider.getCaseFacade().getByUuids(uuids);
 		return result;
 	}
@@ -64,7 +62,6 @@ public class CaseResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postCases(List<CaseDataDto> dtos) {
-
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
 		return result;
 	}
@@ -72,7 +69,6 @@ public class CaseResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getCaseFacade().getAllActiveUuids(userDto.getUuid());
@@ -82,10 +78,19 @@ public class CaseResource extends EntityDtoResource {
 	@GET
 	@Path("/archived/{since}")
 	public List<String> getArchivedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
-
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getCaseFacade().getArchivedUuidsSince(userDto.getUuid(), new Date(since));
 		return uuids;
 	}
+	
+	@GET
+	@Path("/deleted/{since]")
+	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<String> uuids = FacadeProvider.getCaseFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
+		return uuids;
+	}
+	
 }
