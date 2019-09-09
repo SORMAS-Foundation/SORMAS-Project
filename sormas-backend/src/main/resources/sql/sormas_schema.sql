@@ -3583,5 +3583,8 @@ UPDATE samples SET deleted = false;
 ALTER TABLE pathogentest ADD COLUMN deleted boolean;
 ALTER TABLE pathogentest_history ADD COLUMN deleted boolean;
 UPDATE pathogentest SET deleted = false;
+ALTER TABLE events ADD COLUMN deleted boolean;
+ALTER TABLE events_history ADD COLUMN deleted boolean;
+UPDATE events SET deleted = false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add deleted flag to core entities #1268');
