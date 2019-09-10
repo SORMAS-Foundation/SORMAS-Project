@@ -19,7 +19,6 @@ package de.symeda.sormas.api.caze;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -40,7 +39,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -82,9 +80,6 @@ public class CaseExportDto implements Serializable {
 	private Date dischargeDate;
 	private YesNoUnknown leftAgainstAdvice;
 	private String initialDetectionPlace;
-	private YesNoUnknown sampleTaken;
-	private String sampleDates;
-	private String labResults;
 	private PresentCondition presentCondition;
 	private Date deathDate;
 	private String burialInfo;
@@ -108,6 +103,16 @@ public class CaseExportDto implements Serializable {
 	private int numberOfPrescriptions;
 	private int numberOfTreatments;
 	private int numberOfClinicalVisits;
+	private Date sampleDateTime1;
+	private String sampleLab1;
+	private PathogenTestResultType sampleResult1;
+	private Date sampleDateTime2;
+	private String sampleLab2;
+	private PathogenTestResultType sampleResult2;
+	private Date sampleDateTime3;
+	private String sampleLab3;
+	private PathogenTestResultType sampleResult3;
+	private String otherSamples = "";
 
 	public CaseExportDto(long id, long personId, long epiDataId, long symptomsId, long hospitalizationId, long districtId, long healthConditionsId,
 			String uuid, String epidNumber, Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex,
@@ -475,25 +480,6 @@ public class CaseExportDto implements Serializable {
 		return vaccinationInfoSource;
 	}
 
-	@Order(100)
-	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
-	public YesNoUnknown getSampleTaken() {
-		return sampleTaken;
-	}
-
-	@Order(101)
-	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
-	public String getSampleDates() {
-		return sampleDates;
-	}
-
-	@Order(102)
-	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
-	public String getLabResults() {
-		return labResults;
-	}
-
-
 //	@Order(90)
 //	public Date getOnsetDate() {
 //		return onsetDate;
@@ -534,6 +520,66 @@ public class CaseExportDto implements Serializable {
 		return numberOfClinicalVisits;
 	}
 	
+	@Order(120)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public Date getSampleDateTime1() {
+		return sampleDateTime1;
+	}
+
+	@Order(121)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public String getSampleLab1() {
+		return sampleLab1;
+	}
+
+	@Order(122)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public PathogenTestResultType getSampleResult1() {
+		return sampleResult1;
+	}
+
+	@Order(123)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public Date getSampleDateTime2() {
+		return sampleDateTime2;
+	}
+
+	@Order(124)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public String getSampleLab2() {
+		return sampleLab2;
+	}
+
+	@Order(125)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public PathogenTestResultType getSampleResult2() {
+		return sampleResult2;
+	}
+
+	@Order(126)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public Date getSampleDateTime3() {
+		return sampleDateTime3;
+	}
+
+	@Order(127)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public String getSampleLab3() {
+		return sampleLab3;
+	}
+
+	@Order(128)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public PathogenTestResultType getSampleResult3() {
+		return sampleResult3;
+	}
+
+	@Order(130)
+	@ExportTarget(exportTypes = {ExportType.CASE_SURVEILLANCE})
+	public String getOtherSamples() {
+		return otherSamples;
+	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -620,40 +666,6 @@ public class CaseExportDto implements Serializable {
 	
 	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
 		this.admittedToHealthFacility = admittedToHealthFacility;
-	}
-
-	public void setSampleTaken(YesNoUnknown sampleTaken) {
-		this.sampleTaken = sampleTaken;
-	}
-
-	public void setSampleDates(String sampleDates) {
-		this.sampleDates = sampleDates;
-	}
-
-	public void setSampleDates(List<Date> sampleDates) {
-		StringBuilder sampleDateBuilder = new StringBuilder();
-		for (int i = 0; i < sampleDates.size(); i++) {
-			if (i > 0) {
-				sampleDateBuilder.append(", ");
-			}
-			sampleDateBuilder.append(DateHelper.formatLocalShortDate(sampleDates.get(i)));
-		}
-		this.sampleDates = sampleDateBuilder.toString();
-	}
-
-	public void setLabResults(String labResults) {
-		this.labResults = labResults;
-	}
-
-	public void setLabResults(List<PathogenTestResultType> labResults) {
-		StringBuilder testResultsBuilder = new StringBuilder();
-		for (int i = 0; i < labResults.size(); i++) {
-			if (i > 0) {
-				testResultsBuilder.append(", ");
-			}
-			testResultsBuilder.append(labResults.get(i).toString());
-		}
-		this.labResults = testResultsBuilder.toString();
 	}
 
 	public void setCaseClassification(CaseClassification caseClassification) {
@@ -754,6 +766,46 @@ public class CaseExportDto implements Serializable {
 
 	public void setNumberOfClinicalVisits(int numberOfClinicalVisits) {
 		this.numberOfClinicalVisits = numberOfClinicalVisits;
+	}
+
+	public void setSampleDateTime1(Date sampleDateTime1) {
+		this.sampleDateTime1 = sampleDateTime1;
+	}
+
+	public void setSampleLab1(String sampleLab1) {
+		this.sampleLab1 = sampleLab1;
+	}
+
+	public void setSampleResult1(PathogenTestResultType sampleResult1) {
+		this.sampleResult1 = sampleResult1;
+	}
+
+	public void setSampleDateTime2(Date sampleDateTime2) {
+		this.sampleDateTime2 = sampleDateTime2;
+	}
+
+	public void setSampleLab2(String sampleLab2) {
+		this.sampleLab2 = sampleLab2;
+	}
+
+	public void setSampleResult2(PathogenTestResultType sampleResult2) {
+		this.sampleResult2 = sampleResult2;
+	}
+
+	public void setSampleDateTime3(Date sampleDateTime3) {
+		this.sampleDateTime3 = sampleDateTime3;
+	}
+
+	public void setSampleLab3(String sampleLab3) {
+		this.sampleLab3 = sampleLab3;
+	}
+
+	public void setSampleResult3(PathogenTestResultType sampleResult3) {
+		this.sampleResult3 = sampleResult3;
+	}
+
+	public void setOtherSamples(String otherSamples) {
+		this.otherSamples = otherSamples;
 	}
 	
 }

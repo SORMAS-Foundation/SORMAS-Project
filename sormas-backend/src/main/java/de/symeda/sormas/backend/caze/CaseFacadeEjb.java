@@ -210,7 +210,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class CaseFacadeEjb implements CaseFacade {
 
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
-	
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
@@ -326,7 +326,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> root = cq.from(Case.class);
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
-		
+
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
@@ -334,7 +334,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
@@ -430,11 +430,37 @@ public class CaseFacadeEjb implements CaseFacade {
 			// TODO: Speed up this code, e.g. by persisting symptoms, lab results, etc. as a
 			// String in the database
 			if (exportType == ExportType.CASE_SURVEILLANCE) {
-				List<Date> sampleDates = sampleService.getSampleDatesForCase(exportDto.getId());
-				exportDto.setSampleTaken(
-						(sampleDates == null || sampleDates.isEmpty()) ? YesNoUnknown.NO : YesNoUnknown.YES);
-				exportDto.setSampleDates(sampleDates);
-				exportDto.setLabResults(pathogenTestService.getPathogenTestResultsForCase(exportDto.getId()));
+				List<Sample> samples = sampleService.findBy(new SampleCriteria().caze(new CaseReferenceDto(exportDto.getUuid())), null, Sample.SAMPLE_DATE_TIME, false);
+				int count = 0;
+				for (Sample sample : samples) {
+					switch (++count) {
+					case 1:
+						exportDto.setSampleDateTime1(sample.getSampleDateTime());
+						exportDto.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+						exportDto.setSampleResult1(sample.getPathogenTestResult());
+						break;
+					case 2:
+						exportDto.setSampleDateTime2(sample.getSampleDateTime());
+						exportDto.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+						exportDto.setSampleResult2(sample.getPathogenTestResult());
+						break;
+					case 3:
+						exportDto.setSampleDateTime3(sample.getSampleDateTime());
+						exportDto.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+						exportDto.setSampleResult3(sample.getPathogenTestResult());
+						break;
+					default:
+						StringBuilder sb = new StringBuilder();
+						if (!exportDto.getOtherSamples().isEmpty()) {
+							sb.append(", ");
+						}
+						sb.append(DateHelper.formatDateForExport(sample.getSampleDateTime())).append(" (")
+						.append(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()))
+						.append(", ").append(sample.getPathogenTestResult()).append(")");
+						exportDto.setOtherSamples(exportDto.getOtherSamples() + sb.toString());
+						break;
+					}
+				}
 
 				// Build travel history - done here to avoid transforming EpiDataTravel to
 				// EpiDataTravelDto
@@ -787,8 +813,8 @@ public class CaseFacadeEjb implements CaseFacade {
 										cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
 						new Long(30 * 24 * 60 * 60) // 30 days
 						));
-						
-						
+
+
 		Predicate creationDateFilter = cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
 
 		Predicate filter = userFilter;

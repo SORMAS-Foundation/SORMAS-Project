@@ -42,7 +42,6 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
@@ -63,24 +62,33 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	public SampleService() {
 		super(Sample.class);
 	}
-	
-	public List<Sample> findBy(SampleCriteria criteria, User user) {
+
+	public List<Sample> findBy(SampleCriteria criteria, User user, String sortProperty, boolean ascending) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
 
 		Predicate filter = buildCriteriaFilter(criteria, cb, from);
-		
+
 		if (user != null) {
 			filter = and(cb, filter, createUserFilter(cb, cq, from, user));
 		}
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.asc(from.get(Contact.CREATION_DATE)));
+
+		if (ascending) {
+			cq.orderBy(cb.asc(from.get(sortProperty)));
+		} else {
+			cq.orderBy(cb.desc(from.get(sortProperty)));
+		}
 
 		List<Sample> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+
+	public List<Sample> findBy(SampleCriteria criteria, User user) {
+		return findBy(criteria, user, Sample.CREATION_DATE, true);
 	}
 
 	public List<Sample> getAllActiveSamplesAfter(Date date, User user) {
@@ -137,7 +145,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
-	
+
 	/**
 	 * Returns the sample that refers to the sample identified by the sampleUuid.
 	 * 
@@ -215,18 +223,6 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return result;
 	}
 
-	public List<Date> getSampleDatesForCase(long caseId) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Date> cq = cb.createQuery(Date.class);
-		Root<Sample> sample = cq.from(getElementClass());
-		cq.where(cb.and(
-				createDefaultFilter(cb, sample),
-				cb.equal(sample.get(Sample.ASSOCIATED_CASE).get(Case.ID), caseId)));
-		cq.select(sample.get(Sample.SAMPLE_DATE_TIME));
-		List<Date> result = em.createQuery(cq).getResultList();
-		return result;
-	}
-	
 	public List<String> getDeletedUuidsSince(User user, Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -273,7 +269,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
 		Join<Sample, Case> caze = samplePath.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		
+
 		Predicate filter = null;
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
@@ -362,7 +358,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		return filter;	
 	}
-	
+
 	@Override
 	public void delete(Sample sample) {
 		// Mark all pathogen tests of this sample as deleted
@@ -374,17 +370,17 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
 			additionalTestService.delete(additionalTest);
 		}
-		
+
 		// Remove the reference from another sample to this sample if existing
 		Sample referralSample = getReferredFrom(sample.getUuid());
 		if (referralSample != null) {
 			referralSample.setReferredTo(null);
 			ensurePersisted(referralSample);
 		}
-		
+
 		super.delete(sample);
 	}
-	
+
 	/**
 	 * Creates a filter that excludes all samples that are either {@link CoreAdo#deleted} or associated with
 	 * cases that are {@link Case#archived}.
@@ -395,7 +391,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 				cb.isFalse(caze.get(Case.ARCHIVED)),
 				cb.isFalse(root.get(Case.DELETED)));
 	}
-	
+
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link SampleCriteria}.
 	 * This essentially removes {@link CoreAdo#deleted} samples from the queries.
@@ -403,5 +399,5 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Sample> root) {
 		return cb.isFalse(root.get(Sample.DELETED));
 	}
-	
+
 }

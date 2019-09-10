@@ -236,7 +236,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetExportList() {
-
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -269,8 +268,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// dates, lab results, address, travel history) is present
 		CaseExportDto exportDto = results.get(0);
 		// assertTrue(StringUtils.isNotEmpty(exportDto.getSymptoms()));
-		assertTrue(StringUtils.isNotEmpty(exportDto.getSampleDates()));
-		assertTrue(StringUtils.isNotEmpty(exportDto.getLabResults()));
+		assertNotNull(exportDto.getSampleDateTime1());
+		assertNotNull(exportDto.getSampleLab1());
 		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
 		assertTrue(StringUtils.isNotEmpty(exportDto.getTravelHistory()));
 	}
