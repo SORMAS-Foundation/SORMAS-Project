@@ -126,7 +126,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	private void buildCriteria() {
 		ClassificationCriteriaDto suspect, probable, confirmed;
-
+		
 		// EVD
 		suspect = allOf(
 				symptom(SymptomsDto.FEVER),

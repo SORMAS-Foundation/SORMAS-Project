@@ -59,13 +59,13 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -87,6 +87,7 @@ import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
@@ -368,7 +369,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, ExportType exportType, int first, int max, String userUuid) {
+	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, String userUuid, ExportConfigurationDto exportConfiguration) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseExportDto> cq = cb.createQuery(CaseExportDto.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -429,86 +430,110 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (CaseExportDto exportDto : resultList) {
 			// TODO: Speed up this code, e.g. by persisting symptoms, lab results, etc. as a
 			// String in the database
-			if (exportType == ExportType.CASE_SURVEILLANCE) {
-				List<Sample> samples = sampleService.findBy(new SampleCriteria().caze(new CaseReferenceDto(exportDto.getUuid())), null, Sample.SAMPLE_DATE_TIME, false);
-				int count = 0;
-				for (Sample sample : samples) {
-					switch (++count) {
-					case 1:
-						exportDto.setSampleDateTime1(sample.getSampleDateTime());
-						exportDto.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
-						exportDto.setSampleResult1(sample.getPathogenTestResult());
-						break;
-					case 2:
-						exportDto.setSampleDateTime2(sample.getSampleDateTime());
-						exportDto.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
-						exportDto.setSampleResult2(sample.getPathogenTestResult());
-						break;
-					case 3:
-						exportDto.setSampleDateTime3(sample.getSampleDateTime());
-						exportDto.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
-						exportDto.setSampleResult3(sample.getPathogenTestResult());
-						break;
-					default:
-						StringBuilder sb = new StringBuilder();
-						if (!exportDto.getOtherSamples().isEmpty()) {
-							sb.append(", ");
+			if (exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE) {
+				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.SAMPLE_INFORMATION)) {
+					List<Sample> samples = sampleService.findBy(new SampleCriteria().caze(new CaseReferenceDto(exportDto.getUuid())), null, Sample.SAMPLE_DATE_TIME, false);
+					int count = 0;
+					for (Sample sample : samples) {
+						switch (++count) {
+						case 1:
+							exportDto.setSampleDateTime1(sample.getSampleDateTime());
+							exportDto.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+							exportDto.setSampleResult1(sample.getPathogenTestResult());
+							break;
+						case 2:
+							exportDto.setSampleDateTime2(sample.getSampleDateTime());
+							exportDto.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+							exportDto.setSampleResult2(sample.getPathogenTestResult());
+							break;
+						case 3:
+							exportDto.setSampleDateTime3(sample.getSampleDateTime());
+							exportDto.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+							exportDto.setSampleResult3(sample.getPathogenTestResult());
+							break;
+						default:
+							StringBuilder sb = new StringBuilder();
+							if (!exportDto.getOtherSamples().isEmpty()) {
+								sb.append(", ");
+							}
+							sb.append(DateHelper.formatDateForExport(sample.getSampleDateTime())).append(" (")
+							.append(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()))
+							.append(", ").append(sample.getPathogenTestResult()).append(")");
+							exportDto.setOtherSamples(exportDto.getOtherSamples() + sb.toString());
+							break;
 						}
-						sb.append(DateHelper.formatDateForExport(sample.getSampleDateTime())).append(" (")
-						.append(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()))
-						.append(", ").append(sample.getPathogenTestResult()).append(")");
-						exportDto.setOtherSamples(exportDto.getOtherSamples() + sb.toString());
-						break;
 					}
 				}
 
-				// Build travel history - done here to avoid transforming EpiDataTravel to
-				// EpiDataTravelDto
-				List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
-				StringBuilder travelHistoryBuilder = new StringBuilder();
-				for (int i = 0; i < travels.size(); i++) {
-					EpiDataTravel travel = travels.get(i);
-					if (i > 0) {
-						travelHistoryBuilder.append(", ");
+				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.TRAVEL_HISTORY)) {
+					// Build travel history - done here to avoid transforming EpiDataTravel to
+					// EpiDataTravelDto
+					List<EpiDataTravel> travels = epiDataTravelService.getAllByEpiDataId(exportDto.getEpiDataId());
+					StringBuilder travelHistoryBuilder = new StringBuilder();
+					for (int i = 0; i < travels.size(); i++) {
+						EpiDataTravel travel = travels.get(i);
+						if (i > 0) {
+							travelHistoryBuilder.append(", ");
+						}
+						travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(travel.getTravelType(),
+								travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo()));
 					}
-					travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(travel.getTravelType(),
-							travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo()));
+					if (travelHistoryBuilder.length() == 0 && exportDto.getTraveled() != null) {
+						travelHistoryBuilder.append(exportDto.getTraveled());
+					}
+					exportDto.setTravelHistory(travelHistoryBuilder.toString());
 				}
-				if (travelHistoryBuilder.length() == 0 && exportDto.getTraveled() != null) {
-					travelHistoryBuilder.append(exportDto.getTraveled());
+			}
+			if (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT) {
+				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_PRESCRIPTIONS)) {
+					exportDto.setNumberOfPrescriptions(prescriptionService.getPrescriptionCountByCase(exportDto.getId()));
 				}
-				exportDto.setTravelHistory(travelHistoryBuilder.toString());
-			} else if (exportType == ExportType.CASE_MANAGEMENT) {
-				exportDto.setNumberOfPrescriptions(prescriptionService.getPrescriptionCountByCase(exportDto.getId()));
-				exportDto.setNumberOfTreatments(treatmentService.getTreatmentCountByCase(exportDto.getId()));
-				exportDto.setNumberOfClinicalVisits(clinicalVisitService.getClinicalVisitCountByCase(exportDto.getId()));
-				exportDto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(healthConditionsService.getById(exportDto.getHealthConditionsId())));
+				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_TREATMENTS)) {
+					exportDto.setNumberOfTreatments(treatmentService.getTreatmentCountByCase(exportDto.getId()));
+				}
+				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_CLINICAL_VISITS)) {
+					exportDto.setNumberOfClinicalVisits(clinicalVisitService.getClinicalVisitCountByCase(exportDto.getId()));
+				}
+				if (exportConfiguration == null || exportConfiguration.getProperties().contains(ClinicalCourseDto.HEALTH_CONDITIONS)) {
+					exportDto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(healthConditionsService.getById(exportDto.getHealthConditionsId())));
+				}
 			}
 
-			// exportDto.setSymptoms(symptomsService.getById(exportDto.getSymptomsId()).toHumanString(false));
-			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
-			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
-			List<CaseClassification> sourceCaseClassifications = contactService
-					.getSourceCaseClassifications(exportDto.getId());
-			exportDto.setMaxSourceCaseClassifcation(sourceCaseClassifications.stream()
-					.filter(c -> c != CaseClassification.NO_CASE).max(Comparator.naturalOrder()).orElse(null));
-
-			// Place of initial detection
-			PreviousHospitalization firstPrevHosp = previousHospitalizationService
-					.getInitialHospitalization(exportDto.getHospitalizationId());
-			if (firstPrevHosp != null) {
-				exportDto.setInitialDetectionPlace(firstPrevHosp.getHealthFacility().toString());
-			} else {
-				exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
+			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseDataDto.SYMPTOMS)) {
+				exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
+			}
+			if (exportConfiguration == null || exportConfiguration.getProperties().contains(PersonDto.ADDRESS)) {
+				exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
+			}
+			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
+				List<CaseClassification> sourceCaseClassifications = contactService
+						.getSourceCaseClassifications(exportDto.getId());
+				exportDto.setMaxSourceCaseClassification(sourceCaseClassifications.stream()
+						.filter(c -> c != CaseClassification.NO_CASE).max(Comparator.naturalOrder()).orElse(null));
 			}
 
-			// Associated with outbreak?
-			DistrictReferenceDto districtRef = districtFacade.getDistrictReferenceById(exportDto.getDistrictId());
-			exportDto.setAssociatedWithOutbreak(
-					outbreakFacade.hasOutbreakAtDate(districtRef, exportDto.getDisease(), exportDto.getReportDate()));
+			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.INITIAL_DETECTION_PLACE)) {
+				// Place of initial detection
+				PreviousHospitalization firstPrevHosp = previousHospitalizationService
+						.getInitialHospitalization(exportDto.getHospitalizationId());
+				if (firstPrevHosp != null) {
+					exportDto.setInitialDetectionPlace(firstPrevHosp.getHealthFacility().toString());
+				} else {
+					exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
+				}
+			}
 
-			// Country
-			exportDto.setCountry(configFacade.getEpidPrefix());
+			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.ASSOCIATED_WITH_OUTBREAK)) {
+				// Associated with outbreak?
+				DistrictReferenceDto districtRef = districtFacade.getDistrictReferenceById(exportDto.getDistrictId());
+				exportDto.setAssociatedWithOutbreak(
+						outbreakFacade.hasOutbreakAtDate(districtRef, exportDto.getDisease(), exportDto.getReportDate()));
+			}
+
+			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
+				// Country
+				exportDto.setCountry(configFacade.getEpidPrefix());
+			}
 		}
 
 		return resultList;

@@ -58,6 +58,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -888,6 +889,25 @@ public class CaseController {
 						}
 					});
 		}
+	}
+	
+	public void openEditExportConfigurationWindow(CaseCustomExportsGrid grid, ExportConfigurationDto config) {
+		Window newExportWindow = VaadinUiUtil.createPopupWindow();
+		CaseEditExportConfigurationLayout editLayout = new CaseEditExportConfigurationLayout(config, 
+				(exportConfiguration) -> {
+					FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
+					newExportWindow.close();
+					new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+					grid.reload();
+				}, 
+				() -> { 
+					newExportWindow.close();
+					grid.reload();
+				});
+		newExportWindow.setWidth(1024, Unit.PIXELS);
+		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
+		newExportWindow.setContent(editLayout);
+		UI.getCurrent().addWindow(newExportWindow);
 	}
 
 }

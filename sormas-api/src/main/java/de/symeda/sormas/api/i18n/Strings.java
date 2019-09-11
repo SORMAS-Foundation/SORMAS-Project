@@ -258,6 +258,7 @@ public interface Strings {
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoContactDashboard = "infoContactDashboard";
+	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
 	public static String infoDatabaseExportTables = "infoDatabaseExportTables";
 	public static String infoDefineOutbreaks = "infoDefineOutbreaks";
@@ -266,6 +267,7 @@ public interface Strings {
 	public static String infoDownloadErrorReport = "infoDownloadErrorReport";
 	public static String infoDownloadImportGuide = "infoDownloadImportGuide";
 	public static String infoDownloadImportTemplate = "infoDownloadImportTemplate";
+	public static String infoEditExportConfiguration = "infoEditExportConfiguration";
 	public static String infoExportNoFilters = "infoExportNoFilters";
 	public static String infoHowToMergeCases = "infoHowToMergeCases";
 	public static String infoImportCsvFile = "infoImportCsvFile";
@@ -339,6 +341,8 @@ public interface Strings {
 	public static String messageEventsDearchived = "messageEventsDearchived";
 	public static String messageEventsDeleted = "messageEventsDeleted";
 	public static String messageEventsEdited = "messageEventsEdited";
+	public static String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
+	public static String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	public static String messageExportFailed = "messageExportFailed";
 	public static String messageFollowUpCanceled = "messageFollowUpCanceled";
 	public static String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";

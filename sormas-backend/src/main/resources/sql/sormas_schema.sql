@@ -3570,7 +3570,7 @@ ALTER TABLE cases_history ADD COLUMN completeness real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completeness value to case #1253');
 
--- 2019-09-XX Add deleted flag to core entities #1268
+-- 2019-09-08 Add deleted flag to core entities #1268
 ALTER TABLE cases ADD COLUMN deleted boolean;
 ALTER TABLE cases_history ADD COLUMN deleted boolean;
 UPDATE cases SET deleted = false;
@@ -3588,3 +3588,30 @@ ALTER TABLE events_history ADD COLUMN deleted boolean;
 UPDATE events SET deleted = false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add deleted flag to core entities #1268');
+
+-- 2019-09-10 Add ExportConfiguration entity #1276
+
+CREATE TABLE exportconfiguration(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(512),
+	user_id bigint,
+	exporttype varchar(255),
+	propertiesstring varchar,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE exportconfiguration OWNER TO sormas_user;
+
+CREATE TABLE exportconfiguration_history (LIKE exportconfiguration);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON exportconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exportconfiguration_history', true);
+ALTER TABLE exportconfiguration_history OWNER TO sormas_user;
+
+ALTER TABLE exportconfiguration ADD CONSTRAINT fk_exportconfiguration_user_id FOREIGN KEY (user_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (164, 'Add ExportConfiguration entity #1276');

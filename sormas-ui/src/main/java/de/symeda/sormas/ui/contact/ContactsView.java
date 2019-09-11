@@ -192,7 +192,7 @@ public class ContactsView extends AbstractView {
 						}
 						return caption;
 					},
-					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
 			// Warning if no filters have been selected

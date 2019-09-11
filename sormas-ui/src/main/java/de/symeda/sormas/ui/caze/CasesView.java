@@ -37,6 +37,7 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -45,12 +46,12 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.ExportType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -226,8 +227,8 @@ public class CasesView extends AbstractView {
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(extendedExportButton);
 
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, ExportType.CASE_SURVEILLANCE, 
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), ExportType.CASE_SURVEILLANCE, start, max, UserProvider.getCurrent().getUuid()), 
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, UserProvider.getCurrent().getUuid(), null), 
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
@@ -240,7 +241,7 @@ public class CasesView extends AbstractView {
 						}
 						return caption;
 					},
-					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
@@ -278,8 +279,45 @@ public class CasesView extends AbstractView {
 						}
 						return caption;
 					},
-					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 			new FileDownloader(sampleExportStreamResource).extend(sampleExportButton);
+
+			Button btnCustomCaseExport = new Button(I18nProperties.getCaption(Captions.exportCaseCustom));
+			btnCustomCaseExport.setId("customCaseExport");
+			btnCustomCaseExport.setDescription(I18nProperties.getString(Strings.infoCustomCaseExport));
+			btnCustomCaseExport.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnCustomCaseExport.setIcon(VaadinIcons.FILE_TEXT);
+			btnCustomCaseExport.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(btnCustomCaseExport);
+			btnCustomCaseExport.addClickListener(e -> {
+				Window customExportWindow = VaadinUiUtil.createPopupWindow();
+				CaseCustomExportsLayout customExportsLayout = new CaseCustomExportsLayout(
+						() -> {
+							customExportWindow.close();
+						});
+				customExportsLayout.setExportCallback(
+						(exportConfig) -> {
+							Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null, 
+									(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, UserProvider.getCurrent().getUuid(), exportConfig), 
+									(propertyId,type) -> {
+										String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+																I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+																		I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId,
+																				I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
+										if (Date.class.isAssignableFrom(type)) {
+											caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+										}
+										return caption;
+									},
+									"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", exportConfig), null, true);
+						});
+				customExportWindow.setWidth(1024, Unit.PIXELS);
+				customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
+				customExportWindow.setContent(customExportsLayout);				
+				UI.getCurrent().addWindow(customExportWindow);
+			});
 
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters), ContentMode.HTML);
@@ -613,7 +651,7 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(portHealthCasesWithoutFacilityFilter);
 			}
-			
+
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				casesWithCaseManagementData = new CheckBox();
 				CssStyles.style(casesWithCaseManagementData, CssStyles.CHECKBOX_FILTER_INLINE);
@@ -844,7 +882,9 @@ public class CasesView extends AbstractView {
 		if (portHealthCasesWithoutFacilityFilter != null) {
 			portHealthCasesWithoutFacilityFilter.setValue(criteria.isMustBePortHealthCaseWithoutFacility());
 		}
-		casesWithCaseManagementData.setValue(criteria.isMustHaveCaseManagementData());
+		if (casesWithCaseManagementData != null) {
+			casesWithCaseManagementData.setValue(criteria.isMustHaveCaseManagementData());
+		}
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
