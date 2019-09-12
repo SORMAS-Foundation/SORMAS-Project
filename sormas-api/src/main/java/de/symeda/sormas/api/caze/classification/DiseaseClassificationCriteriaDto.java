@@ -30,18 +30,20 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 	private ClassificationCriteriaDto suspectCriteria;
 	private ClassificationCriteriaDto probableCriteria;
 	private ClassificationCriteriaDto confirmedCriteria;
+	private ClassificationCriteriaDto notACaseCriteria;
 
 	public DiseaseClassificationCriteriaDto() {
 
 	}
 
 	public DiseaseClassificationCriteriaDto(Disease disease, Date changeDate, ClassificationCriteriaDto suspectCriteria,
-			ClassificationCriteriaDto probableCriteria, ClassificationCriteriaDto confirmedCriteria) {
+			ClassificationCriteriaDto probableCriteria, ClassificationCriteriaDto confirmedCriteria, ClassificationCriteriaDto notACaseCriteria) {
 		super(changeDate, changeDate, null);
 		this.disease = disease;
 		this.suspectCriteria = suspectCriteria;
 		this.probableCriteria = probableCriteria;
 		this.confirmedCriteria = confirmedCriteria;
+		this.setNotACaseCriteria(notACaseCriteria);
 	}
 
 	public Disease getDisease() {
@@ -75,9 +77,16 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 	public void setConfirmedCriteria(ClassificationCriteriaDto confirmedCriteria) {
 		this.confirmedCriteria = confirmedCriteria;
 	}
+	
+	public ClassificationCriteriaDto getNotACaseCriteria() {
+		return notACaseCriteria;
+	}
+
+	public void setNotACaseCriteria(ClassificationCriteriaDto notACaseCriteria) {
+		this.notACaseCriteria = notACaseCriteria;
+	}
 
 	public boolean hasAnyCriteria() {
 		return suspectCriteria != null || probableCriteria != null || confirmedCriteria != null;
 	}
-
 }

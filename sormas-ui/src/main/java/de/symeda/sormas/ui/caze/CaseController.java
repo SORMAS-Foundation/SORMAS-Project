@@ -810,6 +810,12 @@ public class CaseController {
 			confirmedContent.setWidth(100, Unit.PERCENTAGE);
 			confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
 			classificationRulesLayout.addComponent(confirmedContent);
+			
+			Label notACaseContent = new Label();
+			notACaseContent.setContentMode(ContentMode.HTML);
+			notACaseContent.setWidth(100, Unit.PERCENTAGE);
+			notACaseContent.setValue(ClassificationHtmlRenderer.createNotACaseHtmlString(diseaseCriteria));
+			classificationRulesLayout.addComponent(notACaseContent);
 		}
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);

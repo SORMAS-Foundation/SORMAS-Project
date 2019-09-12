@@ -18,9 +18,13 @@ public interface Strings {
 	public static String classificationGeneratedFor = "classificationGeneratedFor";
 	public static String classificationInfoNumberText = "classificationInfoNumberText";
 	public static String classificationInfoText = "classificationInfoText";
+	public static String classificationNegativeTestResult = "classificationNegativeTestResult";
 	public static String classificationNoneOf = "classificationNoneOf";
+	public static String classificationNotACase = "classificationNotACase";
 	public static String classificationNotWithin = "classificationNotWithin";
+	public static String classificationOneNegativeTestResult = "classificationOneNegativeTestResult";
 	public static String classificationOneOf = "classificationOneOf";
+	public static String classificationOneOtherPositiveTestResult = "classificationOneOtherPositiveTestResult";
 	public static String classificationOnePositiveTestResult = "classificationOnePositiveTestResult";
 	public static String classificationPersonAged = "classificationPersonAged";
 	public static String classificationProbable = "classificationProbable";
