@@ -41,6 +41,7 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -60,6 +61,8 @@ public class RegionFacadeEjb implements RegionFacade {
 	protected DistrictService districtService;
 	@EJB
 	protected CommunityService communityService;
+	@EJB
+	protected PopulationDataFacadeEjbLocal populationDataFacade;
 
 	@Override
 	public List<RegionReferenceDto> getAllAsReference() {
@@ -94,7 +97,6 @@ public class RegionFacadeEjb implements RegionFacade {
 				switch (sortProperty.propertyName) {
 				case Region.NAME:
 				case Region.EPID_CODE:
-				case Region.POPULATION:
 				case Region.GROWTH_RATE:
 					expression = region.get(sortProperty.propertyName);
 					break;
@@ -178,7 +180,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		return dto;
 	}
 	
-	public static RegionDto toDto(Region entity) {
+	public RegionDto toDto(Region entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -187,7 +189,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());
-		dto.setPopulation(entity.getPopulation());
+		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
 
 		return dto;
@@ -215,7 +217,6 @@ public class RegionFacadeEjb implements RegionFacade {
 		
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());
-		target.setPopulation(source.getPopulation());
 		target.setGrowthRate(source.getGrowthRate());
 		
 		return target;

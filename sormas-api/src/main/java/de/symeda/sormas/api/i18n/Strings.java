@@ -187,6 +187,7 @@ public interface Strings {
 	public static String headingImportError = "headingImportError";
 	public static String headingImportFailed = "headingImportFailed";
 	public static String headingImportPointsOfEntry = "headingImportPointsOfEntry";
+	public static String headingImportPopulationData = "headingImportPopulationData";
 	public static String headingInformationSource = "headingInformationSource";
 	public static String headingIntroduction = "headingIntroduction";
 	public static String headingLaboratorySample = "headingLaboratorySample";
@@ -282,6 +283,8 @@ public interface Strings {
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
 	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
+	public static String infoPopulationCollectionDate = "infoPopulationCollectionDate";
+	public static String infoPopulationDataView = "infoPopulationDataView";
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
@@ -467,6 +470,7 @@ public interface Strings {
 	public static String reportedOn = "reportedOn";
 	public static String step = "step";
 	public static String toCase = "toCase";
+	public static String total = "total";
 	public static String unknown = "unknown";
 	public static String weekShort = "weekShort";
 	public static String year = "year";

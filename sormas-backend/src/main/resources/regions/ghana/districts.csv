@@ -1,218 +1,218 @@
-region;district;epidcode;population;growthrate
-Ashanti;Ahafo-Ano North;AAN;116696;2.70
-Ashanti;Ahafo-Ano South;AAS;150577;2.70
-Ashanti;Adansi North;ADN;132546;2.70
-Ashanti;Adansi South;ADS;142803;2.70
-Ashanti;Afigya-Kwabre;AFK;168500;2.70
-Ashanti;Asokore-Mampong;AMA;377269;2.70
-Ashanti;Amansie Central;AMC;112310;2.70
-Ashanti;Amansie West;AMW;166261;2.70
-Ashanti;Asante-Akim Central;ASC;88505;2.70
-Ashanti;Asante-Mampong;ASM;108980;2.70
-Ashanti;Asante-Akim North;ASN;85631;2.70
-Ashanti;Asante-Akim South;ASS;145114;2.70
-Ashanti;Atwima-Kwanwoma;ATK;112177;2.70
-Ashanti;Atwima-Mponua;ATM;147509;2.70
-Ashanti;Atwima-Wabiagya;ATN;184448;2.70
-Ashanti;Bekwai;BEK;146078;2.70
-Ashanti;Bosome-Freho;BOF;74753;2.70
-Ashanti;Bosomtwe;BOS;116232;2.70
-Ashanti;Ejisu-Juaben;EJJ;177934;2.70
-Ashanti;Ejura-Sekyedumasi;EJS;105756;2.70
-Ashanti;Kumasi;KUM;2141524;2.70
-Ashanti;Kwabre East;KWB;143023;2.70
-Ashanti;Obuasi;OBU;208726;2.70
-Ashanti;Offinso;OFF;95173;2.70
-Ashanti;Offinso North;OFN;70401;2.70
-Ashanti;Sekyere-Afram Plains;SAP;35318;2.70
-Ashanti;Sekyere Central;SEC;88164;2.70
-Ashanti;Sekyere East;SEE;76950;2.70
-Ashanti;Sekyere South;SES;116355;2.70
-Ashanti;Sekyere-Kumawu;SKK;80948;2.70
-Brong Ahafo;Asutifi North;AFN;63581;2.30
-Brong Ahafo;Asutifi South;AFS;63396;2.30
-Brong Ahafo;Atebubu-Amanten;ATA;127091;2.30
-Brong Ahafo;Asunafo North;AUN;149581;2.30
-Brong Ahafo;Asunafo South;AUS;114665;2.30
-Brong Ahafo;Banda;BAN;24332;2.30
-Brong Ahafo;Berekum;BER;155511;2.30
-Brong Ahafo;Dormaa Central;DOC;134497;2.30
-Brong Ahafo;Dormaa East;DOE;61029;2.30
-Brong Ahafo;Dormaa West;DOW;57198;2.30
-Brong Ahafo;Jaman North;JNO;99644;2.30
-Brong Ahafo;Jaman South;JSO;111148;2.30
-Brong Ahafo;Kintampo North;KIN;114545;2.30
-Brong Ahafo;Kintampo South;KIS;97173;2.30
-Brong Ahafo;Nkoranza North;NKN;121082;2.30
-Brong Ahafo;Nkoranza South;NKS;79052;2.30
-Brong Ahafo;Pru;PRU;155055;2.30
-Brong Ahafo;Sene East;SNE;72593;2.30
-Brong Ahafo;Sene West;SNW;69940;2.30
-Brong Ahafo;Sunyani;SUN;147828;2.30
-Brong Ahafo;Sunyani West;SUW;102298;2.30
-Brong Ahafo;Tain;TAI;105696;2.30
-Brong Ahafo;Tano North;TAN;95943;2.30
-Brong Ahafo;Tano South;TAS;93729;2.30
-Brong Ahafo;Techiman;TEC;177297;2.30
-Brong Ahafo;Techiman North;TEN;70862;2.30
-Brong Ahafo;Wenchi;WEN;107657;2.30
-Central;Abura-Asebu-Kwamankese;AAK;149611;3.10
-Central;Ajumako-Enyan-Essiam;AEE;176245;
-Central;Agona East;AGE;109695;3.10
-Central;Agona West;AGW;147279;3.10
-Central;Assin North;AIN;205986;3.10
-Central;Assin South;AIS;133090;3.10
-Central;Asikuma-Odoben-Brakwa;AOB;143893;3.10
-Central;Awutu-Senya East;ASE;137336;3.10
-Central;Awutu-Senya;ASW;112014;3.10
-Central;Cape Coast;CAC;216906;3.10
-Central;Efutu;EFU;87579;3.10
-Central;Ekumfi;EKU;66684;3.10
-Central;Gomoa East;GOE;264370;3.10
-Central;Gomoa West;GOW;172597;3.10
-Central;Komenda-Edina-Eguafo-Abirem;KEA;184747;3.10
-Central;Mfantsiman;MFA;184270;3.10
-Central;Twifu-Hemang Lower Denkyira;THL;70386;3.10
-Central;Twifu-Ati-Mokwa;TWM;78828;3.10
-Central;Upper Denkyira East;UDE;92957;3.10
-Central;Upper Denkyira West;UDW;76672;3.10
-Eastern;Akyemansa;AKM;114983;2.10
-Eastern;Akwapim North;AKN;161165;2.10
-Eastern;Akwapim South;AKS;44283;2.10
-Eastern;Afram Plains North;APN;121124;2.10
-Eastern;Afram Plains South;APS;1365782.10
-Eastern;Asuogyaman;ASG;115777;2.10
-Eastern;Atiwa;ATI;130627;2.10
-Eastern;Ayensuano;AYE;90012;2.10
-Eastern;Birim Central;BIC;171068;2.10
-Eastern;Birim North;BIN;93177;2.10
-Eastern;Birim South;BIS;141426;2.10
-Eastern;Denkyembour;DKB;92681;2.10
-Eastern;East Akim;EAK;198259;2.10
-Eastern;Fanteakwa;FAN;128256;2.10
-Eastern;Kwaebibirem;KBR;134705;2.10
-Eastern;Kwahu East;KWE;91073;2.10
-Eastern;Kwahu North;KWN;0000;2.10
-Eastern;Kwahu South;KWS;82372;2.10
-Eastern;Kwahu West;KWW;110508;2.10
-Eastern;Lower Manya-Krobo;LMK;105386;2.10
-Eastern;New Juaben;NEJ;216953;2.10
-Eastern;Nsawam-Adoagyiri;NSA;101553;2.10
-Eastern;Suhum;SUH;107839;2.10
-Eastern;Upper Manya-Krobo;UMK;85129;2.10
-Eastern;Upper West Akim;UWA;102794;2.10
-Eastern;West Akim;WAK;127883;2.10
-Eastern;Yilo-Krobo;YIK;103734;2.10
-Greater Accra;Accra;ACC;2125627;3.10
-Greater Accra;Ada East;ADE;91494;3.10
-Greater Accra;Adentan;ADT;99848;3.10
-Greater Accra;Ada West;ADW;75477;3.10
-Greater Accra;Ashaiman;ASH;243792;3.10
-Greater Accra;Ga Central;GAC;54835;3.10
-Greater Accra;Ga East;GAE;188605;3.10
-Greater Accra;Ga South;GAS;619965;3.10
-Greater Accra;Ga West;GAW;280578;3.10
-Greater Accra;Kpone-Katamanso;KPK;140251;3.10
-Greater Accra;La-Dade-Kotopon;LDK;234289;3.10
-Greater Accra;Ledzokuku-Krowor;LEK;290975;3.10
-Greater Accra;La-Nkwantanang-Madina;LNM;142883;3.10
-Greater Accra;Ningo-Prampram;NIP;90279;3.10
-Greater Accra;Shai-Osudoku;SHO;66532;3.10
-Greater Accra;Tema;TEM;373750;3.10
-Northern;Bole;BOL;77423;2.90
-Northern;Bunkpurugu-Yunyuo;BUY;154097;2.90
-Northern;Central Gonja;CGO;110462;2.90
-Northern;Chereponi;CHE;67116;2.90
-Northern;East Gonja;EGO;170261;2.90
-Northern;East Mamprusi;EMA;152109;2.90
-Northern;Gushiegu;GUS;139853;2.90
-Northern;Karaga;KAR;97677;2.90
-Northern;Kpandai;KPD;136782;2.90
-Northern;Kumbungu;KUB;48889;2.90
-Northern;Mamprugu-Moagduri;MAM;58946;2.90
-Northern;Mion;MIO;102235;2.90
-Northern;Nanumba North;NAN;177972;2.90
-Northern;Nanumba South;NAS;117485;2.90
-Northern;North Gonja;NGO;54739;2.90
-Northern;Saboba;SAB;82593;2.90
-Northern;Sagnarigu;SAG;186161;2.90
-Northern;Savelugu-Nanton;SAN;175079;2.90
-Northern;Sawla-Tuna-Kalba;STK;125528;2.90
-Northern;Tamale;TAM;280629;2.90
-Northern;Tolon;TOL;92312;2.90
-Northern;Tatale-Sangule;TTS;74633;2.90
-Northern;West Gonja;WGO;51763;2.90
-Northern;West Mamprusi;WMA;152244;2.90
-Northern;Yendi;YEN;148653;2.90
-Northern;Zabzugu;ZAB;81052;2.90
-Upper East;Bawku;BAW;108419;1.20
-Upper East;Binduri;BID;67751;1.20
-Upper East;Bawku West;BKW;103464;1.20
-Upper East;Bolgatanga;BOG;144742;1.20
-Upper East;Bongo;BON;93023;1.20
-Upper East;Builsa North;BUI;62140;1.20
-Upper East;Builsa South;BUS;40176;1.20
-Upper East;Garu-Tempane;GAT;143039;1.20
-Upper East;Kassena-Nankana;KND;120969;1.20
-Upper East;Kassena-Nankana West;KNW;77753;1.20
-Upper East;Nabdam;NAB;37218;1.20
-Upper East;Pusiga;PUS;63461;1.20
-Upper East;Talensi;TAL;89336;1.20
-Upper West;Daffiama-Bussie-Issa;DBI;37866;1.90
-Upper West;Jirapa;JIR;102733;1.90
-Upper West;Lambussie-Karni;LAM;60027;1.90
-Upper West;Lawra;LAW;64652;1.90
-Upper West;Nandom;NAD;52639;1.90
-Upper West;Nadowli-Kaleo;NAK;71823;1.90
-Upper West;Sissala East;SIE;65692;1.90
-Upper West;Sissala West;SIW;57609;1.90
-Upper West;Wa East;WAE;124594;1.90
-Upper West;Wa;WAU;83758;1.90
-Upper West;Wa West;WAW;94535;1.90
-Volta;Adaklu-Anyigbe;ADA;36484;2.50
-Volta;Afadjato;AFA;115769;2.50
-Volta;Agotime-Ziope;AGZ;41975;2.50
-Volta;Akatsi North;ANO;40244;2.50
-Volta;Akatsi South;ASO;116251;2.50
-Volta;Biakoye;BIK;80283;2.50
-Volta;Central Tongu;CTO;72376;2.50
-Volta;Hohoe;HOH;203464;2.50
-Volta;Ho;HOV;215969;2.50
-Volta;Ho West;HOW;115245;2.50
-Volta;Jasikan;JAS;72096;2.50
-Volta;Kadjebi;KAD;72245;2.50
-Volta;Ketu North;KEN;121717;2.50
-Volta;Ketu South;KES;195838;2.50
-Volta;Keta;KET;179833;2.50
-Volta;Kpando;KPO;65463;2.50
-Volta;Krachi East;KRE;142294;2.50
-Volta;Krachi-Nchumuru;KRN;88551;2.50
-Volta;Krachi West;KRW;60201;2.50
-Volta;North Dayi;NDA;48632;2.50
-Volta;Nkwanta North;NKO;78641;2.50
-Volta;Nkwanta South;NKW;143603;2.50
-Volta;North Tongu;NTO;109369;2.50
-Volta;South Dayi;SDA;56844;2.50
-Volta;South Tongu;STO;107143;2.50
-Western;Wassa-Amenfi East;AFE;97832;2.00
-Western;Wassa-Amenfi West;AFW;108548;2.00
-Western;Ahanta West;AHW;124478;2.00
-Western;Aowin;AOW;138546;2.00
-Western;Bibiani-Anhwiaso-Bekwai;BAB;144468;2.00
-Western;Bia East;BIE;30908;2.00
-Western;Bia West;BIW;105427;2.00
-Western;Bodi;BOD;61911;2.00
-Western;Ellembelle;ELL;102546;2.00
-Western;Jomoro;JOM;175917;2.00
-Western;Juabeso;JUA;69052;2.00
-Western;Mpohor;MPO;50303;2.00
-Western;Nzema East;NZE;71287;2.00
-Western;Prestea-Huni Valley;PHV;186695;2.00
-Western;Sefwi-Akontombra;SEA;96647;2.00
-Western;Sekondi-Takoradi;SET;655759;2.00
-Western;Sefwi-Wiawso;SEW;163135;2.00
-Western;Shama;SHA;96060;2.00
-Western;Suaman;SUA;23669;2.00
-Western;Tarkwa-Nsuaem;TNS;106034;2.00
-Western;Wassa-Amenfi Central;WAC;80330;2.00
-Western;Wassa East;WSE;95013;2.00
+﻿region;district;epidcode;growthrate
+Ashanti;Ahafo-Ano North;AAN;2.70
+Ashanti;Ahafo-Ano South;AAS;2.70
+Ashanti;Adansi North;ADN;2.70
+Ashanti;Adansi South;ADS;2.70
+Ashanti;Afigya-Kwabre;AFK;2.70
+Ashanti;Asokore-Mampong;AMA;2.70
+Ashanti;Amansie Central;AMC;2.70
+Ashanti;Amansie West;AMW;2.70
+Ashanti;Asante-Akim Central;ASC;2.70
+Ashanti;Asante-Mampong;ASM;2.70
+Ashanti;Asante-Akim North;ASN;2.70
+Ashanti;Asante-Akim South;ASS;2.70
+Ashanti;Atwima-Kwanwoma;ATK;2.70
+Ashanti;Atwima-Mponua;ATM;2.70
+Ashanti;Atwima-Wabiagya;ATN;2.70
+Ashanti;Bekwai;BEK;2.70
+Ashanti;Bosome-Freho;BOF;2.70
+Ashanti;Bosomtwe;BOS;2.70
+Ashanti;Ejisu-Juaben;EJJ;2.70
+Ashanti;Ejura-Sekyedumasi;EJS;2.70
+Ashanti;Kumasi;KUM;2.70
+Ashanti;Kwabre East;KWB;2.70
+Ashanti;Obuasi;OBU;2.70
+Ashanti;Offinso;OFF;2.70
+Ashanti;Offinso North;OFN;2.70
+Ashanti;Sekyere-Afram Plains;SAP;2.70
+Ashanti;Sekyere Central;SEC;2.70
+Ashanti;Sekyere East;SEE;2.70
+Ashanti;Sekyere South;SES;2.70
+Ashanti;Sekyere-Kumawu;SKK;2.70
+Brong Ahafo;Asutifi North;AFN;2.30
+Brong Ahafo;Asutifi South;AFS;2.30
+Brong Ahafo;Atebubu-Amanten;ATA;2.30
+Brong Ahafo;Asunafo North;AUN;2.30
+Brong Ahafo;Asunafo South;AUS;2.30
+Brong Ahafo;Banda;BAN;2.30
+Brong Ahafo;Berekum;BER;2.30
+Brong Ahafo;Dormaa Central;DOC;2.30
+Brong Ahafo;Dormaa East;DOE;2.30
+Brong Ahafo;Dormaa West;DOW;2.30
+Brong Ahafo;Jaman North;JNO;2.30
+Brong Ahafo;Jaman South;JSO;2.30
+Brong Ahafo;Kintampo North;KIN;2.30
+Brong Ahafo;Kintampo South;KIS;2.30
+Brong Ahafo;Nkoranza North;NKN;2.30
+Brong Ahafo;Nkoranza South;NKS;2.30
+Brong Ahafo;Pru;PRU;2.30
+Brong Ahafo;Sene East;SNE;2.30
+Brong Ahafo;Sene West;SNW;2.30
+Brong Ahafo;Sunyani;SUN;2.30
+Brong Ahafo;Sunyani West;SUW;2.30
+Brong Ahafo;Tain;TAI;2.30
+Brong Ahafo;Tano North;TAN;2.30
+Brong Ahafo;Tano South;TAS;2.30
+Brong Ahafo;Techiman;TEC;2.30
+Brong Ahafo;Techiman North;TEN;2.30
+Brong Ahafo;Wenchi;WEN;2.30
+Central;Abura-Asebu-Kwamankese;AAK;3.10
+Central;Ajumako-Enyan-Essiam;AEE;
+Central;Agona East;AGE;3.10
+Central;Agona West;AGW;3.10
+Central;Assin North;AIN;3.10
+Central;Assin South;AIS;3.10
+Central;Asikuma-Odoben-Brakwa;AOB;3.10
+Central;Awutu-Senya East;ASE;3.10
+Central;Awutu-Senya;ASW;3.10
+Central;Cape Coast;CAC;3.10
+Central;Efutu;EFU;3.10
+Central;Ekumfi;EKU;3.10
+Central;Gomoa East;GOE;3.10
+Central;Gomoa West;GOW;3.10
+Central;Komenda-Edina-Eguafo-Abirem;KEA;3.10
+Central;Mfantsiman;MFA;3.10
+Central;Twifu-Hemang Lower Denkyira;THL;3.10
+Central;Twifu-Ati-Mokwa;TWM;3.10
+Central;Upper Denkyira East;UDE;3.10
+Central;Upper Denkyira West;UDW;3.10
+Eastern;Akyemansa;AKM;2.10
+Eastern;Akwapim North;AKN;2.10
+Eastern;Akwapim South;AKS;2.10
+Eastern;Afram Plains North;APN;2.10
+Eastern;Afram Plains South;APS;
+Eastern;Asuogyaman;ASG;2.10
+Eastern;Atiwa;ATI;2.10
+Eastern;Ayensuano;AYE;2.10
+Eastern;Birim Central;BIC;2.10
+Eastern;Birim North;BIN;2.10
+Eastern;Birim South;BIS;2.10
+Eastern;Denkyembour;DKB;2.10
+Eastern;East Akim;EAK;2.10
+Eastern;Fanteakwa;FAN;2.10
+Eastern;Kwaebibirem;KBR;2.10
+Eastern;Kwahu East;KWE;2.10
+Eastern;Kwahu North;KWN;2.10
+Eastern;Kwahu South;KWS;2.10
+Eastern;Kwahu West;KWW;2.10
+Eastern;Lower Manya-Krobo;LMK;2.10
+Eastern;New Juaben;NEJ;2.10
+Eastern;Nsawam-Adoagyiri;NSA;2.10
+Eastern;Suhum;SUH;2.10
+Eastern;Upper Manya-Krobo;UMK;2.10
+Eastern;Upper West Akim;UWA;2.10
+Eastern;West Akim;WAK;2.10
+Eastern;Yilo-Krobo;YIK;2.10
+Greater Accra;Accra;ACC;3.10
+Greater Accra;Ada East;ADE;3.10
+Greater Accra;Adentan;ADT;3.10
+Greater Accra;Ada West;ADW;3.10
+Greater Accra;Ashaiman;ASH;3.10
+Greater Accra;Ga Central;GAC;3.10
+Greater Accra;Ga East;GAE;3.10
+Greater Accra;Ga South;GAS;3.10
+Greater Accra;Ga West;GAW;3.10
+Greater Accra;Kpone-Katamanso;KPK;3.10
+Greater Accra;La-Dade-Kotopon;LDK;3.10
+Greater Accra;Ledzokuku-Krowor;LEK;3.10
+Greater Accra;La-Nkwantanang-Madina;LNM;3.10
+Greater Accra;Ningo-Prampram;NIP;3.10
+Greater Accra;Shai-Osudoku;SHO;3.10
+Greater Accra;Tema;TEM;3.10
+Northern;Bole;BOL;2.90
+Northern;Bunkpurugu-Yunyuo;BUY;2.90
+Northern;Central Gonja;CGO;2.90
+Northern;Chereponi;CHE;2.90
+Northern;East Gonja;EGO;2.90
+Northern;East Mamprusi;EMA;2.90
+Northern;Gushiegu;GUS;2.90
+Northern;Karaga;KAR;2.90
+Northern;Kpandai;KPD;2.90
+Northern;Kumbungu;KUB;2.90
+Northern;Mamprugu-Moagduri;MAM;2.90
+Northern;Mion;MIO;2.90
+Northern;Nanumba North;NAN;2.90
+Northern;Nanumba South;NAS;2.90
+Northern;North Gonja;NGO;2.90
+Northern;Saboba;SAB;2.90
+Northern;Sagnarigu;SAG;2.90
+Northern;Savelugu-Nanton;SAN;2.90
+Northern;Sawla-Tuna-Kalba;STK;2.90
+Northern;Tamale;TAM;2.90
+Northern;Tolon;TOL;2.90
+Northern;Tatale-Sangule;TTS;2.90
+Northern;West Gonja;WGO;2.90
+Northern;West Mamprusi;WMA;2.90
+Northern;Yendi;YEN;2.90
+Northern;Zabzugu;ZAB;2.90
+Upper East;Bawku;BAW;1.20
+Upper East;Binduri;BID;1.20
+Upper East;Bawku West;BKW;1.20
+Upper East;Bolgatanga;BOG;1.20
+Upper East;Bongo;BON;1.20
+Upper East;Builsa North;BUI;1.20
+Upper East;Builsa South;BUS;1.20
+Upper East;Garu-Tempane;GAT;1.20
+Upper East;Kassena-Nankana;KND;1.20
+Upper East;Kassena-Nankana West;KNW;1.20
+Upper East;Nabdam;NAB;1.20
+Upper East;Pusiga;PUS;1.20
+Upper East;Talensi;TAL;1.20
+Upper West;Daffiama-Bussie-Issa;DBI;1.90
+Upper West;Jirapa;JIR;1.90
+Upper West;Lambussie-Karni;LAM;1.90
+Upper West;Lawra;LAW;1.90
+Upper West;Nandom;NAD;1.90
+Upper West;Nadowli-Kaleo;NAK;1.90
+Upper West;Sissala East;SIE;1.90
+Upper West;Sissala West;SIW;1.90
+Upper West;Wa East;WAE;1.90
+Upper West;Wa;WAU;1.90
+Upper West;Wa West;WAW;1.90
+Volta;Adaklu-Anyigbe;ADA;2.50
+Volta;Afadjato;AFA;2.50
+Volta;Agotime-Ziope;AGZ;2.50
+Volta;Akatsi North;ANO;2.50
+Volta;Akatsi South;ASO;2.50
+Volta;Biakoye;BIK;2.50
+Volta;Central Tongu;CTO;2.50
+Volta;Hohoe;HOH;2.50
+Volta;Ho;HOV;2.50
+Volta;Ho West;HOW;2.50
+Volta;Jasikan;JAS;2.50
+Volta;Kadjebi;KAD;2.50
+Volta;Ketu North;KEN;2.50
+Volta;Ketu South;KES;2.50
+Volta;Keta;KET;2.50
+Volta;Kpando;KPO;2.50
+Volta;Krachi East;KRE;2.50
+Volta;Krachi-Nchumuru;KRN;2.50
+Volta;Krachi West;KRW;2.50
+Volta;North Dayi;NDA;2.50
+Volta;Nkwanta North;NKO;2.50
+Volta;Nkwanta South;NKW;2.50
+Volta;North Tongu;NTO;2.50
+Volta;South Dayi;SDA;2.50
+Volta;South Tongu;STO;2.50
+Western;Wassa-Amenfi East;AFE;2.00
+Western;Wassa-Amenfi West;AFW;2.00
+Western;Ahanta West;AHW;2.00
+Western;Aowin;AOW;2.00
+Western;Bibiani-Anhwiaso-Bekwai;BAB;2.00
+Western;Bia East;BIE;2.00
+Western;Bia West;BIW;2.00
+Western;Bodi;BOD;2.00
+Western;Ellembelle;ELL;2.00
+Western;Jomoro;JOM;2.00
+Western;Juabeso;JUA;2.00
+Western;Mpohor;MPO;2.00
+Western;Nzema East;NZE;2.00
+Western;Prestea-Huni Valley;PHV;2.00
+Western;Sefwi-Akontombra;SEA;2.00
+Western;Sekondi-Takoradi;SET;2.00
+Western;Sefwi-Wiawso;SEW;2.00
+Western;Shama;SHA;2.00
+Western;Suaman;SUA;2.00
+Western;Tarkwa-Nsuaem;TNS;2.00
+Western;Wassa-Amenfi Central;WAC;2.00
+Western;Wassa East;WSE;2.00

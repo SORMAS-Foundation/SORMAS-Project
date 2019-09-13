@@ -31,7 +31,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class CaseCriteria extends BaseCriteria implements Cloneable  {
+public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 

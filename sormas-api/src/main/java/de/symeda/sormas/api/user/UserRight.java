@@ -837,6 +837,9 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			POE_SUPERVISOR,
 			POE_INFORMANT
+			),
+	POPULATION_MANAGE(
+			ADMIN
 			);
 
 	private final Set<UserRole> defaultUserRoles;

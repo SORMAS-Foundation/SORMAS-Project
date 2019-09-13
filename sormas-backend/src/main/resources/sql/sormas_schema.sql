@@ -3590,7 +3590,6 @@ UPDATE events SET deleted = false;
 INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add deleted flag to core entities #1268');
 
 -- 2019-09-10 Add ExportConfiguration entity #1276
-
 CREATE TABLE exportconfiguration(
 	id bigint not null,
 	uuid varchar(36) not null unique,
@@ -3615,3 +3614,27 @@ ALTER TABLE exportconfiguration_history OWNER TO sormas_user;
 ALTER TABLE exportconfiguration ADD CONSTRAINT fk_exportconfiguration_user_id FOREIGN KEY (user_id) REFERENCES users(id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (164, 'Add ExportConfiguration entity #1276');
+
+-- 2019-09-11 Add PopulationData entity #1084
+CREATE TABLE populationdata(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	region_id bigint,
+	district_id bigint,
+	sex varchar(255),
+	agegroup varchar(255),
+	population integer,
+	collectiondate timestamp,
+	primary key(id)
+);
+
+ALTER TABLE populationdata OWNER TO sormas_user;
+ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+
+ALTER TABLE region DROP COLUMN population;
+ALTER TABLE district DROP COLUMN population;
+
+INSERT INTO schema_version (version_number, comment) VALUES (165, 'Add PopulationData entity #1084');

@@ -149,6 +149,7 @@ public interface Captions {
 	public static String CaseExport_burialInfo = "CaseExport.burialInfo";
 	public static String CaseExport_contactWithRodent = "CaseExport.contactWithRodent";
 	public static String CaseExport_country = "CaseExport.country";
+	public static String CaseExport_diseaseFormatted = "CaseExport.diseaseFormatted";
 	public static String CaseExport_id = "CaseExport.id";
 	public static String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	public static String CaseExport_labResults = "CaseExport.labResults";
@@ -693,6 +694,8 @@ public interface Captions {
 	public static String PointOfEntry_OTHER_POE = "PointOfEntry.OTHER_POE";
 	public static String PointOfEntry_OTHER_SEAPORT = "PointOfEntry.OTHER_SEAPORT";
 	public static String PointOfEntry_pointOfEntryType = "PointOfEntry.pointOfEntryType";
+	public static String populationDataFemaleTotal = "populationDataFemaleTotal";
+	public static String populationDataMaleTotal = "populationDataMaleTotal";
 	public static String PortHealthInfo = "PortHealthInfo";
 	public static String PortHealthInfo_airlineName = "PortHealthInfo.airlineName";
 	public static String PortHealthInfo_arrivalDateTime = "PortHealthInfo.arrivalDateTime";
@@ -1099,6 +1102,8 @@ public interface Captions {
 	public static String View_configuration_outbreaks_short = "View.configuration.outbreaks.short";
 	public static String View_configuration_pointsofentry = "View.configuration.pointsofentry";
 	public static String View_configuration_pointsofentry_short = "View.configuration.pointsofentry.short";
+	public static String View_configuration_populationdata = "View.configuration.populationdata";
+	public static String View_configuration_populationdata_short = "View.configuration.populationdata.short";
 	public static String View_configuration_regions = "View.configuration.regions";
 	public static String View_configuration_regions_short = "View.configuration.regions.short";
 	public static String View_configuration_userrights = "View.configuration.userrights";

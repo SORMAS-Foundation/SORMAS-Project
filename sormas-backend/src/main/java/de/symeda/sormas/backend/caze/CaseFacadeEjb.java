@@ -164,6 +164,7 @@ import de.symeda.sormas.backend.hospitalization.PreviousHospitalizationService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
@@ -303,6 +304,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private HealthConditionsService healthConditionsService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private PopulationDataFacadeEjbLocal populationDataFacade;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date, String userUuid) {
@@ -1833,21 +1836,21 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (caseMeasure == CaseMeasure.CASE_COUNT) {
 			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream()
-					.map(e -> new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto((District) e[0]),
+					.map(e -> new Pair<DistrictDto, BigDecimal>(districtFacade.toDto((District) e[0]),
 							new BigDecimal((Long) e[1])))
 					.collect(Collectors.toList());
 			return resultList;
 		} else {
 			List<Pair<DistrictDto, BigDecimal>> resultList = results.stream().map(e -> {
 				District district = (District) e[0];
-				Integer population = district.getPopulation();
+				Integer population = populationDataFacade.getDistrictPopulation(district.getUuid());
 				Long caseCount = (Long) e[1];
 
 				if (population == null || population <= 0) {
 					// No or negative population - these entries will be cut off in the UI
-					return new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto(district), new BigDecimal(0));
+					return new Pair<DistrictDto, BigDecimal>(districtFacade.toDto(district), new BigDecimal(0));
 				} else {
-					return new Pair<DistrictDto, BigDecimal>(DistrictFacadeEjb.toDto(district),
+					return new Pair<DistrictDto, BigDecimal>(districtFacade.toDto(district),
 							new BigDecimal(caseCount).divide(
 									new BigDecimal((double) population / DistrictDto.CASE_INCIDENCE_DIVISOR), 1,
 									RoundingMode.HALF_UP));
