@@ -224,7 +224,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		taskService.ensurePersisted(ado);
 
 		// once we have to handle additional logic this should be moved to it's own function or even class 
-		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION) {
+		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION && ado.getCaze() != null) {
 			caseFacade.updateInvestigationByTask(ado.getCaze());
 		}
 		
