@@ -120,7 +120,7 @@ public class TaskEditActivity extends BaseEditActivity<Task> {
         }
 
         if (data.getTaskStatus() == TaskStatus.DONE
-                && data.getTaskType() == TaskType.CASE_INVESTIGATION) {
+                && data.getTaskType() == TaskType.CASE_INVESTIGATION && data.getCaze() != null) {
             Case caze = DatabaseHelper.getCaseDao().queryUuidBasic(data.getCaze().getUuid());
             CaseDataDto cazeDto = new CaseDataDto();
             CaseDtoHelper.fillDto(cazeDto, caze);

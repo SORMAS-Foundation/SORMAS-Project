@@ -109,12 +109,12 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
 		}
 		
-		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles()) && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
 			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
 		} else {
-			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
+			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY && getColumn(CaseIndexDto.POINT_OF_ENTRY_NAME) != null) {
 				removeColumn(CaseIndexDto.POINT_OF_ENTRY_NAME);
-			} else if (getCriteria().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+			} else if (getCriteria().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
 				removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
 			}
 		}
