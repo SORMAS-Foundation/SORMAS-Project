@@ -144,6 +144,7 @@ public interface Strings {
 	public static String headingCreateNewVisit = "headingCreateNewVisit";
 	public static String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
 	public static String headingDatabaseExportFailed = "headingDatabaseExportFailed";
+	public static String headingDataImport = "headingDataImport";
 	public static String headingDearchiveCase = "headingDearchiveCase";
 	public static String headingDearchiveEvent = "headingDearchiveEvent";
 	public static String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";

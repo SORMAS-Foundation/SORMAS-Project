@@ -486,7 +486,7 @@
 							<featureBranchPrefix>feature-</featureBranchPrefix>
 							<releaseBranchPrefix>release-</releaseBranchPrefix>
 							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
-							<versionTagPrefix>releases/version-</versionTagPrefix>
+							<versionTagPrefix>v</versionTagPrefix>
 						</flowInitContext>
 						<username>${github.sormas.user}</username>
 						<password>${github.sormas.password}</password>
