@@ -818,17 +818,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				cb.and(
 						cb.equal(person.get(Person.BIRTHDATE_DD), person2.get(Person.BIRTHDATE_DD)),
 						cb.equal(person.get(Person.BIRTHDATE_MM), person2.get(Person.BIRTHDATE_MM)),
-						cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));
-		// Age filter: only when age is filled in for both cases
-		Predicate ageFilter = cb.or(
-				cb.or(
-						cb.isNull(person.get(Person.APPROXIMATE_AGE)),
-						cb.isNull(person.get(Person.APPROXIMATE_AGE_TYPE)),
-						cb.isNull(person2.get(Person.APPROXIMATE_AGE)),
-						cb.isNull(person2.get(Person.APPROXIMATE_AGE_TYPE))),
-				cb.and(
-						cb.equal(person.get(Person.APPROXIMATE_AGE), person2.get(Person.APPROXIMATE_AGE)),
-						cb.equal(person.get(Person.APPROXIMATE_AGE_TYPE), person2.get(Person.APPROXIMATE_AGE_TYPE))));		
+						cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));	
 		// Onset date filter: only when onset date is filled in for both cases
 		Predicate onsetDateFilter = cb.or(
 				cb.or(
@@ -860,9 +850,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		filter = cb.and(filter, diseaseFilter);
 		filter = cb.and(filter, regionFilter);
 		filter = cb.and(filter, reportDateFilter);
-		filter = cb.and(filter, sexFilter);
-		filter = cb.and(filter, birthDateFilter);
-		filter = cb.and(filter, ageFilter);
+		filter = cb.and(filter, cb.or(
+				sexFilter,
+				birthDateFilter));
 		filter = cb.and(filter, onsetDateFilter);
 		filter = cb.and(filter, creationDateFilter);
 
