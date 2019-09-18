@@ -82,6 +82,7 @@ public interface Captions {
 	public static String caseBackToDirectory = "caseBackToDirectory";
 	public static String caseCalculateCompleteness = "caseCalculateCompleteness";
 	public static String caseCasesList = "caseCasesList";
+	public static String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";
 	public static String caseContacts = "caseContacts";
 	public static String caseCreateCase = "caseCreateCase";
 	public static String CaseData = "CaseData";

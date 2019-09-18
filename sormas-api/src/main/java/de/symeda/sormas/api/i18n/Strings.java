@@ -327,6 +327,7 @@ public interface Strings {
 	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";
 	public static String messageClinicalVisitSaved = "messageClinicalVisitSaved";
 	public static String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
+	public static String messageCloneCaseWithNewDisease = "messageCloneCaseWithNewDisease";
 	public static String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	public static String messageContactCreated = "messageContactCreated";
 	public static String messageContactSaved = "messageContactSaved";

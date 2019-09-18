@@ -53,6 +53,8 @@ public interface CaseFacade {
     
     CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
     
+    CaseDataDto saveCaseSimple(CaseDataDto dto) throws ValidationRuntimeException;
+    
     void validate(CaseDataDto dto) throws ValidationRuntimeException;
 
 	CaseReferenceDto getReferenceByUuid(String uuid);
@@ -109,5 +111,7 @@ public interface CaseFacade {
 	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid);
 	
 	void updateCompleteness(String caseUuid);
-	
+
+	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
+
 }

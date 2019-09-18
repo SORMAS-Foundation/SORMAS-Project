@@ -256,6 +256,19 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 	
 	@Override
+	public PersonDto savePersonSimple(PersonDto source) throws ValidationRuntimeException {
+
+		Person person = personService.getByUuid(source.getUuid());
+
+		validate(source);
+		
+		person = fillOrBuildEntity(source, person);
+		personService.ensurePersisted(person);
+
+		return toDto(person);
+	}
+	
+	@Override
 	public void validate(PersonDto source) throws ValidationRuntimeException {
 		if (StringUtils.isEmpty(source.getFirstName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyFirstName));
@@ -502,6 +515,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@LocalBean
 	@Stateless
 	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {
+
 	}
 
 }

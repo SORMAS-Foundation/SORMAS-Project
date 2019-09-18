@@ -211,6 +211,25 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return toDto(sample);
 	}
+	
+	@Override
+	public SampleDto saveSampleSimple(SampleDto dto) {
+		
+		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
+		Sample sample = fromDto(dto);
+
+		// Set defaults for testing requests
+		if (sample.getPathogenTestingRequested() == null) {
+			sample.setPathogenTestingRequested(false);
+		}
+		if (sample.getAdditionalTestingRequested() == null) {
+			sample.setAdditionalTestingRequested(false);
+		}
+
+		sampleService.ensurePersisted(sample);
+
+		return toDto(sample);
+	}
 
 	@Override
 	public SampleReferenceDto getReferenceByUuid(String uuid) {
@@ -680,5 +699,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	@LocalBean
 	@Stateless
 	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
+
 	}
 }
