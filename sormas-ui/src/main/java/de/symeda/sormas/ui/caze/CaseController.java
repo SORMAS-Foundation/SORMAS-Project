@@ -48,7 +48,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
@@ -56,10 +55,10 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -69,7 +68,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
@@ -451,6 +449,7 @@ public class CaseController {
 				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(),
 				UserRight.CASE_EDIT, viewMode);
 		caseEditForm.setValue(caze);
+
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
 				caseEditForm, caseEditForm.getFieldGroup());
 
@@ -543,7 +542,7 @@ public class CaseController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getCaseFacade().deleteCase(caze.toReference(),
+					FacadeProvider.getCaseFacade().deleteCase(caze.getUuid(),
 							UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				}
@@ -655,6 +654,7 @@ public class CaseController {
 		SymptomsForm symptomsForm = new SymptomsForm(caseDataDto, caseDataDto.getDisease(), person,
 				SymptomsContext.CASE, UserRight.CASE_EDIT, viewMode);
 		symptomsForm.setValue(caseDataDto.getSymptoms());
+		
 		CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(
 				symptomsForm, symptomsForm.getFieldGroup());
 
@@ -833,7 +833,7 @@ public class CaseController {
 					new Runnable() {
 						public void run() {
 							for (CaseIndexDto selectedRow : selectedRows) {
-								FacadeProvider.getCaseFacade().deleteCase(new CaseReferenceDto(selectedRow.getUuid()),
+								FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid(),
 										UserProvider.getCurrent().getUuid());
 							}
 							callback.run();
@@ -889,6 +889,25 @@ public class CaseController {
 						}
 					});
 		}
+	}
+	
+	public void openEditExportConfigurationWindow(CaseCustomExportsGrid grid, ExportConfigurationDto config) {
+		Window newExportWindow = VaadinUiUtil.createPopupWindow();
+		CaseEditExportConfigurationLayout editLayout = new CaseEditExportConfigurationLayout(config, 
+				(exportConfiguration) -> {
+					FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
+					newExportWindow.close();
+					new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+					grid.reload();
+				}, 
+				() -> { 
+					newExportWindow.close();
+					grid.reload();
+				});
+		newExportWindow.setWidth(1024, Unit.PIXELS);
+		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
+		newExportWindow.setContent(editLayout);
+		UI.getCurrent().addWindow(newExportWindow);
 	}
 
 }

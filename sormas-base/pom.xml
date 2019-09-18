@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.26.1</version>
+	<version>1.27.0</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -486,7 +486,7 @@
 							<featureBranchPrefix>feature-</featureBranchPrefix>
 							<releaseBranchPrefix>release-</releaseBranchPrefix>
 							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
-							<versionTagPrefix>releases/version-</versionTagPrefix>
+							<versionTagPrefix>v</versionTagPrefix>
 						</flowInitContext>
 						<username>${github.sormas.user}</username>
 						<password>${github.sormas.password}</password>

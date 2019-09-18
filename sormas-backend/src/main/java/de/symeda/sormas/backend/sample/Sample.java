@@ -47,13 +47,13 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="samples")
 @Audited
-public class Sample extends AbstractDomainObject {
+public class Sample extends CoreAdo {
 
 	private static final long serialVersionUID = -7196712070188634978L;
 

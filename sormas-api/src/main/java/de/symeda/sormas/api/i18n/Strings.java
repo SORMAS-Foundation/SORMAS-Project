@@ -144,6 +144,7 @@ public interface Strings {
 	public static String headingCreateNewVisit = "headingCreateNewVisit";
 	public static String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
 	public static String headingDatabaseExportFailed = "headingDatabaseExportFailed";
+	public static String headingDataImport = "headingDataImport";
 	public static String headingDearchiveCase = "headingDearchiveCase";
 	public static String headingDearchiveEvent = "headingDearchiveEvent";
 	public static String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
@@ -187,6 +188,7 @@ public interface Strings {
 	public static String headingImportError = "headingImportError";
 	public static String headingImportFailed = "headingImportFailed";
 	public static String headingImportPointsOfEntry = "headingImportPointsOfEntry";
+	public static String headingImportPopulationData = "headingImportPopulationData";
 	public static String headingInformationSource = "headingInformationSource";
 	public static String headingIntroduction = "headingIntroduction";
 	public static String headingLaboratorySample = "headingLaboratorySample";
@@ -258,6 +260,7 @@ public interface Strings {
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoContactDashboard = "infoContactDashboard";
+	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
 	public static String infoDatabaseExportTables = "infoDatabaseExportTables";
 	public static String infoDefineOutbreaks = "infoDefineOutbreaks";
@@ -266,6 +269,7 @@ public interface Strings {
 	public static String infoDownloadErrorReport = "infoDownloadErrorReport";
 	public static String infoDownloadImportGuide = "infoDownloadImportGuide";
 	public static String infoDownloadImportTemplate = "infoDownloadImportTemplate";
+	public static String infoEditExportConfiguration = "infoEditExportConfiguration";
 	public static String infoExportNoFilters = "infoExportNoFilters";
 	public static String infoHowToMergeCases = "infoHowToMergeCases";
 	public static String infoImportCsvFile = "infoImportCsvFile";
@@ -280,6 +284,8 @@ public interface Strings {
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
 	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
+	public static String infoPopulationCollectionDate = "infoPopulationCollectionDate";
+	public static String infoPopulationDataView = "infoPopulationDataView";
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
@@ -339,6 +345,8 @@ public interface Strings {
 	public static String messageEventsDearchived = "messageEventsDearchived";
 	public static String messageEventsDeleted = "messageEventsDeleted";
 	public static String messageEventsEdited = "messageEventsEdited";
+	public static String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
+	public static String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	public static String messageExportFailed = "messageExportFailed";
 	public static String messageFollowUpCanceled = "messageFollowUpCanceled";
 	public static String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
@@ -463,6 +471,7 @@ public interface Strings {
 	public static String reportedOn = "reportedOn";
 	public static String step = "step";
 	public static String toCase = "toCase";
+	public static String total = "total";
 	public static String unknown = "unknown";
 	public static String weekShort = "weekShort";
 	public static String year = "year";

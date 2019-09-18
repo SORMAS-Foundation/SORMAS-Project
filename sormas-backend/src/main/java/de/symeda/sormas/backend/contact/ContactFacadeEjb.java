@@ -65,17 +65,17 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
@@ -89,6 +89,7 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -124,6 +125,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private LocationService locationService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	
 	@Override
 	public List<String> getAllActiveUuids(String userUuid) {
@@ -158,17 +161,14 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactDto> getFollowUpBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
+	public List<String> getDeletedUuidsSince(String userUuid, Date since) {
 		User user = userService.getByUuid(userUuid);
-		District district = districtService.getByReferenceDto(districtRef);
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return contactService.getFollowUpBetween(fromDate, toDate, district, disease, user).stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
+		return contactService.getDeletedUuidsSince(user, since);
 	}
 
 	@Override
@@ -203,14 +203,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactReferenceDto> getSelectableContacts(UserReferenceDto userRef) {
-		User user = userService.getByReferenceDto(userRef);
-		return contactService.getAllAfter(null, user).stream()
-				.map(c -> toReferenceDto(c))
-				.collect(Collectors.toList());
-	}
-
-	@Override
 	public List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos) {
 		User user = userService.getByUuid(userUuid);
 		Region region = regionService.getByReferenceDto(regionRef);
@@ -228,21 +220,13 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public void deleteContact(ContactReferenceDto contactRef, String userUuid) {
+	public void deleteContact(String contactUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.CONTACT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete contacts.");
 		}
 		
-		Contact contact = contactService.getByReferenceDto(contactRef);
-		List<Visit> visits = visitService.getAllByContact(contact);
-		for (Visit visit : visits) {
-			visitService.delete(visit);
-		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(contactRef));
-		for (Task task : tasks) {
-			taskService.delete(task);
-		}
+		Contact contact = contactService.getByUuid(contactUuid);
 		contactService.delete(contact);
 		
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(contact.getCaze()), contact.getCaze());
@@ -443,14 +427,6 @@ public class ContactFacadeEjb implements ContactFacade {
 			return em.createQuery(cq).getResultList();
 		}
 	}
-	
-	@Override
-	public List<ContactReferenceDto> getAllByVisit(VisitReferenceDto visitRef) {
-		Visit visit = visitService.getByReferenceDto(visitRef);
-		return contactService.getAllByVisit(visit).stream()
-				.map(c -> toReferenceDto(c))
-				.collect(Collectors.toList());
-	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
 
@@ -489,6 +465,20 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
+	}
+
+	@Override
+	public boolean isDeleted(String contactUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> from = cq.from(Contact.class);
+
+		cq.where(cb.and(
+				cb.isTrue(from.get(Contact.DELETED)),
+				cb.equal(from.get(AbstractDomainObject.UUID), contactUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
 	}
 	
 	@Override
@@ -572,14 +562,12 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@RolesAllowed(UserRole._SYSTEM)
 	public void generateContactFollowUpTasks() {
-
 		// get all contacts that are followed up
 		LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
 		LocalDateTime toDateTime = fromDateTime.plusDays(1);
 		List<Contact> contacts = contactService.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime), null, null, null);
 
 		for (Contact contact : contacts) {
-
 			User assignee;
 			// assign responsible user
 			if (contact.getContactOfficer() != null) {
@@ -642,4 +630,5 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {
 	}
+	
 }

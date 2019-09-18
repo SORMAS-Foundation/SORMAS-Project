@@ -33,7 +33,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -97,7 +96,7 @@ public class PathogenTestController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getPathogenTestFacade().deletePathogenTest(dto.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getPathogenTestFacade().deletePathogenTest(dto.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
@@ -136,7 +135,7 @@ public class PathogenTestController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeletePathogenTests), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getPathogenTestFacade().deletePathogenTest(new PathogenTestReferenceDto(((PathogenTestDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getPathogenTestFacade().deletePathogenTest(((PathogenTestDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingPathogenTestsDeleted),

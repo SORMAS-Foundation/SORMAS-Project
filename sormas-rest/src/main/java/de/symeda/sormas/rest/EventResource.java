@@ -45,7 +45,6 @@ public class EventResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<EventDto> getAllEvents(@Context SecurityContext sc, @PathParam("since") long since) {
-
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<EventDto> events = FacadeProvider.getEventFacade().getAllActiveEventsAfter(new Date(since),
@@ -56,7 +55,6 @@ public class EventResource extends EntityDtoResource {
 	@POST
 	@Path("/query")
 	public List<EventDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
-
 		List<EventDto> result = FacadeProvider.getEventFacade().getByUuids(uuids);
 		return result;
 	}
@@ -64,7 +62,6 @@ public class EventResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postEvents(List<EventDto> dtos) {
-
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventFacade()::saveEvent);
 		return result;
 	}
@@ -72,7 +69,6 @@ public class EventResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getEventFacade().getAllActiveUuids(userDto.getUuid());
@@ -82,10 +78,19 @@ public class EventResource extends EntityDtoResource {
 	@GET
 	@Path("/archived/{since}")
 	public List<String> getArchivedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
-
 		UserReferenceDto userDto = FacadeProvider.getUserFacade()
 				.getByUserNameAsReference(sc.getUserPrincipal().getName());
 		List<String> uuids = FacadeProvider.getEventFacade().getArchivedUuidsSince(userDto.getUuid(), new Date(since));
 		return uuids;
 	}
+	
+	@GET
+	@Path("/deleted/{since}")
+	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<String> uuids = FacadeProvider.getEventFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
+		return uuids;
+	}
+	
 }

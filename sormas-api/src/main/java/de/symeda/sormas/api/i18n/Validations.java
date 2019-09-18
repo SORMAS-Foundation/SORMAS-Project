@@ -7,6 +7,7 @@ public interface Validations {
 	public static String beforeDate = "beforeDate";
 	public static String beforeDateSoft = "beforeDateSoft";
 	public static String duplicateEpidNumber = "duplicateEpidNumber";
+	public static String exportNoNameSpecified = "exportNoNameSpecified";
 	public static String futureDate = "futureDate";
 	public static String futureDateStrict = "futureDateStrict";
 	public static String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";

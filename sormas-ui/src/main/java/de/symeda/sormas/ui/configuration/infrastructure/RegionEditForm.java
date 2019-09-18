@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import com.vaadin.v7.data.util.converter.StringToFloatConverter;
-import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -34,7 +33,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE)
-			+ LayoutUtil.fluidRowLocs(RegionDto.POPULATION, RegionDto.GROWTH_RATE);
+			+ LayoutUtil.fluidRowLocs(RegionDto.GROWTH_RATE);
 
 	public RegionEditForm(UserRight editOrCreateUserRight, boolean create) {
 		super(RegionDto.class, RegionDto.I18N_PREFIX, editOrCreateUserRight);
@@ -50,9 +49,6 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 	protected void addFields() {
 		addField(RegionDto.NAME, TextField.class);
 		addField(RegionDto.EPID_CODE, TextField.class);
-		TextField population = addField(RegionDto.POPULATION, TextField.class);
-		population.setConverter(new StringToIntegerConverter());
-		population.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, population.getCaption()));
 		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
 		growthRate.setConverter(new StringToFloatConverter());
 		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));

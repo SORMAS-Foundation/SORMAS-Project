@@ -126,6 +126,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
             menuItems.remove(CaseSection.MATERNAL_HISTORY.ordinal());
         }
+
         return menuItems;
     }
 

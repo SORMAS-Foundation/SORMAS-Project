@@ -83,7 +83,7 @@ public class CaseDataView extends AbstractCaseView {
 		} else {
 			editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
 		}
-
+		
 		// setSubComponent(editComponent);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);

@@ -348,6 +348,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 			Predicate visitFilter = buildVisitFilter(contactService.getByReferenceDto(criteria.getContact()), null, cb, from);
 			filter = and(cb, filter, visitFilter);
 		}
+		if (criteria.getDeleted() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), criteria.getDeleted()));
+		}
 
 		return filter;
 	}
@@ -361,7 +364,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Visit,Visit> visitPath, Date date) {
-
 		Predicate dateFilter = cb.greaterThan(visitPath.get(Visit.CHANGE_DATE), date);
 
 		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
@@ -369,4 +371,5 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 		return dateFilter;
 	}
+	
 }

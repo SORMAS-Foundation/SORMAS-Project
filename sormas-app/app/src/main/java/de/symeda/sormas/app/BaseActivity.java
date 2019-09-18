@@ -31,7 +31,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,10 +43,7 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -100,7 +96,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected PageMenuControl pageMenu = null;
     private List<PageMenuItem> pageItems = new ArrayList<>();
     private PageMenuItem activePageItem = null;
-    private int activePageKey = 0;
+    private int activePageIndex = 0;
     private boolean finishInsteadOfUpNav;
 
     private ActionBarDrawerToggle menuDrawerToggle;
@@ -130,7 +126,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     protected static Bundler buildBundle(int activePageKey) {
-        return new Bundler().setActivePageKey(activePageKey);
+        return new Bundler().setActivePageIndex(activePageKey);
     }
 
     public static <TActivity extends BaseActivity> void startActivity(Context context, Class<TActivity> toActivity, Bundler bundler) {
@@ -142,7 +138,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        new Bundler(outState).setActivePageKey(activePageKey).setFinishInsteadOfUpNav(finishInsteadOfUpNav);
+        new Bundler(outState).setActivePageIndex(activePageIndex).setFinishInsteadOfUpNav(finishInsteadOfUpNav);
     }
 
     @Override
@@ -161,31 +157,21 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         }
 
         Bundler bundler = new Bundler(savedInstanceState);
-        activePageKey = bundler.getActivePageKey();
+        activePageIndex = bundler.getActivePageIndex();
         finishInsteadOfUpNav = bundler.isFinishInsteadOfUpNav();
 
         setContentView(getRootActivityLayout());
 
         rootView = findViewById(R.id.base_layout);
-        preloader = (ProgressBar) findViewById(R.id.preloader);
+        preloader = findViewById(R.id.preloader);
         fragmentFrame = findViewById(R.id.fragment_frame);
         applicationTitleBar = findViewById(R.id.applicationTitleBar);
         statusFrame = findViewById(R.id.statusFrame);
 
-        pageMenu = (PageMenuControl) findViewById(R.id.landingPageMenuControl);
+        pageMenu = findViewById(R.id.landingPageMenuControl);
         if (pageMenu != null) {
-            pageMenu.setPageMenuClickListener(new PageMenuControl.PageMenuClickListener() {
-                @Override
-                public boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException {
-                    return setActivePage(menuItem);
-                }
-            });
-            pageMenu.setPageMenuInititalSelectionProvider(new PageMenuControl.PageMenuInitialSelectionProvider() {
-                @Override
-                public PageMenuItem getInititalSelectedPageMenuItem(List<PageMenuItem> menuList) {
-                    return initPageMenuAndGetInitialSelection(menuList);
-                }
-            });
+            pageMenu.setPageMenuClickListener((parent, view, menuItem, position, id) -> setActivePage(menuItem));
+            pageMenu.setPageMenuInititalSelectionProvider(this::initPageMenuAndGetInitialSelection);
 
         }
 
@@ -484,7 +470,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         }
 
         activePageItem = menuItem;
-        activePageKey = activePageItem.getKey();
+        activePageIndex = pageItems.indexOf(activePageItem);
         return openPage(activePageItem);
     }
 
@@ -713,21 +699,22 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return null;
     }
 
-    public PageMenuItem initPageMenuAndGetInitialSelection(List<PageMenuItem> menuList) {
+    private PageMenuItem initPageMenuAndGetInitialSelection(List<PageMenuItem> menuList) {
         this.pageItems = menuList;
         activePageItem = menuList.get(0);
-        for (PageMenuItem m : menuList) {
-            if (m.getKey() == activePageKey) {
-                activePageItem = m;
+        for (int i = 0; i < menuList.size(); i++) {
+            if (i == activePageIndex) {
+                activePageItem = menuList.get(i);
             }
         }
         return activePageItem;
     }
 
     protected boolean goToNextPage() {
-        if (activePageKey == pageItems.size() - 1)
+        if (activePageIndex == pageItems.size() - 1) {
             return false; // last page
-        int newMenukey = activePageKey + 1;
+        }
+        int newMenukey = activePageIndex + 1;
         PageMenuItem pageItem = pageItems.get(newMenukey);
         pageMenu.markActiveMenuItem(pageItem);
         return setActivePage(pageItem);

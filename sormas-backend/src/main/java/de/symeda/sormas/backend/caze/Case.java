@@ -50,7 +50,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
@@ -66,7 +66,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "cases")
 @Audited
-public class Case extends AbstractDomainObject {
+public class Case extends CoreAdo {
 
 	private static final long serialVersionUID = -2697795184663562129L;
 
