@@ -11,7 +11,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -26,7 +25,7 @@ public class CaseCustomExportsGrid extends Grid<ExportConfigurationDto> {
 	public static final String COLUMN_ACTIONS = "actions";
 	
 	private final String userUuid;
-	private Consumer<Boolean> selectionChangeCallback;
+	private Consumer<ExportConfigurationDto> exportCallback;
 	
 	public CaseCustomExportsGrid(String userUuid) {
 		this.userUuid = userUuid;
@@ -35,7 +34,7 @@ public class CaseCustomExportsGrid extends Grid<ExportConfigurationDto> {
 	}
 	
 	private void buildGrid() {
-		SingleSelectionModel<ExportConfigurationDto> selectionModel = (SingleSelectionModel<ExportConfigurationDto>) setSelectionMode(SelectionMode.SINGLE);
+		setSelectionMode(SelectionMode.NONE);
 		setHeightMode(HeightMode.ROW);
 		
 		addColumn(ExportConfigurationDto::getName)
@@ -45,12 +44,6 @@ public class CaseCustomExportsGrid extends Grid<ExportConfigurationDto> {
 		addComponentColumn(config -> {
 			return buildButtonLayout(config);
 		}).setId(COLUMN_ACTIONS).setCaption("");
-		
-		selectionModel.addSingleSelectionListener(e -> {
-			if (selectionChangeCallback != null) {
-				selectionChangeCallback.accept(e.getSelectedItem().isPresent());
-			}
-		});
 	}
 	
 	public void reload() {
@@ -63,8 +56,12 @@ public class CaseCustomExportsGrid extends Grid<ExportConfigurationDto> {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSpacing(true);
 		
+		Button btnExport = new Button(VaadinIcons.DOWNLOAD);
+		btnExport.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		layout.addComponent(btnExport);
+		btnExport.addClickListener(e -> exportCallback.accept(config));
+		
 		Button btnEdit = new Button(VaadinIcons.EDIT);
-		btnEdit.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		layout.addComponent(btnEdit);
 		btnEdit.addClickListener(e -> {
 			ControllerProvider.getCaseController().openEditExportConfigurationWindow(this, config);
@@ -81,12 +78,8 @@ public class CaseCustomExportsGrid extends Grid<ExportConfigurationDto> {
 		return layout;
 	}
 	
-	public void setSelectionChangeCallback(Consumer<Boolean> selectionChangeCallback) {
-		this.selectionChangeCallback = selectionChangeCallback;
-	}
-	
-	public ExportConfigurationDto getSelectedExportConfiguration() {
-		return ((SingleSelectionModel<ExportConfigurationDto>) getSelectionModel()).getSelectedItem().orElse(null);
+	public void setExportCallback(Consumer<ExportConfigurationDto> exportCallback) {
+		this.exportCallback = exportCallback;
 	}
 	
 }
