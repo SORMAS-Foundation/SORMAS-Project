@@ -62,12 +62,12 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 		
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = cb.and(filter, dateFilter);
+			filter = AbstractAdoService.and(cb, filter, dateFilter);
 		}
 		
 		cq.where(filter);
@@ -101,7 +101,7 @@ public class PrescriptionService extends AbstractAdoService<Prescription> {
 		
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
 		cq.where(filter);
