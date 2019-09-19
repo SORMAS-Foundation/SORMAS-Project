@@ -253,11 +253,14 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	 * @param existing nullable
 	 */
 	public static Predicate and(CriteriaBuilder cb, Predicate existing, Predicate additional) {
-		if (existing == null) {
+		if (existing == null && additional == null) {
+			return null;
+		} else if (existing == null) {
 			return additional;
 		} else if (additional == null) {
 			return existing;
 		}
+		
 		return cb.and(existing, additional);
 	}
 	
@@ -266,7 +269,9 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	 * @param existing nullable
 	 */
 	public static Predicate or(CriteriaBuilder cb, Predicate existing, Predicate additional) {
-		if (existing == null) {
+		if (existing == null && additional == null) {
+			return null;
+		} else if (existing == null) {
 			return additional;
 		} else if (additional == null) {
 			return existing;

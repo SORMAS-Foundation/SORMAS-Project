@@ -40,7 +40,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
@@ -66,7 +66,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
