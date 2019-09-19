@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.facility.Facility;
@@ -100,12 +101,12 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = cb.and(filter, dateFilter);		
+			filter = AbstractAdoService.and(cb, filter, dateFilter);	
 		}
 
 		cq.where(filter);
@@ -124,7 +125,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -172,7 +173,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
 		Predicate filter = createDefaultFilter(cb, sample);
-		filter = cb.and(filter, createUserFilter(cb, cq, sample, user));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, sample, user));
 		Predicate dateFilter = cb.between(sample.get(Sample.REPORT_DATE_TIME), from, to);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);

@@ -62,7 +62,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
@@ -89,7 +89,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
 		cq.where(filter);

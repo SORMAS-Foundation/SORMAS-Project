@@ -55,6 +55,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -119,12 +120,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = cb.and(filter, dateFilter);		
+			filter = AbstractAdoService.and(cb, filter, dateFilter);	
 		}
 
 		cq.where(filter);
@@ -143,7 +144,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -279,7 +280,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
 		Predicate filter = createActiveContactsFilter(cb, contact);
-		filter = cb.and(filter, createUserFilter(cb, cq, contact, user));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact, user));
 
 		if (caseUuids != null && !caseUuids.isEmpty()) {
 			// Only return contacts whose cases are displayed
@@ -362,7 +363,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
 
 		Predicate filter = createDefaultFilter(cb, contact);
-		filter = cb.and(filter, createUserFilter(cb, cq, contact, user));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact, user));
 
 		// Date filter
 		Predicate dateFilter = cb.or(

@@ -565,11 +565,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -617,11 +613,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -646,11 +638,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, user);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
-		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
-		} else {
-			filter = criteriaFilter;
-		}
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -748,21 +736,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate reportDateFilter = criteria.getReportDate() != null ? cb.between(root.get(Case.REPORT_DATE), DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30)) : null;
 
 		Predicate filter = userFilter;
-
-		if (filter != null) {
-			filter = cb.and(userFilter, nameSimilarityFilter);
-		} else {
-			filter = nameSimilarityFilter;
-		}
-		if (diseaseFilter != null) {
-			filter = cb.and(filter, diseaseFilter);
-		}
-		if (regionFilter != null) {
-			filter = cb.and(filter, regionFilter);
-		}
-		if (reportDateFilter != null) {
-			filter = cb.and(filter, reportDateFilter);
-		}
+		filter = AbstractAdoService.and(cb, filter, nameSimilarityFilter);
+		filter = AbstractAdoService.and(cb, filter, diseaseFilter);
+		filter = AbstractAdoService.and(cb, filter, regionFilter);
+		filter = AbstractAdoService.and(cb, filter, reportDateFilter);
 
 		cq.where(filter);
 

@@ -38,6 +38,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.region.District;
@@ -64,12 +65,12 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = cb.and(filter, dateFilter);
+			filter = AbstractAdoService.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
@@ -88,7 +89,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
 		cq.where(filter);
@@ -180,7 +181,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
 		Predicate filter = createDefaultFilter(cb, pathogenTest);
-		filter = cb.and(filter, createUserFilter(cb, cq, pathogenTest, user));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, pathogenTest, user));
 		Predicate dateFilter = cb.between(pathogenTest.get(PathogenTest.TEST_DATE_TIME), from, to);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
@@ -239,7 +240,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		cq.groupBy(sampleTest.get(PathogenTest.TEST_RESULT));
 		
 		Predicate filter = createDefaultFilter(cb, sampleTest);
-		filter = cb.and(filter, createUserFilter(cb, cq, sampleTest, user));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, sampleTest, user));
 		
 		if (from != null || to != null)
 			filter = and(cb, filter, cb.between(sampleTest.get(PathogenTest.TEST_DATE_TIME), from, to));
