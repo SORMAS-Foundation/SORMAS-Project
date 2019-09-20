@@ -373,6 +373,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, String userUuid, ExportConfigurationDto exportConfiguration) {
+		Boolean previousCaseManagementDataCriteria = caseCriteria.isMustHaveCaseManagementData();
+		if (CaseExportType.CASE_MANAGEMENT == exportType) {
+			caseCriteria.mustHaveCaseManagementData(Boolean.TRUE);
+		}
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseExportDto> cq = cb.createQuery(CaseExportDto.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -538,6 +543,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				exportDto.setCountry(configFacade.getEpidPrefix());
 			}
 		}
+		
+		caseCriteria.mustHaveCaseManagementData(previousCaseManagementDataCriteria);
 
 		return resultList;
 	}
@@ -735,7 +742,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate regionFilter = caseCriteria.getRegion() != null ? cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()) : null;
 		Predicate reportDateFilter = criteria.getReportDate() != null ? cb.between(root.get(Case.REPORT_DATE), DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30)) : null;
 
-		Predicate filter = userFilter;
+		Predicate filter = caseService.createDefaultFilter(cb, root);
+		filter = AbstractAdoService.and(cb, filter, userFilter);
 		filter = AbstractAdoService.and(cb, filter, nameSimilarityFilter);
 		filter = AbstractAdoService.and(cb, filter, diseaseFilter);
 		filter = AbstractAdoService.and(cb, filter, regionFilter);
@@ -1089,6 +1097,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null && !caze.getRegion()
 					.equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInRegion));
+			}
+			if (FacilityHelper.isOtherOrNoneHealthFacility(caze.getHealthFacility().getUuid()) && StringUtils.isEmpty(caze.getHealthFacilityDetails())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityDetails));
 			}
 		}
 	}

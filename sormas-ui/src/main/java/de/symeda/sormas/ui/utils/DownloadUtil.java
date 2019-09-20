@@ -94,7 +94,7 @@ import de.symeda.sormas.ui.statistics.DatabaseExportView;
 
 public class DownloadUtil {
 
-	public static final int DETAILED_EXPORT_STEP_SIZE = 200;
+	public static final int DETAILED_EXPORT_STEP_SIZE = 50;
 	private static final Logger logger = LoggerFactory.getLogger(DownloadUtil.class);
 
 	private DownloadUtil() {

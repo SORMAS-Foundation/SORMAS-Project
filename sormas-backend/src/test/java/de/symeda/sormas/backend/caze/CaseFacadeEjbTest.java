@@ -259,7 +259,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				rdcf.facility);
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(null, CaseExportType.CASE_SURVEILLANCE, 0, 100, user.getUuid(), null);
+		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, user.getUuid(), null);
 
 		// List should have one entry
 		assertEquals(1, results.size());

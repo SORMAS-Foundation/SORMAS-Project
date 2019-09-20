@@ -25,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class EventCriteria extends BaseCriteria implements Serializable {
 
@@ -61,6 +62,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		this.reportingUserRole = reportingUserRole;
 		return this;
 	}
+	@IgnoreForUrl
 	public Boolean getArchived() {
 		return archived;
 	}
@@ -72,6 +74,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		this.deleted = deleted;
 		return this;
 	}
+	@IgnoreForUrl
 	public Boolean getDeleted() {
 		return deleted;
 	}

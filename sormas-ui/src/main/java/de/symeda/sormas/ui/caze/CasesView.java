@@ -219,30 +219,30 @@ public class CasesView extends AbstractView {
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
-			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
-			extendedExportButton.setId("extendedExport");
-			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
-			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
-			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(extendedExportButton);
-
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, UserProvider.getCurrent().getUuid(), null), 
-					(propertyId,type) -> {
-						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
-								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
-												I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
-														I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId,
-																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
-						}
-						return caption;
-					},
-					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
-			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+//			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+//			extendedExportButton.setId("extendedExport");
+//			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
+//			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+//			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
+//			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
+//			exportLayout.addComponent(extendedExportButton);
+//
+//			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
+//					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, UserProvider.getCurrent().getUuid(), null), 
+//					(propertyId,type) -> {
+//						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
+//								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+//										I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+//												I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+//														I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId,
+//																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
+//						if (Date.class.isAssignableFrom(type)) {
+//							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+//						}
+//						return caption;
+//					},
+//					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+//			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
 				Button caseManagementExportButton = new Button(I18nProperties.getCaption(Captions.exportCaseManagement));
@@ -885,10 +885,22 @@ public class CasesView extends AbstractView {
 		if (casesWithCaseManagementData != null) {
 			casesWithCaseManagementData.setValue(criteria.isMustHaveCaseManagementData());
 		}
+		
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
-		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
-		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
-		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
+		Date newCaseDateTo = criteria.getNewCaseDateTo();
+		// Reconstruct date/epi week choice
+		if ((newCaseDateFrom != null && newCaseDateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo)))
+				|| (newCaseDateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom))
+				|| (newCaseDateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo))) {
+			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
+			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(newCaseDateFrom));
+			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(newCaseDateTo));
+		} else {
+			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+			weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
+			weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
+		}
 
 		boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
 				.anyMatch(f -> !f.isEmpty());

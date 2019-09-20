@@ -216,6 +216,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return followUpUntilTo;
 	}
 
+	@IgnoreForUrl
 	public Boolean getArchived() {
 		return archived;
 	}
@@ -229,7 +230,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.deleted = deleted;
 		return this;
 	}
-	
+
+	@IgnoreForUrl
 	public Boolean getDeleted() {
 		return deleted;
 	}

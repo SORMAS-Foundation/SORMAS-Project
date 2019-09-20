@@ -266,7 +266,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.archived = archived;
 		return this;
 	}
-	
+
+	@IgnoreForUrl
 	public Boolean getArchived() {
 		return archived;
 	}
@@ -275,7 +276,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.deleted = deleted;
 		return this;
 	}
-	
+
+	@IgnoreForUrl
 	public Boolean getDeleted() {
 		return deleted;
 	}
