@@ -348,9 +348,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 			Predicate visitFilter = buildVisitFilter(contactService.getByReferenceDto(criteria.getContact()), null, cb, from);
 			filter = and(cb, filter, visitFilter);
 		}
-		if (criteria.getDeleted() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), criteria.getDeleted()));
-		}
 
 		return filter;
 	}
