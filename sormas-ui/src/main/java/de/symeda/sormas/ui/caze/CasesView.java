@@ -885,10 +885,22 @@ public class CasesView extends AbstractView {
 		if (casesWithCaseManagementData != null) {
 			casesWithCaseManagementData.setValue(criteria.isMustHaveCaseManagementData());
 		}
+		
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
-		weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
-		weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
-		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
+		Date newCaseDateTo = criteria.getNewCaseDateTo();
+		// Reconstruct date/epi week choice
+		if ((newCaseDateFrom != null && newCaseDateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo)))
+				|| (newCaseDateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom))
+				|| (newCaseDateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo))) {
+			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
+			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(newCaseDateFrom));
+			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(newCaseDateTo));
+		} else {
+			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+			weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
+			weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
+		}
 
 		boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
 				.anyMatch(f -> !f.isEmpty());
