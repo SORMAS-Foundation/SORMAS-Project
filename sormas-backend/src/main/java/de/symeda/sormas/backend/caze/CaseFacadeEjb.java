@@ -373,6 +373,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, String userUuid, ExportConfigurationDto exportConfiguration) {
+		Boolean previousCaseManagementDataCriteria = caseCriteria.isMustHaveCaseManagementData();
+		if (CaseExportType.CASE_MANAGEMENT == exportType) {
+			caseCriteria.mustHaveCaseManagementData(Boolean.TRUE);
+		}
+		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseExportDto> cq = cb.createQuery(CaseExportDto.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -538,6 +543,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				exportDto.setCountry(configFacade.getEpidPrefix());
 			}
 		}
+		
+		caseCriteria.mustHaveCaseManagementData(previousCaseManagementDataCriteria);
 
 		return resultList;
 	}
