@@ -696,7 +696,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
-			return null;
+			if (user.getLimitedDisease() != null) {
+				Join<Contact, Case> caze = contactPath.join(Contact.CAZE, JoinType.LEFT);
+				return cb.equal(caze.get(Case.DISEASE), user.getLimitedDisease());
+			} else {
+				return null;
+			}
 		}
 
 		// whoever created it or is assigned to it is allowed to access it
