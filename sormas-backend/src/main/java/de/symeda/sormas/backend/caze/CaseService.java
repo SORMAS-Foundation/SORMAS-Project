@@ -122,7 +122,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	TreatmentService treatmentService;
 	@EJB
 	PrescriptionService prescriptionService;
-	
+
 	public CaseService() {
 		super(Case.class);
 	}
@@ -298,7 +298,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<String> getDeletedUuidsSince(User user, Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -326,7 +326,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * Creates a filter that checks whether the case is considered "relevant" in the time frame specified by {@code fromDate} and 
 	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are 
@@ -442,7 +442,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			Subquery<ClinicalVisit> clinicalVisitSubquery = cq.subquery(ClinicalVisit.class);
 			Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitSubquery.from(ClinicalVisit.class);
 			clinicalVisitSubquery.select(clinicalVisitRoot).where(cb.equal(clinicalVisitRoot.get(ClinicalVisit.CLINICAL_COURSE), from.get(Case.CLINICAL_COURSE)));
-			
+
 			filter = and(cb, filter,
 					cb.or(
 							cb.exists(prescriptionSubquery),
@@ -484,7 +484,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		return filter;
 	}
-	
+
 	/**
 	 * Creates a filter that excludes all cases that are either {@link Case#archived} or {@link CoreAdo#deleted}.
 	 */
@@ -493,7 +493,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb.isFalse(root.get(Case.ARCHIVED)),
 				cb.isFalse(root.get(Case.DELETED)));
 	}
-	
+
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link CaseCriteria}.
 	 * This essentially removes {@link CoreAdo#deleted} cases from the queries.
@@ -601,9 +601,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				|| user.getUserRoles().contains(UserRole.NATIONAL_USER)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
-			return null;
+			if (user != null && user.getLimitedDisease() != null) {
+				return cb.equal(casePath.get(Case.DISEASE), user.getLimitedDisease());
+			} else {
+				return null;
+			}
 		}
-		
+
 		// whoever created the case or is assigned to it is allowed to access it
 		Predicate filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), user);
 		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
@@ -698,7 +702,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return filter;
 	}
-	
+
 	/**
 	 * Creates a filter that checks whether the case has "started" within the time frame specified by {@code fromDate} and {@code toDate}.
 	 * By default (if {@code newCaseDateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null, 
@@ -728,5 +732,5 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return newCaseFilter;
 	}
-	
+
 }

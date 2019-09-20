@@ -146,6 +146,7 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	@IgnoreForUrl
 	public Boolean getArchived() {
 		return archived;
 	}
@@ -159,7 +160,8 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		this.deleted = deleted;
 		return this;
 	}
-	
+
+	@IgnoreForUrl
 	public Boolean getDeleted() {
 		return deleted;
 	}

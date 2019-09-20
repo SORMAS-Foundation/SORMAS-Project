@@ -11,7 +11,6 @@ public class VisitCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = -4565935488912148448L;
 
 	private ContactReferenceDto contact;
-	private Boolean deleted = Boolean.FALSE;
 
 	@IgnoreForUrl
 	public ContactReferenceDto getContact() {
@@ -21,15 +20,6 @@ public class VisitCriteria extends BaseCriteria implements Serializable {
 	public VisitCriteria contact(ContactReferenceDto contact) {
 		this.contact = contact;
 		return this;
-	}
-	
-	public VisitCriteria deleted(Boolean deleted) {
-		this.deleted = deleted;
-		return this;
-	}
-	
-	public Boolean getDeleted() {
-		return deleted;
 	}
 	
 }

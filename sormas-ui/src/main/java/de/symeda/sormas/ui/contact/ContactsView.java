@@ -607,15 +607,27 @@ public class ContactsView extends AbstractView {
 		officerFilter.setValue(criteria.getContactOfficer());
 		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
-		searchField.setValue(criteria.getNameUuidCaseLike());
+		searchField.setValue(criteria.getNameUuidCaseLike());		
+		
 		ContactDateType contactDateType = criteria.getReportDateFrom() != null ? ContactDateType.REPORT_DATE 
 				: criteria.getLastContactDateFrom() != null ? ContactDateType.LAST_CONTACT_DATE : null;
 		weekAndDateFilter.getDateTypeSelector().setValue(contactDateType);
-		weekAndDateFilter.getDateFromFilter().setValue(contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateFrom()
-				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateFrom() : null);
-		weekAndDateFilter.getDateToFilter().setValue(contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateTo() 
-				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateTo() : null);
-		weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+		Date dateFrom = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateFrom()
+				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateFrom() : null;
+		Date dateTo = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateTo() 
+				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateTo() : null;
+		// Reconstruct date/epi week choice
+		if ((dateFrom != null && dateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(dateFrom)).equals(dateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(dateTo)).equals(dateTo)))
+				|| (dateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(dateFrom)).equals(dateFrom))
+				|| (dateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(dateTo)).equals(dateTo))) {
+			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
+			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(dateFrom));
+			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(dateTo));
+		} else {
+			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
+			weekAndDateFilter.getDateToFilter().setValue(dateTo);
+		}
 		
 		boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
 				.anyMatch(f -> !f.isEmpty());

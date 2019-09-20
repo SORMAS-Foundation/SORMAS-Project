@@ -76,7 +76,7 @@ public class CaseEditExportConfigurationLayout extends VerticalLayout {
 		lblDescription = new Label(I18nProperties.getString(Strings.infoEditExportConfiguration));
 		lblDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblDescription);
-		
+
 		addComponent(buildSelectionButtonLayout());
 
 		int totalCheckBoxCount = buildCheckBoxGroups();
@@ -113,11 +113,11 @@ public class CaseEditExportConfigurationLayout extends VerticalLayout {
 		Set<String> combinedProperties = new HashSet<>();
 		for (Method method : readMethods) {
 			ExportGroupType groupType = method.getAnnotation(ExportGroup.class).value();
-			
+
 			if (ExportGroupType.CASE_MANAGEMENT == groupType && !UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				continue;
 			}
-			
+
 			if (!checkBoxGroups.containsKey(groupType)) {
 				checkBoxGroups.put(groupType, new ArrayList<>());
 			}
@@ -143,8 +143,6 @@ public class CaseEditExportConfigurationLayout extends VerticalLayout {
 
 			if (!CollectionUtils.isEmpty(exportConfiguration.getProperties())) {
 				cb.setValue(exportConfiguration.getProperties().contains(property));
-			} else {
-				cb.setValue(true);
 			}
 
 			checkBoxGroups.get(groupType).add(cb);
@@ -179,7 +177,7 @@ public class CaseEditExportConfigurationLayout extends VerticalLayout {
 			if (ExportGroupType.CASE_MANAGEMENT == groupType && !UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				continue;
 			}
-			
+
 			int side = 0;
 			if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 1/3) {
 				firstColumnLayout.addComponent(groupTypeLabels.get(groupType));
@@ -205,11 +203,11 @@ public class CaseEditExportConfigurationLayout extends VerticalLayout {
 
 		return checkBoxLayout;
 	}
-	
+
 	private HorizontalLayout buildSelectionButtonLayout() {
 		HorizontalLayout selectionButtonLayout = new HorizontalLayout();
 		selectionButtonLayout.setMargin(false);
-		
+
 		Button btnSelectAll = new Button(I18nProperties.getCaption(Captions.actionSelectAll));
 		btnSelectAll.setStyleName(ValoTheme.BUTTON_LINK);
 		btnSelectAll.addClickListener(e -> {
@@ -218,7 +216,7 @@ public class CaseEditExportConfigurationLayout extends VerticalLayout {
 			}
 		});
 		selectionButtonLayout.addComponent(btnSelectAll);
-		
+
 		Button btnDeselectAll = new Button(I18nProperties.getCaption(Captions.actionDeselectAll));
 		btnDeselectAll.setStyleName(ValoTheme.BUTTON_LINK);
 		btnDeselectAll.addClickListener(e -> {
@@ -227,7 +225,7 @@ public class CaseEditExportConfigurationLayout extends VerticalLayout {
 			}
 		});
 		selectionButtonLayout.addComponent(btnDeselectAll);
-		
+
 		return selectionButtonLayout;
 	}
 
