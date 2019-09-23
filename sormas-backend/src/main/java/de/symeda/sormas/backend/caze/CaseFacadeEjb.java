@@ -816,12 +816,14 @@ public class CaseFacadeEjb implements CaseFacade {
 										cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
 						new Long(30 * 24 * 60 * 60) // 30 days
 						));
-
-
 		Predicate creationDateFilter = cb.lessThan(root.get(Case.CREATION_DATE), root2.get(Case.CREATION_DATE));
-
-		Predicate filter = userFilter;
-
+		
+		Predicate filter = cb.and(
+				caseService.createDefaultFilter(cb, root),
+				caseService.createDefaultFilter(cb, root2));
+		if (userFilter != null) {
+			filter = cb.and(filter, userFilter);
+		}
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
 		} else {

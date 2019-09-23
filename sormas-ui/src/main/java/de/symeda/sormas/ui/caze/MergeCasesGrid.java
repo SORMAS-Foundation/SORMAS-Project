@@ -120,8 +120,8 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		layout.setSpacing(false);
 		Button btnMerge = new Button(I18nProperties.getCaption(Captions.actionMerge));
 		btnMerge.setIcon(VaadinIcons.COMPRESS_SQUARE);
-//		Button btnPick = new Button(I18nProperties.getCaption(Captions.actionPick));
-//		btnPick.setIcon(VaadinIcons.CHECK);
+		Button btnPick = new Button(I18nProperties.getCaption(Captions.actionPick));
+		btnPick.setIcon(VaadinIcons.CHECK);
 		Button btnHide = null;
 		
 		TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
@@ -140,7 +140,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 							FacadeProvider.getCaseFacade().mergeCase(caze.getUuid(), caseToMergeAndDelete.getUuid());
 							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(), caze.getUuid(), UserProvider.getCurrent().getUuid());
 							
-							if (FacadeProvider.getCaseFacade().getReferenceByUuid(caseToMergeAndDelete.getUuid()) == null) {
+							if (FacadeProvider.getCaseFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
 								reload();
 								new Notification(I18nProperties.getString(Strings.messageCasesMerged), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
 							} else {
@@ -151,33 +151,33 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 			);
 		});
 		
-//		btnPick.addClickListener(e -> {
-//			VaadinUiUtil.showConfirmationPopup(
-//					I18nProperties.getString(Strings.headingConfirmChoice),
-//					new Label(I18nProperties.getString(Strings.confirmationPickCaseAndDeleteOther)),
-//					I18nProperties.getCaption(Captions.actionConfirm),
-//					I18nProperties.getCaption(Captions.actionCancel),
-//					640,
-//					confirmed -> {
-//						if (confirmed.booleanValue()) {
-//							CaseIndexDto caseToDelete = data.getParent(caze) != null ? data.getParent(caze) : data.getChildren(caze).get(0);
-//							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToDelete.getUuid(), caze.getUuid(), UserProvider.getCurrent().getUuid());
-//							
-//							if (FacadeProvider.getCaseFacade().getReferenceByUuid(caseToDelete.getUuid()) == null) {
-//								data.removeItem(data.getParent(caze) == null ? caze : data.getParent(caze));
-//								dataProvider.refreshAll();
-//								new Notification(I18nProperties.getString(Strings.messageCaseDuplicateDeleted), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
-//							} else {
-//								new Notification(I18nProperties.getString(Strings.errorCaseDuplicateDeletion), Type.ERROR_MESSAGE).show(Page.getCurrent());
-//							}
-//						}
-//					}
-//			);
-//		});
+		btnPick.addClickListener(e -> {
+			VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingConfirmChoice),
+					new Label(I18nProperties.getString(Strings.confirmationPickCaseAndDeleteOther)),
+					I18nProperties.getCaption(Captions.actionConfirm),
+					I18nProperties.getCaption(Captions.actionCancel),
+					640,
+					confirmed -> {
+						if (confirmed.booleanValue()) {
+							CaseIndexDto caseToDelete = data.getParent(caze) != null ? data.getParent(caze) : data.getChildren(caze).get(0);
+							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToDelete.getUuid(), caze.getUuid(), UserProvider.getCurrent().getUuid());
+							
+							if (FacadeProvider.getCaseFacade().isDeleted(caseToDelete.getUuid())) {
+								data.removeItem(data.getParent(caze) == null ? caze : data.getParent(caze));
+								dataProvider.refreshAll();
+								new Notification(I18nProperties.getString(Strings.messageCaseDuplicateDeleted), Type.TRAY_NOTIFICATION).show(Page.getCurrent());
+							} else {
+								new Notification(I18nProperties.getString(Strings.errorCaseDuplicateDeletion), Type.ERROR_MESSAGE).show(Page.getCurrent());
+							}
+						}
+					}
+			);
+		});
 		
 		if (data.getParent(caze) == null) {        
 			CssStyles.style(btnMerge, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
-//			CssStyles.style(btnPick, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
+			CssStyles.style(btnPick, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
 			btnHide = new Button(I18nProperties.getCaption(Captions.actionHide));
 			btnHide.setIcon(VaadinIcons.CLOSE);
 			btnHide.addClickListener(e -> {
@@ -187,11 +187,11 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 			});
 		} else {
 			CssStyles.style(btnMerge, ValoTheme.BUTTON_LINK);
-//			CssStyles.style(btnPick, ValoTheme.BUTTON_LINK);
+			CssStyles.style(btnPick, ValoTheme.BUTTON_LINK);
 		}
 	
 		layout.addComponent(btnMerge);
-//		layout.addComponent(btnPick);
+		layout.addComponent(btnPick);
 		if (btnHide != null) {
 			layout.addComponent(btnHide);
 		}
