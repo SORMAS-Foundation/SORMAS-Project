@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -8,6 +9,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -22,6 +24,7 @@ import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -65,6 +68,33 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 			return null;
 		}
 	}
+	
+	@Override
+	public Integer getProjectedRegionPopulation(String regionUuid) {
+		Float growthRate = regionService.getByUuid(regionUuid).getGrowthRate();
+		
+		if (growthRate == null || growthRate == 0) {
+			return getRegionPopulation(regionUuid);
+		}
+				
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PopulationData> cq = cb.createQuery(PopulationData.class);
+		Root<PopulationData> root = cq.from(PopulationData.class);
+		
+		PopulationDataCriteria criteria = new PopulationDataCriteria()
+				.ageGroup(null)
+				.sex(null)
+				.region(new RegionReferenceDto(regionUuid));
+		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
+		cq.where(filter);
+		
+		try {
+			PopulationData populationData = em.createQuery(cq).getSingleResult();
+			return getProjectedPopulationData(populationData, growthRate);
+		} catch (NoResultException | NonUniqueResultException e) {
+			return null;
+		}
+	}
 
 	@Override
 	public Integer getDistrictPopulation(String districtUuid) {
@@ -83,6 +113,33 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		try {
 			return em.createQuery(cq).getSingleResult();
 		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public Integer getProjectedDistrictPopulation(String districtUuid) {
+		Float growthRate = districtService.getByUuid(districtUuid).getGrowthRate();
+		
+		if (growthRate == null || growthRate == 0) {
+			return getDistrictPopulation(districtUuid);
+		}
+				
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PopulationData> cq = cb.createQuery(PopulationData.class);
+		Root<PopulationData> root = cq.from(PopulationData.class);
+		
+		PopulationDataCriteria criteria = new PopulationDataCriteria()
+				.ageGroup(null)
+				.sex(null)
+				.district(new DistrictReferenceDto(districtUuid));
+		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
+		cq.where(filter);
+
+		try {
+			PopulationData populationData = em.createQuery(cq).getSingleResult();
+			return getProjectedPopulationData(populationData, growthRate);
+		} catch (NoResultException | NonUniqueResultException e) {
 			return null;
 		}
 	}
@@ -165,6 +222,21 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		target.setCollectionDate(source.getCollectionDate());
 
 		return target;
+	}
+	
+	private Integer getProjectedPopulationData(PopulationData populationData, Float growthRate) {
+		Integer population = populationData.getPopulation();
+		
+		if (population != null && population > 0) {
+			Integer yearsBetween = DateHelper.getYearsBetween(populationData.getCollectionDate(), new Date());
+			int calculatedYears = 0;
+			while (calculatedYears < yearsBetween) {
+				population += (int) (population / 100 * growthRate);
+				calculatedYears++;
+			}
+		}
+		
+		return population;
 	}
 
 	@LocalBean
