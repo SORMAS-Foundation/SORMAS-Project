@@ -401,6 +401,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, District> districtJoin = caseRoot.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Community> communityJoin = caseRoot.join(Case.COMMUNITY, JoinType.LEFT);
 		Join<Case, Facility> facilityJoin = caseRoot.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Case, PointOfEntry> pointOfEntryJoin = caseRoot.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 
 		cq.multiselect(caseRoot.get(Case.ID), personJoin.get(Person.ID), personAddressJoin.get(Location.ID), epiDataJoin.get(EpiData.ID), symptomsJoin.get(Symptoms.ID),
 				hospitalizationJoin.get(Hospitalization.ID), districtJoin.get(District.ID), healthConditionsJoin.get(HealthConditions.ID), 
@@ -410,11 +411,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				personJoin.get(Person.BIRTHDATE_DD), personJoin.get(Person.BIRTHDATE_MM), personJoin.get(Person.BIRTHDATE_YYYY),
 				caseRoot.get(Case.REPORT_DATE), regionJoin.get(Region.NAME), districtJoin.get(District.NAME),
 				communityJoin.get(Community.NAME), facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.UUID),
-				caseRoot.get(Case.HEALTH_FACILITY_DETAILS), caseRoot.get(Case.CASE_CLASSIFICATION),
-				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
-				hospitalizationJoin.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
-				hospitalizationJoin.get(Hospitalization.ADMISSION_DATE),
-				hospitalizationJoin.get(Hospitalization.DISCHARGE_DATE),
+				caseRoot.get(Case.HEALTH_FACILITY_DETAILS), pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.UUID),
+				caseRoot.get(Case.POINT_OF_ENTRY_DETAILS), caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), 
+				caseRoot.get(Case.OUTCOME), hospitalizationJoin.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
+				hospitalizationJoin.get(Hospitalization.ADMISSION_DATE), hospitalizationJoin.get(Hospitalization.DISCHARGE_DATE),
 				hospitalizationJoin.get(Hospitalization.LEFT_AGAINST_ADVICE), personJoin.get(Person.PRESENT_CONDITION),
 				personJoin.get(Person.DEATH_DATE), personJoin.get(Person.BURIAL_DATE), personJoin.get(Person.BURIAL_CONDUCTOR),
 				personJoin.get(Person.BURIAL_PLACE_DESCRIPTION), personJoin.get(Person.PHONE), personJoin.get(Person.PHONE_OWNER),
@@ -566,7 +566,11 @@ public class CaseFacadeEjb implements CaseFacade {
 					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId())).ifPresent(firstPreviousHospitalization -> exportDto.setInitialDetectionPlace(FacilityHelper.buildFacilityString(firstPreviousHospitalization.getHealthFacility().getUuid(), 
 							firstPreviousHospitalization.getHealthFacility().getName(), firstPreviousHospitalization.getHealthFacilityDetails())));
 					if (StringUtils.isEmpty(exportDto.getInitialDetectionPlace())) {
-						exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
+						if (!StringUtils.isEmpty(exportDto.getHealthFacility())) {
+							exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
+						} else {
+							exportDto.setInitialDetectionPlace(exportDto.getPointOfEntry());
+						}
 					}
 				}
 				if (sourceCaseClassifications != null) {
@@ -624,7 +628,7 @@ public class CaseFacadeEjb implements CaseFacade {
 							}
 						}
 					});
-					
+
 				}
 
 			}

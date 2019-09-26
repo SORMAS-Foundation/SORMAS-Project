@@ -33,6 +33,7 @@ import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportTarget;
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.BurialConductor;
@@ -47,6 +48,15 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
+/**
+ * A DTO class that contains the properties that are exported during a detailed case export. These
+ * properties are also those that users can select when creating a custom export configuration.
+ * 
+ * PLEASE NOTE: When the @ExportProperty value of one of these properties changes, it's necessary
+ * to replace all occurrences of the former value in all export configurations in the database.
+ * Otherwise, existing export configurations will no longer export the property. Also, it is
+ * recommended to remove properties that are removed from this file from existing export configurations.
+ */
 public class CaseExportDto implements Serializable {
 
 	private static final long serialVersionUID = 8581579464816945555L;
@@ -89,6 +99,7 @@ public class CaseExportDto implements Serializable {
 	private String district;
 	private String community;
 	private String healthFacility;
+	private String pointOfEntry;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private CaseClassification maxSourceCaseClassification;
@@ -137,8 +148,8 @@ public class CaseExportDto implements Serializable {
 			String uuid, String epidNumber, Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex,
 			Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, 
 			Date reportDate, String region, String district, String community, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, 
-			CaseClassification caseClassification, InvestigationStatus investigationStatus, CaseOutcome outcome,
-			YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, 
+			String pointOfEntry, String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus, 
+			CaseOutcome outcome, YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, 
 			PresentCondition presentCondition,  Date deathDate, Date burialDate, BurialConductor burialConductor,String burialPlaceDescription, 
 			String phone, String phoneOwner, EducationType educationType, String educationDetails,
 			OccupationType occupationType, String occupationDetails, String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
@@ -170,6 +181,7 @@ public class CaseExportDto implements Serializable {
 		this.investigationStatus = investigationStatus;
 		this.outcome = outcome;
 		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
+		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry, pointOfEntryDetails);
 		this.admittedToHealthFacility = admittedToHealthFacility;
 		this.admissionDate = admissionDate;
 		this.dischargeDate = dischargeDate;
@@ -347,8 +359,16 @@ public class CaseExportDto implements Serializable {
 	public String getHealthFacility() {
 		return healthFacility;
 	}
-	
+
 	@Order(25)
+	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
+	@ExportProperty(CaseDataDto.POINT_OF_ENTRY)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getPointOfEntry() {
+		return pointOfEntry;
+	}
+	
+	@Order(26)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(INITIAL_DETECTION_PLACE)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
@@ -800,6 +820,10 @@ public class CaseExportDto implements Serializable {
 
 	public void setHealthFacility(String healthFacility) {
 		this.healthFacility = healthFacility;
+	}
+	
+	public void setPointOfEntry(String pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
 	}
 	
 	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
