@@ -44,8 +44,6 @@ public interface OutbreakFacade {
 
 	boolean hasOutbreak(DistrictReferenceDto district, Disease disease);
 
-	boolean hasOutbreakAtDate(DistrictReferenceDto district, Disease disease, Date date);
-	
 	OutbreakDto saveOutbreak(OutbreakDto outbreakDto);
 
 	void deleteOutbreak(OutbreakDto outbreakDto);

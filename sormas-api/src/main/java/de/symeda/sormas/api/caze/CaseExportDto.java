@@ -69,6 +69,7 @@ public class CaseExportDto implements Serializable {
 	private String country;
 	private long id;
 	private long personId;
+	private long personAddressId;
 	private long epiDataId;
 	private long symptomsId;
 	private long hospitalizationId;
@@ -132,7 +133,7 @@ public class CaseExportDto implements Serializable {
 	private PathogenTestResultType sampleResult3;
 	private String otherSamples = "";
 
-	public CaseExportDto(long id, long personId, long epiDataId, long symptomsId, long hospitalizationId, long districtId, long healthConditionsId,
+	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId, long hospitalizationId, long districtId, long healthConditionsId,
 			String uuid, String epidNumber, Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex,
 			Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, 
 			Date reportDate, String region, String district, String community, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, 
@@ -146,6 +147,7 @@ public class CaseExportDto implements Serializable {
 			Vaccination vaccination, String vaccinationDoses, Date vaccinationDate, VaccinationInfoSource vaccinationInfoSource) {
 		this.id = id;
 		this.personId = personId;
+		this.personAddressId = personAddressId;
 		this.epiDataId = epiDataId;
 		this.symptomsId = symptomsId;
 		this.hospitalizationId = hospitalizationId;
@@ -212,6 +214,10 @@ public class CaseExportDto implements Serializable {
 
 	public long getPersonId() {
 		return personId;
+	}
+	
+	public long getPersonAddressId() {
+		return personAddressId;
 	}
 
 	public long getEpiDataId() {
@@ -718,6 +724,10 @@ public class CaseExportDto implements Serializable {
 	
 	public void setPersonId(long personId) {
 		this.personId = personId;
+	}
+	
+	public void setPersonAddressId(long personAddressId) {
+		this.personAddressId = personAddressId;
 	}
 	
 	public void setEpiDataId(long epiDataId) {

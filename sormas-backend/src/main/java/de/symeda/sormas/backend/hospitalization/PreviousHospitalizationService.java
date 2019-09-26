@@ -17,18 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.hospitalization;
 
-import java.util.Date;
+import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
@@ -49,18 +50,25 @@ public class PreviousHospitalizationService extends AbstractAdoService<PreviousH
 		throw new UnsupportedOperationException();
 	}
 
-	public PreviousHospitalization getInitialHospitalization(long hospitalizationId) {
+	public List<Object[]> getFirstPreviousHospitalizations(List<Long> caseIds) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PreviousHospitalization> cq = cb.createQuery(PreviousHospitalization.class);
-		Root<PreviousHospitalization> prevHosp = cq.from(getElementClass());
-		cq.where(cb.equal(prevHosp.get(PreviousHospitalization.HOSPITALIZATION).get(Hospitalization.ID), hospitalizationId));
-		cq.orderBy(cb.asc(prevHosp.get(PreviousHospitalization.ADMISSION_DATE)));
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<PreviousHospitalization> prevHospRoot = cq.from(getElementClass());
+		Join<PreviousHospitalization, Hospitalization> hospitalizationJoin = prevHospRoot.join(PreviousHospitalization.HOSPITALIZATION, JoinType.LEFT);
+		Root<Case> caseRoot = cq.from(Case.class);
+		Join<Case, Hospitalization> caseHospitalizationJoin = caseRoot.join(Case.HOSPITALIZATION, JoinType.LEFT);
 		
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		cq.multiselect(
+				caseRoot.get(Case.ID),
+				prevHospRoot.get(PreviousHospitalization.ID));
+		
+		Expression<String> caseIdsExpression = caseRoot.get(Case.ID);
+		cq.where(cb.and(
+				caseIdsExpression.in(caseIds),
+				cb.equal(hospitalizationJoin.get(Hospitalization.ID), caseHospitalizationJoin.get(Hospitalization.ID))));
+		cq.orderBy(cb.asc(caseRoot.get(Case.ID)), cb.asc(prevHospRoot.get(PreviousHospitalization.ADMISSION_DATE)));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 }
