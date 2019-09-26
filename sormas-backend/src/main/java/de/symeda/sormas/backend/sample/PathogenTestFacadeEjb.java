@@ -21,7 +21,6 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -29,9 +28,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -53,7 +49,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -160,15 +155,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		District district = districtService.getByReferenceDto(districtRef);
 
 		return pathogenTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
-	}
-
-	@Override
-	public Map<PathogenTestResultType, Long> getTestResultCountByResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-
-		return pathogenTestService.getTestResultCountByResultType(region, district, disease, from, to, user);
 	}
 	
 	@Override

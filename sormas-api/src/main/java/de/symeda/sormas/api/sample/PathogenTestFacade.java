@@ -19,7 +19,6 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -44,8 +43,6 @@ public interface PathogenTestFacade {
 	List<PathogenTestDto> getByUuids(List<String> uuids);
 	
 	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
-	
-	Map<PathogenTestResultType, Long> getTestResultCountByResultType(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
 	void deletePathogenTest(String pathogenTestUuid, String userUuid);
 	

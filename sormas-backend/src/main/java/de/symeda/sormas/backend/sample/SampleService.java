@@ -20,6 +20,8 @@ package de.symeda.sormas.backend.sample;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -35,6 +37,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -250,6 +253,40 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		cq.select(sample.get(Sample.UUID));
 
 		return em.createQuery(cq).getResultList();
+	}
+	
+	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(Region region, District district, Disease disease, Date from, Date to, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Sample> sampleRoot = cq.from(Sample.class);
+		Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
+		cq.multiselect(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), cb.countDistinct(sampleRoot));
+		cq.groupBy(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT));
+		
+		Predicate filter = createDefaultFilter(cb, sampleRoot);
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, sampleRoot, user));
+		
+		if (from != null || to != null)
+			filter = and(cb, filter, cb.between(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT_CHANGE_DATE), from, to));
+		
+		if (region != null)
+			filter = and(cb, filter, cb.equal(caseJoin.get(Case.REGION), region));
+
+		if (district != null)
+			filter = and(cb, filter, cb.equal(caseJoin.get(Case.DISTRICT), district));
+
+		if (disease != null)
+			filter = and(cb, filter, cb.equal(caseJoin.get(Case.DISEASE), disease));
+		
+		if (filter != null)
+			cq.where(filter);
+		
+		List<Object[]> results = em.createQuery(cq).getResultList();
+		
+		Map<PathogenTestResultType, Long> testResults = results.stream().collect(Collectors.toMap(e -> (PathogenTestResultType) e[0], e -> (Long) e[1]));
+		
+		return testResults;
 	}
 
 	@Override

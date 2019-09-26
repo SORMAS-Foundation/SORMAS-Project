@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -521,6 +523,15 @@ public class SampleFacadeEjb implements SampleFacade {
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sample.getAssociatedCase()), sample.getAssociatedCase());
 	}
 
+	@Override
+	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType (RegionReferenceDto regionReference, DistrictReferenceDto districtReference, Disease disease, Date from, Date to, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionReference);
+		District district = districtService.getByReferenceDto(districtReference);
+
+		return sampleService.getNewTestResultCountByResultType(region, district, disease, from, to, user);
+	}
+
 	public Sample fromDto(@NotNull SampleDto source) {
 
 		Sample target = sampleService.getByUuid(source.getUuid());
@@ -619,6 +630,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+		// Change pathogenTestResultChangeDate if the pathogen test result has changed
+		if (existingSample != null && existingSample.getPathogenTestResult() != null && existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
+			newSample.setPathogenTestResultChangeDate(new Date());
+		}
+		
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
 		
 		// Send an email to the lab user when a sample has been shipped to his lab
