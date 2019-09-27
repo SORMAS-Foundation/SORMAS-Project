@@ -228,6 +228,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import static de.symeda.sormas.backend.util.DtoHelper.mergeDto;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "CaseFacade")
@@ -2756,7 +2757,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void mergeCase(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {
 		// 1 Merge Dtos
 		// 1.1 Case
-		CaseDataDto mergedCase = DtoHelper.mergeDto(leadCaseData, otherCaseData, cloning);
+		CaseDataDto mergedCase = mergeDto(leadCaseData, otherCaseData, cloning);
 		if (cloning) {
 			saveCaseSimple(mergedCase);
 		} else {
@@ -2766,7 +2767,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// 1.2 Person
 		PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 		PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-		PersonDto mergedPerson = DtoHelper.mergeDto(leadPerson, otherPerson, cloning);
+		PersonDto mergedPerson = mergeDto(leadPerson, otherPerson, cloning);
 		if (cloning) {
 			personFacade.savePersonSimple(mergedPerson);
 		} else {
@@ -2782,7 +2783,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				ContactDto newContact = ContactDto.build(leadCase.toReference());
 				contactFacade
-						.saveContactSimple(DtoHelper.mergeDto(newContact, ContactFacadeEjb.toDto(contact), cloning));
+						.saveContactSimple(mergeDto(newContact, ContactFacadeEjb.toDto(contact), cloning));
 
 			} else {
 				contact.setCaze(leadCase);
@@ -2796,12 +2797,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				SampleDto newSample = SampleDto.buildSample(sample.getReportingUser().toReference(),
 						leadCase.toReference());
-				sampleFacade.saveSampleSimple(DtoHelper.mergeDto(newSample, SampleFacadeEjb.toDto(sample), cloning));
+				sampleFacade.saveSampleSimple(mergeDto(newSample, SampleFacadeEjb.toDto(sample), cloning));
 
-				//2.2.1 Pathogen Tests
+				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getSampleTests()) {
-					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
-					sampleTestFacade.savePathogenTest(DtoHelper.mergeDto(newPathogenTest, sampleTestFacade.toDto(pathogenTest), cloning));
+					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(),
+							pathogenTest.getLabUser().toReference());
+					sampleTestFacade.savePathogenTest(
+							mergeDto(newPathogenTest, sampleTestFacade.toDto(pathogenTest), cloning));
 
 				}
 			} else {
@@ -2828,7 +2831,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				TreatmentDto newTreatment = TreatmentDto.buildTreatment(leadCaseTherapyReference);
 				treatmentFacade
-						.saveTreatment(DtoHelper.mergeDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning));
+						.saveTreatment(mergeDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning));
 			} else {
 				treatment.setTherapy(leadCase.getTherapy());
 				treatmentService.ensurePersisted(treatment);
@@ -2842,7 +2845,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				PrescriptionDto newPrescription = PrescriptionDto.buildPrescription(leadCaseTherapyReference);
 				prescriptionFacade.savePrescription(
-						DtoHelper.mergeDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning));
+						mergeDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning));
 			} else {
 				prescription.setTherapy(leadCase.getTherapy());
 				prescriptionService.ensurePersisted(prescription);
@@ -2858,7 +2861,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.buildClinicalVisit(
 						leadCaseData.getClinicalCourse().toReference(), SymptomsDto.build(), leadCase.getDisease());
 				clinicalVisitFacade.saveClinicalVisitSimple(
-						DtoHelper.mergeDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning),
+						mergeDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning),
 						leadCase.getUuid());
 			} else {
 				clinicalVisit.setClinicalCourse(leadCase.getClinicalCourse());
