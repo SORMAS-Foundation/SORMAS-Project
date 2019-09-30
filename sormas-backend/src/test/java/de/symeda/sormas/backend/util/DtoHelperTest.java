@@ -39,7 +39,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			Float reportLatLonAccuracy = (float) 4.567;
 			otherDto.setReportLatLonAccuracy(reportLatLonAccuracy);
 
-			VisitDto merged = DtoHelper.mergeDto(leadDto, otherDto, false);
+			VisitDto merged = DtoHelper.mergeDto(leadDto, otherDto, false, false);
 
 			// Check no values
 			assertNull(merged.getDisease());
@@ -78,7 +78,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			leadCaseDto.setSymptoms(leadSymptomsDto);
 			otherCaseDto.setSymptoms(otherSymptomsDto);
 
-			CaseDataDto merged = DtoHelper.mergeDto(leadCaseDto, otherCaseDto, false);
+			CaseDataDto merged = DtoHelper.mergeDto(leadCaseDto, otherCaseDto, false, false);
 
 			// Check no values
 			assertNull(merged.getSymptoms().getBackache());
@@ -119,20 +119,20 @@ public class DtoHelperTest extends AbstractBeanTest {
 			otherList2.add(subDto2);
 
 			// Check no values
-			HospitalizationDto merged = DtoHelper.mergeDto(leadDto, otherDto, false);
+			HospitalizationDto merged = DtoHelper.mergeDto(leadDto, otherDto, false, false);
 			assertTrue(merged.getPreviousHospitalizations().isEmpty());
 
 			// Check 'lead and other have different values'
 			leadDto.setPreviousHospitalizations(leadList1);
 			otherDto.setPreviousHospitalizations(otherList1);
-			merged = DtoHelper.mergeDto(leadDto, otherDto, false);
+			merged = DtoHelper.mergeDto(leadDto, otherDto, false, false);
 			assertEquals(leadList1.size(), merged.getPreviousHospitalizations().size());
 			assertEquals(leadList1.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
 
 			// Check 'lead has value, other has not'
 			leadDto.setPreviousHospitalizations(leadList2);
 			otherDto.setPreviousHospitalizations(null);
-			merged = DtoHelper.mergeDto(leadDto, otherDto, false);
+			merged = DtoHelper.mergeDto(leadDto, otherDto, false, false);
 			assertEquals(leadList2.size(), merged.getPreviousHospitalizations().size());
 			assertEquals(leadList2.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
 			assertEquals(leadList2.get(1).getUuid(), merged.getPreviousHospitalizations().get(1).getUuid());
@@ -140,7 +140,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// Check 'lead has no value, other has'
 			leadDto.setPreviousHospitalizations(null);
 			otherDto.setPreviousHospitalizations(otherList2);
-			merged = DtoHelper.mergeDto(leadDto, otherDto, false);
+			merged = DtoHelper.mergeDto(leadDto, otherDto, false, false);
 			assertEquals(otherList2.size(), merged.getPreviousHospitalizations().size());
 			assertEquals(otherList2.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
 			assertEquals(otherList2.get(1).getUuid(), merged.getPreviousHospitalizations().get(1).getUuid());

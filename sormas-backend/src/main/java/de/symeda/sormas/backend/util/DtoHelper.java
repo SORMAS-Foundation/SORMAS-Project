@@ -21,13 +21,12 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-
-import com.auth0.jwt.internal.com.fasterxml.jackson.databind.JsonMappingException.Reference;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -52,7 +51,7 @@ public final class DtoHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends EntityDto> T mergeDto(T lead, T other, boolean cloning) {
+	public static <T extends EntityDto> T mergeDto(T lead, T other, boolean cloning, boolean overrideEntityUuids) {
 
 		try {
 			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class)
@@ -74,15 +73,30 @@ public final class DtoHelper {
 						|| cloning && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 
 					if (List.class.isAssignableFrom(pd.getPropertyType())) {
-
+						
 						for (EntityDto entry : (List<EntityDto>) otherProperty) {
-							entry.setUuid(UUID.randomUUID().toString());
-							pd.getWriteMethod().invoke(lead, otherProperty);
+							entry.setUuid(DataHelper.createUuid());
+							entry.setCreationDate(null);
 						}
+						
+						pd.getWriteMethod().invoke(lead, otherProperty);
+
+						if (cloning) {
+							// Call merge on the new entry to override UUIDs of EntityDtos
+							Object newLeadProperty = pd.getReadMethod().invoke(lead);
+							for (EntityDto entry : (List<EntityDto>) newLeadProperty) {
+								mergeDto(entry, entry, true, true);
+							}
+						}
+						
 					} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 
 						pd.getWriteMethod().invoke(lead,
-								mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning));
+								mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
+
+						if (overrideEntityUuids) {
+							((EntityDto) leadProperty).setUuid(DataHelper.createUuid());
+						}
 
 					} else {
 
@@ -92,8 +106,11 @@ public final class DtoHelper {
 				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 
 					pd.getWriteMethod().invoke(lead,
-							mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning));
+							mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
 
+					if (overrideEntityUuids) {
+						((EntityDto) leadProperty).setUuid(DataHelper.createUuid());
+					}
 				}
 			}
 		} catch (IntrospectionException | InvocationTargetException |

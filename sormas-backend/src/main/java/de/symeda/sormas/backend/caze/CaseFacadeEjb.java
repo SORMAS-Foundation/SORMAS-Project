@@ -2757,7 +2757,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void mergeCase(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {
 		// 1 Merge Dtos
 		// 1.1 Case
-		CaseDataDto mergedCase = mergeDto(leadCaseData, otherCaseData, cloning);
+		CaseDataDto mergedCase = mergeDto(leadCaseData, otherCaseData, cloning, false);
 		if (cloning) {
 			saveCaseSimple(mergedCase);
 		} else {
@@ -2767,7 +2767,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// 1.2 Person
 		PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 		PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-		PersonDto mergedPerson = mergeDto(leadPerson, otherPerson, cloning);
+		PersonDto mergedPerson = mergeDto(leadPerson, otherPerson, cloning, false);
 		if (cloning) {
 			personFacade.savePersonSimple(mergedPerson);
 		} else {
@@ -2783,7 +2783,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				ContactDto newContact = ContactDto.build(leadCase.toReference());
 				contactFacade
-						.saveContactSimple(mergeDto(newContact, ContactFacadeEjb.toDto(contact), cloning));
+						.saveContactSimple(mergeDto(newContact, ContactFacadeEjb.toDto(contact), cloning, false));
 
 			} else {
 				contact.setCaze(leadCase);
@@ -2797,14 +2797,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				SampleDto newSample = SampleDto.buildSample(sample.getReportingUser().toReference(),
 						leadCase.toReference());
-				sampleFacade.saveSampleSimple(mergeDto(newSample, SampleFacadeEjb.toDto(sample), cloning));
+				sampleFacade.saveSampleSimple(mergeDto(newSample, SampleFacadeEjb.toDto(sample), cloning, false));
 
 				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getSampleTests()) {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(),
 							pathogenTest.getLabUser().toReference());
 					sampleTestFacade.savePathogenTest(
-							mergeDto(newPathogenTest, sampleTestFacade.toDto(pathogenTest), cloning));
+							mergeDto(newPathogenTest, sampleTestFacade.toDto(pathogenTest), cloning, false));
 
 				}
 			} else {
@@ -2831,7 +2831,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				TreatmentDto newTreatment = TreatmentDto.buildTreatment(leadCaseTherapyReference);
 				treatmentFacade
-						.saveTreatment(mergeDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning));
+						.saveTreatment(mergeDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning, false));
 			} else {
 				treatment.setTherapy(leadCase.getTherapy());
 				treatmentService.ensurePersisted(treatment);
@@ -2845,7 +2845,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				PrescriptionDto newPrescription = PrescriptionDto.buildPrescription(leadCaseTherapyReference);
 				prescriptionFacade.savePrescription(
-						mergeDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning));
+						mergeDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning, false));
 			} else {
 				prescription.setTherapy(leadCase.getTherapy());
 				prescriptionService.ensurePersisted(prescription);
@@ -2861,7 +2861,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.buildClinicalVisit(
 						leadCaseData.getClinicalCourse().toReference(), SymptomsDto.build(), leadCase.getDisease());
 				clinicalVisitFacade.saveClinicalVisitSimple(
-						mergeDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning),
+						mergeDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning, false),
 						leadCase.getUuid());
 			} else {
 				clinicalVisit.setClinicalCourse(leadCase.getClinicalCourse());

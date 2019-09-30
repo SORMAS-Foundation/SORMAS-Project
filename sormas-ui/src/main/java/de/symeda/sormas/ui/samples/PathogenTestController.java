@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -33,7 +34,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -154,6 +154,7 @@ public class PathogenTestController {
 						clonedCase.setClassificationUser(null);
 						clonedCase.setDisease(disease);
 						clonedCase.setEpidNumber(null);
+						clonedCase.setReportDate(new Date());
 						caseFacade.saveCase(clonedCase);
 					}
 				});
