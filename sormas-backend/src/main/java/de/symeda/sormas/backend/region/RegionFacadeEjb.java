@@ -146,8 +146,8 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 	
 	@Override
-	public List<String> getAllUuids() {
-		return regionService.getAllUuids(null);
+	public List<Integer> getAllIds() {
+		return regionService.getAllIds(null);
 	}
 	
 	@Override
@@ -171,6 +171,18 @@ public class RegionFacadeEjb implements RegionFacade {
 	@Override
 	public RegionReferenceDto getRegionReferenceById(int id) {
 		return toReferenceDto(regionService.getById(id));
+	}
+	
+	@Override
+	public List<String> getNamesByIds(List<Long> regionIds) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Region> root = cq.from(Region.class);
+		
+		Predicate filter = root.get(Region.ID).in(regionIds);
+		cq.where(filter);
+		cq.select(root.get(Region.NAME));
+		return em.createQuery(cq).getResultList();
 	}
 	
 	public static RegionReferenceDto toReferenceDto(Region entity) {

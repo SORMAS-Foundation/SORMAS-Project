@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.common;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -171,6 +172,23 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		}
 		
 		cq.select(from.get(AbstractDomainObject.UUID));
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<Integer> getAllIds(User user) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		if (user != null) {
+			Predicate filter = createUserFilter(cb, cq, from, user);
+			if (filter != null) {
+				cq.where(filter);
+			}
+		}
+		
+		cq.select(from.get(AbstractDomainObject.ID));
 		return em.createQuery(cq).getResultList();
 	}
 	
@@ -360,4 +378,23 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 //		return JpaHelper.simpleSingleQuery(em, elementClass, propertyName, propertyValue);
 		return null;
 	}
+
+	public <T> StringBuilder appendInFilterValues(StringBuilder filterBuilder, List<Object> filterBuilderParameters,
+			List<T> values, Function<T, ?> valueMapper) {
+		filterBuilder.append("(");
+		boolean first = true;
+		for (T value : values) {
+			if (first) {
+				filterBuilder.append("?");
+				first = false;
+			} else {
+				filterBuilder.append(",?");
+			}
+			filterBuilder.append(filterBuilderParameters.size() + 1);
+			filterBuilderParameters.add(valueMapper.apply(value));
+		}
+		filterBuilder.append(")");
+		return filterBuilder;
+	}
+
 }

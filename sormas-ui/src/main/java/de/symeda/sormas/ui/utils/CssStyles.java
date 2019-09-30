@@ -159,10 +159,8 @@ public final class CssStyles {
 	public static final String SVG_STROKE_MINOR = "svg-stroke-minor";
 	public static final String SVG_STROKE_BACKGROUND = "svg-stroke-background";
 
-	/**
-	 * Stellt sicher, dass CM-Checkboxen dieselbe Höhe wie Textfelder etc. haben
-	 */
 	public static final String FORCE_CAPTION = "force-caption";
+	public static final String FORCE_CAPTION_CHECKBOX = "force-caption-checkbox";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	

@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.statistics;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
@@ -41,7 +42,10 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -58,6 +62,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -88,9 +93,17 @@ public class StatisticsView extends AbstractStatisticsView {
 
 	private VerticalLayout filtersLayout;
 	private VerticalLayout resultsLayout;
-	private CheckBox zeroValues;
+	private CheckBox cbShowZeroValues;
+	private OptionGroup ogCaseCountOrIncidence;
+	private TextField tfIncidenceDivisor;
 	private Button exportButton;
 	private final Label emptyResultLabel;
+	private Label populationDataMissingLabel;
+	private boolean showCaseIncidence;
+	private boolean hasMissingPopulationData;
+	private boolean caseIncidencePossible;
+	private String missingPopulationDataNames;
+	private int incidenceDivisor = 100000;
 	private StatisticsCaseGrid statisticsCaseGrid;
 	private StatisticsVisualizationComponent visualizationComponent;
 	private List<StatisticsFilterComponent> filterComponents = new ArrayList<>();
@@ -229,9 +242,38 @@ public class StatisticsView extends AbstractStatisticsView {
 		optionsLayout.setSpacing(true);
 		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
 		{
-			zeroValues = new CheckBox(I18nProperties.getCaption(Captions.statisticsShowZeroValues));
-			zeroValues.setValue(false);
-			optionsLayout.addComponent(zeroValues);
+			ogCaseCountOrIncidence = new OptionGroup(I18nProperties.getCaption(Captions.statisticsDataDisplayed), Arrays.asList(CaseCountOrIncidence.values()));
+			ogCaseCountOrIncidence.setValue(CaseCountOrIncidence.CASE_COUNT);
+			ogCaseCountOrIncidence.setItemCaption(CaseCountOrIncidence.CASE_COUNT, I18nProperties.getCaption(Captions.statisticsCaseCount));
+			ogCaseCountOrIncidence.setItemCaption(CaseCountOrIncidence.CASE_INCIDENCE, I18nProperties.getCaption(Captions.statisticsCaseIncidence));
+			ogCaseCountOrIncidence.addValueChangeListener(e -> {
+				showCaseIncidence = e.getProperty().getValue() == CaseCountOrIncidence.CASE_INCIDENCE;
+				tfIncidenceDivisor.setVisible(showCaseIncidence);
+			});
+			CssStyles.style(ogCaseCountOrIncidence, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.SOFT_REQUIRED);
+			ogCaseCountOrIncidence.setNullSelectionAllowed(false);
+			optionsLayout.addComponent(ogCaseCountOrIncidence);
+
+			tfIncidenceDivisor = new TextField(I18nProperties.getCaption(Captions.statisticsIncidenceDivisor));
+			tfIncidenceDivisor.setValue("100000");
+			tfIncidenceDivisor.addValueChangeListener(e -> {
+				try {
+					// Store value in a temporary variable to trigger possible exception
+					int newDivisor = Integer.valueOf((String) e.getProperty().getValue());
+					incidenceDivisor = newDivisor;
+				} catch (NumberFormatException ex) {
+					tfIncidenceDivisor.setValue(String.valueOf(incidenceDivisor));
+					new Notification(null, I18nProperties.getValidationError(Validations.statisticsIncidenceOnlyNumbersAllowed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				}
+			});
+			optionsLayout.addComponent(tfIncidenceDivisor);
+			tfIncidenceDivisor.setVisible(false);
+
+			cbShowZeroValues = new CheckBox(I18nProperties.getCaption(Captions.statisticsShowZeroValues));
+			cbShowZeroValues.setValue(false);
+			CssStyles.style(cbShowZeroValues, CssStyles.FORCE_CAPTION_CHECKBOX);
+			optionsLayout.addComponent(cbShowZeroValues);
+			optionsLayout.setExpandRatio(cbShowZeroValues, 1);
 		}
 		statisticsLayout.addComponent(optionsLayout);
 	}
@@ -245,11 +287,19 @@ public class StatisticsView extends AbstractStatisticsView {
 			for (StatisticsFilterComponent filterComponent : filterComponents) {
 				if (filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.REGION_DISTRICT
 						&& (filterComponent.getSelectedAttribute() == null
-								|| filterComponent.getSelectedAttribute().getSubAttributes().length > 0
-										&& filterComponent.getSelectedSubAttribute() == null)) {
+						|| filterComponent.getSelectedAttribute().getSubAttributes().length > 0
+						&& filterComponent.getSelectedSubAttribute() == null)) {
 					errorNotification = new Notification(I18nProperties.getString(Strings.messageSpecifyFilterAttributes), Type.WARNING_MESSAGE);
 					break;
 				}
+			}
+
+			if (showCaseIncidence && hasPopulationFilterUnknownValue()) {
+				errorNotification = new Notification(I18nProperties.getString(Strings.messageUnknownFilterAttributeForPopulationData), Type.ERROR_MESSAGE);
+			}
+
+			if (showCaseIncidence && visualizationComponent.hasAgeGroupGroupingWithoutPopulationData() || hasUnsupportedPopulationAgeGroupFilter()) {
+				errorNotification = new Notification(I18nProperties.getString(Strings.messageCaseIncidenceUnsupportedAgeGroup), Type.ERROR_MESSAGE);
 			}
 
 			if (errorNotification == null && visualizationComponent.getRowsAttribute() != null
@@ -290,6 +340,17 @@ public class StatisticsView extends AbstractStatisticsView {
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
 			return;
+		}		
+
+		if (showCaseIncidence && hasMissingPopulationData) {
+			if (!caseIncidencePossible) {
+				populationDataMissingLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoCaseIncidenceNotPossible), missingPopulationDataNames), ContentMode.HTML);
+				resultsLayout.addComponent(populationDataMissingLabel);
+			} else {
+				populationDataMissingLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoCaseIncidenceMissingPopulationData), missingPopulationDataNames), ContentMode.HTML);
+			}
+			populationDataMissingLabel.setWidth(100, Unit.PERCENTAGE);
+			CssStyles.style(populationDataMissingLabel, CssStyles.VSPACE_TOP_4);
 		}
 
 		exportButton = new Button(I18nProperties.getCaption(Captions.export));
@@ -301,9 +362,14 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		statisticsCaseGrid = new StatisticsCaseGrid(visualizationComponent.getRowsAttribute(),
 				visualizationComponent.getRowsSubAttribute(), visualizationComponent.getColumnsAttribute(),
-				visualizationComponent.getColumnsSubAttribute(), zeroValues.getValue(), resultData, caseCriteria);
+				visualizationComponent.getColumnsSubAttribute(), cbShowZeroValues.getValue(), 
+				showCaseIncidence && caseIncidencePossible, incidenceDivisor, resultData, caseCriteria);
 		resultsLayout.addComponent(statisticsCaseGrid);
 		resultsLayout.setExpandRatio(statisticsCaseGrid, 1);
+
+		if (showCaseIncidence && hasMissingPopulationData && caseIncidencePossible) {
+			resultsLayout.addComponent(populationDataMissingLabel);
+		}
 
 		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
 				statisticsCaseGrid.getContainerDataSource(), statisticsCaseGrid.getColumns(), "sormas_statistics",
@@ -389,7 +455,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			// every possible value of the chosen attribute unless a filter has been
 			// set for the same attribute; in this case, only values that are part of the
 			// filter are chosen
-			if (zeroValues.getValue() == true && xAxisAttribute != null) {
+			if (cbShowZeroValues.getValue() == true && xAxisAttribute != null) {
 				List<Object> values = StatisticsHelper.getAllAttributeValues(xAxisAttribute, xAxisSubAttribute);
 				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria
 						.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
@@ -409,22 +475,22 @@ public class StatisticsView extends AbstractStatisticsView {
 				});
 
 				if (appendUnknownXAxisCaption) {
-					hcjs.append("'").append(getEscapedFragment(StatisticsHelper.UNKNOWN)).append("'");
+					hcjs.append("'").append(getEscapedFragment(StatisticsHelper.VALUE_UNKNOWN)).append("'");
 				}
 			} else {
 				hcjs.append("'").append(getEscapedFragment(StatisticsHelper.TOTAL)).append("'");
 			}
 			int numberOfCategories = xAxisIdIndex >= 1
 					? appendUnknownXAxisCaption ? xAxisCaptions.size() + 1 : xAxisCaptions.size()
-					: 1;
-			hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
+							: 1;
+					hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
 
-			hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
+					hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
 					.append("' },").append("allowDecimals: false, softMax: 10, " + "stackLabels: { enabled: true, "
 							+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
 
-			hcjs.append(
-					"tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.total) + ": {point.stackTotal}'},");
+					hcjs.append(
+							"tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.total) + ": {point.stackTotal}'},");
 		}
 
 		hcjs.append("legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
@@ -448,12 +514,12 @@ public class StatisticsView extends AbstractStatisticsView {
 		hcjs.append("series: [");
 		if (seriesIdIndex < 1 && xAxisIdIndex < 1) {
 			hcjs.append("{ name: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
-					.append("', dataLabels: { allowOverlap: false }").append(", data: [['")
-					.append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("',")
-					.append(resultData.get(0)[0].toString()).append("]]}");
+			.append("', dataLabels: { allowOverlap: false }").append(", data: [['")
+			.append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("',")
+			.append(resultData.get(0)[0].toString()).append("]]}");
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
 			hcjs.append("{ name: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
-					.append("', dataLabels: { allowOverlap: false }").append(", data: [");
+			.append("', dataLabels: { allowOverlap: false }").append(", data: [");
 			TreeMap<StatisticsGroupingKey, Object[]> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
 			Object[] unknownSeriesElement = null;
 			for (Object[] row : resultData) {
@@ -473,7 +539,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			if (unknownSeriesElement != null) {
 				Object seriesValue = unknownSeriesElement[0];
 				hcjs.append("['").append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("',")
-						.append(seriesValue).append("],");
+				.append(seriesValue).append("],");
 			}
 			hcjs.append("]}");
 		} else {
@@ -492,7 +558,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					if (!StatisticsHelper.isNullOrUnknown(row[seriesIdIndex])) {
 						rowSeriesKey = row[seriesIdIndex]; // seriesCaptions.get(
 					} else {
-						rowSeriesKey = StatisticsHelper.UNKNOWN;
+						rowSeriesKey = StatisticsHelper.VALUE_UNKNOWN;
 					}
 				} else {
 					rowSeriesKey = StatisticsHelper.TOTAL;
@@ -506,18 +572,18 @@ public class StatisticsView extends AbstractStatisticsView {
 
 					// Append the start sequence of the next series String
 					if (StatisticsHelper.isNullOrUnknown(rowSeriesKey)) {
-						seriesKey = StatisticsHelper.UNKNOWN;
-						unknownSeriesString.append("{ name: '").append(getEscapedFragment(StatisticsHelper.UNKNOWN))
-								.append("', dataLabels: { allowOverlap: false }, data: [");
+						seriesKey = StatisticsHelper.VALUE_UNKNOWN;
+						unknownSeriesString.append("{ name: '").append(getEscapedFragment(StatisticsHelper.VALUE_UNKNOWN))
+						.append("', dataLabels: { allowOverlap: false }, data: [");
 					} else if (rowSeriesKey.equals(StatisticsHelper.TOTAL)) {
 						seriesKey = StatisticsHelper.TOTAL;
 						totalSeriesString.append("{name : '").append(getEscapedFragment(StatisticsHelper.TOTAL))
-								.append("', dataLabels: { allowOverlap: false }, data: [");
+						.append("', dataLabels: { allowOverlap: false }, data: [");
 					} else {
 						seriesKey = (StatisticsGroupingKey) row[seriesIdIndex];
 						currentSeriesString.append("{ name: '")
-								.append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesKey)))
-								.append("', dataLabels: { allowOverlap: false }, data: [");
+						.append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesKey)))
+						.append("', dataLabels: { allowOverlap: false }, data: [");
 					}
 				}
 
@@ -721,16 +787,109 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	private List<Object[]> generateStatistics() {
-		fillCaseCriteria();
+		fillCaseCriteria(showCaseIncidence);
+
+		if (showCaseIncidence) {	
+			caseIncidencePossible = true;
+			missingPopulationDataNames = null;
+			
+			List<Long> missingPopulationData = FacadeProvider.getPopulationDataFacade().getMissingPopulationDataForStatistics(caseCriteria, visualizationComponent.hasRegionGrouping(), 
+					visualizationComponent.hasDistrictGrouping(), visualizationComponent.hasSexGrouping(), visualizationComponent.hasAgeGroupGrouping());
+			hasMissingPopulationData = missingPopulationData.size() > 0;
+			if (hasMissingPopulationData) {
+				List<String> missingPopulationDataNamesList;
+				if (visualizationComponent.hasDistrictGrouping() || hasDistrictFilter()) {
+					missingPopulationDataNamesList = FacadeProvider.getDistrictFacade().getNamesByIds(missingPopulationData);
+				} else {
+					missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationData);
+				}			
+				StringBuilder populationDataNamesBuilder = new StringBuilder();
+				missingPopulationDataNamesList.forEach(s -> populationDataNamesBuilder.append(s).append(", "));
+				if (populationDataNamesBuilder.length() > 0) {
+					populationDataNamesBuilder.delete(populationDataNamesBuilder.lastIndexOf(","), populationDataNamesBuilder.length());
+				}
+				missingPopulationDataNames = populationDataNamesBuilder.toString();
+				
+				caseIncidencePossible = !hasMissingPopulationData || visualizationComponent.hasPopulationGrouping() || hasDistrictFilter();
+			}
+		}
 
 		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
 				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
-				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute());
+				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), 
+				showCaseIncidence && caseIncidencePossible);
+
+		replaceIdsWithGroupingKeys(resultData, visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(), visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute());
 
 		return resultData;
 	}
+	
+	private boolean hasDistrictFilter() {
+		for (StatisticsFilterComponent filterComponent : filterComponents) {
+			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.REGION_DISTRICT) {
+				if (!CollectionUtils.isEmpty(((StatisticsFilterRegionDistrictElement) filterComponent.getFilterElement()).getSelectedDistricts())) {
+					return true;
+				}
+			}
+		}
+	
+		return false;
+	}
 
-	private void fillCaseCriteria() {
+	private boolean hasPopulationFilterUnknownValue() {
+		for (StatisticsFilterComponent filterComponent : filterComponents) {
+			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.SEX ||
+					filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS) {
+				for (TokenizableValue selectedValue : filterComponent.getFilterElement().getSelectedValues()) {
+					if (selectedValue.getValue().toString().equals(I18nProperties.getString(Strings.unknown))) {
+						return true;
+					}
+				}
+			}
+		}
+	
+		return false;
+	}
+	
+	private boolean hasUnsupportedPopulationAgeGroupFilter() {
+		for (StatisticsFilterComponent filterComponent : filterComponents) {
+			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR
+					|| filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_BASIC
+					|| filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_COARSE
+					|| filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_MEDIUM
+					|| filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_CHILDREN_FINE) {
+				return true;
+			}
+		}
+	
+		return false;
+	}
+
+	/**
+	 * Replaces the ids in each row with the appropriate StatisticsGroupingKey based
+	 * on the grouping.
+	 */
+	private void replaceIdsWithGroupingKeys(List<Object[]> results, StatisticsCaseAttribute groupingA,
+			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
+			StatisticsCaseSubAttribute subGroupingB) {
+
+		for (Object[] resultRow : results) {
+			for (int i = 2; i < resultRow.length; i++) {
+				Object resultsEntry = resultRow[i];
+				if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
+					StatisticsGroupingKey reformattedEntry = null;
+					if (i == 2 && groupingA != null) {
+						reformattedEntry = StatisticsHelper.buildGroupingKey(resultsEntry, groupingA, subGroupingA);
+					} else if (i == 3 && groupingB != null) {
+						reformattedEntry = StatisticsHelper.buildGroupingKey(resultsEntry, groupingB, subGroupingB);
+					}
+					resultRow[i] = reformattedEntry;
+				}
+			}
+		}
+	}
+
+	private void fillCaseCriteria(boolean showCaseIncidence) {
 		caseCriteria = new StatisticsCaseCriteria();
 
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
@@ -740,7 +899,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (filterElement.getSelectedValues() != null) {
 					List<Sex> sexes = new ArrayList<>();
 					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
-						if (tokenizableValue.getValue().toString().toLowerCase().equals(StatisticsHelper.UNKNOWN)) {
+						if (tokenizableValue.getValue().equals(I18nProperties.getString(Strings.unknown))) {
 							caseCriteria.sexUnknown(true);
 						} else {
 							sexes.add((Sex) tokenizableValue.getValue());
@@ -788,6 +947,17 @@ public class StatisticsView extends AbstractStatisticsView {
 						ageIntervals.add((IntegerRange) tokenizableValue.getValue());
 					}
 					caseCriteria.addAgeIntervals(ageIntervals);
+
+					// Fill age groups if 5 years interval has been selected and case incidence is shown
+					if (showCaseIncidence && filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS) {
+						List<AgeGroup> ageGroups = new ArrayList<>();
+						for (IntegerRange ageInterval : ageIntervals) {
+							if (ageInterval.getFrom() != null || ageInterval.getTo() != null) {
+								ageGroups.add(AgeGroup.getAgeGroupFromIntegerRange(ageInterval));
+							}
+						}
+						caseCriteria.addAgeGroups(ageGroups);
+					}
 				}
 				break;
 			case REGION_DISTRICT:
@@ -882,6 +1052,11 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 			}
 		}
+	}
+
+	private enum CaseCountOrIncidence {
+		CASE_COUNT,
+		CASE_INCIDENCE;
 	}
 
 }

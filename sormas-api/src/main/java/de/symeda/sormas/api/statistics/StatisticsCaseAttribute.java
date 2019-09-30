@@ -21,29 +21,31 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum StatisticsCaseAttribute {
 
-	ONSET_TIME(StatisticsCaseAttributeGroup.TIME, false, StatisticsCaseSubAttribute.YEAR,StatisticsCaseSubAttribute.QUARTER,StatisticsCaseSubAttribute.MONTH,StatisticsCaseSubAttribute.EPI_WEEK,
+	ONSET_TIME(StatisticsCaseAttributeGroup.TIME, false, true, StatisticsCaseSubAttribute.YEAR,StatisticsCaseSubAttribute.QUARTER,StatisticsCaseSubAttribute.MONTH,StatisticsCaseSubAttribute.EPI_WEEK,
 			StatisticsCaseSubAttribute.QUARTER_OF_YEAR,StatisticsCaseSubAttribute.MONTH_OF_YEAR,StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR,StatisticsCaseSubAttribute.DATE_RANGE),
-	REPORT_TIME(StatisticsCaseAttributeGroup.TIME, false, StatisticsCaseSubAttribute.YEAR,StatisticsCaseSubAttribute.QUARTER,StatisticsCaseSubAttribute.MONTH,StatisticsCaseSubAttribute.EPI_WEEK,
+	REPORT_TIME(StatisticsCaseAttributeGroup.TIME, false, false, StatisticsCaseSubAttribute.YEAR,StatisticsCaseSubAttribute.QUARTER,StatisticsCaseSubAttribute.MONTH,StatisticsCaseSubAttribute.EPI_WEEK,
 			StatisticsCaseSubAttribute.QUARTER_OF_YEAR,StatisticsCaseSubAttribute.MONTH_OF_YEAR,StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR,StatisticsCaseSubAttribute.DATE_RANGE),
-	REGION_DISTRICT(StatisticsCaseAttributeGroup.PLACE, true, StatisticsCaseSubAttribute.REGION,StatisticsCaseSubAttribute.DISTRICT),
-	SEX(StatisticsCaseAttributeGroup.PERSON, true),
-	AGE_INTERVAL_1_YEAR(StatisticsCaseAttributeGroup.PERSON, false),
-	AGE_INTERVAL_5_YEARS(StatisticsCaseAttributeGroup.PERSON, false),
-	AGE_INTERVAL_CHILDREN_COARSE(StatisticsCaseAttributeGroup.PERSON, false),
-	AGE_INTERVAL_CHILDREN_FINE(StatisticsCaseAttributeGroup.PERSON, false),
-	AGE_INTERVAL_CHILDREN_MEDIUM(StatisticsCaseAttributeGroup.PERSON, false),
-	AGE_INTERVAL_BASIC(StatisticsCaseAttributeGroup.PERSON, false),
-	DISEASE(StatisticsCaseAttributeGroup.CASE, true),
-	CLASSIFICATION(StatisticsCaseAttributeGroup.CASE, true),
-	OUTCOME(StatisticsCaseAttributeGroup.CASE, true);
+	REGION_DISTRICT(StatisticsCaseAttributeGroup.PLACE, true, false, StatisticsCaseSubAttribute.REGION,StatisticsCaseSubAttribute.DISTRICT),
+	SEX(StatisticsCaseAttributeGroup.PERSON, true, true),
+	AGE_INTERVAL_1_YEAR(StatisticsCaseAttributeGroup.PERSON, false, true),
+	AGE_INTERVAL_5_YEARS(StatisticsCaseAttributeGroup.PERSON, false, true),
+	AGE_INTERVAL_CHILDREN_COARSE(StatisticsCaseAttributeGroup.PERSON, false, true),
+	AGE_INTERVAL_CHILDREN_FINE(StatisticsCaseAttributeGroup.PERSON, false, true),
+	AGE_INTERVAL_CHILDREN_MEDIUM(StatisticsCaseAttributeGroup.PERSON, false, true),
+	AGE_INTERVAL_BASIC(StatisticsCaseAttributeGroup.PERSON, false, true),
+	DISEASE(StatisticsCaseAttributeGroup.CASE, true, false),
+	CLASSIFICATION(StatisticsCaseAttributeGroup.CASE, true, false),
+	OUTCOME(StatisticsCaseAttributeGroup.CASE, true, false);
 	
 	private final StatisticsCaseAttributeGroup attributeGroup;
 	private final boolean sortByCaption;
+	private final boolean unknownValueAllowed;
 	private final StatisticsCaseSubAttribute[] subAttributes;
 
-	StatisticsCaseAttribute(StatisticsCaseAttributeGroup attributeGroup, boolean sortByCaption, StatisticsCaseSubAttribute ...subAttributes) {
+	StatisticsCaseAttribute(StatisticsCaseAttributeGroup attributeGroup, boolean sortByCaption, boolean unknownValueAllowed, StatisticsCaseSubAttribute ...subAttributes) {
 		this.attributeGroup = attributeGroup;
 		this.sortByCaption = sortByCaption;
+		this.unknownValueAllowed = unknownValueAllowed;
 		this.subAttributes = subAttributes;
 	}
 	
@@ -55,12 +57,21 @@ public enum StatisticsCaseAttribute {
 		return sortByCaption;
 	}
 
+	public boolean isUnknownValueAllowed() {
+		return unknownValueAllowed;
+	}
+	
 	public StatisticsCaseSubAttribute[] getSubAttributes() {
 		return subAttributes;
 	}
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+	
+	public boolean isAgeGroup() {
+		return this == AGE_INTERVAL_1_YEAR || this == AGE_INTERVAL_BASIC || this == AGE_INTERVAL_CHILDREN_COARSE
+				|| this == AGE_INTERVAL_CHILDREN_FINE || this == AGE_INTERVAL_CHILDREN_MEDIUM;
 	}
 	
 }

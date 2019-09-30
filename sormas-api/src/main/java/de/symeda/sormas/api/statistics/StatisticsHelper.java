@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.EnumUtils;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
@@ -42,9 +43,10 @@ import de.symeda.sormas.api.utils.EpiWeek;
 
 public class StatisticsHelper {
 
-	public static final String UNKNOWN = "unknown";
+	public static final String VALUE_UNKNOWN = "VALUE_UNKNOWN";
 	public static final String TOTAL = "total";
-	public static final String CASE_COUNT = "caseCount";
+	public static final String CASE_COUNT = "statisticsCaseCount";
+	public static final String CASE_INCIDENCE = "statisticsCaseIncidence";
 	
 	public static StatisticsGroupingKey buildGroupingKey(Object attributeValue, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
 		if (subAttribute != null) {
@@ -67,9 +69,9 @@ public class StatisticsHelper {
 				entryAsString = String.valueOf(attributeValue);
 				return new EpiWeek(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 2)), Integer.valueOf(entryAsString.substring(entryAsString.length() - 2)));
 			case REGION:
-				return FacadeProvider.getRegionFacade().getRegionReferenceByUuid(attributeValue.toString());
+				return FacadeProvider.getRegionFacade().getRegionReferenceById(((Number) attributeValue).intValue());
 			case DISTRICT:
-				return FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(attributeValue.toString());
+				return FacadeProvider.getDistrictFacade().getDistrictReferenceById(((Number) attributeValue).intValue());
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());
 			}
@@ -94,6 +96,15 @@ public class StatisticsHelper {
 				}
 				
 				String entryAsString = attributeValue.toString();
+				if (attribute == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS) {
+					try {
+						AgeGroup ageGroup = AgeGroup.valueOf(entryAsString);
+						return ageGroup.toIntegerRange();
+					} catch (IllegalArgumentException e) {
+						// This is fine; continue to build the IntegerGroup based on the entry string
+					}
+				}
+				
 				if (entryAsString.contains("-")) {
 					return new IntegerRange(Integer.valueOf(entryAsString.substring(0, entryAsString.indexOf("-"))), Integer.valueOf(entryAsString.substring(entryAsString.indexOf("-") + 1)));
 				} else if (entryAsString.contains("+")) {
@@ -251,9 +262,9 @@ public class StatisticsHelper {
 			case EPI_WEEK_OF_YEAR:
 				return StatisticsHelper.getListOfDateValues(attribute, subAttribute);
 			case REGION:
-				return new ArrayList<Object>(FacadeProvider.getRegionFacade().getAllUuids());
+				return new ArrayList<Object>(FacadeProvider.getRegionFacade().getAllIds());
 			case DISTRICT:
-				return new ArrayList<Object>(FacadeProvider.getDistrictFacade().getAllUuids());
+				return new ArrayList<Object>(FacadeProvider.getDistrictFacade().getAllIds());
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());
 			}
@@ -267,7 +278,7 @@ public class StatisticsHelper {
 				return sexList;
 			case DISEASE:
 				ArrayList<Object> diseaseList = new ArrayList<>();
-				for (Disease disease : EnumUtils.getEnumList(Disease.class)) {
+				for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases()) {
 					diseaseList.add(disease.getName());
 				}
 				return diseaseList;
@@ -297,7 +308,11 @@ public class StatisticsHelper {
 	}
 	
 	public static boolean isNullOrUnknown(Object value) {
-		return value == null || value.toString().equalsIgnoreCase(UNKNOWN);
+		return value == null || value.toString().equalsIgnoreCase(VALUE_UNKNOWN);
+	}
+	
+	public static boolean isUnknown(Object value) {
+		return value.toString().equalsIgnoreCase(VALUE_UNKNOWN);
 	}
 	
 	public static class StatisticsKeyComparator implements Comparator<StatisticsGroupingKey> {

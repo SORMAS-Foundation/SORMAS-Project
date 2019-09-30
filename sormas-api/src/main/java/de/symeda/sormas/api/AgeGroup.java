@@ -20,11 +20,36 @@ public enum AgeGroup {
 	AGE_65_69,
 	AGE_70_74,
 	AGE_75_79,
-	AGE_80_84,
 	AGE_80_PLUS;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+	
+	public static AgeGroup getAgeGroupFromIntegerRange(IntegerRange range) {
+		if (range.getFrom() == 80 && range.getTo() == null) {
+			return AGE_80_PLUS;
+		}
+		
+		try {
+			return AgeGroup.valueOf("AGE_" + range.getFrom() + "_" + range.getTo());
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+	}
+
+	public IntegerRange toIntegerRange() {
+		if (this == AGE_80_PLUS) {
+			return new IntegerRange(80, null);
+		}
+		
+		try {
+			return new IntegerRange(
+					Integer.valueOf(this.name().substring(this.name().indexOf("_") + 1, this.name().lastIndexOf("_"))), 
+					Integer.valueOf(this.name().substring(this.name().lastIndexOf("_") + 1, this.name().length())));
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 	
 }

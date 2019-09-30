@@ -262,6 +262,8 @@ public interface Strings {
 	public static String infoCaseCompleteness = "infoCaseCompleteness";
 	public static String infoCaseDate = "infoCaseDate";
 	public static String infoCaseIncidence = "infoCaseIncidence";
+	public static String infoCaseIncidenceMissingPopulationData = "infoCaseIncidenceMissingPopulationData";
+	public static String infoCaseIncidenceNotPossible = "infoCaseIncidenceNotPossible";
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoContactDashboard = "infoContactDashboard";
@@ -314,6 +316,7 @@ public interface Strings {
 	public static String messageCaseCreated = "messageCaseCreated";
 	public static String messageCaseDearchived = "messageCaseDearchived";
 	public static String messageCaseDuplicateDeleted = "messageCaseDuplicateDeleted";
+	public static String messageCaseIncidenceUnsupportedAgeGroup = "messageCaseIncidenceUnsupportedAgeGroup";
 	public static String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
 	public static String messageCasesArchived = "messageCasesArchived";
 	public static String messageCaseSaved = "messageCaseSaved";
@@ -406,6 +409,7 @@ public interface Strings {
 	public static String messageTreatmentCreated = "messageTreatmentCreated";
 	public static String messageTreatmentSaved = "messageTreatmentSaved";
 	public static String messageTreatmentsDeleted = "messageTreatmentsDeleted";
+	public static String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
 	public static String messageUserRoleCombination = "messageUserRoleCombination";
 	public static String messageVisitsDeleted = "messageVisitsDeleted";
 	public static String messageWrongFileType = "messageWrongFileType";

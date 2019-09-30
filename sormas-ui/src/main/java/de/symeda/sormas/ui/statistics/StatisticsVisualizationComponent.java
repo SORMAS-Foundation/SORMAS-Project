@@ -19,16 +19,16 @@ package de.symeda.sormas.ui.statistics;
 
 import java.util.Arrays;
 
-import com.vaadin.v7.data.Property.ValueChangeEvent;
-import com.vaadin.v7.data.Property.ValueChangeListener;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.Property.ValueChangeListener;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -232,6 +232,31 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 
 	public StatisticsVisualizationChartType getVisualizationChartType() {
 		return visualizationChartType;
+	}
+	
+	public boolean hasRegionGrouping() {
+		return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION;
+	}
+	
+	public boolean hasDistrictGrouping() {
+		return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT;
+	}
+	
+	public boolean hasSexGrouping() {
+		return rowsElement.getAttribute() == StatisticsCaseAttribute.SEX || columnsElement.getAttribute() == StatisticsCaseAttribute.SEX;
+	}
+	
+	public boolean hasAgeGroupGrouping() {
+		return rowsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS || columnsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS;
+	}
+	
+	public boolean hasAgeGroupGroupingWithoutPopulationData() {
+		return (rowsElement.getAttribute() != null && rowsElement.getAttribute().isAgeGroup() && rowsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS)
+				|| (columnsElement.getAttribute() != null && columnsElement.getAttribute().isAgeGroup() && rowsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS);
+	}
+	
+	public boolean hasPopulationGrouping() {
+		return hasRegionGrouping() || hasDistrictGrouping() || hasSexGrouping() || hasAgeGroupGrouping();
 	}
 
 }

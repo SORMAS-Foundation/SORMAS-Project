@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
@@ -61,6 +62,7 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<Sex> sexes;
 	private Boolean sexUnknown;
 	private List<IntegerRange> ageIntervals;
+	private List<AgeGroup> ageGroups;
 	private List<Disease> diseases;
 	private List<CaseClassification> classifications;
 	private List<CaseOutcome> outcomes;
@@ -149,6 +151,10 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public List<IntegerRange> getAgeIntervals() {
 		return ageIntervals;
+	}
+	
+	public List<AgeGroup> getAgeGroups() {
+		return ageGroups;
 	}
 
 	public List<Disease> getDiseases() {
@@ -311,6 +317,15 @@ public class StatisticsCaseCriteria implements Serializable {
 		this.ageIntervals.addAll(ageIntervals);
 		return this;
 	}
+	
+	public StatisticsCaseCriteria addAgeGroups(List<AgeGroup> ageGroups) {
+		if (this.ageGroups == null) {
+			this.ageGroups = new ArrayList<>();
+		}
+		
+		this.ageGroups.addAll(ageGroups);
+		return this;
+	}
 
 	public StatisticsCaseCriteria diseases(List<Disease> diseases) {
 		this.diseases = diseases;
@@ -431,4 +446,10 @@ public class StatisticsCaseCriteria implements Serializable {
 		}
 	}
 
+	public boolean hasOnsetDate() {
+		return onsetDateFrom != null || onsetDateTo != null || onsetEpiWeeks != null || onsetEpiWeeksOfYear != null
+				|| onsetMonths != null || onsetMonthsOfYear != null || onsetQuarters != null || onsetQuartersOfYear != null
+				|| onsetYears != null;
+	}
+	
 }

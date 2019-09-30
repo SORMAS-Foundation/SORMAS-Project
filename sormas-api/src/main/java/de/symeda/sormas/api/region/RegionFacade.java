@@ -43,12 +43,14 @@ public interface RegionFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
-	List<String> getAllUuids();
+	List<Integer> getAllIds();
 	
 	List<RegionDto> getByUuids(List<String> uuids);
 	
 	void saveRegion(RegionDto dto);
 	
 	List<RegionReferenceDto> getByName(String name);
+	
+	List<String> getNamesByIds(List<Long> regionIds);
 
 }

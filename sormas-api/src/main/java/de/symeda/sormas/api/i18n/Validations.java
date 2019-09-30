@@ -44,6 +44,7 @@ public interface Validations {
 	public static String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
 	public static String specifyFirstName = "specifyFirstName";
 	public static String specifyLastName = "specifyLastName";
+	public static String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
 	public static String userNameNotUnique = "userNameNotUnique";
 	public static String validCase = "validCase";
 	public static String validCommunity = "validCommunity";

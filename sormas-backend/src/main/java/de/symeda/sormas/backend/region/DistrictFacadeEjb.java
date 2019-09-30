@@ -164,8 +164,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids() {
-		return districtService.getAllUuids(null);
+	public List<Integer> getAllIds() {
+		return districtService.getAllIds(null);
 	}
 
 	@Override	
@@ -214,6 +214,18 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Override
 	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef) {
 		return districtService.getByName(name, regionService.getByReferenceDto(regionRef)).stream().map(d -> toReferenceDto(d)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<String> getNamesByIds(List<Long> districtIds) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<District> root = cq.from(District.class);
+		
+		Predicate filter = root.get(District.ID).in(districtIds);
+		cq.where(filter);
+		cq.select(root.get(District.NAME));
+		return em.createQuery(cq).getResultList();
 	}
 
 	public static DistrictReferenceDto toReferenceDto(District entity) {

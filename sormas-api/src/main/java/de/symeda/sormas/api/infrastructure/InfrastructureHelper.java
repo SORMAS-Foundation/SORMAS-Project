@@ -1,10 +1,18 @@
 package de.symeda.sormas.api.infrastructure;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 
 public class InfrastructureHelper {
 
+	public static final int CASE_INCIDENCE_DIVISOR = 100000;
+	
 	public static String buildPointOfEntryString(String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails) {
 		StringBuilder result = new StringBuilder();
 		result.append(buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName));
@@ -17,7 +25,7 @@ public class InfrastructureHelper {
 		}		
 		return result.toString();
 	}
-	
+
 	public static String buildPointOfEntryString(String pointOfEntryUuid, String pointOfEntryName) {
 		if (pointOfEntryUuid != null) {
 			if (pointOfEntryUuid.equals(PointOfEntryDto.OTHER_AIRPORT_UUID)) {
@@ -41,5 +49,28 @@ public class InfrastructureHelper {
 
 		return caption.toString();
 	}
-	
+
+	public static Integer getProjectedPopulation(Integer population, Date collectionDate, Float growthRate) {
+		if (population != null && population > 0) {
+			Integer yearsBetween = DateHelper.getYearsBetween(collectionDate, new Date());
+			int calculatedYears = 0;
+			while (calculatedYears < yearsBetween) {
+				population += (int) (population / 100 * growthRate);
+				calculatedYears++;
+			}
+		}
+
+		return population;
+	}
+
+	public static BigDecimal getCaseIncidence(int caseCount, int population, int divisor) {
+		return getCaseIncidence(caseCount, new Double(population).doubleValue(), divisor);
+	}
+
+	public static BigDecimal getCaseIncidence(int caseCount, double population, int divisor) {
+		return new BigDecimal(caseCount).divide(
+				new BigDecimal(population / divisor), 3,
+				RoundingMode.HALF_UP);
+	}
+
 }

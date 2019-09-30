@@ -64,6 +64,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -625,7 +626,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		case CASE_INCIDENCE:
 			legendEntry = buildMapIconLegendEntry("lowest-region-small",
 					"<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-							+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
+							+ InfrastructureHelper.CASE_INCIDENCE_DIVISOR);
 			break;
 		default:
 			throw new IllegalArgumentException(caseMeasure.toString());
@@ -646,7 +647,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						DataHelper.getTruncatedBigDecimal(
 								districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP))
 						+ " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-						+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
+						+ InfrastructureHelper.CASE_INCIDENCE_DIVISOR);
 				break;
 			default:
 				throw new IllegalArgumentException(caseMeasure.toString());
@@ -669,7 +670,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						DataHelper.getTruncatedBigDecimal(
 								districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - "
 								+ DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-								+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
+								+ InfrastructureHelper.CASE_INCIDENCE_DIVISOR);
 				break;
 			default:
 				throw new IllegalArgumentException(caseMeasure.toString());
@@ -686,7 +687,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		case CASE_INCIDENCE:
 			legendEntry = buildMapIconLegendEntry("highest-region-small",
 					"> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-							+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
+							+ InfrastructureHelper.CASE_INCIDENCE_DIVISOR);
 			break;
 		default:
 			throw new IllegalArgumentException(caseMeasure.toString());

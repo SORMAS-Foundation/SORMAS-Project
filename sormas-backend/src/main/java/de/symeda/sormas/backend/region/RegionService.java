@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.region;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -29,6 +30,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.region.RegionCriteria;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
@@ -49,6 +51,16 @@ public class RegionService extends AbstractAdoService<Region> {
 
 		cq.where(cb.equal(cb.upper(from.get(Region.NAME)), name.toUpperCase()));
 
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<Long> getIdsByReferenceDtos(List<RegionReferenceDto> references) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Region> from = cq.from(getElementClass());
+		
+		cq.where(from.get(Region.UUID).in(references.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList())));
+		cq.select(from.get(Region.ID));
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -100,4 +112,5 @@ public class RegionService extends AbstractAdoService<Region> {
 					persist(region);
 				});
 	}
+	
 }
