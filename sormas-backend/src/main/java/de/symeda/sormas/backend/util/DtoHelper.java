@@ -54,8 +54,7 @@ public final class DtoHelper {
 	public static <T extends EntityDto> T mergeDto(T lead, T other, boolean cloning, boolean overrideEntityUuids) {
 
 		try {
-			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class)
-					.getPropertyDescriptors();
+			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class).getPropertyDescriptors();
 
 			for (PropertyDescriptor pd : pds) {
 				// Skip properties without a read or write method
@@ -91,8 +90,7 @@ public final class DtoHelper {
 						
 					} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 
-						pd.getWriteMethod().invoke(lead,
-								mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
+						pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
 
 						if (overrideEntityUuids) {
 							((EntityDto) leadProperty).setUuid(DataHelper.createUuid());
@@ -105,17 +103,14 @@ public final class DtoHelper {
 
 				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 
-					pd.getWriteMethod().invoke(lead,
-							mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
+					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
 
 					if (overrideEntityUuids) {
 						((EntityDto) leadProperty).setUuid(DataHelper.createUuid());
 					}
 				}
 			}
-		} catch (IntrospectionException | InvocationTargetException |
-
-				IllegalAccessException e) {
+		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
 			throw new RuntimeException("Exception when trying to merge or clone dto: " + e.getMessage(), e.getCause());
 		}
 

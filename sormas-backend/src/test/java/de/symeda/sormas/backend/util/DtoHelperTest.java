@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,12 +10,17 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class DtoHelperTest extends AbstractBeanTest {
 
@@ -23,41 +29,42 @@ public class DtoHelperTest extends AbstractBeanTest {
 
 		// Test simple values
 		{
-			VisitDto leadDto = new VisitDto();
-			VisitDto otherDto = new VisitDto();
+			HealthConditionsDto leadDto = new HealthConditionsDto();
+			HealthConditionsDto otherDto = new HealthConditionsDto();
 
 			// lead and other have different values
-			Double reportLat = 1.234;
-			leadDto.setReportLat(reportLat);
-			otherDto.setReportLat(2.345);
+			leadDto.setTuberculosis(YesNoUnknown.YES);
+			otherDto.setTuberculosis(YesNoUnknown.NO);
 
 			// lead has value, other has not
-			Double reportLon = 3.456;
-			leadDto.setReportLon(reportLon);
+			leadDto.setAsplenia(YesNoUnknown.YES);
 
 			// lead has no value, other has
-			Float reportLatLonAccuracy = (float) 4.567;
-			otherDto.setReportLatLonAccuracy(reportLatLonAccuracy);
+			otherDto.setDiabetes(YesNoUnknown.YES);
 
-			VisitDto merged = DtoHelper.mergeDto(leadDto, otherDto, false, false);
+			HealthConditionsDto merged = DtoHelper.mergeDto(leadDto, otherDto, false, false);
 
 			// Check no values
-			assertNull(merged.getDisease());
+			assertNull(merged.getHiv());
 
 			// Check 'lead and other have different values'
-			assertEquals(reportLat, merged.getReportLat());
+			assertNotEquals(otherDto.getTuberculosis(), merged.getTuberculosis());
 
 			// Check 'lead has value, other has not'
-			assertEquals(reportLon, merged.getReportLon());
+			assertEquals(YesNoUnknown.YES, merged.getAsplenia());
+			assertNull(otherDto.getAsplenia());
 
 			// Check 'lead has no value, other has'
-			assertEquals(reportLatLonAccuracy, merged.getReportLatLonAccuracy());
+			assertEquals(otherDto.getDiabetes(), merged.getDiabetes());
 		}
 
 		// Test complex subDto
 		{
-			CaseDataDto leadCaseDto = new CaseDataDto();
-			CaseDataDto otherCaseDto = new CaseDataDto();
+			RDCFEntities rdcf = creator.createRDCFEntities();
+			UserDto user = creator.createUser(rdcf, UserRole.ADMIN);
+			PersonDto person = creator.createPerson("First", "Last");
+			CaseDataDto leadCaseDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
+			CaseDataDto otherCaseDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
 			SymptomsDto leadSymptomsDto = new SymptomsDto();
 			SymptomsDto otherSymptomsDto = new SymptomsDto();
