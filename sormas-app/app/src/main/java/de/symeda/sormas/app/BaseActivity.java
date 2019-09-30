@@ -711,7 +711,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     protected boolean goToNextPage() {
-        if (activePageIndex == pageItems.size() - 1) {
+        if (activePageIndex >= pageItems.size() - 1) {
             return false; // last page
         }
         int newMenukey = activePageIndex + 1;
