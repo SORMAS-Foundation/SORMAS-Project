@@ -174,6 +174,7 @@ public interface Captions {
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
 	public static String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	public static String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
+	public static String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	public static String CaseHospitalization = "CaseHospitalization";
 	public static String CaseHospitalization_accommodation = "CaseHospitalization.accommodation";

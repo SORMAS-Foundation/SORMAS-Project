@@ -108,7 +108,7 @@ public interface CaseFacade {
 	
 	List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria, String userUuid);
 	
-	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid);
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid, boolean showDuplicatesWithDifferentRegion);
 	
 	void updateCompleteness(String caseUuid);
 

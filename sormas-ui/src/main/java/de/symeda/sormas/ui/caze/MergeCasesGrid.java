@@ -44,6 +44,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 	public static final String COLUMN_UUID = "uuidLink";
 	
 	private CaseCriteria criteria;
+	private boolean ignoreRegion;
 	
 	private List<String[]> hiddenUuidPairs;
 
@@ -209,7 +210,8 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 			hiddenUuidPairs = new ArrayList<>();
 		}
 		
-		List<CaseIndexDto[]> casePairs = FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, UserProvider.getCurrent().getUuid());
+		List<CaseIndexDto[]> casePairs = FacadeProvider.getCaseFacade()
+				.getCasesForDuplicateMerging(criteria, UserProvider.getCurrent().getUuid(), ignoreRegion);
 		for (CaseIndexDto[] casePair : casePairs) {
 			boolean uuidPairExists = false;
 			for (String[] hiddenUuidPair : hiddenUuidPairs) {
@@ -228,6 +230,11 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 		}
 		
 		dataProvider.refreshAll();
+	}
+	
+	public void reload(boolean ignoreRegion) {
+		this.ignoreRegion = ignoreRegion;
+		reload();
 	}
 
 	@SuppressWarnings("unchecked")

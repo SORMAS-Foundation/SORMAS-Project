@@ -884,7 +884,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid) {
+	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid, boolean ignoreRegion) {
 		User user = userService.getByUuid(userUuid);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -956,7 +956,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			filter = nameSimilarityFilter;
 		}
 		filter = cb.and(filter, diseaseFilter);
-		filter = cb.and(filter, regionFilter);
+		
+		if (!ignoreRegion) {
+			filter = cb.and(filter, regionFilter);
+		}
+		
 		filter = cb.and(filter, reportDateFilter);
 		filter = cb.and(filter, cb.or(
 				sexFilter,
