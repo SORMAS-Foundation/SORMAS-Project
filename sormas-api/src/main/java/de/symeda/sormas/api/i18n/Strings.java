@@ -280,6 +280,7 @@ public interface Strings {
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
+	public static String infoMergeIgnoreRegion = "infoMergeIgnoreRegion";
 	public static String infoMergingExplanation = "infoMergingExplanation";
 	public static String infoMergingHideDescription = "infoMergingHideDescription";
 	public static String infoMergingMergeDescription = "infoMergingMergeDescription";
