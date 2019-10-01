@@ -137,7 +137,12 @@ public class UsersView extends AbstractView {
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 			regionFilter.addValueChangeListener(e -> {
-				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
+				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+				
+				if (!region.equals(criteria.getRegion())) {
+					criteria.district(null);
+				}
+				
 				criteria.region(region);
 				navigateTo(criteria);
 			});
@@ -149,27 +154,10 @@ public class UsersView extends AbstractView {
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 		districtFilter.addValueChangeListener(e -> {
-			DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
+			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			criteria.district(district);
 			navigateTo(criteria);
 		});
-
-		if (user.getRegion() != null && user.getDistrict() == null) {
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
-			districtFilter.setEnabled(true);
-		} else {
-			regionFilter.addValueChangeListener(e -> {
-				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-				districtFilter.removeAllItems();
-				if (region != null) {
-					districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
-					districtFilter.setEnabled(true);
-				} else {
-					districtFilter.setEnabled(false);
-				}
-			});
-			districtFilter.setEnabled(false);
-		}
 		filterLayout.addComponent(districtFilter);
 
 		searchField = new TextField();
@@ -201,11 +189,23 @@ public class UsersView extends AbstractView {
 
 	public void updateFilterComponents() {
 		applyingCriteria = true;
+		UserDto user = UserProvider.getCurrent().getUser();
 
 		activeFilter
-				.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
+		.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());
 		regionFilter.setValue(criteria.getRegion());
+
+		if (user.getRegion() != null && user.getDistrict() == null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else if (criteria.getRegion() != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(criteria.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else {
+			districtFilter.setEnabled(false);
+		}
+		
 		districtFilter.setValue(criteria.getDistrict());
 		searchField.setValue(criteria.getFreeText());
 
