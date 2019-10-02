@@ -18,7 +18,6 @@ public interface Strings {
 	public static String classificationGeneratedFor = "classificationGeneratedFor";
 	public static String classificationInfoNumberText = "classificationInfoNumberText";
 	public static String classificationInfoText = "classificationInfoText";
-	public static String classificationNegativeTestResult = "classificationNegativeTestResult";
 	public static String classificationNoneOf = "classificationNoneOf";
 	public static String classificationNotACase = "classificationNotACase";
 	public static String classificationNotWithin = "classificationNotWithin";
