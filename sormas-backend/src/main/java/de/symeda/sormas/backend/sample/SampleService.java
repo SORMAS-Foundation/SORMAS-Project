@@ -261,7 +261,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Root<Sample> sampleRoot = cq.from(Sample.class);
 		Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		
-		cq.multiselect(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), cb.countDistinct(sampleRoot));
+		cq.multiselect(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), cb.countDistinct(caseJoin));
 		cq.groupBy(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT));
 		
 		Predicate filter = createDefaultFilter(cb, sampleRoot);

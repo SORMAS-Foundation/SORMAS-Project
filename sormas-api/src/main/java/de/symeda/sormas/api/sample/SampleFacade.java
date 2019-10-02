@@ -66,6 +66,7 @@ public interface SampleFacade {
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
 
 	boolean isDeleted(String sampleUuid);
+	
 	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(RegionReferenceDto regionReference, DistrictReferenceDto districtReference, Disease disease, Date from, Date to, String userUuid);
 	
 }
