@@ -19,8 +19,11 @@ public interface Strings {
 	public static String classificationInfoNumberText = "classificationInfoNumberText";
 	public static String classificationInfoText = "classificationInfoText";
 	public static String classificationNoneOf = "classificationNoneOf";
+	public static String classificationNotACase = "classificationNotACase";
 	public static String classificationNotWithin = "classificationNotWithin";
+	public static String classificationOneNegativeTestResult = "classificationOneNegativeTestResult";
 	public static String classificationOneOf = "classificationOneOf";
+	public static String classificationOneOtherPositiveTestResult = "classificationOneOtherPositiveTestResult";
 	public static String classificationOnePositiveTestResult = "classificationOnePositiveTestResult";
 	public static String classificationPersonAged = "classificationPersonAged";
 	public static String classificationProbable = "classificationProbable";
@@ -276,6 +279,7 @@ public interface Strings {
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
+	public static String infoMergeIgnoreRegion = "infoMergeIgnoreRegion";
 	public static String infoMergingExplanation = "infoMergingExplanation";
 	public static String infoMergingHideDescription = "infoMergingHideDescription";
 	public static String infoMergingMergeDescription = "infoMergingMergeDescription";
@@ -323,6 +327,7 @@ public interface Strings {
 	public static String messageClinicalVisitCreated = "messageClinicalVisitCreated";
 	public static String messageClinicalVisitSaved = "messageClinicalVisitSaved";
 	public static String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
+	public static String messageCloneCaseWithNewDisease = "messageCloneCaseWithNewDisease";
 	public static String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	public static String messageContactCreated = "messageContactCreated";
 	public static String messageContactSaved = "messageContactSaved";

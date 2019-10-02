@@ -3638,3 +3638,9 @@ ALTER TABLE region DROP COLUMN population;
 ALTER TABLE district DROP COLUMN population;
 
 INSERT INTO schema_version (version_number, comment) VALUES (165, 'Add PopulationData entity #1084');
+
+-- 2019-09-26 Add pathogenTestResultChangeDate to sample #1302
+ALTER TABLE samples ADD COLUMN pathogentestresultchangedate timestamp;
+ALTER TABLE samples_history ADD COLUMN pathogentestresultchangedate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (166, 'Add pathogenTestResultChangeDate to sample #1302');

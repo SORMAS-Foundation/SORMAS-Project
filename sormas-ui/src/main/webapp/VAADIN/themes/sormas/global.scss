@@ -217,6 +217,10 @@
   .background-confirmed-criteria {
     background: $s-critical-transparent-color;	
   }
+  
+  .background-not-a-case-criteria {
+  	background: $s-highlight-color;
+  }
 
   .background-rounded-corners {
 	border-radius: 8px;

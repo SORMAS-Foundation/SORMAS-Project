@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.dashboard.surveillance;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -61,6 +62,8 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		epiCurveComponent = new SurveillanceEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
 		diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
+		//remove 'other' and 'undefined' if present
+		diseases.removeAll(Arrays.asList(Disease.OTHER, Disease.UNDEFINED));
 
 		this.initLayout();
 	}

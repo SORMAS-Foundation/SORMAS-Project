@@ -43,6 +43,8 @@ public interface PersonFacade {
     PersonDto getPersonByUuid(String uuid);
 
     PersonDto savePerson(PersonDto dto) throws ValidationRuntimeException;
+    
+    PersonDto savePersonSimple(PersonDto source) throws ValidationRuntimeException;
 
     void validate(PersonDto dto) throws ValidationRuntimeException;
     

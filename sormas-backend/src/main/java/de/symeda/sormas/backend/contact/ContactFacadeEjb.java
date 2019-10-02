@@ -201,6 +201,18 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		return toDto(entity);
 	}
+	
+	@Override
+	public ContactDto saveContactSimple(ContactDto dto) {
+		
+		Contact entity = fromDto(dto);
+
+		contactService.ensurePersisted(entity);
+
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
+		
+		return toDto(entity);
+	}
 
 	@Override
 	public List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos) {
@@ -629,6 +641,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {
+
 	}
 	
 }

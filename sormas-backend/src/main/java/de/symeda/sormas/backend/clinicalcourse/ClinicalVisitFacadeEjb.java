@@ -18,6 +18,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -162,6 +163,20 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		return toDto(entity);
 	}
 
+	@Override
+	public ClinicalVisitDto saveClinicalVisitSimple(ClinicalVisitDto clinicalVisit, String caseUuid) {
+
+		ClinicalVisit entity = fromDto(clinicalVisit);
+
+		service.ensurePersisted(entity);
+
+		CaseDataDto caze = caseFacade.getCaseDataByUuid(caseUuid);
+
+		caseFacade.saveCase(caze);
+
+		return toDto(entity);
+	}
+	
 	/**
 	 * Should only be used for synchronization purposes since the associated
 	 * case symptoms are not updated from this method.
@@ -184,7 +199,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		ClinicalVisit clinicalVisit = service.getByUuid(clinicalVisitUuid);
 		service.delete(clinicalVisit);
 	}
-
+	
 	@Override
 	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
@@ -298,6 +313,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	@LocalBean
 	@Stateless
 	public static class ClinicalVisitFacadeEjbLocal extends ClinicalVisitFacadeEjb {
+
 	}
 	
 }

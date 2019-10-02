@@ -82,6 +82,7 @@ public interface Captions {
 	public static String caseBackToDirectory = "caseBackToDirectory";
 	public static String caseCalculateCompleteness = "caseCalculateCompleteness";
 	public static String caseCasesList = "caseCasesList";
+	public static String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";
 	public static String caseContacts = "caseContacts";
 	public static String caseCreateCase = "caseCreateCase";
 	public static String CaseData = "CaseData";
@@ -173,6 +174,7 @@ public interface Captions {
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
 	public static String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	public static String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
+	public static String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	public static String CaseHospitalization = "CaseHospitalization";
 	public static String CaseHospitalization_accommodation = "CaseHospitalization.accommodation";

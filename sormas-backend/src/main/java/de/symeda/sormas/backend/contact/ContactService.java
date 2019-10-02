@@ -30,6 +30,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -39,7 +40,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -180,14 +180,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return resultList;
 	}
 
-	public List<CaseClassification> getSourceCaseClassifications(long resultCaseId) {
+	public List<Object[]> getSourceCaseClassifications(List<Long> caseIds) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CaseClassification> cq = cb.createQuery(CaseClassification.class);
-		Root<Contact> from = cq.from(getElementClass());
-		Join<Contact, Case> cazeJoin = from.join(Contact.CAZE);
-		Join<Contact, Case> resultingCazeJoin = from.join(Contact.RESULTING_CASE);
-		cq.select(cazeJoin.get(Case.CASE_CLASSIFICATION));
-		cq.where(cb.equal(resultingCazeJoin.get(Case.ID), resultCaseId));
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Contact> contactRoot = cq.from(getElementClass());
+		Join<Contact, Case> rootCaseJoin = contactRoot.join(Contact.CAZE);
+		Join<Contact, Case> resultingCaseJoin = contactRoot.join(Contact.RESULTING_CASE);
+		
+		cq.multiselect(
+				resultingCaseJoin.get(Case.ID),
+				rootCaseJoin.get(Case.CASE_CLASSIFICATION));
+		
+		Expression<String> caseIdsExpression = resultingCaseJoin.get(Case.ID);
+		cq.where(caseIdsExpression.in(caseIds));
+		
 		return em.createQuery(cq).getResultList();
 	}
 	

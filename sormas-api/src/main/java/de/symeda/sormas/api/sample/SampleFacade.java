@@ -19,6 +19,7 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -46,6 +47,8 @@ public interface SampleFacade {
 	
 	SampleDto saveSample(SampleDto dto);
 	
+	SampleDto saveSampleSimple(SampleDto dto);
+	
 	SampleReferenceDto getReferenceByUuid(String uuid);
 	
 	SampleReferenceDto getReferredFrom(String sampleUuid);
@@ -63,5 +66,7 @@ public interface SampleFacade {
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
 
 	boolean isDeleted(String sampleUuid);
+	
+	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(RegionReferenceDto regionReference, DistrictReferenceDto districtReference, Disease disease, Date from, Date to, String userUuid);
 	
 }

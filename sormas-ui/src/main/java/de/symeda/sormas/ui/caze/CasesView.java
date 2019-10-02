@@ -219,30 +219,30 @@ public class CasesView extends AbstractView {
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
-//			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
-//			extendedExportButton.setId("extendedExport");
-//			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
-//			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-//			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
-//			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
-//			exportLayout.addComponent(extendedExportButton);
-//
-//			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
-//					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, UserProvider.getCurrent().getUuid(), null), 
-//					(propertyId,type) -> {
-//						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
-//								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
-//										I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
-//												I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
-//														I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId,
-//																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
-//						if (Date.class.isAssignableFrom(type)) {
-//							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
-//						}
-//						return caption;
-//					},
-//					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
-//			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+			extendedExportButton.setId("extendedExport");
+			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
+			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
+			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(extendedExportButton);
+
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, UserProvider.getCurrent().getUuid(), null), 
+					(propertyId,type) -> {
+						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
+								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId,
+																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						}
+						return caption;
+					},
+					"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
 				Button caseManagementExportButton = new Button(I18nProperties.getCaption(Captions.exportCaseManagement));
@@ -507,6 +507,11 @@ public class CasesView extends AbstractView {
 				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
+					
+					if (!region.equals(criteria.getRegion())) {
+						criteria.district(null);
+					}
+					
 					criteria.region(region);
 					navigateTo(criteria);
 				});
@@ -519,26 +524,15 @@ public class CasesView extends AbstractView {
 			districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 			districtFilter.addValueChangeListener(e -> {
 				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
+
+				if (!district.equals(criteria.getDistrict())) {
+					criteria.healthFacility(null);
+					criteria.pointOfEntry(null);
+				}
+				
 				criteria.district(district);
 				navigateTo(criteria);
 			});
-
-			if (user.getRegion() != null && user.getDistrict() == null) {
-				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
-				districtFilter.setEnabled(true);
-			} else {
-				regionFilter.addValueChangeListener(e -> {
-					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-					districtFilter.removeAllItems();
-					if (region != null) {
-						districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
-						districtFilter.setEnabled(true);
-					} else {
-						districtFilter.setEnabled(false);
-					}
-				});
-				districtFilter.setEnabled(false);
-			}
 			secondFilterRowLayout.addComponent(districtFilter);
 
 			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
@@ -565,29 +559,6 @@ public class CasesView extends AbstractView {
 				});
 				secondFilterRowLayout.addComponent(pointOfEntryFilter);
 			}
-
-			districtFilter.addValueChangeListener(e-> {
-				if (facilityFilter != null) {
-					facilityFilter.removeAllItems();
-					DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-					if (district != null) {
-						facilityFilter.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(district, true));
-						facilityFilter.setEnabled(true);
-					} else {
-						facilityFilter.setEnabled(false);
-					}
-				}
-				if (pointOfEntryFilter != null) {
-					pointOfEntryFilter.removeAllItems();
-					DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-					if (district != null) {
-						pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllByDistrict(district.getUuid(), true));
-						pointOfEntryFilter.setEnabled(caseOriginFilter == null || caseOriginFilter.getValue() != CaseOrigin.IN_COUNTRY);
-					} else {
-						pointOfEntryFilter.setEnabled(false);
-					}
-				}
-			});
 
 			officerFilter = new ComboBox();
 			officerFilter.setWidth(140, Unit.PIXELS);
@@ -854,6 +825,7 @@ public class CasesView extends AbstractView {
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
+		UserDto user = UserProvider.getCurrent().getUser();
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
 
@@ -868,11 +840,35 @@ public class CasesView extends AbstractView {
 		searchField.setValue(criteria.getNameUuidEpidNumberLike());
 		presentConditionFilter.setValue(criteria.getPresentCondition());
 		regionFilter.setValue(criteria.getRegion());
-		districtFilter.setValue(criteria.getDistrict());
+		
+		if (user.getRegion() != null && user.getDistrict() == null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else if (criteria.getRegion() != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(criteria.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else {
+			districtFilter.setEnabled(false);
+		}
+		districtFilter.setValue(criteria.getDistrict());		
+		
 		if (facilityFilter != null) {
+			if (criteria.getDistrict() != null) {
+				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(criteria.getDistrict(), true));
+				facilityFilter.setEnabled(true);
+			} else {
+				facilityFilter.setEnabled(false);
+			}
+			
 			facilityFilter.setValue(criteria.getHealthFacility());
 		}
 		if (pointOfEntryFilter != null) {
+			if (criteria.getDistrict() != null) {
+				pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllByDistrict(criteria.getDistrict().getUuid(), true));
+				pointOfEntryFilter.setEnabled(caseOriginFilter == null || caseOriginFilter.getValue() != CaseOrigin.IN_COUNTRY);
+			} else {
+				pointOfEntryFilter.setEnabled(false);
+			}
 			pointOfEntryFilter.setValue(criteria.getPointOfEntry());
 		}
 		officerFilter.setValue(criteria.getSurveillanceOfficer());

@@ -1,12 +1,14 @@
 package de.symeda.sormas.ui.caze;
 
 import java.time.ZoneId;
+import java.util.function.Consumer;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -41,6 +43,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private ComboBox<Disease> cbDisease;
 	private TextField tfSearch;
 	private TextField tfReportingUser;
+	private CheckBox cbIgnoreRegion;
 	private ComboBox<RegionReferenceDto> cbRegion;
 	private ComboBox<DistrictReferenceDto> cbDistrict;
 	private ComboBox<NewCaseDateType> cbNewCaseDateType;
@@ -52,6 +55,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private Binder<CaseCriteria> binder = new Binder<>(CaseCriteria.class);
 	private CaseCriteria criteria;
 	private Runnable filtersUpdatedCallback;
+	private Consumer<Boolean> ignoreRegionCallback;
 
 	private Label lblNumberOfDuplicates;
 	
@@ -71,6 +75,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private void addFirstRowLayout() {
 		firstRowLayout = new HorizontalLayout();
 		firstRowLayout.setMargin(false);
+		firstRowLayout.setWidth(100, Unit.PERCENTAGE);
 
 		dfCreationDateFrom = new DateField();
 		dfCreationDateFrom.setId(CaseCriteria.CREATION_DATE_FROM);
@@ -116,6 +121,16 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		tfReportingUser.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORTING_USER));
 		binder.bind(tfReportingUser, CaseCriteria.REPORTING_USER_LIKE);
 		firstRowLayout.addComponent(tfReportingUser);
+		
+		cbIgnoreRegion = new CheckBox();
+		CssStyles.style(cbIgnoreRegion, CssStyles.CHECKBOX_FILTER_INLINE);
+		cbIgnoreRegion.setCaption(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
+		cbIgnoreRegion.addValueChangeListener(e -> {
+			ignoreRegionCallback.accept(e.getValue());
+		});
+		firstRowLayout.addComponent(cbIgnoreRegion);
+		firstRowLayout.setComponentAlignment(cbIgnoreRegion, Alignment.MIDDLE_RIGHT);
+		firstRowLayout.setExpandRatio(cbIgnoreRegion, 1);
 
 		addComponent(firstRowLayout);
 	}
@@ -230,6 +245,10 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	
 	public void setFiltersUpdatedCallback(Runnable filtersUpdatedCallback) {
 		this.filtersUpdatedCallback = filtersUpdatedCallback;
+	}
+	
+	public void setIgnoreRegionCallback(Consumer<Boolean> ignoreRegionCallback) {
+		this.ignoreRegionCallback = ignoreRegionCallback;
 	}
 
 }

@@ -38,6 +38,8 @@ public interface ContactFacade {
     
 	ContactDto saveContact(ContactDto dto);
 	
+	ContactDto saveContactSimple(ContactDto dto);
+	
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllActiveUuids(String userUuid);
@@ -70,5 +72,4 @@ public interface ContactFacade {
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
 	
 	boolean isDeleted(String contactUuid);
-
 }

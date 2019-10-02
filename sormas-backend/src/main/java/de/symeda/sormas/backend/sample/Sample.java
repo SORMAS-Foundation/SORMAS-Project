@@ -83,6 +83,7 @@ public class Sample extends CoreAdo {
 	public static final String ADDITIONAL_TESTING_REQUESTED = "additionalTestingRequested";
 	public static final String ADDITIONAL_TESTS = "additionalTests";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
+	public static final String PATHOGEN_TEST_RESULT_CHANGE_DATE = "pathogenTestResultChangeDate";
 	public static final String REQUESTED_PATHOGEN_TESTS_STRING = "requestedPathogenTestsString";
 	public static final String REQUESTED_ADDITIONAL_TESTS_STRING = "requestedAdditionalTestsString";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
@@ -114,6 +115,7 @@ public class Sample extends CoreAdo {
 	private boolean shipped;
 	private boolean received;
 	private PathogenTestResultType pathogenTestResult;
+	private Date pathogenTestResultChangeDate;
 
 	private Boolean pathogenTestingRequested;
 	private Boolean additionalTestingRequested;
@@ -318,6 +320,14 @@ public class Sample extends CoreAdo {
 		this.pathogenTestResult = pathogenTestResult;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getPathogenTestResultChangeDate() {
+		return pathogenTestResultChangeDate;
+	}
+	public void setPathogenTestResultChangeDate(Date pathogenTestResultChangeDate) {
+		this.pathogenTestResultChangeDate = pathogenTestResultChangeDate;
+	}
+	
 	@Column
 	public Boolean getPathogenTestingRequested() {
 		return pathogenTestingRequested;
