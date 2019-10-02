@@ -31,6 +31,7 @@ public interface Validations {
 	public static String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	public static String noCommunityInDistrict = "noCommunityInDistrict";
 	public static String noDistrictInRegion = "noDistrictInRegion";
+	public static String noFacilityDetails = "noFacilityDetails";
 	public static String noFacilityInCommunity = "noFacilityInCommunity";
 	public static String noFacilityInDistrict = "noFacilityInDistrict";
 	public static String noFacilityInRegion = "noFacilityInRegion";
@@ -55,5 +56,4 @@ public interface Validations {
 	public static String visitAfterFollowUp = "visitAfterFollowUp";
 	public static String visitBeforeContactReport = "visitBeforeContactReport";
 	public static String visitBeforeLastContactDate = "visitBeforeLastContactDate";
-	public static String noFacilityDetails = "noFacilityDetails";
  }
