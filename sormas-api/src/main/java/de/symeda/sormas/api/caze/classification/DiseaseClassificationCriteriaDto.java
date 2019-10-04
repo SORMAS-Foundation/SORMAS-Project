@@ -43,7 +43,7 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 		this.suspectCriteria = suspectCriteria;
 		this.probableCriteria = probableCriteria;
 		this.confirmedCriteria = confirmedCriteria;
-		this.setNotACaseCriteria(notACaseCriteria);
+		this.notACaseCriteria = notACaseCriteria;
 	}
 
 	public Disease getDisease() {
@@ -87,6 +87,6 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 	}
 
 	public boolean hasAnyCriteria() {
-		return suspectCriteria != null || probableCriteria != null || confirmedCriteria != null;
+		return suspectCriteria != null || probableCriteria != null || confirmedCriteria != null || notACaseCriteria != null;
 	}
 }
