@@ -169,6 +169,8 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState radiolucentBoneDisease;
 	private SymptomState congenitalHeartDisease;
 	private CongenitalHeartDiseaseType congenitalHeartDiseaseType;
+	private SymptomState hydrophobia;
+	private SymptomState opisthotonus;
 	private String congenitalHeartDiseaseDetails;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
@@ -1305,6 +1307,24 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setCongenitalHeartDiseaseDetails(String congenitalHeartDiseaseDetails) {
 		this.congenitalHeartDiseaseDetails = congenitalHeartDiseaseDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHydrophobia() {
+		return hydrophobia;
+	}
+
+	public void setHydrophobia(SymptomState hydrophobia) {
+		this.hydrophobia = hydrophobia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOpisthotonus() {
+		return opisthotonus;
+	}
+
+	public void setOpisthotonus(SymptomState opisthotonus) {
+		this.opisthotonus = opisthotonus;
 	}
 
 	@Column(length = 255)

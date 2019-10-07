@@ -3595,4 +3595,9 @@ ALTER TABLE epidata_history ADD COLUMN kindofexposuredetails varchar(512);
 ALTER TABLE epidata ADD COLUMN animalvaccinationstatus varchar(255);
 ALTER TABLE epidata_history ADD COLUMN animalvaccinationstatus varchar(255);
 
+ALTER TABLE symptoms ADD COLUMN hydrophobia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hydrophobia varchar(255);
+ALTER TABLE symptoms ADD COLUMN opisthotonus varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN opisthotonus varchar(255);
+
 INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add new disease, human rabies #834');

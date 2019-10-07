@@ -178,6 +178,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setSplenomegaly(source.getSplenomegaly());
 		target.setJaundiceWithin24HoursOfBirth(source.getJaundiceWithin24HoursOfBirth());
 		target.setRadiolucentBoneDisease(source.getRadiolucentBoneDisease());
+		target.setHydrophobia(source.getHydrophobia());
+		target.setOpisthotonus(source.getOpisthotonus());
 		
 		return symptoms;
 	}
@@ -322,6 +324,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setSplenomegaly(source.getSplenomegaly());
 		target.setJaundiceWithin24HoursOfBirth(source.getJaundiceWithin24HoursOfBirth());
 		target.setRadiolucentBoneDisease(source.getRadiolucentBoneDisease());
+		target.setHydrophobia(source.getHydrophobia());
+		target.setOpisthotonus(source.getOpisthotonus());
 
 		return target;
 	}

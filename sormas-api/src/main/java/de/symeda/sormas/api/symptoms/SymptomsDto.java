@@ -163,6 +163,8 @@ public class SymptomsDto extends EntityDto {
 	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
 	public static final String UNILATERAL_CATARACTS = "unilateralCataracts";
 	public static final String VOMITING = "vomiting";	
+	public static final String HYDROPHOBIA = "hydrophobia";	
+	public static final String OPISTHOTONUS = "opisthotonus";	
 	
 	public static final String WEIGHT = "weight";
 
@@ -484,6 +486,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState vomiting;
+	@Diseases({Disease.RABIES})
+	private SymptomState hydrophobia;
+	@Diseases({Disease.RABIES})
+	private SymptomState opisthotonus;
 
 	private Integer weight;
 	
@@ -1365,6 +1371,18 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setCongenitalHeartDiseaseDetails(String congenitalHeartDiseaseDetails) {
 		this.congenitalHeartDiseaseDetails = congenitalHeartDiseaseDetails;
+	}
+	public SymptomState getHydrophobia() {
+		return hydrophobia;
+	}
+	public void setHydrophobia(SymptomState hydrophobia) {
+		this.hydrophobia = hydrophobia;
+	}
+	public SymptomState getOpisthotonus() {
+		return opisthotonus;
+	}
+	public void setOpisthotonus(SymptomState opisthotonus) {
+		this.opisthotonus = opisthotonus;
 	}
 	public void setWeight(Integer weight) {
 		this.weight = weight;
