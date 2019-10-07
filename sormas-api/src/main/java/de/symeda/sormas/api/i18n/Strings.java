@@ -368,6 +368,7 @@ public interface Strings {
 	public static String messageLoginFailed = "messageLoginFailed";
 	public static String messageMissingDateFilter = "messageMissingDateFilter";
 	public static String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
+	public static String messageMultipleInfrastructureDataChanged = "messageMultipleInfrastructureDataChanged";
 	public static String messageNoCasesSelected = "messageNoCasesSelected";
 	public static String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	public static String messageNoContactsSelected = "messageNoContactsSelected";

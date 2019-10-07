@@ -76,6 +76,7 @@ public interface Captions {
 	public static String bulkEdit = "bulkEdit";
 	public static String bulkEventStatus = "bulkEventStatus";
 	public static String bulkEventType = "bulkEventType";
+	public static String bulkHealthFacility = "bulkHealthFacility";
 	public static String bulkInvestigationStatus = "bulkInvestigationStatus";
 	public static String bulkLostToFollowUp = "bulkLostToFollowUp";
 	public static String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
@@ -211,6 +212,7 @@ public interface Captions {
 	public static String caseShowActive = "caseShowActive";
 	public static String caseShowArchived = "caseShowArchived";
 	public static String caseTransferCase = "caseTransferCase";
+	public static String caseTransferCases = "caseTransferCases";
 	public static String city = "city";
 	public static String ClinicalVisit = "ClinicalVisit";
 	public static String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";

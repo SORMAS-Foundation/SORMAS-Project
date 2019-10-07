@@ -45,6 +45,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -456,7 +457,8 @@ public class CaseController {
 		editView.addCommitListener(() -> {
 			CaseDataDto oldCase = findCase(caseUuid);
 			CaseDataDto cazeDto = caseEditForm.getValue();
-			if (cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
+			if (cazeDto.getHealthFacility() != null
+					&& !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
 				saveCaseWithPreviousHospitalizationPrompt(cazeDto, oldCase);
 			} else {
 				saveCase(cazeDto);
@@ -472,7 +474,7 @@ public class CaseController {
 		if (selectedCases.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
-			.show(Page.getCurrent());
+							.show(Page.getCurrent());
 			return;
 		}
 
@@ -504,28 +506,77 @@ public class CaseController {
 			@Override
 			public void onCommit() {
 				CaseDataDto updatedTempCase = form.getValue();
-				for (CaseIndexDto indexDto : selectedCases) {
-					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(indexDto.getUuid());
-					if (form.getClassificationCheckBox().getValue() == true) {
-						caseDto.setCaseClassification(updatedTempCase.getCaseClassification());
-					}
-					if (form.getInvestigationStatusCheckBox().getValue() == true) {
-						caseDto.setInvestigationStatus(updatedTempCase.getInvestigationStatus());
-					}
-					if (form.getOutcomeCheckBox().getValue() == true) {
-						caseDto.setOutcome(updatedTempCase.getOutcome());
-					}
-					// Setting the surveillance officer is only allowed if all selected cases are in
-					// the same district
-					if (district != null && form.getSurveillanceOfficerCheckBox().getValue() == true) {
-						caseDto.setSurveillanceOfficer(updatedTempCase.getSurveillanceOfficer());
-					}
 
-					FacadeProvider.getCaseFacade().saveCase(caseDto);
+				boolean classificationChange = form.getClassificationCheckBox().getValue();
+				boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
+				boolean outcomeChange = form.getOutcomeCheckBox().getValue();
+				boolean surveillanceOfficerChange = district != null
+						&& form.getSurveillanceOfficerCheckBox().getValue();
+				boolean healthFacilityChange = form.getHealthFacilityCheckbox().getValue();
+
+				if (healthFacilityChange) {
+
+					VaadinUiUtil.showConfirmationPopup(
+							I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
+							new Label(I18nProperties.getString(Strings.messageMultipleInfrastructureDataChanged)),
+							I18nProperties.getCaption(Captions.caseTransferCases),
+							I18nProperties.getCaption(Captions.caseEditData), 500, e -> {
+								CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+								for (CaseIndexDto indexDto : selectedCases) {
+									CaseDataDto updatedCase = changeCaseDto(updatedTempCase,
+											caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange,
+											investigationStatusChange, outcomeChange, surveillanceOfficerChange);
+									updatedCase.setRegion(updatedTempCase.getRegion());
+									updatedCase.setDistrict(updatedTempCase.getDistrict());
+									updatedCase.setCommunity(updatedTempCase.getCommunity());
+									updatedCase.setHealthFacility(updatedTempCase.getHealthFacility());
+									boolean doTransfer = e.booleanValue();
+									if (doTransfer) {
+										CaseDataDto oldCase = caseFacade.getCaseDataByUuid(indexDto.getUuid());
+										CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(updatedCase,
+												oldCase);
+									}
+									caseFacade.saveCase(updatedCase);
+									navigateToIndex();
+								}
+							});
+
+				} else {
+					CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+					for (CaseIndexDto indexDto : selectedCases) {
+
+						CaseDataDto caseDto = changeCaseDto(updatedTempCase,
+								caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange,
+								investigationStatusChange, outcomeChange, surveillanceOfficerChange);
+
+						caseFacade.saveCase(caseDto);
+					}
 				}
 				popupWindow.close();
 				navigateToIndex();
 				Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
+			}
+
+			private CaseDataDto changeCaseDto(CaseDataDto updatedTempCase, CaseDataDto caseDto,
+					boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
+					boolean surveillanceOfficerChange) {
+
+				if (classificationChange) {
+					caseDto.setCaseClassification(updatedTempCase.getCaseClassification());
+				}
+				if (investigationStatusChange) {
+					caseDto.setInvestigationStatus(updatedTempCase.getInvestigationStatus());
+				}
+				if (outcomeChange) {
+					caseDto.setOutcome(updatedTempCase.getOutcome());
+				}
+				// Setting the surveillance officer is only allowed if all selected cases are in
+				// the same district
+				if (surveillanceOfficerChange) {
+					caseDto.setSurveillanceOfficer(updatedTempCase.getSurveillanceOfficer());
+				}
+
+				return caseDto;
 			}
 		});
 
@@ -654,7 +705,7 @@ public class CaseController {
 		SymptomsForm symptomsForm = new SymptomsForm(caseDataDto, caseDataDto.getDisease(), person,
 				SymptomsContext.CASE, UserRight.CASE_EDIT, viewMode);
 		symptomsForm.setValue(caseDataDto.getSymptoms());
-		
+
 		CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(
 				symptomsForm, symptomsForm.getFieldGroup());
 
@@ -716,8 +767,8 @@ public class CaseController {
 	public void saveCaseWithPreviousHospitalizationPrompt(CaseDataDto caze, CaseDataDto oldCase) {
 		VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
 				new Label(I18nProperties.getString(Strings.messageInfrastructureDataChanged)),
-				I18nProperties.getCaption(Captions.caseTransferCase),
-				I18nProperties.getCaption(Captions.caseEditData), 500, e -> {
+				I18nProperties.getCaption(Captions.caseTransferCase), I18nProperties.getCaption(Captions.caseEditData),
+				500, e -> {
 					if (e.booleanValue() == true) {
 						CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(caze, oldCase);
 						saveCase(caze);
@@ -810,7 +861,7 @@ public class CaseController {
 			confirmedContent.setWidth(100, Unit.PERCENTAGE);
 			confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
 			classificationRulesLayout.addComponent(confirmedContent);
-			
+
 			Label notACaseContent = new Label();
 			notACaseContent.setContentMode(ContentMode.HTML);
 			notACaseContent.setWidth(100, Unit.PERCENTAGE);
@@ -832,7 +883,7 @@ public class CaseController {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
-			.show(Page.getCurrent());
+							.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 					String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()),
@@ -855,7 +906,7 @@ public class CaseController {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
-			.show(Page.getCurrent());
+							.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmArchiving),
 					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveCases),
@@ -878,7 +929,7 @@ public class CaseController {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
-			.show(Page.getCurrent());
+							.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmDearchiving),
 					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveCases),
@@ -896,17 +947,17 @@ public class CaseController {
 					});
 		}
 	}
-	
+
 	public void openEditExportConfigurationWindow(CaseCustomExportsGrid grid, ExportConfigurationDto config) {
 		Window newExportWindow = VaadinUiUtil.createPopupWindow();
-		CaseEditExportConfigurationLayout editLayout = new CaseEditExportConfigurationLayout(config, 
+		CaseEditExportConfigurationLayout editLayout = new CaseEditExportConfigurationLayout(config,
 				(exportConfiguration) -> {
 					FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
 					newExportWindow.close();
-					new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+					new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved),
+							Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 					grid.reload();
-				}, 
-				() -> { 
+				}, () -> {
 					newExportWindow.close();
 					grid.reload();
 				});
