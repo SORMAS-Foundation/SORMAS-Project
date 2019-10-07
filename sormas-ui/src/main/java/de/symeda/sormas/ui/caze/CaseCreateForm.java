@@ -53,7 +53,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
 			LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE) +
-			LayoutUtil.fluidRow(LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE)) +
+			LayoutUtil.fluidRow(LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE, CaseDataDto.HUMAN_RABIES_TYPE)) +
 			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
@@ -76,6 +76,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
+		addField(CaseDataDto.HUMAN_RABIES_TYPE, OptionGroup.class);
 		addCustomField(FIRST_NAME, String.class, TextField.class);
 		addCustomField(LAST_NAME, String.class, TextField.class);
 
@@ -146,6 +147,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), CaseDataDto.CASE_ORIGIN, Arrays.asList(CaseDataDto.POINT_OF_ENTRY), Arrays.asList(CaseOrigin.POINT_OF_ENTRY));
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.PLAGUE), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.DENGUE), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.HUMAN_RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
 
 		facility.addValueChangeListener(e -> {
 			updateFacilityFields(facility, facilityDetails);

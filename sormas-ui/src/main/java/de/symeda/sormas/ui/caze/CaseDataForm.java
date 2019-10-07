@@ -92,7 +92,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					new FluidColumn(null, 6, 0, CaseDataDto.DISEASE, null),
 					new FluidColumn(null, 6, 0, null,
 							LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE,
-									CaseDataDto.DENGUE_FEVER_TYPE)))
+									CaseDataDto.DENGUE_FEVER_TYPE, CaseDataDto.HUMAN_RABIES_TYPE)))
 			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE)
 			+ LayoutUtil.fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
@@ -162,6 +162,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
+		addField(CaseDataDto.HUMAN_RABIES_TYPE, OptionGroup.class);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -217,6 +218,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (isVisibleAllowed(CaseDataDto.PLAGUE_TYPE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE,
 					Arrays.asList(Disease.PLAGUE), true);
+		}
+		if (isVisibleAllowed(CaseDataDto.HUMAN_RABIES_TYPE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.HUMAN_RABIES_TYPE), CaseDataDto.DISEASE,
+					Arrays.asList(Disease.RABIES), true);
 		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SMALLPOX_VACCINATION_SCAR,

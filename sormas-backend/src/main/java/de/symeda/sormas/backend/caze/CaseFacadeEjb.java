@@ -1474,6 +1474,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
+		target.setHumanRabiesType(source.getHumanRabiesType());
 		if (source.getReportDate() != null) {
 			target.setReportDate(source.getReportDate());
 		} else { // make sure we do have a report date
@@ -1571,6 +1572,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
+		target.setHumanRabiesType(source.getHumanRabiesType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
