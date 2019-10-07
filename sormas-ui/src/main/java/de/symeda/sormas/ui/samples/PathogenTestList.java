@@ -40,9 +40,9 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
 	private SampleReferenceDto sampleRef;
 	private int caseSampleCount;
-	private BiConsumer<PathogenTestResultType, Boolean> testChangedCallback;
+	private BiConsumer<PathogenTestResultType, Runnable> testChangedCallback;
 
-	public PathogenTestList(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Boolean> testChangedCallback) {
+	public PathogenTestList(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		super(5);
 
 		this.sampleRef = sampleRef;

@@ -61,7 +61,7 @@ public class PathogenTestController {
 	}
 
 	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback,
-			BiConsumer<PathogenTestResultType, Boolean> testChangedCallback) {
+			BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		PathogenTestForm createForm = new PathogenTestForm(
 				FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid()), true,
 				UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
@@ -83,7 +83,7 @@ public class PathogenTestController {
 	}
 
 	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable callback,
-			BiConsumer<PathogenTestResultType, Boolean> testChangedCallback) {
+			BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		// get fresh data
 		PathogenTestDto newDto = facade.getByUuid(dto.getUuid());
 
@@ -120,45 +120,43 @@ public class PathogenTestController {
 		}
 	}
 
-	private void savePathogenTest(PathogenTestDto dto,
-			BiConsumer<PathogenTestResultType, Boolean> testChangedCallback) {
+	private void savePathogenTest(PathogenTestDto dto, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
 		CaseDataDto existingCaseDto = FacadeProvider.getCaseFacade()
 				.getCaseDataByUuid(sample.getAssociatedCase().getUuid());
 		facade.savePathogenTest(dto);
 		CaseDataDto newCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
 		showSaveNotification(existingCaseDto, newCaseDto);
+
+		Runnable caseCloningCallback = () -> {
+			if (dto.getTestedDisease() != newCaseDto.getDisease() 
+					&& dto.getTestResult() == PathogenTestResultType.POSITIVE
+					&& dto.getTestResultVerified().booleanValue() == true) {
+				buildAndShowDialogForCaseCloningWithNewDisease(newCaseDto, dto.getTestedDisease());
+			}
+		};
 		
-		BiConsumer<PathogenTestResultType, Boolean> caseCloningCallback = (testResult, accepted) -> {
-			buildAndShowDialogForCaseCloningWithNewDisease(newCaseDto, dto.getTestedDisease());
+		// TESTEN!
+
+		Runnable confirmCaseCallback = () -> {
+			if (dto.getTestedDisease() == newCaseDto.getDisease()
+					&& dto.getTestResult() == PathogenTestResultType.POSITIVE
+					&& dto.getTestResultVerified().booleanValue() == true
+					&& newCaseDto.getCaseClassification() != CaseClassification.CONFIRMED
+					&& newCaseDto.getCaseClassification() != CaseClassification.NO_CASE) {
+				buildAndShowConfirmCaseDialog(newCaseDto);
+			}
 		};
 
-		BiConsumer<PathogenTestResultType, Boolean> confirmCaseCallback = (testResult, accepted) -> {
-			buildAndShowConfirmCaseDialog(newCaseDto);
-		};
-
-		if (dto.getTestedDisease() != newCaseDto.getDisease() 
-				&& dto.getTestResult() == PathogenTestResultType.POSITIVE
+		if (testChangedCallback != null
 				&& dto.getTestResultVerified().booleanValue() == true) {
-
-			if (testChangedCallback != null) {
-				testChangedCallback.andThen(caseCloningCallback).accept(dto.getTestResult(), dto.getTestResultVerified());
-			} else {
-				caseCloningCallback.accept(dto.getTestResult(), dto.getTestResultVerified());
-			}
-		} else if (dto.getTestedDisease() == newCaseDto.getDisease()
-				&& dto.getTestResult() == PathogenTestResultType.POSITIVE
-				&& dto.getTestResultVerified().booleanValue() == true
-				&& newCaseDto.getCaseClassification() != CaseClassification.CONFIRMED
-				&& newCaseDto.getCaseClassification() != CaseClassification.NO_CASE) {
-
-			if (testChangedCallback != null) {
-				testChangedCallback.andThen(confirmCaseCallback).accept(dto.getTestResult(), dto.getTestResultVerified());
-			} else {
-				confirmCaseCallback.accept(dto.getTestResult(), dto.getTestResultVerified());
-			}
-		} else if (testChangedCallback != null) {
-			testChangedCallback.accept(dto.getTestResult(), dto.getTestResultVerified());
+			testChangedCallback.accept(dto.getTestResult(), () -> {
+				confirmCaseCallback.run();
+				caseCloningCallback.run();
+			});
+		} else {
+			confirmCaseCallback.run();
+			caseCloningCallback.run();
 		}
 	}
 
@@ -193,14 +191,8 @@ public class PathogenTestController {
 	}
 
 	private void showSaveNotification(CaseDataDto existingCaseDto, CaseDataDto newCaseDto) {
-		if (existingCaseDto.getCaseClassification() != newCaseDto.getCaseClassification()
-				&& newCaseDto.getClassificationUser() == null) {
-			Notification notification = new Notification(
-					String.format(I18nProperties.getString(Strings.messagePathogenTestSaved),
-							newCaseDto.getCaseClassification().toString()),
-					Type.TRAY_NOTIFICATION);
-			notification.setDelayMsec(-1);
-			notification.show(Page.getCurrent());
+		if (existingCaseDto.getCaseClassification() != newCaseDto.getCaseClassification() && newCaseDto.getClassificationUser() == null) {
+			Notification.show(String.format(I18nProperties.getString(Strings.messagePathogenTestSaved), newCaseDto.getCaseClassification().toString()), Type.TRAY_NOTIFICATION);
 		} else {
 			Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), Type.TRAY_NOTIFICATION);
 		}
