@@ -29,11 +29,12 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SampleLabType;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -64,7 +65,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private List<Item> sampleMaterialList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
-    private List<Item> labTypeList;
+    private List<Item> samplePurposeList;
     private List<String> requestedPathogenTests;
     private List<String> requestedAdditionalTests = new ArrayList<>();
 
@@ -143,7 +144,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
-        labTypeList = DataUtils.getEnumItems(SampleLabType.class, true);
+        samplePurposeList = DataUtils.getEnumItems(SamplePurpose.class, true);
 
         requestedPathogenTests = new ArrayList<>();
         for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
@@ -191,15 +192,12 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 }
             }
         });
-        contentBinding.sampleLabType.initializeSpinner(labTypeList, new ValueChangeListener() {
+        contentBinding.samplePurpose.initializeSpinner(samplePurposeList, new ValueChangeListener() {
             @Override
             public void onChange(ControlPropertyField field) {
-                SampleLabType labType = (SampleLabType) field.getValue();
-                if (labType != null && labType.equals(SampleLabType.EXTERNAL)) {
-                    showLabExternal(contentBinding, VISIBLE);
-                } else {
-                    showLabExternal(contentBinding, GONE);
-                }
+                SamplePurpose samplePurpose = (SamplePurpose) field.getValue();
+                if(samplePurpose != null)
+                    setVisibilitiesBasedOnSamplePurpose(contentBinding, samplePurpose);
             }
         });
 
@@ -260,15 +258,42 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         }
     }
 
-    void showLabExternal(FragmentSampleEditLayoutBinding contentBinding, int show){
-        contentBinding.sampleShipped.setVisibility(show);
-        contentBinding.sampleShipmentDate.setVisibility(show);
-        contentBinding.sampleReceived.setVisibility(show);
-
-        if(show== VISIBLE && record!=null && record.isShipped())
-            contentBinding.sampleShipmentDetails.setVisibility(show);
-        else
-            contentBinding.sampleShipmentDetails.setVisibility(show);
+    void setVisibilitiesBasedOnSamplePurpose(FragmentSampleEditLayoutBinding contentBinding, SamplePurpose samplePurpose)
+    {
+        switch(samplePurpose) {
+            case EXTERNAL:
+                contentBinding.sampleShipped.setVisibility(VISIBLE);
+                contentBinding.sampleShipmentDate.setVisibility(VISIBLE);
+                contentBinding.sampleReceived.setVisibility(VISIBLE);
+                contentBinding.sampleShipmentDetails.setVisibility(VISIBLE);
+                contentBinding.samplePathogenTestResult.setVisibility(VISIBLE);
+                contentBinding.samplePathogenTestingRequested.setVisibility(VISIBLE);
+                contentBinding.sampleRequestedPathogenTests.setVisibility(VISIBLE);
+                contentBinding.sampleRequestedPathogenTestsTags.setVisibility(VISIBLE);
+                contentBinding.sampleRequestedOtherPathogenTests.setVisibility(VISIBLE);
+                contentBinding.sampleAdditionalTestingRequested.setVisibility(VISIBLE);
+                contentBinding.sampleRequestedAdditionalTests.setVisibility(VISIBLE);
+                contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(VISIBLE);
+                contentBinding.sampleLab.setRequired(true);
+                break;
+            case INTERNAL:
+                contentBinding.sampleShipped.setVisibility(GONE);
+                contentBinding.sampleShipmentDate.setVisibility(GONE);
+                contentBinding.sampleReceived.setVisibility(GONE);
+                contentBinding.sampleShipmentDetails.setVisibility(GONE);
+                contentBinding.samplePathogenTestResult.setVisibility(GONE);
+                contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
+                contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
+                contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
+                contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
+                contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
+                contentBinding.sampleRequestedAdditionalTests.setVisibility(GONE);
+                contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
+                contentBinding.sampleLab.setRequired(false);
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(samplePurpose));
+        }
     }
 
     @Override

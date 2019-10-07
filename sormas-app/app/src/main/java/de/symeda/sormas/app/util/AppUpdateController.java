@@ -35,6 +35,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 
+import de.symeda.sormas.app.BuildConfig;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -387,7 +388,7 @@ public class AppUpdateController {
         installIntent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
         installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         installIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        installIntent.setDataAndType(FileProvider.getUriForFile(activity, "de.symeda.sormas.fileprovider", file), "application/vnd.android.package-archive");
+        installIntent.setDataAndType(FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", file), "application/vnd.android.package-archive");
         activity.startActivityForResult(installIntent, AppUpdateController.INSTALL_RESULT);
     }
 

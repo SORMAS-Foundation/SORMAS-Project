@@ -57,8 +57,8 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<PathogenTestDto> PathogenTestDtos) throws NoConnectionException {
-        throw new UnsupportedOperationException("Can't change sample tests in app");
+    protected Call<List<PushResult>> pushAll(List<PathogenTestDto> pathogenTestDtos) throws NoConnectionException {
+        return RetroProvider.getSampleTestFacade().pushAll(pathogenTestDtos);
     }
 
     @Override
@@ -70,8 +70,6 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestType(source.getTestType());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-
-        //newly added
         target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
@@ -86,14 +84,11 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         } else {
             target.setSample(null);
         }
-
         target.setTestDateTime(source.getTestDateTime());
         target.setTestResult(source.getTestResult());
         target.setTestType(source.getTestType());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-
-        //newly added
         if(source.getLab() != null) {
             Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getLab().getId());
             target.setLab(FacilityDtoHelper.toReferenceDto(lab));

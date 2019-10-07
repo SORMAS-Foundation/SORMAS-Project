@@ -168,6 +168,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	
 	@Test
 	public void testContactDeletion() {
+		Date since = new Date();
+		
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
@@ -185,12 +187,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 		assertNotNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 		
-		 getContactFacade().deleteContact(contact.toReference(), adminUuid);
-		
-		// Database should not contain the deleted contact, visit and task
-		assertNull(getContactFacade().getContactByUuid(contact.getUuid()));
+		 getContactFacade().deleteContact(contact.getUuid(), adminUuid);
+
+		// Deleted flag should be set for contact; Task should be deleted
+		assertTrue(getContactFacade().getDeletedUuidsSince(user.getUuid(), since).contains(contact.getUuid()));
+		// Can't delete visit because it might be associated with other contacts as well
+//		assertNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
-		assertNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 	}
 	
 	@Test

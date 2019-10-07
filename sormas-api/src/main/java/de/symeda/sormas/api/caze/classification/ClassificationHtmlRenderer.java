@@ -91,6 +91,24 @@ public class ClassificationHtmlRenderer {
 
 		return sb.toString();
 	}
+	
+	public static String createNotACaseHtmlString(DiseaseClassificationCriteriaDto criteria) {
+		StringBuilder sb = new StringBuilder();
+		ClassificationCriteriaDto notACaseCriteria = criteria.getNotACaseCriteria();
+		if (notACaseCriteria != null) {
+			StringBuilder notACaseSb = new StringBuilder();
+			notACaseSb.append(createHeadlineDiv(I18nProperties.getString(Strings.classificationNotACase)));
+			if (notACaseCriteria instanceof ClassificationXOfCriteriaDto) {
+				notACaseSb.append(createInfoDiv(((ClassificationXOfCriteriaDto) notACaseCriteria).getRequiredAmount()));
+			} else {
+				notACaseSb.append(createInfoDiv());
+			}
+			notACaseSb.append(buildCriteriaDiv(notACaseCriteria));
+			sb.append(createSurroundingDiv(ClassificationCriteriaType.NOT_A_CASE, notACaseSb.toString(), false));
+		}
+
+		return sb.toString();
+	}
 
 	public static String createHtmlForDownload(String sormasServerUrl, List<Disease> diseases) {
 		StringBuilder html = new StringBuilder();
@@ -117,6 +135,9 @@ public class ClassificationHtmlRenderer {
 				"}\r\n" + 
 				".classification-rules .main-criteria.main-criteria-confirmed {\r\n" + 
 				"  background: rgba(255, 0, 0, 0.6);\r\n" + 
+				"}\r\n" +
+				".classification-rules .main-criteria.main-criteria-not_a_case {\r\n" + 
+				"  background: rgba(201, 201, 201, 0.6);\r\n" + 
 				"}\r\n" + 
 				".classification-rules .headline {\r\n" + 
 				"  font-weight: bold;\r\n" + 
@@ -282,7 +303,8 @@ public class ClassificationHtmlRenderer {
 	private enum ClassificationCriteriaType {
 		SUSPECT,
 		PROBABLE,
-		CONFIRMED;
+		CONFIRMED,
+		NOT_A_CASE;
 
 		@Override
 		public String toString() {

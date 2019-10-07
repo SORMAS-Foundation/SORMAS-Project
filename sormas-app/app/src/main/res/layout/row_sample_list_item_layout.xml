@@ -147,6 +147,19 @@
                         />
 
                     <TextView
+                        android:id="@+id/sample_purpose"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        android:textColor="@color/row_entry_secondary_text"
+                        app:samplePurposeValue="@{data.samplePurpose}"
+                        app:defaultValue=''
+                        />
+
+                    <TextView
                         android:id="@+id/txtTestResult"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

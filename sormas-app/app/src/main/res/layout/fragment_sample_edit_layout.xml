@@ -84,6 +84,12 @@
                     app:value="@={data.sampleDateTime}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/sample_purpose"
+                    app:required="true"
+                    app:value="@={data.samplePurpose}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -202,12 +208,6 @@
                 </LinearLayout>
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/sample_labType"
-                    app:required="true"
-                    app:value="@={data.labType}"
-                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

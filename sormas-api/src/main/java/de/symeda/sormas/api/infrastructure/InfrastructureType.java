@@ -6,6 +6,7 @@ public enum InfrastructureType {
 	DISTRICT,
 	COMMUNITY,
 	FACILITY,
-	POINT_OF_ENTRY;
+	POINT_OF_ENTRY,
+	POPULATION_DATA;
 	
 }

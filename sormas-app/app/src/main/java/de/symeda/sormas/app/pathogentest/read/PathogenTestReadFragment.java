@@ -33,35 +33,9 @@ import static android.view.View.GONE;
 public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenTestReadLayoutBinding, PathogenTest, PathogenTest> {
 
     private PathogenTest record;
-    private Case sourceCase;
 
     public static PathogenTestReadFragment newInstance(PathogenTest activityRootData) {
         return newInstance(PathogenTestReadFragment.class, null, activityRootData);
-    }
-
-    private void setUpControlListeners(FragmentPathogenTestReadLayoutBinding contentBinding) {
-//        contentBinding.openSourceCase.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                CaseReadActivity.startActivity(getContext(), sourceCase.getUuid(), true);
-//            }
-//        });
-//
-//        contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                CaseReadActivity.startActivity(getContext(), record.getResultingCaseUuid(), true);
-//            }
-//        });
-    }
-
-    private void setUpFieldVisibilities(FragmentPathogenTestReadLayoutBinding contentBinding) {
-//        setVisibilityByDisease(PathogenTestDto.class, sourceCase.getDisease(), contentBinding.mainContent);
-//
-//        if (record.getResultingCaseUuid() == null
-//                || DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
-//            contentBinding.openResultingCase.setVisibility(GONE);
-//        }
     }
 
     // Overrides
@@ -69,20 +43,11 @@ public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenT
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
-//        sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
     }
 
     @Override
     public void onLayoutBinding(FragmentPathogenTestReadLayoutBinding contentBinding) {
-        setUpControlListeners(contentBinding);
-
         contentBinding.setData(record);
-//        contentBinding.setCaze(sourceCase);
-    }
-
-    @Override
-    public void onAfterLayoutBinding(FragmentPathogenTestReadLayoutBinding contentBinding) {
-        setUpFieldVisibilities(contentBinding);
     }
 
     @Override

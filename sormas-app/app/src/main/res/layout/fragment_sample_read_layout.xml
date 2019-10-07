@@ -78,6 +78,11 @@
                     app:dateTimeValue="@{data.sampleDateTime}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_purpose"
+                    app:value="@{data.samplePurpose}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

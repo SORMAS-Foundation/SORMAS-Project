@@ -37,14 +37,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name="events")
 @Audited
-public class Event extends AbstractDomainObject {
+public class Event extends CoreAdo {
 
 	private static final long serialVersionUID = 4964495716032049582L;
 

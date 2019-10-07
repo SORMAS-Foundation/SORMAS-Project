@@ -100,6 +100,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
         if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
             menuItems.remove(CaseSection.MATERNAL_HISTORY.ordinal());
         }
+
         return menuItems;
     }
 

@@ -13,7 +13,6 @@ public class CaseCriteriaTest {
 	@Test
 	public void testFromToUrlParams() throws Exception {
 		CaseCriteria criteria = new CaseCriteria();
-		criteria.archived(true);
 		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid());
 		criteria.district(district);
 		criteria.nameUuidEpidNumberLike("test AHSDBSD-ADS");
@@ -21,7 +20,6 @@ public class CaseCriteriaTest {
 		
 		CaseCriteria generatedCriteria = new CaseCriteria();
 		generatedCriteria.fromUrlParams(criteria.toUrlParams());
-		assertEquals(criteria.getArchived(), generatedCriteria.getArchived());
 		assertEquals(criteria.getDistrict(), generatedCriteria.getDistrict());
 		assertEquals(criteria.getDisease(), generatedCriteria.getDisease());
 	}

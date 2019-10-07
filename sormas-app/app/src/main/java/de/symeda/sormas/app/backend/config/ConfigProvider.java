@@ -74,6 +74,7 @@ public final class ConfigProvider {
     private static String KEY_REPULL_NEEDED = "repullNeeded";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
     private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
+    private static String LAST_DELETED_SYNC_DATE = "lastDeletedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
     private static String LOCALE = "locale";
 
@@ -96,6 +97,7 @@ public final class ConfigProvider {
     private Set<UserRight> userRights; // just a cache
     private Date lastNotificationDate;
     private Date lastArchivedSyncDate;
+    private Date lastDeletedSyncDate;
     private Long currentAppDownloadId;
     private Boolean accessGranted;
     private String locale;
@@ -521,6 +523,35 @@ public final class ConfigProvider {
             DatabaseHelper.getConfigDao().delete(new Config(LAST_ARCHIVED_SYNC_DATE, ""));
         } else {
             DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_ARCHIVED_SYNC_DATE, String.valueOf(lastArchivedSyncDate.getTime())));
+        }
+    }
+
+    public static Date getLastDeletedSyncDate() {
+        if (instance.lastDeletedSyncDate == null) {
+            synchronized (ConfigProvider.class) {
+                if (instance.lastDeletedSyncDate == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(LAST_DELETED_SYNC_DATE);
+                    if (config != null) {
+                        instance.lastDeletedSyncDate = new Date(Long.parseLong(config.getValue()));
+                    }
+
+                }
+            }
+        }
+
+        return instance.lastDeletedSyncDate;
+    }
+
+    public static void setLastDeletedSyncDate(Date lastDeletedSyncDate) {
+        if (lastDeletedSyncDate != null && lastDeletedSyncDate.equals(instance.lastDeletedSyncDate)) {
+            return;
+        }
+
+        instance.lastDeletedSyncDate = lastDeletedSyncDate;
+        if (lastDeletedSyncDate == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(LAST_DELETED_SYNC_DATE, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_DELETED_SYNC_DATE, String.valueOf(lastDeletedSyncDate.getTime())));
         }
     }
 

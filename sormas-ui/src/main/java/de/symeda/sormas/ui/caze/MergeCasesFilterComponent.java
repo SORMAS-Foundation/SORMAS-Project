@@ -1,14 +1,18 @@
 package de.symeda.sormas.ui.caze;
 
 import java.time.ZoneId;
+import java.util.function.Consumer;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.converter.LocalDateToDateConverter;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -39,6 +43,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private ComboBox<Disease> cbDisease;
 	private TextField tfSearch;
 	private TextField tfReportingUser;
+	private CheckBox cbIgnoreRegion;
 	private ComboBox<RegionReferenceDto> cbRegion;
 	private ComboBox<DistrictReferenceDto> cbDistrict;
 	private ComboBox<NewCaseDateType> cbNewCaseDateType;
@@ -50,14 +55,16 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private Binder<CaseCriteria> binder = new Binder<>(CaseCriteria.class);
 	private CaseCriteria criteria;
 	private Runnable filtersUpdatedCallback;
+	private Consumer<Boolean> ignoreRegionCallback;
 
-	public MergeCasesFilterComponent(CaseCriteria criteria, Runnable filtersUpdatedCallback) {
+	private Label lblNumberOfDuplicates;
+	
+	public MergeCasesFilterComponent(CaseCriteria criteria) {
 		setSpacing(false);
 		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
 
 		this.criteria = criteria;
-		this.filtersUpdatedCallback = filtersUpdatedCallback;
 
 		addFirstRowLayout();
 		addSecondRowLayout();
@@ -68,6 +75,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private void addFirstRowLayout() {
 		firstRowLayout = new HorizontalLayout();
 		firstRowLayout.setMargin(false);
+		firstRowLayout.setWidth(100, Unit.PERCENTAGE);
 
 		dfCreationDateFrom = new DateField();
 		dfCreationDateFrom.setId(CaseCriteria.CREATION_DATE_FROM);
@@ -113,6 +121,16 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		tfReportingUser.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORTING_USER));
 		binder.bind(tfReportingUser, CaseCriteria.REPORTING_USER_LIKE);
 		firstRowLayout.addComponent(tfReportingUser);
+		
+		cbIgnoreRegion = new CheckBox();
+		CssStyles.style(cbIgnoreRegion, CssStyles.CHECKBOX_FILTER_INLINE);
+		cbIgnoreRegion.setCaption(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
+		cbIgnoreRegion.addValueChangeListener(e -> {
+			ignoreRegionCallback.accept(e.getValue());
+		});
+		firstRowLayout.addComponent(cbIgnoreRegion);
+		firstRowLayout.setComponentAlignment(cbIgnoreRegion, Alignment.MIDDLE_RIGHT);
+		firstRowLayout.setExpandRatio(cbIgnoreRegion, 1);
 
 		addComponent(firstRowLayout);
 	}
@@ -120,6 +138,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 	private void addSecondRowLayout() {
 		secondRowLayout = new HorizontalLayout();
 		secondRowLayout.setMargin(false);
+		secondRowLayout.setWidth(100, Unit.PERCENTAGE);
 
 		cbRegion = new ComboBox<>();
 		cbDistrict = new ComboBox<>();
@@ -209,8 +228,27 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			filtersUpdatedCallback.run();
 		});
 		secondRowLayout.addComponent(btnResetFilters);
+		
+		lblNumberOfDuplicates = new Label("");
+		lblNumberOfDuplicates.setId("numberOfDuplicates");
+		CssStyles.style(lblNumberOfDuplicates, CssStyles.FORCE_CAPTION, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, CssStyles.LABEL_BOLD);
+		secondRowLayout.addComponent(lblNumberOfDuplicates);
+		secondRowLayout.setComponentAlignment(lblNumberOfDuplicates, Alignment.MIDDLE_RIGHT);
+		secondRowLayout.setExpandRatio(lblNumberOfDuplicates, 1);
 
 		addComponent(secondRowLayout);
+	}
+	
+	public void updateDuplicateCountLabel(int count) {
+		lblNumberOfDuplicates.setValue(String.format(I18nProperties.getCaption(Captions.caseNumberOfDuplicatesDetected), count));
+	}
+	
+	public void setFiltersUpdatedCallback(Runnable filtersUpdatedCallback) {
+		this.filtersUpdatedCallback = filtersUpdatedCallback;
+	}
+	
+	public void setIgnoreRegionCallback(Consumer<Boolean> ignoreRegionCallback) {
+		this.ignoreRegionCallback = ignoreRegionCallback;
 	}
 
 }

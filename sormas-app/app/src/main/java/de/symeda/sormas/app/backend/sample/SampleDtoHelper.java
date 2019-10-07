@@ -78,6 +78,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setSampleDateTime(source.getSampleDateTime());
         target.setSampleMaterial(source.getSampleMaterial());
         target.setSampleMaterialText(source.getSampleMaterialText());
+        target.setSamplePurpose(source.getSamplePurpose());
         target.setShipmentDate(source.getShipmentDate());
         target.setShipmentDetails(source.getShipmentDetails());
         target.setReceivedDate(source.getReceivedDate());
@@ -141,6 +142,7 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setReportDateTime(source.getReportDateTime());
         target.setSampleMaterial(source.getSampleMaterial());
         target.setSampleMaterialText(source.getSampleMaterialText());
+        target.setSamplePurpose(source.getSamplePurpose());
         target.setShipmentDate(source.getShipmentDate());
         target.setShipmentDetails(source.getShipmentDetails());
         target.setReceivedDate(source.getReceivedDate());

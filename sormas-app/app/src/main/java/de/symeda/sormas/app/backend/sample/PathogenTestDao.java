@@ -18,7 +18,11 @@
 
 package de.symeda.sormas.app.backend.sample;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -100,4 +104,34 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
         return PathogenTest.TABLE_NAME;
     }
 
+    public long countByCriteria(PathogenTestCriteria criteria) {
+        try {
+            return buildQueryBuilder(criteria).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform countByCriteria on PathogenTest");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<PathogenTest> queryByCriteria(PathogenTestCriteria criteria, long offset, long limit) {
+        try {
+            return buildQueryBuilder(criteria).orderBy(PathogenTest.TEST_DATE_TIME, true)
+                    .offset(offset).limit(limit).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByCriteria on PathogenTest");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private QueryBuilder<PathogenTest, Long> buildQueryBuilder(PathogenTestCriteria criteria) throws SQLException {
+        QueryBuilder<PathogenTest, Long> queryBuilder = queryBuilder();
+        Where<PathogenTest, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+        if (criteria.getSample() != null) {
+            where.and().eq(PathogenTest.SAMPLE + "_id", criteria.getSample().getId());
+        }
+
+        queryBuilder.setWhere(where);
+        return queryBuilder;
+    }
 }

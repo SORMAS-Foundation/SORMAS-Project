@@ -33,7 +33,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -142,7 +141,7 @@ public class EventController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getEventFacade().deleteEvent(event.toReference(), UserProvider.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getEventFacade().deleteEvent(event.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 				}
 			}, I18nProperties.getString(Strings.entityEvent));
@@ -252,7 +251,7 @@ public class EventController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (EventIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().deleteEvent(new EventReferenceDto(selectedRow.getUuid()), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid(), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingEventsDeleted), 

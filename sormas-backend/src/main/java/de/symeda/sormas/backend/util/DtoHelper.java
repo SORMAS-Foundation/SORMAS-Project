@@ -21,23 +21,25 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public final class DtoHelper {
-	
+
 	/**
 	 * some inaccuracy is ok, because of the rest conversion
 	 */
 	public static final int CHANGE_DATE_TOLERANCE_MS = 1000;
-	
+
 	public static void validateDto(EntityDto dto, AbstractDomainObject entity) {
-		if (entity.getChangeDate() != null 
-				&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
+		if (entity.getChangeDate() != null && (dto.getChangeDate() == null
+				|| dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
 			throw new OutdatedEntityException(dto.getUuid(), dto.getClass());
 		}
 	}
@@ -47,13 +49,12 @@ public final class DtoHelper {
 		dto.setChangeDate(entity.getChangeDate());
 		dto.setUuid(entity.getUuid());
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T extends EntityDto> T mergeDto(T lead, T other) {
+	public static <T extends EntityDto> T mergeDto(T lead, T other, boolean cloning, boolean overrideEntityUuids) {
 
 		try {
-			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class)
-					.getPropertyDescriptors();
+			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class).getPropertyDescriptors();
 
 			for (PropertyDescriptor pd : pds) {
 				// Skip properties without a read or write method
@@ -64,28 +65,53 @@ public final class DtoHelper {
 				Object leadProperty = pd.getReadMethod().invoke(lead);
 				Object otherProperty = pd.getReadMethod().invoke(other);
 
-				// Write other-property into lead-property, if lead-property is null
-				if (leadProperty == null || (List.class.isAssignableFrom(pd.getPropertyType()) && ((List<?>) leadProperty).isEmpty())) {
+				// Write other-property into lead-property, if lead-property is null or cloning
+				// is active
+				if (leadProperty == null
+						|| (List.class.isAssignableFrom(pd.getPropertyType()) && ((List<?>) leadProperty).isEmpty())
+						|| cloning && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 
 					if (List.class.isAssignableFrom(pd.getPropertyType())) {
-
+						
 						for (EntityDto entry : (List<EntityDto>) otherProperty) {
-							entry.setUuid(UUID.randomUUID().toString());
+							entry.setUuid(DataHelper.createUuid());
+							entry.setCreationDate(null);
 						}
-					}
+						
+						pd.getWriteMethod().invoke(lead, otherProperty);
 
-					pd.getWriteMethod().invoke(lead, otherProperty);
+						if (cloning) {
+							// Call merge on the new entry to override UUIDs of EntityDtos
+							Object newLeadProperty = pd.getReadMethod().invoke(lead);
+							for (EntityDto entry : (List<EntityDto>) newLeadProperty) {
+								mergeDto(entry, entry, true, true);
+							}
+						}
+						
+					} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
+
+						pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
+
+						if (overrideEntityUuids) {
+							((EntityDto) leadProperty).setUuid(DataHelper.createUuid());
+						}
+
+					} else {
+
+						pd.getWriteMethod().invoke(lead, otherProperty);
+					}
 
 				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 
-					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty));
+					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
 
+					if (overrideEntityUuids) {
+						((EntityDto) leadProperty).setUuid(DataHelper.createUuid());
+					}
 				}
 			}
-		} catch (IntrospectionException | InvocationTargetException |
-
-				IllegalAccessException e) {
-			throw new RuntimeException("Exception when trying to merge dto: " + e.getMessage(), e.getCause());
+		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException("Exception when trying to merge or clone dto: " + e.getMessage(), e.getCause());
 		}
 
 		return lead;

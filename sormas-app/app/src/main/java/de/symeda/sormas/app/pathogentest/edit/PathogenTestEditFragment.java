@@ -61,14 +61,6 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
         return newInstance(PathogenTestEditFragment.class, null, activityRootData);
     }
 
-    private void setUpControlListeners(FragmentPathogenTestEditLayoutBinding contentBinding) {
-
-    }
-
-    private void setUpFieldVisibilities(FragmentPathogenTestEditLayoutBinding contentBinding) {
-
-    }
-
     // Overrides
 
     @Override
@@ -92,26 +84,17 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 
     @Override
     public void onLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
-        setUpControlListeners(contentBinding);
-
         contentBinding.setData(record);
-//        contentBinding.setCaze(sourceCase);
-//
-//        PathogenTestValidator.initializeValidation(record, contentBinding);
-//
-//        contentBinding.setPathogenTestProximityClass(PathogenTestProximity.class);
     }
 
     @Override
     public void onAfterLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
-        setUpFieldVisibilities(contentBinding);
-
         // Initialize ControlSpinnerFields
         contentBinding.pathogenTestTestType.initializeSpinner(testTypeList);
         contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList);
         contentBinding.pathogenTestTestResult.initializeSpinner(testResultList);
         contentBinding.pathogenTestLab.initializeSpinner(DataUtils.toItems(labList));
-//
+
 //        // Initialize ControlDateFields
         contentBinding.pathogenTestTestDateTime.initializeDateTimeField(getFragmentManager());
     }

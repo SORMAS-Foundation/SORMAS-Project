@@ -521,4 +521,5 @@
     <string name="value_visit_time_unknown">Visit Time N/A</string>
     <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
     <string name="caption_new_pathogen_test">New Pathogen test</string>
+    <string name="error_no_pathogentest_labuser">the pathogen test has no lab user</string>
 </resources>

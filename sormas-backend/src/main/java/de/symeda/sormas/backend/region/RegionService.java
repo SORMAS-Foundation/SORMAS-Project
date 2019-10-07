@@ -31,7 +31,6 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 
@@ -41,26 +40,6 @@ public class RegionService extends AbstractAdoService<Region> {
 
 	public RegionService() {
 		super(Region.class);
-	}
-
-	public List<Region> getAllWithoutEpidCode() {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
-		Root<Region> from = cq.from(getElementClass());
-		cq.where(cb.isNull(from.get(Region.EPID_CODE)));
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Region> getAllWithoutPopulationData() {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
-		Root<Region> from = cq.from(getElementClass());
-		cq.where(cb.isNull(from.get(Region.POPULATION)));
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
-
-		return em.createQuery(cq).getResultList();
 	}
 
 	public List<Region> getByName(String name) {
@@ -99,9 +78,8 @@ public class RegionService extends AbstractAdoService<Region> {
 	}
 
 	public void importRegions(String countryName, List<Region> regions) {
-
 		InfrastructureDataImporter.importRegions(countryName, 
-				(regionName, epidCode, population, growthRate) -> {
+				(regionName, epidCode, growthRate) -> {
 
 					Optional<Region> regionResult = regions.stream()
 							.filter(r -> r.getName().equals(regionName))
@@ -117,7 +95,6 @@ public class RegionService extends AbstractAdoService<Region> {
 					}
 
 					region.setEpidCode(epidCode);
-					region.setPopulation(population);
 					region.setGrowthRate(growthRate);
 
 					persist(region);

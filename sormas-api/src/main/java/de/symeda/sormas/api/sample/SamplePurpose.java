@@ -19,7 +19,7 @@ package de.symeda.sormas.api.sample;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum SampleLabType {
+public enum SamplePurpose {
 
 	EXTERNAL,
 	INTERNAL;

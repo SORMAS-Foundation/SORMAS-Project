@@ -40,7 +40,7 @@ import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleLabType;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
@@ -61,6 +61,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 	private static final String HTML_LAYOUT = LayoutUtil.divs(
 			LayoutUtil.divsCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME),//, SampleDto.SAMPLE_CODE),
+					LayoutUtil.fluidRowLocs(CssStyles.VSPACE_TOP_3, SampleDto.SAMPLE_PURPOSE) +
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)),
@@ -72,7 +73,6 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.loc(ADDITIONAL_TESTING_INFO_LOC) +
 			LayoutUtil.loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
 			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS) +
-			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.LAB_TYPE) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED),
 			LayoutUtil.divs(LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS)),
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED),
@@ -104,18 +104,11 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
-		ComboBox labType = addField(SampleDto.LAB_TYPE, ComboBox.class);
+		ComboBox samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, ComboBox.class);
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
-		
-		//hidding for labType
-		shipped.setVisible(false);
-		shipmentDate.setVisible(false);
-		shipmentDetails.setVisible(false);
-		received.setVisible(false);
-		receivedDate.setVisible(false);
 
-		initializeRequestedTests();
+		initializeRequestedTests(samplePurpose);
 		
 		// Validators
 		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, shipmentDate, true, false,
@@ -140,7 +133,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), SampleDto.SPECIMEN_CONDITION,
 				Arrays.asList(SampleDto.NO_TEST_POSSIBLE_REASON), Arrays.asList(SpecimenCondition.NOT_ADEQUATE));
 
-		setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL, SampleDto.LAB);
+		setRequired(true, SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL);
 
 		addValueChangeListener(e -> {
 			CaseDataDto caze = FacadeProvider.getCaseFacade()
@@ -159,24 +152,21 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 					getFieldGroup(), received, Arrays.asList(true), Arrays.asList(SampleDto.RECEIVED_DATE,
 							SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
 					true);
+
+			samplePurpose.setValue(SamplePurpose.EXTERNAL);
 		});
 		
-		labType.addValueChangeListener(e -> {
-			SampleLabType labTypeVal = (SampleLabType) e.getProperty().getValue();
-			if (labTypeVal == SampleLabType.EXTERNAL) {
-				shipped.setVisible(true);
-				shipmentDate.setVisible(true);
-				shipmentDetails.setVisible(true);
-				received.setVisible(true);
-				receivedDate.setVisible(true);
-			} else {
-				shipped.setVisible(false);
-				shipmentDate.setVisible(false);
-				shipmentDetails.setVisible(false);
-				received.setVisible(false);
-				receivedDate.setVisible(false);
-			}
+		samplePurpose.addValueChangeListener(e -> {
+			SamplePurpose samplePurposeVal = (SamplePurpose) e.getProperty().getValue();
+				shipped.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				shipmentDate.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				shipmentDetails.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				received.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				receivedDate.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				
+				setRequired( samplePurposeVal == SamplePurpose.EXTERNAL, SampleDto.LAB);
 		});
+		
 
 		shipped.addValueChangeListener(event -> {
 			if ((boolean) event.getProperty().getValue() == true) {
@@ -207,7 +197,7 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 		});
 	}
 	
-	private void initializeRequestedTests() {
+	private void initializeRequestedTests(ComboBox samplePurpose) {
 		// Yes/No fields for requesting pathogen/additional tests
 		OptionGroup pathogenTestingRequestedField = addField(SampleDto.PATHOGEN_TESTING_REQUESTED, OptionGroup.class);
 		CssStyles.style(pathogenTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
@@ -264,6 +254,17 @@ public class SampleCreateForm extends AbstractEditForm<SampleDto> {
 				requestedOtherAdditionalTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
 			});
 		}
+		
+		//hide fields for internal lab test
+		samplePurpose.addValueChangeListener(e -> {
+			SamplePurpose samplePurposeVal = (SamplePurpose) e.getProperty().getValue();
+				pathogenTestingRequestedField.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				additionalTestingRequestedField.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				requestedPathogenTestsField.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				requestedAdditionalTestsField.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				requestedOtherPathogenTests.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				requestedOtherAdditionalTests.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+		});
 	}
 
 	@Override

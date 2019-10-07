@@ -21,5 +21,6 @@ public interface ModelConstants {
 
 	String PERSISTENCE_UNIT_NAME = "SormasPU";
 	String PERSISTENCE_UNIT_NAME_AUDITLOG = "auditlogPU";
+	String HINT_HIBERNATE_READ_ONLY = "org.hibernate.readOnly";
 
 }

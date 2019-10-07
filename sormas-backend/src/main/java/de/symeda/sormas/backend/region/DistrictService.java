@@ -96,8 +96,7 @@ public class DistrictService extends AbstractAdoService<District> {
 			private Region cachedRegion = null;
 			
 			@Override
-			public void consume(String regionName, String districtName, String epidCode, Integer population, Float growthRate) {
-					
+			public void consume(String regionName, String districtName, String epidCode, Float growthRate) {
 				if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
 					Optional<Region> regionResult = regions.stream()
 							.filter(r -> r.getName().equals(regionName))
@@ -129,7 +128,6 @@ public class DistrictService extends AbstractAdoService<District> {
 				}
 				
 				district.setEpidCode(epidCode);
-				district.setPopulation(population);
 				district.setGrowthRate(growthRate);
 
 				persist(district);

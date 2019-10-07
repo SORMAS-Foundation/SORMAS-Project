@@ -23,6 +23,7 @@ import android.view.Menu;
 
 import java.util.List;
 
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -67,13 +68,15 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     @Override
     public List<PageMenuItem> getPageMenuData() {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(SampleSection.values(), getContext());
+        Sample sample = getStoredRootEntity();
+        if(sample != null && sample.getSamplePurpose().equals(SamplePurpose.INTERNAL)){
+            menuItems.remove(SampleSection.PATHOGEN_TESTS.ordinal());
+        }
         return menuItems;
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Sample activityRootData) {
-//        return SampleReadFragment.newInstance(activityRootData);
-
         SampleSection section = SampleSection.fromOrdinal(menuItem.getKey());
         BaseReadFragment fragment;
         switch (section) {

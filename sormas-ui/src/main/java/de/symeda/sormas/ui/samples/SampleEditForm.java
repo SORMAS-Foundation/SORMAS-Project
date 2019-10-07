@@ -45,7 +45,7 @@ import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleLabType;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -76,6 +76,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.loc(REPORT_INFORMATION_LOC) +
 			LayoutUtil.divs(
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME),
+					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
 					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
@@ -92,7 +93,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			LayoutUtil.loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
 			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS) +
 			LayoutUtil.loc(REQUESTED_ADDITIONAL_TESTS_READ_LOC) +
-			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.LAB_TYPE) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
 			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED) +
@@ -124,20 +124,14 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
 		addField(SampleDto.NO_TEST_POSSIBLE_REASON, TextField.class);
 		addField(SampleDto.COMMENT, TextArea.class).setRows(2);
-		ComboBox labType = addField(SampleDto.LAB_TYPE, ComboBox.class);
+		ComboBox samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, ComboBox.class);
+		samplePurpose.setRequired(true);
 		CheckBox shipped = addField(SampleDto.SHIPPED, CheckBox.class);
 		CheckBox received = addField(SampleDto.RECEIVED, CheckBox.class);
 		ComboBox pathogenTestResultField = addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
 		
-		//hidding for labType
-		shipped.setVisible(false);
-		shipmentDate.setVisible(false);
-		shipmentDetails.setVisible(false);
-		received.setVisible(false);
-		receivedDate.setVisible(false);
-		labSampleId.setVisible(false);
 
-		initializeRequestedTests();
+		initializeRequestedTests(samplePurpose);
 
 		// Validators
 		sampleDateField.addValidator(new DateComparisonValidator(sampleDateField, shipmentDate, true, false,
@@ -182,25 +176,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
 				getField(SampleDto.SAMPLE_SOURCE).setEnabled(false);
 			}
-			
-			labType.addValueChangeListener(event -> {
-				SampleLabType labTypeVal = (SampleLabType) event.getProperty().getValue();
-				if (labTypeVal == SampleLabType.EXTERNAL) {
-					shipped.setVisible(true);
-					shipmentDate.setVisible(true);
-					shipmentDetails.setVisible(true);
-					received.setVisible(true);
-					receivedDate.setVisible(true);
-					labSampleId.setVisible(true);
-				} else {
-					shipped.setVisible(false);
-					shipmentDate.setVisible(false);
-					shipmentDetails.setVisible(false);
-					received.setVisible(false);
-					receivedDate.setVisible(false);
-					labSampleId.setVisible(false);
-				}
-			});
+
 
 			shipped.addValueChangeListener(event -> {
 				if ((boolean) event.getProperty().getValue() == true) {
@@ -246,6 +222,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				pathogenTestResultField.setEnabled(false);
 			}
 		});
+		
+		samplePurpose.addValueChangeListener(e -> {
+			SamplePurpose samplePurposeVal = (SamplePurpose) e.getProperty().getValue();
+				shipped.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				shipmentDate.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				shipmentDetails.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				received.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				receivedDate.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+				
+				setRequired( samplePurposeVal == SamplePurpose.EXTERNAL, SampleDto.LAB);
+		});
 
 		lab.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null && ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
@@ -269,7 +256,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		}
 	}
 
-	private void initializeRequestedTests() {
+	private void initializeRequestedTests(ComboBox samplePurpose) {
 		// Yes/No fields for requesting pathogen/additional tests
 		OptionGroup pathogenTestingRequestedField = addField(SampleDto.PATHOGEN_TESTING_REQUESTED, OptionGroup.class);
 		CssStyles.style(pathogenTestingRequestedField, CssStyles.OPTIONGROUP_CAPTION_AREA_INLINE);
@@ -295,10 +282,15 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		TextField requestedOtherPathogenTests = addField(SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS, TextField.class);
 		TextField requestedOtherAdditionalTests = addField(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS, TextField.class);
 		
+
+		
 		// The code below relies on getValue() to return the sample of the form and therefore has to be delayed until the sample is set
 		addValueChangeListener(e -> {
 			if (!requestedTestsInitialized) {				
 				if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED) || UserProvider.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid())) {
+
+					boolean isExternal = getValue().getSamplePurpose().equals(SamplePurpose.EXTERNAL);
+					
 					// Information texts for users that can edit the requested tests
 					Label requestedPathogenInfoLabel = new Label(I18nProperties.getString(Strings.infoSamplePathogenTesting));
 					getContent().addComponent(requestedPathogenInfoLabel, PATHOGEN_TESTING_INFO_LOC);
@@ -306,15 +298,15 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					getContent().addComponent(requestedAdditionalInfoLabel, ADDITIONAL_TESTING_INFO_LOC);
 					
 					// Set initial visibility
-					requestedPathogenTestsField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
-					requestedPathogenInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
-					requestedOtherPathogenTests.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()));
+					requestedPathogenTestsField.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()) && isExternal);
+					requestedPathogenInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()) && isExternal);
+					requestedOtherPathogenTests.setVisible(Boolean.TRUE.equals(getValue().getPathogenTestingRequested()) && isExternal);
 					
 					// CheckBoxes should be hidden when no tests are requested
 					pathogenTestingRequestedField.addValueChangeListener(f -> {
-						requestedPathogenInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
-						requestedPathogenTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
-						requestedOtherPathogenTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+						requestedPathogenInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE) && isExternal);
+						requestedPathogenTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE) && isExternal);
+						requestedOtherPathogenTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE) && isExternal);
 					});
 
 					if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
@@ -324,14 +316,14 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 						requestedAdditionalInfoLabel.setVisible(false);
 						requestedOtherAdditionalTests.setVisible(false);
 					} else {
-						requestedAdditionalTestsField.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
-						requestedAdditionalInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
-						requestedOtherAdditionalTests.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()));
+						requestedAdditionalTestsField.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()) && isExternal);
+						requestedAdditionalInfoLabel.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()) && isExternal);
+						requestedOtherAdditionalTests.setVisible(Boolean.TRUE.equals(getValue().getAdditionalTestingRequested()) && isExternal);
 						
 						additionalTestingRequestedField.addValueChangeListener(f -> {
-							requestedAdditionalInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
-							requestedAdditionalTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
-							requestedOtherAdditionalTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE));
+							requestedAdditionalInfoLabel.setVisible(f.getProperty().getValue().equals(Boolean.TRUE) && isExternal);
+							requestedAdditionalTestsField.setVisible(f.getProperty().getValue().equals(Boolean.TRUE) && isExternal);
+							requestedOtherAdditionalTests.setVisible(f.getProperty().getValue().equals(Boolean.TRUE) && isExternal);
 						});
 					}
 				} else {
@@ -379,6 +371,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 				}
 			}
+			
+			//hide fields for internal lab test
+			samplePurpose.addValueChangeListener(ev -> {
+				SamplePurpose samplePurposeVal = (SamplePurpose) ev.getProperty().getValue();
+					pathogenTestingRequestedField.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+					additionalTestingRequestedField.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+					requestedPathogenTestsField.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+					requestedAdditionalTestsField.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+					requestedOtherPathogenTests.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+					requestedOtherAdditionalTests.setVisible(samplePurposeVal == SamplePurpose.EXTERNAL);
+			});
 
 			requestedTestsInitialized = true;
 		});
