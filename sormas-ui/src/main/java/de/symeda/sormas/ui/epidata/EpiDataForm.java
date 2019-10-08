@@ -67,7 +67,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 									EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES,
 									EpiDataDto.SWINE, EpiDataDto.BIRDS, EpiDataDto.CATTLE, 
 									EpiDataDto.SICK_DEAD_ANIMALS, EpiDataDto.SICK_DEAD_ANIMALS_DETAILS,
-									EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION
+									EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION,
+									EpiDataDto.DOGS, EpiDataDto.CATS, EpiDataDto.CANIDAE
 							)
 					),
 					LayoutUtil.fluidColumn(6, 0,
@@ -139,6 +140,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, 
 				EpiDataDto.EATING_RAW_ANIMALS,EpiDataDto.EATING_RAW_ANIMALS_DETAILS,
 				EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.BIRDS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE, 
+				EpiDataDto.DOGS, EpiDataDto.CATS, EpiDataDto.CANIDAE,
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
 				EpiDataDto.ANIMAL_CONDITION, EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE);
 		

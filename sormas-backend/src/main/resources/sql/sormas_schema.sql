@@ -3637,4 +3637,11 @@ ALTER TABLE symptoms_history ADD COLUMN death varchar(255);
 ALTER TABLE cases ADD COLUMN humanrabiestype varchar(255);
 ALTER TABLE cases_history ADD COLUMN humanrabiestype varchar(255);
 
+ALTER TABLE epidata ADD COLUMN dogs varchar(255);
+ALTER TABLE epidata_history ADD COLUMN dogs varchar(255);
+ALTER TABLE epidata ADD COLUMN cats varchar(255);
+ALTER TABLE epidata_history ADD COLUMN cats varchar(255);
+ALTER TABLE epidata ADD COLUMN canidae varchar(255);
+ALTER TABLE epidata_history ADD COLUMN canidae varchar(255);
+
 INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add new disease, human rabies #834');

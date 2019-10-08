@@ -44,6 +44,9 @@ public class EpiDataDto extends EntityDto {
 	public static final String SWINE = "swine";
 	public static final String BIRDS = "birds";
 	public static final String CATTLE = "cattle";
+	public static final String DOGS = "dogs";
+	public static final String CATS = "cats";
+	public static final String CANIDAE = "canidae";
 	public static final String OTHER_ANIMALS = "otherAnimals";
 	public static final String OTHER_ANIMALS_DETAILS = "otherAnimalsDetails";
 	public static final String WATER_SOURCE = "waterSource";
@@ -140,6 +143,12 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown birds;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown cattle;
+	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
+	private YesNoUnknown dogs;
+	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
+	private YesNoUnknown cats;
+	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
+	private YesNoUnknown canidae;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF, Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown otherAnimals;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF, Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
@@ -245,6 +254,24 @@ public class EpiDataDto extends EntityDto {
 		this.cattle = cattle;
 	}
 	
+	public YesNoUnknown getDogs() {
+		return dogs;
+	}
+	public void setDogs(YesNoUnknown dogs) {
+		this.dogs = dogs;
+	}
+	public YesNoUnknown getCats() {
+		return cats;
+	}
+	public void setCats(YesNoUnknown cats) {
+		this.cats = cats;
+	}
+	public YesNoUnknown getCanidae() {
+		return canidae;
+	}
+	public void setCanidae(YesNoUnknown canidae) {
+		this.canidae = canidae;
+	}
 	public YesNoUnknown getOtherAnimals() {
 		return otherAnimals;
 	}

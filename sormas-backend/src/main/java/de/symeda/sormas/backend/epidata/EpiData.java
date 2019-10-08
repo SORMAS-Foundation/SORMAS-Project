@@ -59,6 +59,9 @@ public class EpiData extends AbstractDomainObject {
 	public static final String SWINE = "swine";
 	public static final String BIRDS = "birds";
 	public static final String CATTLE = "cattle";
+	public static final String DOGS = "dogs";
+	public static final String CATS = "cats";
+	public static final String CANIDAE = "canidae";
 	public static final String OTHER_ANIMALS = "otherAnimals";
 	public static final String OTHER_ANIMALS_DETAILS = "otherAnimalsDetails";
 	public static final String WATER_SOURCE = "waterSource";
@@ -114,6 +117,9 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown swine;
 	private YesNoUnknown birds;
 	private YesNoUnknown cattle;
+	private YesNoUnknown dogs;
+	private YesNoUnknown cats;
+	private YesNoUnknown canidae;
 	private YesNoUnknown otherAnimals;
 	private String otherAnimalsDetails;
 	private WaterSource waterSource;
@@ -204,6 +210,28 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setCattle(YesNoUnknown cattle) {
 		this.cattle = cattle;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDogs() {
+		return dogs;
+	}
+	public void setDogs(YesNoUnknown dogs) {
+		this.dogs = dogs;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCats() {
+		return cats;
+	}
+	public void setCats(YesNoUnknown cats) {
+		this.cats = cats;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCanidae() {
+		return canidae;
+	}
+	public void setCanidae(YesNoUnknown canidae) {
+		this.canidae = canidae;
 	}
 
 	@Enumerated(EnumType.STRING)

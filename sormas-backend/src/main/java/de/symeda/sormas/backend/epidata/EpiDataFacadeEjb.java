@@ -94,6 +94,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setSwine(source.getSwine());
 		target.setBirds(source.getBirds());
 		target.setCattle(source.getCattle());
+		target.setDogs(source.getDogs());
+		target.setCats(source.getCats());
+		target.setCanidae(source.getCanidae());
 		target.setOtherAnimals(source.getOtherAnimals());
 		target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
 		target.setWaterSource(source.getWaterSource());
@@ -274,6 +277,9 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setSwine(source.getSwine());
 		target.setBirds(source.getBirds());
 		target.setCattle(source.getCattle());
+		target.setDogs(source.getDogs());
+		target.setCats(source.getCats());
+		target.setCanidae(source.getCanidae());
 		target.setOtherAnimals(source.getOtherAnimals());
 		target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
 		target.setWaterSource(source.getWaterSource());
