@@ -98,6 +98,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					)
 			) +
 			LayoutUtil.fluidRowLoc(6, EpiDataDto.ANIMAL_VACCINATION_STATUS) +
+			LayoutUtil.fluidRowLocs(EpiDataDto.PROPHYLAXIS_STATUS, EpiDataDto.DATE_OF_PROPHYLAXIS) +
 			LayoutUtil.loc(ENVIRONMENTAL_LOC) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_BODY_DETAILS) +
@@ -151,6 +152,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.KIND_OF_EXPOSURE_OTHER, EpiDataDto.KIND_OF_EXPOSURE_DETAILS);
 		
 		addField(EpiDataDto.ANIMAL_VACCINATION_STATUS, OptionGroup.class);
+		
+		OptionGroup prophylaxisStatus = addField(EpiDataDto.PROPHYLAXIS_STATUS, OptionGroup.class);
+		CssStyles.style(prophylaxisStatus, CssStyles.ERROR_COLOR_PRIMARY);
+		addFields(EpiDataDto.DATE_OF_PROPHYLAXIS);
 		
 		addFields(EpiDataDto.WATER_BODY, EpiDataDto.WATER_BODY_DETAILS, 
 				EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_SOURCE_OTHER, 
@@ -211,6 +216,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_LICK, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_OTHER, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_DETAILS, EpiDataDto.KIND_OF_EXPOSURE_OTHER, Arrays.asList(YesNoUnknown.YES), true);
+		
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.PROPHYLAXIS_STATUS, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.DATE_OF_PROPHYLAXIS, EpiDataDto.PROPHYLAXIS_STATUS, Arrays.asList(YesNoUnknown.YES), true);
 		
 		burialAttendedField.addValueChangeListener(e -> {
 			updateBurialsHint(burialAttendedField, burialsField);

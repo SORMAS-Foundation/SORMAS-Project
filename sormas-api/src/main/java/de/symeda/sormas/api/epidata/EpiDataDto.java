@@ -66,6 +66,8 @@ public class EpiDataDto extends EntityDto {
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
 	public static final String ANIMAL_VACCINATION_STATUS = "animalVaccinationStatus";
+	public static final String PROPHYLAXIS_STATUS = "prophylaxisStatus";
+	public static final String DATE_OF_PROPHYLAXIS = "dateOfProphylaxis";
 	public static final String BURIALS = "burials";
 	public static final String GATHERINGS = "gatherings";
 	public static final String TRAVELS = "travels";
@@ -187,6 +189,10 @@ public class EpiDataDto extends EntityDto {
 	private AnimalCondition animalCondition;
 	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
 	private Vaccination animalVaccinationStatus;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown prophylaxisStatus;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private Date dateOfProphylaxis;
 
 	@ImportIgnore
 	public YesNoUnknown getBurialAttended() {
@@ -398,6 +404,18 @@ public class EpiDataDto extends EntityDto {
 		this.animalVaccinationStatus = animalVaccinationStatus;
 	}
 	
+	public YesNoUnknown getProphylaxisStatus() {
+		return prophylaxisStatus;
+	}
+	public void setProphylaxisStatus(YesNoUnknown prophylaxisStatus) {
+		this.prophylaxisStatus = prophylaxisStatus;
+	}
+	public Date getDateOfProphylaxis() {
+		return dateOfProphylaxis;
+	}
+	public void setDateOfProphylaxis(Date dateOfProphylaxis) {
+		this.dateOfProphylaxis = dateOfProphylaxis;
+	}
 	public YesNoUnknown getFleaBite() {
 		return fleaBite;
 	}

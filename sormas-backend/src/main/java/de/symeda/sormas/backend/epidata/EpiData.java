@@ -81,6 +81,8 @@ public class EpiData extends AbstractDomainObject {
 	public static final String ANIMAL_CONDITION = "animalCondition";
 	public static final String ANIMAL_VACCINATION_STATUS = "animalVaccinationStatus";
 	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
+	public static final String PROPHYLAXIS_STATUS = "prophylaxisStatus";
+	public static final String DATE_OF_PROPHYLAXIS = "dateOfProphylaxis";
 	
 	
 	private YesNoUnknown burialAttended;
@@ -139,6 +141,8 @@ public class EpiData extends AbstractDomainObject {
 	private String placeOfLastExposure;
 	private AnimalCondition animalCondition;
 	private Vaccination animalVaccinationStatus;
+	private YesNoUnknown prophylaxisStatus;
+	private Date dateOfProphylaxis;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getBurialAttended() {
@@ -384,6 +388,21 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setAnimalVaccinationStatus(Vaccination animalVaccinationStatus) {
 		this.animalVaccinationStatus = animalVaccinationStatus;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getProphylaxisStatus() {
+		return prophylaxisStatus;
+	}
+	public void setProphylaxisStatus(YesNoUnknown prophylaxisStatus) {
+		this.prophylaxisStatus = prophylaxisStatus;
+	}
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfProphylaxis() {
+		return dateOfProphylaxis;
+	}
+	public void setDateOfProphylaxis(Date dateOfProphylaxis) {
+		this.dateOfProphylaxis = dateOfProphylaxis;
 	}
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = EpiDataBurial.EPI_DATA)
