@@ -335,6 +335,12 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create point of entry import template .csv file.");
 		}
+		
+		try {
+			importFacade.generatePopulationDataImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create population data import template .csv file.");
+		}
 	}
 	
 	private void createMissingDiseaseConfigurations() {

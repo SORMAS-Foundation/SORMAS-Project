@@ -52,6 +52,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class EventsView extends AbstractView {
 
@@ -60,6 +61,7 @@ public class EventsView extends AbstractView {
 	public static final String VIEW_NAME = "events";
 
 	private EventCriteria criteria;
+	private ViewConfiguration viewConfiguration;
 
 	private EventGrid grid;
 	private Button createButton;
@@ -77,6 +79,7 @@ public class EventsView extends AbstractView {
 	private String originalViewTitle;
 
 	// Bulk operations
+	private MenuBar bulkOperationsDropdown;
 	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
 
@@ -85,13 +88,13 @@ public class EventsView extends AbstractView {
 
 		originalViewTitle = getViewTitleLabel().getValue();
 
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(EventsView.class).get(EventCriteria.class);
 		if (criteria.getArchived() == null) {
 			criteria.archived(false);
 		}
 
-		grid = new EventGrid();
-		grid.setCriteria(criteria);
+		grid = new EventGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -115,6 +118,37 @@ public class EventsView extends AbstractView {
 			fileDownloader.extend(exportButton);
 
 			addHeaderComponent(exportButton);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+			btnEnterBulkEditMode.setId("enterBulkEditMode");
+			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnEnterBulkEditMode);
+			
+			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
+			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(btnLeaveBulkEditMode);
+			
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				viewConfiguration.setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				grid.setEagerDataProvider();
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				viewConfiguration.setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+			});
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
@@ -210,7 +244,7 @@ public class EventsView extends AbstractView {
 
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				MenuBar bulkOperationsDropdown = new MenuBar();	
+				bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = selectedItem -> {
@@ -221,7 +255,7 @@ public class EventsView extends AbstractView {
 				Command deleteCommand = selectedItem -> {
 					ControllerProvider.getEventController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
-							grid.reload();
+							navigateTo(criteria);
 						}
 					});
 				};
@@ -230,7 +264,7 @@ public class EventsView extends AbstractView {
 				Command archiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
-							grid.reload();
+							navigateTo(criteria);
 						}
 					});
 				};
@@ -239,13 +273,14 @@ public class EventsView extends AbstractView {
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
-							grid.reload();
+							navigateTo(criteria);
 						}
 					});
 				};
 				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(I18nProperties.getCaption(Captions.actionDearchive)), VaadinIcons.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
+				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 		}

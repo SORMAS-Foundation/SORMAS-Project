@@ -39,6 +39,9 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		//add disease burden and cases
 		surveillanceOverviewLayout = new SurveillanceOverviewLayout(dashboardDataProvider);
 		dashboardLayout.addComponent(surveillanceOverviewLayout);
+		filterLayout.setDateFilterChangeCallback(() -> {
+			surveillanceOverviewLayout.updateDifferenceComponentSubHeader();
+		});
 
 		//add diseaseCarousel and map
 		diseaseCarouselLayout = new SurveillanceDiseaseCarouselLayout(dashboardDataProvider);

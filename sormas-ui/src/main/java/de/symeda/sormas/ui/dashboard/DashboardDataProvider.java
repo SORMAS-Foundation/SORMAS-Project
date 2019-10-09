@@ -37,7 +37,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 
 public class DashboardDataProvider {
@@ -46,7 +45,6 @@ public class DashboardDataProvider {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
-	private DateFilterOption dateFilterOption;
 	private Date fromDate;
 	private Date toDate;
 	private Date previousFromDate;
@@ -63,7 +61,7 @@ public class DashboardDataProvider {
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
 	private Long outbreakDistrictCount = 0L;
-	private String lastReportedCommunity = "";
+	private String lastReportedDistrict = "";
 	private List<DashboardEventDto> events = new ArrayList<>();
 	private List<DashboardEventDto> previousEvents = new ArrayList<>();
 	private Map<PathogenTestResultType, Long> testResultCountByResultType;
@@ -74,10 +72,6 @@ public class DashboardDataProvider {
 	public void refreshData() {
 		// Update the entities lists according to the filters
 		String userUuid = UserProvider.getCurrent().getUuid();
-
-		int period = DateHelper.getDaysBetween(fromDate, toDate);
-		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
-		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
 		
 		// Disease burden
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
@@ -87,7 +81,6 @@ public class DashboardDataProvider {
 	}
 
 	private void refreshDataForSelectedDisease () {
-
 		// Update the entities lists according to the filters
 		String userUuid = UserProvider.getCurrent().getUuid();
 		
@@ -99,17 +92,15 @@ public class DashboardDataProvider {
 					previousFromDate, previousToDate, userUuid));
 		}
 
-		if (this.disease == null)
+		if (this.disease == null) {
 			return;
-
-		int period = DateHelper.getDaysBetween(fromDate, toDate);
-		previousFromDate = DateHelper.getStartOfDay(DateHelper.subtractDays(fromDate, period));
-		previousToDate = DateHelper.getEndOfDay(DateHelper.subtractDays(toDate, period));
+		}
 		
 		// Cases
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
 		setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+		setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, userUuid));
 		
 		caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
 		setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
@@ -130,13 +121,9 @@ public class DashboardDataProvider {
 				fromDate, toDate, userUuid));
 		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
 				disease, previousFromDate, previousToDate, userUuid));
-		setTestResultCountByResultType(FacadeProvider.getPathogenTestFacade().getTestResultCountByResultType(region, district, disease, fromDate, toDate, userUuid));
-		
-		// Outbreaks
+		setTestResultCountByResultType(FacadeProvider.getSampleFacade().getNewTestResultCountByResultType(region, district, disease, fromDate, toDate, userUuid));
+	
 		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate), userUuid));
-		
-		// lastReportedCommunity
-		setLastReportedCommunity(FacadeProvider.getCaseFacade().getLastReportedCommunityName(caseCriteria, userUuid));
 	}
 	
 	public List<DashboardCaseDto> getCases() {
@@ -235,12 +222,12 @@ public class DashboardDataProvider {
 		this.outbreakDistrictCount = districtCount;
 	}	
 
-	public String getLastReportedCommunity () {
-		return this.lastReportedCommunity;
+	public String getLastReportedDistrict () {
+		return this.lastReportedDistrict;
 	}
 
-	public void setLastReportedCommunity (String community) {
-		this.lastReportedCommunity = community;
+	public void setLastReportedDistrict (String district) {
+		this.lastReportedDistrict = district;
 	}	
 
 	public RegionReferenceDto getRegion() {
@@ -267,14 +254,6 @@ public class DashboardDataProvider {
 		this.disease = disease;
 		
 		this.refreshDataForSelectedDisease();
-	}
-
-	public DateFilterOption getDateFilterOption() {
-		return dateFilterOption;
-	}
-
-	public void setDateFilterOption(DateFilterOption dateFilterOption) {
-		this.dateFilterOption = dateFilterOption;
 	}
 
 	public Date getFromDate() {

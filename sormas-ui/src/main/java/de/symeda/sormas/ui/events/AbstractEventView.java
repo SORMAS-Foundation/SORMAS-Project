@@ -41,7 +41,15 @@ public class AbstractEventView extends AbstractSubNavigationView {
 	
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
+		if (params.endsWith("/")) {
+			params = params.substring(0, params.length() - 1);
+		}
+		
 		eventRef = FacadeProvider.getEventFacade().getReferenceByUuid(params);
+		
+		if (FacadeProvider.getEventFacade().isDeleted(eventRef.getUuid())) {
+			setEnabled(false);
+		}
 		
 		menu.removeAllViews();
 		menu.addView(EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventsList));

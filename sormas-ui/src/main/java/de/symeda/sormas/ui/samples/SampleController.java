@@ -236,7 +236,7 @@ public class SampleController {
 		});
 	}
 	
-	public void showChangePathogenTestResultWindow(CommitDiscardWrapperComponent<SampleEditForm> editComponent, String sampleUuid, PathogenTestResultType newResult) {
+	public void showChangePathogenTestResultWindow(CommitDiscardWrapperComponent<SampleEditForm> editComponent, String sampleUuid, PathogenTestResultType newResult, Runnable callback) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 		
@@ -263,6 +263,7 @@ public class SampleController {
 				FacadeProvider.getSampleFacade().saveSample(sample);
 				popupWindow.close();
 				SormasUI.refreshView();
+				callback.run();
 			}
 		});
 		confirmationComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -270,6 +271,7 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
+				callback.run();
 			}
 		});
 	}

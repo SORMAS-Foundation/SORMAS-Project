@@ -75,7 +75,7 @@ public class DiseaseFacadeEjbTest extends AbstractBeanTest {
 		DiseaseBurdenDto evdBurden = diseaseBurdenForDashboard.stream().filter(dto -> dto.getDisease() == Disease.EVD).findFirst().get();
 		assertEquals(new Long(3), evdBurden.getCaseCount());
 		assertEquals(new Long(1), evdBurden.getPreviousCaseCount());
-		assertEquals(rdcf.community.getCaption(), evdBurden.getLastReportedCommunityName());
+		assertEquals(rdcf.district.getCaption(), evdBurden.getLastReportedDistrictName());
 	}
 	
 	

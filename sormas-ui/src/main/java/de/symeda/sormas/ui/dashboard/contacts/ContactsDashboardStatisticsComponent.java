@@ -187,7 +187,8 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 			List<Map.Entry<Disease, Integer>> sortedDiseaseList = createSortedDiseaseList(diseaseMap);
 
 			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by case count
-			for (int i = 0; i < visibleDiseasesCount; i++) {
+			for (int i = 0; i < (visibleDiseasesCount <= sortedDiseaseList.size() ? visibleDiseasesCount : sortedDiseaseList.size()); i++) {
+				
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousContacts.stream().filter(c -> c.getDisease() == mapEntry.getKey()).count();
 				DashboardStatisticsDiseaseElement diseaseElement = new DashboardStatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);

@@ -81,13 +81,13 @@ public class SampleDataView extends AbstractSampleView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		BiConsumer<PathogenTestResultType, Boolean> pathogenTestChangedCallback = new BiConsumer<PathogenTestResultType, Boolean>() {
+		BiConsumer<PathogenTestResultType, Runnable> pathogenTestChangedCallback = new BiConsumer<PathogenTestResultType, Runnable>() {
 			@Override
-			public void accept(PathogenTestResultType pathogenTestResult, Boolean verified) {
-				if (verified) {
+			public void accept(PathogenTestResultType pathogenTestResult, Runnable callback) {
+				if (pathogenTestResult != null) {
 					SampleDto componentSample = editComponent.getWrappedComponent().getValue();
 					if (pathogenTestResult != componentSample.getPathogenTestResult()) {
-						ControllerProvider.getSampleController().showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestResult);
+						ControllerProvider.getSampleController().showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestResult, callback);
 					}
 				}
 				

@@ -41,10 +41,12 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class SamplesView extends AbstractView {
@@ -52,10 +54,12 @@ public class SamplesView extends AbstractView {
 	public static final String VIEW_NAME = "samples";	
 	
 	private final SampleGridComponent sampleListComponent;
+	private ViewConfiguration viewConfiguration;
 	
 	public SamplesView() {
     	super(VIEW_NAME);
-    	
+
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		sampleListComponent = new SampleGridComponent(getViewTitleLabel(), this);
 		setSizeFull();
 		addComponent(sampleListComponent);
@@ -102,14 +106,51 @@ public class SamplesView extends AbstractView {
 						}
 						return caption;
 					},
-					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+			btnEnterBulkEditMode.setId("enterBulkEditMode");
+			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnEnterBulkEditMode);
+			
+			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
+			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(btnLeaveBulkEditMode);
+			
+			btnEnterBulkEditMode.addClickListener(e -> {
+				sampleListComponent.getBulkOperationsDropdown().setVisible(true);
+				viewConfiguration.setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				sampleListComponent.getSearchField().setEnabled(false);
+				sampleListComponent.getGrid().setEagerDataProvider();
+				sampleListComponent.getGrid().reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				sampleListComponent.getBulkOperationsDropdown().setVisible(false);
+				viewConfiguration.setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				sampleListComponent.getSearchField().setEnabled(true);
+				navigateTo(sampleListComponent.getCriteria());
+			});
 		}
 	}
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
 		sampleListComponent.reload(event);
+	}
+	
+	public ViewConfiguration getViewConfiguration() {
+		return viewConfiguration;
 	}
 
 }

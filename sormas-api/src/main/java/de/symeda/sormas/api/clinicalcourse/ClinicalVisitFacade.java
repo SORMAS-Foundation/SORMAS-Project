@@ -16,6 +16,8 @@ public interface ClinicalVisitFacade {
 	
 	ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid);
 	
+	ClinicalVisitDto saveClinicalVisitSimple(ClinicalVisitDto clinicalVisit, String caseUuid);
+	
 	ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit);
 	
 	void deleteClinicalVisit(String clinicalVisitUuid, String userUuid);
@@ -27,5 +29,4 @@ public interface ClinicalVisitFacade {
 	List<String> getAllActiveUuids(String userUuid);
 	
 	List<ClinicalVisitExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max);
-	
 }

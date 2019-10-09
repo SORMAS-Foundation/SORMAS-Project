@@ -55,6 +55,7 @@ import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -63,6 +64,7 @@ public class CaseContactsView extends AbstractCaseView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
 	private ContactCriteria criteria;
+	private ViewConfiguration viewConfiguration;
 	
 	private ContactGrid grid;  
 	
@@ -80,22 +82,10 @@ public class CaseContactsView extends AbstractCaseView {
 	public CaseContactsView() {
 		super(VIEW_NAME);
 		setSizeFull();
-		
-		criteria = ViewModelProviders.of(CaseContactsView.class).get(ContactCriteria.class);
-		
-		grid = new ContactGrid();
-		grid.setCriteria(criteria);
-		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(createStatusFilterBar());
-		gridLayout.addComponent(grid);
-		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
-		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(grid, 1);
-		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
-		setSubComponent(gridLayout);
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		viewConfiguration.setInEagerMode(true);
+		criteria = ViewModelProviders.of(CaseContactsView.class).get(ContactCriteria.class);
 	}
 
 	public HorizontalLayout createFilterBar() {
@@ -187,8 +177,7 @@ public class CaseContactsView extends AbstractCaseView {
 			Command cancelFollowUpCommand = selectedItem -> {
 				ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
-						grid.deselectAll();
-						grid.reload();
+						navigateTo(criteria);
 					}
 				});
 			};
@@ -197,8 +186,7 @@ public class CaseContactsView extends AbstractCaseView {
 			Command lostToFollowUpCommand = selectedItem -> {
 				ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
-						grid.deselectAll();
-						grid.reload();
+						navigateTo(criteria);
 					}
 				});
 			};
@@ -207,8 +195,7 @@ public class CaseContactsView extends AbstractCaseView {
 			Command deleteCommand = selectedItem -> {
 				ControllerProvider.getContactController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 					public void run() {
-						grid.deselectAll();
-						grid.reload();
+						navigateTo(criteria);
 					}
 				});
 			};
@@ -253,14 +240,30 @@ public class CaseContactsView extends AbstractCaseView {
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 
+		criteria.caze(getCaseRef());
+		
+		if (grid == null) {
+			grid = new ContactGrid(criteria, getClass());
+			gridLayout = new VerticalLayout();
+			gridLayout.addComponent(createFilterBar());
+			gridLayout.addComponent(createStatusFilterBar());
+			gridLayout.addComponent(grid);
+			gridLayout.setMargin(true);
+			gridLayout.setSpacing(false);
+			gridLayout.setSizeFull();
+			gridLayout.setExpandRatio(grid, 1);
+			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+
+			setSubComponent(gridLayout);
+		}
+
 		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-
-		criteria.caze(getCaseRef());
+		
 		grid.reload();
 	}
 

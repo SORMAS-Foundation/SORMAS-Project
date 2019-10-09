@@ -44,4 +44,8 @@ public interface ContactFacadeRetro {
 
     @GET("contacts/uuids")
     Call<List<String>> pullUuids();
+
+    @GET("contacts/deleted/{since}")
+    Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+
 }

@@ -48,9 +48,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.task.TaskCriteria;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -65,10 +63,10 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -95,6 +93,8 @@ public class EventFacadeEjb implements EventFacade {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	
 	@Override
 	public List<String> getAllActiveUuids(String userUuid) {
@@ -127,19 +127,16 @@ public class EventFacadeEjb implements EventFacade {
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
-	public List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid) {
+	public List<String> getDeletedUuidsSince(String userUuid, Date since) {
 		User user = userService.getByUuid(userUuid);
-		District district = districtService.getByReferenceDto(districtRef);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
-		return eventService.getAllBetween(fromDate, toDate, district, disease, user).stream()
-				.map(e -> toDto(e))
-				.collect(Collectors.toList());
+
+		return eventService.getDeletedUuidsSince(user, since);
 	}
 	
 	@Override
@@ -149,13 +146,13 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getNewEventsForDashboard(eventCriteria, user);
 	}
 	
-	public Map<Disease, Long> getEventCountByDisease (EventCriteria eventCriteria, String userUuid) {
+	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 		
 		return eventService.getEventCountByDisease(eventCriteria, user);
 	}
 	
-	public Map<EventStatus, Long> getEventCountByStatus (EventCriteria eventCriteria, String userUuid) {
+	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria, String userUuid) {
 		User user = userService.getByUuid(userUuid);
 
 		return eventService.getEventCountByStatus(eventCriteria, user);
@@ -180,30 +177,13 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<EventReferenceDto> getSelectableEvents(UserReferenceDto userRef) {
-		User user = userService.getByReferenceDto(userRef);
-		return eventService.getAllAfter(null, user).stream()
-				.map(c -> toReferenceDto(c))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public void deleteEvent(EventReferenceDto eventRef, String userUuid) {
+	public void deleteEvent(String eventUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.EVENT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete events.");
 		}
-		
-		Event event = eventService.getByReferenceDto(eventRef);
-		List<EventParticipant> eventParticipants = eventParticipantService.getAllByEventAfter(null, event);
-		for (EventParticipant eventParticipant : eventParticipants) {
-			eventParticipantService.delete(eventParticipant);
-		}
-		List<Task> tasks = taskService.findBy(new TaskCriteria().event(eventRef));
-		for (Task task : tasks) {
-			taskService.delete(task);
-		}
-		eventService.delete(event);
+
+		eventService.delete(eventService.getByUuid(eventUuid));
 	}
 	
 	@Override
@@ -232,7 +212,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 	
 	@Override
-	public List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
 		Root<Event> event = cq.from(Event.class);
@@ -308,8 +288,11 @@ public class EventFacadeEjb implements EventFacade {
 			cq.orderBy(cb.desc(event.get(Contact.CHANGE_DATE)));
 		}
 
-		List<EventIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return resultList;
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 
 	@Override
@@ -324,6 +307,20 @@ public class EventFacadeEjb implements EventFacade {
 				cb.and(
 						cb.equal(from.get(Event.ARCHIVED), true), 
 						cb.equal(from.get(AbstractDomainObject.UUID), eventUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
+	@Override
+	public boolean isDeleted(String eventUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Event> from = cq.from(Event.class);
+
+		cq.where(cb.and(
+				cb.isTrue(from.get(Event.DELETED)),
+				cb.equal(from.get(AbstractDomainObject.UUID), eventUuid)));
 		cq.select(cb.count(from));
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
@@ -424,4 +421,5 @@ public class EventFacadeEjb implements EventFacade {
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
 	}	
+	
 }

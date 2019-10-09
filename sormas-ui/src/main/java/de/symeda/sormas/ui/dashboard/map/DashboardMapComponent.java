@@ -701,7 +701,6 @@ public class DashboardMapComponent extends VerticalLayout {
 	}
 
 	private void clearRegionShapes() {
-
 		map.removeGroup(REGIONS_GROUP_ID);
 		map.removeGroup(DISTRICTS_GROUP_ID);
 		polygonRegions.clear();
@@ -712,7 +711,6 @@ public class DashboardMapComponent extends VerticalLayout {
 	}
 
 	private void showRegionsShapes(CaseMeasure caseMeasure, Date fromDate, Date toDate, Disease disease) {
-
 		clearRegionShapes();
 		map.setTileLayerOpacity(0.5f);
 

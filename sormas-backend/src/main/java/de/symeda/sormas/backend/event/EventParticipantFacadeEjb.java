@@ -150,7 +150,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 	
 	@Override
-	public List<EventParticipantIndexDto> getIndexList(EventParticipantCriteria eventParticipantCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<EventParticipantIndexDto> getIndexList(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
 			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
 		}
@@ -210,9 +210,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		} else {
 			cq.orderBy(cb.desc(person.get(Person.LAST_NAME)));
 		}
-		
-		List<EventParticipantIndexDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return resultList;
+
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
 	}
 	
 	@Override

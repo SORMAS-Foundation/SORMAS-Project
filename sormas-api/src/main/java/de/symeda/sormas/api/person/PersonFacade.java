@@ -24,8 +24,8 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -43,6 +43,8 @@ public interface PersonFacade {
     PersonDto getPersonByUuid(String uuid);
 
     PersonDto savePerson(PersonDto dto) throws ValidationRuntimeException;
+    
+    PersonDto savePersonSimple(PersonDto source) throws ValidationRuntimeException;
 
     void validate(PersonDto dto) throws ValidationRuntimeException;
     
@@ -54,5 +56,5 @@ public interface PersonFacade {
 	
 	PersonDto buildPerson();
 	
-	Map<Disease, Long> getDeathCountByDisease (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Date from, Date to);
+	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid);
 }

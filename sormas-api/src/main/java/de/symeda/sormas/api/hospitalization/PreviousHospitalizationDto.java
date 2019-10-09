@@ -20,10 +20,12 @@ package de.symeda.sormas.api.hospitalization;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class PreviousHospitalizationDto extends EntityDto {
@@ -51,6 +53,32 @@ public class PreviousHospitalizationDto extends EntityDto {
 	private String healthFacilityDetails;
 	private YesNoUnknown isolated;
 	private String description;
+	
+	public static PreviousHospitalizationDto build(CaseDataDto caze) {
+		HospitalizationDto hospitalization = caze.getHospitalization();
+		PreviousHospitalizationDto previousHospitalization = new PreviousHospitalizationDto();
+		previousHospitalization.setUuid(DataHelper.createUuid());
+
+		if (hospitalization.getAdmissionDate() != null) {
+			previousHospitalization.setAdmissionDate(hospitalization.getAdmissionDate());
+		} else {
+			previousHospitalization.setAdmissionDate(caze.getReportDate());
+		}
+
+		if (hospitalization.getDischargeDate() != null) {
+			previousHospitalization.setDischargeDate(hospitalization.getDischargeDate());
+		} else {
+			previousHospitalization.setDischargeDate(new Date());
+		}
+
+		previousHospitalization.setRegion(caze.getRegion());
+		previousHospitalization.setDistrict(caze.getDistrict());
+		previousHospitalization.setCommunity(caze.getCommunity());
+		previousHospitalization.setHealthFacility(caze.getHealthFacility());
+		previousHospitalization.setIsolated(hospitalization.getIsolated());
+		
+		return previousHospitalization;
+	}
 	
 	public Date getAdmissionDate() {
 		return admissionDate;

@@ -49,6 +49,10 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		sampleRef = FacadeProvider.getSampleFacade().getReferenceByUuid(params);
 		CaseReferenceDto caseRef = FacadeProvider.getSampleFacade().getSampleByUuid(params).getAssociatedCase();
 		
+		if (FacadeProvider.getSampleFacade().isDeleted(sampleRef.getUuid())) {
+			setEnabled(false);
+		}
+		
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.sampleSamplesList));
 		if (caseRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
