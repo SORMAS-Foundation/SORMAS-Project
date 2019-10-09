@@ -58,6 +58,7 @@ public class EpiData extends AbstractDomainObject {
 	public static final String PRIMATES = "primates";
 	public static final String SWINE = "swine";
 	public static final String BIRDS = "birds";
+	public static final String RABBITS = "rabbits";
 	public static final String CATTLE = "cattle";
 	public static final String DOGS = "dogs";
 	public static final String CATS = "cats";
@@ -118,6 +119,7 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown primates;
 	private YesNoUnknown swine;
 	private YesNoUnknown birds;
+	private YesNoUnknown rabbits;
 	private YesNoUnknown cattle;
 	private YesNoUnknown dogs;
 	private YesNoUnknown cats;
@@ -206,6 +208,14 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setBirds(YesNoUnknown birds) {
 		this.birds = birds;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getRabbits() {
+		return rabbits;
+	}
+	public void setRabbits(YesNoUnknown rabbits) {
+		this.rabbits = rabbits;
 	}
 
 	@Enumerated(EnumType.STRING)

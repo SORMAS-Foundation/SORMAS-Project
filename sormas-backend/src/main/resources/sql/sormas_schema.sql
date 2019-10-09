@@ -3643,6 +3643,8 @@ ALTER TABLE epidata ADD COLUMN cats varchar(255);
 ALTER TABLE epidata_history ADD COLUMN cats varchar(255);
 ALTER TABLE epidata ADD COLUMN canidae varchar(255);
 ALTER TABLE epidata_history ADD COLUMN canidae varchar(255);
+ALTER TABLE epidata ADD COLUMN rabbits varchar(255);
+ALTER TABLE epidata_history ADD COLUMN rabbits varchar(255);
 
 ALTER TABLE epidata ADD COLUMN prophylaxisstatus varchar(255);
 ALTER TABLE epidata_history ADD COLUMN prophylaxisstatus varchar(255);

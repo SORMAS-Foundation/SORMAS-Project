@@ -93,6 +93,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setPrimates(source.getPrimates());
 		target.setSwine(source.getSwine());
 		target.setBirds(source.getBirds());
+		target.setRabbits(source.getRabbits());
 		target.setCattle(source.getCattle());
 		target.setDogs(source.getDogs());
 		target.setCats(source.getCats());
@@ -278,6 +279,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setPrimates(source.getPrimates());
 		target.setSwine(source.getSwine());
 		target.setBirds(source.getBirds());
+		target.setRabbits(source.getRabbits());
 		target.setCattle(source.getCattle());
 		target.setDogs(source.getDogs());
 		target.setCats(source.getCats());

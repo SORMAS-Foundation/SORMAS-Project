@@ -43,6 +43,7 @@ public class EpiDataDto extends EntityDto {
 	public static final String PRIMATES = "primates";
 	public static final String SWINE = "swine";
 	public static final String BIRDS = "birds";
+	public static final String RABBITS = "rabbits";
 	public static final String CATTLE = "cattle";
 	public static final String DOGS = "dogs";
 	public static final String CATS = "cats";
@@ -143,7 +144,9 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown swine;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown birds;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
+	private YesNoUnknown rabbits;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF, Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown cattle;
 	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown dogs;
@@ -253,6 +256,12 @@ public class EpiDataDto extends EntityDto {
 		this.birds = birds;
 	}
 		
+	public YesNoUnknown getRabbits() {
+		return rabbits;
+	}
+	public void setRabbits(YesNoUnknown rabbits) {
+		this.rabbits = rabbits;
+	}
 	public YesNoUnknown getCattle() {
 		return cattle;
 	}
