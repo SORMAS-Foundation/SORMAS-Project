@@ -3726,4 +3726,4 @@ ALTER TABLE epidata_history ADD COLUMN prophylaxisstatus varchar(255);
 ALTER TABLE epidata ADD COLUMN dateofprophylaxis timestamp;
 ALTER TABLE epidata_history ADD COLUMN dateofprophylaxis timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add new disease, human rabies #834');
+INSERT INTO schema_version (version_number, comment) VALUES (167, 'Add new disease, human rabies #834');
