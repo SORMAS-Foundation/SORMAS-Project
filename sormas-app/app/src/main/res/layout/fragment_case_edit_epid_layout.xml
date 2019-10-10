@@ -28,6 +28,7 @@
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.epidata.WaterSource" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.caze.Vaccination" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.epidata.EpiData" />
         <variable name="waterSourceClass" type="Class" />
@@ -37,6 +38,8 @@
         <variable name="gatheringItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="travelItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
         <variable name="burialItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+
+        <variable name="vaccinationClass" type="Class" />
     </data>
 
     <ScrollView
@@ -373,6 +376,30 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_rabbits"
+                    app:slim="true"
+                    app:value="@={data.rabbits}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_dogs"
+                    app:slim="true"
+                    app:value="@={data.dogs}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_cats"
+                    app:slim="true"
+                    app:value="@={data.cats}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_canidae"
+                    app:slim="true"
+                    app:value="@={data.canidae}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/epiData_sickDeadAnimals"
                     app:slim="true"
                     app:value="@={data.sickDeadAnimals}"
@@ -436,6 +463,59 @@
                     app:value="@={data.otherAnimalsDetails}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_kindOfExposure"
+                    app:value="@={data.kindOfExposure}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_kindOfExposureBite"
+                    app:dependencyParentField="@{epiDataKindOfExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:slim="true"
+                    app:value="@={data.kindOfExposureBite}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_kindOfExposureTouch"
+                    app:dependencyParentField="@{epiDataKindOfExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:slim="true"
+                    app:value="@={data.kindOfExposureTouch}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_kindOfExposureScratch"
+                    app:dependencyParentField="@{epiDataKindOfExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:slim="true"
+                    app:value="@={data.kindOfExposureScratch}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_kindOfExposureLick"
+                    app:dependencyParentField="@{epiDataKindOfExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:slim="true"
+                    app:value="@={data.kindOfExposureLick}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_kindOfExposureOther"
+                    app:dependencyParentField="@{epiDataKindOfExposure}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:slim="true"
+                    app:value="@={data.kindOfExposureOther}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/epiData_kindOfExposureDetails"
+                    app:dependencyParentField="@{epiDataKindOfExposureOther}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:slim="true"
+                    app:value="@={data.kindOfExposureDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -457,6 +537,31 @@
                     android:id="@+id/epiData_placeOfLastExposure"
                     app:value="@={data.placeOfLastExposure}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/epiData_animalVaccinationStatus"
+                    app:enumClass="@{vaccinationClass}"
+                    app:value="@={data.animalVaccinationStatus}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/field_yes_no_caption_margin_top">
+
+                    <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/epiData_prophylaxisStatus"
+                        app:value="@={data.prophylaxisStatus}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/epiData_dateOfProphylaxis"
+                        app:dependencyParentField="@{epiDataProphylaxisStatus}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@={data.dateOfProphylaxis}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

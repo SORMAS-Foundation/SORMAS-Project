@@ -25,6 +25,7 @@ import android.view.View;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
@@ -371,6 +372,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 
         contentBinding.setData(record);
         contentBinding.setWaterSourceClass(WaterSource.class);
+        contentBinding.setVaccinationClass(Vaccination.class);
         contentBinding.setGatheringList(getGatherings());
         contentBinding.setTravelList(getTravels());
         contentBinding.setBurialList(getBurials());
@@ -429,6 +431,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         // Initialize ControlDateFields
         contentBinding.epiDataDateOfLastExposure.initializeDateField(getFragmentManager());
         contentBinding.epiDataSickDeadAnimalsDate.initializeDateField(getFragmentManager());
+        contentBinding.epiDataDateOfProphylaxis.initializeDateField(getFragmentManager());
 
         verifyBurialStatus();
         verifyGatheringStatus();

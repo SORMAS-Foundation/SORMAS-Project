@@ -252,6 +252,30 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_rabbits"
+                    app:slim="true"
+                    app:value="@{data.rabbits}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_dogs"
+                    app:slim="true"
+                    app:value="@{data.dogs}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_cats"
+                    app:slim="true"
+                    app:value="@{data.cats}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_canidae"
+                    app:slim="true"
+                    app:value="@{data.canidae}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_sickDeadAnimals"
                     app:appendValue="@{data.sickDeadAnimalsDetails}"
                     app:value="@{data.sickDeadAnimals}"
@@ -304,6 +328,74 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_kindOfExposure"
+                        app:value="@{data.kindOfExposure}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_kindOfExposureBite"
+                        app:dependencyParentField="@{epiDataKindOfExposure}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.kindOfExposureBite}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_kindOfExposureTouch"
+                        app:dependencyParentField="@{epiDataKindOfExposure}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.kindOfExposureTouch}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_kindOfExposureScratch"
+                        app:dependencyParentField="@{epiDataKindOfExposure}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.kindOfExposureScratch}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_kindOfExposureLick"
+                        app:dependencyParentField="@{epiDataKindOfExposure}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.kindOfExposureLick}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_kindOfExposureOther"
+                        app:dependencyParentField="@{epiDataKindOfExposure}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.kindOfExposureOther}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_kindOfExposureDetails"
+                    app:dependencyParentField="@{epiDataKindOfExposureOther}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:value="@{data.kindOfExposureDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/epiData_dateOfLastExposure"
                         app:value="@{data.dateOfLastExposure}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
@@ -319,6 +411,30 @@
                     android:id="@+id/epiData_animalCondition"
                     app:value="@{data.animalCondition}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_animalVaccinationStatus"
+                    app:value="@{data.animalVaccinationStatus}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_prophylaxisStatus"
+                        app:value="@{data.prophylaxisStatus}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/epiData_dateOfProphylaxis"
+                        app:dependencyParentField="@{epiDataProphylaxisStatus}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.dateOfProphylaxis}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
