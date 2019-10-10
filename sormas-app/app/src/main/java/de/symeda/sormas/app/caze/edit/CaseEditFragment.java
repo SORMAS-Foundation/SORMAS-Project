@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.HumanRabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -70,6 +71,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> vaccinationInfoSourceList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
+    private List<Item> humanRabiesTypeList;
     private List<Item> hospitalWardTypeList;
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
@@ -183,6 +185,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
+        humanRabiesTypeList = DataUtils.getEnumItems(HumanRabiesType.class, true);
         hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
 
         initialRegions = InfrastructureHelper.loadRegions();
@@ -233,6 +236,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
+        contentBinding.caseDataHumanRabiesType.initializeSpinner(humanRabiesTypeList);
         contentBinding.caseDataNotifyingClinic.initializeSpinner(hospitalWardTypeList);
         contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
 

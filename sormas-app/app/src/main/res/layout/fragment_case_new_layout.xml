@@ -101,6 +101,13 @@
                 app:softRequired="true"
                 app:value="@={data.dengueFeverType}"/>
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/caseData_humanRabiesType"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{caseDataDisease}"
+                app:dependencyParentValue="@{Disease.RABIES}"
+                app:value="@={data.humanRabiesType}"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

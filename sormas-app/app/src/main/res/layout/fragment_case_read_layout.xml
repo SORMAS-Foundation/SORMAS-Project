@@ -133,6 +133,13 @@
                         app:dependencyParentValue="@{Disease.DENGUE}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_humanRabiesType"
+                        app:value="@{data.humanRabiesType}"
+                        app:dependencyParentField="@{caseDataDisease}"
+                        app:dependencyParentValue="@{Disease.RABIES}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -262,14 +269,21 @@
                     app:value="@{data.pregnant}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_vaccination"
+                    app:value="@{data.vaccination}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccination"
-                        app:value="@{data.vaccination}"
+                        android:id="@+id/caseData_whichVaccine"
+                        app:value="@{data.whichVaccine}"
+                        app:dependencyParentField="@{caseDataVaccination}"
+                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
