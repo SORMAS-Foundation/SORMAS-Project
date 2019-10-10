@@ -263,6 +263,46 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState fluidInLungCavity;
     @Enumerated(EnumType.STRING)
     private SymptomState tremor;
+
+    @Enumerated(EnumType.STRING)
+    private SymptomState hydrophobia;
+    @Enumerated(EnumType.STRING)
+    private SymptomState opisthotonus;
+    @Enumerated(EnumType.STRING)
+    private SymptomState anxietyStates;
+    @Enumerated(EnumType.STRING)
+    private SymptomState delirium;
+    @Enumerated(EnumType.STRING)
+    private SymptomState uproariousness;
+    @Enumerated(EnumType.STRING)
+    private SymptomState paresthesiaAroundWound;
+    @Enumerated(EnumType.STRING)
+    private SymptomState excessSalivation;
+    @Enumerated(EnumType.STRING)
+    private SymptomState insomnia;
+    @Enumerated(EnumType.STRING)
+    private SymptomState paralysis;
+    @Enumerated(EnumType.STRING)
+    private SymptomState excitation;
+    @Enumerated(EnumType.STRING)
+    private SymptomState dysphagia;
+    @Enumerated(EnumType.STRING)
+    private SymptomState aerophobia;
+    @Enumerated(EnumType.STRING)
+    private SymptomState hyperactivity;
+    @Enumerated(EnumType.STRING)
+    private SymptomState paresis;
+    @Enumerated(EnumType.STRING)
+    private SymptomState agitation;
+    @Enumerated(EnumType.STRING)
+    private SymptomState ascendingFlaccidParalysis;
+    @Enumerated(EnumType.STRING)
+    private SymptomState erraticBehaviour;
+    @Enumerated(EnumType.STRING)
+    private SymptomState coma;
+    @Enumerated(EnumType.STRING)
+    private SymptomState death;
+
     @Enumerated(EnumType.STRING)
     private SymptomState otherHemorrhagicSymptoms;
     @Column(length = 255)
@@ -1138,6 +1178,158 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setTremor(SymptomState tremor) {
         this.tremor = tremor;
+    }
+
+    public SymptomState getHydrophobia() {
+        return hydrophobia;
+    }
+
+    public void setHydrophobia(SymptomState hydrophobia) {
+        this.hydrophobia = hydrophobia;
+    }
+
+    public SymptomState getOpisthotonus() {
+        return opisthotonus;
+    }
+
+    public void setOpisthotonus(SymptomState opisthotonus) {
+        this.opisthotonus = opisthotonus;
+    }
+
+    public SymptomState getAnxietyStates() {
+        return anxietyStates;
+    }
+
+    public void setAnxietyStates(SymptomState anxietyStates) {
+        this.anxietyStates = anxietyStates;
+    }
+
+    public SymptomState getDelirium() {
+        return delirium;
+    }
+
+    public void setDelirium(SymptomState delirium) {
+        this.delirium = delirium;
+    }
+
+    public SymptomState getUproariousness() {
+        return uproariousness;
+    }
+
+    public void setUproariousness(SymptomState uproariousness) {
+        this.uproariousness = uproariousness;
+    }
+
+    public SymptomState getParesthesiaAroundWound() {
+        return paresthesiaAroundWound;
+    }
+
+    public void setParesthesiaAroundWound(SymptomState paresthesiaAroundWound) {
+        this.paresthesiaAroundWound = paresthesiaAroundWound;
+    }
+
+    public SymptomState getExcessSalivation() {
+        return excessSalivation;
+    }
+
+    public void setExcessSalivation(SymptomState excessSalivation) {
+        this.excessSalivation = excessSalivation;
+    }
+
+    public SymptomState getInsomnia() {
+        return insomnia;
+    }
+
+    public void setInsomnia(SymptomState insomnia) {
+        this.insomnia = insomnia;
+    }
+
+    public SymptomState getParalysis() {
+        return paralysis;
+    }
+
+    public void setParalysis(SymptomState paralysis) {
+        this.paralysis = paralysis;
+    }
+
+    public SymptomState getExcitation() {
+        return excitation;
+    }
+
+    public void setExcitation(SymptomState excitation) {
+        this.excitation = excitation;
+    }
+
+    public SymptomState getDysphagia() {
+        return dysphagia;
+    }
+
+    public void setDysphagia(SymptomState dysphagia) {
+        this.dysphagia = dysphagia;
+    }
+
+    public SymptomState getAerophobia() {
+        return aerophobia;
+    }
+
+    public void setAerophobia(SymptomState aerophobia) {
+        this.aerophobia = aerophobia;
+    }
+
+    public SymptomState getHyperactivity() {
+        return hyperactivity;
+    }
+
+    public void setHyperactivity(SymptomState hyperactivity) {
+        this.hyperactivity = hyperactivity;
+    }
+
+    public SymptomState getParesis() {
+        return paresis;
+    }
+
+    public void setParesis(SymptomState paresis) {
+        this.paresis = paresis;
+    }
+
+    public SymptomState getAgitation() {
+        return agitation;
+    }
+
+    public void setAgitation(SymptomState agitation) {
+        this.agitation = agitation;
+    }
+
+    public SymptomState getAscendingFlaccidParalysis() {
+        return ascendingFlaccidParalysis;
+    }
+
+    public void setAscendingFlaccidParalysis(SymptomState ascendingFlaccidParalysis) {
+        this.ascendingFlaccidParalysis = ascendingFlaccidParalysis;
+    }
+
+    public SymptomState getErraticBehaviour() {
+        return erraticBehaviour;
+    }
+
+    public void setErraticBehaviour(SymptomState erraticBehaviour) {
+        this.erraticBehaviour = erraticBehaviour;
+    }
+
+    public SymptomState getComa() {
+        return coma;
+    }
+
+    public void setComa(SymptomState coma) {
+        this.coma = coma;
+    }
+
+    public SymptomState getDeath() {
+        return death;
+    }
+
+    public void setDeath(SymptomState death) {
+        this.death = death;
     }
 
     public String getPatientIllLocation() {
