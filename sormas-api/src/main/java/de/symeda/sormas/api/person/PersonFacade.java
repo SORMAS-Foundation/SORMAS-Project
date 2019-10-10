@@ -44,8 +44,6 @@ public interface PersonFacade {
 
     PersonDto savePerson(PersonDto dto) throws ValidationRuntimeException;
     
-    PersonDto savePersonSimple(PersonDto source) throws ValidationRuntimeException;
-
     void validate(PersonDto dto) throws ValidationRuntimeException;
     
 	List<String> getAllUuids(String userUuid);

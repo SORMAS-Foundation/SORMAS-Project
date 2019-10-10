@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -49,10 +50,6 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		sampleRef = FacadeProvider.getSampleFacade().getReferenceByUuid(params);
 		CaseReferenceDto caseRef = FacadeProvider.getSampleFacade().getSampleByUuid(params).getAssociatedCase();
 		
-		if (FacadeProvider.getSampleFacade().isDeleted(sampleRef.getUuid())) {
-			setEnabled(false);
-		}
-		
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.sampleSamplesList));
 		if (caseRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
@@ -61,6 +58,15 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getCaption(SampleDto.I18N_PREFIX), params);
 		infoLabel.setValue(sampleRef.getCaption());
 		infoLabelSub.setValue(DataHelper.getShortUuid(sampleRef.getUuid()));
+	}
+	
+	@Override
+	protected void setSubComponent(Component newComponent) {
+		super.setSubComponent(newComponent);
+		
+		if (FacadeProvider.getSampleFacade().isDeleted(sampleRef.getUuid())) {
+			newComponent.setEnabled(false);
+		}
 	}
 	
 	public SampleReferenceDto getSampleRef() {

@@ -16,8 +16,6 @@ public interface ClinicalVisitFacade {
 	
 	ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid);
 	
-	ClinicalVisitDto saveClinicalVisitSimple(ClinicalVisitDto clinicalVisit, String caseUuid);
-	
 	ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit);
 	
 	void deleteClinicalVisit(String clinicalVisitUuid, String userUuid);

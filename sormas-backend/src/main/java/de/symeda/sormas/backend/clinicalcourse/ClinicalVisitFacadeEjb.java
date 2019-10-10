@@ -149,33 +149,26 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@Override
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid) {
+		return saveClinicalVisit(clinicalVisit, caseUuid, true);
+	}
+	
+	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid, boolean handleChanges) {
 		SymptomsHelper.updateIsSymptomatic(clinicalVisit.getSymptoms());
 		ClinicalVisit entity = fromDto(clinicalVisit);
 
 		service.ensurePersisted(entity);
 
-		// Update case symptoms
-		CaseDataDto caze = caseFacade.getCaseDataByUuid(caseUuid);
-		SymptomsDto caseSymptoms = caze.getSymptoms();
-		SymptomsHelper.updateSymptoms(clinicalVisit.getSymptoms(), caseSymptoms);
-		caseFacade.saveCase(caze);
-
+		if (handleChanges) {
+			// Update case symptoms
+			CaseDataDto caze = caseFacade.getCaseDataByUuid(caseUuid);
+			SymptomsDto caseSymptoms = caze.getSymptoms();
+			SymptomsHelper.updateSymptoms(clinicalVisit.getSymptoms(), caseSymptoms);
+			caseFacade.saveCase(caze);
+		}
+		
 		return toDto(entity);
 	}
 
-	@Override
-	public ClinicalVisitDto saveClinicalVisitSimple(ClinicalVisitDto clinicalVisit, String caseUuid) {
-
-		ClinicalVisit entity = fromDto(clinicalVisit);
-
-		service.ensurePersisted(entity);
-
-		CaseDataDto caze = caseFacade.getCaseDataByUuid(caseUuid);
-
-		caseFacade.saveCase(caze);
-
-		return toDto(entity);
-	}
 	
 	/**
 	 * Should only be used for synchronization purposes since the associated

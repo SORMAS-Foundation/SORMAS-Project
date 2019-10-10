@@ -172,12 +172,8 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 
 	@Override
 	protected EpiDataBurialDto createEntry() {
-		EpiDataBurialDto burial = new EpiDataBurialDto();
-		burial.setUuid(DataHelper.createUuid());
-		LocationDto location = new LocationDto();
-		location.setUuid(DataHelper.createUuid());
-		location.setRegion(UserProvider.getCurrent().getUser().getRegion());
-		burial.setBurialAddress(location);
+		EpiDataBurialDto burial = EpiDataBurialDto.build();
+		burial.getBurialAddress().setRegion(UserProvider.getCurrent().getUser().getRegion());
 		return burial;
 	}
 
