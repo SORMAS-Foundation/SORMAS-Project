@@ -171,6 +171,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState radiolucentBoneDisease;
 	private SymptomState congenitalHeartDisease;
 	private CongenitalHeartDiseaseType congenitalHeartDiseaseType;
+	private String congenitalHeartDiseaseDetails;
 	private SymptomState hydrophobia;
 	private SymptomState opisthotonus;
 	private SymptomState anxietyStates;
@@ -190,7 +191,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState erraticBehaviour;
 	private SymptomState coma;
 	private SymptomState death;
-	private String congenitalHeartDiseaseDetails;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 
