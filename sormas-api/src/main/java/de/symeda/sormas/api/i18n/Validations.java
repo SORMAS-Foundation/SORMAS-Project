@@ -7,6 +7,7 @@ public interface Validations {
 	public static String beforeDate = "beforeDate";
 	public static String beforeDateSoft = "beforeDateSoft";
 	public static String duplicateEpidNumber = "duplicateEpidNumber";
+	public static String exportNoNameSpecified = "exportNoNameSpecified";
 	public static String futureDate = "futureDate";
 	public static String futureDateStrict = "futureDateStrict";
 	public static String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";
@@ -30,6 +31,7 @@ public interface Validations {
 	public static String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	public static String noCommunityInDistrict = "noCommunityInDistrict";
 	public static String noDistrictInRegion = "noDistrictInRegion";
+	public static String noFacilityDetails = "noFacilityDetails";
 	public static String noFacilityInCommunity = "noFacilityInCommunity";
 	public static String noFacilityInDistrict = "noFacilityInDistrict";
 	public static String noFacilityInRegion = "noFacilityInRegion";

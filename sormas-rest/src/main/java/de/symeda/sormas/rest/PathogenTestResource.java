@@ -74,4 +74,14 @@ public class PathogenTestResource extends EntityDtoResource {
 		List<String> uuids = FacadeProvider.getPathogenTestFacade().getAllActiveUuids(userDto.getUuid());
 		return uuids;
 	}
+	
+	@GET
+	@Path("/deleted/{since}")
+	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+		UserReferenceDto userDto = FacadeProvider.getUserFacade()
+				.getByUserNameAsReference(sc.getUserPrincipal().getName());
+		List<String> uuids = FacadeProvider.getPathogenTestFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
+		return uuids;
+	}
+	
 }

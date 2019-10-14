@@ -19,7 +19,6 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -45,12 +44,12 @@ public interface PathogenTestFacade {
 	
 	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
 	
-	Map<PathogenTestResultType, Long> getTestResultCountByResultType (RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
-	
-	void deletePathogenTest(PathogenTestReferenceDto pathogenTestRef, String userUuid);
+	void deletePathogenTest(String pathogenTestUuid, String userUuid);
 	
 	boolean hasPathogenTest(SampleReferenceDto sample);
 	
 	void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException;
+	
+	List<String> getDeletedUuidsSince(String userUuid, Date since);
 	
 }

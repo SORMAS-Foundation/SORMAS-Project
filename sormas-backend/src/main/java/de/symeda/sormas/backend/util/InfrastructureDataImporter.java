@@ -36,12 +36,12 @@ public final class InfrastructureDataImporter {
 	
     @FunctionalInterface
     public interface RegionConsumer {
-        public void consume(String regionName, String epidCode, Integer population, Float growthRate);
+        public void consume(String regionName, String epidCode, Float growthRate);
     }
 
     @FunctionalInterface
     public interface DistrictConsumer {
-        public void consume(String regionName, String districtName, String epidCode, Integer population, Float growthRate);
+        public void consume(String regionName, String districtName, String epidCode, Float growthRate);
     }
     
     @FunctionalInterface
@@ -59,20 +59,18 @@ public final class InfrastructureDataImporter {
 	private static final Logger logger = LoggerFactory.getLogger(InfrastructureDataImporter.class);
 	
 	public static void importRegions(String countryName, RegionConsumer regionConsumer) {
-		
 		String resourceFileName = "/regions/" + countryName + "/regions.csv";
 		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		
-		NumberFormat populationFormat = NumberFormat.getIntegerInstance(Locale.ENGLISH);
 		NumberFormat growthRateFormat = NumberFormat.getNumberInstance(Locale.ENGLISH);
 
 		String currentLine = null;
 		try {
 			currentLine = reader.readLine();
-			if (!currentLine.equals("region;epidcode;population;growthrate")) {
+			if (!currentLine.equals("region;epidcode;growthrate")) {
 				throw new IllegalArgumentException("Resource file does not match expected format. "
-						+ "First line has to be 'region;epidcode;population;growthrate'. " + resourceFileName);
+						+ "First line has to be 'region;epidcode;growthrate'. " + resourceFileName);
 			}
 
 			while (reader.ready()) {
@@ -81,12 +79,10 @@ public final class InfrastructureDataImporter {
 				
 				String regionName = columns[0];
 				String epidCode = columns.length > 1 ? columns[1] : null;
-				Number populationNumber = columns.length > 2 ? populationFormat.parse(columns[2]) : null;
-				Number growthRateNumber = columns.length > 3 ? growthRateFormat.parse(columns[3]) : null;
-				Integer population = populationNumber != null ? populationNumber.intValue() : null;
+				Number growthRateNumber = columns.length > 2 ? growthRateFormat.parse(columns[2]) : null;
 				Float growthRate = growthRateNumber != null ? growthRateNumber.floatValue() : null;
 
-				regionConsumer.consume(regionName, epidCode, population, growthRate);
+				regionConsumer.consume(regionName, epidCode, growthRate);
 			}
 			
 			stream.close();
@@ -96,20 +92,18 @@ public final class InfrastructureDataImporter {
 	}
 	
 	public static void importDistricts(String countryName, DistrictConsumer districtConsumer) {
-		
 		String resourceFileName = "/regions/" + countryName + "/districts.csv";
 		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		
-		NumberFormat populationFormat = NumberFormat.getIntegerInstance(Locale.ENGLISH);
 		NumberFormat growthRateFormat = NumberFormat.getNumberInstance(Locale.ENGLISH);
 		
 		String currentLine = null;
 		try {
 			currentLine = reader.readLine();
-			if (!currentLine.equals("region;district;epidcode;population;growthrate")) {
+			if (!currentLine.equals("region;district;epidcode;growthrate")) {
 				throw new IllegalArgumentException("Resource file does not match expected format. "
-						+ "First line has to be 'region;district;epidcode;population;growthrate'. " + resourceFileName);
+						+ "First line has to be 'region;district;epidcode;growthrate'. " + resourceFileName);
 			}
 
 			while (reader.ready()) {
@@ -119,12 +113,10 @@ public final class InfrastructureDataImporter {
 				String regionName = columns[0];
 				String districtName = columns[1];
 				String epidCode = columns.length > 2 ? columns[2] : null;
-				Number populationNumber = columns.length > 3 ? populationFormat.parse(columns[3]) : null;
-				Number growthRateNumber = columns.length > 4 ? growthRateFormat.parse(columns[4]) : null;
-				Integer population = populationNumber != null ? populationNumber.intValue() : null;
+				Number growthRateNumber = columns.length > 3 ? growthRateFormat.parse(columns[3]) : null;
 				Float growthRate = growthRateNumber != null ? growthRateNumber.floatValue() : null;
 
-				districtConsumer.consume(regionName, districtName, epidCode, population, growthRate);
+				districtConsumer.consume(regionName, districtName, epidCode, growthRate);
 			}
 			
 			stream.close();
@@ -134,7 +126,6 @@ public final class InfrastructureDataImporter {
 	}
 
 	public static void importCommunities(String countryName, CommunityConsumer communityConsumer) {
-		
 		String resourceFileName = "/regions/" + countryName + "/communities.csv";
 		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -165,7 +156,6 @@ public final class InfrastructureDataImporter {
 	}
 	
 	public static void importFacilities(String countryName, Region region, FacilityConsumer facilityConsumer) {
-		
 		String resourceFileName = "/facilities/"+countryName + "/"+region.getName()+".csv";
 		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		if (stream == null) {
@@ -236,7 +226,6 @@ public final class InfrastructureDataImporter {
 	}
 	
 	public static void importLaboratories(String countryName, FacilityConsumer facilityConsumer) {
-		
 		String resourceFileName = "/facilities/" + countryName + "/Laboratories.csv";
 		InputStream stream = InfrastructureDataImporter.class.getResourceAsStream(resourceFileName);
 		if (stream == null) {

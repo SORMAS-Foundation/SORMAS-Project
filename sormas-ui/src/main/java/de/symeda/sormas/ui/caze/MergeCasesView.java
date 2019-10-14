@@ -32,7 +32,8 @@ public class MergeCasesView extends AbstractView {
 	private CaseCriteria criteria;
 
 	private MergeCasesGrid grid;
-
+	private MergeCasesFilterComponent filterComponent;
+	
 	public MergeCasesView() {
 		super(VIEW_NAME);
 
@@ -49,13 +50,20 @@ public class MergeCasesView extends AbstractView {
 		grid.setCriteria(criteria);
 
 		VerticalLayout gridLayout = new VerticalLayout();
-		gridLayout.addComponent(new MergeCasesFilterComponent(criteria, () -> {
+		filterComponent = new MergeCasesFilterComponent(criteria);
+		filterComponent.setFiltersUpdatedCallback(() -> {
 			if (ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class)) {
 				grid.reload();
+				filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
 			} else {
 				navigateTo(null);
 			}
-		}));
+		});
+		filterComponent.setIgnoreRegionCallback((ignoreRegion) -> {
+			grid.reload(ignoreRegion);
+		});
+		gridLayout.addComponent(filterComponent);
+		
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -105,6 +113,7 @@ public class MergeCasesView extends AbstractView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		grid.reload();
+		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
 	}
 
 }

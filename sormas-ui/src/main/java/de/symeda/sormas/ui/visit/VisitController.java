@@ -84,7 +84,7 @@ public class VisitController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getVisitFacade().deleteVisit(referenceDto, UserProvider.getCurrent().getUuid());
+					FacadeProvider.getVisitFacade().deleteVisit(referenceDto.getUuid(), UserProvider.getCurrent().getUuid());
 					UI.getCurrent().removeWindow(window);
         			if (doneConsumer != null) {
         				doneConsumer.accept(referenceDto);
@@ -140,7 +140,7 @@ public class VisitController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteVisits), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getVisitFacade().deleteVisit(new VisitReferenceDto(((VisitDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getVisitFacade().deleteVisit(((VisitDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingVisitsDeleted), 

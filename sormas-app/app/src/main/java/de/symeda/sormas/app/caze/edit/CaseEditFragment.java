@@ -71,6 +71,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
     private List<Item> hospitalWardTypeList;
+    private List<Item> initialRegions;
+    private List<Item> initialDistricts;
+    private List<Item> initialCommunities;
+    private List<Item> initialFacilities;
 
     // Static methods
 
@@ -126,31 +130,15 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (classificationCriteria == null || !classificationCriteria.hasAnyCriteria()) {
             contentBinding.showClassificationRules.setVisibility(GONE);
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CASE_TRANSFER) || record.getHealthFacility() == null) {
-            contentBinding.transferCase.setVisibility(GONE);
-        }
         if (!ConfigProvider.hasUserRight(UserRight.CASE_REFER_FROM_POE) || record.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || record.getHealthFacility() != null) {
             contentBinding.referCaseFromPoe.setVisibility(GONE);
         }
-        if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.transferCase.getVisibility() == GONE && contentBinding.referCaseFromPoe.getVisibility() == GONE) {
+        if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.referCaseFromPoe.getVisibility() == GONE) {
             contentBinding.caseButtonsPanel.setVisibility(GONE);
         }
     }
 
     private void setUpButtonListeners(FragmentCaseEditLayoutBinding contentBinding) {
-        contentBinding.transferCase.setOnClickListener(v -> {
-            final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
-            activity.saveData(caze -> {
-                final Case caseClone = (Case) caze.clone();
-                final MoveCaseDialog moveCaseDialog = new MoveCaseDialog(BaseActivity.getActiveActivity(), caze);
-                moveCaseDialog.setPositiveCallback(() -> {
-                    record = caseClone;
-                    requestLayoutRebind();
-                    moveCaseDialog.dismiss();
-                });
-                moveCaseDialog.show();
-            });
-        });
 
         contentBinding.referCaseFromPoe.setOnClickListener(e -> {
             final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
@@ -196,6 +184,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
         hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
+
+        initialRegions = InfrastructureHelper.loadRegions();
+        initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
+        initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
+        initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity());
     }
 
     @Override
@@ -221,6 +214,14 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
         contentBinding.setVaccinationClass(Vaccination.class);
+
+        InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility,
+                contentBinding.caseDataHealthFacilityDetails);
+
+        InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
+                contentBinding.caseDataDistrict, initialDistricts,
+                contentBinding.caseDataCommunity, initialCommunities,
+                contentBinding.caseDataHealthFacility, initialFacilities);
     }
 
     @Override

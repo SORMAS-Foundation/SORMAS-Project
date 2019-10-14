@@ -51,6 +51,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
 	private Boolean archived;
+	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidCaseLike;
 	
 	public UserRole getReportingUserRole() {
@@ -215,6 +216,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return followUpUntilTo;
 	}
 
+	@IgnoreForUrl
 	public Boolean getArchived() {
 		return archived;
 	}
@@ -222,6 +224,16 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria archived(Boolean archived) {
 		this.archived = archived;
 		return this;
+	}
+	
+	public ContactCriteria deleted(Boolean deleted) {
+		this.deleted = deleted;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Boolean getDeleted() {
+		return deleted;
 	}
 	
 	/**

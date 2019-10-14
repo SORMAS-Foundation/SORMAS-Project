@@ -112,7 +112,7 @@ public abstract class DataImporter {
 
 	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback) {
 		Window window = VaadinUiUtil.createPopupWindow();
-		window.setCaption(I18nProperties.getString(Strings.headingPointOfEntryImport));
+		window.setCaption(I18nProperties.getString(Strings.headingDataImport));
 		window.setWidth(800, Unit.PIXELS);
 		window.setContent(progressLayout);
 		window.setClosable(false);

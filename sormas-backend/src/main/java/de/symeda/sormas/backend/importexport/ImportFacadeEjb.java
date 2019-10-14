@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.auth0.jwt.internal.org.apache.commons.lang3.text.WordUtils;
 import com.opencsv.CSVWriter;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -122,7 +124,8 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
-
+	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
+	
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				
 		// Create the export directory if it doesn't exist
@@ -166,6 +169,39 @@ public class ImportFacadeEjb implements ImportFacade {
 			writer.flush();
 		}
 	}
+	
+	@Override
+	public void generatePopulationDataImportTemplateFile() throws IOException {
+		// Create the export directory if it doesn't exist
+		try {
+			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
+		} catch (IOException e) {
+			logger.error("Generated files directory doesn't exist and creation failed.");
+			throw e;
+		}
+		
+		List<String> columnNames = new ArrayList<>();
+		columnNames.add(PopulationDataDto.REGION);
+		columnNames.add(PopulationDataDto.DISTRICT);
+		columnNames.add("TOTAL");
+		columnNames.add("MALE_TOTAL");
+		columnNames.add("FEMALE_TOTAL");
+		for (AgeGroup ageGroup : AgeGroup.values()) {
+			columnNames.add("TOTAL_" + ageGroup.name());
+			columnNames.add("MALE_" + ageGroup.name());
+			columnNames.add("FEMALE_" + ageGroup.name());
+		}
+		Path filePath = Paths.get(getPopulationDataImportTemplateFilePath());
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
+			String[] entityNames = new String[columnNames.size()];
+			for (int i = 0; i < entityNames.length; i++) {
+				entityNames[i] = PopulationDataDto.class.getSimpleName().substring(0, PopulationDataDto.class.getSimpleName().indexOf("Dto"));
+			}
+			writer.writeNext(entityNames);
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.flush();
+		}
+	}
 
 	@Override
 	public String getCaseImportTemplateFilePath() {
@@ -178,6 +214,13 @@ public class ImportFacadeEjb implements ImportFacade {
 	public String getPointOfEntryImportTemplateFilePath() {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+	
+	@Override
+	public String getPopulationDataImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 

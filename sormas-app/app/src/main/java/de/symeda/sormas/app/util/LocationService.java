@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -34,7 +36,16 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 
+import com.google.common.collect.Maps;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 /**
  * Created by Mate Strysewske on 16.08.2017.
@@ -49,27 +60,26 @@ public final class LocationService {
     }
 
     private Context context;
-
     private Location bestKnownLocation = null;
-
     private AlertDialog requestGpsAccessDialog;
+    private Geocoder geocoder;
 
     private LocationService() {
     }
 
     /**
      * Creates a base request for GPS and network every 10 minutes when more than 100m moved
-     * @param context
      */
     public static void init(Context context) {
         if (instance != null) {
             throw new UnsupportedOperationException("instance already initialized");
         }
         instance = new LocationService();
-
         instance.context = context;
 
-        LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+        instance.geocoder = new Geocoder(context, Locale.getDefault());
+
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -113,7 +123,7 @@ public final class LocationService {
                 return;
             }
 
-            LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
             networkActiveLocationListener = new BestKnownLocationListener();
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*60, 10, networkActiveLocationListener, Looper.getMainLooper());
@@ -132,7 +142,7 @@ public final class LocationService {
 
         if (activeRequestCount == 0 && isRequestingActiveLocationUpdates()) {
 
-            LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
             locationManager.removeUpdates(networkActiveLocationListener);
             networkActiveLocationListener = null;
@@ -202,7 +212,7 @@ public final class LocationService {
             return null;
         }
 
-        LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (isBetterLocation(location, bestKnownLocation)) {
@@ -224,12 +234,27 @@ public final class LocationService {
      * @param currentBestLocation  The current Location fix, to which you want to compare the new one
      */
     protected static boolean isBetterLocation(Location location, Location currentBestLocation) {
-        if (currentBestLocation == null) {
-            // A new location is always better than no location
-            return true;
-        }
         if (location == null) {
             return false;
+        }
+        // Discard the location if it's not in the server's country
+        String countryLocale = ConfigProvider.getLocale();
+        if (!StringUtils.isEmpty(countryLocale)) {
+            try {
+                List<Address> addresses = instance.geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                if (addresses.size() > 0) {
+                    String countryCode = addresses.get(0).getCountryCode();
+                    if (countryCode == null || !countryCode.equals(countryLocale.substring(countryLocale.indexOf("_") + 1).toUpperCase())) {
+                        return false;
+                    }
+                }
+            } catch (IOException e) {
+                // If retrieving the country of the location fails, assume it is valid
+            }
+        }
+        // A new location is better than no location
+        if (currentBestLocation == null) {
+            return true;
         }
 
         // Check whether the new location fix is newer or older
@@ -288,7 +313,7 @@ public final class LocationService {
      * @return
      */
     public boolean hasGpsEnabled() {
-        LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
