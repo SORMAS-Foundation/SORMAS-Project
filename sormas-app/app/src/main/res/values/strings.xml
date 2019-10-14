@@ -317,8 +317,8 @@
     <string name="heading_pathogen_test_edit">Edit Pathogen Test</string>
     <string name="heading_pathogen_test_new">New Pathogen Test</string>
     <string name="heading_pathogen_test_read">Read Pathogen Test</string>
-    <string name="heading_pathogen_test_summary">Pathogen Summary</string>
-    <string name="heading_pathogen_tests_list">Pathogen Listing</string>
+    <string name="heading_pathogen_test_summary">Pathogen Test Summary</string>
+    <string name="heading_pathogen_tests_list">Pathogen Test Listing</string>
     <string name="heading_sign_in">Sign In</string>
     <string name="heading_social_events">Social Events</string>
     <string name="heading_source_case">Source Case</string>

@@ -97,7 +97,7 @@
                         app:value="@{data.testResult}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextImageBooleanField
+                    <de.symeda.sormas.app.component.controls.ControlTextImageField
                         android:id="@+id/pathogenTest_testResultVerified"
                         app:value="@{data.testResultVerified}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />

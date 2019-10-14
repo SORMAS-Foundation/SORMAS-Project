@@ -68,16 +68,16 @@ public class PathogenTest extends AbstractDomainObject {
     @Column(nullable = false)
     private PathogenTestResultType testResult;
 
-    @Column(nullable = true)
+    @Column
     private Boolean testResultVerified;
 
-    @Column(length=512, nullable = true)
+    @Column(length=512)
     private String testResultText;
 
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date testDateTime;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3, canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility lab;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)

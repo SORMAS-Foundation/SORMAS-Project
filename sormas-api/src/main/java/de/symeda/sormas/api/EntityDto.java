@@ -22,8 +22,6 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Outbreaks;
 
 /**
