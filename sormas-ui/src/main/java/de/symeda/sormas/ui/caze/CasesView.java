@@ -116,6 +116,7 @@ public class CasesView extends AbstractView {
 
 	private CaseGrid grid;    
 	private Button createButton;
+	private Button lineListingButton;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
@@ -377,6 +378,13 @@ public class CasesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
+			lineListingButton = new Button(I18nProperties.getCaption(Captions.caseLineListing));
+			lineListingButton.setId("lineListing");
+			lineListingButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			lineListingButton.setIcon(VaadinIcons.PLUS_CIRCLE);
+			lineListingButton.addClickListener(e -> ControllerProvider.getCaseController().lineListing());
+			addHeaderComponent(lineListingButton);
+			
 			createButton = new Button(I18nProperties.getCaption(Captions.caseNewCase));
 			createButton.setId("create");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);

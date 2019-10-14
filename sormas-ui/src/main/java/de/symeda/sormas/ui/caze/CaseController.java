@@ -56,6 +56,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -63,6 +64,7 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
@@ -71,6 +73,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
@@ -90,10 +93,13 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class CaseController {
+
+	private static final float LINELISTING_FORM_WIDTH = 1532;
 
 	public CaseController() {
 
@@ -782,7 +788,7 @@ public class CaseController {
 	public void saveCaseWithHealthFacilityChangedPrompt(CaseDataDto caze, CaseDataDto oldCase) {
 		VaadinUiUtil.showChooseOptionPopup(I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
 				new Label(I18nProperties.getString(Strings.messageHealthFacilityChanged)),
-				I18nProperties.getCaption(Captions.caseTransferCase),I18nProperties.getCaption(Captions.caseEditData),  
+				I18nProperties.getCaption(Captions.caseTransferCase),I18nProperties.getCaption(Captions.caseEditData),
 				500, e -> {
 					if (e.booleanValue() == true) {
 						CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(caze, oldCase);
@@ -982,4 +988,22 @@ public class CaseController {
 		UI.getCurrent().addWindow(newExportWindow);
 	}
 
+	public void lineListing() {
+		
+		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
+		
+		LineListingLayout lineListingForm = new LineListingLayout(window);
+		
+		lineListingForm.setWidth(LINELISTING_FORM_WIDTH, Unit.PIXELS);
+
+		window.setContent(lineListingForm);
+		
+		window.setModal(true);
+		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - LINELISTING_FORM_WIDTH)) / 2);
+		window.setPositionY(70);
+		
+		window.setResizable(false);
+		
+		UI.getCurrent().addWindow(window);
+	}
 }

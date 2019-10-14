@@ -178,6 +178,7 @@ public interface Captions {
 	public static String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	public static String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
+	public static String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
 	public static String CaseHospitalization = "CaseHospitalization";
 	public static String CaseHospitalization_accommodation = "CaseHospitalization.accommodation";
 	public static String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
@@ -192,6 +193,7 @@ public interface Captions {
 	public static String caseImportErrorDescription = "caseImportErrorDescription";
 	public static String caseImportMergeCase = "caseImportMergeCase";
 	public static String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
+	public static String caseLineListing = "caseLineListing";
 	public static String caseMergeDuplicates = "caseMergeDuplicates";
 	public static String caseNewCase = "caseNewCase";
 	public static String caseNewCaseDate = "caseNewCaseDate";
@@ -571,6 +573,10 @@ public interface Captions {
 	public static String importSkips = "importSkips";
 	public static String info = "info";
 	public static String lastName = "lastName";
+	public static String lineListingAddLine = "lineListingAddLine";
+	public static String lineListingInfrastructureData = "lineListingInfrastructureData";
+	public static String lineListingNewCasesList = "lineListingNewCasesList";
+	public static String lineListingSharedInformation = "lineListingSharedInformation";
 	public static String Location = "Location";
 	public static String Location_address = "Location.address";
 	public static String Location_areaType = "Location.areaType";

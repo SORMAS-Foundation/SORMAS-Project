@@ -90,6 +90,7 @@ public interface Strings {
 	public static String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	public static String errorCaseMerging = "errorCaseMerging";
 	public static String errorEntityOutdated = "errorEntityOutdated";
+	public static String errorFieldValidationFailed = "errorFieldValidationFailed";
 	public static String errorInvalidValue = "errorInvalidValue";
 	public static String errorNoAccessToWeb = "errorNoAccessToWeb";
 	public static String errorNotRequiredRights = "errorNotRequiredRights";
@@ -195,6 +196,7 @@ public interface Strings {
 	public static String headingInformationSource = "headingInformationSource";
 	public static String headingIntroduction = "headingIntroduction";
 	public static String headingLaboratorySample = "headingLaboratorySample";
+	public static String headingLineListing = "headingLineListing";
 	public static String headingLocation = "headingLocation";
 	public static String headingLoginFailed = "headingLoginFailed";
 	public static String headingMaternalHistory = "headingMaternalHistory";
