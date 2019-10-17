@@ -45,18 +45,21 @@ public class PathogenTest extends AbstractDomainObject {
 
     private static final long serialVersionUID = 2290351143518627813L;
 
+    public static final String TABLE_NAME = "pathogenTest";
+    public static final String I18N_PREFIX = "PathogenTest";
+
     public static final String TEST_DATE_TIME = "testDateTime";
     public static final String SAMPLE = "sample";
 
-    public static final String TABLE_NAME = "pathogenTests";
-    public static final String I18N_PREFIX = "PathogenTest";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Sample sample;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private PathogenTestType testType;
+
+    @Column
+    private String testTypeText;
 
     @Enumerated(EnumType.STRING)
     private Disease testedDisease;
@@ -65,7 +68,7 @@ public class PathogenTest extends AbstractDomainObject {
     private String testedDiseaseDetails;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private PathogenTestResultType testResult;
 
     @Column
@@ -74,11 +77,17 @@ public class PathogenTest extends AbstractDomainObject {
     @Column(length=512)
     private String testResultText;
 
-    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
+    @DatabaseField(dataType = DataType.DATE_LONG)
     private Date testDateTime;
+
+    @Column
+    private boolean fourFoldIncreaseAntibodyTiter;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility lab;
+
+    @Column
+    private String labDetails;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private User labUser;
@@ -150,9 +159,32 @@ public class PathogenTest extends AbstractDomainObject {
     public Date getTestDateTime() {
         return testDateTime;
     }
-
     public void setTestDateTime(Date testDateTime) {
         this.testDateTime = testDateTime;
+    }
+
+    public String getLabDetails() {
+        return labDetails;
+    }
+
+    public void setLabDetails(String labDetails) {
+        this.labDetails = labDetails;
+    }
+
+    public boolean isFourFoldIncreaseAntibodyTiter() {
+        return fourFoldIncreaseAntibodyTiter;
+    }
+
+    public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+        this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+    }
+
+    public String getTestTypeText() {
+        return testTypeText;
+    }
+
+    public void setTestTypeText(String testTypeText) {
+        this.testTypeText = testTypeText;
     }
 
     @Override

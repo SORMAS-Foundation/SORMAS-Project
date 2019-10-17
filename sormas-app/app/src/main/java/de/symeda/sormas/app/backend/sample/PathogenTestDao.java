@@ -48,6 +48,8 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
         PathogenTest pathogenTest = super.build();
         pathogenTest.setSample(associatedSample);
         pathogenTest.setTestDateTime(new Date());
+        pathogenTest.setLab(associatedSample.getLab());
+        pathogenTest.setLabDetails(associatedSample.getLabDetails());
         pathogenTest.setLabUser(ConfigProvider.getUser());
         return pathogenTest;
     }

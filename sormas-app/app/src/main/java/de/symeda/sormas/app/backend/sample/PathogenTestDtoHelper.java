@@ -66,11 +66,14 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestDateTime(source.getTestDateTime());
         target.setTestResult(source.getTestResult());
         target.setTestType(source.getTestType());
+        target.setTestTypeText(source.getTestTypeText());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
+        target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
+        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
+        target.setLabDetails(source.getLabDetails());
         target.setLabUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getLabUser()));
     }
 
@@ -86,6 +89,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestDateTime(source.getTestDateTime());
         target.setTestResult(source.getTestResult());
         target.setTestType(source.getTestType());
+        target.setTestTypeText(source.getTestTypeText());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 
@@ -95,8 +99,11 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         } else {
             target.setLab(null);
         }
+        target.setLabDetails(source.getLabDetails());
+
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
+        target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
         if (source.getLabUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getLabUser().getId());
             target.setLabUser(UserDtoHelper.toReferenceDto(user));

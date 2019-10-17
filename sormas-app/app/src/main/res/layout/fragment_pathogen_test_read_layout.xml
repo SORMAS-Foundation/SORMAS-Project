@@ -57,11 +57,14 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/pathogenTest_testType"
                         app:value="@{data.testType}"
+                        app:appendValue="@{data.testTypeText}"
+                        app:valueFormat="@string/two_strings_with_hyphen_format"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/pathogenTest_testedDisease"
                         app:value="@{data.testedDisease}"
+                        app:appendValue="@{data.testedDiseaseDetails}"
                         app:valueFormat="@string/two_strings_with_hyphen_format"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
@@ -80,12 +83,11 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/pathogenTest_lab"
                         app:value="@{data.lab}"
+                        app:appendValue="@{data.labDetails}"
                         app:valueFormat="@string/two_strings_with_hyphen_format"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
-
-
 
                 <LinearLayout
                     android:layout_width="match_parent"
