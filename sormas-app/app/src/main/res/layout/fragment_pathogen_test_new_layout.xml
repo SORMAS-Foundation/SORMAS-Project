@@ -87,6 +87,7 @@
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/pathogenTest_testResultVerified"
                     app:useBoolean="true"
+                    app:required="true"
                     app:value="@={data.testResultVerified}"
                     style="@style/ControlSingleColumnStyle" />
 
