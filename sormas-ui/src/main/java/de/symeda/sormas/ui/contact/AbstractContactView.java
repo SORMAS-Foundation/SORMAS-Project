@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
@@ -51,10 +52,6 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(params);
 		contactRef = FacadeProvider.getContactFacade().getReferenceByUuid(contact.getUuid());
 		
-		if (FacadeProvider.getContactFacade().isDeleted(contact.getUuid())) {
-			setEnabled(false);
-		}
-		
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));
 		menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactCaseContacts), contact.getCaze().getUuid(), true);
@@ -69,6 +66,15 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 				? caseData.getDisease().toShortString()
 				: DataHelper.toStringNullable(caseData.getDiseaseDetails()));
     }
+	
+	@Override
+	protected void setSubComponent(Component newComponent) {
+		super.setSubComponent(newComponent);
+		
+		if (FacadeProvider.getContactFacade().isDeleted(contactRef.getUuid())) {
+			newComponent.setEnabled(false);
+		}
+	}
 
 	public ContactReferenceDto getContactRef() {
 		return contactRef;

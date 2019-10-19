@@ -18,8 +18,6 @@
 
 package de.symeda.sormas.app.backend.sample;
 
-import android.util.Log;
-
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
@@ -57,8 +55,8 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
     }
 
     @Override
-    protected Call<List<PushResult>> pushAll(List<PathogenTestDto> PathogenTestDtos) throws NoConnectionException {
-        throw new UnsupportedOperationException("Can't change sample tests in app");
+    protected Call<List<PushResult>> pushAll(List<PathogenTestDto> pathogenTestDtos) throws NoConnectionException {
+        return RetroProvider.getSampleTestFacade().pushAll(pathogenTestDtos);
     }
 
     @Override
@@ -68,19 +66,20 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestDateTime(source.getTestDateTime());
         target.setTestResult(source.getTestResult());
         target.setTestType(source.getTestType());
+        target.setTestTypeText(source.getTestTypeText());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-
-        //newly added
-        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
+        target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
+        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
+        target.setLabDetails(source.getLabDetails());
         target.setLabUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getLabUser()));
     }
 
     @Override
     protected void fillInnerFromAdo(PathogenTestDto target, PathogenTest source) {
-        if(source.getSample() != null) {
+        if (source.getSample() != null) {
             Sample sample = DatabaseHelper.getSampleDao().queryForId(source.getSample().getId());
             target.setSample(SampleDtoHelper.toReferenceDto(sample));
         } else {
@@ -90,19 +89,22 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestDateTime(source.getTestDateTime());
         target.setTestResult(source.getTestResult());
         target.setTestType(source.getTestType());
+        target.setTestTypeText(source.getTestTypeText());
         target.setTestedDisease(source.getTestedDisease());
         target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 
-        //newly added
-        if(source.getLab() != null) {
+        if (source.getLab() != null) {
             Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getLab().getId());
             target.setLab(FacilityDtoHelper.toReferenceDto(lab));
         } else {
             target.setLab(null);
         }
+        target.setLabDetails(source.getLabDetails());
+
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
-        if(source.getLabUser() != null) {
+        target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
+        if (source.getLabUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getLabUser().getId());
             target.setLabUser(UserDtoHelper.toReferenceDto(user));
         } else {

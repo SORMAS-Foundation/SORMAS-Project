@@ -81,7 +81,7 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getSaveMenu().setTitle(R.string.action_save_contact);
+        getSaveMenu().setTitle(R.string.action_save_pathogen_test);
 
         return true;
     }

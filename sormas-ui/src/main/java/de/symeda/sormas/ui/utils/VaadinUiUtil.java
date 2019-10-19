@@ -143,13 +143,13 @@ public class VaadinUiUtil {
 			private static final long serialVersionUID = 1L;
 			@Override
 			protected void onConfirm() {
-				popupWindow.close();
 				resultConsumer.accept(true);
+				popupWindow.close();
 			}
 			@Override
 			protected void onCancel() {
-				popupWindow.close();
 				resultConsumer.accept(false);
+				popupWindow.close();
 			}
 		};
 		confirmationComponent.getConfirmButton().setCaption(confirmCaption);

@@ -56,8 +56,6 @@ public interface CaseFacade {
     
     CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
     
-    CaseDataDto saveCaseSimple(CaseDataDto dto) throws ValidationRuntimeException;
-    
     void validate(CaseDataDto dto) throws ValidationRuntimeException;
 
 	CaseReferenceDto getReferenceByUuid(String uuid);

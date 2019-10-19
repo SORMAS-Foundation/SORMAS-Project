@@ -61,7 +61,7 @@ public class PathogenTestReadActivity extends BaseReadActivity<PathogenTest> {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getEditMenu().setTitle(R.string.action_edit_contact);
+        getEditMenu().setTitle(R.string.action_edit_pathogen_test);
         getEditMenu().setVisible(ConfigProvider.hasUserRight(UserRight.PATHOGEN_TEST_EDIT));
 
         return true;

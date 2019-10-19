@@ -41,8 +41,7 @@ public interface PathogenTestFacadeRetro {
 
     @POST("pathogentests/push")
     Call<List<PushResult>> pushAll(@Body List<PathogenTestDto> dtos);
-    
+  
     @GET("pathogentests/deleted/{since}")
     Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
-
 }
