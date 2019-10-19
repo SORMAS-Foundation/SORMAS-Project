@@ -157,12 +157,6 @@ public class PathogenTestController {
 			confirmCaseCallback.run();
 			caseCloningCallback.run();
 		}
-
-		if (dto.getTestedDisease() != newCaseDto.getDisease() 
-				&& dto.getTestResult() == PathogenTestResultType.POSITIVE
-				&& dto.getTestResultVerified().booleanValue() == true) {
-			buildAndShowDialogForCaseCloningWithNewDisease(newCaseDto, dto.getTestedDisease());
-		}
 	}
 
 	private void showCaseCloningWithNewDiseaseDialog(CaseDataDto existingCaseDto, Disease disease) {
