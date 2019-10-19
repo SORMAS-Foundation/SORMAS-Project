@@ -22,6 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -110,4 +111,12 @@ public class EpiDataBurialDto extends EntityDto {
 		this.burialTouching = burialTouching;
 	}
 
+
+	public static EpiDataBurialDto build() {
+		EpiDataBurialDto dto = new EpiDataBurialDto();
+		dto.setUuid(DataHelper.createUuid());
+		LocationDto location = LocationDto.build();
+		dto.setBurialAddress(location);
+		return dto;
+	}
 }

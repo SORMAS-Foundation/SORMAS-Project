@@ -84,7 +84,6 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
-//        return SampleReadFragment.newInstance(activityRootData);
         int menuKey =0;
         if (menuItem !=null)
             menuKey= menuItem.getKey();
@@ -123,11 +122,6 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
             return null;
         }
     }
-
-//    @Override
-//    protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
-//        return SampleEditFragment.newInstance(activityRootData);
-//    }
 
     @Override
     protected int getActivityTitle() {

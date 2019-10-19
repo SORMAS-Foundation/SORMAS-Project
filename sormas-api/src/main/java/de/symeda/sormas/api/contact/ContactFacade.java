@@ -38,8 +38,6 @@ public interface ContactFacade {
     
 	ContactDto saveContact(ContactDto dto);
 	
-	ContactDto saveContactSimple(ContactDto dto);
-	
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllActiveUuids(String userUuid);

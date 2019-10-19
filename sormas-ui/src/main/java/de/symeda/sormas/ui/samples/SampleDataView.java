@@ -23,9 +23,10 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.UserRight;
@@ -73,7 +74,9 @@ public class SampleDataView extends AbstractSampleView {
 		container.addComponent(layout);
 
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(getSampleRef().getUuid());
-
+		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sampleDto.getAssociatedCase().getUuid());
+		Disease caseDisease = caseDto.getDisease();
+		
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent = ControllerProvider.getSampleController()
 				.getSampleEditComponent(getSampleRef().getUuid());
 		editComponent.setMargin(false);
@@ -82,13 +85,16 @@ public class SampleDataView extends AbstractSampleView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		BiConsumer<PathogenTestResultType, Runnable> pathogenTestChangedCallback = new BiConsumer<PathogenTestResultType, Runnable>() {
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = new BiConsumer<PathogenTestDto, Runnable>() {
 			@Override
-			public void accept(PathogenTestResultType pathogenTestResult, Runnable callback) {
-				if (pathogenTestResult != null) {
+			public void accept(PathogenTestDto pathogenTestDto, Runnable callback) {
+				if (pathogenTestDto != null 
+						&& pathogenTestDto.getTestResult() != null
+						&& pathogenTestDto.getTestResultVerified() == Boolean.TRUE
+						&& pathogenTestDto.getTestedDisease() == caseDisease) {
 					SampleDto componentSample = editComponent.getWrappedComponent().getValue();
-					if (pathogenTestResult != componentSample.getPathogenTestResult()) {
-						ControllerProvider.getSampleController().showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestResult, callback);
+					if (pathogenTestDto.getTestResult()  != componentSample.getPathogenTestResult()) {
+						ControllerProvider.getSampleController().showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestDto.getTestResult(), callback);
 					}
 				}
 				
@@ -96,13 +102,12 @@ public class SampleDataView extends AbstractSampleView {
 			}
 		};
 
-		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sampleDto.getAssociatedCase().getUuid());
 		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(caseInfoLayout, CASE_LOC);
 
 		if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
-			PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), pathogenTestChangedCallback);
+			PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest);
 			pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
 			

@@ -100,7 +100,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, PathogenTest activityRootData) {
-        BaseEditFragment fragment = PathogenTestNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = PathogenTestEditFragment.newInstance(activityRootData);
         fragment.setLiveValidationDisabled(true);
         return fragment;
     }
@@ -125,7 +125,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
         }
 
         final PathogenTest PathogenTestToSave = getStoredRootEntity();
-        PathogenTestNewFragment fragment = (PathogenTestNewFragment) getActiveFragment();
+        PathogenTestEditFragment fragment = (PathogenTestEditFragment) getActiveFragment();
 
         if (PathogenTestToSave.getLabUser() == null) {
             NotificationHelper.showNotification(this, ERROR, getString(R.string.error_no_pathogentest_labuser));

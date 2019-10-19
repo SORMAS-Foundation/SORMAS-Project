@@ -99,11 +99,6 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
         } else {
             contentBinding.mostRecentAdditionalTestsLayout.setVisibility(GONE);
         }
-
-        // Lab details
-        if (!record.getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-            contentBinding.sampleLabDetails.setVisibility(GONE);
-        }
     }
 
     // Overrides

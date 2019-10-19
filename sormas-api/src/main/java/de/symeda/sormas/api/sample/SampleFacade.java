@@ -47,8 +47,6 @@ public interface SampleFacade {
 	
 	SampleDto saveSample(SampleDto dto);
 	
-	SampleDto saveSampleSimple(SampleDto dto);
-	
 	SampleReferenceDto getReferenceByUuid(String uuid);
 	
 	SampleReferenceDto getReferredFrom(String sampleUuid);

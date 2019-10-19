@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
@@ -110,10 +111,6 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			return;
 		}
 		
-		if (FacadeProvider.getCaseFacade().isDeleted(caseRef.getUuid())) {
-			setEnabled(false);
-		}
-
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 
 		// Handle outbreaks for the disease and district of the case
@@ -175,6 +172,15 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		infoLabelSub.setValue(caze.getDisease() != Disease.OTHER
 				? DataHelper.toStringNullable(caze.getDisease())
 						: DataHelper.toStringNullable(caze.getDiseaseDetails()));
+	}
+	
+	@Override
+	protected void setSubComponent(Component newComponent) {
+		super.setSubComponent(newComponent);
+		
+		if (FacadeProvider.getCaseFacade().isDeleted(caseRef.getUuid())) {
+			newComponent.setEnabled(false);
+		}
 	}
 
 	public CaseReferenceDto getCaseRef() {

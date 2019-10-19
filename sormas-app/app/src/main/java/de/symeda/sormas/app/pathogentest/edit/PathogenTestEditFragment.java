@@ -46,7 +46,6 @@ import static android.view.View.GONE;
 public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenTestEditLayoutBinding, PathogenTest, PathogenTest> {
 
     private PathogenTest record;
-    private Case sourceCase;
 
     // Enum lists
 
@@ -65,7 +64,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 
     @Override
     protected String getSubHeadingTitle() {
-        return getResources().getString(R.string.heading_pathogen_test_summary);
+        return getResources().getString(R.string.heading_pathogen_test_edit);
     }
 
     @Override
@@ -93,7 +92,17 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
         contentBinding.pathogenTestTestType.initializeSpinner(testTypeList);
         contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList);
         contentBinding.pathogenTestTestResult.initializeSpinner(testResultList);
-        contentBinding.pathogenTestLab.initializeSpinner(DataUtils.toItems(labList));
+        contentBinding.pathogenTestLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                Facility laboratory = (Facility) field.getValue();
+                if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+                    contentBinding.pathogenTestLabDetails.setVisibility(View.VISIBLE);
+                } else {
+                    contentBinding.pathogenTestLabDetails.hideField(true);
+                }
+            }
+        });
 
 //        // Initialize ControlDateFields
         contentBinding.pathogenTestTestDateTime.initializeDateTimeField(getFragmentManager());
