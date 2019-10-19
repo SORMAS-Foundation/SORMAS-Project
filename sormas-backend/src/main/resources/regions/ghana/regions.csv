@@ -1,11 +1,11 @@
-region;epidcode;population;growthrate
-Ashanti;GHA-ASH;5736456;2.70
-Brong Ahafo;GHA-BAR;2773180;2.30
-Central;GHA-CEN;2642236;3.10
-Eastern;GHA-EAS;3159785;2.10
-Greater Accra;GHA-GAR;4812065;3.10
-Northern;GHA-NOR;2975353;2.90
-Upper East;GHA-UPE;1255854;1.20
-Upper West;GHA-UPW;842532;1.90
-Volta;GHA-VOL;2541902;2.50
-Western;GHA-WES;2851225;2.00
+region;epidcode;growthrate
+Ashanti;GHA-ASH;2.70
+Brong Ahafo;GHA-BAR;2.30
+Central;GHA-CEN;3.10
+Eastern;GHA-EAS;2.10
+Greater Accra;GHA-GAR;3.10
+Northern;GHA-NOR;2.90
+Upper East;GHA-UPE;1.20
+Upper West;GHA-UPW;1.90
+Volta;GHA-VOL;2.50
+Western;GHA-WES;2.00

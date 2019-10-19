@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.caze;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.function.Consumer;
 
 import org.slf4j.LoggerFactory;
@@ -32,8 +31,6 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
@@ -50,10 +47,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
@@ -65,6 +61,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -434,12 +431,18 @@ public class CaseController {
 				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(),
 				UserRight.CASE_EDIT, viewMode);
 		caseEditForm.setValue(caze);
+
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
 				caseEditForm, caseEditForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
+			CaseDataDto oldCase = findCase(caseUuid);
 			CaseDataDto cazeDto = caseEditForm.getValue();
-				checkIfPreviousHospitalisationNeededAndSaveCase(cazeDto);
+			if (cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
+				saveCaseWithPreviousHospitalizationPrompt(cazeDto, oldCase);
+			} else {
+				saveCase(cazeDto);
+			}
 		});
 
 		appendSpecialCommands(caze, editView);
@@ -447,12 +450,11 @@ public class CaseController {
 		return editView;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void showBulkCaseDataEditComponent(Collection<CaseIndexDto> selectedCases) {
 		if (selectedCases.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
-							.show(Page.getCurrent());
+			.show(Page.getCurrent());
 			return;
 		}
 
@@ -522,7 +524,7 @@ public class CaseController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getCaseFacade().deleteCase(caze.toReference(),
+					FacadeProvider.getCaseFacade().deleteCase(caze.getUuid(),
 							UserProvider.getCurrent().getUserReference().getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				}
@@ -634,6 +636,7 @@ public class CaseController {
 		SymptomsForm symptomsForm = new SymptomsForm(caseDataDto, caseDataDto.getDisease(), person,
 				SymptomsContext.CASE, UserRight.CASE_EDIT, viewMode);
 		symptomsForm.setValue(caseDataDto.getSymptoms());
+		
 		CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(
 				symptomsForm, symptomsForm.getFieldGroup());
 
@@ -692,24 +695,18 @@ public class CaseController {
 		return view;
 	}
 
-	public void checkIfPreviousHospitalisationNeededAndSaveCase(CaseDataDto cazeDto) {
-
-		if (cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid())
-				.getHealthFacility().getUuid())) {
-
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.caseCaseTransferOrDataCorrection),
-					new Label(I18nProperties.getString(Strings.messageCaseTransferOrDataCorrection)),
-					I18nProperties.getCaption(Captions.caseCaseTransfer),
-					I18nProperties.getCaption(Captions.caseDataCorrection), 500, e -> {
-						if (e.booleanValue() == true) {
-							FacadeProvider.getCaseFacade().saveAndTransferCase(cazeDto);
-						} else {
-							saveCase(cazeDto);
-						}
-					});
-		}else {
-			saveCase(cazeDto);
-		}
+	public void saveCaseWithPreviousHospitalizationPrompt(CaseDataDto caze, CaseDataDto oldCase) {
+		VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
+				new Label(I18nProperties.getString(Strings.messageInfrastructureDataChanged)),
+				I18nProperties.getCaption(Captions.caseTransferCase),
+				I18nProperties.getCaption(Captions.caseEditData), 500, e -> {
+					if (e.booleanValue() == true) {
+						CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(caze, oldCase);
+						saveCase(caze);
+					} else {
+						saveCase(caze);
+					}
+				});
 	}
 
 	public void referFromPointOfEntry(CaseDataDto caze) {
@@ -795,6 +792,12 @@ public class CaseController {
 			confirmedContent.setWidth(100, Unit.PERCENTAGE);
 			confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
 			classificationRulesLayout.addComponent(confirmedContent);
+			
+			Label notACaseContent = new Label();
+			notACaseContent.setContentMode(ContentMode.HTML);
+			notACaseContent.setWidth(100, Unit.PERCENTAGE);
+			notACaseContent.setValue(ClassificationHtmlRenderer.createNotACaseHtmlString(diseaseCriteria));
+			classificationRulesLayout.addComponent(notACaseContent);
 		}
 
 		Window popupWindow = VaadinUiUtil.showPopupWindow(classificationRulesLayout);
@@ -811,14 +814,14 @@ public class CaseController {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
-							.show(Page.getCurrent());
+			.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 					String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()),
 					new Runnable() {
 						public void run() {
 							for (CaseIndexDto selectedRow : selectedRows) {
-								FacadeProvider.getCaseFacade().deleteCase(new CaseReferenceDto(selectedRow.getUuid()),
+								FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid(),
 										UserProvider.getCurrent().getUuid());
 							}
 							callback.run();
@@ -834,7 +837,7 @@ public class CaseController {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
-							.show(Page.getCurrent());
+			.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmArchiving),
 					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveCases),
@@ -857,7 +860,7 @@ public class CaseController {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
-							.show(Page.getCurrent());
+			.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmDearchiving),
 					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveCases),
@@ -874,6 +877,25 @@ public class CaseController {
 						}
 					});
 		}
+	}
+	
+	public void openEditExportConfigurationWindow(CaseCustomExportsGrid grid, ExportConfigurationDto config) {
+		Window newExportWindow = VaadinUiUtil.createPopupWindow();
+		CaseEditExportConfigurationLayout editLayout = new CaseEditExportConfigurationLayout(config, 
+				(exportConfiguration) -> {
+					FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
+					newExportWindow.close();
+					new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+					grid.reload();
+				}, 
+				() -> { 
+					newExportWindow.close();
+					grid.reload();
+				});
+		newExportWindow.setWidth(1024, Unit.PIXELS);
+		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
+		newExportWindow.setContent(editLayout);
+		UI.getCurrent().addWindow(newExportWindow);
 	}
 
 }

@@ -371,6 +371,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				
 				if (getValue().getHealthFacility() == null) {
 					setVisible(false, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS);
+					setReadOnly(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY);
 				}
 			} else {
 				setRequired(true, CaseDataDto.HEALTH_FACILITY);

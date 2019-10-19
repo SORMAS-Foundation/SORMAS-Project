@@ -170,7 +170,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		
 		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
-		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, root));
+		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 		
 		if (filter != null) {
@@ -251,6 +251,19 @@ public class PersonFacadeEjb implements PersonFacade {
 		personService.ensurePersisted(person);
 
 		onPersonChanged(existingPerson, person);
+
+		return toDto(person);
+	}
+	
+	@Override
+	public PersonDto savePersonSimple(PersonDto source) throws ValidationRuntimeException {
+
+		Person person = personService.getByUuid(source.getUuid());
+
+		validate(source);
+		
+		person = fillOrBuildEntity(source, person);
+		personService.ensurePersisted(person);
 
 		return toDto(person);
 	}
@@ -502,6 +515,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@LocalBean
 	@Stateless
 	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {
+
 	}
 
 }

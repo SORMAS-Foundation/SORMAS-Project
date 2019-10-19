@@ -28,6 +28,7 @@ import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -161,8 +162,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = service.createUserFilter(cb, cq, treatment, user);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(criteria, cb, casePath);
-		filter = cb.and(filter, criteriaFilter);
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(caze.get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
 		

@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -38,12 +40,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.importexport.DatabaseTable;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -85,7 +92,10 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.therapy.Treatment;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 
@@ -117,6 +127,8 @@ public class ExportFacadeEjb implements ExportFacade {
 	private HospitalizationService hospitalizationService;
 	@EJB
 	private EpiDataService epiDataService;
+	@EJB
+	private ExportConfigurationService exportConfigurationService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ExportFacadeEjb.class);
 
@@ -241,6 +253,38 @@ public class ExportFacadeEjb implements ExportFacade {
 		return zipPath;
 	}
 	
+	@Override
+	public List<ExportConfigurationDto> getExportConfigurations(String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExportConfiguration> cq = cb.createQuery(ExportConfiguration.class);
+		Root<ExportConfiguration> config = cq.from(ExportConfiguration.class);
+		
+		cq.where(cb.equal(config.get(ExportConfiguration.USER), user));
+		cq.orderBy(cb.desc(config.get(ExportConfiguration.CHANGE_DATE)));
+		
+		return em.createQuery(cq).getResultList().stream()
+				.map(c -> toExportConfigurationDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public void saveExportConfiguration(ExportConfigurationDto exportConfiguration) {
+		ExportConfiguration entity = fromExportConfigurationDto(exportConfiguration);
+		exportConfigurationService.ensurePersisted(entity);
+	}
+	
+	@Override
+	public void deleteExportConfiguration(String exportConfigurationUuid) {
+		ExportConfiguration exportConfiguration = exportConfigurationService.getByUuid(exportConfigurationUuid);
+		exportConfigurationService.delete(exportConfiguration);
+	}
+	
 	/**
 	 * Creates a zip by collecting all .csv files that match the file names of the passed databaseTables plus
 	 * the date and randomNumber suffixes. The zip is stored in the same export folder that contains the .csv files
@@ -303,6 +347,42 @@ public class ExportFacadeEjb implements ExportFacade {
 		query.setParameter("join_column_name", joinTableName + "." + joinColumnName);		
 		query.setParameter("file_path", filePath.toString());
 		return query;
+	}
+	
+	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source) {
+		ExportConfiguration target = exportConfigurationService.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new ExportConfiguration();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+		
+		DtoHelper.validateDto(source, target);
+		
+		target.setName(source.getName());
+		target.setUser(userService.getByReferenceDto(source.getUser()));
+		target.setExportType(source.getExportType());
+		target.setProperties(source.getProperties());
+		
+		return target;
+	}
+	
+	public static ExportConfigurationDto toExportConfigurationDto(ExportConfiguration source) {
+		if (source == null) {
+			return null;
+		}
+		
+		ExportConfigurationDto target = new ExportConfigurationDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setName(source.getName());
+		target.setUser(UserFacadeEjb.toReferenceDto(source.getUser()));
+		target.setExportType(source.getExportType());
+		target.setProperties(source.getProperties());
+		
+		return target;
 	}
 
 	@LocalBean

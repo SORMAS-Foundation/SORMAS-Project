@@ -20,6 +20,9 @@
 			&.main-criteria-confirmed {
 				background: rgba(255, 0, 0, 0.6);
 			}
+			&.main-criteria-not_a_case {
+				background: rgba(201, 201, 201, 0.6);
+			}
 		}
 	
 		.headline {

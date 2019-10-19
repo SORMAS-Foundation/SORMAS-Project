@@ -118,7 +118,6 @@ public class PersonController {
 	}
 
 	public CommitDiscardWrapperComponent<PersonCreateForm> getPersonCreateComponent(PersonDto person, UserRight editOrCreateUserRight) {
-
 		PersonCreateForm createForm = new PersonCreateForm(editOrCreateUserRight);
 		createForm.setValue(person);
 		final CommitDiscardWrapperComponent<PersonCreateForm> editComponent = new CommitDiscardWrapperComponent<PersonCreateForm>(createForm, createForm.getFieldGroup());
@@ -142,7 +141,7 @@ public class PersonController {
 
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
 		editForm.setValue(personDto);
-
+		
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, editForm.getFieldGroup());
 		
 		editView.addCommitListener(new CommitListener() {

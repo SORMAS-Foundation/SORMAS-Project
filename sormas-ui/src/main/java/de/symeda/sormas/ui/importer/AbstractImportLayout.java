@@ -24,6 +24,7 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 public class AbstractImportLayout extends VerticalLayout {
 
 	protected Button downloadErrorReportButton;
+	protected Upload upload;
 	protected final UserReferenceDto currentUser;
 	protected final UI currentUI;
 	
@@ -71,7 +72,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		String infoText = I18nProperties.getString(Strings.infoImportCsvFile);
 		ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
 		addComponent(importCsvComponent);
-		Upload upload = new Upload("", receiver);
+		upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
 		upload.addSucceededListener(receiver);

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -47,7 +48,6 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -55,6 +55,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -62,6 +63,7 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -72,6 +74,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
@@ -93,6 +96,7 @@ import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFac
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -135,6 +139,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private MessagingService messagingService;
 	@EJB
 	private LocationService locationService;
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
@@ -171,29 +177,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleDto> getAllByCase(CaseReferenceDto caseRef) {
-		if(caseRef == null) {
+	public List<String> getDeletedUuidsSince(String userUuid, Date since) {
+		User user = userService.getByUuid(userUuid);
+
+		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		Case caze = caseService.getByUuid(caseRef.getUuid());
-
-		return sampleService.getAllByCase(caze).stream()
-				.map(s -> toDto(s))
-				.collect(Collectors.toList());
+		return sampleService.getDeletedUuidsSince(user, since);
 	}
-
-	@Override
-	public int getReceivedSampleCountByCase(CaseReferenceDto caseRef) {
-		if (caseRef == null) {
-			return 0;
-		}
-
-		Case caze = caseService.getByUuid(caseRef.getUuid());
-
-		return sampleService.getReceivedSampleCountByCase(caze);
-	}
-
+	
 	@Override
 	public SampleDto getSampleByUuid(String uuid) {
 		return toDto(sampleService.getByUuid(uuid));
@@ -215,6 +208,25 @@ public class SampleFacadeEjb implements SampleFacade {
 		sampleService.ensurePersisted(sample);
 
 		onSampleChanged(existingSample, sample);
+
+		return toDto(sample);
+	}
+	
+	@Override
+	public SampleDto saveSampleSimple(SampleDto dto) {
+		
+		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
+		Sample sample = fromDto(dto);
+
+		// Set defaults for testing requests
+		if (sample.getPathogenTestingRequested() == null) {
+			sample.setPathogenTestingRequested(false);
+		}
+		if (sample.getAdditionalTestingRequested() == null) {
+			sample.setAdditionalTestingRequested(false);
+		}
+
+		sampleService.ensurePersisted(sample);
 
 		return toDto(sample);
 	}
@@ -403,8 +415,9 @@ public class SampleFacadeEjb implements SampleFacade {
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
 			Join<Case, Case> casePath = sample.join(Sample.ASSOCIATED_CASE);
-			Predicate criteriaFilter = caseService.buildCriteriaFilter(caseCriteria, cb, casePath);
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, casePath);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+			filter = AbstractAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
 		}
 
 		if (filter != null) {
@@ -519,14 +532,23 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public void deleteSample(SampleReferenceDto sampleRef, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.SAMPLE_DELETE)) {
+			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete samples.");
 		}
-
+		
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample);
 
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sample.getAssociatedCase()), sample.getAssociatedCase());
+	}
+
+	@Override
+	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType (RegionReferenceDto regionReference, DistrictReferenceDto districtReference, Disease disease, Date from, Date to, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		Region region = regionService.getByReferenceDto(regionReference);
+		District district = districtService.getByReferenceDto(districtReference);
+
+		return sampleService.getNewTestResultCountByResultType(region, district, disease, from, to, user);
 	}
 
 	public Sample fromDto(@NotNull SampleDto source) {
@@ -627,6 +649,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+		// Change pathogenTestResultChangeDate if the pathogen test result has changed
+		if (existingSample != null && existingSample.getPathogenTestResult() != null && existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
+			newSample.setPathogenTestResultChangeDate(new Date());
+		}
+		
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
 		
 		// Send an email to the lab user when a sample has been shipped to his lab
@@ -655,8 +682,23 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 	}
 
+	@Override
+	public boolean isDeleted(String sampleUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Sample> from = cq.from(Sample.class);
+
+		cq.where(cb.and(
+				cb.isTrue(from.get(Sample.DELETED)),
+				cb.equal(from.get(AbstractDomainObject.UUID), sampleUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
+
 	}
 }

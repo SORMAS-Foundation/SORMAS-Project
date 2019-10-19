@@ -20,51 +20,27 @@ package de.symeda.sormas.ui.person;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.MethodProperty;
-import com.vaadin.v7.data.util.PropertyValueGenerator;
-import com.vaadin.server.Page;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
-import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
 public class PersonGrid extends Grid {
 
-	public static final String CASE_LOC = "caseLoc";
-
 	private final List<PersonNameDto> persons;
 
-	private CaseDataDto associatedCase;
 	private UserReferenceDto currentUser;
-
-	/**
-	 * Initializes the person grid with a fixed list of similar persons and a fixed first and
-	 * last name. This is intended to be used when importing cases because the list of similar persons
-	 * does not change and a potential matching case is displayed.
-	 */
-	public PersonGrid(List<PersonNameDto> persons, PersonDto associatedPerson, CaseDataDto associatedCase, UserReferenceDto currentUser) {
-		this.persons = persons;
-		this.associatedCase = associatedCase;
-		this.currentUser = currentUser;
-		buildGrid();
-		reload(associatedPerson.getFirstName(), associatedPerson.getLastName());
-	}
 
 	/**
 	 * Initializes the person grid with variable first and last names, dynamically retrieving
@@ -85,28 +61,9 @@ public class PersonGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
-		generatedContainer.addGeneratedProperty(CASE_LOC, new PropertyValueGenerator<String>() {
-			@Override
-			public String getValue(Item item, Object itemId, Object propertyId) {
-				PersonIndexDto person = (PersonIndexDto) itemId;
-				if (person.getCaseDisease() != null) {
-					return "<a href='" + Page.getCurrent().getLocation() + "/data/" + 
-							person.getCaseUuid() + "' target='_blank'>" + person.getCaseDisease().toShortString() + 
-							" (" + DateHelper.formatLocalShortDate(person.getCaseDiseaseStartDate()) + ")</a>";
-				} else {
-					return "";
-				}
-			}
-			@Override
-			public Class<String> getType() {
-				return String.class;
-			}
-		});
-
 		setColumns(PersonIndexDto.FIRST_NAME, PersonIndexDto.LAST_NAME, PersonIndexDto.NICKNAME, 
 				PersonIndexDto.APPROXIMATE_AGE, PersonIndexDto.SEX, PersonIndexDto.PRESENT_CONDITION,
-				PersonIndexDto.DISTRICT_NAME, PersonIndexDto.COMMUNITY_NAME, PersonIndexDto.CITY,
-				CASE_LOC);
+				PersonIndexDto.DISTRICT_NAME, PersonIndexDto.COMMUNITY_NAME, PersonIndexDto.CITY);
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(
@@ -115,9 +72,6 @@ public class PersonGrid extends Grid {
 
 		getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(PersonIndexDto.LAST_NAME).setMinimumWidth(150);
-		getColumn(CASE_LOC).setRenderer(new HtmlRenderer());
-		getColumn(CASE_LOC).setHeaderCaption(I18nProperties.getPrefixCaption(PersonIndexDto.I18N_PREFIX, 
-				associatedCase == null ? PersonIndexDto.LAST_DISEASE : PersonIndexDto.MATCHING_CASE));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -131,19 +85,6 @@ public class PersonGrid extends Grid {
 		for (PersonNameDto person : persons) {
 			if (PersonHelper.areNamesSimilar(firstName + " " + lastName, person.getFirstName() + " " + person.getLastName())) {
 				PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getUuid());
-				CaseDataDto caze = null;
-				if (associatedCase == null) {
-					caze = FacadeProvider.getCaseFacade().getLatestCaseByPerson(indexDto.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
-				} else {
-					caze = FacadeProvider.getCaseFacade().getMatchingCaseForImport(associatedCase, indexDto.toReference(), currentUser.getUuid());
-				}
-
-				if (caze != null) {
-					indexDto.setCaseDisease(caze.getDisease());
-					indexDto.setCaseDiseaseStartDate(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()));
-					indexDto.setCaseUuid(caze.getUuid());
-				}
-
 				entries.add(indexDto);
 			}
 		}

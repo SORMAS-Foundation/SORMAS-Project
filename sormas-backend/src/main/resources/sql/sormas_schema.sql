@@ -3569,3 +3569,78 @@ ALTER TABLE cases ADD COLUMN completeness real;
 ALTER TABLE cases_history ADD COLUMN completeness real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completeness value to case #1253');
+
+-- 2019-09-08 Add deleted flag to core entities #1268
+ALTER TABLE cases ADD COLUMN deleted boolean;
+ALTER TABLE cases_history ADD COLUMN deleted boolean;
+UPDATE cases SET deleted = false;
+ALTER TABLE contact ADD COLUMN deleted boolean;
+ALTER TABLE contact_history ADD COLUMN deleted boolean;
+UPDATE contact SET deleted = false;
+ALTER TABLE samples ADD COLUMN deleted boolean;
+ALTER TABLE samples_history ADD COLUMN deleted boolean;
+UPDATE samples SET deleted = false;
+ALTER TABLE pathogentest ADD COLUMN deleted boolean;
+ALTER TABLE pathogentest_history ADD COLUMN deleted boolean;
+UPDATE pathogentest SET deleted = false;
+ALTER TABLE events ADD COLUMN deleted boolean;
+ALTER TABLE events_history ADD COLUMN deleted boolean;
+UPDATE events SET deleted = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add deleted flag to core entities #1268');
+
+-- 2019-09-10 Add ExportConfiguration entity #1276
+CREATE TABLE exportconfiguration(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(512),
+	user_id bigint,
+	exporttype varchar(255),
+	propertiesstring varchar,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE exportconfiguration OWNER TO sormas_user;
+
+CREATE TABLE exportconfiguration_history (LIKE exportconfiguration);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON exportconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exportconfiguration_history', true);
+ALTER TABLE exportconfiguration_history OWNER TO sormas_user;
+
+ALTER TABLE exportconfiguration ADD CONSTRAINT fk_exportconfiguration_user_id FOREIGN KEY (user_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (164, 'Add ExportConfiguration entity #1276');
+
+-- 2019-09-11 Add PopulationData entity #1084
+CREATE TABLE populationdata(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	region_id bigint,
+	district_id bigint,
+	sex varchar(255),
+	agegroup varchar(255),
+	population integer,
+	collectiondate timestamp,
+	primary key(id)
+);
+
+ALTER TABLE populationdata OWNER TO sormas_user;
+ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE populationdata ADD CONSTRAINT fk_populationdata_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+
+ALTER TABLE region DROP COLUMN population;
+ALTER TABLE district DROP COLUMN population;
+
+INSERT INTO schema_version (version_number, comment) VALUES (165, 'Add PopulationData entity #1084');
+
+-- 2019-09-26 Add pathogenTestResultChangeDate to sample #1302
+ALTER TABLE samples ADD COLUMN pathogentestresultchangedate timestamp;
+ALTER TABLE samples_history ADD COLUMN pathogentestresultchangedate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (166, 'Add pathogenTestResultChangeDate to sample #1302');

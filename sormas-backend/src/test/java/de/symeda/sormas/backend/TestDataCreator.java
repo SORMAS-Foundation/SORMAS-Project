@@ -37,6 +37,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -311,6 +312,12 @@ public class TestDataCreator {
 		return createPathogenTest(associatedCase, null, testType, resultType);
 	}
 	
+	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {
+		RDCFEntities rdcf = createRDCFEntities("LabRegion", "LabDistrict", "LabCommunity", "LabFacilty");
+		return createPathogenTest(sample, PathogenTestType.ANTIGEN_DETECTION, associatedCase.getDisease(), new Date(), rdcf.facility,
+				associatedCase.getReportingUser(), PathogenTestResultType.PENDING, "", false);
+	}
+	
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, Disease testedDisease,
 			PathogenTestType testType, PathogenTestResultType resultType) {
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
@@ -419,6 +426,15 @@ public class TestDataCreator {
 		facility.setRegion(region);
 		beanTest.getFacilityFacade().saveFacility(facility);
 		return facility;
+	}
+	
+	public PopulationDataDto createPopulationData(RegionReferenceDto region, DistrictReferenceDto district, Integer population, Date collectionDate) {
+		PopulationDataDto populationData = PopulationDataDto.build(collectionDate);
+		populationData.setRegion(region);
+		populationData.setDistrict(district);
+		populationData.setPopulation(population);
+		beanTest.getPopulationDataFacade().savePopulationData(populationData);
+		return populationData;
 	}
 
 	/**

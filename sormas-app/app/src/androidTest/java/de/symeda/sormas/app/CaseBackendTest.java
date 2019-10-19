@@ -181,6 +181,11 @@ public class CaseBackendTest {
         mergeCase.getSymptoms().setId(null);
         mergeCase.getHospitalization().setId(null);
         mergeCase.getEpiData().setId(null);
+        mergeCase.getClinicalCourse().setId(null);
+        mergeCase.getPortHealthInfo().setId(null);
+        mergeCase.getTherapy().setId(null);
+        mergeCase.getClinicalCourse().getHealthConditions().setId(null);
+        mergeCase.getMaternalHistory().setId(null);
 
         mergeCase.setEpidNumber("ServerEpidNumber");
         mergeCase.getHospitalization().setIsolated(YesNoUnknown.YES);
@@ -276,6 +281,11 @@ public class CaseBackendTest {
         mergeCase.getSymptoms().setId(null);
         mergeCase.getHospitalization().setId(null);
         mergeCase.getEpiData().setId(null);
+        mergeCase.getClinicalCourse().setId(null);
+        mergeCase.getPortHealthInfo().setId(null);
+        mergeCase.getTherapy().setId(null);
+        mergeCase.getClinicalCourse().getHealthConditions().setId(null);
+        mergeCase.getMaternalHistory().setId(null);
         mergeCase.setEpidNumber("ServerEpidNumber");
 
         caseDao.mergeOrCreate(mergeCase);
@@ -285,7 +295,7 @@ public class CaseBackendTest {
     }
 
     @Test
-    public void shouldUpdateCaseAndAssociatedEntitiesOnMove() {
+    public void shouldUpdateCaseAndAssociatedEntitiesOnMove() throws DaoException {
         CaseDao caseDao = DatabaseHelper.getCaseDao();
         Case caze = TestEntityCreator.createCase();
         User user = DatabaseHelper.getUserDao().queryUuid(TestHelper.USER_UUID);
@@ -294,17 +304,14 @@ public class CaseBackendTest {
         Task pendingTask = TestEntityCreator.createCaseTask(caze, TaskStatus.PENDING, user);
         Task doneTask = TestEntityCreator.createCaseTask(caze, TaskStatus.DONE, user);
 
+        Case existingCase = caseDao.queryUuidWithEmbedded(caze.getUuid());
         caze.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID));
         caze.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID));
         caze.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.SECOND_FACILITY_UUID));
-
-        try {
-            caseDao.transferCase(caze, false);
-        } catch (DaoException e) {
-            throw new RuntimeException();
-        }
-
+        caseDao.createPreviousHospitalizationAndUpdateHospitalization(caze, existingCase);
+        caseDao.saveAndSnapshot(caze);
         caze = caseDao.queryUuidWithEmbedded(caze.getUuid());
+
         pendingTask = taskDao.queryUuid(pendingTask.getUuid());
         doneTask = taskDao.queryUuid(doneTask.getUuid());
 

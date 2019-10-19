@@ -48,7 +48,6 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	}
 	
 	public ConfirmationComponent(boolean inverseOrder) {
-
 		setSpacing(true);
 		setSizeUndefined();
 		
@@ -66,7 +65,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	public Button getConfirmButton() {
 		if (confirmButton == null) {
 			confirmButton = new Button(I18nProperties.getCaption(Captions.actionConfirm));
-			cancelButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			confirmButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
 			confirmButton.addClickListener(new ClickListener() {
 				public void buttonClick(ClickEvent event) {

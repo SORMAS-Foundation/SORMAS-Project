@@ -35,5 +35,11 @@ public interface ExportFacade {
 	String generateDatabaseExportArchive(List<DatabaseTable> databaseTables) throws ExportErrorException, IOException;
 	
 	String generateZipArchive(String date, int randomNumber);
+	
+	List<ExportConfigurationDto> getExportConfigurations(String userUuid);
+	
+	void saveExportConfiguration(ExportConfigurationDto exportConfiguration);
+	
+	void deleteExportConfiguration(String exportConfigurationUuid);
 
 }

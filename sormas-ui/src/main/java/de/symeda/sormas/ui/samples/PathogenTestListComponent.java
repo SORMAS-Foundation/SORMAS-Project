@@ -45,7 +45,7 @@ public class PathogenTestListComponent extends VerticalLayout {
 	private PathogenTestList list;
 	private Button createButton;
 
-	public PathogenTestListComponent(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Boolean> testChangedCallback) {
+	public PathogenTestListComponent(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Runnable> testChangedCallback) {
 		setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();

@@ -31,9 +31,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered;
 import com.vaadin.v7.data.Validator.InvalidValueException;
@@ -41,10 +43,8 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.v7.ui.AbstractLegacyComponent;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -529,7 +529,11 @@ VerticalLayout implements Buffered {
 
 	@Override
 	public void setReadOnly(boolean readOnly) {
-		super.setReadOnly(readOnly);
+		try {
+			super.setReadOnly(readOnly);
+		} catch (IllegalStateException e) {
+			super.setEnabled(readOnly);
+		}
 //
 //		getWrappedComponent().setReadOnly(readOnly);
 //		if (fieldGroups != null) {

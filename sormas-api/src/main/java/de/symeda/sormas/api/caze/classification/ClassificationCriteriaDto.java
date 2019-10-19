@@ -43,6 +43,8 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 	@JsonSubTypes.Type(value = ClassificationNoneOfCriteriaDto.class, name = "ClassificationNoneOfCrieriaDto"),
 	@JsonSubTypes.Type(value = ClassificationPersonAgeBetweenYearsCriteriaDto.class, name = "ClassificationPersonAgeBetweenYearsCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationPathogenTestPositiveResultCriteriaDto.class, name = "ClassificationPathogenTestPositiveResultCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationPathogenTestNegativeResultCriteriaDto.class, name = "ClassificationPathogenTestNegativeResultCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationPathogenTestOtherPositiveResultCriteriaDto.class, name = "ClassificationPathogenTestOtherPositiveResultCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationXOfCriteriaDto.class, name = "ClassificationXOfCriteriaDto"),
 })
 public abstract class ClassificationCriteriaDto implements Serializable {
