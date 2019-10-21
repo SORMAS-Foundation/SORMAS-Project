@@ -21,10 +21,12 @@ package de.symeda.sormas.app.backend.sample;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
 
@@ -35,6 +37,21 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
     @Override
     protected Class<PathogenTest> getAdoClass() {
         return PathogenTest.class;
+    }
+
+    @Override
+    public PathogenTest build() {
+        throw new UnsupportedOperationException();
+    }
+
+    public PathogenTest build(Sample associatedSample) {
+        PathogenTest pathogenTest = super.build();
+        pathogenTest.setSample(associatedSample);
+        pathogenTest.setTestDateTime(new Date());
+        pathogenTest.setLab(associatedSample.getLab());
+        pathogenTest.setLabDetails(associatedSample.getLabDetails());
+        pathogenTest.setLabUser(ConfigProvider.getUser());
+        return pathogenTest;
     }
 
     public PathogenTest queryMostRecentBySample(Sample sample) {

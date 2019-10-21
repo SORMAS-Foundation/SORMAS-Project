@@ -183,6 +183,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto saveContact(ContactDto dto) {
+		return saveContact(dto, true);
+	}
+	
+	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
 		Contact entity = fromDto(dto);
 
 		// taking this out because it may lead to server problems
@@ -193,27 +197,18 @@ public class ContactFacadeEjb implements ContactFacade {
 //		}
 		
 		contactService.ensurePersisted(entity);
-
-		contactService.updateFollowUpUntilAndStatus(entity);
-		contactService.udpateContactStatus(entity);
 		
-		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
+		if (handleChanges) {
+
+			contactService.updateFollowUpUntilAndStatus(entity);
+			contactService.udpateContactStatus(entity);
+			
+			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
+		}
 		
 		return toDto(entity);
 	}
 	
-	@Override
-	public ContactDto saveContactSimple(ContactDto dto) {
-		
-		Contact entity = fromDto(dto);
-
-		contactService.ensurePersisted(entity);
-
-		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
-		
-		return toDto(entity);
-	}
-
 	@Override
 	public List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos) {
 		User user = userService.getByUuid(userUuid);

@@ -194,27 +194,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleDto saveSample(SampleDto dto) {
-		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
-		Sample sample = fromDto(dto);
-
-		// Set defaults for testing requests
-		if (sample.getPathogenTestingRequested() == null) {
-			sample.setPathogenTestingRequested(false);
-		}
-		if (sample.getAdditionalTestingRequested() == null) {
-			sample.setAdditionalTestingRequested(false);
-		}
-
-		sampleService.ensurePersisted(sample);
-
-		onSampleChanged(existingSample, sample);
-
-		return toDto(sample);
+		return saveSample(dto, true);
 	}
 	
-	@Override
-	public SampleDto saveSampleSimple(SampleDto dto) {
-		
+	public SampleDto saveSample(SampleDto dto, boolean handleChanges) {
 		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
 		Sample sample = fromDto(dto);
 
@@ -227,6 +210,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		sampleService.ensurePersisted(sample);
+
+		if (handleChanges) {
+			onSampleChanged(existingSample, sample);
+		}
 
 		return toDto(sample);
 	}
