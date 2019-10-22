@@ -64,11 +64,13 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
@@ -459,7 +461,7 @@ public class CaseController {
 			CaseDataDto cazeDto = caseEditForm.getValue();
 			if (cazeDto.getHealthFacility() != null
 					&& !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
-				saveCaseWithPreviousHospitalizationPrompt(cazeDto, oldCase);
+				saveCaseWithHealthFacilityChangedPrompt(cazeDto, oldCase);
 			} else {
 				saveCase(cazeDto);
 			}
@@ -478,22 +480,34 @@ public class CaseController {
 			return;
 		}
 
-		// Check if cases with multiple districts have been selected
-		String districtUuid = null;
+		// Check if cases with multiple regions and districts have been selected
+		String regionUuid = null, districtUuid = null;
+		boolean first = true;
 		for (CaseIndexDto selectedCase : selectedCases) {
-			if (districtUuid == null) {
+			if (first) {
+				regionUuid = selectedCase.getRegionUuid();
 				districtUuid = selectedCase.getDistrictUuid();
-			} else if (!districtUuid.equals(selectedCase.getDistrictUuid())) {
-				districtUuid = null;
-				break;
+				first = false;
+			} else {
+				if (!DataHelper.equal(regionUuid, selectedCase.getRegionUuid())) {
+					regionUuid = null;
+				}
+				if (!DataHelper.equal(districtUuid, selectedCase.getDistrictUuid())) {
+					districtUuid = null;
+				}
 			}
+			if (regionUuid == null && districtUuid == null)
+				break;
 		}
 
+		RegionReferenceDto region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid);
 		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
 
 		// Create a temporary case in order to use the CommitDiscardWrapperComponent
 		CaseDataDto tempCase = new CaseDataDto();
-
+		tempCase.setRegion(region);
+		tempCase.setDistrict(district);
+		
 		BulkCaseDataForm form = new BulkCaseDataForm(district);
 		form.setValue(tempCase);
 		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView = new CommitDiscardWrapperComponent<BulkCaseDataForm>(
@@ -516,9 +530,9 @@ public class CaseController {
 
 				if (healthFacilityChange) {
 
-					VaadinUiUtil.showConfirmationPopup(
+					VaadinUiUtil.showChooseOptionPopup(
 							I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
-							new Label(I18nProperties.getString(Strings.messageMultipleInfrastructureDataChanged)),
+							new Label(I18nProperties.getString(Strings.messageHealthFacilityMulitChanged)),
 							I18nProperties.getCaption(Captions.caseTransferCases),
 							I18nProperties.getCaption(Captions.caseEditData), 500, e -> {
 								CaseFacade caseFacade = FacadeProvider.getCaseFacade();
@@ -764,10 +778,10 @@ public class CaseController {
 		return view;
 	}
 
-	public void saveCaseWithPreviousHospitalizationPrompt(CaseDataDto caze, CaseDataDto oldCase) {
-		VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
-				new Label(I18nProperties.getString(Strings.messageInfrastructureDataChanged)),
-				I18nProperties.getCaption(Captions.caseTransferCase), I18nProperties.getCaption(Captions.caseEditData),
+	public void saveCaseWithHealthFacilityChangedPrompt(CaseDataDto caze, CaseDataDto oldCase) {
+		VaadinUiUtil.showChooseOptionPopup(I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
+				new Label(I18nProperties.getString(Strings.messageHealthFacilityChanged)),
+				I18nProperties.getCaption(Captions.caseTransferCase),I18nProperties.getCaption(Captions.caseEditData),  
 				500, e -> {
 					if (e.booleanValue() == true) {
 						CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(caze, oldCase);

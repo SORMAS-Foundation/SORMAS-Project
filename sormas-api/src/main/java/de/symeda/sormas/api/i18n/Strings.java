@@ -356,6 +356,8 @@ public interface Strings {
 	public static String messageExportFailed = "messageExportFailed";
 	public static String messageFollowUpCanceled = "messageFollowUpCanceled";
 	public static String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
+	public static String messageHealthFacilityChanged = "messageHealthFacilityChanged";
+	public static String messageHealthFacilityMulitChanged = "messageHealthFacilityMulitChanged";
 	public static String messageImportCanceled = "messageImportCanceled";
 	public static String messageImportCanceledErrors = "messageImportCanceledErrors";
 	public static String messageImportError = "messageImportError";
@@ -364,11 +366,9 @@ public interface Strings {
 	public static String messageImportInvalidColumn = "messageImportInvalidColumn";
 	public static String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	public static String messageImportSuccessful = "messageImportSuccessful";
-	public static String messageInfrastructureDataChanged = "messageInfrastructureDataChanged";
 	public static String messageLoginFailed = "messageLoginFailed";
 	public static String messageMissingDateFilter = "messageMissingDateFilter";
 	public static String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
-	public static String messageMultipleInfrastructureDataChanged = "messageMultipleInfrastructureDataChanged";
 	public static String messageNoCasesSelected = "messageNoCasesSelected";
 	public static String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	public static String messageNoContactsSelected = "messageNoContactsSelected";

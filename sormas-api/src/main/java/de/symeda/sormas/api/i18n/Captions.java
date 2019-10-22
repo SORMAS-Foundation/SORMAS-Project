@@ -637,6 +637,7 @@ public interface Captions {
 	public static String PathogenTest_testTypeText = "PathogenTest.testTypeText";
 	public static String pathogenTestNewResult = "pathogenTestNewResult";
 	public static String pathogenTestNewTest = "pathogenTestNewTest";
+	public static String PathogenTests = "PathogenTests";
 	public static String Person = "Person";
 	public static String Person_address = "Person.address";
 	public static String Person_approximateAge = "Person.approximateAge";
