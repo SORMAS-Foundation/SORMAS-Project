@@ -63,6 +63,7 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -90,6 +91,11 @@ public class StatisticsView extends AbstractStatisticsView {
 	private static final long serialVersionUID = -4440568319850399685L;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME;
+
+	public static final int COUNT_POSITION = 0;
+	public static final int POPULATION_POSITION = 1;
+	public static final int ROW_GROUP_POSITION = 2;
+	public static final int COLUMN_GROUP_POSITION = 3;
 
 	private VerticalLayout filtersLayout;
 	private VerticalLayout resultsLayout;
@@ -391,6 +397,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		StatisticsCaseAttribute xAxisAttribute = visualizationComponent.getColumnsAttribute();
 		StatisticsCaseSubAttribute xAxisSubAttribute = visualizationComponent.getColumnsSubAttribute();
 		StatisticsCaseAttribute seriesAttribute = visualizationComponent.getRowsAttribute();
+		StatisticsCaseSubAttribute seriesSubAttribute = visualizationComponent.getRowsSubAttribute();
 
 		HighChart chart = new HighChart();
 		chart.setWidth(100, Unit.PERCENTAGE);
@@ -406,18 +413,18 @@ public class StatisticsView extends AbstractStatisticsView {
 		case COLUMN:
 		case STACKED_COLUMN:
 			hcjs.append("column");
-			seriesIdIndex = seriesAttribute != null ? 1 : -1;
-			xAxisIdIndex = xAxisAttribute != null ? (seriesIdIndex >= 1 ? 2 : 1) : -1;
+			seriesIdIndex = seriesAttribute != null ? ROW_GROUP_POSITION : -1;
+			xAxisIdIndex = xAxisAttribute != null ? COLUMN_GROUP_POSITION : -1;
 			break;
 		case LINE:
 			hcjs.append("line");
-			seriesIdIndex = seriesAttribute != null ? 1 : -1;
-			xAxisIdIndex = xAxisAttribute != null ? (seriesIdIndex >= 1 ? 2 : 1) : -1;
+			seriesIdIndex = seriesAttribute != null ? ROW_GROUP_POSITION : -1;
+			xAxisIdIndex = xAxisAttribute != null ? COLUMN_GROUP_POSITION : -1;
 			break;
 		case PIE:
 			hcjs.append("pie");
 			xAxisIdIndex = -1;
-			seriesIdIndex = seriesAttribute != null ? 1 : -1;
+			seriesIdIndex = seriesAttribute != null ? ROW_GROUP_POSITION : -1;
 			break;
 		default:
 			throw new IllegalArgumentException(chartType.toString());
@@ -475,22 +482,25 @@ public class StatisticsView extends AbstractStatisticsView {
 				});
 
 				if (appendUnknownXAxisCaption) {
-					hcjs.append("'").append(getEscapedFragment(StatisticsHelper.VALUE_UNKNOWN)).append("'");
+					hcjs.append("'").append(getEscapedFragment(StatisticsHelper.UNKNOWN)).append("'");
 				}
+			} else if (seriesIdIndex >= 1) {
+				hcjs.append("'").append(seriesSubAttribute != null ? seriesSubAttribute.toString() : seriesAttribute.toString()).append("'");
 			} else {
 				hcjs.append("'").append(getEscapedFragment(StatisticsHelper.TOTAL)).append("'");
 			}
-			int numberOfCategories = xAxisIdIndex >= 1
-					? appendUnknownXAxisCaption ? xAxisCaptions.size() + 1 : xAxisCaptions.size()
-							: 1;
-					hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
+			int numberOfCategories = xAxisIdIndex >= 1 ? appendUnknownXAxisCaption ? xAxisCaptions.size() + 1 : xAxisCaptions.size() : 1;
+			hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
 
-					hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
-					.append("' },").append("allowDecimals: false, softMax: 10, " + "stackLabels: { enabled: true, "
-							+ "style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
+			hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
+			.append("' },").append("allowDecimals: false, softMax: ").append(showCaseIncidence ? 1 : 10).append(", stackLabels: { enabled: true, ")
+			.append("style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
 
-					hcjs.append(
-							"tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}<br/>" + I18nProperties.getCaption(Captions.total) + ": {point.stackTotal}'},");
+			hcjs.append("tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}");
+			if (chartType == StatisticsVisualizationChartType.STACKED_COLUMN) {
+				hcjs.append("<br/>").append(I18nProperties.getCaption(Captions.total) + ": {point.stackTotal}");
+			}
+			hcjs.append("'},");
 		}
 
 		hcjs.append("legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', "
@@ -499,8 +509,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		hcjs.append(
 				"colors: ['#FF0000','#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],");
 
-		if (chartType == StatisticsVisualizationChartType.STACKED_COLUMN
-				|| chartType == StatisticsVisualizationChartType.COLUMN) {
+		if (chartType == StatisticsVisualizationChartType.STACKED_COLUMN || chartType == StatisticsVisualizationChartType.COLUMN) {
 			hcjs.append("plotOptions: { column: { borderWidth: 0, ");
 			if (chartType == StatisticsVisualizationChartType.STACKED_COLUMN) {
 				hcjs.append("stacking: 'normal', ");
@@ -513,12 +522,17 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		hcjs.append("series: [");
 		if (seriesIdIndex < 1 && xAxisIdIndex < 1) {
-			hcjs.append("{ name: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
+			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [['")
-			.append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("',")
-			.append(resultData.get(0)[0].toString()).append("]]}");
+			.append(getEscapedFragment(showCaseIncidence ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',");
+			if (!showCaseIncidence) {
+				hcjs.append(resultData.get(0)[COUNT_POSITION].toString());
+			} else {
+				hcjs.append(InfrastructureHelper.getCaseIncidence(((Number) resultData.get(0)[COUNT_POSITION]).intValue(), ((Number) resultData.get(0)[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
+			}
+			hcjs.append("]]}");
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
-			hcjs.append("{ name: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
+			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [");
 			TreeMap<StatisticsGroupingKey, Object[]> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
 			Object[] unknownSeriesElement = null;
@@ -532,13 +546,23 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 
 			seriesElements.forEach((key, value) -> {
-				Object seriesValue = value[0];
+				Object seriesValue;
+				if (!showCaseIncidence) {
+					seriesValue = value[COUNT_POSITION];
+				} else {
+					seriesValue = InfrastructureHelper.getCaseIncidence(((Number) value[COUNT_POSITION]).intValue(), ((Number) value[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+				}
 				Object seriesId = value[seriesIdIndex];
 				hcjs.append("['").append(seriesCaptions.get(seriesId)).append("',").append(seriesValue).append("],");
 			});
 			if (unknownSeriesElement != null) {
-				Object seriesValue = unknownSeriesElement[0];
-				hcjs.append("['").append(getEscapedFragment(StatisticsHelper.CASE_COUNT)).append("',")
+				Object seriesValue;
+				if (!showCaseIncidence) {
+					seriesValue = unknownSeriesElement[COUNT_POSITION];
+				} else {
+					seriesValue = InfrastructureHelper.getCaseIncidence(((Number) unknownSeriesElement[COUNT_POSITION]).intValue(), ((Number) unknownSeriesElement[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+				}
+				hcjs.append("['").append(getEscapedFragment(showCaseIncidence ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',")
 				.append(seriesValue).append("],");
 			}
 			hcjs.append("]}");
@@ -556,7 +580,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				Object rowSeriesKey;
 				if (seriesIdIndex >= 1) {
 					if (!StatisticsHelper.isNullOrUnknown(row[seriesIdIndex])) {
-						rowSeriesKey = row[seriesIdIndex]; // seriesCaptions.get(
+						rowSeriesKey = row[seriesIdIndex];
 					} else {
 						rowSeriesKey = StatisticsHelper.VALUE_UNKNOWN;
 					}
@@ -573,7 +597,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					// Append the start sequence of the next series String
 					if (StatisticsHelper.isNullOrUnknown(rowSeriesKey)) {
 						seriesKey = StatisticsHelper.VALUE_UNKNOWN;
-						unknownSeriesString.append("{ name: '").append(getEscapedFragment(StatisticsHelper.VALUE_UNKNOWN))
+						unknownSeriesString.append("{ name: '").append(getEscapedFragment(StatisticsHelper.UNKNOWN))
 						.append("', dataLabels: { allowOverlap: false }, data: [");
 					} else if (rowSeriesKey.equals(StatisticsHelper.TOTAL)) {
 						seriesKey = StatisticsHelper.TOTAL;
@@ -587,7 +611,12 @@ public class StatisticsView extends AbstractStatisticsView {
 					}
 				}
 
-				Object value = row[0];
+				Object value;
+				if (!showCaseIncidence) {
+					value = row[COUNT_POSITION];
+				} else {
+					value = InfrastructureHelper.getCaseIncidence(((Number) row[COUNT_POSITION]).intValue(), ((Number) row[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+				}
 				if (xAxisIdIndex >= 1) {
 					Object xAxisId = row[xAxisIdIndex];
 					int captionPosition = StatisticsHelper.isNullOrUnknown(xAxisId) ? xAxisCaptions.size()
@@ -792,7 +821,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		if (showCaseIncidence) {	
 			caseIncidencePossible = true;
 			missingPopulationDataNames = null;
-			
+
 			List<Long> missingPopulationData = FacadeProvider.getPopulationDataFacade().getMissingPopulationDataForStatistics(caseCriteria, visualizationComponent.hasRegionGrouping(), 
 					visualizationComponent.hasDistrictGrouping(), visualizationComponent.hasSexGrouping(), visualizationComponent.hasAgeGroupGrouping());
 			hasMissingPopulationData = missingPopulationData.size() > 0;
@@ -809,7 +838,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					populationDataNamesBuilder.delete(populationDataNamesBuilder.lastIndexOf(","), populationDataNamesBuilder.length());
 				}
 				missingPopulationDataNames = populationDataNamesBuilder.toString();
-				
+
 				caseIncidencePossible = !hasMissingPopulationData || visualizationComponent.hasPopulationGrouping() || hasDistrictFilter();
 			}
 		}
@@ -823,7 +852,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		return resultData;
 	}
-	
+
 	private boolean hasDistrictFilter() {
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
 			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.REGION_DISTRICT) {
@@ -832,7 +861,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 			}
 		}
-	
+
 		return false;
 	}
 
@@ -847,10 +876,10 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 			}
 		}
-	
+
 		return false;
 	}
-	
+
 	private boolean hasUnsupportedPopulationAgeGroupFilter() {
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
 			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_1_YEAR
@@ -861,7 +890,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				return true;
 			}
 		}
-	
+
 		return false;
 	}
 

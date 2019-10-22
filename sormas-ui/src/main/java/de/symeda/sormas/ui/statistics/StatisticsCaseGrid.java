@@ -44,11 +44,6 @@ public class StatisticsCaseGrid extends Grid {
 	private static final String UNKNOWN_COLUMN = "UnknownColumn";
 	private static final String TOTAL_COLUMN = "TotalColumn";
 	
-	private final int COUNT_POSITION = 0;
-	private final int POPULATION_POSITION = 1;
-	private final int ROW_GROUP_POSITION = 2;
-	private final int COLUMN_GROUP_POSITION = 3;
-	
 	private final class StatisticsCaseGridCellStyleGenerator implements CellStyleGenerator {
 		private static final long serialVersionUID = 1L;
 
@@ -83,9 +78,9 @@ public class StatisticsCaseGrid extends Grid {
 			addColumn(CASE_COUNT_OR_INCIDENCE_COLUMN);
 			getColumn(CASE_COUNT_OR_INCIDENCE_COLUMN).setHeaderCaption(showCaseIncidence ? I18nProperties.getCaption(StatisticsHelper.CASE_INCIDENCE) : I18nProperties.getCaption(StatisticsHelper.CASE_COUNT));
 			if (!showCaseIncidence) {
-				addRow(new Object[]{String.valueOf(content.get(0)[COUNT_POSITION])});
+				addRow(new Object[]{String.valueOf(content.get(0)[StatisticsView.COUNT_POSITION])});
 			} else {
-				addRow(new Object[]{String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) content.get(0)[COUNT_POSITION]).intValue(), ((Number) content.get(0)[POPULATION_POSITION]).doubleValue(), incidenceDivisor))});
+				addRow(new Object[]{String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) content.get(0)[StatisticsView.COUNT_POSITION]).intValue(), ((Number) content.get(0)[StatisticsView.POPULATION_POSITION]).doubleValue(), incidenceDivisor))});
 			}
 			return;
 		}
@@ -105,10 +100,10 @@ public class StatisticsCaseGrid extends Grid {
 			boolean addColumnUnknown = false;
 			// Iterate over content and add new columns to the list
 			for (Object[] entry : content) {
-				if (StatisticsHelper.isNullOrUnknown(entry[COLUMN_GROUP_POSITION])) {
+				if (StatisticsHelper.isNullOrUnknown(entry[StatisticsView.COLUMN_GROUP_POSITION])) {
 					addColumnUnknown = true;
 				} else {
-					columns.putIfAbsent((StatisticsGroupingKey) entry[COLUMN_GROUP_POSITION], entry[COLUMN_GROUP_POSITION].toString());
+					columns.putIfAbsent((StatisticsGroupingKey) entry[StatisticsView.COLUMN_GROUP_POSITION], entry[StatisticsView.COLUMN_GROUP_POSITION].toString());
 				}
 			}
 
@@ -162,34 +157,34 @@ public class StatisticsCaseGrid extends Grid {
 			
 			for (int i = 0; i < content.size(); i++) {
 				Object[] entry = content.get(i);
-				if (StatisticsHelper.isNullOrUnknown(entry[COLUMN_GROUP_POSITION])) {
+				if (StatisticsHelper.isNullOrUnknown(entry[StatisticsView.COLUMN_GROUP_POSITION])) {
 					if (!showCaseIncidence || columnsAttribute.isUnknownValueAllowed()) {
 						// 'Unknown' column is always the second-last
 						int columnIndex = getColumns().size() - 2;
 						if (!showCaseIncidence) {
-							row[columnIndex] = entry[COUNT_POSITION].toString();
+							row[columnIndex] = entry[StatisticsView.COUNT_POSITION].toString();
 						} else {
-							row[columnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[COUNT_POSITION]).intValue(), ((Number) entry[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
+							row[columnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[StatisticsView.COUNT_POSITION]).intValue(), ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue(), incidenceDivisor));
 						}
 					} else {
 						continue;
 					}
 				} else {
 					// Retrieve the column index by using the headMap function
-					int columnIndex = columns.headMap((StatisticsGroupingKey) entry[COLUMN_GROUP_POSITION]).size() + 1;
+					int columnIndex = columns.headMap((StatisticsGroupingKey) entry[StatisticsView.COLUMN_GROUP_POSITION]).size() + 1;
 					if (!showCaseIncidence) {
-						row[columnIndex] = entry[COUNT_POSITION].toString();
+						row[columnIndex] = entry[StatisticsView.COUNT_POSITION].toString();
 					} else {
-						row[columnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[COUNT_POSITION]).intValue(), ((Number) entry[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
+						row[columnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[StatisticsView.COUNT_POSITION]).intValue(), ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue(), incidenceDivisor));
 					}
 				}
 				
-				totalCaseCount += ((Number) entry[COUNT_POSITION]).longValue();
+				totalCaseCount += ((Number) entry[StatisticsView.COUNT_POSITION]).longValue();
 				if (showCaseIncidence) {
 					if (columnsHavePopulationGrouping && rowPopulation != null) {
-						rowPopulation += ((Number) entry[POPULATION_POSITION]).doubleValue();
+						rowPopulation += ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue();
 					} else if (rowPopulation == null) {
-						rowPopulation = ((Number) entry[POPULATION_POSITION]).doubleValue();
+						rowPopulation = ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue();
 					}
 				}
 			}
@@ -220,41 +215,41 @@ public class StatisticsCaseGrid extends Grid {
 			for (Object[] entry : content) {
 				if (columnsAttribute == null && columnsSubAttribute == null) {
 					// Only display the number of cases if there is no column grouping
-					if (!StatisticsHelper.isNullOrUnknown(entry[ROW_GROUP_POSITION])) {
+					if (!StatisticsHelper.isNullOrUnknown(entry[StatisticsView.ROW_GROUP_POSITION])) {
 						currentRow = new Object[getColumns().size()];
-						currentRowKey = (StatisticsGroupingKey) entry[ROW_GROUP_POSITION];
-						currentRow[0] = entry[ROW_GROUP_POSITION].toString();
+						currentRowKey = (StatisticsGroupingKey) entry[StatisticsView.ROW_GROUP_POSITION];
+						currentRow[0] = entry[StatisticsView.ROW_GROUP_POSITION].toString();
 
 						if (!showCaseIncidence) {
-							currentRow[1] = entry[COUNT_POSITION].toString();
+							currentRow[1] = entry[StatisticsView.COUNT_POSITION].toString();
 						} else {
-							currentRow[1] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[COUNT_POSITION]).intValue(), ((Number) entry[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
+							currentRow[1] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[StatisticsView.COUNT_POSITION]).intValue(), ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue(), incidenceDivisor));
 						}
 						
-						rows.putIfAbsent((StatisticsGroupingKey) entry[ROW_GROUP_POSITION], currentRow);
-						columnTotals[columnTotals.length - 1] += ((Number) entry[COUNT_POSITION]).longValue();
+						rows.putIfAbsent((StatisticsGroupingKey) entry[StatisticsView.ROW_GROUP_POSITION], currentRow);
+						columnTotals[columnTotals.length - 1] += ((Number) entry[StatisticsView.COUNT_POSITION]).longValue();
 					} else if (unknownRow == null) {
 						unknownRow = new Object[getColumns().size()];
 						unknownRow[0] = I18nProperties.getCaption(Captions.unknown);
 						
 						if (!showCaseIncidence) {
-							unknownRow[1] = entry[COUNT_POSITION].toString();
+							unknownRow[1] = entry[StatisticsView.COUNT_POSITION].toString();
 						} else {
-							unknownRow[1] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[COUNT_POSITION]).intValue(), ((Number) entry[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
+							unknownRow[1] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[StatisticsView.COUNT_POSITION]).intValue(), ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue(), incidenceDivisor));
 						}
 						
-						columnTotals[columnTotals.length - 1] += ((Number) entry[COUNT_POSITION]).longValue();
+						columnTotals[columnTotals.length - 1] += ((Number) entry[StatisticsView.COUNT_POSITION]).longValue();
 					}
 					
 					if (showCaseIncidence) {
 						if (rowsHavePopulationGrouping) {
-							columnPopulations[columnPopulations.length - 1] += ((Number) entry[POPULATION_POSITION]).doubleValue();
+							columnPopulations[columnPopulations.length - 1] += ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue();
 						} else {
-							columnPopulations[columnPopulations.length - 1] = ((Number) entry[POPULATION_POSITION]).doubleValue();
+							columnPopulations[columnPopulations.length - 1] = ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue();
 						}
 					}
 				} else {
-					if (currentRow != null && currentRowKey != null && !currentRowKey.equals(entry[ROW_GROUP_POSITION])) {
+					if (currentRow != null && currentRowKey != null && !currentRowKey.equals(entry[StatisticsView.ROW_GROUP_POSITION])) {
 						// New grouping entry has been reached, add the current row to the rows map
 						if (!showCaseIncidence) {
 							currentRow[currentRow.length - 1] = String.valueOf(rowTotal);
@@ -275,47 +270,47 @@ public class StatisticsCaseGrid extends Grid {
 
 					if (currentRow == null && currentRowKey == null) {
 						// New grouping entry has been reached, set up currentRow and currentRowKey
-						if (StatisticsHelper.isNullOrUnknown(entry[ROW_GROUP_POSITION])) {
+						if (StatisticsHelper.isNullOrUnknown(entry[StatisticsView.ROW_GROUP_POSITION])) {
 							if (unknownRow == null) {
 								unknownRow = new Object[getColumns().size()];
 								unknownRow[0] = I18nProperties.getCaption(Captions.unknown);
 							}
 						} else {
 							currentRow = new Object[getColumns().size()];
-							currentRowKey = (StatisticsGroupingKey) entry[ROW_GROUP_POSITION];
-							currentRow[0] = entry[ROW_GROUP_POSITION].toString();
+							currentRowKey = (StatisticsGroupingKey) entry[StatisticsView.ROW_GROUP_POSITION];
+							currentRow[0] = entry[StatisticsView.ROW_GROUP_POSITION].toString();
 						}
 					}
 
 					int columnIndex = 0;
 
-					if (!StatisticsHelper.isNullOrUnknown(entry[COLUMN_GROUP_POSITION])) {
-						columnIndex = columns.headMap((StatisticsGroupingKey) entry[COLUMN_GROUP_POSITION]).size() + 1;
+					if (!StatisticsHelper.isNullOrUnknown(entry[StatisticsView.COLUMN_GROUP_POSITION])) {
+						columnIndex = columns.headMap((StatisticsGroupingKey) entry[StatisticsView.COLUMN_GROUP_POSITION]).size() + 1;
 					} else {
 						columnIndex = getColumns().size() - 2;
 					}
 
-					if (StatisticsHelper.isNullOrUnknown(entry[ROW_GROUP_POSITION])) {
+					if (StatisticsHelper.isNullOrUnknown(entry[StatisticsView.ROW_GROUP_POSITION])) {
 						if (!showCaseIncidence) {
-							unknownRow[columnIndex] = entry[COUNT_POSITION].toString();
+							unknownRow[columnIndex] = entry[StatisticsView.COUNT_POSITION].toString();
 						} else {
-							unknownRow[columnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[COUNT_POSITION]).intValue(), ((Number) entry[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
+							unknownRow[columnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[StatisticsView.COUNT_POSITION]).intValue(), ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue(), incidenceDivisor));
 						}
 					} else {
 						if (!showCaseIncidence) {
-							currentRow[columnIndex] = entry[COUNT_POSITION].toString();
+							currentRow[columnIndex] = entry[StatisticsView.COUNT_POSITION].toString();
 						} else {
-							currentRow[columnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[COUNT_POSITION]).intValue(), ((Number) entry[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
+							currentRow[columnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(((Number) entry[StatisticsView.COUNT_POSITION]).intValue(), ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue(), incidenceDivisor));
 						}
 					}	
 					
-					rowTotal += ((Number) entry[COUNT_POSITION]).longValue();	
+					rowTotal += ((Number) entry[StatisticsView.COUNT_POSITION]).longValue();	
 
 					if (showCaseIncidence) {
 						if (columnsHavePopulationGrouping && rowPopulation != null) {
-							rowPopulation += ((Number) entry[POPULATION_POSITION]).doubleValue();
+							rowPopulation += ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue();
 						} else if (rowPopulation == null) {
-							rowPopulation = ((Number) entry[POPULATION_POSITION]).doubleValue();
+							rowPopulation = ((Number) entry[StatisticsView.POPULATION_POSITION]).doubleValue();
 						}
 
 						for (int column = 0; column < columnPopulations.length; column++) {
@@ -327,14 +322,14 @@ public class StatisticsCaseGrid extends Grid {
 						}
 					}
 
-					columnTotals[columnIndex] += ((Number) entry[COUNT_POSITION]).longValue();
+					columnTotals[columnIndex] += ((Number) entry[StatisticsView.COUNT_POSITION]).longValue();
 				}
 			}
 
 			// Add the last calculated row to the list (since this was not done in the loop) or calculate
 			// the totals for the unknown row if this was the last row processed
 			if (columnsAttribute != null || columnsSubAttribute != null) {
-				if (currentRow != null && currentRow[COUNT_POSITION] != null) {
+				if (currentRow != null && currentRow[StatisticsView.COUNT_POSITION] != null) {
 					if (!showCaseIncidence) {
 						currentRow[currentRow.length - 1] = String.valueOf(rowTotal);
 					} else {
@@ -354,7 +349,7 @@ public class StatisticsCaseGrid extends Grid {
 					}
 					columnTotals[columnTotals.length - 1] += rowTotal;
 					rows.putIfAbsent(currentRowKey, currentRow);
-				} else if (unknownRow != null && unknownRow[COUNT_POSITION] != null) {
+				} else if (unknownRow != null && unknownRow[StatisticsView.COUNT_POSITION] != null) {
 					if (!showCaseIncidence) {
 						unknownRow[unknownRow.length - 1] = String.valueOf(rowTotal);
 					} else {
