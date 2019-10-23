@@ -40,6 +40,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -79,7 +80,8 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 						Class<? extends String> targetType, Locale locale) throws ConversionException {
 
 					boolean styleAsButton = UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL) || 
-							(UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED) && UserProvider.getCurrent().getUser().getRegion().equals(value.getRegion()));
+							(UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED) 
+									&& DataHelper.equal(UserProvider.getCurrent().getUser().getRegion(), value.getRegion()));
 					boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size( )>= value.getTotalDistricts() / 2.0f;
 
 					String styles;

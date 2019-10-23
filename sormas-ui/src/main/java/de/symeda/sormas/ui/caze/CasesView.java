@@ -76,6 +76,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -508,7 +509,7 @@ public class CasesView extends AbstractView {
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
 					
-					if (!region.equals(criteria.getRegion())) {
+					if (!DataHelper.equal(region, criteria.getRegion())) {
 						criteria.district(null);
 					}
 					
@@ -525,7 +526,7 @@ public class CasesView extends AbstractView {
 			districtFilter.addValueChangeListener(e -> {
 				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
 
-				if (!district.equals(criteria.getDistrict())) {
+				if (!DataHelper.equal(district, criteria.getDistrict())) {
 					criteria.healthFacility(null);
 					criteria.pointOfEntry(null);
 				}
