@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public class Year implements Serializable, StatisticsGroupingKey {
+public class Year implements Serializable, Comparable<Year>, StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -6317192936320989737L;
 	
@@ -76,6 +76,11 @@ public class Year implements Serializable, StatisticsGroupingKey {
 		}
 		
 		return Integer.compare(value, ((Year) o).getValue());
+	}
+
+	@Override
+	public int compareTo(Year o) {
+		return keyCompareTo(o);
 	}
 	
 }

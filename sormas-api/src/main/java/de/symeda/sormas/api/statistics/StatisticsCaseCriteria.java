@@ -68,7 +68,7 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<CaseOutcome> outcomes;
 	private List<RegionReferenceDto> regions;
 	private List<DistrictReferenceDto> districts;
-
+	
 	public List<Year> getOnsetYears() {
 		return onsetYears;
 	}

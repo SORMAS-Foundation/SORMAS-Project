@@ -463,7 +463,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				StatisticsCaseAttribute.ONSET_TIME);
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
-		List<Object[]> results = getCaseFacade().queryCaseCount(criteria, null, null, null, null, false);
+		List<Object[]> results = getCaseFacade().queryCaseCount(criteria, null, null, null, null, false, null);
 
 		// List should have one entry
 		assertEquals(1, results.size());

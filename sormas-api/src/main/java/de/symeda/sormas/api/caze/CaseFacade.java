@@ -85,7 +85,7 @@ public interface CaseFacade {
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid);
 	
 	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
-			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB, boolean includePopulation);
+			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB, boolean includePopulation, Integer populationReferenceYear);
 	
 	Date getOldestCaseOnsetDate();
 	

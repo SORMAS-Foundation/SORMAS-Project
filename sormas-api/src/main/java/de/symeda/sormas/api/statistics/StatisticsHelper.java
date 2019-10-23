@@ -309,7 +309,14 @@ public class StatisticsHelper {
 	}
 	
 	public static boolean isNullOrUnknown(Object value) {
-		return value == null || value.toString().equalsIgnoreCase(VALUE_UNKNOWN);
+		if (value == null) {
+			return true;
+		}
+		if (value instanceof IntegerRange && ((IntegerRange) value).getFrom() == null && ((IntegerRange) value).getTo() == null) {
+			return true;
+		}
+		
+		return value.toString().equalsIgnoreCase(VALUE_UNKNOWN);
 	}
 	
 	public static boolean isUnknown(Object value) {

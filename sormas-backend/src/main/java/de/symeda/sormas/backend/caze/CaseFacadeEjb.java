@@ -120,6 +120,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -2021,8 +2022,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA,
 			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
-			StatisticsCaseSubAttribute subGroupingB, boolean includePopulation) {
-		Pair<String, List<Object>> sqlBuilderAndParameters = buildStatisticsQueryFilter(caseCriteria, groupingA, subGroupingA, groupingB, subGroupingB, includePopulation);
+			StatisticsCaseSubAttribute subGroupingB, boolean includePopulation, Integer populationReferenceYear) {
+		Pair<String, List<Object>> sqlBuilderAndParameters = buildStatisticsQueryFilter(caseCriteria, groupingA, subGroupingA, groupingB, subGroupingB, includePopulation, populationReferenceYear);
 
 		// 4. Retrieve the results of the query and prepare the results for usage in the UI
 
@@ -2048,7 +2049,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private Pair<String, List<Object>> buildStatisticsQueryFilter(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA,
 			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
-			StatisticsCaseSubAttribute subGroupingB, boolean includePopulation) {
+			StatisticsCaseSubAttribute subGroupingB, boolean includePopulation, Integer populationReferenceYear) {
 
 		List<Long> regionIds = null;
 		List<Long> districtIds = null;
@@ -2384,8 +2385,16 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// Include population data to calculate incidence
 		if (includePopulation) {
-			queryBuilder.append(", populationinfo AS(SELECT SUM(").append(PopulationData.POPULATION).append("*power(exp(1), (growthrates.growthrate")
-			.append("*0.01)*date_part('year', age(date_trunc('year', ").append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp))))) AS projectedpopulation ");
+			queryBuilder.append(", populationinfo AS(SELECT SUM(").append(PopulationData.POPULATION).append("*power(exp(1), (growthrates.growthrate").append("*0.01)*");
+			
+			if (populationReferenceYear == null) {
+				queryBuilder.append("date_part('year', age(date_trunc('year', ").append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp)))))");
+			} else {
+				queryBuilder.append("GREATEST(0, date_part('year', age(date_trunc('year', '").append(populationReferenceYear).append("-01-01'\\:\\:timestamp), date_trunc('year', ")
+				.append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp))))))");
+			}
+			
+			queryBuilder.append(" AS projectedpopulation ");
 
 			if (hasRegionGrouping) {
 				queryBuilder.append(",").append(PopulationData.TABLE_NAME).append(".").append(PopulationData.REGION).append("_id");
@@ -2633,8 +2642,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
-		.append(" * 10) AS integer)) + (CAST(EXTRACT(QUARTER FROM ").append(tableName).append(".")
+		filterBuilder.append("(CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
+		.append(" * 10 AS integer)) + (CAST(EXTRACT(QUARTER FROM ").append(tableName).append(".")
 		.append(fieldName).append(") AS integer))").append(" IN ");
 		return caseService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
@@ -2646,8 +2655,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			filterBuilder.append(" AND ");
 		}
 
-		filterBuilder.append("((CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
-		.append(" * 100) AS integer)) + (CAST(EXTRACT(MONTH FROM ").append(tableName).append(".")
+		filterBuilder.append("(CAST(EXTRACT(YEAR FROM ").append(tableName).append(".").append(fieldName).append(")")
+		.append(" * 100 AS integer)) + (CAST(EXTRACT(MONTH FROM ").append(tableName).append(".")
 		.append(fieldName).append(") AS integer))").append(" IN ");
 		return caseService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}

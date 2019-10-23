@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public class MonthOfYear implements Serializable, StatisticsGroupingKey {
+public class MonthOfYear implements Serializable, Comparable<MonthOfYear>, StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -5776682012649885759L;
 
@@ -92,6 +92,11 @@ public class MonthOfYear implements Serializable, StatisticsGroupingKey {
 			return -1;
 		}
 		return 1;
+	}
+
+	@Override
+	public int compareTo(MonthOfYear o) {
+		return keyCompareTo(o);
 	}
 
 }

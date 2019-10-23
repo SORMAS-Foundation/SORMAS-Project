@@ -18,11 +18,14 @@
 package de.symeda.sormas.ui.statistics;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -83,6 +86,7 @@ import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
+import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationMapType;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
@@ -114,6 +118,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	private StatisticsVisualizationComponent visualizationComponent;
 	private List<StatisticsFilterComponent> filterComponents = new ArrayList<>();
 	private StatisticsCaseCriteria caseCriteria;
+	private Integer populationReferenceYear;
 
 	public StatisticsView() {
 		super(VIEW_NAME);
@@ -393,6 +398,17 @@ public class StatisticsView extends AbstractStatisticsView {
 			return;
 		}
 
+		if (showCaseIncidence && hasMissingPopulationData) {
+			if (!caseIncidencePossible) {
+				populationDataMissingLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoCaseIncidenceNotPossible), missingPopulationDataNames), ContentMode.HTML);
+				resultsLayout.addComponent(populationDataMissingLabel);
+			} else {
+				populationDataMissingLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoCaseIncidenceMissingPopulationData), missingPopulationDataNames), ContentMode.HTML);
+			}
+			populationDataMissingLabel.setWidth(100, Unit.PERCENTAGE);
+			CssStyles.style(populationDataMissingLabel, CssStyles.VSPACE_TOP_4);
+		}
+
 		StatisticsVisualizationChartType chartType = visualizationComponent.getVisualizationChartType();
 		StatisticsCaseAttribute xAxisAttribute = visualizationComponent.getColumnsAttribute();
 		StatisticsCaseSubAttribute xAxisSubAttribute = visualizationComponent.getColumnsSubAttribute();
@@ -464,12 +480,10 @@ public class StatisticsView extends AbstractStatisticsView {
 			// filter are chosen
 			if (cbShowZeroValues.getValue() == true && xAxisAttribute != null) {
 				List<Object> values = StatisticsHelper.getAllAttributeValues(xAxisAttribute, xAxisSubAttribute);
-				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria
-						.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
+				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
 				for (Object value : values) {
 					Object formattedValue = StatisticsHelper.buildGroupingKey(value, xAxisAttribute, xAxisSubAttribute);
-					if (formattedValue != null
-							&& (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
+					if (formattedValue != null && (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
 						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) formattedValue, formattedValue.toString());
 					}
 				}
@@ -493,7 +507,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
 
 			hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
-			.append("' },").append("allowDecimals: false, softMax: ").append(showCaseIncidence ? 1 : 10).append(", stackLabels: { enabled: true, ")
+			.append("' },").append("allowDecimals: false, softMax: ").append(showCaseIncidence && caseIncidencePossible ? 1 : 10).append(", stackLabels: { enabled: true, ")
 			.append("style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
 
 			hcjs.append("tooltip: { headerFormat: '<b>{point.x}</b><br/>', pointFormat: '{series.name}: {point.y}");
@@ -522,17 +536,17 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		hcjs.append("series: [");
 		if (seriesIdIndex < 1 && xAxisIdIndex < 1) {
-			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
+			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [['")
-			.append(getEscapedFragment(showCaseIncidence ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',");
-			if (!showCaseIncidence) {
+			.append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',");
+			if (!showCaseIncidence || !caseIncidencePossible) {
 				hcjs.append(resultData.get(0)[COUNT_POSITION].toString());
 			} else {
 				hcjs.append(InfrastructureHelper.getCaseIncidence(((Number) resultData.get(0)[COUNT_POSITION]).intValue(), ((Number) resultData.get(0)[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
 			}
 			hcjs.append("]]}");
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
-			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
+			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [");
 			TreeMap<StatisticsGroupingKey, Object[]> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
 			Object[] unknownSeriesElement = null;
@@ -547,7 +561,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 			seriesElements.forEach((key, value) -> {
 				Object seriesValue;
-				if (!showCaseIncidence) {
+				if (!showCaseIncidence || !caseIncidencePossible) {
 					seriesValue = value[COUNT_POSITION];
 				} else {
 					seriesValue = InfrastructureHelper.getCaseIncidence(((Number) value[COUNT_POSITION]).intValue(), ((Number) value[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
@@ -557,17 +571,16 @@ public class StatisticsView extends AbstractStatisticsView {
 			});
 			if (unknownSeriesElement != null) {
 				Object seriesValue;
-				if (!showCaseIncidence) {
+				if (!showCaseIncidence || !caseIncidencePossible) {
 					seriesValue = unknownSeriesElement[COUNT_POSITION];
 				} else {
 					seriesValue = InfrastructureHelper.getCaseIncidence(((Number) unknownSeriesElement[COUNT_POSITION]).intValue(), ((Number) unknownSeriesElement[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
 				}
-				hcjs.append("['").append(getEscapedFragment(showCaseIncidence ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',")
+				hcjs.append("['").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',")
 				.append(seriesValue).append("],");
 			}
 			hcjs.append("]}");
 		} else {
-			// StatisticsGroupingKey seriesKey = null;
 			Object seriesKey = null;
 			TreeMap<StatisticsGroupingKey, String> seriesStrings = new TreeMap<>(new StatisticsKeyComparator());
 			final StringBuilder currentSeriesString = new StringBuilder();
@@ -612,7 +625,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 
 				Object value;
-				if (!showCaseIncidence) {
+				if (!showCaseIncidence || !caseIncidencePossible) {
 					value = row[COUNT_POSITION];
 				} else {
 					value = InfrastructureHelper.getCaseIncidence(((Number) row[COUNT_POSITION]).intValue(), ((Number) row[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
@@ -653,8 +666,12 @@ public class StatisticsView extends AbstractStatisticsView {
 		hcjs.append("]};");
 
 		chart.setHcjs(hcjs.toString());
-		resultsLayout.addComponent(chart);
+		resultsLayout.addComponent(chart);		
 		resultsLayout.setExpandRatio(chart, 1);
+
+		if (showCaseIncidence && hasMissingPopulationData && caseIncidencePossible) {
+			resultsLayout.addComponent(populationDataMissingLabel);
+		}
 	}
 
 	private String getEscapedFragment(String i18nFragmentKeykey) {
@@ -700,6 +717,24 @@ public class StatisticsView extends AbstractStatisticsView {
 			return;
 		}
 
+		if (showCaseIncidence && hasMissingPopulationData) {
+			if (!caseIncidencePossible) {
+				populationDataMissingLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoCaseIncidenceNotPossible), missingPopulationDataNames), ContentMode.HTML);
+				resultsLayout.addComponent(populationDataMissingLabel);
+			} else {
+				populationDataMissingLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoCaseIncidenceMissingPopulationData), missingPopulationDataNames), ContentMode.HTML);
+			}
+			populationDataMissingLabel.setWidth(100, Unit.PERCENTAGE);
+			CssStyles.style(populationDataMissingLabel, CssStyles.VSPACE_TOP_4);
+		}
+
+		// Calculate and add incidence to the result list to use it for sorting and comparing later
+		if (showCaseIncidence && caseIncidencePossible) {
+			for (Object[] result : resultData) {
+				result[POPULATION_POSITION] = InfrastructureHelper.getCaseIncidence(((Number) result[COUNT_POSITION]).intValue(), ((Number) result[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+			}
+		}
+
 		HorizontalLayout mapLayout = new HorizontalLayout();
 		mapLayout.setSpacing(true);
 		mapLayout.setMargin(false);
@@ -739,25 +774,39 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		map.addPolygonGroup("outlines", outlinePolygones);
 
-		resultData.sort((a, b) -> {
-			return Long.compare(((Number) a[0]).longValue(), ((Number) b[0]).longValue());
-		});
+		if (!showCaseIncidence || !caseIncidencePossible) {
+			resultData.sort((a, b) -> {
+				return Long.compare(((Number) a[COUNT_POSITION]).longValue(), ((Number) b[COUNT_POSITION]).longValue());
+			});
+		} else {
+			resultData.sort((a, b) -> {
+				return Double.compare(((Number) a[POPULATION_POSITION]).doubleValue(), ((Number) b[POPULATION_POSITION]).doubleValue());
+			});
+		}
 
-		BigDecimal valuesLowerQuartile = new BigDecimal(
-				resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.25))[0]).longValue() : null);
-		BigDecimal valuesMedian = new BigDecimal(
-				resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.5))[0]).longValue() : null);
-		BigDecimal valuesUpperQuartile = new BigDecimal(
-				resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.75))[0]).longValue() : null);
+		BigDecimal valuesLowerQuartile, valuesMedian, valuesUpperQuartile;
+		if (!showCaseIncidence || !caseIncidencePossible) {
+			valuesLowerQuartile = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.25))[COUNT_POSITION]).longValue() : null);
+			valuesMedian = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.5))[COUNT_POSITION]).longValue() : null);
+			valuesUpperQuartile = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.75))[COUNT_POSITION]).longValue() : null);
+		} else {
+			valuesLowerQuartile = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.25))[POPULATION_POSITION]).doubleValue() : null);
+			valuesMedian = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.5))[POPULATION_POSITION]).doubleValue() : null);
+			valuesUpperQuartile = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.75))[POPULATION_POSITION]).doubleValue() : null);
+		}
 
 		List<LeafletPolygon> resultPolygons = new ArrayList<LeafletPolygon>();
 
 		// Draw relevant district fills
 		for (Object[] resultRow : resultData) {
-
-			ReferenceDto regionOrDistrict = (ReferenceDto) resultRow[1];
+			ReferenceDto regionOrDistrict = (ReferenceDto) resultRow[ROW_GROUP_POSITION];
 			String shapeUuid = regionOrDistrict.getUuid();
-			BigDecimal regionOrDistrictValue = new BigDecimal(((Number) resultRow[0]).longValue());
+			BigDecimal regionOrDistrictValue;
+			if (!showCaseIncidence || !caseIncidencePossible) {
+				regionOrDistrictValue = new BigDecimal(((Number) resultRow[COUNT_POSITION]).longValue());
+			} else {
+				regionOrDistrictValue = new BigDecimal(((Number) resultRow[POPULATION_POSITION]).doubleValue()).setScale(3, RoundingMode.HALF_UP);
+			}
 			GeoLatLon[][] shape;
 			switch (visualizationComponent.getVisualizationMapType()) {
 			case REGIONS:
@@ -802,8 +851,15 @@ public class StatisticsView extends AbstractStatisticsView {
 		mapLayout.addComponent(map);
 		mapLayout.setExpandRatio(map, 1);
 
-		AbstractOrderedLayout regionLegend = DashboardMapComponent.buildRegionLegend(true, CaseMeasure.CASE_COUNT,
-				false, valuesLowerQuartile, valuesMedian, valuesUpperQuartile);
+		if (showCaseIncidence && caseIncidencePossible) {
+			valuesLowerQuartile = valuesLowerQuartile.setScale(3, RoundingMode.HALF_UP);
+			valuesMedian = valuesMedian.setScale(3, RoundingMode.HALF_UP);
+			valuesUpperQuartile = valuesUpperQuartile.setScale(3, RoundingMode.HALF_UP);
+		}
+
+		AbstractOrderedLayout regionLegend = DashboardMapComponent.buildRegionLegend(true, 
+				showCaseIncidence && caseIncidencePossible ? CaseMeasure.CASE_INCIDENCE : CaseMeasure.CASE_COUNT,
+						false, valuesLowerQuartile, valuesMedian, valuesUpperQuartile, incidenceDivisor);
 		Label legendHeader = new Label(I18nProperties.getCaption(Captions.dashboardMapKey));
 		CssStyles.style(legendHeader, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		regionLegend.addComponent(legendHeader, 0);
@@ -813,6 +869,10 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		resultsLayout.addComponent(mapLayout);
 		resultsLayout.setExpandRatio(mapLayout, 1);
+
+		if (showCaseIncidence && hasMissingPopulationData && caseIncidencePossible) {
+			resultsLayout.addComponent(populationDataMissingLabel);
+		}
 	}
 
 	private List<Object[]> generateStatistics() {
@@ -822,12 +882,17 @@ public class StatisticsView extends AbstractStatisticsView {
 			caseIncidencePossible = true;
 			missingPopulationDataNames = null;
 
-			List<Long> missingPopulationData = FacadeProvider.getPopulationDataFacade().getMissingPopulationDataForStatistics(caseCriteria, visualizationComponent.hasRegionGrouping(), 
-					visualizationComponent.hasDistrictGrouping(), visualizationComponent.hasSexGrouping(), visualizationComponent.hasAgeGroupGrouping());
+			boolean showMapRegions = visualizationComponent.getVisualizationType() == StatisticsVisualizationType.MAP && visualizationComponent.getVisualizationMapType() == StatisticsVisualizationMapType.REGIONS;
+			boolean showMapDistricts = visualizationComponent.getVisualizationType() == StatisticsVisualizationType.MAP && visualizationComponent.getVisualizationMapType() == StatisticsVisualizationMapType.DISTRICTS;
+
+			List<Long> missingPopulationData = FacadeProvider.getPopulationDataFacade().getMissingPopulationDataForStatistics(caseCriteria, 
+					showMapRegions ? true : visualizationComponent.hasRegionGrouping(), 
+							showMapDistricts ? true : visualizationComponent.hasDistrictGrouping(), 
+									visualizationComponent.hasSexGrouping(), visualizationComponent.hasAgeGroupGrouping());
 			hasMissingPopulationData = missingPopulationData.size() > 0;
 			if (hasMissingPopulationData) {
 				List<String> missingPopulationDataNamesList;
-				if (visualizationComponent.hasDistrictGrouping() || hasDistrictFilter()) {
+				if (visualizationComponent.hasDistrictGrouping() || hasDistrictFilter() || showMapDistricts) {
 					missingPopulationDataNamesList = FacadeProvider.getDistrictFacade().getNamesByIds(missingPopulationData);
 				} else {
 					missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationData);
@@ -839,14 +904,24 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 				missingPopulationDataNames = populationDataNamesBuilder.toString();
 
-				caseIncidencePossible = !hasMissingPopulationData || visualizationComponent.hasPopulationGrouping() || hasDistrictFilter();
+				caseIncidencePossible = !hasMissingPopulationData || visualizationComponent.hasPopulationGrouping() || hasDistrictFilter() || showMapDistricts;
 			}
+
+			// Calculate projected population by either using the current year or, if a date filter has been selected, the maximum year from the date filter
+			populationReferenceYear = calculateMaximumReferenceYear(null, caseCriteria.getOnsetYears(), Comparator.naturalOrder(), e -> e.getValue());
+			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getReportYears(), Comparator.naturalOrder(), e -> e.getValue());
+			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getOnsetMonthsOfYear(), Comparator.naturalOrder(), e -> e.getYear().getValue());
+			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getReportMonthsOfYear(), Comparator.naturalOrder(), e -> e.getYear().getValue());
+			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getOnsetQuartersOfYear(), Comparator.naturalOrder(), e -> e.getYear().getValue());
+			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getReportQuartersOfYear(), Comparator.naturalOrder(), e -> e.getYear().getValue());
+			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getOnsetEpiWeeksOfYear(), Comparator.naturalOrder(), e -> e.getYear());
+			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getReportEpiWeeksOfYear(), Comparator.naturalOrder(), e -> e.getYear());
 		}
 
 		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
 				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
 				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), 
-				showCaseIncidence && caseIncidencePossible);
+				showCaseIncidence && caseIncidencePossible, populationReferenceYear);
 
 		replaceIdsWithGroupingKeys(resultData, visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(), visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute());
 
@@ -892,6 +967,16 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 
 		return false;
+	}
+
+	private <T extends StatisticsGroupingKey> Integer calculateMaximumReferenceYear(Integer currentMaxYear, List<T> list, Comparator<? super T> comparator, Function<? super T, Integer> mapFunction) {
+		Integer maxYear = null;
+
+		if (!CollectionUtils.isEmpty(list)) {
+			maxYear = (Integer) list.stream().max(comparator).map(mapFunction).orElse(null);
+		}
+
+		return currentMaxYear != null ? ((maxYear != null && maxYear > currentMaxYear) ? maxYear : currentMaxYear) : maxYear;
 	}
 
 	/**
