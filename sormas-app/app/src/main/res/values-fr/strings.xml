@@ -21,10 +21,10 @@
     <string name="app_name">SORMAS</string>
     <string name="and">et</string>
     <string name="no">Non</string>
-    <string name="notAnswered">Not answered</string>
+    <string name="notAnswered">Pas de réponse</string>
     <string name="system">Système</string>
-    <string name="yes">Yes</string>
-    <string name="action_add_missing_case">Add Missing Case</string>
+    <string name="yes">Oui</string>
+    <string name="action_add_missing_case">Ajouter un cas manquant</string>
     <string name="action_allow_gps_access">Allow GPS Access</string>
     <string name="action_apply_filters">Apply filters</string>
     <string name="action_back_to_settings">Back to settings</string>
