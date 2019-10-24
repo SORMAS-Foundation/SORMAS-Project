@@ -28,7 +28,7 @@
     <string name="number_of_visits_long_format">%1$d visits (%2$d missed)</string>
     <string name="person_name_format">%1$s %2$s</string>
     <string name="two_strings_format">%1$s %2$s</string>
-    <string name="report_submitted_date_format">Report submitted %1$s</string>
+    <string name="report_submitted_date_format">Rapport soumis %1$s</string>
     <string name="title_detail_format"><b>%1$s:</b> %2$s</string>
     <string name="two_strings_with_brackets_format">%1$s (%2$s)</string>
     <string name="two_strings_with_hyphen_format">%1$s - %2$s</string>
