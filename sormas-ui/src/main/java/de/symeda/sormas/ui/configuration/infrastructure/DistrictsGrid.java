@@ -27,25 +27,25 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictCriteria;
-import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
-public class DistrictsGrid extends FilteredGrid<DistrictDto, DistrictCriteria> {
+public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriteria> {
 
 	private static final long serialVersionUID = -4437531618828715458L;
 
 	public static final String EDIT_BTN_ID = "edit";
 	
 	public DistrictsGrid() {
-		super(DistrictDto.class);
+		super(DistrictIndexDto.class);
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
 
-		DataProvider<DistrictDto, DistrictCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<DistrictIndexDto, DistrictCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getDistrictFacade().getIndexList(
 						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
@@ -55,10 +55,10 @@ public class DistrictsGrid extends FilteredGrid<DistrictDto, DistrictCriteria> {
 				});
 		setDataProvider(dataProvider);
 		
-		setColumns(DistrictDto.NAME, DistrictDto.REGION, DistrictDto.EPID_CODE, DistrictDto.GROWTH_RATE);
+		setColumns(DistrictIndexDto.NAME, DistrictIndexDto.REGION, DistrictIndexDto.EPID_CODE, DistrictIndexDto.POPULATION, DistrictIndexDto.GROWTH_RATE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			Column<DistrictDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
+			Column<DistrictIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 			editColumn.setId(EDIT_BTN_ID);
 			editColumn.setWidth(20);
 
@@ -71,7 +71,7 @@ public class DistrictsGrid extends FilteredGrid<DistrictDto, DistrictCriteria> {
 		
 		for(Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
-					DistrictDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+					DistrictIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 	}
 

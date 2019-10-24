@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -27,13 +29,22 @@ public class RegionDto extends EntityDto {
 	public static final String I18N_PREFIX = "Region";
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
-	public static final String POPULATION = "population";
 	public static final String GROWTH_RATE = "growthRate";
 	
 	private String name;
 	private String epidCode;
-	private Integer population;
 	private Float growthRate;
+	
+	public RegionDto(Date creationDate, Date changeDate, String uuid, String name, String epidCode, Float growthRate) {
+		super(creationDate, changeDate, uuid);
+		this.name = name;
+		this.epidCode = epidCode;
+		this.growthRate = growthRate;
+	}	
+	
+	public RegionDto() {
+		super();
+	}
 	
 	public String getName() {
 		return name;
@@ -53,14 +64,7 @@ public class RegionDto extends EntityDto {
 	public String toString() {
 		return getName();
 	}
-	
-	public Integer getPopulation() {
-		return population;
-	}
-	public void setPopulation(Integer population) {
-		this.population = population;
-	}
-	
+
 	public Float getGrowthRate() {
 		return growthRate;
 	}

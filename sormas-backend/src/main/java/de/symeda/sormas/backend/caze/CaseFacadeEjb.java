@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
@@ -99,6 +101,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -228,7 +231,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "CaseFacade")
@@ -1974,7 +1976,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				} else {
 					return new Pair<DistrictDto, BigDecimal>(districtFacade.toDto(district),
 							new BigDecimal(caseCount).divide(
-									new BigDecimal((double) population / DistrictDto.CASE_INCIDENCE_DIVISOR), 1,
+									new BigDecimal((double) population / DistrictIndexDto.CASE_INCIDENCE_DIVISOR), 1,
 									RoundingMode.HALF_UP));
 				}
 			}).sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {

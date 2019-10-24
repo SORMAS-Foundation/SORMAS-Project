@@ -12,8 +12,11 @@ public class PopulationDataCriteria extends BaseCriteria implements Cloneable {
 	
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private boolean districtIsNull;
 	private Sex sex;
+	private boolean sexIsNull;
 	private AgeGroup ageGroup;
+	private boolean ageGroupIsNull;
 
 	public PopulationDataCriteria region(RegionReferenceDto region) {
 		this.region = region;
@@ -49,6 +52,33 @@ public class PopulationDataCriteria extends BaseCriteria implements Cloneable {
 	
 	public AgeGroup getAgeGroup() {
 		return ageGroup;
+	}
+
+	public boolean isDistrictIsNull() {
+		return districtIsNull;
+	}
+
+	public PopulationDataCriteria districtIsNull(boolean districtIsNull) {
+		this.districtIsNull = districtIsNull;
+		return this;
+	}
+
+	public boolean isSexIsNull() {
+		return sexIsNull;
+	}
+
+	public PopulationDataCriteria sexIsNull(boolean sexIsNull) {
+		this.sexIsNull = sexIsNull;
+		return this;
+	}
+
+	public boolean isAgeGroupIsNull() {
+		return ageGroupIsNull;
+	}
+
+	public PopulationDataCriteria ageGroupIsNull(boolean ageGroupIsNull) {
+		this.ageGroupIsNull = ageGroupIsNull;
+		return this;
 	}
 	
 }

@@ -433,7 +433,7 @@ public class TestDataCreator {
 		populationData.setRegion(region);
 		populationData.setDistrict(district);
 		populationData.setPopulation(population);
-		beanTest.getPopulationDataFacade().savePopulationData(populationData);
+		beanTest.getPopulationDataFacade().savePopulationData(Arrays.asList(populationData));
 		return populationData;
 	}
 

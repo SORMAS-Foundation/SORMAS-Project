@@ -47,7 +47,7 @@ public class RegionService extends AbstractAdoService<Region> {
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
-		cq.where(cb.equal(from.get(Region.NAME), name));
+		cq.where(cb.equal(cb.upper(from.get(Region.NAME)), name.toUpperCase()));
 
 		return em.createQuery(cq).getResultList();
 	}
