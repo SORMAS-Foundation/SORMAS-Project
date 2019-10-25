@@ -39,7 +39,6 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.caze.CasePickOrCreateDialog;
 import de.symeda.sormas.app.caze.CaseSection;
-import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -200,8 +199,12 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             if (pickedCase.getUuid().equals(caze.getUuid())) {
                 saveDataInner(caze);
             } else {
-                finish();
-                CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
+                if (fragment.isRapidCaseEntry()) {
+                    fragment.clearFieldsForRapidCaseEntry();
+                } else{
+                    finish();
+                    CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
+                }
             }
         });
     }
@@ -251,8 +254,15 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 hidePreloader();
                 super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
-                    finish();
-                    CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO);
+
+                    CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
+                    if (fragment.isRapidCaseEntry()) {
+                        fragment.updateLastCaseInfo(caseToSave.getPerson());
+                        fragment.clearFieldsForRapidCaseEntry();
+                    } else {
+                        finish();
+                        CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO);
+                    }
                 }
                 saveTask = null;
             }

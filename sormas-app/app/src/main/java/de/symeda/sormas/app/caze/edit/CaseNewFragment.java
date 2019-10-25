@@ -18,23 +18,27 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import android.view.View;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
@@ -51,6 +55,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
     private Case record;
 
+    private List<Item> yearList;
+    private List<Item> monthList;
+    private List<Item> sexList;
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
@@ -59,6 +66,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> initialCommunities;
     private List<Item> initialFacilities;
     private List<Item> initialPointsOfEntry;
+
+    private String subHeadingTitle;
 
     public static CaseNewFragment newInstance(Case activityRootData) {
         return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle().get(), activityRootData);
@@ -94,6 +103,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
 
+        yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
+        monthList = DataUtils.getMonthItems(true);
+
+        sexList = DataUtils.getEnumItems(Sex.class, true);
+
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
         initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
@@ -106,16 +120,28 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.setData(record);
         contentBinding.setCaseOriginClass(CaseOrigin.class);
 
+        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+        contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
+        contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
+
         InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
                 contentBinding.caseDataDistrict, initialDistricts,
                 contentBinding.caseDataCommunity, initialCommunities,
                 contentBinding.caseDataHealthFacility, initialFacilities,
                 contentBinding.caseDataPointOfEntry, initialPointsOfEntry);
 
-        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
-        contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
-        contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
         contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
+        contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
+
+        contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
+            updateListOfDays(contentBinding, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
+        });
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
+            updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
+        });
+
+        contentBinding.personSex.initializeSpinner(sexList);
     }
 
     @Override
@@ -167,7 +193,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
             contentBinding.caseDataHealthFacility.setRequired(false);
             contentBinding.caseDataHealthFacilityDetails.setRequired(false);
-        } else if (DatabaseHelper.getPointOfEntryDao().hasEntriesInDistrict()){
+        } else if (DatabaseHelper.getPointOfEntryDao().hasEntriesInDistrict()) {
             if (record.getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
                 contentBinding.caseDataPointOfEntry.setRequired(false);
                 contentBinding.caseDataPointOfEntry.setVisibility(GONE);
@@ -195,5 +221,45 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     @Override
     public int getEditLayout() {
         return R.layout.fragment_case_new_layout;
+    }
+
+    public void clearFieldsForRapidCaseEntry() {
+
+        setLiveValidationDisabled(true);
+
+        getContentBinding().symptomsOnsetDate.setValue(null);
+        getContentBinding().caseDataFirstName.setValue(null);
+        getContentBinding().caseDataLastName.setValue(null);
+        getContentBinding().personBirthdateYYYY.setValue(null);
+        getContentBinding().personBirthdateMM.setValue(null);
+        getContentBinding().personBirthdateDD.setValue(null);
+        getContentBinding().personSex.setValue(null);
+    }
+
+    private static void updateListOfDays(FragmentCaseNewLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
+        Integer currentlySelected = (Integer) binding.personBirthdateDD.getValue();
+        List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
+        binding.personBirthdateDD.setSpinnerData(days);
+        if (currentlySelected != null) {
+            binding.personBirthdateDD.setValue(currentlySelected);
+        }
+    }
+
+    public boolean isRapidCaseEntry() {
+        return (boolean) getContentBinding().rapidCaseEntry.getValue();
+    }
+
+    public void updateLastCaseInfo(Person person) {
+        StringBuilder lastCaseText = new StringBuilder();
+        lastCaseText.append(getResources().getString(R.string.caption_last_case)).append(": ").append(person.getFirstName()).append(" ").append(person.getLastName());
+        String dobText = PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+        if (!DataHelper.isNullOrEmpty(dobText)){
+            lastCaseText.append(" | ").append(dobText);
+        }
+        if (person.getSex() != null){
+            lastCaseText.append(" | ").append(person.getSex());
+        }
+
+        ((IUpdateSubHeadingTitle)getActivity()).updateSubHeadingTitle(lastCaseText.toString());
     }
 }
