@@ -150,6 +150,7 @@
     <string name="caption_indeterminate">Indeterminate</string>
     <string name="caption_informant_reports">Informant Reports</string>
     <string name="caption_issued_on">Issued on </string>
+    <string name="caption_last_case">Last case</string>
     <string name="caption_last_name">Last Name</string>
     <string name="caption_lesions_locations">Localisation of the lesions</string>
     <string name="caption_message">Message</string>
@@ -176,6 +177,7 @@
     <string name="caption_prescribed_by">Prescribed by</string>
     <string name="caption_present_condition">Present Condition</string>
     <string name="caption_probable_case">Probable Case</string>
+    <string name="caption_rapid_case_entry">Rapid Case Entry</string>
     <string name="caption_report_date">Report Date: %1$s</string>
     <string name="caption_reported_case_count">Number of cases you have reported</string>
     <string name="caption_reported_informant_case_count">Number of cases informants have reported</string>
@@ -187,6 +189,7 @@
     <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
     <string name="caption_suspected_case">Suspected Case</string>
     <string name="caption_symptoms">Symptom Information</string>
+    <string name="caption_symptoms_onset_short">Symptom onset</string>
     <string name="caption_task_filters">Filter Task Assignees</string>
     <string name="caption_task_information">Task Information</string>
     <string name="caption_tasks_done">Tasks Done</string>
