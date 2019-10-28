@@ -34,6 +34,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.statistics.CaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -84,7 +85,7 @@ public interface CaseFacade {
 	
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid);
 	
-	List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
+	List<CaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
 			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB, boolean includePopulation, Integer populationReferenceYear);
 	
 	Date getOldestCaseOnsetDate();

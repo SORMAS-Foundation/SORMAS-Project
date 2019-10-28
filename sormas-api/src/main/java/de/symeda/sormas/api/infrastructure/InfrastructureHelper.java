@@ -5,7 +5,6 @@ import java.math.RoundingMode;
 import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
@@ -64,12 +63,8 @@ public class InfrastructureHelper {
 	}
 
 	public static BigDecimal getCaseIncidence(int caseCount, int population, int divisor) {
-		return getCaseIncidence(caseCount, new Double(population).doubleValue(), divisor);
-	}
-
-	public static BigDecimal getCaseIncidence(int caseCount, double population, int divisor) {
 		return new BigDecimal(caseCount).divide(
-				new BigDecimal(population / divisor), 3,
+				new BigDecimal((double)population / divisor), 3,
 				RoundingMode.HALF_UP);
 	}
 

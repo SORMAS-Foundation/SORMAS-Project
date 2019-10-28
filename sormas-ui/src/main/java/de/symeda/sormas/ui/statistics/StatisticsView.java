@@ -71,6 +71,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.statistics.CaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -95,11 +96,6 @@ public class StatisticsView extends AbstractStatisticsView {
 	private static final long serialVersionUID = -4440568319850399685L;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME;
-
-	public static final int COUNT_POSITION = 0;
-	public static final int POPULATION_POSITION = 1;
-	public static final int ROW_GROUP_POSITION = 2;
-	public static final int COLUMN_GROUP_POSITION = 3;
 
 	private VerticalLayout filtersLayout;
 	private VerticalLayout resultsLayout;
@@ -346,7 +342,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	public void generateTable() {
-		List<Object[]> resultData = generateStatistics();
+		List<CaseCountDto> resultData = generateStatistics();
 
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
@@ -391,7 +387,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 	@SuppressWarnings("unchecked")
 	public void generateChart() {
-		List<Object[]> resultData = generateStatistics();
+		List<CaseCountDto> resultData = generateStatistics();
 
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
@@ -422,30 +418,6 @@ public class StatisticsView extends AbstractStatisticsView {
 		StringBuilder hcjs = new StringBuilder();
 		hcjs.append("var options = {");
 
-		final int xAxisIdIndex;
-		final int seriesIdIndex;
-		hcjs.append("chart:{ " + " ignoreHiddenSeries: false, " + " type: '");
-		switch (chartType) {
-		case COLUMN:
-		case STACKED_COLUMN:
-			hcjs.append("column");
-			seriesIdIndex = seriesAttribute != null ? ROW_GROUP_POSITION : -1;
-			xAxisIdIndex = xAxisAttribute != null ? COLUMN_GROUP_POSITION : -1;
-			break;
-		case LINE:
-			hcjs.append("line");
-			seriesIdIndex = seriesAttribute != null ? ROW_GROUP_POSITION : -1;
-			xAxisIdIndex = xAxisAttribute != null ? COLUMN_GROUP_POSITION : -1;
-			break;
-		case PIE:
-			hcjs.append("pie");
-			xAxisIdIndex = -1;
-			seriesIdIndex = seriesAttribute != null ? ROW_GROUP_POSITION : -1;
-			break;
-		default:
-			throw new IllegalArgumentException(chartType.toString());
-		}
-
 		hcjs.append("', " + " backgroundColor: 'transparent' " + "}," + "credits:{ enabled: false }," + "exporting:{ "
 				+ " enabled: true," + " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }" + "},"
 				+ "title:{ text: '' },");
@@ -453,21 +425,21 @@ public class StatisticsView extends AbstractStatisticsView {
 		TreeMap<StatisticsGroupingKey, String> xAxisCaptions = new TreeMap<>(new StatisticsKeyComparator());
 		TreeMap<StatisticsGroupingKey, String> seriesCaptions = new TreeMap<>(new StatisticsKeyComparator());
 		boolean appendUnknownXAxisCaption = false;
-		if (xAxisIdIndex >= 1 || seriesIdIndex >= 1) {
+		if (seriesAttribute != null || xAxisAttribute != null) {
 			// Build captions for x-axis and/or series
-			for (Object[] row : resultData) {
-				if (xAxisIdIndex >= 1) {
-					if (!StatisticsHelper.isNullOrUnknown(row[xAxisIdIndex])) {
-						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) row[xAxisIdIndex],
-								row[xAxisIdIndex].toString());
+			for (CaseCountDto row : resultData) {
+				if (xAxisAttribute != null) {
+					if (!StatisticsHelper.isNullOrUnknown(row.getColumnKey())) {
+						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) row.getColumnKey(),
+								row.getColumnKey().toString());
 					} else {
 						appendUnknownXAxisCaption = true;
 					}
 				}
-				if (seriesIdIndex >= 1) {
-					if (!StatisticsHelper.isNullOrUnknown(row[seriesIdIndex])) {
-						seriesCaptions.putIfAbsent((StatisticsGroupingKey) row[seriesIdIndex],
-								row[seriesIdIndex].toString());
+				if (seriesAttribute != null) {
+					if (!StatisticsHelper.isNullOrUnknown(row.getRowKey())) {
+						seriesCaptions.putIfAbsent((StatisticsGroupingKey) row.getRowKey(),
+								row.getRowKey().toString());
 					}
 				}
 			}
@@ -490,7 +462,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 
 			hcjs.append("xAxis: { categories: [");
-			if (xAxisIdIndex >= 1) {
+			if (xAxisAttribute != null) {
 				xAxisCaptions.forEach((key, value) -> {
 					hcjs.append("'").append(xAxisCaptions.get(key)).append("',");
 				});
@@ -498,12 +470,12 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (appendUnknownXAxisCaption) {
 					hcjs.append("'").append(getEscapedFragment(StatisticsHelper.UNKNOWN)).append("'");
 				}
-			} else if (seriesIdIndex >= 1) {
+			} else if (seriesAttribute != null) {
 				hcjs.append("'").append(seriesSubAttribute != null ? seriesSubAttribute.toString() : seriesAttribute.toString()).append("'");
 			} else {
 				hcjs.append("'").append(getEscapedFragment(StatisticsHelper.TOTAL)).append("'");
 			}
-			int numberOfCategories = xAxisIdIndex >= 1 ? appendUnknownXAxisCaption ? xAxisCaptions.size() + 1 : xAxisCaptions.size() : 1;
+			int numberOfCategories = xAxisAttribute != null ? appendUnknownXAxisCaption ? xAxisCaptions.size() + 1 : xAxisCaptions.size() : 1;
 			hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
 
 			hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
@@ -535,23 +507,23 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 
 		hcjs.append("series: [");
-		if (seriesIdIndex < 1 && xAxisIdIndex < 1) {
+		if (seriesAttribute == null && xAxisAttribute == null) {
 			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [['")
 			.append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',");
 			if (!showCaseIncidence || !caseIncidencePossible) {
-				hcjs.append(resultData.get(0)[COUNT_POSITION].toString());
+				hcjs.append(resultData.get(0).getCaseCount().toString());
 			} else {
-				hcjs.append(InfrastructureHelper.getCaseIncidence(((Number) resultData.get(0)[COUNT_POSITION]).intValue(), ((Number) resultData.get(0)[POPULATION_POSITION]).doubleValue(), incidenceDivisor));
+				hcjs.append(resultData.get(0).getIncidence(incidenceDivisor));
 			}
 			hcjs.append("]]}");
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
 			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [");
-			TreeMap<StatisticsGroupingKey, Object[]> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
-			Object[] unknownSeriesElement = null;
-			for (Object[] row : resultData) {
-				Object seriesId = row[seriesIdIndex];
+			TreeMap<StatisticsGroupingKey, CaseCountDto> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
+			CaseCountDto unknownSeriesElement = null;
+			for (CaseCountDto row : resultData) {
+				Object seriesId = row.getRowKey();
 				if (StatisticsHelper.isNullOrUnknown(seriesId)) {
 					unknownSeriesElement = row;
 				} else {
@@ -562,19 +534,19 @@ public class StatisticsView extends AbstractStatisticsView {
 			seriesElements.forEach((key, value) -> {
 				Object seriesValue;
 				if (!showCaseIncidence || !caseIncidencePossible) {
-					seriesValue = value[COUNT_POSITION];
+					seriesValue = value.getCaseCount();
 				} else {
-					seriesValue = InfrastructureHelper.getCaseIncidence(((Number) value[COUNT_POSITION]).intValue(), ((Number) value[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+					seriesValue = value.getIncidence(incidenceDivisor);
 				}
-				Object seriesId = value[seriesIdIndex];
+				Object seriesId = value.getRowKey();
 				hcjs.append("['").append(seriesCaptions.get(seriesId)).append("',").append(seriesValue).append("],");
 			});
 			if (unknownSeriesElement != null) {
 				Object seriesValue;
 				if (!showCaseIncidence || !caseIncidencePossible) {
-					seriesValue = unknownSeriesElement[COUNT_POSITION];
+					seriesValue = unknownSeriesElement.getCaseCount();
 				} else {
-					seriesValue = InfrastructureHelper.getCaseIncidence(((Number) unknownSeriesElement[COUNT_POSITION]).intValue(), ((Number) unknownSeriesElement[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+					seriesValue = unknownSeriesElement.getIncidence(incidenceDivisor);
 				}
 				hcjs.append("['").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',")
 				.append(seriesValue).append("],");
@@ -588,12 +560,12 @@ public class StatisticsView extends AbstractStatisticsView {
 			final StringBuilder totalSeriesString = new StringBuilder();
 			TreeMap<Integer, Number> currentSeriesValues = new TreeMap<>();
 
-			for (Object[] row : resultData) {
+			for (CaseCountDto row : resultData) {
 				// Retrieve series caption of the current row
 				Object rowSeriesKey;
-				if (seriesIdIndex >= 1) {
-					if (!StatisticsHelper.isNullOrUnknown(row[seriesIdIndex])) {
-						rowSeriesKey = row[seriesIdIndex];
+				if (seriesAttribute != null) {
+					if (!StatisticsHelper.isNullOrUnknown(row.getRowKey())) {
+						rowSeriesKey = row.getRowKey();
 					} else {
 						rowSeriesKey = StatisticsHelper.VALUE_UNKNOWN;
 					}
@@ -617,7 +589,7 @@ public class StatisticsView extends AbstractStatisticsView {
 						totalSeriesString.append("{name : '").append(getEscapedFragment(StatisticsHelper.TOTAL))
 						.append("', dataLabels: { allowOverlap: false }, data: [");
 					} else {
-						seriesKey = (StatisticsGroupingKey) row[seriesIdIndex];
+						seriesKey = (StatisticsGroupingKey) row.getRowKey();
 						currentSeriesString.append("{ name: '")
 						.append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesKey)))
 						.append("', dataLabels: { allowOverlap: false }, data: [");
@@ -626,12 +598,12 @@ public class StatisticsView extends AbstractStatisticsView {
 
 				Object value;
 				if (!showCaseIncidence || !caseIncidencePossible) {
-					value = row[COUNT_POSITION];
+					value = row.getCaseCount();
 				} else {
-					value = InfrastructureHelper.getCaseIncidence(((Number) row[COUNT_POSITION]).intValue(), ((Number) row[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+					value = row.getIncidence(incidenceDivisor);
 				}
-				if (xAxisIdIndex >= 1) {
-					Object xAxisId = row[xAxisIdIndex];
+				if (xAxisAttribute != null) {
+					Object xAxisId = row.getColumnKey();
 					int captionPosition = StatisticsHelper.isNullOrUnknown(xAxisId) ? xAxisCaptions.size()
 							: xAxisCaptions.headMap((StatisticsGroupingKey) xAxisId).size();
 					currentSeriesValues.put(captionPosition, (Number) value);
@@ -710,7 +682,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	public void generateMap() {
-		List<Object[]> resultData = generateStatistics();
+		List<CaseCountDto> resultData = generateStatistics();
 
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
@@ -728,12 +700,12 @@ public class StatisticsView extends AbstractStatisticsView {
 			CssStyles.style(populationDataMissingLabel, CssStyles.VSPACE_TOP_4);
 		}
 
-		// Calculate and add incidence to the result list to use it for sorting and comparing later
-		if (showCaseIncidence && caseIncidencePossible) {
-			for (Object[] result : resultData) {
-				result[POPULATION_POSITION] = InfrastructureHelper.getCaseIncidence(((Number) result[COUNT_POSITION]).intValue(), ((Number) result[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
-			}
-		}
+//		// Calculate and add incidence to the result list to use it for sorting and comparing later
+//		if (showCaseIncidence && caseIncidencePossible) {
+//			for (CaseCountDto result : resultData) {
+//				result[POPULATION_POSITION] = InfrastructureHelper.getCaseIncidence(((Number) result[COUNT_POSITION]).intValue(), ((Number) result[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+//			}
+//		}
 
 		HorizontalLayout mapLayout = new HorizontalLayout();
 		mapLayout.setSpacing(true);
@@ -776,36 +748,36 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		if (!showCaseIncidence || !caseIncidencePossible) {
 			resultData.sort((a, b) -> {
-				return Long.compare(((Number) a[COUNT_POSITION]).longValue(), ((Number) b[COUNT_POSITION]).longValue());
+				return Integer.compare(a.getCaseCount(), b.getCaseCount());
 			});
 		} else {
 			resultData.sort((a, b) -> {
-				return Double.compare(((Number) a[POPULATION_POSITION]).doubleValue(), ((Number) b[POPULATION_POSITION]).doubleValue());
+				return Integer.compare(a.getPopulation(), b.getPopulation());
 			});
 		}
 
 		BigDecimal valuesLowerQuartile, valuesMedian, valuesUpperQuartile;
 		if (!showCaseIncidence || !caseIncidencePossible) {
-			valuesLowerQuartile = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.25))[COUNT_POSITION]).longValue() : null);
-			valuesMedian = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.5))[COUNT_POSITION]).longValue() : null);
-			valuesUpperQuartile = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.75))[COUNT_POSITION]).longValue() : null);
+			valuesLowerQuartile = new BigDecimal(resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.25)).getCaseCount() : null);
+			valuesMedian = new BigDecimal(resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.5)).getCaseCount() : null);
+			valuesUpperQuartile = new BigDecimal(resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.75)).getCaseCount() : null);
 		} else {
-			valuesLowerQuartile = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.25))[POPULATION_POSITION]).doubleValue() : null);
-			valuesMedian = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.5))[POPULATION_POSITION]).doubleValue() : null);
-			valuesUpperQuartile = new BigDecimal(resultData.size() > 0 ? ((Number) resultData.get((int) (resultData.size() * 0.75))[POPULATION_POSITION]).doubleValue() : null);
+			valuesLowerQuartile = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.25)).getIncidence(incidenceDivisor) : null;
+			valuesMedian = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.5)).getIncidence(incidenceDivisor) : null;
+			valuesUpperQuartile = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.75)).getIncidence(incidenceDivisor) : null;
 		}
 
 		List<LeafletPolygon> resultPolygons = new ArrayList<LeafletPolygon>();
 
 		// Draw relevant district fills
-		for (Object[] resultRow : resultData) {
-			ReferenceDto regionOrDistrict = (ReferenceDto) resultRow[ROW_GROUP_POSITION];
+		for (CaseCountDto resultRow : resultData) {
+			ReferenceDto regionOrDistrict = (ReferenceDto) resultRow.getRowKey();
 			String shapeUuid = regionOrDistrict.getUuid();
 			BigDecimal regionOrDistrictValue;
 			if (!showCaseIncidence || !caseIncidencePossible) {
-				regionOrDistrictValue = new BigDecimal(((Number) resultRow[COUNT_POSITION]).longValue());
+				regionOrDistrictValue = new BigDecimal(resultRow.getCaseCount());
 			} else {
-				regionOrDistrictValue = new BigDecimal(((Number) resultRow[POPULATION_POSITION]).doubleValue()).setScale(3, RoundingMode.HALF_UP);
+				regionOrDistrictValue = resultRow.getIncidence(incidenceDivisor);
 			}
 			GeoLatLon[][] shape;
 			switch (visualizationComponent.getVisualizationMapType()) {
@@ -875,7 +847,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 	}
 
-	private List<Object[]> generateStatistics() {
+	private List<CaseCountDto> generateStatistics() {
 		fillCaseCriteria(showCaseIncidence);
 
 		if (showCaseIncidence) {	
@@ -918,7 +890,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getReportEpiWeeksOfYear(), Comparator.naturalOrder(), e -> e.getYear());
 		}
 
-		List<Object[]> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
+		List<CaseCountDto> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
 				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
 				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), 
 				showCaseIncidence && caseIncidencePossible, populationReferenceYear);
@@ -983,22 +955,19 @@ public class StatisticsView extends AbstractStatisticsView {
 	 * Replaces the ids in each row with the appropriate StatisticsGroupingKey based
 	 * on the grouping.
 	 */
-	private void replaceIdsWithGroupingKeys(List<Object[]> results, StatisticsCaseAttribute groupingA,
+	private void replaceIdsWithGroupingKeys(List<CaseCountDto> results, StatisticsCaseAttribute groupingA,
 			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
 			StatisticsCaseSubAttribute subGroupingB) {
 
-		for (Object[] resultRow : results) {
-			for (int i = 2; i < resultRow.length; i++) {
-				Object resultsEntry = resultRow[i];
-				if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
-					StatisticsGroupingKey reformattedEntry = null;
-					if (i == 2 && groupingA != null) {
-						reformattedEntry = StatisticsHelper.buildGroupingKey(resultsEntry, groupingA, subGroupingA);
-					} else if (i == 3 && groupingB != null) {
-						reformattedEntry = StatisticsHelper.buildGroupingKey(resultsEntry, groupingB, subGroupingB);
-					}
-					resultRow[i] = reformattedEntry;
-				}
+		for (CaseCountDto result : results) {
+			
+			Object resultsEntry = result.getRowKey();
+			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
+				result.setRowKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingA, subGroupingA));
+			}
+			resultsEntry = result.getColumnKey();
+			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
+				result.setColumnKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingB, subGroupingB));
 			}
 		}
 	}

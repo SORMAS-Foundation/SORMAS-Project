@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -111,16 +112,15 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.statistics.CaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
-import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -2017,10 +2017,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA,
+	public List<CaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA,
 			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
 			StatisticsCaseSubAttribute subGroupingB, boolean includePopulation, Integer populationReferenceYear) {
 		Pair<String, List<Object>> sqlBuilderAndParameters = buildStatisticsQueryFilter(caseCriteria, groupingA, subGroupingA, groupingB, subGroupingB, includePopulation, populationReferenceYear);
@@ -2031,20 +2031,26 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (int i = 0; i < sqlBuilderAndParameters.getElement1().size(); i++) {
 			query.setParameter(i + 1, sqlBuilderAndParameters.getElement1().get(i));
 		}
-		if (groupingA == null && groupingB == null) {
-			Object[] result = (Object[]) query.getSingleResult();
-			if (((Number) result[0]).longValue() == 0) {
-				// Return an empty list if no cases have been found
-				return new ArrayList<>();
-			} else {
-				List<Object[]> results = new ArrayList<>();
-				results.add(result);
-				return results;
-			}
-		} else {
-			List<Object[]> results = (List<Object[]>) query.getResultList();
-			return results;
-		}
+		
+		return ((Stream<Object[]>)query.getResultStream())
+				.map(result -> new CaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, result[1] != null ? ((Number)result[1]).intValue() : null,
+						"".equals(result[2]) ? null : result[2], "".equals(result[3]) ? null : result[3]))
+				.collect(Collectors.toList());
+		
+//		if (groupingA == null && groupingB == null) {
+//			Object[] result = (Object[]) query.getSingleResult();
+//			if (((Number) result[0]).longValue() == 0) {
+//				// Return an empty list if no cases have been found
+//				return new ArrayList<>();
+//			} else {
+//				List<Object[]> results = new ArrayList<>();
+//				results.add(result);
+//				return results;
+//			}
+//		} else {
+//			List<Object[]> results = (List<Object[]>) query.getResultList();
+//			return results;
+//		}
 	}
 
 	private Pair<String, List<Object>> buildStatisticsQueryFilter(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA,
@@ -2335,14 +2341,14 @@ public class CaseFacadeEjb implements CaseFacade {
 				groupingSelectQueryA = buildGroupingSelectQuery(groupingA, subGroupingA, groupAAlias, includePopulation);
 				caseGroupByBuilder.append(groupAAlias);
 			} else {
-				groupingSelectQueryA = " null AS " + groupAAlias;
+				groupingSelectQueryA = " '' AS " + groupAAlias;
 				caseGroupByBuilder.append(groupAAlias);
 			}
 			if (groupingB != null) {
 				groupingSelectQueryB = buildGroupingSelectQuery(groupingB, subGroupingB, groupBAlias, includePopulation);
 				caseGroupByBuilder.append(",").append(groupBAlias);
 			} else {
-				groupingSelectQueryB = " null AS " + groupBAlias;
+				groupingSelectQueryB = " '' AS " + groupBAlias;
 				caseGroupByBuilder.append(", ").append(groupBAlias);
 			}
 		}
@@ -2481,69 +2487,70 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (includePopulation) {
 			queryBuilder.append("SELECT SUM(casecount) AS casecount, SUM(populationinfo.projectedpopulation) AS population ");
 		} else {
-			queryBuilder.append("SELECT casecount, null AS population ");
+			queryBuilder.append("SELECT casecount, 0 AS population ");
 		}
 
-		if (groupingA != null || groupingB != null) {
-			queryBuilder.append(", casecounts.").append(groupAAlias).append(", casecounts.").append(groupBAlias).append(" FROM casecounts ");
+		if (groupingA != null) {
+			queryBuilder.append(", casecounts.").append(groupAAlias);
 		} else {
-			queryBuilder.append(" FROM casecounts ");
+			queryBuilder.append(", '' AS ").append(groupAAlias);
 		}
+		if (groupingB != null) {
+			queryBuilder.append(", casecounts.").append(groupBAlias);
+		} else {
+			queryBuilder.append(", '' AS ").append(groupBAlias);
+		}
+		queryBuilder.append(" FROM casecounts ");
 		
 		if (includePopulation) {
-			if (!hasSexGrouping && !hasAgeGroupGrouping) {
-				queryBuilder.append(", populationinfo ");
-			} else {
-				queryBuilder.append(" LEFT JOIN populationinfo ON ");
-				if (hasSexGrouping) {
-					queryBuilder.append("populationinfo.").append(PopulationData.SEX).append(" = casecounts.").append(groupingA == StatisticsCaseAttribute.SEX ? groupAAlias : groupBAlias);
-				}
-				if (hasAgeGroupGrouping) {
-					if (hasSexGrouping) {
-						queryBuilder.append(" AND ");
-					}
-					queryBuilder.append("populationinfo.").append(PopulationData.AGE_GROUP).append(" = casecounts.").append(groupingA == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS ? groupAAlias : groupBAlias);
-				}
-			}
+//			if (!hasSexGrouping && !hasAgeGroupGrouping) {
+//				queryBuilder.append(", populationinfo ");
+//			} else {
+//				queryBuilder.append(" LEFT JOIN populationinfo ON ");
+//				if (hasSexGrouping) {
+//					queryBuilder.append("populationinfo.").append(PopulationData.SEX).append(" = casecounts.").append(groupingA == StatisticsCaseAttribute.SEX ? groupAAlias : groupBAlias);
+//				}
+//				if (hasAgeGroupGrouping) {
+//					if (hasSexGrouping) {
+//						queryBuilder.append(" AND ");
+//					}
+//					queryBuilder.append("populationinfo.").append(PopulationData.AGE_GROUP).append(" = casecounts.").append(groupingA == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS ? groupAAlias : groupBAlias);
+//				}
+//			}
 
 			if (hasSexGrouping || hasDistrictGrouping || hasRegionGrouping || hasAgeGroupGrouping) {
-				StringBuilder populationWhereBuilder = new StringBuilder();
-				queryBuilder.append(" WHERE ");
+				StringBuilder populationJoinBuilder = new StringBuilder();
+				queryBuilder.append(" LEFT JOIN populationinfo ON");
 
 				if (hasRegionGrouping) {
-					populationWhereBuilder.append(" populationinfo.").append(PopulationData.REGION).append("_id = casecounts.").append(subGroupingA == StatisticsCaseSubAttribute.REGION ? groupAAlias : groupBAlias);
+					populationJoinBuilder.append(" populationinfo.").append(PopulationData.REGION).append("_id = casecounts.").append(subGroupingA == StatisticsCaseSubAttribute.REGION ? groupAAlias : groupBAlias);
 				}
 				
 				if (hasDistrictGrouping) {
-					if (populationWhereBuilder.length() > 0) {
-						populationWhereBuilder.append(" AND ");
+					if (populationJoinBuilder.length() > 0) {
+						populationJoinBuilder.append(" AND ");
 					}
-					populationWhereBuilder.append(" populationinfo.").append(PopulationData.DISTRICT).append("_id = casecounts.").append(subGroupingA == StatisticsCaseSubAttribute.DISTRICT ? groupAAlias : groupBAlias);
+					populationJoinBuilder.append(" populationinfo.").append(PopulationData.DISTRICT).append("_id = casecounts.").append(subGroupingA == StatisticsCaseSubAttribute.DISTRICT ? groupAAlias : groupBAlias);
 				}
 
 				if (hasSexGrouping) {
-					if (populationWhereBuilder.length() > 0) {
-						populationWhereBuilder.append(" AND ");
+					if (populationJoinBuilder.length() > 0) {
+						populationJoinBuilder.append(" AND ");
 					}
-					populationWhereBuilder.append(" populationinfo.").append(PopulationData.SEX).append(" = casecounts.").append(groupingA == StatisticsCaseAttribute.SEX ? groupAAlias : groupBAlias);
+					populationJoinBuilder.append(" populationinfo.").append(PopulationData.SEX).append(" = casecounts.").append(groupingA == StatisticsCaseAttribute.SEX ? groupAAlias : groupBAlias);
 				}
 				
 				if (hasAgeGroupGrouping) {
-					if (populationWhereBuilder.length() > 0) {
-						populationWhereBuilder.append(" AND ");
+					if (populationJoinBuilder.length() > 0) {
+						populationJoinBuilder.append(" AND ");
 					}
-					populationWhereBuilder.append(" populationinfo.").append(PopulationData.AGE_GROUP).append(" = casecounts.").append(groupingA == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS ? groupAAlias : groupBAlias);
+					populationJoinBuilder.append(" populationinfo.").append(PopulationData.AGE_GROUP).append(" = casecounts.").append(groupingA == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS ? groupAAlias : groupBAlias);
 				}
 
-				if (hasRegionGrouping || hasDistrictGrouping) {
-					if (populationWhereBuilder.length() > 0) {
-						populationWhereBuilder.append(" AND ");
-					}
-					populationWhereBuilder.append(" casecounts.casecount > 0");
-				}
-
-				queryBuilder.append(populationWhereBuilder);
+				queryBuilder.append(populationJoinBuilder);
 			}
+
+			queryBuilder.append(" WHERE casecounts.casecount > 0");
 		}
 
 		if (groupingA != null || groupingB != null) {

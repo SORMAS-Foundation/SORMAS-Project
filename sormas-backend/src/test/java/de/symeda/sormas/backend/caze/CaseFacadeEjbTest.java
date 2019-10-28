@@ -33,8 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Year;
@@ -72,6 +70,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.statistics.CaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -463,7 +462,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				StatisticsCaseAttribute.ONSET_TIME);
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
-		List<Object[]> results = getCaseFacade().queryCaseCount(criteria, null, null, null, null, false, null);
+		List<CaseCountDto> results = getCaseFacade().queryCaseCount(criteria, null, null, null, null, false, null);
 
 		// List should have one entry
 		assertEquals(1, results.size());
