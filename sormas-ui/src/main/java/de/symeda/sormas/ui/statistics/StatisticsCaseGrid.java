@@ -45,7 +45,7 @@ public class StatisticsCaseGrid extends Grid {
 	private static final String CASE_COUNT_OR_INCIDENCE_COLUMN = "CaseCountOrIncidenceColumn";
 	private static final String UNKNOWN_COLUMN = "UnknownColumn";
 	private static final String TOTAL_COLUMN = "TotalColumn";
-	
+
 	private final class StatisticsCaseGridCellStyleGenerator implements CellStyleGenerator {
 		private static final long serialVersionUID = 1L;
 
@@ -66,7 +66,7 @@ public class StatisticsCaseGrid extends Grid {
 	public StatisticsCaseGrid(StatisticsCaseAttribute rowsAttribute, StatisticsCaseSubAttribute rowsSubAttribute,
 			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, boolean showZeroValues, 
 			boolean showCaseIncidence, int incidenceDivisor, List<CaseCountDto> cellValues, StatisticsCaseCriteria caseCriteria) {
-		
+
 		super();
 
 		setSelectionMode(SelectionMode.NONE);
@@ -96,16 +96,16 @@ public class StatisticsCaseGrid extends Grid {
 		captionColumn.setHeaderCaption("");
 		captionColumn.setSortable(false);
 		captionColumn.setMaximumWidth(150);
-		
+
 		int unknowColumnIndex = -1;
 		int totalColumnIndex;
-		
+
 		TreeMap<StatisticsGroupingKey, String> columns = new TreeMap<>(new StatisticsKeyComparator());
 		if (columnsAttribute == null && columnsSubAttribute == null) {
-			// When no column grouping has been selected, simply display the number of cases for the respective row
+			// When no column grouping has been selected, simply display the number of cases or case incidence for the respective row
 			totalColumnIndex = getColumns().size();
 			addColumn(CASE_COUNT_OR_INCIDENCE_COLUMN)
-				.setHeaderCaption(showCaseIncidence ? I18nProperties.getCaption(StatisticsHelper.CASE_INCIDENCE) : I18nProperties.getCaption(StatisticsHelper.CASE_COUNT));
+			.setHeaderCaption(showCaseIncidence ? I18nProperties.getCaption(StatisticsHelper.CASE_INCIDENCE) : I18nProperties.getCaption(StatisticsHelper.CASE_COUNT));
 		} else {
 			boolean addColumnUnknown = false;
 			// Iterate over content and add new columns to the list
@@ -119,6 +119,7 @@ public class StatisticsCaseGrid extends Grid {
 
 			// If zero values are ticked, add missing columns to the list; this involves every possible value of the chosen column attribute unless a filter has been
 			// set for the same attribute; in this case, only values that are part of the filter are chosen
+			// TODO: These are still not taken into account for case incidence, i.e. the population data from the zero values is ignored
 			if (showZeroValues) {
 				List<Object> values = StatisticsHelper.getAllAttributeValues(columnsAttribute, columnsSubAttribute);
 				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnsAttribute, columnsSubAttribute);
@@ -156,7 +157,7 @@ public class StatisticsCaseGrid extends Grid {
 
 		// ## ROWS
 		// Extract rows from content and add them to the grid
-		
+
 		// Add a row for every value of the selected grouping
 		TreeMap<StatisticsGroupingKey, Object[]> rows = new TreeMap<>(new StatisticsKeyComparator());
 		int[] columnTotals = new int[getColumns().size()];
@@ -168,15 +169,13 @@ public class StatisticsCaseGrid extends Grid {
 		int rowPopulation = 0;
 
 		for (CaseCountDto entry : cellValues) {
-			
 			boolean isUnknownColumn = StatisticsHelper.isNullOrUnknown(entry.getColumnKey());
 			boolean isUnknownRow = StatisticsHelper.isNullOrUnknown(entry.getRowKey());
 
 			if (currentRow != null && !DataHelper.equal(currentRowKey, entry.getRowKey())) {
 				// New grouping entry has been reached, add the current row to the rows map
-
 				if (columnsAttribute != null) {
-					// calc total
+					// Calculate total
 					if (!showCaseIncidence) {
 						currentRow[totalColumnIndex] = String.valueOf(rowTotal);
 					} else if (rowPopulation > 0) {
@@ -185,9 +184,11 @@ public class StatisticsCaseGrid extends Grid {
 						currentRow[totalColumnIndex] = null;
 					}
 					columnTotals[totalColumnIndex] += rowTotal;
-					columnPopulations[totalColumnIndex] += rowPopulation;
+					if (entry.getPopulation() != null) {
+						columnPopulations[totalColumnIndex] += entry.getPopulation();
+					}
 				}
-				
+
 				rows.putIfAbsent(currentRowKey, currentRow);
 				currentRow = null;
 				currentRowKey = null;
@@ -222,16 +223,23 @@ public class StatisticsCaseGrid extends Grid {
 				currentRow[columnIndex] = String.valueOf(entry.getIncidence(incidenceDivisor));
 			}
 
-			if (entry.getCaseCount() != null
-					&& !(showCaseIncidence && entry.getPopulation() == null)) {
-				// don't add to case sum when we are looking at incidence and not population is provided 
+			if (entry.getCaseCount() != null && !(showCaseIncidence && entry.getPopulation() == null)) {
+				// Don't add to case sum when we are looking at incidence and population is not provided 
 				rowTotal += entry.getCaseCount();
 				columnTotals[columnIndex] += entry.getCaseCount();
 			}
-			
+
 			if (entry.getPopulation() != null) {
-				rowPopulation += entry.getPopulation();
-				columnPopulations[columnIndex] += entry.getPopulation();
+				if (columnsAttribute != null && columnsAttribute.isPopulationData()) {
+					rowPopulation += entry.getPopulation();
+				} else if (rowPopulation == 0) {
+					rowPopulation = entry.getPopulation();
+				}
+				if (rowsAttribute != null && rowsAttribute.isPopulationData()) {
+					columnPopulations[columnIndex] += entry.getPopulation();
+				} else if (columnPopulations[columnIndex] == 0) {
+					columnPopulations[columnIndex] = entry.getPopulation();
+				}
 			}
 		}
 
@@ -273,10 +281,10 @@ public class StatisticsCaseGrid extends Grid {
 			addRow(rows.get(groupingKey));
 		}
 
-//		// Add unknown row if existing
-//		if (unknownRow != null && rowsAttribute != null && rowsAttribute.isUnknownValueAllowed()) {
-//			addRow(unknownRow);
-//		}
+		//		// Add unknown row if existing
+		//		if (unknownRow != null && rowsAttribute != null && rowsAttribute.isUnknownValueAllowed()) {
+		//			addRow(unknownRow);
+		//		}
 
 		// Add total row
 		Object[] totalRow = new Object[getColumns().size()];

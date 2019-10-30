@@ -2032,7 +2032,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			query.setParameter(i + 1, sqlBuilderAndParameters.getElement1().get(i));
 		}
 		
-		return ((Stream<Object[]>)query.getResultStream())
+		return ((Stream<Object[]>) query.getResultStream())
 				.map(result -> new CaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, result[1] != null ? ((Number)result[1]).intValue() : null,
 						"".equals(result[2]) ? null : result[2], "".equals(result[3]) ? null : result[3]))
 				.collect(Collectors.toList());
@@ -2548,6 +2548,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 
 				queryBuilder.append(populationJoinBuilder);
+			} else {
+				queryBuilder.append(", populationinfo ");
 			}
 
 			queryBuilder.append(" WHERE casecounts.casecount > 0");

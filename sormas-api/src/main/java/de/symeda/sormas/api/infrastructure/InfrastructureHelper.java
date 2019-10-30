@@ -64,7 +64,7 @@ public class InfrastructureHelper {
 
 	public static BigDecimal getCaseIncidence(int caseCount, int population, int divisor) {
 		return new BigDecimal(caseCount).divide(
-				new BigDecimal((double)population / divisor), 3,
+				new BigDecimal((double)population / divisor), 2,
 				RoundingMode.HALF_UP);
 	}
 

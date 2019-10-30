@@ -325,6 +325,18 @@ public class StatisticsHelper {
 	
 	public static class StatisticsKeyComparator implements Comparator<StatisticsGroupingKey> {
 		public int compare(StatisticsGroupingKey a, StatisticsGroupingKey b) {
+			if (a == null && b == null) {
+				return 0;
+			}
+			
+			if (a == null && b != null) {
+				return -1;
+			}
+			
+			if (b == null && a != null) {
+				return 1;
+			}
+			
 			return a.keyCompareTo(b);
 		}
 	}

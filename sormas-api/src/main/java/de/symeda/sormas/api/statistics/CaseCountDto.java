@@ -51,6 +51,7 @@ public class CaseCountDto implements Serializable {
 		if (caseCount == null || population == null) {
 			return null;
 		}
+		
 		return InfrastructureHelper.getCaseIncidence(caseCount.intValue(), population.intValue(), divisor);
 	}
 }

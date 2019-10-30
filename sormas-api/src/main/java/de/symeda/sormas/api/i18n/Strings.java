@@ -294,6 +294,7 @@ public interface Strings {
 	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
 	public static String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	public static String infoPopulationDataView = "infoPopulationDataView";
+	public static String infoPopulationReferenceYear = "infoPopulationReferenceYear";
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";

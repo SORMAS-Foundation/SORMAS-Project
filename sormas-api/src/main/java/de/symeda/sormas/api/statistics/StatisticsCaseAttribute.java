@@ -70,8 +70,12 @@ public enum StatisticsCaseAttribute {
 	}
 	
 	public boolean isAgeGroup() {
-		return this == AGE_INTERVAL_1_YEAR || this == AGE_INTERVAL_BASIC || this == AGE_INTERVAL_CHILDREN_COARSE
+		return this == AGE_INTERVAL_1_YEAR || this == AGE_INTERVAL_5_YEARS || this == AGE_INTERVAL_BASIC || this == AGE_INTERVAL_CHILDREN_COARSE
 				|| this == AGE_INTERVAL_CHILDREN_FINE || this == AGE_INTERVAL_CHILDREN_MEDIUM;
+	}
+	
+	public boolean isPopulationData() {
+		return this == REGION_DISTRICT || this == SEX || this.isAgeGroup();
 	}
 	
 }

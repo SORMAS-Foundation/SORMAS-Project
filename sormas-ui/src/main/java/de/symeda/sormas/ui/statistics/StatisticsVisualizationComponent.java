@@ -258,5 +258,15 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 	public boolean hasPopulationGrouping() {
 		return hasRegionGrouping() || hasDistrictGrouping() || hasSexGrouping() || hasAgeGroupGrouping();
 	}
+	
+	public void setStackedColumnAndPieEnabled(boolean enabled) {
+		visualizationChartSelect.setItemEnabled(StatisticsVisualizationChartType.STACKED_COLUMN, enabled);
+		visualizationChartSelect.setItemEnabled(StatisticsVisualizationChartType.PIE, enabled);
+		
+		if (!enabled && (StatisticsVisualizationChartType.STACKED_COLUMN == visualizationChartSelect.getValue()
+				|| StatisticsVisualizationChartType.PIE == visualizationChartSelect.getValue())) {
+			visualizationChartSelect.setValue(StatisticsVisualizationChartType.COLUMN);
+		}
+	}
 
 }

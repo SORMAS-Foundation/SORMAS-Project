@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -104,6 +105,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	private TextField tfIncidenceDivisor;
 	private Button exportButton;
 	private final Label emptyResultLabel;
+	private Label referenceYearLabel;
 	private Label populationDataMissingLabel;
 	private boolean showCaseIncidence;
 	private boolean hasMissingPopulationData;
@@ -256,6 +258,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			ogCaseCountOrIncidence.addValueChangeListener(e -> {
 				showCaseIncidence = e.getProperty().getValue() == CaseCountOrIncidence.CASE_INCIDENCE;
 				tfIncidenceDivisor.setVisible(showCaseIncidence);
+				visualizationComponent.setStackedColumnAndPieEnabled(!showCaseIncidence);
 			});
 			CssStyles.style(ogCaseCountOrIncidence, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.SOFT_REQUIRED);
 			ogCaseCountOrIncidence.setNullSelectionAllowed(false);
@@ -349,6 +352,12 @@ public class StatisticsView extends AbstractStatisticsView {
 			return;
 		}		
 
+		if (showCaseIncidence && caseIncidencePossible && populationReferenceYear != null && populationReferenceYear != Calendar.getInstance().get(Calendar.YEAR)) {
+			referenceYearLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoPopulationReferenceYear), populationReferenceYear), ContentMode.HTML);
+			resultsLayout.addComponent(referenceYearLabel);
+			CssStyles.style(referenceYearLabel, CssStyles.VSPACE_TOP_4);
+		}
+		
 		if (showCaseIncidence && hasMissingPopulationData) {
 			if (!caseIncidencePossible) {
 				populationDataMissingLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoCaseIncidenceNotPossible), missingPopulationDataNames), ContentMode.HTML);
@@ -392,6 +401,12 @@ public class StatisticsView extends AbstractStatisticsView {
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
 			return;
+		}		
+
+		if (showCaseIncidence && caseIncidencePossible && populationReferenceYear != null && populationReferenceYear != Calendar.getInstance().get(Calendar.YEAR)) {
+			referenceYearLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoPopulationReferenceYear), populationReferenceYear), ContentMode.HTML);
+			resultsLayout.addComponent(referenceYearLabel);
+			CssStyles.style(referenceYearLabel, CssStyles.VSPACE_TOP_4);
 		}
 
 		if (showCaseIncidence && hasMissingPopulationData) {
@@ -416,7 +431,21 @@ public class StatisticsView extends AbstractStatisticsView {
 		chart.setHeight(580, Unit.PIXELS);
 
 		StringBuilder hcjs = new StringBuilder();
-		hcjs.append("var options = {");
+		hcjs.append("var options = {").append("chart:{ " + " ignoreHiddenSeries: false, " + " type: '");
+		switch (chartType) {
+		case COLUMN:
+		case STACKED_COLUMN:
+			hcjs.append("column");
+			break;
+		case LINE:
+			hcjs.append("line");
+			break;
+		case PIE:
+			hcjs.append("pie");
+			break;
+		default:
+			throw new IllegalArgumentException(chartType.toString());
+		}
 
 		hcjs.append("', " + " backgroundColor: 'transparent' " + "}," + "credits:{ enabled: false }," + "exporting:{ "
 				+ " enabled: true," + " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }" + "},"
@@ -687,6 +716,12 @@ public class StatisticsView extends AbstractStatisticsView {
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
 			return;
+		}		
+
+		if (showCaseIncidence && caseIncidencePossible && populationReferenceYear != null && populationReferenceYear != Calendar.getInstance().get(Calendar.YEAR)) {
+			referenceYearLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoPopulationReferenceYear), populationReferenceYear), ContentMode.HTML);
+			resultsLayout.addComponent(referenceYearLabel);
+			CssStyles.style(referenceYearLabel, CssStyles.VSPACE_TOP_4);
 		}
 
 		if (showCaseIncidence && hasMissingPopulationData) {
@@ -700,12 +735,12 @@ public class StatisticsView extends AbstractStatisticsView {
 			CssStyles.style(populationDataMissingLabel, CssStyles.VSPACE_TOP_4);
 		}
 
-//		// Calculate and add incidence to the result list to use it for sorting and comparing later
-//		if (showCaseIncidence && caseIncidencePossible) {
-//			for (CaseCountDto result : resultData) {
-//				result[POPULATION_POSITION] = InfrastructureHelper.getCaseIncidence(((Number) result[COUNT_POSITION]).intValue(), ((Number) result[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
-//			}
-//		}
+		//		// Calculate and add incidence to the result list to use it for sorting and comparing later
+		//		if (showCaseIncidence && caseIncidencePossible) {
+		//			for (CaseCountDto result : resultData) {
+		//				result[POPULATION_POSITION] = InfrastructureHelper.getCaseIncidence(((Number) result[COUNT_POSITION]).intValue(), ((Number) result[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
+		//			}
+		//		}
 
 		HorizontalLayout mapLayout = new HorizontalLayout();
 		mapLayout.setSpacing(true);
@@ -960,7 +995,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			StatisticsCaseSubAttribute subGroupingB) {
 
 		for (CaseCountDto result : results) {
-			
+
 			Object resultsEntry = result.getRowKey();
 			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
 				result.setRowKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingA, subGroupingA));
