@@ -529,7 +529,6 @@ public class CaseController {
 				boolean healthFacilityChange = form.getHealthFacilityCheckbox().getValue();
 
 				if (healthFacilityChange) {
-
 					VaadinUiUtil.showChooseOptionPopup(
 							I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
 							new Label(I18nProperties.getString(Strings.messageHealthFacilityMulitChanged)),
@@ -547,28 +546,30 @@ public class CaseController {
 									boolean doTransfer = e.booleanValue();
 									if (doTransfer) {
 										CaseDataDto oldCase = caseFacade.getCaseDataByUuid(indexDto.getUuid());
-										CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(updatedCase,
-												oldCase);
+										CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(updatedCase, oldCase);
 									}
 									caseFacade.saveCase(updatedCase);
-									navigateToIndex();
 								}
+								
+								popupWindow.close();
+								navigateToIndex();
+								Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 							});
 
 				} else {
 					CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 					for (CaseIndexDto indexDto : selectedCases) {
-
 						CaseDataDto caseDto = changeCaseDto(updatedTempCase,
 								caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange,
 								investigationStatusChange, outcomeChange, surveillanceOfficerChange);
 
 						caseFacade.saveCase(caseDto);
 					}
+					
+					popupWindow.close();
+					navigateToIndex();
+					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 				}
-				popupWindow.close();
-				navigateToIndex();
-				Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 			}
 
 			private CaseDataDto changeCaseDto(CaseDataDto updatedTempCase, CaseDataDto caseDto,
