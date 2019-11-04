@@ -246,7 +246,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     }
 
     public boolean isRapidCaseEntry() {
-        return (boolean) getContentBinding().rapidCaseEntry.getValue();
+        return false;//(boolean) getContentBinding().rapidCaseEntry.getValue();
     }
 
     public void updateLastCaseInfo(Person person) {

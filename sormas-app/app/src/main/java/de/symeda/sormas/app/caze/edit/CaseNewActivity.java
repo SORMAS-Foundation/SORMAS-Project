@@ -252,7 +252,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             @Override
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
                 hidePreloader();
-                super.onPostExecute(taskResult);
                 if (taskResult.getResultStatus().isSuccess()) {
 
                     CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
@@ -264,6 +263,10 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                         CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO);
                     }
                 }
+
+                // do after clearing, because we want to show a success notification that would otherwise be hidden immediately
+                super.onPostExecute(taskResult);
+
                 saveTask = null;
             }
         }.executeOnThreadPool();

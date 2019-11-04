@@ -226,10 +226,10 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.person.sex}" />
 
-            <de.symeda.sormas.app.component.controls.ControlCheckBoxField
-                android:id="@+id/rapidCaseEntry"
-                app:caption="@string/caption_rapid_case_entry"
-                style="@style/ControlSingleColumnStyle" />
+<!--            <de.symeda.sormas.app.component.controls.ControlCheckBoxField-->
+<!--                android:id="@+id/rapidCaseEntry"-->
+<!--                app:caption="@string/caption_rapid_case_entry"-->
+<!--                style="@style/ControlSingleColumnStyle" />-->
 
 
         </LinearLayout>
