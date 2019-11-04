@@ -171,33 +171,33 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
         fragment.show(fragmentManager, getResources().getText(R.string.hint_select_a_time).toString());
     }
 
-    private void setUpOnFocusChangeListener(final EditText input) {
-        input.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!v.isEnabled()) {
-                    return;
-                }
-
-                showOrHideNotifications(hasFocus);
-
-                if (hasFocus) {
-                    changeVisualState(VisualState.FOCUSED);
-                    if (input == dateInput) {
-                        showDateFragment();
-                    } else {
-                        showTimeFragment();
-                    }
-                } else {
-                    if (hasError) {
-                        changeVisualState(VisualState.ERROR);
-                    } else {
-                        changeVisualState(VisualState.NORMAL);
-                    }
-                }
-            }
-        });
-    }
+//    private void setUpOnFocusChangeListener(final EditText input) {
+//        input.setOnFocusChangeListener(new OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (!v.isEnabled()) {
+//                    return;
+//                }
+//
+//                showOrHideNotifications(hasFocus);
+//
+//                if (hasFocus) {
+//                    changeVisualState(VisualState.FOCUSED);
+//                    if (input == dateInput) {
+//                        showDateFragment();
+//                    } else {
+//                        showTimeFragment();
+//                    }
+//                } else {
+//                    if (hasError) {
+//                        changeVisualState(VisualState.ERROR);
+//                    } else {
+//                        changeVisualState(VisualState.NORMAL);
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void setUpOnClickListener(final EditText input) {
         input.setOnClickListener(new OnClickListener() {
@@ -207,15 +207,15 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
                     return;
                 }
 
-                showOrHideNotifications(v.hasFocus());
-
-                if (v.hasFocus()) {
+//                showOrHideNotifications(v.hasFocus());
+//
+//                if (v.hasFocus()) {
                     if (input == dateInput) {
                         showDateFragment();
                     } else {
                         showTimeFragment();
                     }
-                }
+//                }
             }
         });
     }
@@ -363,8 +363,8 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
             }
         });
 
-        setUpOnFocusChangeListener(dateInput);
-        setUpOnFocusChangeListener(timeInput);
+//        setUpOnFocusChangeListener(dateInput);
+//        setUpOnFocusChangeListener(timeInput);
         setUpOnClickListener(dateInput);
         setUpOnClickListener(timeInput);
     }

@@ -36,6 +36,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:inputType="date"
+                android:focusable="false"
                 style="@style/ControlDateOrTimePickerSlimInputStyle" />
 
             <EditText
@@ -44,6 +45,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="@dimen/control_spacing"
                 android:inputType="time"
+                android:focusable="false"
                 style="@style/ControlDateOrTimePickerSlimInputStyle" />
 
         </LinearLayout>
