@@ -52,4 +52,6 @@ public interface PathogenTestFacade {
 	
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
 	
+	Date getLatestPathogenTestDate(String sampleUuid);
+	
 }
