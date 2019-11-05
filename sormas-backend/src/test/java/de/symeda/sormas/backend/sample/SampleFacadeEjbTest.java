@@ -19,7 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
@@ -103,6 +103,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testSampleDeletion() {
+		Date since = new Date();
+		
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
@@ -119,9 +121,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		getSampleFacade().deleteSample(sample.toReference(), adminUuid);
 
-		// Database should not contain the deleted sample and sample test
-		assertNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
-		assertNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
+		// Sample and pathogen test should be marked as deleted
+		assertTrue(getSampleFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sampleTest.getUuid()));
 	}
 	
 	@Test

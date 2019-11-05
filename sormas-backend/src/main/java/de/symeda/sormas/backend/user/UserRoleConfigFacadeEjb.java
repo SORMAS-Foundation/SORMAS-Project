@@ -55,7 +55,6 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	
 	@Override
 	public List<String> getAllUuids(String userUuid) {
-		
 		User user = userService.getByUuid(userUuid);
 		
 		if (user == null) {
@@ -68,7 +67,6 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	
 	@Override
 	public List<String> getDeletedUuids(Date since) {
-		
 		return userRoleConfigService.getDeletedUuids(since);
 	}
 
@@ -92,7 +90,6 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 
 	@Override
 	public Set<UserRight> getEffectiveUserRights(UserRole... userRoles) {
-		
 		HashSet<UserRight> userRights = new HashSet<UserRight>();
 		
 		for (UserRole userRole : userRoles) {
@@ -145,4 +142,5 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	@Stateless
 	public static class UserRoleConfigFacadeEjbLocal extends UserRoleConfigFacadeEjb {
 	}
+	
 }

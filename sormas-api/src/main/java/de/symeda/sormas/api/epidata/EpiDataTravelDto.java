@@ -19,8 +19,9 @@ package de.symeda.sormas.api.epidata;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 
 public class EpiDataTravelDto extends EntityDto {
@@ -71,5 +72,10 @@ public class EpiDataTravelDto extends EntityDto {
 	public void setTravelDateTo(Date travelDateTo) {
 		this.travelDateTo = travelDateTo;
 	}
-	
+
+	public static EpiDataTravelDto build() {
+		EpiDataTravelDto dto = new EpiDataTravelDto();
+		dto.setUuid(DataHelper.createUuid());
+		return dto;
+	}
 }

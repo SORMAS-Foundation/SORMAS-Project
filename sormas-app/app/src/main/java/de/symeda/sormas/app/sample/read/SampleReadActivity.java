@@ -21,19 +21,28 @@ package de.symeda.sormas.app.sample.read;
 import android.content.Context;
 import android.view.Menu;
 
+import java.util.List;
+
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.sample.SampleSection;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.edit.SampleEditActivity;
+import de.symeda.sormas.app.util.Bundler;
 
 public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     public static void startActivity(Context context, String rootUuid) {
-        BaseReadActivity.startActivity(context, SampleReadActivity.class, buildBundle(rootUuid));
+        BaseReadActivity.startActivity(context, SampleReadActivity.class, buildBundle(rootUuid ));
+    }
+
+    public static Bundler buildBundle(String rootUuid) {
+        return BaseReadActivity.buildBundle(rootUuid,0);
     }
 
     @Override
@@ -56,13 +65,26 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     }
 
     @Override
-    protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Sample activityRootData) {
-        return SampleReadFragment.newInstance(activityRootData);
+    public List<PageMenuItem> getPageMenuData() {
+        List<PageMenuItem> menuItems = PageMenuItem.fromEnum(SampleSection.values(), getContext());
+        return menuItems;
     }
 
     @Override
-    public PageMenuItem getActivePage() {
-        return null;
+    protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Sample activityRootData) {
+        SampleSection section = SampleSection.fromOrdinal(menuItem.getKey());
+        BaseReadFragment fragment;
+        switch (section) {
+            case SAMPLE_INFO:
+                fragment = SampleReadFragment.newInstance(activityRootData);
+                break;
+            case PATHOGEN_TESTS:
+                fragment = SampleReadPathogenTestListFragment.newInstance(activityRootData);
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
+        }
+        return fragment;
     }
 
     @Override
@@ -79,6 +101,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     public void goToEditView() {
-        SampleEditActivity.startActivity(getContext(), getRootUuid());
+        SampleSection section = SampleSection.fromOrdinal(getActivePage().getKey());
+        SampleEditActivity.startActivity(getContext(), getRootUuid(), section);
     }
 }

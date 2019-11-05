@@ -109,12 +109,12 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
 		}
 		
-		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles()) && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
 			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
 		} else {
-			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
+			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY && getColumn(CaseIndexDto.POINT_OF_ENTRY_NAME) != null) {
 				removeColumn(CaseIndexDto.POINT_OF_ENTRY_NAME);
-			} else if (getCriteria().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+			} else if (getCriteria().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
 				removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
 			}
 		}
@@ -125,19 +125,19 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 	public void setLazyDataProvider() {
 		DataProvider<CaseIndexDto, CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getCaseFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), UserProvider.getCurrent().getUuid(), 
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
 				query -> {
 					return (int) FacadeProvider.getCaseFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
+						query.getFilter().orElse(null), UserProvider.getCurrent().getUuid());
 				});
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 	
 	public void setEagerDataProvider() {
-		ListDataProvider<CaseIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getCaseFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		ListDataProvider<CaseIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getCaseFacade().getIndexList(getCriteria(), null, null, UserProvider.getCurrent().getUuid(), null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

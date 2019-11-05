@@ -31,7 +31,7 @@ public interface RegionFacade {
 
 	List<RegionDto> getAllAfter(Date date);
 	
-	List<RegionDto> getIndexList(RegionCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<RegionIndexDto> getIndexList(RegionCriteria criteria, int first, int max, List<SortProperty> sortProperties);
 	
 	long count(RegionCriteria criteria);
 	

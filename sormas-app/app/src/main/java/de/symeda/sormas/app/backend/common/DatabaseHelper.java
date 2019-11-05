@@ -122,7 +122,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 165;
+	public static final int DATABASE_VERSION = 166;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1196,6 +1196,33 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 164:
 					currentVersion = 164;
 					getDao(Case.class).executeRaw("DELETE FROM cases WHERE person_id IS NULL");
+				case 165:
+					currentVersion = 165;
+					// normally we would have a temp table and copy the data. In this context we have to pull all samples anyway
+					getDao(WeeklyReportEntry.class).executeRaw("DROP TABLE pathogenTests;");
+					getDao(WeeklyReportEntry.class).executeRaw("CREATE TABLE pathogenTest(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"sample_id bigint REFERENCES samples(id)," +
+							"testDateTime timestamp," +
+							"testType character varying(255)," +
+							"testTypeText character varying(512)," +
+							"lab_id bigint REFERENCES facility(id)," +
+							"labUser_id bigint REFERENCES users(id)," +
+							"testResult character varying(255)," +
+							"testResultText character varying(512) ," +
+							"testResultVerified boolean," +
+							"fourFoldIncreaseAntibodyTiter boolean," +
+							"labDetails character varying(512) ," +
+							"testedDisease character varying(255)," +
+							"testedDiseaseDetails character varying(512)," +
+							"UNIQUE(snapshot, uuid));");
 
 					// ATTENTION: break should only be done after last version
 					break;

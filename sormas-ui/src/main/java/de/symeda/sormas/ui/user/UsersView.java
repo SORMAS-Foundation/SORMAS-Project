@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.user;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -26,13 +27,20 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -55,7 +63,7 @@ public class UsersView extends AbstractView {
 
 	private UserCriteria criteria;
 
-	private UserGrid grid;    
+	private UserGrid grid;
 	private Button createButton;
 
 	private VerticalLayout gridLayout;
@@ -63,6 +71,8 @@ public class UsersView extends AbstractView {
 	// Filters
 	private ComboBox activeFilter;
 	private ComboBox userRolesFilter;
+	private ComboBox regionFilter;
+	private ComboBox districtFilter;
 	private TextField searchField;
 
 	public UsersView() {
@@ -102,9 +112,9 @@ public class UsersView extends AbstractView {
 		activeFilter = new ComboBox();
 		activeFilter.setWidth(200, Unit.PIXELS);
 		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
-		activeFilter.addItems(ACTIVE_FILTER,INACTIVE_FILTER);
-		activeFilter.addValueChangeListener(e-> {
-			criteria.active(ACTIVE_FILTER.equals(e.getProperty().getValue()) ? Boolean.TRUE 
+		activeFilter.addItems(ACTIVE_FILTER, INACTIVE_FILTER);
+		activeFilter.addValueChangeListener(e -> {
+			criteria.active(ACTIVE_FILTER.equals(e.getProperty().getValue()) ? Boolean.TRUE
 					: INACTIVE_FILTER.equals(e.getProperty().getValue()) ? Boolean.FALSE : null);
 			navigateTo(criteria);
 		});
@@ -119,6 +129,37 @@ public class UsersView extends AbstractView {
 			navigateTo(criteria);
 		});
 		filterLayout.addComponent(userRolesFilter);
+
+		UserDto user = UserProvider.getCurrent().getUser();
+
+		regionFilter = new ComboBox();
+		if (user.getRegion() == null) {
+			regionFilter.setWidth(140, Unit.PIXELS);
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+			regionFilter.addValueChangeListener(e -> {
+				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+				
+				if (!DataHelper.equal(region, criteria.getRegion())) {
+					criteria.district(null);
+				}
+				
+				criteria.region(region);
+				navigateTo(criteria);
+			});
+			filterLayout.addComponent(regionFilter);
+		}
+
+		districtFilter = new ComboBox();
+		districtFilter.setWidth(140, Unit.PIXELS);
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
+		districtFilter.addValueChangeListener(e -> {
+			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+			criteria.district(district);
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(districtFilter);
 
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
@@ -149,10 +190,24 @@ public class UsersView extends AbstractView {
 
 	public void updateFilterComponents() {
 		applyingCriteria = true;
+		UserDto user = UserProvider.getCurrent().getUser();
 
-		activeFilter.setValue(criteria.getActive() == null ? null
-				: criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
+		activeFilter
+		.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());
+		regionFilter.setValue(criteria.getRegion());
+
+		if (user.getRegion() != null && user.getDistrict() == null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else if (criteria.getRegion() != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(criteria.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else {
+			districtFilter.setEnabled(false);
+		}
+		
+		districtFilter.setValue(criteria.getDistrict());
 		searchField.setValue(criteria.getFreeText());
 
 		applyingCriteria = false;

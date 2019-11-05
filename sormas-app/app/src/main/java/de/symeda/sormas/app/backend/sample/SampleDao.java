@@ -33,6 +33,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
@@ -113,6 +114,18 @@ public class SampleDao extends AbstractAdoDao<Sample> {
         }
     }
 
+    public Sample getReferredFrom(String sampleUuid) {
+        try {
+            QueryBuilder qb = queryBuilder();
+            qb.where().eq(Sample.REFERRED_TO_UUID, sampleUuid)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false);
+            return (Sample) qb.queryForFirst();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getReferredFrom on Sample");
+            throw new RuntimeException(e);
+        }
+    }
+
     private QueryBuilder<Sample, Long> buildQueryBuilder(SampleCriteria criteria) throws SQLException {
         QueryBuilder<Sample, Long> queryBuilder = queryBuilder();
         Where<Sample, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
@@ -165,6 +178,31 @@ public class SampleDao extends AbstractAdoDao<Sample> {
 
         queryBuilder.setWhere(where);
         return queryBuilder;
+    }
+
+    public void deleteSampleAndAllDependingEntities(String sampleUuid) throws SQLException {
+        deleteSampleAndAllDependingEntities(queryUuidWithEmbedded(sampleUuid));
+    }
+
+    public void deleteSampleAndAllDependingEntities(Sample sample) throws SQLException {
+        // Cancel if not in local database
+        if (sample == null) {
+            return;
+        }
+
+        // Delete all pathogen tests of this sample
+        List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
+        for (PathogenTest pathogenTest : pathogenTests) {
+            DatabaseHelper.getSampleTestDao().deleteCascade(pathogenTest);
+        }
+
+        // Delete all additional tests of this sample
+        List<AdditionalTest> additionalTests = DatabaseHelper.getAdditionalTestDao().queryBySample(sample);
+        for (AdditionalTest additionalTest : additionalTests) {
+            DatabaseHelper.getAdditionalTestDao().deleteCascade(additionalTest);
+        }
+
+        deleteCascade(sample);
     }
 
 }

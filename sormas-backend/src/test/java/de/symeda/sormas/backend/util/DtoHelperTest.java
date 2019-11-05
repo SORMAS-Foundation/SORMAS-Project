@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,141 +11,179 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.epidata.EpiDataBurialDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class DtoHelperTest extends AbstractBeanTest {
 
 	@Test
-	public void testMergeDto() throws Exception {
+	public void testFillDto() throws Exception {
+
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCFEntities rdcf2 = creator.createRDCFEntities();
+		rdcf2.facility.setType(FacilityType.LABORATORY);
+		
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN);
 
 		// Test simple values
 		{
-			VisitDto leadDto = new VisitDto();
-			VisitDto otherDto = new VisitDto();
+			HealthConditionsDto targetDto = new HealthConditionsDto();
+			HealthConditionsDto sourceDto = new HealthConditionsDto();
 
 			// lead and other have different values
-			Double reportLat = 1.234;
-			leadDto.setReportLat(reportLat);
-			otherDto.setReportLat(2.345);
+			targetDto.setTuberculosis(YesNoUnknown.YES);
+			sourceDto.setTuberculosis(YesNoUnknown.NO);
 
 			// lead has value, other has not
-			Double reportLon = 3.456;
-			leadDto.setReportLon(reportLon);
+			targetDto.setAsplenia(YesNoUnknown.YES);
 
 			// lead has no value, other has
-			Float reportLatLonAccuracy = (float) 4.567;
-			otherDto.setReportLatLonAccuracy(reportLatLonAccuracy);
+			sourceDto.setDiabetes(YesNoUnknown.YES);
 
-			VisitDto merged = DtoHelper.mergeDto(leadDto, otherDto);
+			DtoHelper.fillDto(targetDto, sourceDto, false);
 
 			// Check no values
-			assertNull(merged.getDisease());
+			assertNull(targetDto.getHiv());
 
 			// Check 'lead and other have different values'
-			assertEquals(reportLat, merged.getReportLat());
+			assertNotEquals(sourceDto.getTuberculosis(), targetDto.getTuberculosis());
 
 			// Check 'lead has value, other has not'
-			assertEquals(reportLon, merged.getReportLon());
+			assertEquals(YesNoUnknown.YES, targetDto.getAsplenia());
+			assertNull(sourceDto.getAsplenia());
 
 			// Check 'lead has no value, other has'
-			assertEquals(reportLatLonAccuracy, merged.getReportLatLonAccuracy());
+			assertEquals(sourceDto.getDiabetes(), targetDto.getDiabetes());
 		}
 
 		// Test complex subDto
 		{
-			CaseDataDto leadCaseDto = new CaseDataDto();
-			CaseDataDto otherCaseDto = new CaseDataDto();
+			PersonDto person = creator.createPerson("First", "Last");
+			CaseDataDto targetDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
+			CaseDataDto sourceDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
-			SymptomsDto leadSymptomsDto = new SymptomsDto();
-			SymptomsDto otherSymptomsDto = new SymptomsDto();
+			SymptomsDto targetSymptomsDto = targetDto.getSymptoms();
+			SymptomsDto sourceSymptomsDto = sourceDto.getSymptoms();
 
 			// lead and other have different values
 			SymptomState abdominalPain = SymptomState.NO;
-			leadSymptomsDto.setAbdominalPain(abdominalPain);
-			otherSymptomsDto.setAbdominalPain(SymptomState.UNKNOWN);
+			targetSymptomsDto.setAbdominalPain(abdominalPain);
+			sourceSymptomsDto.setAbdominalPain(SymptomState.UNKNOWN);
 
 			// lead has value, other has not
 			SymptomState alteredConsciousness = SymptomState.YES;
-			leadSymptomsDto.setAlteredConsciousness(alteredConsciousness);
+			targetSymptomsDto.setAlteredConsciousness(alteredConsciousness);
 
 			// lead has no value, other has
 			SymptomState anorexiaAppetiteLoss = SymptomState.UNKNOWN;
-			otherSymptomsDto.setAnorexiaAppetiteLoss(anorexiaAppetiteLoss);
+			sourceSymptomsDto.setAnorexiaAppetiteLoss(anorexiaAppetiteLoss);
 
-			leadCaseDto.setSymptoms(leadSymptomsDto);
-			otherCaseDto.setSymptoms(otherSymptomsDto);
+			targetDto.setSymptoms(targetSymptomsDto);
+			sourceDto.setSymptoms(sourceSymptomsDto);
 
-			CaseDataDto merged = DtoHelper.mergeDto(leadCaseDto, otherCaseDto);
+			DtoHelper.fillDto(targetDto, sourceDto, false);
 
 			// Check no values
-			assertNull(merged.getSymptoms().getBackache());
+			assertNull(targetDto.getSymptoms().getBackache());
 
 			// Check 'lead and other have different values'
-			assertEquals(abdominalPain, merged.getSymptoms().getAbdominalPain());
+			assertEquals(abdominalPain, targetDto.getSymptoms().getAbdominalPain());
 
 			// Check 'lead has value, other has not'
-			assertEquals(alteredConsciousness, merged.getSymptoms().getAlteredConsciousness());
+			assertEquals(alteredConsciousness, targetDto.getSymptoms().getAlteredConsciousness());
 
 			// Check 'lead has no value, other has'
-			assertEquals(anorexiaAppetiteLoss, merged.getSymptoms().getAnorexiaAppetiteLoss());
+			assertEquals(anorexiaAppetiteLoss, targetDto.getSymptoms().getAnorexiaAppetiteLoss());
 		}
 
 		// Test List
 		{
-			HospitalizationDto leadDto = new HospitalizationDto();
-			HospitalizationDto otherDto = new HospitalizationDto();
+			PersonDto person = creator.createPerson("First", "Last");
+			CaseDataDto targetDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
+			CaseDataDto sourceDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
-			PreviousHospitalizationDto subDto1 = new PreviousHospitalizationDto();
-			PreviousHospitalizationDto subDto2 = new PreviousHospitalizationDto();
+			EpiDataBurialDto subDto1 = EpiDataBurialDto.build();
+			EpiDataBurialDto subDto2 = EpiDataBurialDto.build();
 
 			// lead and other have different values
-			ArrayList<PreviousHospitalizationDto> leadList1 = new ArrayList<PreviousHospitalizationDto>();
-			leadList1.add(subDto1);
+			ArrayList<EpiDataBurialDto> targetList1 = new ArrayList<EpiDataBurialDto>();
+			targetList1.add(subDto1);
 
-			ArrayList<PreviousHospitalizationDto> otherList1 = new ArrayList<PreviousHospitalizationDto>();
-			otherList1.add(subDto2);
+			ArrayList<EpiDataBurialDto> sourceList1 = new ArrayList<EpiDataBurialDto>();
+			sourceList1.add(subDto2);
 
 			// lead has values, other has not
-			ArrayList<PreviousHospitalizationDto> leadList2 = new ArrayList<PreviousHospitalizationDto>();
-			leadList2.add(subDto1);
-			leadList2.add(subDto2);
+			ArrayList<EpiDataBurialDto> targetList2 = new ArrayList<EpiDataBurialDto>();
+			targetList2.add(subDto1);
+			targetList2.add(subDto2);
 
 			// lead has no values, other has
-			ArrayList<PreviousHospitalizationDto> otherList2 = new ArrayList<PreviousHospitalizationDto>();
-			otherList2.add(subDto1);
-			otherList2.add(subDto2);
+			ArrayList<EpiDataBurialDto> sourceList2 = new ArrayList<EpiDataBurialDto>();
+			sourceList2.add(subDto1);
+			sourceList2.add(subDto2);
 
 			// Check no values
-			HospitalizationDto merged = DtoHelper.mergeDto(leadDto, otherDto);
-			assertTrue(merged.getPreviousHospitalizations().isEmpty());
+			DtoHelper.fillDto(targetDto, sourceDto, false);
+			assertTrue(targetDto.getEpiData().getBurials().isEmpty());
 
-			// Check 'lead and other have different values'
-			leadDto.setPreviousHospitalizations(leadList1);
-			otherDto.setPreviousHospitalizations(otherList1);
-			merged = DtoHelper.mergeDto(leadDto, otherDto);
-			assertEquals(leadList1.size(), merged.getPreviousHospitalizations().size());
-			assertEquals(leadList1.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
+			// Check 'lead has still same entries'
+			targetDto.getEpiData().setBurials(targetList1);
+			sourceDto.getEpiData().setBurials(sourceList1);
+			String existingUuid = targetList1.get(0).getUuid(); 
+			DtoHelper.fillDto(targetDto, sourceDto, false);
+			
+			assertEquals(targetList1.size(), targetDto.getEpiData().getBurials().size());
+			assertNotNull(targetDto.getEpiData().getBurials().get(0).getUuid());
+			assertEquals(existingUuid, targetDto.getEpiData().getBurials().get(0).getUuid());
+			assertNotEquals(existingUuid, sourceDto.getEpiData().getBurials().get(0).getUuid());
 
 			// Check 'lead has value, other has not'
-			leadDto.setPreviousHospitalizations(leadList2);
-			otherDto.setPreviousHospitalizations(null);
-			merged = DtoHelper.mergeDto(leadDto, otherDto);
-			assertEquals(leadList2.size(), merged.getPreviousHospitalizations().size());
-			assertEquals(leadList2.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
-			assertEquals(leadList2.get(1).getUuid(), merged.getPreviousHospitalizations().get(1).getUuid());
+			targetDto.getEpiData().setBurials(targetList2);
+			sourceDto.getEpiData().setBurials(null);
+			DtoHelper.fillDto(targetDto, sourceDto, false);
+
+			assertNotNull(targetDto.getEpiData().getBurials().get(0).getUuid());
+			assertEquals(targetList2.size(), targetDto.getEpiData().getBurials().size());
+			assertEquals(targetList2.get(0).getUuid(), targetDto.getEpiData().getBurials().get(0).getUuid());
+			assertEquals(targetList2.get(1).getUuid(), targetDto.getEpiData().getBurials().get(1).getUuid());
 
 			// Check 'lead has no value, other has'
-			leadDto.setPreviousHospitalizations(null);
-			otherDto.setPreviousHospitalizations(otherList2);
-			merged = DtoHelper.mergeDto(leadDto, otherDto);
-			assertEquals(otherList2.size(), merged.getPreviousHospitalizations().size());
-			assertEquals(otherList2.get(0).getUuid(), merged.getPreviousHospitalizations().get(0).getUuid());
-			assertEquals(otherList2.get(1).getUuid(), merged.getPreviousHospitalizations().get(1).getUuid());
+			targetDto.getEpiData().setBurials(null);
+			sourceDto.getEpiData().setBurials(sourceList2);
+			DtoHelper.fillDto(targetDto, sourceDto, false);
+
+			assertNotNull(targetDto.getEpiData().getBurials().get(0).getUuid());
+			assertEquals(sourceList2.size(), targetDto.getEpiData().getBurials().size());
+			assertNotEquals(sourceList2.get(0).getUuid(), targetDto.getEpiData().getBurials().get(0).getUuid());
+			assertNotEquals(sourceList2.get(1).getUuid(), targetDto.getEpiData().getBurials().get(1).getUuid());
+		}
+		
+		// test non-entity list
+		{ 
+			PersonDto person = creator.createPerson("First", "Last");
+			CaseDataDto targetCaseDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
+			CaseDataDto sourceCaseDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
+			
+			SampleDto sourceDto = creator.createSample(sourceCaseDto.toReference(), user.toReference(), rdcf2.facility);
+			sourceDto.setPathogenTestingRequested(true);
+			sourceDto.getRequestedPathogenTests().add(PathogenTestType.ANTIGEN_DETECTION);
+			sourceDto.getRequestedPathogenTests().add(PathogenTestType.NEUTRALIZING_ANTIBODIES);
+
+			SampleDto targetDto = SampleDto.buildSample(user.toReference(), targetCaseDto.toReference());
+			DtoHelper.fillDto(targetDto, sourceDto, false);
+			assertEquals(2, targetDto.getRequestedPathogenTests().size());
 		}
 	}
 }

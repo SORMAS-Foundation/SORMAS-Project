@@ -254,4 +254,13 @@ public class ControlTextImageField extends ControlTextReadField {
         }
     }
 
+    @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
+    public static void setValue(ControlTextImageField textImageField, Boolean booleanValue, String valueFormat, String defaultValue) {
+        if (booleanValue) {
+            textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
+        } else {
+            textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
+        }
+        ControlTextReadField.setValue(textImageField, booleanValue, valueFormat, defaultValue);
+    }
 }

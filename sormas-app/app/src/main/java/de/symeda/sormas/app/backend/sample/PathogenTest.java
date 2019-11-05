@@ -28,12 +28,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name= PathogenTest.TABLE_NAME)
 @DatabaseTable(tableName = PathogenTest.TABLE_NAME)
@@ -41,18 +45,21 @@ public class PathogenTest extends AbstractDomainObject {
 
     private static final long serialVersionUID = 2290351143518627813L;
 
+    public static final String TABLE_NAME = "pathogenTest";
+    public static final String I18N_PREFIX = "PathogenTest";
+
     public static final String TEST_DATE_TIME = "testDateTime";
     public static final String SAMPLE = "sample";
 
-    public static final String TABLE_NAME = "pathogenTests";
-    public static final String I18N_PREFIX = "PathogenTest";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Sample sample;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private PathogenTestType testType;
+
+    @Column
+    private String testTypeText;
 
     @Enumerated(EnumType.STRING)
     private Disease testedDisease;
@@ -61,11 +68,29 @@ public class PathogenTest extends AbstractDomainObject {
     private String testedDiseaseDetails;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private PathogenTestResultType testResult;
 
-    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
+    @Column
+    private Boolean testResultVerified;
+
+    @Column(length=512)
+    private String testResultText;
+
+    @DatabaseField(dataType = DataType.DATE_LONG)
     private Date testDateTime;
+
+    @Column
+    private boolean fourFoldIncreaseAntibodyTiter;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private Facility lab;
+
+    @Column
+    private String labDetails;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private User labUser;
 
     public Sample getSample() {
         return sample;
@@ -103,16 +128,63 @@ public class PathogenTest extends AbstractDomainObject {
         return testResult;
     }
 
+    public Boolean getTestResultVerified() {
+        return testResultVerified;
+    }
+    public void setTestResultVerified(Boolean testResultVerified) {
+        this.testResultVerified = testResultVerified;
+    }
+
+    public String getTestResultText() {
+        return testResultText;
+    }
+    public void setTestResultText(String testResultText) {
+        this.testResultText = testResultText;
+    }
+    public Facility getLab() {
+        return lab;
+    }
+    public void setLab(Facility lab) {
+        this.lab = lab;
+    }
     public void setTestResult(PathogenTestResultType testResult) {
         this.testResult = testResult;
     }
-
+    public User getLabUser() {
+        return labUser;
+    }
+    public void setLabUser(User labUser) {
+        this.labUser = labUser;
+    }
     public Date getTestDateTime() {
         return testDateTime;
     }
-
     public void setTestDateTime(Date testDateTime) {
         this.testDateTime = testDateTime;
+    }
+
+    public String getLabDetails() {
+        return labDetails;
+    }
+
+    public void setLabDetails(String labDetails) {
+        this.labDetails = labDetails;
+    }
+
+    public boolean isFourFoldIncreaseAntibodyTiter() {
+        return fourFoldIncreaseAntibodyTiter;
+    }
+
+    public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
+        this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+    }
+
+    public String getTestTypeText() {
+        return testTypeText;
+    }
+
+    public void setTestTypeText(String testTypeText) {
+        this.testTypeText = testTypeText;
     }
 
     @Override

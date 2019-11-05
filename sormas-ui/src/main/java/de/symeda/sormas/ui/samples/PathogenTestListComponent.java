@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.samples;
 import java.util.function.BiConsumer;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,13 +30,12 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends VerticalLayout {
@@ -45,14 +43,14 @@ public class PathogenTestListComponent extends VerticalLayout {
 	private PathogenTestList list;
 	private Button createButton;
 
-	public PathogenTestListComponent(SampleReferenceDto sampleRef, BiConsumer<PathogenTestResultType, Boolean> testChangedCallback) {
+	public PathogenTestListComponent(SampleReferenceDto sampleRef, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		list = new PathogenTestList(sampleRef, testChangedCallback);
+		list = new PathogenTestList(sampleRef, onSavedPathogenTest);
 		addComponent(list);
 		list.reload();
 
@@ -65,7 +63,7 @@ public class PathogenTestListComponent extends VerticalLayout {
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(
-					e -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, testChangedCallback));
+					e -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, onSavedPathogenTest));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}

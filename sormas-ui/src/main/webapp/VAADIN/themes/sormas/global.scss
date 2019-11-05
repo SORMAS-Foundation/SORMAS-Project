@@ -9,6 +9,10 @@
     &.v-caption-caption-hidden {
       display: none;
     }
+    
+    &.v-caption-caption-overflow {
+      margin-right : -1000px;
+    }
   }
   
   .force-caption {
@@ -217,6 +221,10 @@
   .background-confirmed-criteria {
     background: $s-critical-transparent-color;	
   }
+  
+  .background-not-a-case-criteria {
+  	background: $s-highlight-color;
+  }
 
   .background-rounded-corners {
 	border-radius: 8px;
@@ -232,7 +240,7 @@
     margin-bottom: 24px;   
   }
   .side-component {
-    min-width: 300px;
+    min-width: 420px;
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 12px 20px;

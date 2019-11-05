@@ -24,8 +24,6 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -33,19 +31,15 @@ public interface EventFacade {
 	
 	List<EventDto> getAllActiveEventsAfter(Date date, String userUuid);
 	
-	List<EventDto> getAllEventsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
-	
 	List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria, String userUuid);
 	
-	Map<Disease, Long> getEventCountByDisease (EventCriteria eventCriteria, String userUuid);
+	Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria, String userUuid);
 	
-	Map<EventStatus, Long> getEventCountByStatus (EventCriteria eventCriteria, String userUuid);
+	Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria, String userUuid);
 	
 	EventDto getEventByUuid(String uuid);
 	
 	EventDto saveEvent(EventDto dto);
-	
-	List<EventReferenceDto> getSelectableEvents(UserReferenceDto user);
 	
 	EventReferenceDto getReferenceByUuid(String uuid);
 
@@ -53,7 +47,7 @@ public interface EventFacade {
 
 	List<EventDto> getByUuids(List<String> uuids);
 
-	void deleteEvent(EventReferenceDto eventRef, String userUuid);
+	void deleteEvent(String eventUuid, String userUuid);
 
 	long count(String userUuid, EventCriteria eventCriteria);
 
@@ -62,7 +56,12 @@ public interface EventFacade {
 	
 	boolean isArchived(String caseUuid);
 	
+	boolean isDeleted(String eventUuid);
+	
 	void archiveOrDearchiveEvent(String eventUuid, boolean archive);
 	
 	List<String> getArchivedUuidsSince(String userUuid, Date since);
+	
+	List<String> getDeletedUuidsSince(String userUuid, Date since);
+	
 }

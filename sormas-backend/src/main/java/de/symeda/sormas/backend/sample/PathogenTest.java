@@ -32,13 +32,13 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
 @Audited
-public class PathogenTest extends AbstractDomainObject {
+public class PathogenTest extends CoreAdo {
 
 	private static final long serialVersionUID = 2290351143518627813L;
 

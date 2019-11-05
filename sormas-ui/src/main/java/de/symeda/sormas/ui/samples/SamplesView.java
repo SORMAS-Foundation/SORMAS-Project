@@ -106,7 +106,7 @@ public class SamplesView extends AbstractView {
 						}
 						return caption;
 					},
-					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
 		}
 

@@ -39,13 +39,13 @@ public class MergeInstructionsLayout extends VerticalLayout {
 		lblMergeDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblMergeDescription);
 
-//		Label lblHeadingPick = new Label(I18nProperties.getCaption(Captions.actionPick));
-//		CssStyles.style(lblHeadingPick, CssStyles.H3);
-//		addComponent(lblHeadingPick);
-//		Label lblPickDescription = new Label(I18nProperties.getString(Strings.infoMergingPickDescription));
-//		CssStyles.style(lblPickDescription, CssStyles.VSPACE_4);
-//		lblPickDescription.setWidth(100, Unit.PERCENTAGE);
-//		addComponent(lblPickDescription);
+		Label lblHeadingPick = new Label(I18nProperties.getCaption(Captions.actionPick));
+		CssStyles.style(lblHeadingPick, CssStyles.H3);
+		addComponent(lblHeadingPick);
+		Label lblPickDescription = new Label(I18nProperties.getString(Strings.infoMergingPickDescription));
+		CssStyles.style(lblPickDescription, CssStyles.VSPACE_4);
+		lblPickDescription.setWidth(100, Unit.PERCENTAGE);
+		addComponent(lblPickDescription);
 
 		Label lblHeadingHide = new Label(I18nProperties.getCaption(Captions.actionHide));
 		CssStyles.style(lblHeadingHide, CssStyles.H3);
@@ -67,6 +67,14 @@ public class MergeInstructionsLayout extends VerticalLayout {
 		lblCompletenessDescription.setContentMode(ContentMode.HTML);
 		lblCompletenessDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblCompletenessDescription);
+		
+		Label lblHeadingIgnoreRegion = new Label(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
+		CssStyles.style(lblHeadingIgnoreRegion, CssStyles.H3);
+		addComponent(lblHeadingIgnoreRegion);
+		Label lblIgnoreRegionDescription = new Label(I18nProperties.getString(Strings.infoMergeIgnoreRegion));
+		lblIgnoreRegionDescription.setContentMode(ContentMode.HTML);
+		lblIgnoreRegionDescription.setWidth(100, Unit.PERCENTAGE);
+		addComponent(lblIgnoreRegionDescription);
 	}
 	
 }

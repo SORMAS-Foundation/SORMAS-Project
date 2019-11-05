@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 
@@ -44,11 +43,6 @@ public class PersonIndexDto implements Serializable {
 	public static final String DISTRICT_NAME = "districtName";
 	public static final String COMMUNITY_NAME = "communityName";
 	public static final String CITY = "city";
-	public static final String CASE_DISEASE = "caseDisease";
-	public static final String CASE_DISEASE_START_DATE = "caseDiseaseStartDate";
-	public static final String CASE_UUID = "caseUuid";
-	public static final String LAST_DISEASE = "lastDisease";
-	public static final String MATCHING_CASE = "matchingCase";
 	
 	private String uuid;
 	private Sex sex;
@@ -66,9 +60,6 @@ public class PersonIndexDto implements Serializable {
 	private String districtName;
 	private String communityName;
 	private String city;
-	private Disease caseDisease;
-	private Date caseDiseaseStartDate;
-	private String caseUuid;
 
 	public PersonIndexDto(String uuid, Sex sex, String firstName, String lastName, PresentCondition presentCondition,
 			Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Integer approximateAge, 
@@ -236,30 +227,6 @@ public class PersonIndexDto implements Serializable {
 
 	public void setCity(String city) {
 		this.city = city;
-	}
-
-	public Disease getCaseDisease() {
-		return caseDisease;
-	}
-
-	public void setCaseDisease(Disease caseDisease) {
-		this.caseDisease = caseDisease;
-	}
-
-	public Date getCaseDiseaseStartDate() {
-		return caseDiseaseStartDate;
-	}
-
-	public void setCaseDiseaseStartDate(Date caseDiseaseStartDate) {
-		this.caseDiseaseStartDate = caseDiseaseStartDate;
-	}
-
-	public String getCaseUuid() {
-		return caseUuid;
-	}
-
-	public void setCaseUuid(String caseUuid) {
-		this.caseUuid = caseUuid;
 	}
 	
 }

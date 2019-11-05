@@ -58,20 +58,6 @@ public class EventParticipantsView extends AbstractEventView {
 		addStyleName("crud-view");
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
-		
-		grid = new EventParticipantsGrid(criteria);
-		
-		gridLayout = new VerticalLayout();
-		gridLayout.setSizeFull();
-		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
-
-		gridLayout.addComponent(createTopBar());
-		gridLayout.addComponent(grid);
-		gridLayout.setExpandRatio(grid, 1);
-		gridLayout.setStyleName("crud-main-layout");
-
-		setSubComponent(gridLayout);
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -111,7 +97,7 @@ public class EventParticipantsView extends AbstractEventView {
 			addButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			addButton.addClickListener(e -> {
 				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(),
-						r -> grid.reload());
+						r -> navigateTo(criteria));
 			});
 			topLayout.addComponent(addButton);
 			topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
@@ -128,6 +114,20 @@ public class EventParticipantsView extends AbstractEventView {
 		}
 		
 		criteria.event(getEventRef());
+		
+		if (grid == null) {
+			grid = new EventParticipantsGrid(criteria);
+			gridLayout = new VerticalLayout();
+			gridLayout.setSizeFull();
+			gridLayout.setMargin(true);
+			gridLayout.setSpacing(false);
+			gridLayout.addComponent(createTopBar());
+			gridLayout.addComponent(grid);
+			gridLayout.setExpandRatio(grid, 1);
+			gridLayout.setStyleName("crud-main-layout");
+			setSubComponent(gridLayout);
+		}
+		
 		grid.reload();
 	}
 

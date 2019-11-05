@@ -269,6 +269,7 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_CLINICIAN,
 			SURVEILLANCE_SUPERVISOR,
+			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			LAB_USER,
 			EXTERNAL_LAB_USER
@@ -278,9 +279,13 @@ public enum UserRight {
 			NATIONAL_USER,
 			NATIONAL_CLINICIAN,
 			SURVEILLANCE_SUPERVISOR,
+			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
 			LAB_USER,
 			EXTERNAL_LAB_USER
+			),
+	PATHOGEN_TEST_DELETE(
+			ADMIN
 			),
 	ADDITIONAL_TEST_VIEW(
 			ADMIN,
@@ -396,6 +401,9 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
 			),
+	VISIT_DELETE(
+			ADMIN
+			),
 	TASK_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -473,6 +481,9 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			POE_SUPERVISOR
 			),
+	TASK_DELETE(
+			ADMIN
+			),
 	EVENT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -521,6 +532,9 @@ public enum UserRight {
 			LAB_USER
 			),
 	EVENT_ARCHIVE(
+			ADMIN
+			),
+	EVENT_DELETE(
 			ADMIN
 			),
 	EVENT_VIEW_ARCHIVED(
@@ -825,6 +839,9 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			POE_SUPERVISOR,
 			POE_INFORMANT
+			),
+	POPULATION_MANAGE(
+			ADMIN
 			);
 
 	private final Set<UserRole> defaultUserRoles;
@@ -840,4 +857,5 @@ public enum UserRight {
 	public Set<UserRole> getDefaultUserRoles() {
 		return defaultUserRoles;
 	}
+	
 }

@@ -30,7 +30,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.Community;

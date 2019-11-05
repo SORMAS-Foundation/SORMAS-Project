@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -41,14 +42,27 @@ public class AbstractEventView extends AbstractSubNavigationView {
 	
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
-		eventRef = FacadeProvider.getEventFacade().getReferenceByUuid(params);
+		if (params.endsWith("/")) {
+			params = params.substring(0, params.length() - 1);
+		}
 		
+		eventRef = FacadeProvider.getEventFacade().getReferenceByUuid(params);
+
 		menu.removeAllViews();
 		menu.addView(EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventsList));
 		menu.addView(EventDataView.VIEW_NAME, I18nProperties.getCaption(EventDto.I18N_PREFIX), params);
 		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventParticipants), params);
 		infoLabel.setValue(eventRef.getCaption());
 		infoLabelSub.setValue(DataHelper.getShortUuid(eventRef.getUuid()));
+	}	
+	
+	@Override
+	protected void setSubComponent(Component newComponent) {
+		super.setSubComponent(newComponent);
+		
+		if (FacadeProvider.getEventFacade().isDeleted(eventRef.getUuid())) {
+			newComponent.setEnabled(false);
+		}
 	}
 	
 	public EventReferenceDto getEventRef() {
