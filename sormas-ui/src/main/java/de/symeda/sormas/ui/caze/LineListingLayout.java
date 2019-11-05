@@ -29,6 +29,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.AbstractSelect;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -456,7 +457,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {
-			comboBox.setItemCaptionGenerator(item -> Month.of(item).toString());
+			comboBox.setItemCaptionGenerator(item -> I18nProperties.getEnumCaption(Month.of(item)));
 		}
 
 		private void updateListOfDays(Integer selectedYear, Integer selectedMonth, ComboBox<Integer> dateOfBirthDay) {
