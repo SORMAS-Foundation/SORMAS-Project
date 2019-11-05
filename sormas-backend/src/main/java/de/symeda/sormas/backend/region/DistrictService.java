@@ -73,7 +73,7 @@ public class DistrictService extends AbstractAdoService<District> {
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
 	
-		Predicate filter = cb.equal(from.get(District.NAME), name);
+		Predicate filter = cb.equal(cb.upper(from.get(District.NAME)), name.toUpperCase());
 		if (region != null) {
 			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));
 		}

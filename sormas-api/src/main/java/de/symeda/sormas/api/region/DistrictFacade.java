@@ -34,7 +34,7 @@ public interface DistrictFacade {
 
 	List<DistrictDto> getAllAfter(Date date);
 	
-	List<DistrictDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties);
 	
 	long count(DistrictCriteria criteria);
 	

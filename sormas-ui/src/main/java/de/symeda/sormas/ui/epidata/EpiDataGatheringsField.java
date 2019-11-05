@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -152,12 +153,8 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 
 	@Override
 	protected EpiDataGatheringDto createEntry() {
-		EpiDataGatheringDto gathering = new EpiDataGatheringDto();
-		gathering.setUuid(DataHelper.createUuid());
-		LocationDto location = new LocationDto();
-		location.setUuid(DataHelper.createUuid());
-		location.setRegion(UserProvider.getCurrent().getUser().getRegion());
-		gathering.setGatheringAddress(location);
+		EpiDataGatheringDto gathering = EpiDataGatheringDto.build();
+		gathering.getGatheringAddress().setRegion(UserProvider.getCurrent().getUser().getRegion());
 		return gathering;
 	}
 }

@@ -21,7 +21,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
@@ -50,11 +50,14 @@ public final class DtoHelper {
 		dto.setUuid(entity.getUuid());
 	}
 
+	/**
+	 * @param overrideValues Note: Existing references are NOT overridden
+	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends EntityDto> T mergeDto(T lead, T other, boolean cloning, boolean overrideEntityUuids) {
+	public static <T extends EntityDto> void fillDto(T target, T source, boolean overrideValues) {
 
 		try {
-			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class).getPropertyDescriptors();
+			PropertyDescriptor[] pds = Introspector.getBeanInfo(target.getClass(), EntityDto.class).getPropertyDescriptors();
 
 			for (PropertyDescriptor pd : pds) {
 				// Skip properties without a read or write method
@@ -62,58 +65,67 @@ public final class DtoHelper {
 					continue;
 				}
 
-				Object leadProperty = pd.getReadMethod().invoke(lead);
-				Object otherProperty = pd.getReadMethod().invoke(other);
-
-				// Write other-property into lead-property, if lead-property is null or cloning
-				// is active
-				if (leadProperty == null
-						|| (List.class.isAssignableFrom(pd.getPropertyType()) && ((List<?>) leadProperty).isEmpty())
-						|| cloning && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
-
-					if (List.class.isAssignableFrom(pd.getPropertyType())) {
-						
-						for (EntityDto entry : (List<EntityDto>) otherProperty) {
-							entry.setUuid(DataHelper.createUuid());
-							entry.setCreationDate(null);
-						}
-						
-						pd.getWriteMethod().invoke(lead, otherProperty);
-
-						if (cloning) {
-							// Call merge on the new entry to override UUIDs of EntityDtos
-							Object newLeadProperty = pd.getReadMethod().invoke(lead);
-							for (EntityDto entry : (List<EntityDto>) newLeadProperty) {
-								mergeDto(entry, entry, true, true);
-							}
-						}
-						
-					} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
-
-						pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
-
-						if (overrideEntityUuids) {
-							((EntityDto) leadProperty).setUuid(DataHelper.createUuid());
-						}
-
-					} else {
-
-						pd.getWriteMethod().invoke(lead, otherProperty);
+				Object targetValue = pd.getReadMethod().invoke(target);
+				Object sourceValue = pd.getReadMethod().invoke(source);
+				
+				if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
+					
+					if (targetValue == null) {
+						targetValue = sourceValue.getClass().newInstance();
+						pd.getWriteMethod().invoke(target, targetValue);
 					}
+					
+					// entity: just fill the existing one with the source
+					fillDto((EntityDto) targetValue, (EntityDto) sourceValue, overrideValues);
+				}
+				else {
+					boolean targetIsEmpty = targetValue == null 
+							|| (Collection.class.isAssignableFrom(pd.getPropertyType()) && ((Collection<?>) targetValue).isEmpty());
+					boolean override = overrideValues && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType());
+					// should we write into the target property?
+					if (targetIsEmpty || override) {
+						
+						if (Collection.class.isAssignableFrom(pd.getPropertyType()) && sourceValue != null) {
+							
+							if (targetValue == null) {
+								targetValue = sourceValue.getClass().newInstance();
+								pd.getWriteMethod().invoke(target, targetValue);
+							}
 
-				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
+							Collection targetCollection = (Collection)targetValue;
+							targetCollection.clear();
+							
+							for (Object sourceEntry : (Collection) sourceValue) {
+								
+								if (sourceEntry instanceof EntityDto) {
+									EntityDto newEntry = ((EntityDto)sourceEntry).clone();
+									newEntry.setUuid(DataHelper.createUuid());
+									newEntry.setCreationDate(null);
+									fillDto(newEntry, (EntityDto)sourceEntry, true);
+									targetCollection.add(newEntry);
+								} else if (DataHelper.isValueType(sourceEntry.getClass())
+										|| sourceEntry instanceof ReferenceDto) {
+									targetCollection.add(sourceEntry);
+								} else {
+				                    throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a list entry type.");
+								}
+							}
+							
+						} else if (DataHelper.isValueType(pd.getPropertyType())
+								|| ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 
-					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty, cloning, overrideEntityUuids));
+							pd.getWriteMethod().invoke(target, sourceValue);
+							
+						} else {
 
-					if (overrideEntityUuids) {
-						((EntityDto) leadProperty).setUuid(DataHelper.createUuid());
+							// Other objects are not supported
+		                    throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a property type.");
+		                }
 					}
 				}
 			}
-		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
-			throw new RuntimeException("Exception when trying to merge or clone dto: " + e.getMessage(), e.getCause());
+		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException | CloneNotSupportedException | InstantiationException e) {
+			throw new RuntimeException("Exception when trying to fill dto: " + e.getMessage(), e.getCause());
 		}
-
-		return lead;
 	}
 }

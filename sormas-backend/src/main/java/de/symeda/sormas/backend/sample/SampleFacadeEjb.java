@@ -47,6 +47,7 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -194,27 +195,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleDto saveSample(SampleDto dto) {
-		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
-		Sample sample = fromDto(dto);
-
-		// Set defaults for testing requests
-		if (sample.getPathogenTestingRequested() == null) {
-			sample.setPathogenTestingRequested(false);
-		}
-		if (sample.getAdditionalTestingRequested() == null) {
-			sample.setAdditionalTestingRequested(false);
-		}
-
-		sampleService.ensurePersisted(sample);
-
-		onSampleChanged(existingSample, sample);
-
-		return toDto(sample);
+		return saveSample(dto, true);
 	}
 	
-	@Override
-	public SampleDto saveSampleSimple(SampleDto dto) {
-		
+	public SampleDto saveSample(SampleDto dto, boolean handleChanges) {
 		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
 		Sample sample = fromDto(dto);
 
@@ -227,6 +211,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		sampleService.ensurePersisted(sample);
+
+		if (handleChanges) {
+			onSampleChanged(existingSample, sample);
+		}
 
 		return toDto(sample);
 	}
@@ -651,7 +639,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
 		// Change pathogenTestResultChangeDate if the pathogen test result has changed
 		if (existingSample != null && existingSample.getPathogenTestResult() != null && existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
-			newSample.setPathogenTestResultChangeDate(new Date());
+			Date latestPathogenTestDate = FacadeProvider.getPathogenTestFacade().getLatestPathogenTestDate(newSample.getUuid());
+			if (latestPathogenTestDate != null) {
+				newSample.setPathogenTestResultChangeDate(latestPathogenTestDate);
+			}
 		}
 		
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());

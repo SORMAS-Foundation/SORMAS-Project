@@ -31,6 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="60dp"
+            android:focusable="false"
             android:labelFor="@+id/input"/>
             <!-- 60dp margin makes sure indicators are always visible -->
 
@@ -41,18 +42,22 @@
 
             <TextView
                 android:id="@+id/required_indicator"
+                android:focusable="false"
                 style="@style/RequiredIndicatorStyle"/>
 
             <TextView
                 android:id="@+id/soft_required_indicator"
+                android:focusable="false"
                 style="@style/SoftRequiredIndicatorStyle"/>
 
             <TextView
                 android:id="@+id/error_indicator"
+                android:focusable="false"
                 style="@style/ErrorIndicatorStyle"/>
 
             <TextView
                 android:id="@+id/warning_indicator"
+                android:focusable="false"
                 style="@style/WarningIndicatorStyle"/>
 
         </LinearLayout>

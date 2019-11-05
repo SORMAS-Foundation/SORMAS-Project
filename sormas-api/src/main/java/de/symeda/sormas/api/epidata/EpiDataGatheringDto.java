@@ -19,9 +19,10 @@ package de.symeda.sormas.api.epidata;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 
 public class EpiDataGatheringDto extends EntityDto {
@@ -61,5 +62,12 @@ public class EpiDataGatheringDto extends EntityDto {
 	public void setGatheringAddress(LocationDto gatheringAddress) {
 		this.gatheringAddress = gatheringAddress;
 	}
-	
+
+	public static EpiDataGatheringDto build() {
+		EpiDataGatheringDto dto = new EpiDataGatheringDto();
+		dto.setUuid(DataHelper.createUuid());
+		LocationDto location = LocationDto.build();
+		dto.setGatheringAddress(location);
+		return dto;
+	}
 }

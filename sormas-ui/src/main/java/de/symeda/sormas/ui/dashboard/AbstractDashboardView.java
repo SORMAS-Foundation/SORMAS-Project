@@ -66,7 +66,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 		dashboardSwitcher.setValue(dashboardType);
 		dashboardSwitcher.addValueChangeListener(e -> {
 			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
-			if (e.getProperty().getValue().equals(DashboardType.SURVEILLANCE)) {
+			if (DashboardType.SURVEILLANCE.equals(e.getProperty().getValue())) {
 				SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
 			} else {
 				SormasUI.get().getNavigator().navigateTo(ContactsDashboardView.VIEW_NAME);

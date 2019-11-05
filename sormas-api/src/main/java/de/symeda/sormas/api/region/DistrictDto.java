@@ -27,25 +27,21 @@ public class DistrictDto extends EntityDto {
 	private static final long serialVersionUID = 8990957700033431836L;
 
 	public static final String I18N_PREFIX = "District";
-	public static final int CASE_INCIDENCE_DIVISOR = 100000;
 
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
-	public static final String POPULATION = "population";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
 	
 	private String name;
 	private String epidCode;
-	private Integer population;
 	private Float growthRate;
 	private RegionReferenceDto region;
 	
-	public DistrictDto(Date creationDate, Date changeDate, String uuid, String name, String epidCode, Integer population, Float growthRate, String regionUuid, String regionName) {
+	public DistrictDto(Date creationDate, Date changeDate, String uuid, String name, String epidCode, Float growthRate, String regionUuid, String regionName) {
 		super(creationDate, changeDate, uuid);
 		this.name = name;
 		this.epidCode = epidCode;
-		this.population = population;
 		this.growthRate = growthRate;
 		this.region = new RegionReferenceDto(regionUuid, regionName);
 	}
@@ -78,13 +74,6 @@ public class DistrictDto extends EntityDto {
 	@Override
 	public String toString() {
 		return getName();
-	}
-	
-	public Integer getPopulation() {
-		return population;
-	}
-	public void setPopulation(Integer population) {
-		this.population = population;
 	}
 	
 	public Float getGrowthRate() {

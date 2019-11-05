@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
@@ -99,6 +101,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -228,7 +231,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import static de.symeda.sormas.backend.util.DtoHelper.mergeDto;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "CaseFacade")
@@ -1163,8 +1165,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException {
+		return saveCase(dto, true);
+	}
+	
+	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges) throws ValidationRuntimeException {
 		Case caze = caseService.getByUuid(dto.getUuid());
-		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
+		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
@@ -1173,32 +1179,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		caze = fillOrBuildEntity(dto, caze);
 
 		// Set version number on a new case
-		if (existingCaseDto == null && StringUtils.isEmpty(dto.getCreationVersion())) {
+		if (caze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
 			caze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
 		caseService.ensurePersisted(caze);
-		onCaseChanged(existingCaseDto, caze);
-
-		return toDto(caze);
-	}
-
-	@Override
-	public CaseDataDto saveCaseSimple(CaseDataDto dto) throws ValidationRuntimeException {
-
-		Case caze = caseService.getByUuid(dto.getUuid());
-		CaseDataDto existingCaseDto = toDto(caseService.getByUuid(dto.getUuid()));
-
-		validate(dto);
-
-		caze = fillOrBuildEntity(dto, caze);
-
-		// Set version number on a new case
-		if (existingCaseDto == null && StringUtils.isEmpty(dto.getCreationVersion())) {
-			caze.setCreationVersion(InfoProvider.get().getVersion());
+		if (handleChanges) {
+			onCaseChanged(existingCaseDto, caze);
 		}
-
-		caseService.ensurePersisted(caze);
 
 		return toDto(caze);
 	}
@@ -1988,7 +1976,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				} else {
 					return new Pair<DistrictDto, BigDecimal>(districtFacade.toDto(district),
 							new BigDecimal(caseCount).divide(
-									new BigDecimal((double) population / DistrictDto.CASE_INCIDENCE_DIVISOR), 1,
+									new BigDecimal((double) population / DistrictIndexDto.CASE_INCIDENCE_DIVISOR), 1,
 									RoundingMode.HALF_UP));
 				}
 			}).sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {
@@ -2761,22 +2749,19 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void mergeCase(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {
 		// 1 Merge Dtos
 		// 1.1 Case
-		CaseDataDto mergedCase = mergeDto(leadCaseData, otherCaseData, cloning, false);
-		if (cloning) {
-			saveCaseSimple(mergedCase);
-		} else {
-			saveCase(mergedCase);
-		}
+		fillDto(leadCaseData, otherCaseData, cloning);
+		saveCase(leadCaseData, !cloning);
 
 		// 1.2 Person
-		PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
-		PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-		PersonDto mergedPerson = mergeDto(leadPerson, otherPerson, cloning, false);
-		if (cloning) {
-			personFacade.savePersonSimple(mergedPerson);
+		if (!cloning) {
+			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
+			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
+			fillDto(leadPerson, otherPerson, cloning);
+			personFacade.savePerson(leadPerson);
 		} else {
-			personFacade.savePerson(mergedPerson);
+			assert(DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
 		}
+		
 		// 2 Change CaseReference
 		Case leadCase = caseService.getByUuid(leadCaseData.getUuid());
 		Case otherCase = caseService.getByUuid(otherCaseData.getUuid());
@@ -2786,10 +2771,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Contact contact : contacts) {
 			if (cloning) {
 				ContactDto newContact = ContactDto.build(leadCase.toReference());
-				contactFacade
-						.saveContactSimple(mergeDto(newContact, ContactFacadeEjb.toDto(contact), cloning, false));
+				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
+				contactFacade.saveContact(newContact, false);
 
 			} else {
+				// simply move existing entities to the merge target
 				contact.setCaze(leadCase);
 				contactService.ensurePersisted(contact);
 			}
@@ -2801,26 +2787,30 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				SampleDto newSample = SampleDto.buildSample(sample.getReportingUser().toReference(),
 						leadCase.toReference());
-				sampleFacade.saveSampleSimple(mergeDto(newSample, SampleFacadeEjb.toDto(sample), cloning, false));
+				fillDto(newSample, SampleFacadeEjb.toDto(sample), cloning);
+				sampleFacade.saveSample(newSample, false);
 
 				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getSampleTests()) {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(),
 							pathogenTest.getLabUser().toReference());
-					sampleTestFacade.savePathogenTest(
-							mergeDto(newPathogenTest, sampleTestFacade.toDto(pathogenTest), cloning, false));
+					fillDto(newPathogenTest, sampleTestFacade.toDto(pathogenTest), cloning);
+					sampleTestFacade.savePathogenTest(newPathogenTest);
 
 				}
 			} else {
+				// simply move existing entities to the merge target
 				sample.setAssociatedCase(leadCase);
 				sampleService.ensurePersisted(sample);
 			}
 		}
 
 		// 2.3 Tasks
-		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(otherCase.getUuid())));
-		for (Task task : tasks) {
-			if (!cloning) {
+		if (!cloning) {
+			// simply move existing entities to the merge target
+
+			List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(otherCase.getUuid())));
+			for (Task task : tasks) {
 				task.setCaze(leadCase);
 				taskService.ensurePersisted(task);
 			}
@@ -2834,9 +2824,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Treatment treatment : treatments) {
 			if (cloning) {
 				TreatmentDto newTreatment = TreatmentDto.buildTreatment(leadCaseTherapyReference);
-				treatmentFacade
-						.saveTreatment(mergeDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning, false));
+				fillDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning);
+				treatmentFacade.saveTreatment(newTreatment);
 			} else {
+				// simply move existing entities to the merge target
 				treatment.setTherapy(leadCase.getTherapy());
 				treatmentService.ensurePersisted(treatment);
 			}
@@ -2848,9 +2839,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Prescription prescription : prescriptions) {
 			if (cloning) {
 				PrescriptionDto newPrescription = PrescriptionDto.buildPrescription(leadCaseTherapyReference);
-				prescriptionFacade.savePrescription(
-						mergeDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning, false));
+				fillDto(newPrescription, PrescriptionFacadeEjb.toDto(prescription), cloning);
+				prescriptionFacade.savePrescription(newPrescription);
 			} else {
+				// simply move existing entities to the merge target
 				prescription.setTherapy(leadCase.getTherapy());
 				prescriptionService.ensurePersisted(prescription);
 			}
@@ -2864,10 +2856,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.buildClinicalVisit(
 						leadCaseData.getClinicalCourse().toReference(), SymptomsDto.build(), leadCase.getDisease());
-				clinicalVisitFacade.saveClinicalVisitSimple(
-						mergeDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning, false),
-						leadCase.getUuid());
+				fillDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
+				clinicalVisitFacade.saveClinicalVisit(newClinicalVisit, leadCase.getUuid(), false);
 			} else {
+				// simply move existing entities to the merge target
 				clinicalVisit.setClinicalCourse(leadCase.getClinicalCourse());
 				clinicalVisitService.ensurePersisted(clinicalVisit);
 			}

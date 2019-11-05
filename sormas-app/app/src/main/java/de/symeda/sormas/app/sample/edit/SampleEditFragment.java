@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app.sample.edit;
 
+import android.util.Log;
 import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
