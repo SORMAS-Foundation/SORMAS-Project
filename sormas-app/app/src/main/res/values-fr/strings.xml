@@ -103,6 +103,8 @@
     <string name="action_try_again">Try again</string>
     <string name="action_turn_on_gps">Turn On GPS</string>
     <string name="action_update_search">Update search</string>
+    <string name="action_save_pathogen_test">Save Pathogen Test</string>
+    <string name="action_edit_pathogen_test">Edit Pathogen Test</string>
     <string name="caption_address">Address</string>
     <string name="caption_age">Age</string>
     <string name="caption_attended_by">Attended by</string>
@@ -527,7 +529,4 @@
     <string name="value_visit_remarks_unknown">Remarks N/A</string>
     <string name="value_visit_time_unknown">Visit Time N/A</string>
     <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
-    <string name="caption_new_pathogen_test">New Pathogen test</string>
-    <string name="action_save_pathogen_test">Save Pathogen Test</string>
-    <string name="action_edit_pathogen_test">Edit Pathogen Test</string>
 </resources>
