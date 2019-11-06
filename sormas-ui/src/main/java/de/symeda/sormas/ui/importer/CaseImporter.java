@@ -56,6 +56,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -116,7 +117,7 @@ public class CaseImporter extends DataImporter {
 			@Override
 			public Exception apply(ImportCellData cellData) {
 				try {
-					if (cellData.getEntityClass() == "Sample") {
+					if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))) {
 						if (firstSampleColumnName == null) {
 							firstSampleColumnName = String.join(".", cellData.getEntityPropertyPath());
 						}
@@ -131,7 +132,7 @@ public class CaseImporter extends DataImporter {
 							currentEntityHasEntries = true;
 							insertColumnEntryIntoSampleData(samples.get(samples.size() - 1), null, cellData.getValue(), cellData.getEntityPropertyPath());
 						}
-					} else if (cellData.getEntityClass() == "PathogenTest") {
+					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
 						if (firstPathogenTestColumnName == null) {
 							firstPathogenTestColumnName = String.join(".", cellData.getEntityPropertyPath());
 						}
@@ -147,7 +148,7 @@ public class CaseImporter extends DataImporter {
 							currentEntityHasEntries = true;					
 							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
 						}
-					} else if (cellData.getEntityClass() == "CaseData") {
+					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(CaseDataDto.class))) {
 						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
 					} else {
 						throw new InvalidColumnException(buildEntityProperty(cellData.getEntityPropertyPath()));
