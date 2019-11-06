@@ -3649,8 +3649,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (166, 'Add pathogenT
 ALTER TABLE cases ADD COLUMN whichvaccine varchar(512);
 ALTER TABLE cases_history ADD COLUMN whichvaccine varchar(512);
 
-ALTER TABLE epidata ADD COLUMN kindofexposure varchar(255);
-ALTER TABLE epidata_history ADD COLUMN kindofexposure varchar(255);
 ALTER TABLE epidata ADD COLUMN kindofexposurebite varchar(255);
 ALTER TABLE epidata_history ADD COLUMN kindofexposurebite varchar(255);
 ALTER TABLE epidata ADD COLUMN kindofexposuretouch varchar(255);

@@ -106,7 +106,6 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setWaterBodyDetails(source.getWaterBodyDetails());
 		target.setTickBite(source.getTickBite());
 		target.setFleaBite(source.getFleaBite());
-		target.setKindOfExposure(source.getKindOfExposure());
 		target.setKindOfExposureBite(source.getKindOfExposureBite());
 		target.setKindOfExposureTouch(source.getKindOfExposureTouch());
 		target.setKindOfExposureScratch(source.getKindOfExposureScratch());
@@ -292,7 +291,6 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setWaterBodyDetails(source.getWaterBodyDetails());
 		target.setTickBite(source.getTickBite());
 		target.setFleaBite(source.getFleaBite());
-		target.setKindOfExposure(source.getKindOfExposure());
 		target.setKindOfExposureBite(source.getKindOfExposureBite());
 		target.setKindOfExposureTouch(source.getKindOfExposureTouch());
 		target.setKindOfExposureScratch(source.getKindOfExposureScratch());

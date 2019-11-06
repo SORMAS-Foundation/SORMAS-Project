@@ -70,7 +70,6 @@ public class EpiData extends AbstractDomainObject {
 	public static final String WATER_BODY = "waterBody";
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
 	public static final String TICKBITE = "tickBite";
-	public static final String KIND_OF_EXPOSURE = "kindOfExposure";
 	public static final String KIND_OF_EXPOSURE_BITE = "kindOfExposureBite";
 	public static final String KIND_OF_EXPOSURE_TOUCH = "kindOfExposureTouch";
 	public static final String KIND_OF_EXPOSURE_SCRATCH = "kindOfExposureScratch";
@@ -132,7 +131,6 @@ public class EpiData extends AbstractDomainObject {
 	private String waterBodyDetails;
 	private YesNoUnknown tickBite;
 	private YesNoUnknown fleaBite;
-	private YesNoUnknown kindOfExposure;
 	private YesNoUnknown kindOfExposureBite;
 	private YesNoUnknown kindOfExposureTouch;
 	private YesNoUnknown kindOfExposureScratch;
@@ -310,14 +308,6 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setFleaBite(YesNoUnknown fleaBite) {
 		this.fleaBite = fleaBite;
-	}
-	
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getKindOfExposure() {
-		return kindOfExposure;
-	}
-	public void setKindOfExposure(YesNoUnknown kindOfExposure) {
-		this.kindOfExposure = kindOfExposure;
 	}
 	
 	@Enumerated(EnumType.STRING)

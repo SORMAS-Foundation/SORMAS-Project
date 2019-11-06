@@ -56,7 +56,6 @@ public class EpiDataDto extends EntityDto {
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
 	public static final String TICK_BITE = "tickBite";
 	public static final String FLEA_BITE = "fleaBite";
-	public static final String KIND_OF_EXPOSURE = "kindOfExposure";
 	public static final String KIND_OF_EXPOSURE_BITE = "kindOfExposureBite";
 	public static final String KIND_OF_EXPOSURE_TOUCH = "kindOfExposureTouch";
 	public static final String KIND_OF_EXPOSURE_SCRATCH = "kindOfExposureScratch";
@@ -170,8 +169,6 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown tickBite;
 	@Diseases({Disease.PLAGUE,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown fleaBite;
-	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
-	private YesNoUnknown kindOfExposure;
 	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown kindOfExposureBite;
 	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
@@ -334,13 +331,6 @@ public class EpiDataDto extends EntityDto {
 	}
 	public void setTickBite(YesNoUnknown tickBite) {
 		this.tickBite = tickBite;
-	}
-	
-	public YesNoUnknown getKindOfExposure() {
-		return kindOfExposure;
-	}
-	public void setKindOfExposure(YesNoUnknown kindOfExposure) {
-		this.kindOfExposure = kindOfExposure;
 	}
 	
 	public YesNoUnknown getKindOfExposureBite() {
