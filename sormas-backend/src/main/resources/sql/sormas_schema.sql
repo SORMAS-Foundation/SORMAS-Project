@@ -3645,5 +3645,10 @@ ALTER TABLE samples_history ADD COLUMN pathogentestresultchangedate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (166, 'Add pathogenTestResultChangeDate to sample #1302');
 
--- 2019-10-02 Bed-side lab testing #1109
+-- 2019-11-04 Fill samples with accurate pathogenTestResultChangeDate #1349
+UPDATE samples SET pathogentestresultchangedate = (SELECT testdatetime FROM pathogentest WHERE pathogentest.sample_id = samples.id ORDER BY pathogentest.testdatetime DESC LIMIT 1);
+
+INSERT INTO schema_version (version_number, comment) VALUES (167, 'Fill samples with accurate pathogenTestResultChangeDate #1349');
+
+-- 2019-11-06 Bed-side lab testing #1109
 ALTER TABLE samples ADD COLUMN samplepurpose  varchar(255) DEFAULT 'EXTERNAL' NOT NULL;

@@ -29,6 +29,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -238,26 +239,28 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
         }, this);
         input.setOnItemSelectedListener(spinnerFieldListeners);
 
-        input.setFocusable(true);
-        input.setFocusableInTouchMode(true);
-        input.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (getValue() == null) {
-                        input.setSelection(indexOnOpen);
-                    }
-                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    }
-
-                    if (input.isShown()) {
-                        input.performClick();
-                    }
-                }
-            }
-        });
+        // caused a lot of problems, because the spinner is shown whenever the field is focused
+        // - in contrast to only showing it when the user clicks/touches
+//        input.setFocusable(true);
+//        input.setFocusableInTouchMode(true);
+//        input.setOnFocusChangeListener(new OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (hasFocus) {
+//                    if (getValue() == null) {
+//                        input.setSelection(indexOnOpen);
+//                    }
+//                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    if (imm != null) {
+//                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                    }
+//
+//                    if (input.isShown()) {
+//                        input.performClick();
+//                    }
+//                }
+//            }
+//        });
     }
 
     @Override

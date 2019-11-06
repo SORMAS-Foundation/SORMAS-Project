@@ -27,9 +27,12 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
@@ -160,7 +163,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		return pathogenTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
 	}
-	
+
 	@Override
 	public PathogenTestDto getByUuid(String uuid) {
 		return toDto(pathogenTestService.getByUuid(uuid));
@@ -171,9 +174,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		PathogenTestDto existingSampleTest = toDto(pathogenTestService.getByUuid(dto.getUuid()));		
 		PathogenTest pathogenTest = fromDto(dto);
 		pathogenTestService.ensurePersisted(pathogenTest);
-		
+
 		onPathogenTestChanged(existingSampleTest, pathogenTest);
-		
+
 		// Update case classification if necessary
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(pathogenTest.getSample().getAssociatedCase()), pathogenTest.getSample().getAssociatedCase());
 
@@ -189,10 +192,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
 		pathogenTestService.delete(pathogenTest);
-		
+
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(pathogenTest.getSample().getAssociatedCase()), pathogenTest.getSample().getAssociatedCase());
 	}
-	
+
 	@Override
 	public boolean hasPathogenTest(SampleReferenceDto sample) {
 		Sample sampleEntity = sampleService.getByReferenceDto(sample);
@@ -223,9 +226,27 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
 		}
 	}
-	
-	public PathogenTest fromDto(@NotNull PathogenTestDto source) {
 
+	@Override
+	public Date getLatestPathogenTestDate(String sampleUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
+		Join<PathogenTest, Sample> sampleJoin = pathogenTestRoot.join(PathogenTest.SAMPLE);
+
+		Predicate filter = cb.equal(sampleJoin.get(Sample.UUID), sampleUuid);
+		cq.where(filter);
+		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME)));
+		cq.select(pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	public PathogenTest fromDto(@NotNull PathogenTestDto source) {
 		PathogenTest target = pathogenTestService.getByUuid(source.getUuid());
 		if(target == null) {
 			target = new PathogenTest();

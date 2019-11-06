@@ -39,6 +39,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.region.RegionIndexDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -79,7 +80,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 	
 	@Override
-	public List<RegionDto> getIndexList(RegionCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<RegionIndexDto> getIndexList(RegionCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
 		Root<Region> region = cq.from(Region.class);
@@ -113,7 +114,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		cq.select(region);
 		
 		List<Region> regions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return regions.stream().map(r -> toDto(r)).collect(Collectors.toList());
+		return regions.stream().map(r -> toIndexDto(r)).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -185,6 +186,20 @@ public class RegionFacadeEjb implements RegionFacade {
 			return null;
 		}
 		RegionDto dto = new RegionDto();
+		DtoHelper.fillDto(dto, entity);
+		
+		dto.setName(entity.getName());
+		dto.setEpidCode(entity.getEpidCode());
+		dto.setGrowthRate(entity.getGrowthRate());
+
+		return dto;
+	}
+	
+	public RegionIndexDto toIndexDto(Region entity) {
+		if (entity == null) {
+			return null;
+		}
+		RegionIndexDto dto = new RegionIndexDto();
 		DtoHelper.fillDto(dto, entity);
 		
 		dto.setName(entity.getName());

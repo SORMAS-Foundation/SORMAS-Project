@@ -27,25 +27,25 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.RegionCriteria;
-import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.RegionIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
-public class RegionsGrid extends FilteredGrid<RegionDto, RegionCriteria> {
+public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 
 	private static final long serialVersionUID = 6289713952342575369L;
 
 	public static final String EDIT_BTN_ID = "edit";
 
 	public RegionsGrid() {
-		super(RegionDto.class);
+		super(RegionIndexDto.class);
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
 
-		DataProvider<RegionDto, RegionCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<RegionIndexDto, RegionCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getRegionFacade().getIndexList(
 						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
@@ -55,10 +55,10 @@ public class RegionsGrid extends FilteredGrid<RegionDto, RegionCriteria> {
 				});
 		setDataProvider(dataProvider);
 
-		setColumns(RegionDto.NAME, RegionDto.EPID_CODE, RegionDto.GROWTH_RATE);
+		setColumns(RegionIndexDto.NAME, RegionIndexDto.EPID_CODE, RegionIndexDto.POPULATION, RegionIndexDto.GROWTH_RATE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			Column<RegionDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
+			Column<RegionIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 			editColumn.setId(EDIT_BTN_ID);
 			editColumn.setWidth(20);
 
@@ -71,7 +71,7 @@ public class RegionsGrid extends FilteredGrid<RegionDto, RegionCriteria> {
 		
 		for(Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
-					RegionDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+					RegionIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 	}
 

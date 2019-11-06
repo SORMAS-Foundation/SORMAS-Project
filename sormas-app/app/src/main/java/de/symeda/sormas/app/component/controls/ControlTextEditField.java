@@ -117,40 +117,40 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         });
     }
 
-    private void setUpOnFocusChangeListener() {
-        input.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!v.isEnabled()) {
-                    return;
-                }
-
-                showOrHideNotifications(hasFocus);
-
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                if (imm != null) {
-                    if (hasFocus) {
-                        changeVisualState(VisualState.FOCUSED);
-                        imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-                        // Prevent the content from being automatically selected
-                        input.setSelection(input.getText().length(), input.getText().length());
-                        if (onClickListener != null) {
-                            input.setOnClickListener(onClickListener);
-                        }
-                    } else {
-                        if (hasError) {
-                            changeVisualState(VisualState.ERROR);
-                        } else {
-                            changeVisualState(VisualState.NORMAL);
-                        }
-                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                        input.setOnClickListener(null);
-                    }
-                }
-            }
-        });
-    }
+//    private void setUpOnFocusChangeListener() {
+//        input.setOnFocusChangeListener(new OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (!v.isEnabled()) {
+//                    return;
+//                }
+//
+//                showOrHideNotifications(hasFocus);
+//
+//                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//
+//                if (imm != null) {
+//                    if (hasFocus) {
+//                        changeVisualState(VisualState.FOCUSED);
+//                        imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+//                        // Prevent the content from being automatically selected
+//                        input.setSelection(input.getText().length(), input.getText().length());
+//                        if (onClickListener != null) {
+//                            input.setOnClickListener(onClickListener);
+//                        }
+//                    } else {
+//                        if (hasError) {
+//                            changeVisualState(VisualState.ERROR);
+//                        } else {
+//                            changeVisualState(VisualState.NORMAL);
+//                        }
+//                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                        input.setOnClickListener(null);
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void initializeOnClickListener() {
         if (onClickListener != null) {
@@ -289,7 +289,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         });
 
         setUpOnEditorActionListener();
-        setUpOnFocusChangeListener();
+//        setUpOnFocusChangeListener();
         initializeOnClickListener();
     }
 

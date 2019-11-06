@@ -27,19 +27,19 @@ public class PopulationDataService extends AbstractAdoService<PopulationData> {
 		if (criteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(PopulationData.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
-		if (criteria.getDistrict() == null) {
+		if (criteria.isDistrictIsNull()) {
 			filter = and(cb, filter, cb.isNull(from.get(PopulationData.DISTRICT)));
-		} else {
+		} else if (criteria.getDistrict() != null) {
 			filter = and(cb, filter, cb.equal(from.join(PopulationData.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
-		if (criteria.getAgeGroup() == null) {
+		if (criteria.isAgeGroupIsNull()) {
 			filter = and(cb, filter, cb.isNull(from.get(PopulationData.AGE_GROUP)));
-		} else {
+		} else if (criteria.getAgeGroup() != null) {
 			filter = and(cb, filter, cb.equal(from.get(PopulationData.AGE_GROUP), criteria.getAgeGroup()));
 		}
-		if (criteria.getSex() == null) {
+		if (criteria.isSexIsNull()) {
 			filter = and(cb, filter, cb.isNull(from.get(PopulationData.SEX)));
-		} else {
+		} else if (criteria.getSex() != null) {
 			filter = and(cb, filter, cb.equal(from.get(PopulationData.SEX), criteria.getSex()));
 		}
 

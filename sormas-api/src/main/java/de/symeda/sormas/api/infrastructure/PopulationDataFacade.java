@@ -23,9 +23,9 @@ public interface PopulationDataFacade {
 	 */
 	Integer getProjectedRegionPopulation(String regionUuid);
 	
-	void savePopulationData(PopulationDataDto populationData) throws ValidationRuntimeException;
+	void savePopulationData(List<PopulationDataDto> populationDatas) throws ValidationRuntimeException;
 	
-	PopulationDataDto getPopulationData(PopulationDataCriteria criteria);
+	List<PopulationDataDto> getPopulationData(PopulationDataCriteria criteria);
 	
 	List<Object[]> getPopulationDataForExport();
 	

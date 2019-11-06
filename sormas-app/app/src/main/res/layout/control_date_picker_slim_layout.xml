@@ -29,6 +29,7 @@
         <EditText
             android:id="@+id/input"
             android:layout_width="match_parent"
+            android:focusable="false"
             android:inputType="date"
             style="@style/ControlDateOrTimePickerSlimInputStyle" />
 

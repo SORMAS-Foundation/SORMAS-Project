@@ -73,7 +73,6 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
         target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
         target.setLabDetails(source.getLabDetails());
         target.setLabUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getLabUser()));
     }

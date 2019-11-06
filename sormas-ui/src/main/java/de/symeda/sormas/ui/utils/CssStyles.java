@@ -164,6 +164,7 @@ public final class CssStyles {
 	 */
 	public static final String FORCE_CAPTION = "force-caption";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
+	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	
 	public static final String SOFT_REQUIRED = "soft-required";
 	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
