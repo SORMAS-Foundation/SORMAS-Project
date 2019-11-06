@@ -125,6 +125,21 @@ public final class FieldHelper {
 			final boolean clearOnHidden, Class fieldClass, Disease disease) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
+		
+		setVisibleWhen(fieldGroup, targetPropertyIds, sourceField, sourceValues, visibleWhenNot, clearOnHidden, fieldClass, disease);
+	}
+	
+	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Field sourceField,
+			List<Object> sourceValues, boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourceField, sourceValues, false,
+				clearOnHidden, null, null);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
+			Field sourceField, final List<Object> sourceValues, boolean visibleWhenNot,
+			final boolean clearOnHidden, Class fieldClass, Disease disease) {
+
 		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
 		}

@@ -23,11 +23,14 @@ import java.util.List;
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -46,6 +49,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String EPI_DATA_CAPTION_LOC = "epiDataCaptionLoc";
 	private static final String ANIMAL_CAPTION_LOC = "animalCaptionLoc";
 	private static final String ENVIRONMENTAL_LOC = "environmentalLoc";
+	private static final String KIND_OF_EXPOSURE_LOC = "kindOfExposureLoc";
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.loc(EPI_DATA_CAPTION_LOC) +
@@ -81,7 +85,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 							)
 					)
 			) +
-			LayoutUtil.fluidRowLoc(6, EpiDataDto.KIND_OF_EXPOSURE) +
+			LayoutUtil.fluidRowLoc(6, KIND_OF_EXPOSURE_LOC) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
@@ -145,11 +149,20 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
 				EpiDataDto.ANIMAL_CONDITION, EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE);
 		
-		OptionGroup kindOfExposureField = addField(EpiDataDto.KIND_OF_EXPOSURE, OptionGroup.class);
-		CssStyles.style(kindOfExposureField, CssStyles.ERROR_COLOR_PRIMARY);
 		addFields(EpiDataDto.KIND_OF_EXPOSURE_BITE, EpiDataDto.KIND_OF_EXPOSURE_TOUCH,
 				EpiDataDto.KIND_OF_EXPOSURE_SCRATCH, EpiDataDto.KIND_OF_EXPOSURE_LICK, 
 				EpiDataDto.KIND_OF_EXPOSURE_OTHER, EpiDataDto.KIND_OF_EXPOSURE_DETAILS);
+		
+		OptionGroup kindOfExposureField = new OptionGroup(I18nProperties.getCaption(Captions.EpiData_kindOfExposure), Arrays.asList(YesNoUnknown.values()));
+		CssStyles.style(kindOfExposureField, CssStyles.ERROR_COLOR_PRIMARY, ValoTheme.OPTIONGROUP_HORIZONTAL);
+		kindOfExposureField.setWidth(100, Unit.PERCENTAGE);
+		getContent().addComponent(kindOfExposureField, KIND_OF_EXPOSURE_LOC);	
+		addDefaultAdditionalValidators(kindOfExposureField);
+//		kindOfExposureField.setData(kindOfExposure);
+		
+		addValueChangeListener(e -> {
+			kindOfExposureField.setValue(EpiDataHelper.getKindOfExposure(this.getValue()));
+		});
 		
 		addField(EpiDataDto.ANIMAL_VACCINATION_STATUS, OptionGroup.class);
 		
@@ -210,14 +223,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			}
 		}
 		
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_BITE, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_TOUCH, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_SCRATCH, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_LICK, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_OTHER, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_BITE, kindOfExposureField, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_TOUCH, kindOfExposureField, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_SCRATCH, kindOfExposureField, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_LICK, kindOfExposureField, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_OTHER, kindOfExposureField, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_DETAILS, EpiDataDto.KIND_OF_EXPOSURE_OTHER, Arrays.asList(YesNoUnknown.YES), true);
 		
-		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.PROPHYLAXIS_STATUS, EpiDataDto.KIND_OF_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.PROPHYLAXIS_STATUS, kindOfExposureField, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.DATE_OF_PROPHYLAXIS, EpiDataDto.PROPHYLAXIS_STATUS, Arrays.asList(YesNoUnknown.YES), true);
 		
 		burialAttendedField.addValueChangeListener(e -> {
