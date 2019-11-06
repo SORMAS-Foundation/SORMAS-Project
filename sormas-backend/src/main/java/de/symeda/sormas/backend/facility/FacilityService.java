@@ -153,6 +153,20 @@ public class FacilityService extends AbstractAdoService<Facility> {
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public int getNumberOfChangedFacilities(Date since) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Facility> facilityRoot = cq.from(getElementClass());
+		
+		if (since != null) {
+			cq.where(createChangeDateFilter(cb, facilityRoot, since));
+		}
+		
+		cq.select(cb.count(facilityRoot));
+		
+		return em.createQuery(cq).getFirstResult();
+	}
 
 	public List<Facility> getAllWithoutRegionAfter(Date date) {
 

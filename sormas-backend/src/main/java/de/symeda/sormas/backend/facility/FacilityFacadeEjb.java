@@ -184,6 +184,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public int getNumberOfChangedFacilities(Date since) {
+		return facilityService.getNumberOfChangedFacilities(since);
+	}
 
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {
 		if (entity == null) {

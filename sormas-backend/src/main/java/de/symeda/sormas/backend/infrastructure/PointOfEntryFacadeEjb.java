@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -284,6 +285,11 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		
 		return target;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class PointOfEntryFacadeEjbLocal extends PointOfEntryFacadeEjb	 {
 	}
 	
 }
