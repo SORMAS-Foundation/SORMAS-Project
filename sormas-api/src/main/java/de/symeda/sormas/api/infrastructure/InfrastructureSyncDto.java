@@ -26,6 +26,7 @@ public class InfrastructureSyncDto implements Serializable {
 	private List<DiseaseClassificationCriteriaDto> diseaseClassifications;
 	private List<DiseaseConfigurationDto> diseaseConfigurations;
 	private List<UserRoleConfigDto> userRoleConfigurations;
+	private List<String> deletedUserRoleConfigurationUuids;
 	
 	public boolean isInitialSyncRequired() {
 		return initialSyncRequired;
@@ -105,6 +106,14 @@ public class InfrastructureSyncDto implements Serializable {
 	
 	public void setUserRoleConfigurations(List<UserRoleConfigDto> userRoleConfigurations) {
 		this.userRoleConfigurations = userRoleConfigurations;
+	}
+
+	public List<String> getDeletedUserRoleConfigurationUuids() {
+		return deletedUserRoleConfigurationUuids;
+	}
+
+	public void setDeletedUserRoleConfigurationUuids(List<String> deletedUserRoleConfigurationUuids) {
+		this.deletedUserRoleConfigurationUuids = deletedUserRoleConfigurationUuids;
 	}
 
 }

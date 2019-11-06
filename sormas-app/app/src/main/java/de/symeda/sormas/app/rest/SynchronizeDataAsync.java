@@ -31,6 +31,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
@@ -44,6 +46,7 @@ import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -333,22 +336,47 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     @AddTrace(name = "pullInfrastructureTrace")
     private void pullInfrastructure() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
-        new RegionDtoHelper().pullEntities(false);
-        new DistrictDtoHelper().pullEntities(false);
-        new CommunityDtoHelper().pullEntities(false);
-        new FacilityDtoHelper().pullEntities(false);
-        new PointOfEntryDtoHelper().pullEntities(false);
-        new UserDtoHelper().pullEntities(false);
-        new DiseaseClassificationDtoHelper().pullEntities(false);
-        new DiseaseConfigurationDtoHelper().pullEntities(false);
+        if (!ConfigProvider.isInitialSyncRequired()) {
+            InfrastructureChangeDatesDto changeDates = InfrastructureHelper.getInfrastructureChangeDates();
 
-        // user role configurations may be removed, so have to pull the deleted uuids
-        // this may be applied to other entities later as well
-        Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
-        List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() + 1 : 0));
-        DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
+            try {
+                Response<InfrastructureSyncDto> response = RetroProvider.getInfrastructureFacadeRetro().pullInfrastructureSyncData(changeDates).execute();
+                if (!response.isSuccessful()) {
+                    RetroProvider.throwException(response);
+                }
 
-        new UserRoleConfigDtoHelper().pullEntities(false);
+                InfrastructureSyncDto infrastructureData = response.body();
+                if (infrastructureData != null) {
+                    if (infrastructureData.isInitialSyncRequired()) {
+                        ConfigProvider.setInitialSyncRequired(true);
+                        pullInfrastructure();
+                    } else {
+                        InfrastructureHelper.handlePulledInfrastructureData(infrastructureData);
+                    }
+                }
+            } catch (IOException e) {
+                Log.e(SynchronizeDataAsync.class.getSimpleName(), "Error when trying to pull infrastructure data: " + e.getMessage());
+            }
+        } else {
+            new RegionDtoHelper().pullEntities(false);
+            new DistrictDtoHelper().pullEntities(false);
+            new CommunityDtoHelper().pullEntities(false);
+            new FacilityDtoHelper().pullEntities(false);
+            new PointOfEntryDtoHelper().pullEntities(false);
+            new UserDtoHelper().pullEntities(false);
+            new DiseaseClassificationDtoHelper().pullEntities(false);
+            new DiseaseConfigurationDtoHelper().pullEntities(false);
+
+            // user role configurations may be removed, so have to pull the deleted uuids
+            // this may be applied to other entities later as well
+            Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
+            List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() + 1 : 0));
+            DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
+
+            new UserRoleConfigDtoHelper().pullEntities(false);
+
+            ConfigProvider.setInitialSyncRequired(false);
+        }
     }
 
     @AddTrace(name = "pullAndRemoveArchivedUuidsSinceTrace")

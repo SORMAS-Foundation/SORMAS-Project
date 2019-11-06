@@ -1,10 +1,9 @@
 package de.symeda.sormas.backend.infrastructure;
 
-import java.util.Date;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
@@ -49,24 +48,25 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 	protected ConfigFacadeEjbLocal configFacade;
 	
 	@Override
-	public InfrastructureSyncDto getNewInfrastructureData(Date since) {
+	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
 		
-		if (facilityService.getNumberOfChangedFacilities(since) > configFacade.getInfrastructureSyncThreshold()
-				|| communityService.getNumberOfChangedCommunities(since) > configFacade.getInfrastructureSyncThreshold()) {
+		if (facilityService.getNumberOfChangedFacilities(changeDates.getFacilityChangeDate()) > configFacade.getInfrastructureSyncThreshold()
+				|| communityService.getNumberOfChangedCommunities(changeDates.getCommunityChangeDate()) > configFacade.getInfrastructureSyncThreshold()) {
 			sync.setInitialSyncRequired(true);
 			return sync;
 		}
 		
-		sync.setRegions(regionFacade.getAllAfter(since));
-		sync.setDistricts(districtFacade.getAllAfter(since));
-		sync.setCommunities(communityFacade.getAllAfter(since));
-		sync.setFacilities(facilityFacade.getAllByRegionAfter(null, since));
-		sync.setPointsOfEntry(pointOfEntryFacade.getAllAfter(since));
-		sync.setUsers(userFacade.getAllAfter(since));
-		sync.setDiseaseClassifications(caseClassificationFacade.getAllSince(since));
-		sync.setDiseaseConfigurations(diseaseConfigurationFacade.getAllAfter(since));
-		sync.setUserRoleConfigurations(userRoleConfigurationFacade.getAllAfter(since));
+		sync.setRegions(regionFacade.getAllAfter(changeDates.getRegionChangeDate()));
+		sync.setDistricts(districtFacade.getAllAfter(changeDates.getDistrictChangeDate()));
+		sync.setCommunities(communityFacade.getAllAfter(changeDates.getCommunityChangeDate()));
+		sync.setFacilities(facilityFacade.getAllByRegionAfter(null, changeDates.getFacilityChangeDate()));
+		sync.setPointsOfEntry(pointOfEntryFacade.getAllAfter(changeDates.getPointOfEntryChangeDate()));
+		sync.setUsers(userFacade.getAllAfter(changeDates.getUserChangeDate()));
+		sync.setDiseaseClassifications(caseClassificationFacade.getAllSince(changeDates.getDiseaseClassificationChangeDate()));
+		sync.setDiseaseConfigurations(diseaseConfigurationFacade.getAllAfter(changeDates.getDiseaseConfigurationChangeDate()));
+		sync.setUserRoleConfigurations(userRoleConfigurationFacade.getAllAfter(changeDates.getUserRoleConfigurationChangeDate()));
+		sync.setDeletedUserRoleConfigurationUuids(userRoleConfigurationFacade.getDeletedUuids(changeDates.getUserRoleConfigurationChangeDate()));
 		
 		return sync;
 	}

@@ -1,15 +1,15 @@
 package de.symeda.sormas.rest;
 
-import java.util.Date;
-
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 
 @Path("/infrastructure")
@@ -17,9 +17,9 @@ import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 @RolesAllowed("USER")
 public class InfrastructureResource {
 
-	@GET @Path("/all/{since}")
-	public InfrastructureSyncDto getNewInfrastructureData(@PathParam("since") long since) {
-		return FacadeProvider.getInfrastructureFacade().getNewInfrastructureData(new Date(since));
+	@POST @Path("/sync")
+	public InfrastructureSyncDto getInfrastructureSyncData(@Context SecurityContext sc, InfrastructureChangeDatesDto changeDates) {
+		return FacadeProvider.getInfrastructureFacade().getInfrastructureSyncData(changeDates);
 	}
 	
 }

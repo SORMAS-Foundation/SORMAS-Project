@@ -131,7 +131,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
     }
 
     /**
-     * @return Number or pulled entities
+     * @return Number of pulled entities
      */
     protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response) throws ServerCommunicationException, DaoException, ServerConnectionException {
         if (!response.isSuccessful()) {
@@ -140,25 +140,27 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
         final List<DTO> result = response.body();
         if (result != null && result.size() > 0) {
-            preparePulledResult(result);
-            dao.callBatchTasks(new Callable<Void>() {
-                public Void call() throws Exception {
-                    boolean empty = dao.countOf() == 0;
-                    for (DTO dto : result) {
-                        handlePulledDto(dao, dto);
-                        // TODO #704
+            return handlePulledList(dao, result);
+        }
+        return 0;
+    }
+
+    public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result) throws DaoException {
+        preparePulledResult(result);
+        dao.callBatchTasks((Callable<Void>) () -> {
+//            boolean empty = dao.countOf() == 0;
+            for (DTO dto : result) {
+                handlePulledDto(dao, dto);
+                // TODO #704
 //                        if (entity != null && markAsRead) {
 //                            dao.markAsRead(entity);
 //                        }
-                    }
-                    return null;
-                }
-            });
+            }
+            return null;
+        });
 
-            Log.d(dao.getTableName(), "Pulled: " + result.size());
-            return result.size();
-        }
-        return 0;
+        Log.d(dao.getTableName(), "Pulled: " + result.size());
+        return result.size();
     }
 
     /**
