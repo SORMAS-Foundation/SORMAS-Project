@@ -1223,6 +1223,48 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"testedDisease character varying(255)," +
 							"testedDiseaseDetails character varying(512)," +
 							"UNIQUE(snapshot, uuid));");
+					break;
+				case 168:
+					currentVersion = 168;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN whichVaccine varchar(512);");
+
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureBite varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureTouch varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureScratch varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureLick varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureOther varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureDetails varchar(512);");
+
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN animalVaccinationStatus varchar(255);");
+
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hydrophobia varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN opisthotonus varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN anxietyStates varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN delirium varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN uproariousness varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN paresthesiaAroundWound varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN excessSalivation varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN insomnia varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN paralysis varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN excitation varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN dysphagia varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN aerophobia varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hyperactivity varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN paresis varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN agitation varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN ascendingFlaccidParalysis varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN erraticBehaviour varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN coma varchar(255);");
+
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN humanRabiesType varchar(255);");
+
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN dogs varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN cats varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN canidae varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN rabbits varchar(255);");
+
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN prophylaxisStatus varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN dateOfProphylaxis timestamp;");
 
 					// ATTENTION: break should only be done after last version
 					break;
