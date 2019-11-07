@@ -58,7 +58,4 @@ public interface FacilityFacade {
 	List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef);
 	
 	List<FacilityReferenceDto> getLaboratoriesByName(String name);
-	
-	int getNumberOfChangedFacilities(Date since);
-
 }

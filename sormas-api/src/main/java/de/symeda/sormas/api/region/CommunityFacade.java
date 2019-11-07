@@ -47,7 +47,4 @@ public interface CommunityFacade {
 	void saveCommunity(CommunityDto dto) throws ValidationRuntimeException;
 	
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef);
-	
-	int getNumberOfChangedCommunities(Date since);
-
 }

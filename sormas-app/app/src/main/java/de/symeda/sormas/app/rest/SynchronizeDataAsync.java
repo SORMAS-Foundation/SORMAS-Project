@@ -370,7 +370,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             // user role configurations may be removed, so have to pull the deleted uuids
             // this may be applied to other entities later as well
             Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
-            List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() + 1 : 0));
+            List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() : 0));
             DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
 
             new UserRoleConfigDtoHelper().pullEntities(false);

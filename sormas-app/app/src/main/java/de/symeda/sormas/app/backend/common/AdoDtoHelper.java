@@ -86,7 +86,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
             final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
             Date maxModifiedDate = dao.getLatestChangeDate();
-            Call<List<DTO>> dtoCall = pullAllSince(maxModifiedDate != null ? maxModifiedDate.getTime() + 1 : 0);
+            Call<List<DTO>> dtoCall = pullAllSince(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
             if (dtoCall == null) {
                 return;
             }

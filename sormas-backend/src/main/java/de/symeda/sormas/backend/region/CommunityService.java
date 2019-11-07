@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,20 +59,6 @@ public class CommunityService extends AbstractAdoService<Community> {
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
-	}
-	
-	public int getNumberOfChangedCommunities(Date since) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Community> communityRoot = cq.from(getElementClass());
-		
-		if (since != null) {
-			cq.where(createChangeDateFilter(cb, communityRoot, since));
-		}
-		
-		cq.select(cb.count(communityRoot));
-		
-		return em.createQuery(cq).getFirstResult();
 	}
 	
 	@SuppressWarnings("rawtypes")

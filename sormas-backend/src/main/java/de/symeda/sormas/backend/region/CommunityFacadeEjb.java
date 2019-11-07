@@ -194,11 +194,6 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		return communityService.getByName(name, districtService.getByReferenceDto(districtRef)).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 	
-	@Override
-	public int getNumberOfChangedCommunities(Date since) {
-		return communityService.getNumberOfChangedCommunities(since);
-	}
-	
 	public static CommunityReferenceDto toReferenceDto(Community entity) {
 		if (entity == null) {
 			return null;

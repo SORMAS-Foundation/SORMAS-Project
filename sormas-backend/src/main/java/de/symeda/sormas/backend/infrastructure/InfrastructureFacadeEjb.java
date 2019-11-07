@@ -51,8 +51,8 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
 		
-		if (facilityService.getNumberOfChangedFacilities(changeDates.getFacilityChangeDate()) > configFacade.getInfrastructureSyncThreshold()
-				|| communityService.getNumberOfChangedCommunities(changeDates.getCommunityChangeDate()) > configFacade.getInfrastructureSyncThreshold()) {
+		if (facilityService.countAfter(changeDates.getFacilityChangeDate()) > configFacade.getInfrastructureSyncThreshold()
+				|| communityService.countAfter(changeDates.getCommunityChangeDate()) > configFacade.getInfrastructureSyncThreshold()) {
 			sync.setInitialSyncRequired(true);
 			return sync;
 		}

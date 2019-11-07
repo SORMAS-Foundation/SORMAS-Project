@@ -32,6 +32,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
@@ -66,7 +67,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			filter = cb.and(filter, dateFilter);		
 		}
 
@@ -105,7 +106,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		
 		Predicate filter = cb.equal(from.get(EventParticipant.EVENT), event);
 		if (date != null) {
-			filter = cb.and(filter, createChangeDateFilter(cb, from, date));
+			filter = cb.and(filter, createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date)));
 		}
 		cq.where(filter);		
 		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));

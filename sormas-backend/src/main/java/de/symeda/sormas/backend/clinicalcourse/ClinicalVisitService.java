@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -88,7 +90,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 		}
 		
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			filter = AbstractAdoService.and(cb, filter, dateFilter);
 		}
 		
@@ -133,7 +135,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 	}
 	
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ClinicalVisit, ClinicalVisit> path, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ClinicalVisit, ClinicalVisit> path, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(path.get(ClinicalVisit.CHANGE_DATE), date);
 		
 		Join<ClinicalVisit, Symptoms> symptoms = path.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);
