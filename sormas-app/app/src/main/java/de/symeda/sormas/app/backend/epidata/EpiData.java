@@ -151,8 +151,6 @@ public class EpiData extends AbstractDomainObject {
     private Date dateOfProphylaxis;
 
     @Enumerated(EnumType.STRING)
-    private YesNoUnknown kindOfExposure;
-    @Enumerated(EnumType.STRING)
     private YesNoUnknown kindOfExposureBite;
     @Enumerated(EnumType.STRING)
     private YesNoUnknown kindOfExposureTouch;
@@ -291,14 +289,6 @@ public class EpiData extends AbstractDomainObject {
 
     public void setOtherAnimalsDetails(String otherAnimalsDetails) {
         this.otherAnimalsDetails = otherAnimalsDetails;
-    }
-
-    public YesNoUnknown getKindOfExposure() {
-        return kindOfExposure;
-    }
-
-    public void setKindOfExposure(YesNoUnknown kindOfExposure) {
-        this.kindOfExposure = kindOfExposure;
     }
 
     public YesNoUnknown getKindOfExposureBite() {
