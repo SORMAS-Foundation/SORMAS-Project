@@ -336,7 +336,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     @AddTrace(name = "pullInfrastructureTrace")
     private void pullInfrastructure() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
-        if (!ConfigProvider.isInitialSyncRequired()) {
+        if (ConfigProvider.isInitialSyncRequired()) {
+            pullInitialInfrastructure();
+        } else {
             InfrastructureChangeDatesDto changeDates = InfrastructureHelper.getInfrastructureChangeDates();
 
             try {
@@ -357,26 +359,29 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             } catch (IOException e) {
                 Log.e(SynchronizeDataAsync.class.getSimpleName(), "Error when trying to pull infrastructure data: " + e.getMessage());
             }
-        } else {
-            new RegionDtoHelper().pullEntities(false);
-            new DistrictDtoHelper().pullEntities(false);
-            new CommunityDtoHelper().pullEntities(false);
-            new FacilityDtoHelper().pullEntities(false);
-            new PointOfEntryDtoHelper().pullEntities(false);
-            new UserDtoHelper().pullEntities(false);
-            new DiseaseClassificationDtoHelper().pullEntities(false);
-            new DiseaseConfigurationDtoHelper().pullEntities(false);
-
-            // user role configurations may be removed, so have to pull the deleted uuids
-            // this may be applied to other entities later as well
-            Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
-            List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() : 0));
-            DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
-
-            new UserRoleConfigDtoHelper().pullEntities(false);
-
-            ConfigProvider.setInitialSyncRequired(false);
         }
+    }
+
+    @AddTrace(name = "pullInitialInfrastructureTrace")
+    private void pullInitialInfrastructure() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+        new RegionDtoHelper().pullEntities(false);
+        new DistrictDtoHelper().pullEntities(false);
+        new CommunityDtoHelper().pullEntities(false);
+        new FacilityDtoHelper().pullEntities(false);
+        new PointOfEntryDtoHelper().pullEntities(false);
+        new UserDtoHelper().pullEntities(false);
+        new DiseaseClassificationDtoHelper().pullEntities(false);
+        new DiseaseConfigurationDtoHelper().pullEntities(false);
+
+        // user role configurations may be removed, so have to pull the deleted uuids
+        // this may be applied to other entities later as well
+        Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
+        List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() : 0));
+        DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
+
+        new UserRoleConfigDtoHelper().pullEntities(false);
+
+        ConfigProvider.setInitialSyncRequired(false);
     }
 
     @AddTrace(name = "pullAndRemoveArchivedUuidsSinceTrace")
