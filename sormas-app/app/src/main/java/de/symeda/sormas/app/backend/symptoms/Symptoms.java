@@ -300,8 +300,6 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState erraticBehaviour;
     @Enumerated(EnumType.STRING)
     private SymptomState coma;
-    @Enumerated(EnumType.STRING)
-    private SymptomState death;
 
     @Enumerated(EnumType.STRING)
     private SymptomState otherHemorrhagicSymptoms;
@@ -1322,14 +1320,6 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setComa(SymptomState coma) {
         this.coma = coma;
-    }
-
-    public SymptomState getDeath() {
-        return death;
-    }
-
-    public void setDeath(SymptomState death) {
-        this.death = death;
     }
 
     public String getPatientIllLocation() {
