@@ -28,6 +28,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -36,6 +37,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
@@ -436,6 +438,10 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         verifyBurialStatus();
         verifyGatheringStatus();
         verifyTravelStatus();
+
+        EpiDataDto dto = new EpiDataDto();
+        new EpiDataDtoHelper().fillInnerFromAdo(dto, record);
+        contentBinding.epiDataKindOfExposure.setValue(EpiDataHelper.getKindOfExposure(dto));
     }
 
     @Override
