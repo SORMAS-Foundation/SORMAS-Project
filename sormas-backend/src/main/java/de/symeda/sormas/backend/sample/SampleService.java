@@ -261,32 +261,34 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Root<Sample> sampleRoot = cq.from(Sample.class);
 		Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		
-		cq.multiselect(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), cb.countDistinct(caseJoin));
+		cq.multiselect(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), cb.count(sampleRoot));
 		cq.groupBy(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT));
 		
 		Predicate filter = createDefaultFilter(cb, sampleRoot);
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, sampleRoot, user));
 		
-		if (from != null || to != null)
+		if (from != null || to != null) {
 			filter = and(cb, filter, cb.between(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT_CHANGE_DATE), from, to));
+		}
 		
-		if (region != null)
+		if (region != null) {
 			filter = and(cb, filter, cb.equal(caseJoin.get(Case.REGION), region));
+		}
 
-		if (district != null)
+		if (district != null) {
 			filter = and(cb, filter, cb.equal(caseJoin.get(Case.DISTRICT), district));
+		}
 
-		if (disease != null)
+		if (disease != null) {
 			filter = and(cb, filter, cb.equal(caseJoin.get(Case.DISEASE), disease));
+		}
 		
-		if (filter != null)
+		if (filter != null) {
 			cq.where(filter);
+		}
 		
 		List<Object[]> results = em.createQuery(cq).getResultList();
-		
-		Map<PathogenTestResultType, Long> testResults = results.stream().collect(Collectors.toMap(e -> (PathogenTestResultType) e[0], e -> (Long) e[1]));
-		
-		return testResults;
+		return results.stream().collect(Collectors.toMap(e -> (PathogenTestResultType) e[0], e -> (Long) e[1]));
 	}
 
 	@Override

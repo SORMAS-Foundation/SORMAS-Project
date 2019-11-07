@@ -64,12 +64,6 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
-	CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease);
-	
-	CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant);
-	
-	CaseDataDto convertContactToCase(CaseDataDto caseData, ContactDto contact, PersonReferenceDto person, Disease disease, EventParticipantDto eventParticipant);
-	
 	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria, String userUuid);
 
 	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);

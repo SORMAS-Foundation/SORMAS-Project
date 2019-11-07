@@ -90,6 +90,7 @@ public interface Strings {
 	public static String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	public static String errorCaseMerging = "errorCaseMerging";
 	public static String errorEntityOutdated = "errorEntityOutdated";
+	public static String errorFieldValidationFailed = "errorFieldValidationFailed";
 	public static String errorInvalidValue = "errorInvalidValue";
 	public static String errorNoAccessToWeb = "errorNoAccessToWeb";
 	public static String errorNotRequiredRights = "errorNotRequiredRights";
@@ -195,6 +196,7 @@ public interface Strings {
 	public static String headingInformationSource = "headingInformationSource";
 	public static String headingIntroduction = "headingIntroduction";
 	public static String headingLaboratorySample = "headingLaboratorySample";
+	public static String headingLineListing = "headingLineListing";
 	public static String headingLocation = "headingLocation";
 	public static String headingLoginFailed = "headingLoginFailed";
 	public static String headingMaternalHistory = "headingMaternalHistory";
@@ -356,6 +358,8 @@ public interface Strings {
 	public static String messageExportFailed = "messageExportFailed";
 	public static String messageFollowUpCanceled = "messageFollowUpCanceled";
 	public static String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
+	public static String messageHealthFacilityChanged = "messageHealthFacilityChanged";
+	public static String messageHealthFacilityMulitChanged = "messageHealthFacilityMulitChanged";
 	public static String messageImportCanceled = "messageImportCanceled";
 	public static String messageImportCanceledErrors = "messageImportCanceledErrors";
 	public static String messageImportError = "messageImportError";
@@ -364,7 +368,6 @@ public interface Strings {
 	public static String messageImportInvalidColumn = "messageImportInvalidColumn";
 	public static String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	public static String messageImportSuccessful = "messageImportSuccessful";
-	public static String messageInfrastructureDataChanged = "messageInfrastructureDataChanged";
 	public static String messageLoginFailed = "messageLoginFailed";
 	public static String messageMissingDateFilter = "messageMissingDateFilter";
 	public static String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";

@@ -7,7 +7,6 @@ import java.security.Principal;
 import org.junit.Before;
 import org.mockito.Mockito;
 
-import com.vaadin.v7.data.util.converter.ConverterFactory;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
@@ -15,6 +14,7 @@ import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.util.CurrentInstance;
+import com.vaadin.v7.data.util.converter.ConverterFactory;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;

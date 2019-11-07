@@ -76,6 +76,7 @@ public interface Captions {
 	public static String bulkEdit = "bulkEdit";
 	public static String bulkEventStatus = "bulkEventStatus";
 	public static String bulkEventType = "bulkEventType";
+	public static String bulkHealthFacility = "bulkHealthFacility";
 	public static String bulkInvestigationStatus = "bulkInvestigationStatus";
 	public static String bulkLostToFollowUp = "bulkLostToFollowUp";
 	public static String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
@@ -177,6 +178,7 @@ public interface Captions {
 	public static String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	public static String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
+	public static String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
 	public static String CaseHospitalization = "CaseHospitalization";
 	public static String CaseHospitalization_accommodation = "CaseHospitalization.accommodation";
 	public static String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
@@ -191,6 +193,7 @@ public interface Captions {
 	public static String caseImportErrorDescription = "caseImportErrorDescription";
 	public static String caseImportMergeCase = "caseImportMergeCase";
 	public static String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
+	public static String caseLineListing = "caseLineListing";
 	public static String caseMergeDuplicates = "caseMergeDuplicates";
 	public static String caseNewCase = "caseNewCase";
 	public static String caseNewCaseDate = "caseNewCaseDate";
@@ -211,6 +214,7 @@ public interface Captions {
 	public static String caseShowActive = "caseShowActive";
 	public static String caseShowArchived = "caseShowArchived";
 	public static String caseTransferCase = "caseTransferCase";
+	public static String caseTransferCases = "caseTransferCases";
 	public static String city = "city";
 	public static String ClinicalVisit = "ClinicalVisit";
 	public static String ClinicalVisit_bloodPressure = "ClinicalVisit.bloodPressure";
@@ -569,6 +573,10 @@ public interface Captions {
 	public static String importSkips = "importSkips";
 	public static String info = "info";
 	public static String lastName = "lastName";
+	public static String lineListingAddLine = "lineListingAddLine";
+	public static String lineListingInfrastructureData = "lineListingInfrastructureData";
+	public static String lineListingNewCasesList = "lineListingNewCasesList";
+	public static String lineListingSharedInformation = "lineListingSharedInformation";
 	public static String Location = "Location";
 	public static String Location_address = "Location.address";
 	public static String Location_areaType = "Location.areaType";
@@ -635,6 +643,7 @@ public interface Captions {
 	public static String PathogenTest_testTypeText = "PathogenTest.testTypeText";
 	public static String pathogenTestNewResult = "pathogenTestNewResult";
 	public static String pathogenTestNewTest = "pathogenTestNewTest";
+	public static String PathogenTests = "PathogenTests";
 	public static String Person = "Person";
 	public static String Person_address = "Person.address";
 	public static String Person_approximateAge = "Person.approximateAge";

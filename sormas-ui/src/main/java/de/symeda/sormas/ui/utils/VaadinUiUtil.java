@@ -165,6 +165,53 @@ public class VaadinUiUtil {
 		UI.getCurrent().addWindow(popupWindow);
 		return popupWindow;
 	}
+
+	/**
+	 * @param resultConsumer TRUE: Option A, FALSE: Option B
+	 */
+	public static Window showChooseOptionPopup(String caption, Component content, String optionACaption, String optionBCaption, Integer width, Consumer<Boolean> resultConsumer) {
+		Window popupWindow = VaadinUiUtil.createPopupWindow();
+		if (width != null) {
+			popupWindow.setWidth(width, Unit.PIXELS);
+		} else {
+			popupWindow.setWidthUndefined();
+		}
+		popupWindow.setCaption(caption);
+
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(true);
+		content.setWidth(100, Unit.PERCENTAGE);
+		layout.addComponent(content);
+
+		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void onConfirm() {
+				resultConsumer.accept(true);
+				popupWindow.close();
+			}
+			@Override
+			protected void onCancel() {
+				resultConsumer.accept(false);
+				popupWindow.close();
+			}
+		};
+		confirmationComponent.getConfirmButton().setCaption(optionACaption);
+		Button cancelButton = confirmationComponent.getCancelButton();
+		cancelButton.setCaption(optionBCaption);
+		cancelButton.removeStyleName(ValoTheme.BUTTON_LINK);
+		cancelButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+		layout.addComponent(confirmationComponent);
+		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setSpacing(true);
+		popupWindow.setContent(layout);
+		popupWindow.setClosable(false);
+		
+		UI.getCurrent().addWindow(popupWindow);
+		return popupWindow;
+	}
 	
 	public static Window showDeleteConfirmationWindow(String content, Runnable callback) {
 		Window popupWindow = VaadinUiUtil.createPopupWindow();	

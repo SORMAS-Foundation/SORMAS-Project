@@ -21,6 +21,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
@@ -109,6 +110,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -240,7 +242,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "CaseFacade")
@@ -1791,81 +1792,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		return target;
 	}
 
-	@Override
-	public CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease) {
-		return convertContactToCase(new CaseDataDto(), contact, person, disease, null);
-	}
-
-	@Override
-	public CaseDataDto convertContactToCase(ContactDto contact, PersonReferenceDto person, Disease disease,
-			EventParticipantDto eventParticipant) {
-		return convertContactToCase(new CaseDataDto(), contact, person, disease, eventParticipant);
-	}
-
-	@Override
-	public CaseDataDto convertContactToCase(CaseDataDto caseData, ContactDto contact, PersonReferenceDto person,
-			Disease disease, EventParticipantDto eventParticipant) {
-		// #1115: pre-fill the case symptoms based on the last visit of the contact (if
-		// existent)
-		if (disease != null && person != null) {
-
-			VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByPerson(person, disease,
-					java.time.LocalDate.now());
-			if (lastVisit != null) {
-				SymptomsDto oldSymptoms = lastVisit.getSymptoms();
-				SymptomsDto newSymptoms = new SymptomsDto();
-
-				try {
-					// reflection to call the setters of the new symptoms object with the getters
-					// from the one in the visit
-					for (PropertyDescriptor pd : Introspector.getBeanInfo(SymptomsDto.class, EntityDto.class)
-							.getPropertyDescriptors()) {
-						if (pd.getWriteMethod() != null) {
-							try {
-								pd.getWriteMethod().invoke(newSymptoms, pd.getReadMethod().invoke(oldSymptoms));
-							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				} catch (IntrospectionException e) {
-					e.printStackTrace();
-				}
-				caseData.setSymptoms(newSymptoms);
-				System.out.println("Found and saved visit's symptom");
-			} else {
-				System.out
-						.println("No visit found for person:" + person.getUuid() + " || disease:" + disease.getName());
-			}
-		} else {
-			System.out.println("Person and Disease not found");
-		}
-
-		if (person != null)
-			caseData.setPerson(person);
-		CaseDataDto savedCase = FacadeProvider.getCaseFacade().saveCase(caseData);
-		if (eventParticipant != null) {
-			// retrieve the event participant just in case it has been changed during case
-			// saving
-			EventParticipantDto updatedEventParticipant = FacadeProvider.getEventParticipantFacade()
-					.getEventParticipantByUuid(eventParticipant.getUuid());
-			// set resulting case on event participant and save it
-			updatedEventParticipant.setResultingCase(savedCase.toReference());
-			FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
-		}
-		if (contact != null) {
-			// retrieve the contact just in case it has been changed during case saving
-			ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-			// automatically change the contact status to "converted"
-			updatedContact.setContactStatus(ContactStatus.CONVERTED);
-			// set resulting case on contact and save it
-			updatedContact.setResultingCase(savedCase.toReference());
-			FacadeProvider.getContactFacade().saveContact(updatedContact);
-		}
-		return savedCase;
-
-	}
-
 	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
 		CaseReferenceDto caseRef = caze.toReference();
 		InvestigationStatus investigationStatus = caze.getInvestigationStatus();
@@ -2061,7 +1987,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				} else {
 					return new Pair<DistrictDto, BigDecimal>(districtFacade.toDto(district),
 							new BigDecimal(caseCount).divide(
-									new BigDecimal((double) population / DistrictDto.CASE_INCIDENCE_DIVISOR), 1,
+									new BigDecimal((double) population / DistrictIndexDto.CASE_INCIDENCE_DIVISOR), 1,
 									RoundingMode.HALF_UP));
 				}
 			}).sorted(new Comparator<Pair<DistrictDto, BigDecimal>>() {
