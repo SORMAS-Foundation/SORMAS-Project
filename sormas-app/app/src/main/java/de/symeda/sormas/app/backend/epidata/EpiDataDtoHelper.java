@@ -114,6 +114,23 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         target.setAnimalCondition(source.getAnimalCondition());
         target.setFleaBite(source.getFleaBite());
 
+        target.setKindOfExposureBite(source.getKindOfExposureBite());
+        target.setKindOfExposureLick(source.getKindOfExposureLick());
+        target.setKindOfExposureScratch(source.getKindOfExposureScratch());
+        target.setKindOfExposureTouch(source.getKindOfExposureTouch());
+        target.setKindOfExposureOther(source.getKindOfExposureOther());
+        target.setKindOfExposureDetails(source.getKindOfExposureDetails());
+
+        target.setAnimalVaccinationStatus(source.getAnimalVaccinationStatus());
+
+        target.setDogs(source.getDogs());
+        target.setCats(source.getCats());
+        target.setCanidae(source.getCanidae());
+        target.setRabbits(source.getRabbits());
+
+        target.setProphylaxisStatus(source.getProphylaxisStatus());
+        target.setDateOfProphylaxis(source.getDateOfProphylaxis());
+
         // just recreate all of this and throw the old stuff away
         List<EpiDataBurial> burials = new ArrayList<>();
         if (!source.getBurials().isEmpty()) {
@@ -191,6 +208,23 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
         target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
         target.setAnimalCondition(source.getAnimalCondition());
         target.setFleaBite(source.getFleaBite());
+
+        target.setKindOfExposureBite(source.getKindOfExposureBite());
+        target.setKindOfExposureLick(source.getKindOfExposureLick());
+        target.setKindOfExposureScratch(source.getKindOfExposureScratch());
+        target.setKindOfExposureTouch(source.getKindOfExposureTouch());
+        target.setKindOfExposureOther(source.getKindOfExposureOther());
+        target.setKindOfExposureDetails(source.getKindOfExposureDetails());
+
+        target.setAnimalVaccinationStatus(source.getAnimalVaccinationStatus());
+
+        target.setDogs(source.getDogs());
+        target.setCats(source.getCats());
+        target.setCanidae(source.getCanidae());
+        target.setRabbits(source.getRabbits());
+
+        target.setProphylaxisStatus(source.getProphylaxisStatus());
+        target.setDateOfProphylaxis(source.getDateOfProphylaxis());
 
         List<EpiDataBurialDto> burialDtos = new ArrayList<>();
         if (!source.getBurials().isEmpty()) {
