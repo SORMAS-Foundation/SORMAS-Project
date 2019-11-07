@@ -124,7 +124,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			filter = AbstractAdoService.and(cb, filter, dateFilter);	
 		}
 

@@ -138,9 +138,9 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		}
 		if (date != null) {
 			if (filter != null) {
-				filter = cb.and(filter, createChangeDateFilter(cb, from, date));
+				filter = cb.and(filter, createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date)));
 			} else {
-				filter = createChangeDateFilter(cb, from, date);
+				filter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			}
 		}
 		if (filter != null) {
@@ -162,7 +162,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 
 		Predicate filter = cb.isNull(from.get(Facility.REGION));
 		if (date != null) {
-			filter = cb.and(filter, createChangeDateFilter(cb, from, date));
+			filter = cb.and(filter, createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date)));
 		}
 		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));

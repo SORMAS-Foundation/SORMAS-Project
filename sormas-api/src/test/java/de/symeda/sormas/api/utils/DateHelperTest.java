@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -74,6 +76,16 @@ public class DateHelperTest {
 		calendar.setTime(correctCenturyDate);
 		
 		assertEquals(calendar.get(Calendar.YEAR), 1987);
+	}
+
+	@Test
+	public void testToTimestampUpper() throws Exception {
+		
+		Date date = new Date(2323231232l);
+		Timestamp timestamp = DateHelper.toTimestampUpper(date);
+		assertEquals(date.getTime(), timestamp.getTime());
+		assertTrue(timestamp.after(new Timestamp(date.getTime())));
+		assertEquals(999999, timestamp.getNanos() % 1000000);
 	}
 	
 }

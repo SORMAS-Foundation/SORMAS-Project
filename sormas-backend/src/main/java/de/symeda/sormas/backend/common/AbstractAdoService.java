@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -116,16 +117,30 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public long countAfter(Date since) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> root = cq.from(getElementClass());
+		
+		if (since != null) {
+			cq.where(createChangeDateFilter(cb, root, DateHelper.toTimestampUpper(since)));
+		}
+		
+		cq.select(cb.count(root));
+		
+		return em.createQuery(cq).getSingleResult();
+	}
 
-	public List<ADO> getAllAfter(Date date, User user) {
+	public List<ADO> getAllAfter(Date since, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
-		Root<ADO> from = cq.from(getElementClass());
+		Root<ADO> root = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, from, user);	
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+		Predicate filter = createUserFilter(cb, cq, root, user);	
+		if (since != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, root, DateHelper.toTimestampUpper(since));
 			if (filter != null) {
 				filter = cb.and(filter, dateFilter);
 			} else {
@@ -135,7 +150,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.desc(from.get(Case.CHANGE_DATE)));
+		cq.orderBy(cb.desc(root.get(Case.CHANGE_DATE)));
 		cq.distinct(true);
 
 		List<ADO> resultList = em.createQuery(cq).getResultList();
@@ -179,7 +194,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO,ADO> from, User user);
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Date date) {		
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Timestamp date) {		
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		return dateFilter;
 	}

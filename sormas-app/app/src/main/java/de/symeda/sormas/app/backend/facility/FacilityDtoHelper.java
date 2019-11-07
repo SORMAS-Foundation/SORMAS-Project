@@ -90,7 +90,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
             List<Region> regions = DatabaseHelper.getRegionDao().queryForAll();
             for (Region region : regions) {
                 Date maxModifiedDate = facilityDao.getLatestChangeDateByRegion(region);
-                long maxModifiedTime = maxModifiedDate != null ? maxModifiedDate.getTime() + 1 : 0;
+                long maxModifiedTime = maxModifiedDate != null ? maxModifiedDate.getTime() : 0;
                 databaseWasEmpty = maxModifiedDate == null;
 
                 Call<List<FacilityDto>> dtoCall = pullAllByRegionSince(region, maxModifiedTime);
@@ -103,7 +103,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
             {
                 // Pull 'Other' health facility which has no region set
                 Date maxModifiedDate = facilityDao.getLatestChangeDateByRegion(null);
-                long maxModifiedTime = maxModifiedDate != null ? maxModifiedDate.getTime() + 1 : 0;
+                long maxModifiedTime = maxModifiedDate != null ? maxModifiedDate.getTime() : 0;
                 databaseWasEmpty = maxModifiedDate == null;
 
                 Call<List<FacilityDto>> dtoCall = pullAllWithoutRegionSince(maxModifiedTime);

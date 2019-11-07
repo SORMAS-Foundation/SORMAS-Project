@@ -34,6 +34,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
@@ -114,7 +115,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 	public Predicate buildCriteriaFilter(OutbreakCriteria criteria, CriteriaBuilder cb, Root<Outbreak> from) {
 		Predicate filter = null;
 		if (criteria.getChangeDateAfter() != null) {
-			filter = and(cb, filter, createChangeDateFilter(cb, from, criteria.getChangeDateAfter()));
+			filter = and(cb, filter, createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(criteria.getChangeDateAfter())));
 		}
 		if (criteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Outbreak.DISEASE), criteria.getDisease()));

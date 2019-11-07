@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -109,7 +110,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		// date range
 		if (date != null) {
-			filter = cb.and(filter, createChangeDateFilter(cb, visitRoot, date));
+			filter = cb.and(filter, createChangeDateFilter(cb, visitRoot, DateHelper.toTimestampUpper(date)));
 		}
 		cq.where(filter);
 		cq.distinct(true);
@@ -360,7 +361,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Visit,Visit> visitPath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Visit,Visit> visitPath, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(visitPath.get(Visit.CHANGE_DATE), date);
 
 		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
