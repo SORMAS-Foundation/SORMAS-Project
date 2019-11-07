@@ -181,7 +181,6 @@ public class SymptomsDto extends EntityDto {
 	public static final String ASCENDING_FLACCID_PARALYSIS = "ascendingFlaccidParalysis";
 	public static final String ERRATIC_BEHAVIOUR = "erraticBehaviour";
 	public static final String COMA = "coma";
-	public static final String DEATH = "death";
 	
 	public static final String WEIGHT = "weight";
 
@@ -539,8 +538,6 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState erraticBehaviour;
 	@Diseases({Disease.RABIES})
 	private SymptomState coma;
-	@Diseases({Disease.RABIES})
-	private SymptomState death;
 	private Integer weight;
 	
 	@Order(0)
@@ -1529,12 +1526,6 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setComa(SymptomState coma) {
 		this.coma = coma;
-	}
-	public SymptomState getDeath() {
-		return death;
-	}
-	public void setDeath(SymptomState death) {
-		this.death = death;
 	}
 	public void setWeight(Integer weight) {
 		this.weight = weight;

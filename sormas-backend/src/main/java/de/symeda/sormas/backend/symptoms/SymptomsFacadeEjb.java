@@ -196,7 +196,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setAscendingFlaccidParalysis(source.getAscendingFlaccidParalysis());
 		target.setErraticBehaviour(source.getErraticBehaviour());
 		target.setComa(source.getComa());
-		target.setDeath(source.getDeath());
 		
 		return symptoms;
 	}
@@ -359,7 +358,6 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setAscendingFlaccidParalysis(source.getAscendingFlaccidParalysis());
 		target.setErraticBehaviour(source.getErraticBehaviour());
 		target.setComa(source.getComa());
-		target.setDeath(source.getDeath());
 
 		return target;
 	}

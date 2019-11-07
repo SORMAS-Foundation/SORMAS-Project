@@ -117,7 +117,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS, SymptomsDto.LESIONS_ALL_OVER_BODY, SymptomsDto.LESIONS_RESEMBLE_IMG1, MONKEYPOX_LESIONS_IMG1, 
 									SymptomsDto.LESIONS_RESEMBLE_IMG2, MONKEYPOX_LESIONS_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, MONKEYPOX_LESIONS_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4, MONKEYPOX_LESIONS_IMG4,
 									SymptomsDto.LESIONS_ONSET_DATE, SymptomsDto.VOMITING, SymptomsDto.HYDROPHOBIA, SymptomsDto.OPISTHOTONUS, SymptomsDto.HYPERACTIVITY, SymptomsDto.PARESIS, SymptomsDto.AGITATION, 
-									SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA, SymptomsDto.DEATH,
+									SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA,
 									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)
 							+ LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS))
@@ -235,7 +235,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.PATIENT_ILL_LOCATION,
 				SymptomsDto.HYDROPHOBIA, SymptomsDto.OPISTHOTONUS, SymptomsDto.ANXIETY_STATES, SymptomsDto.DELIRIUM, SymptomsDto.UPROARIOUSNESS, SymptomsDto.PARASTHESIA_AROUND_WOUND, 
 				SymptomsDto.EXCESS_SALIVATION, SymptomsDto.INSOMNIA, SymptomsDto.PARALYSIS, SymptomsDto.EXCITATION, SymptomsDto.DYSPHAGIA, SymptomsDto.AEROPHOBIA, SymptomsDto.HYPERACTIVITY, 
-				SymptomsDto.PARESIS, SymptomsDto.AGITATION, SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA, SymptomsDto.DEATH);
+				SymptomsDto.PARESIS, SymptomsDto.AGITATION, SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA);
 		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 		// complications

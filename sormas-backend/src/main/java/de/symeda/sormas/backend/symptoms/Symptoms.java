@@ -190,7 +190,6 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState ascendingFlaccidParalysis;
 	private SymptomState erraticBehaviour;
 	private SymptomState coma;
-	private SymptomState death;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 
@@ -1457,13 +1456,6 @@ public class Symptoms extends AbstractDomainObject {
 	}
 	public void setComa(SymptomState coma) {
 		this.coma = coma;
-	}
-	@Enumerated(EnumType.STRING)
-	public SymptomState getDeath() {
-		return death;
-	}
-	public void setDeath(SymptomState death) {
-		this.death = death;
 	}
 
 	@Column(length = 255)
