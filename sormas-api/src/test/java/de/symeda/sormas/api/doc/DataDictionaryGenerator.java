@@ -115,7 +115,7 @@ public class DataDictionaryGenerator {
 	}
 
 	private enum EntityColumn {
-		FIELD, TYPE, CAPTION, DESCRIPTION, REQUIRED, DISEASES, OUTBREAKS,
+		FIELD, TYPE, CAPTION, DESCRIPTION, REQUIRED, NEW_DISEASE, DISEASES, OUTBREAKS,
 	}
 
 	@SuppressWarnings("unchecked")
@@ -140,7 +140,7 @@ public class DataDictionaryGenerator {
 		for (EntityColumn column : EntityColumn.values()) {
 			table.addColumn();
 			String columnCaption = column.toString();
-			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
+			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase().replaceAll("_", " ");
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 
@@ -150,6 +150,7 @@ public class DataDictionaryGenerator {
 		sheet.setColumnWidth(EntityColumn.CAPTION.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.DESCRIPTION.ordinal(), 256 * 60);
 		sheet.setColumnWidth(EntityColumn.REQUIRED.ordinal(), 256 * 10);
+		sheet.setColumnWidth(EntityColumn.NEW_DISEASE.ordinal(), 256 * 8);
 		sheet.setColumnWidth(EntityColumn.DISEASES.ordinal(), 256 * 45);
 		sheet.setColumnWidth(EntityColumn.OUTBREAKS.ordinal(), 256 * 10);
 

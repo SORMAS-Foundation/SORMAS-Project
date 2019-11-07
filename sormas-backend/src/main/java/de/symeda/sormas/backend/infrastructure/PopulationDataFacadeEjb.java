@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.infrastructure;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -55,8 +56,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
 		PopulationDataCriteria criteria = new PopulationDataCriteria()
-				.ageGroup(null)
-				.sex(null)
+				.ageGroupIsNull(true)
+				.sexIsNull(true)
+				.districtIsNull(true)
 				.region(new RegionReferenceDto(regionUuid));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
@@ -82,8 +84,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 		
 		PopulationDataCriteria criteria = new PopulationDataCriteria()
-				.ageGroup(null)
-				.sex(null)
+				.ageGroupIsNull(true)
+				.sexIsNull(true)
+				.districtIsNull(true)
 				.region(new RegionReferenceDto(regionUuid));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
@@ -103,8 +106,8 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
 		PopulationDataCriteria criteria = new PopulationDataCriteria()
-				.ageGroup(null)
-				.sex(null)
+				.ageGroupIsNull(true)
+				.sexIsNull(true)
 				.district(new DistrictReferenceDto(districtUuid));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
@@ -130,8 +133,8 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Root<PopulationData> root = cq.from(PopulationData.class);
 		
 		PopulationDataCriteria criteria = new PopulationDataCriteria()
-				.ageGroup(null)
-				.sex(null)
+				.ageGroupIsNull(true)
+				.sexIsNull(true)
 				.district(new DistrictReferenceDto(districtUuid));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
@@ -145,15 +148,17 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 	}
 
 	@Override
-	public void savePopulationData(PopulationDataDto populationData) throws ValidationRuntimeException {
-		validate(populationData);
-
-		PopulationData entity = fromDto(populationData);
-		service.ensurePersisted(entity);
+	public void savePopulationData(List<PopulationDataDto> populationDatas) throws ValidationRuntimeException {
+		
+		for (PopulationDataDto populationData : populationDatas) {
+			validate(populationData);
+			PopulationData entity = fromDto(populationData);
+			service.ensurePersisted(entity);
+		}
 	}
 
 	@Override
-	public PopulationDataDto getPopulationData(PopulationDataCriteria criteria) {
+	public List<PopulationDataDto> getPopulationData(PopulationDataCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PopulationData> cq = cb.createQuery(PopulationData.class);
 		Root<PopulationData> root = cq.from(PopulationData.class);
@@ -161,11 +166,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 
-		try {
-			return toDto(em.createQuery(cq).getSingleResult());
-		} catch (NoResultException e) {
-			return null;
-		}
+		return em.createQuery(cq).getResultStream().map(populationData -> toDto(populationData)).collect(Collectors.toList());
 	}
 	
 	@SuppressWarnings("unchecked")

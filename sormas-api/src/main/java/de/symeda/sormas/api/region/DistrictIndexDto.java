@@ -22,31 +22,35 @@ import java.util.Date;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class DistrictDto extends EntityDto {
+public class DistrictIndexDto extends EntityDto {
 
-	private static final long serialVersionUID = 8990957700033431836L;
+	private static final long serialVersionUID = -1445387465599056704L;
+	public static final int CASE_INCIDENCE_DIVISOR = 100000;
 
 	public static final String I18N_PREFIX = "District";
 
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
+	public static final String POPULATION = "population";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
 	
 	private String name;
 	private String epidCode;
+	private Integer population;
 	private Float growthRate;
 	private RegionReferenceDto region;
 	
-	public DistrictDto(Date creationDate, Date changeDate, String uuid, String name, String epidCode, Float growthRate, String regionUuid, String regionName) {
+	public DistrictIndexDto(Date creationDate, Date changeDate, String uuid, String name, String epidCode, Integer population, Float growthRate, String regionUuid, String regionName) {
 		super(creationDate, changeDate, uuid);
 		this.name = name;
 		this.epidCode = epidCode;
+		this.population = population;
 		this.growthRate = growthRate;
 		this.region = new RegionReferenceDto(regionUuid, regionName);
 	}
 	
-	public DistrictDto() {
+	public DistrictIndexDto() {
 		super();
 	}
 	
@@ -76,6 +80,13 @@ public class DistrictDto extends EntityDto {
 		return getName();
 	}
 	
+	public Integer getPopulation() {
+		return population;
+	}
+	public void setPopulation(Integer population) {
+		this.population = population;
+	}
+	
 	public Float getGrowthRate() {
 		return growthRate;
 	}
@@ -87,8 +98,8 @@ public class DistrictDto extends EntityDto {
 		return new DistrictReferenceDto(getUuid());
 	}
 	
-	public static DistrictDto build() {
-		DistrictDto dto = new DistrictDto();
+	public static DistrictIndexDto build() {
+		DistrictIndexDto dto = new DistrictIndexDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}

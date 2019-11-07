@@ -59,13 +59,13 @@ public class StatisticsHelper {
 				return new EpiWeek(null, (int) attributeValue);
 			case QUARTER_OF_YEAR:
 				String entryAsString = String.valueOf(attributeValue);
-				return new QuarterOfYear(new Quarter(Integer.valueOf(entryAsString.substring(4))), new Year(Integer.valueOf(entryAsString.substring(0, 4))));
+				return new QuarterOfYear(new Quarter(Integer.valueOf(entryAsString.substring(entryAsString.length() - 1))), new Year(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 1))));
 			case MONTH_OF_YEAR:
 				entryAsString = String.valueOf(attributeValue);
-				return new MonthOfYear(Month.values()[Integer.valueOf(entryAsString.substring(4)) - 1], new Year(Integer.valueOf(entryAsString.substring(0, 4))));
+				return new MonthOfYear(Month.values()[Integer.valueOf(entryAsString.substring(entryAsString.length() - 2)) - 1], new Year(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 2))));
 			case EPI_WEEK_OF_YEAR:
 				entryAsString = String.valueOf(attributeValue);
-				return new EpiWeek(Integer.valueOf(entryAsString.substring(0, 4)), Integer.valueOf(entryAsString.substring(4)));
+				return new EpiWeek(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 2)), Integer.valueOf(entryAsString.substring(entryAsString.length() - 2)));
 			case REGION:
 				return FacadeProvider.getRegionFacade().getRegionReferenceByUuid(attributeValue.toString());
 			case DISTRICT:

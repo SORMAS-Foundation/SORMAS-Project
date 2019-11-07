@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -139,7 +140,7 @@ public class UsersView extends AbstractView {
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 				
-				if (!region.equals(criteria.getRegion())) {
+				if (!DataHelper.equal(region, criteria.getRegion())) {
 					criteria.district(null);
 				}
 				

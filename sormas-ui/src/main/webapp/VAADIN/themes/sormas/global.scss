@@ -9,6 +9,10 @@
     &.v-caption-caption-hidden {
       display: none;
     }
+    
+    &.v-caption-caption-overflow {
+      margin-right : -1000px;
+    }
   }
   
   .force-caption {

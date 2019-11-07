@@ -3645,6 +3645,11 @@ ALTER TABLE samples_history ADD COLUMN pathogentestresultchangedate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (166, 'Add pathogenTestResultChangeDate to sample #1302');
 
+-- 2019-11-04 Fill samples with accurate pathogenTestResultChangeDate #1349
+UPDATE samples SET pathogentestresultchangedate = (SELECT testdatetime FROM pathogentest WHERE pathogentest.sample_id = samples.id ORDER BY pathogentest.testdatetime DESC LIMIT 1);
+
+INSERT INTO schema_version (version_number, comment) VALUES (167, 'Fill samples with accurate pathogenTestResultChangeDate #1349');
+
 -- 2019-09-04 Add new disease, human rabies
 ALTER TABLE cases ADD COLUMN whichvaccine varchar(512);
 ALTER TABLE cases_history ADD COLUMN whichvaccine varchar(512);
@@ -3721,4 +3726,4 @@ ALTER TABLE epidata_history ADD COLUMN prophylaxisstatus varchar(255);
 ALTER TABLE epidata ADD COLUMN dateofprophylaxis timestamp;
 ALTER TABLE epidata_history ADD COLUMN dateofprophylaxis timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (167, 'Add new disease, human rabies #834');
+INSERT INTO schema_version (version_number, comment) VALUES (168, 'Add new disease, human rabies #834');

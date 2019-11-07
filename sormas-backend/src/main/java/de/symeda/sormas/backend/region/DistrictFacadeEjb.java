@@ -43,6 +43,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
+import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -93,7 +94,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public List<DistrictDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(District.class);
 		Root<District> district = cq.from(District.class);
@@ -131,7 +132,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		cq.select(district);
 
 		List<District> districts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return districts.stream().map(d -> toDto(d)).collect(Collectors.toList());
+		return districts.stream().map(d -> toIndexDto(d)).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -228,6 +229,21 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			return null;
 		}
 		DistrictDto dto = new DistrictDto();
+		DtoHelper.fillDto(dto, entity);
+
+		dto.setName(entity.getName());
+		dto.setEpidCode(entity.getEpidCode());
+		dto.setGrowthRate(entity.getGrowthRate());
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+
+		return dto;
+	}	
+
+	public DistrictIndexDto toIndexDto(District entity) {
+		if (entity == null) {
+			return null;
+		}
+		DistrictIndexDto dto = new DistrictIndexDto();
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setName(entity.getName());
