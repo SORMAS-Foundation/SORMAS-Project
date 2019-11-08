@@ -67,7 +67,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = cb.and(filter, dateFilter);		
 		}
 
@@ -106,7 +106,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		
 		Predicate filter = cb.equal(from.get(EventParticipant.EVENT), event);
 		if (date != null) {
-			filter = cb.and(filter, createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date)));
+			filter = cb.and(filter, createChangeDateFilter(cb, from, date));
 		}
 		cq.where(filter);		
 		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));

@@ -115,7 +115,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 	public Predicate buildCriteriaFilter(OutbreakCriteria criteria, CriteriaBuilder cb, Root<Outbreak> from) {
 		Predicate filter = null;
 		if (criteria.getChangeDateAfter() != null) {
-			filter = and(cb, filter, createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(criteria.getChangeDateAfter())));
+			filter = and(cb, filter, createChangeDateFilter(cb, from, criteria.getChangeDateAfter()));
 		}
 		if (criteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Outbreak.DISEASE), criteria.getDisease()));

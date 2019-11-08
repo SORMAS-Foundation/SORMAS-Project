@@ -110,7 +110,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = AbstractAdoService.and(cb, filter, dateFilter);	
 		}
 
