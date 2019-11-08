@@ -95,6 +95,27 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/pathogenTest_serotype"
+                        app:dependencyParentField="@{pathogenTestTestedDisease}"
+                        app:dependencyParentValue="@{Disease.CSM}"
+                        app:value="@{data.serotype}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/pathogenTest_cqValue"
+                        app:dependencyParentField="@{pathogenTestTestType}"
+                        app:dependencyParentValue="@{PathogenTestType.CQ_VALUE_DETECTION}"
+                        app:value="@{data.cqValue}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/pathogenTest_testResult"
                         app:value="@{data.testResult}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
