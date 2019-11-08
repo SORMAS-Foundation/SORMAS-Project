@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.visit;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -45,11 +44,8 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -132,8 +128,9 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public VisitDto getLastVisitByPerson(PersonReferenceDto person, Disease disease, LocalDate maxDate) {
-		return toDto(visitService.getLastVisitByPerson(personService.getByReferenceDto(person), disease, maxDate));
+	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		return toDto(visitService.getLastVisitByContact(contact, null));
 	}
 
 	@Override

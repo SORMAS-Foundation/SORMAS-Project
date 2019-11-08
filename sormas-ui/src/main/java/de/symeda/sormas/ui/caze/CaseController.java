@@ -22,8 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
@@ -56,18 +54,15 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
@@ -76,7 +71,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -97,7 +91,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -133,21 +126,17 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null,
-				null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
-	public void create(String personUuid, Disease disease, String eventParticipantUuid) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(
-				new PersonReferenceDto(personUuid), disease, null,
-				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid));
+	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
-	public void create(PersonReferenceDto person, Disease disease, ContactDto contact) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(person, disease,
-				contact, null);
+	public void createFromContact(ContactDto contact) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -213,35 +202,6 @@ public class CaseController {
 		return FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 	}
 
-	private CaseDataDto createNewCase(PersonReferenceDto person, Disease disease) {
-		CaseDataDto caze = CaseDataDto.build(person, disease);
-		caze.setReportDate(null);
-
-		UserDto user = UserProvider.getCurrent().getUser();
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		caze.setReportingUser(userReference);
-
-		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
-			caze.setRegion(user.getRegion());
-			caze.setDistrict(user.getDistrict());
-			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
-			caze.setDisease(Disease.UNDEFINED);
-		} else if (user.getHealthFacility() != null) {
-			FacilityDto healthFacility = FacadeProvider.getFacilityFacade()
-					.getByUuid(user.getHealthFacility().getUuid());
-			caze.setRegion(healthFacility.getRegion());
-			caze.setDistrict(healthFacility.getDistrict());
-			caze.setCommunity(healthFacility.getCommunity());
-			caze.setHealthFacility(healthFacility.toReference());
-		} else {
-			caze.setRegion(user.getRegion());
-			caze.setDistrict(user.getDistrict());
-			caze.setCommunity(user.getCommunity());
-		}
-
-		return caze;
-	}
-
 	private void saveCase(CaseDataDto cazeDto) {
 		// Compare old and new case
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
@@ -250,8 +210,7 @@ public class CaseController {
 		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
-			// TODO would be much better to have a notification for this triggered in the
-			// backend
+			// TODO would be much better to have a notification for this triggered in the backend
 			Window window = VaadinUiUtil.showSimplePopupWindow(
 					I18nProperties.getString(Strings.headingSaveNotification),
 					String.format(I18nProperties.getString(Strings.messagePlagueTypeChange),
@@ -304,21 +263,53 @@ public class CaseController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(PersonReferenceDto person,
-			Disease disease, ContactDto contact, EventParticipantDto eventParticipant) {
+	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(ContactDto convertedContact, EventParticipantDto convertedEventParticipant) {
+		assert(convertedContact == null || convertedEventParticipant == null);
+
 		CaseCreateForm createForm = new CaseCreateForm(UserRight.CASE_CREATE);
-		VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByPerson(person, disease,
-				java.time.LocalDate.now());
-		CaseDataDto caze = CaseDataDto.buildFromContact(contact, lastVisit);
+
+		CaseDataDto caze;
+		PersonDto person;
+		if (convertedContact != null) {
+			VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByContact(convertedContact.toReference());
+			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
+			caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
+		} else if (convertedEventParticipant != null) {
+			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid());
+			person = convertedEventParticipant.getPerson();
+			caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, event.getDisease());
+		} else {
+			person = null;
+			caze = CaseDataDto.build(null, null);
+		}
+
+		UserDto user = UserProvider.getCurrent().getUser();
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		caze.setReportingUser(userReference);
-		createForm.setValue(caze);
 
-		if (person != null) {
-			createForm.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
-			createForm.setNameReadOnly(true);
+		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			caze.setRegion(user.getRegion());
+			caze.setDistrict(user.getDistrict());
+			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+			caze.setDisease(Disease.UNDEFINED);
+		} else if (user.getHealthFacility() != null) {
+			FacilityDto healthFacility = FacadeProvider.getFacilityFacade()
+					.getByUuid(user.getHealthFacility().getUuid());
+			caze.setRegion(healthFacility.getRegion());
+			caze.setDistrict(healthFacility.getDistrict());
+			caze.setCommunity(healthFacility.getCommunity());
+			caze.setHealthFacility(healthFacility.toReference());
+		} else {
+			caze.setRegion(user.getRegion());
+			caze.setDistrict(user.getDistrict());
+			caze.setCommunity(user.getCommunity());
 		}
-		if (contact != null) {
+
+		createForm.setValue(caze);
+		createForm.setPerson(person);
+
+		if (convertedContact != null || convertedEventParticipant != null) {
+			createForm.setNameReadOnly(true);
 			createForm.setDiseaseReadOnly(true);
 		}
 		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(
@@ -330,12 +321,12 @@ public class CaseController {
 				if (!createForm.getFieldGroup().isModified()) {
 					final CaseDataDto dto = createForm.getValue();
 
-					if (contact != null) {
-						CaseController.this.saveConvertedCase(dto, contact, eventParticipant);
-						Notification.show(I18nProperties.getString(Strings.messageCaseCreated),
-								Type.ASSISTIVE_NOTIFICATION);
+					if (convertedContact != null || convertedEventParticipant != null) {
+						saveConvertedCase(dto, convertedContact, convertedEventParticipant);
+						Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					} else {
+						// look for potential duplicate
 						selectOrCreate(dto, createForm.getPersonFirstName(), createForm.getPersonLastName(), uuid -> {
 							if (uuid == null) {
 								PersonDto person = PersonDto.build();
@@ -343,7 +334,7 @@ public class CaseController {
 								person.setLastName(createForm.getPersonLastName());
 								person = FacadeProvider.getPersonFacade().savePerson(person);
 								dto.setPerson(person.toReference());
-								CaseController.this.saveConvertedCase(dto, contact, eventParticipant);
+								saveCase(dto);
 								Notification.show(I18nProperties.getString(Strings.messageCaseCreated),
 										Type.ASSISTIVE_NOTIFICATION);
 								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
@@ -361,26 +352,28 @@ public class CaseController {
 		return editView;
 	}
 	
-	CaseDataDto saveConvertedCase(CaseDataDto convertedCase, ContactDto contact, EventParticipantDto eventParticipant) {
-		if (eventParticipant != null) {
+	private void saveConvertedCase(CaseDataDto resultCase, ContactDto convertedContact, EventParticipantDto convertedEventParticipant) {
+		
+		saveCase(resultCase);
+		
+		if (convertedEventParticipant != null) {
 			// retrieve the event participant just in case it has been changed during case
 			// saving
 			EventParticipantDto updatedEventParticipant = FacadeProvider.getEventParticipantFacade()
-					.getEventParticipantByUuid(eventParticipant.getUuid());
+					.getEventParticipantByUuid(convertedEventParticipant.getUuid());
 			// set resulting case on event participant and save it
-			updatedEventParticipant.setResultingCase(convertedCase.toReference());
+			updatedEventParticipant.setResultingCase(resultCase.toReference());
 			FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
 		}
-		if (contact != null) {
+		if (convertedContact != null) {
 			// retrieve the contact just in case it has been changed during case saving
-			ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+			ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
 			// automatically change the contact status to "converted"
 			updatedContact.setContactStatus(ContactStatus.CONVERTED);
 			// set resulting case on contact and save it
-			updatedContact.setResultingCase(convertedCase.toReference());
+			updatedContact.setResultingCase(resultCase.toReference());
 			FacadeProvider.getContactFacade().saveContact(updatedContact);
 		}
-		return FacadeProvider.getCaseFacade().saveCase(convertedCase);
 	}
 
 	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName,

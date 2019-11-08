@@ -25,7 +25,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
@@ -227,7 +226,6 @@ public class CaseDataDto extends EntityDto {
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
-		caze.setReportDate(new Date());
 		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		return caze;
 	}
@@ -247,12 +245,12 @@ public class CaseDataDto extends EntityDto {
 						try {
 							pd.getWriteMethod().invoke(newSymptoms, pd.getReadMethod().invoke(oldSymptoms));
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-							e.printStackTrace();
+							throw new RuntimeException(e);
 						}
 					}
 				}
 			} catch (IntrospectionException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 		cazeData.setSymptoms(newSymptoms);
@@ -261,7 +259,6 @@ public class CaseDataDto extends EntityDto {
 	
 	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, Disease eventDisease) {
 		CaseDataDto cazeData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
-	
 		return cazeData;
 	}
 

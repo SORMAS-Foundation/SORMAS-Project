@@ -25,7 +25,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -200,23 +199,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 	}
 
 	public Visit getLastVisitByContact(Contact contact, VisitStatus visitStatus) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
-		Root<Visit> from = cq.from(getElementClass());
-
-		Predicate filter = buildVisitFilter(contact, visitStatus, cb, from);
-
-		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
-
-		TypedQuery<Visit> query = em.createQuery(cq);
-		query.setFirstResult(0);
-		query.setMaxResults(1);
-		try {
-			return query.getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		
+		return getLastVisitByContactId(contact.getPerson().getId(), contact.getLastContactDate(),  contact.getReportDateTime(), contact.getFollowUpUntil(), contact.getCaze().getDisease(), visitStatus);
 	}
 
 	public Visit getLastVisitByContactId(long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease, VisitStatus visitStatus) {
