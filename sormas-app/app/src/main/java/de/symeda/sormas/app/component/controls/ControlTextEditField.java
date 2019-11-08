@@ -380,6 +380,15 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         }
     }
 
+    @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
+    public static Float getFloatValue(ControlTextEditField view) {
+        if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
+            return Float.valueOf(view.getFieldValue());
+        } else {
+            return null;
+        }
+    }
+
     @BindingAdapter("valueAttrChanged")
     public static void setListener(ControlTextEditField view, InverseBindingListener listener) {
         view.inverseBindingListener = listener;
