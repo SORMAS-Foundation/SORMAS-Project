@@ -38,6 +38,8 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.util.LocationService;
 
 /**
@@ -163,6 +165,33 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
         queryBuilder.setWhere(where);
         return queryBuilder;
+    }
+
+    public void deleteContactAndAllDependingEntities(String contactUuid) throws SQLException {
+        deleteContactAndAllDependingEntities(queryUuidWithEmbedded(contactUuid));
+    }
+
+    public void deleteContactAndAllDependingEntities(Contact contact) throws SQLException {
+        // Cancel if not in local database
+        if (contact == null) {
+            return;
+        }
+
+        // Delete all visits associated ONLY with this contact
+        List<Visit> visits = DatabaseHelper.getVisitDao().getByContact(contact);
+        for (Visit visit : visits) {
+            if (DatabaseHelper.getContactDao().getCountByPersonAndDisease(visit.getPerson(), visit.getDisease()) <= 1) {
+                DatabaseHelper.getVisitDao().deleteCascade(visit);
+            }
+        }
+
+        // Delete all tasks associated with this contact
+        List<Task> tasks = DatabaseHelper.getTaskDao().queryByContact(contact);
+        for (Task task : tasks) {
+            DatabaseHelper.getTaskDao().deleteCascade(task);
+        }
+
+        deleteCascade(contact);
     }
 
 }

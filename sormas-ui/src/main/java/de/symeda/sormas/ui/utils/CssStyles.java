@@ -119,6 +119,7 @@ public final class CssStyles {
 	public static final String BACKGROUND_SUSPECT_CRITERIA = "background-suspect-criteria";
 	public static final String BACKGROUND_PROBABLE_CRITERIA = "background-probable-criteria";
 	public static final String BACKGROUND_CONFIRMED_CRITERIA = "background-confirmed-criteria";
+	public static final String BACKGROUND_NOT_A_CASE_CRITERIA = "background-not-a-case-criteria";
 	public static final String NO_BORDER = "no-border";
 	public static final String BACKGROUND_HIGHLIGHT = "background-highlight";
 	public static final String BACKGROUND_CRITICAL = "background-critical";
@@ -163,6 +164,7 @@ public final class CssStyles {
 	 */
 	public static final String FORCE_CAPTION = "force-caption";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
+	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	
 	public static final String SOFT_REQUIRED = "soft-required";
 	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";

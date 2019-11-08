@@ -276,9 +276,9 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     }
 
     // Abstract Domain Object
-    @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
-    public static void setValue(ControlTextReadField textField, AbstractDomainObject ado, String valueFormat, String defaultValue) {
-        setValue(textField, ado != null ? ado.toString() : null, null, valueFormat, defaultValue, ado);
+    @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
+    public static void setValue(ControlTextReadField textField, AbstractDomainObject ado, String appendValue, String valueFormat, String defaultValue) {
+        setValue(textField, ado != null ? ado.toString() : null, appendValue, valueFormat, defaultValue, ado);
     }
 
     // Date & date range

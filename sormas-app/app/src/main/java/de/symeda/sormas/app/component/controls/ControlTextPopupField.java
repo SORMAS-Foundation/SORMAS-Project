@@ -72,31 +72,31 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
     // Instance methods
 
-    private void setUpOnFocusChangeListener() {
-        input.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!v.isEnabled()) {
-                    return;
-                }
-
-                showOrHideNotifications(hasFocus);
-
-                if (hasFocus) {
-                    changeVisualState(VisualState.FOCUSED);
-                    if (onClickListener != null) {
-                        input.setOnClickListener(onClickListener);
-                    }
-                } else {
-                    if (hasError) {
-                        changeVisualState(VisualState.ERROR);
-                    } else {
-                        changeVisualState(VisualState.NORMAL);
-                    }
-                }
-            }
-        });
-    }
+//    private void setUpOnFocusChangeListener() {
+//        input.setOnFocusChangeListener(new OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (!v.isEnabled()) {
+//                    return;
+//                }
+//
+//                showOrHideNotifications(hasFocus);
+//
+//                if (hasFocus) {
+//                    changeVisualState(VisualState.FOCUSED);
+//                    if (onClickListener != null) {
+//                        input.setOnClickListener(onClickListener);
+//                    }
+//                } else {
+//                    if (hasError) {
+//                        changeVisualState(VisualState.ERROR);
+//                    } else {
+//                        changeVisualState(VisualState.NORMAL);
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void initializeOnClickListener() {
         if (onClickListener != null) {
@@ -224,7 +224,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
             }
         });
 
-        setUpOnFocusChangeListener();
+//        setUpOnFocusChangeListener();
         initializeOnClickListener();
     }
 

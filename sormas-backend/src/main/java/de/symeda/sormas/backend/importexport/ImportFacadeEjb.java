@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.auth0.jwt.internal.org.apache.commons.lang3.text.WordUtils;
 import com.opencsv.CSVWriter;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -49,10 +50,12 @@ import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -122,7 +125,8 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
-
+	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
+	
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				
 		// Create the export directory if it doesn't exist
@@ -135,9 +139,9 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
-		buildListOfFields(columnNames, entityNames, CaseDataDto.class, "");
-		buildListOfFields(columnNames, entityNames, SampleDto.class, "");
-		buildListOfFields(columnNames, entityNames, PathogenTestDto.class, "");
+		appendListOfFields(columnNames, entityNames, CaseDataDto.class, "");
+		appendListOfFields(columnNames, entityNames, SampleDto.class, "");
+		appendListOfFields(columnNames, entityNames, PathogenTestDto.class, "");
 		Path filePath = Paths.get(getCaseImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
 			writer.writeNext(entityNames.toArray(new String[entityNames.size()]));
@@ -158,10 +162,38 @@ public class ImportFacadeEjb implements ImportFacade {
 		
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
-		buildListOfFields(columnNames, entityNames, PointOfEntryDto.class, "");
+		appendListOfFields(columnNames, entityNames, PointOfEntryDto.class, "");
 		Path filePath = Paths.get(getPointOfEntryImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(entityNames.toArray(new String[entityNames.size()]));
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.flush();
+		}
+	}
+	
+	@Override
+	public void generatePopulationDataImportTemplateFile() throws IOException {
+		// Create the export directory if it doesn't exist
+		try {
+			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
+		} catch (IOException e) {
+			logger.error("Generated files directory doesn't exist and creation failed.");
+			throw e;
+		}
+		
+		List<String> columnNames = new ArrayList<>();
+		columnNames.add(PopulationDataDto.REGION);
+		columnNames.add(PopulationDataDto.DISTRICT);
+		columnNames.add(RegionDto.GROWTH_RATE);
+		columnNames.add("TOTAL");
+		columnNames.add("MALE_TOTAL");
+		columnNames.add("FEMALE_TOTAL");
+		for (AgeGroup ageGroup : AgeGroup.values()) {
+			columnNames.add("TOTAL_" + ageGroup.name());
+			columnNames.add("MALE_" + ageGroup.name());
+			columnNames.add("FEMALE_" + ageGroup.name());
+		}
+		Path filePath = Paths.get(getPopulationDataImportTemplateFilePath());
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
 			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 			writer.flush();
 		}
@@ -180,6 +212,13 @@ public class ImportFacadeEjb implements ImportFacade {
 		Path filePath = exportDirectory.resolve(POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
+	
+	@Override
+	public String getPopulationDataImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
 
 	/**
 	 * Builds a list of all fields in the case and its relevant sub entities. IMPORTANT: The order
@@ -187,7 +226,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	 * fields in the order of declaration (which is what we need here), but that could change
 	 * in the future.
 	 */
-	private void buildListOfFields(List<String> columnNames, List<String> entityNames, Class<?> clazz, String prefix) {
+	private void appendListOfFields(List<String> columnNames, List<String> entityNames, Class<?> clazz, String prefix) {
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				continue;
@@ -222,9 +261,9 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 			// Other non-infrastructure EntityDto/ReferenceDto classes, recursively call this method to include fields of the sub-entity
 			if (EntityDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
-				buildListOfFields(columnNames, entityNames, field.getType(), prefix == null || prefix.isEmpty() ? field.getName() + "." :  prefix + field.getName() + ".");
+				appendListOfFields(columnNames, entityNames, field.getType(), prefix == null || prefix.isEmpty() ? field.getName() + "." :  prefix + field.getName() + ".");
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
-				buildListOfFields(columnNames, entityNames, PersonDto.class, prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
+				appendListOfFields(columnNames, entityNames, PersonDto.class, prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else {
 				String className = clazz.getSimpleName();
 				entityNames.add(className.substring(0, className.lastIndexOf("Dto")));

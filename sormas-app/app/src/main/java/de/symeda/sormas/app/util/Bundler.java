@@ -25,7 +25,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 public class Bundler {
 
     private static final String FINISH_INSTEAD_OF_UP_NAV = "finishInsteadOfUpNav";
-    private static final String ACTIVE_PAGE_KEY = "activePageKey";
+    private static final String ACTIVE_PAGE_INDEX = "activePageIndex";
     private static final String ROOT_UUID = "rootUuid";
     private static final String LIST_FILTER = "listFilter";
     private static final String CASE_UUID = "caseUuid";
@@ -55,14 +55,14 @@ public class Bundler {
     }
 
 
-    public Bundler setActivePageKey(int activePageKey) {
-        bundle.putInt(ACTIVE_PAGE_KEY, activePageKey);
+    public Bundler setActivePageIndex(int activePageIndex) {
+        bundle.putInt(ACTIVE_PAGE_INDEX, activePageIndex);
         return this;
     }
 
-    public int getActivePageKey() {
-        if (bundle.containsKey(ACTIVE_PAGE_KEY)) {
-            return bundle.getInt(ACTIVE_PAGE_KEY);
+    public int getActivePageIndex() {
+        if (bundle.containsKey(ACTIVE_PAGE_INDEX)) {
+            return bundle.getInt(ACTIVE_PAGE_INDEX);
         }
         return 0;
     }

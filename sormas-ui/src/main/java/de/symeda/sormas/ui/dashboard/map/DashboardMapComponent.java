@@ -65,6 +65,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -624,7 +625,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		case CASE_INCIDENCE:
 			legendEntry = buildMapIconLegendEntry("lowest-region-small",
 					"<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-							+ DistrictDto.CASE_INCIDENCE_DIVISOR);
+							+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
 			break;
 		default:
 			throw new IllegalArgumentException(caseMeasure.toString());
@@ -645,7 +646,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						DataHelper.getTruncatedBigDecimal(
 								districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP))
 						+ " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-						+ DistrictDto.CASE_INCIDENCE_DIVISOR);
+						+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
 				break;
 			default:
 				throw new IllegalArgumentException(caseMeasure.toString());
@@ -668,7 +669,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						DataHelper.getTruncatedBigDecimal(
 								districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - "
 								+ DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-								+ DistrictDto.CASE_INCIDENCE_DIVISOR);
+								+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
 				break;
 			default:
 				throw new IllegalArgumentException(caseMeasure.toString());
@@ -685,7 +686,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		case CASE_INCIDENCE:
 			legendEntry = buildMapIconLegendEntry("highest-region-small",
 					"> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-							+ DistrictDto.CASE_INCIDENCE_DIVISOR);
+							+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
 			break;
 		default:
 			throw new IllegalArgumentException(caseMeasure.toString());
@@ -701,7 +702,6 @@ public class DashboardMapComponent extends VerticalLayout {
 	}
 
 	private void clearRegionShapes() {
-
 		map.removeGroup(REGIONS_GROUP_ID);
 		map.removeGroup(DISTRICTS_GROUP_ID);
 		polygonRegions.clear();
@@ -712,7 +712,6 @@ public class DashboardMapComponent extends VerticalLayout {
 	}
 
 	private void showRegionsShapes(CaseMeasure caseMeasure, Date fromDate, Date toDate, Disease disease) {
-
 		clearRegionShapes();
 		map.setTileLayerOpacity(0.5f);
 
@@ -759,7 +758,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			List<Pair<DistrictDto, BigDecimal>> measurePerDistrictWithoutMissingPopulations = new ArrayList<>();
 			measurePerDistrictWithoutMissingPopulations.addAll(measurePerDistrict);
 			measurePerDistrictWithoutMissingPopulations
-			.removeIf(d -> d.getElement0().getPopulation() == null || d.getElement0().getPopulation() <= 0);
+			.removeIf(d -> d.getElement1() == null || d.getElement1().intValue() <= 0);
 			districtValuesLowerQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
 					? measurePerDistrictWithoutMissingPopulations
 							.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.25)).getElement1()
@@ -801,7 +800,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 
 			if (caseMeasure == CaseMeasure.CASE_INCIDENCE) {
-				if (district.getPopulation() == null || district.getPopulation() <= 0) {
+				if (districtValue == null || districtValue.intValue() <= 0) {
 					// grey when region has no population data
 					emptyPopulationDistrictPresent = true;
 					fillColor = "#999";

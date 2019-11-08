@@ -30,6 +30,8 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -51,6 +53,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE) +
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TESTED_DISEASE_DETAILS) +
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
+			LayoutUtil.fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
 			LayoutUtil.fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") + 
 			LayoutUtil.fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
@@ -80,12 +83,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 		
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
-		addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
+		TextField testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
+		FieldHelper.addSoftRequiredStyle(testTypeTextField);
 		DateTimeField sampleTestDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
 		sampleTestDateField.addValidator(new DateComparisonValidator(sampleTestDateField, sample.getSampleDateTime(), false, false,
 				I18nProperties.getValidationError(Validations.afterDate, sampleTestDateField.getCaption(), I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
 		ComboBox lab = addField(PathogenTestDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
+		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
 		addDiseaseField(PathogenTestDto.TESTED_DISEASE, true);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		
@@ -99,10 +104,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
-
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TESTED_DISEASE_DETAILS, PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.OTHER), true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestDto.TEST_TYPE_TEXT), Arrays.asList(PathogenTestType.OTHER));
 		
 		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<Object, List<Object>> () {{
 	        put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CSM));
@@ -122,6 +125,18 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				fourFoldIncrease.setEnabled(false);
 			}
 		});
+		
+		lab.addValueChangeListener(event -> {
+			if (event.getProperty().getValue() != null && ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+				labDetails.setVisible(true);
+				labDetails.setRequired(true);
+			} else {
+				labDetails.setVisible(false);
+				labDetails.setRequired(false);
+				labDetails.clear();
+			}
+		});
+
 		
 		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB,
 				PathogenTestDto.TEST_RESULT);

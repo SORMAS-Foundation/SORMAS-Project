@@ -16,7 +16,7 @@ This file defines the SOP (Standard Operating Procedure) that should be followed
 
 ## Guide
 ### Step 1: Download the Data Dictionary
-Download the latest [Data Dictionary](https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx) from this repository and open it. Please never use a version of the Data Dictionary that you downloaded earlier as it is very likely that its contents have changed in the meantime.
+Download the latest [Data Dictionary](https://github.com/hzi-braunschweig/SORMAS-Project/raw/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx) from this repository and open it. Please never use a version of the Data Dictionary that you downloaded earlier as it is very likely that its contents have changed in the meantime.
 
 You will use the Data Dictionary to define all the details of the new disease. Please change the background of every row that you're editing (e.g. to a subtle red) to make sure that we don't miss any of the information you have provided.
 

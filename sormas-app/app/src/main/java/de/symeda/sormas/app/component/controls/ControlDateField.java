@@ -142,29 +142,29 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
         fragment.show(fragmentManager, getResources().getText(R.string.hint_select_a_date).toString());
     }
 
-    private void setUpOnFocusChangeListener() {
-        input.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!v.isEnabled()) {
-                    return;
-                }
-
-                showOrHideNotifications(hasFocus);
-
-                if (hasFocus) {
-                    changeVisualState(VisualState.FOCUSED);
-                    showDateFragment();
-                } else {
-                    if (hasError) {
-                        changeVisualState(VisualState.ERROR);
-                    } else {
-                        changeVisualState(VisualState.NORMAL);
-                    }
-                }
-            }
-        });
-    }
+//    private void setUpOnFocusChangeListener() {
+//        input.setOnFocusChangeListener(new OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (!v.isEnabled()) {
+//                    return;
+//                }
+//
+//                showOrHideNotifications(hasFocus);
+//
+//                if (hasFocus) {
+//                    changeVisualState(VisualState.FOCUSED);
+//                    //showDateFragment();
+//                } else {
+//                    if (hasError) {
+//                        changeVisualState(VisualState.ERROR);
+//                    } else {
+//                        changeVisualState(VisualState.NORMAL);
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void setUpOnClickListener() {
         input.setOnClickListener(new OnClickListener() {
@@ -174,11 +174,11 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
                     return;
                 }
 
-                showOrHideNotifications(v.hasFocus());
+//                showOrHideNotifications(v.hasFocus());
 
-                if (v.hasFocus()) {
+                //if (v.hasFocus()) {
                     showDateFragment();
-                }
+                //}
             }
         });
     }
@@ -310,7 +310,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
             }
         });
 
-        setUpOnFocusChangeListener();
+//        setUpOnFocusChangeListener();
         setUpOnClickListener();
     }
 

@@ -23,12 +23,17 @@ import java.util.List;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -43,6 +48,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String INVESTIGATION_STATUS_CHECKBOX = "investigationStatusCheckbox";
 	private static final String OUTCOME_CHECKBOX = "outcomeCheckbox";
 	private static final String SURVEILLANCE_OFFICER_CHECKBOX = "surveillanceOfficerCheckbox";
+	private static final String HEALTH_FACILITY_CHECKBOX = "healthFacilityCheckbox";
 	
 	private static final String HTML_LAYOUT =
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, CLASSIFICATION_CHECKBOX) +
@@ -52,7 +58,9 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, OUTCOME_CHECKBOX) +
 			LayoutUtil.fluidRowLocs(CaseDataDto.OUTCOME) +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, SURVEILLANCE_OFFICER_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, "");
+			LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, "") +
+			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, HEALTH_FACILITY_CHECKBOX) +
+			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 	
 	private final DistrictReferenceDto singleSelectedDistrict;
 	
@@ -62,6 +70,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox investigationStatusCheckBox;
 	private CheckBox outcomeCheckBox;
 	private CheckBox surveillanceOfficerCheckBox;
+	private CheckBox healthFacilityCheckbox;
 	
 	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, null);
@@ -105,9 +114,46 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 			});
 		}
 		
+		healthFacilityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkHealthFacility));
+		getContent().addComponent(healthFacilityCheckbox, HEALTH_FACILITY_CHECKBOX);
+		
+		ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
+		region.setEnabled(false);
+		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
+		district.setEnabled(false);
+		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		community.setNullSelectionAllowed(true);
+		community.setEnabled(false);
+		ComboBox healthFacility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+		healthFacility.setImmediate(true);
+		healthFacility.setEnabled(false);
+		
+		region.addValueChangeListener(e -> {
+			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
+			FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+		});
+		district.addValueChangeListener(e -> {
+			if (community.getValue() == null) {
+				FieldHelper.removeItems(healthFacility);
+			}
+			FieldHelper.removeItems(community);
+			DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
+			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false) : null);
+		});
+		community.addValueChangeListener(e -> {
+			FieldHelper.removeItems(healthFacility);
+			CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
+			FieldHelper.updateItems(healthFacility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, false) :
+				district.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), false) :
+					null);
+		});
+		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		
 		FieldHelper.setRequiredWhen(getFieldGroup(), classificationCheckBox, Arrays.asList(CaseDataDto.CASE_CLASSIFICATION), Arrays.asList(true));
 		FieldHelper.setRequiredWhen(getFieldGroup(), investigationStatusCheckBox, Arrays.asList(CaseDataDto.INVESTIGATION_STATUS), Arrays.asList(true));
 		FieldHelper.setRequiredWhen(getFieldGroup(), outcomeCheckBox, Arrays.asList(CaseDataDto.OUTCOME), Arrays.asList(true));
+		FieldHelper.setRequiredWhen(getFieldGroup(), healthFacilityCheckbox, Arrays.asList(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY), Arrays.asList(true));
 		
 		classificationCheckBox.addValueChangeListener(e -> {
 			caseClassification.setEnabled((boolean) e.getProperty().getValue());
@@ -118,7 +164,19 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 		outcomeCheckBox.addValueChangeListener(e -> {
 			outcome.setEnabled((boolean) e.getProperty().getValue());
 		});
+		healthFacilityCheckbox.addValueChangeListener(e -> {
+			region.setEnabled((boolean) e.getProperty().getValue());
+			district.setEnabled((boolean) e.getProperty().getValue());
+			community.setEnabled((boolean) e.getProperty().getValue());
+			healthFacility.setEnabled((boolean) e.getProperty().getValue());
+			if ((boolean) e.getProperty().getValue()) {
+				FieldHelper.addSoftRequiredStyle(community);
+			}else {
+				FieldHelper.removeSoftRequiredStyle(community);
+			}
+		});
 	}
+	
 	
 	@Override
 	protected String createHtmlLayout() {
@@ -141,4 +199,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 		return surveillanceOfficerCheckBox;
 	}
 	
+	public CheckBox getHealthFacilityCheckbox() {
+		return healthFacilityCheckbox;
+	}
 }

@@ -78,7 +78,10 @@ public class EventParticipantsController {
 			}
 		});
 		
-		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewEventParticipant));
+		Window window = VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewEventParticipant));
+		window.addCloseListener(e -> {
+			doneConsumer.accept(null);
+		});
 	}
 	
 	public void editEventParticipant(String eventParticipantUuid) {

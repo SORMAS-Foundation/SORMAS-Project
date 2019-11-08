@@ -91,17 +91,18 @@ public class CaseImporter extends DataImporter {
 	}
 
 	public CaseImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
-		super(inputFile, errorReportWriter, currentUser, currentUI);
+		super(inputFile, true, errorReportWriter, currentUser, currentUI);
 
 	}
 
 	@Override
-	protected void importDataFromCsvLine(String[] nextLine, List<String> entityHeaders, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException {
+	protected void importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
-		if (nextLine.length > headersLine.length) {
+		if (values.length > entityProperties.length) {
 			hasImportError = true;
-			writeImportError(nextLine, I18nProperties.getValidationError(Validations.importLineTooLong));
-			readNextLineFromCsv(entityHeaders, headersLine, headers);
+			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
+			importedCallback.accept(ImportResult.ERROR);
+			return;
 		}
 
 		final PersonDto newPersonTmp = PersonDto.build();
@@ -110,45 +111,46 @@ public class CaseImporter extends DataImporter {
 
 		final List<SampleDto> samples = new ArrayList<>();
 		final List<PathogenTestDto> pathogenTests = new ArrayList<>();
-//		final Map<SampleDto, List<PathogenTestDto>> pathogenTests = new HashMap<>();
 
-		boolean caseHasImportError = insertRowIntoData(nextLine, entityHeaders, headers, false, new Function<ImportColumnInformation, Exception>() {
+		boolean caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, new Function<ImportCellData, Exception>() {
 			@Override
-			public Exception apply(ImportColumnInformation importColumnInformation) {
+			public Exception apply(ImportCellData cellData) {
 				try {
-					if (importColumnInformation.getEntityClass() == SampleDto.class) {
+					if (cellData.getEntityClass() == "Sample") {
 						if (firstSampleColumnName == null) {
-							firstSampleColumnName = String.join(".", importColumnInformation.getEntryHeaderPath());
+							firstSampleColumnName = String.join(".", cellData.getEntityPropertyPath());
 						}
-						if (String.join(".", importColumnInformation.getEntryHeaderPath()).equals(firstSampleColumnName)) {
+						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstSampleColumnName)) {
 							if (samples.size() > 0 && !currentEntityHasEntries) {
 								samples.remove(samples.size() - 1);
 							}
 							currentEntityHasEntries = false;
 							samples.add(SampleDto.buildSample(currentUser, new CaseReferenceDto(newCaseTmp.getUuid())));
 						}
-						if (!StringUtils.isEmpty(importColumnInformation.getEntry())) {
+						if (!StringUtils.isEmpty(cellData.getValue())) {
 							currentEntityHasEntries = true;
-							insertColumnEntryIntoSampleData(samples.get(samples.size() - 1), null, importColumnInformation.getEntry(), importColumnInformation.getEntryHeaderPath());
+							insertColumnEntryIntoSampleData(samples.get(samples.size() - 1), null, cellData.getValue(), cellData.getEntityPropertyPath());
 						}
-					} else if (importColumnInformation.getEntityClass() == PathogenTestDto.class) {
+					} else if (cellData.getEntityClass() == "PathogenTest") {
 						if (firstPathogenTestColumnName == null) {
-							firstPathogenTestColumnName = String.join(".", importColumnInformation.getEntryHeaderPath());
+							firstPathogenTestColumnName = String.join(".", cellData.getEntityPropertyPath());
 						}
 						SampleDto referenceSample = samples.get(samples.size() - 1);
-						if (String.join(".", importColumnInformation.getEntryHeaderPath()).equals(firstPathogenTestColumnName)) {
+						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
 							if (pathogenTests.size() > 0 && !currentEntityHasEntries) {
 								pathogenTests.remove(pathogenTests.size() - 1);
 							}
 							currentEntityHasEntries = false;
 							pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUser));
 						}
-						if (!StringUtils.isEmpty(importColumnInformation.getEntry())) {
+						if (!StringUtils.isEmpty(cellData.getValue())) {
 							currentEntityHasEntries = true;					
-							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), importColumnInformation.getEntry(), importColumnInformation.getEntryHeaderPath());
+							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
 						}
+					} else if (cellData.getEntityClass() == "CaseData") {
+						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
 					} else {
-						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, importColumnInformation.getEntry(), importColumnInformation.getEntryHeaderPath());
+						throw new InvalidColumnException(buildEntityProperty(cellData.getEntityPropertyPath()));
 					}
 				} catch (ImportErrorException | InvalidColumnException e) {
 					return e;
@@ -174,7 +176,7 @@ public class CaseImporter extends DataImporter {
 			} catch (ValidationRuntimeException e) {
 				hasImportError = true;
 				caseHasImportError = true;
-				writeImportError(nextLine, e.getMessage());
+				writeImportError(values, e.getMessage());
 			}
 		}
 
@@ -220,11 +222,11 @@ public class CaseImporter extends DataImporter {
 							if (resultOption == ImportSimilarityResultOption.OVERRIDE && consumer.result.getMatchingCase() != null) {
 								final CaseDataDto matchingCaseTmp = FacadeProvider.getCaseFacade().getCaseDataByUuid(consumer.result.getMatchingCase().getUuid());
 								final PersonDto matchingCasePersonTmp = FacadeProvider.getPersonFacade().getPersonByUuid(matchingCaseTmp.getPerson().getUuid());
-								caseHasImportError = insertRowIntoData(nextLine, entityHeaders, headers, true, new Function<ImportColumnInformation, Exception>() {
+								caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, new Function<ImportCellData, Exception>() {
 									@Override
-									public Exception apply(ImportColumnInformation importColumnInformation) {
+									public Exception apply(ImportCellData importColumnInformation) {
 										try {
-											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, importColumnInformation.getEntry(), importColumnInformation.getEntryHeaderPath());
+											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, importColumnInformation.getValue(), importColumnInformation.getEntityPropertyPath());
 										} catch (ImportErrorException | InvalidColumnException e) {
 											return e;
 										}
@@ -243,19 +245,15 @@ public class CaseImporter extends DataImporter {
 				if (caseHasImportError) {
 					// In case insertRowIntoCase when matching person/case has thrown an unexpected error
 					importedCallback.accept(ImportResult.ERROR);
-					readNextLineFromCsv(entityHeaders, headersLine, headers);
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.SKIP) {
 					// Reset the import result
 					consumer.result = null;
 					importedCallback.accept(ImportResult.SKIPPED);
-					readNextLineFromCsv(entityHeaders, headersLine, headers);
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.PICK) {
 					consumer.result = null;
 					importedCallback.accept(ImportResult.DUPLICATE);
-					readNextLineFromCsv(entityHeaders, headersLine, headers);
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.CANCEL) {
 					cancelAfterCurrent = true;
-					return;
 				} else {
 					PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 					newCase.setPerson(savedPerson.toReference());
@@ -269,17 +267,14 @@ public class CaseImporter extends DataImporter {
 					// Reset the import result
 					consumer.result = null;
 					importedCallback.accept(ImportResult.SUCCESS);
-					readNextLineFromCsv(entityHeaders, headersLine, headers);
 				}
 			} catch (ValidationRuntimeException e) {
 				hasImportError = true;
-				writeImportError(nextLine, e.getMessage());
+				writeImportError(values, e.getMessage());
 				importedCallback.accept(ImportResult.ERROR);
-				readNextLineFromCsv(entityHeaders, headersLine, headers);
 			}
 		} else {
 			importedCallback.accept(ImportResult.ERROR);
-			readNextLineFromCsv(entityHeaders, headersLine, headers);
 		}	
 	}
 
@@ -304,18 +299,18 @@ public class CaseImporter extends DataImporter {
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, caze.getRegion());
 						if (district.isEmpty()) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (district.size() > 1) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
 						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, caze.getDistrict());
 						if (community.isEmpty()) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (community.size() > 1) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
@@ -323,23 +318,23 @@ public class CaseImporter extends DataImporter {
 						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, caze.getDistrict(), caze.getCommunity());
 						if (facility.isEmpty()) {
 							if (caze.getCommunity() != null) {
-								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrCommunity, entry, buildHeaderPathString(entryHeaderPath)));
+								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrCommunity, entry, buildEntityProperty(entryHeaderPath)));
 							} else {
-								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildHeaderPathString(entryHeaderPath)));
+								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
 							}
 						} else if (facility.size() > 1 && caze.getCommunity() == null) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (facility.size() > 1 && caze.getCommunity() != null) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, facility.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
 						List<PointOfEntryReferenceDto> pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByName(entry, caze.getDistrict());
 						if (pointOfEntry.isEmpty()) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (pointOfEntry.size() > 1) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importPointOfEntryNotUniqueInDistrict, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importPointOfEntryNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, pointOfEntry.get(0));
 						}
@@ -348,13 +343,13 @@ public class CaseImporter extends DataImporter {
 					}
 				}
 			} catch (IntrospectionException e) {
-				throw new InvalidColumnException(buildHeaderPathString(entryHeaderPath));
+				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
 			} catch (InvocationTargetException | IllegalAccessException e) {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, buildHeaderPathString(entryHeaderPath)));
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
 			} catch (IllegalArgumentException e) {
-				throw new ImportErrorException(entry, buildHeaderPathString(entryHeaderPath));
+				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, buildHeaderPathString(entryHeaderPath)));
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
@@ -381,9 +376,9 @@ public class CaseImporter extends DataImporter {
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						List<FacilityReferenceDto> lab = FacadeProvider.getFacilityFacade().getLaboratoriesByName(entry);
 						if (lab.isEmpty()) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (lab.size() > 1) {
-							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importLabNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importLabNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, lab.get(0));
 						}
@@ -392,13 +387,13 @@ public class CaseImporter extends DataImporter {
 					}
 				}
 			} catch (IntrospectionException e) {
-				throw new InvalidColumnException(buildHeaderPathString(entryHeaderPath));
+				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
 			} catch (InvocationTargetException | IllegalAccessException e) {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, buildHeaderPathString(entryHeaderPath)));
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
 			} catch (IllegalArgumentException e) {
-				throw new ImportErrorException(entry, buildHeaderPathString(entryHeaderPath));
+				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, buildHeaderPathString(entryHeaderPath)));
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {

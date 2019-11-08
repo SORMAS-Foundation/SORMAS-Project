@@ -21,23 +21,25 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public final class DtoHelper {
-	
+
 	/**
 	 * some inaccuracy is ok, because of the rest conversion
 	 */
 	public static final int CHANGE_DATE_TOLERANCE_MS = 1000;
-	
+
 	public static void validateDto(EntityDto dto, AbstractDomainObject entity) {
-		if (entity.getChangeDate() != null 
-				&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
+		if (entity.getChangeDate() != null && (dto.getChangeDate() == null
+				|| dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
 			throw new OutdatedEntityException(dto.getUuid(), dto.getClass());
 		}
 	}
@@ -47,13 +49,15 @@ public final class DtoHelper {
 		dto.setChangeDate(entity.getChangeDate());
 		dto.setUuid(entity.getUuid());
 	}
-	
+
+	/**
+	 * @param overrideValues Note: Existing references are NOT overridden
+	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends EntityDto> T mergeDto(T lead, T other) {
+	public static <T extends EntityDto> void fillDto(T target, T source, boolean overrideValues) {
 
 		try {
-			PropertyDescriptor[] pds = Introspector.getBeanInfo(lead.getClass(), EntityDto.class)
-					.getPropertyDescriptors();
+			PropertyDescriptor[] pds = Introspector.getBeanInfo(target.getClass(), EntityDto.class).getPropertyDescriptors();
 
 			for (PropertyDescriptor pd : pds) {
 				// Skip properties without a read or write method
@@ -61,33 +65,67 @@ public final class DtoHelper {
 					continue;
 				}
 
-				Object leadProperty = pd.getReadMethod().invoke(lead);
-				Object otherProperty = pd.getReadMethod().invoke(other);
-
-				// Write other-property into lead-property, if lead-property is null
-				if (leadProperty == null || (List.class.isAssignableFrom(pd.getPropertyType()) && ((List<?>) leadProperty).isEmpty())) {
-
-					if (List.class.isAssignableFrom(pd.getPropertyType())) {
-
-						for (EntityDto entry : (List<EntityDto>) otherProperty) {
-							entry.setUuid(UUID.randomUUID().toString());
-						}
+				Object targetValue = pd.getReadMethod().invoke(target);
+				Object sourceValue = pd.getReadMethod().invoke(source);
+				
+				if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
+					
+					if (targetValue == null) {
+						targetValue = sourceValue.getClass().newInstance();
+						pd.getWriteMethod().invoke(target, targetValue);
 					}
+					
+					// entity: just fill the existing one with the source
+					fillDto((EntityDto) targetValue, (EntityDto) sourceValue, overrideValues);
+				}
+				else {
+					boolean targetIsEmpty = targetValue == null 
+							|| (Collection.class.isAssignableFrom(pd.getPropertyType()) && ((Collection<?>) targetValue).isEmpty());
+					boolean override = overrideValues && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType());
+					// should we write into the target property?
+					if (targetIsEmpty || override) {
+						
+						if (Collection.class.isAssignableFrom(pd.getPropertyType()) && sourceValue != null) {
+							
+							if (targetValue == null) {
+								targetValue = sourceValue.getClass().newInstance();
+								pd.getWriteMethod().invoke(target, targetValue);
+							}
 
-					pd.getWriteMethod().invoke(lead, otherProperty);
+							Collection targetCollection = (Collection)targetValue;
+							targetCollection.clear();
+							
+							for (Object sourceEntry : (Collection) sourceValue) {
+								
+								if (sourceEntry instanceof EntityDto) {
+									EntityDto newEntry = ((EntityDto)sourceEntry).clone();
+									newEntry.setUuid(DataHelper.createUuid());
+									newEntry.setCreationDate(null);
+									fillDto(newEntry, (EntityDto)sourceEntry, true);
+									targetCollection.add(newEntry);
+								} else if (DataHelper.isValueType(sourceEntry.getClass())
+										|| sourceEntry instanceof ReferenceDto) {
+									targetCollection.add(sourceEntry);
+								} else {
+				                    throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a list entry type.");
+								}
+							}
+							
+						} else if (DataHelper.isValueType(pd.getPropertyType())
+								|| ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 
-				} else if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
+							pd.getWriteMethod().invoke(target, sourceValue);
+							
+						} else {
 
-					pd.getWriteMethod().invoke(lead, mergeDto((EntityDto) leadProperty, (EntityDto) otherProperty));
-
+							// Other objects are not supported
+		                    throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a property type.");
+		                }
+					}
 				}
 			}
-		} catch (IntrospectionException | InvocationTargetException |
-
-				IllegalAccessException e) {
-			throw new RuntimeException("Exception when trying to merge dto: " + e.getMessage(), e.getCause());
+		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException | CloneNotSupportedException | InstantiationException e) {
+			throw new RuntimeException("Exception when trying to fill dto: " + e.getMessage(), e.getCause());
 		}
-
-		return lead;
 	}
 }

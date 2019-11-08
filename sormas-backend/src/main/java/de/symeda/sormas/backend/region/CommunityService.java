@@ -51,7 +51,7 @@ public class CommunityService extends AbstractAdoService<Community> {
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
 		
-		Predicate filter = cb.equal(from.get(Community.NAME), name);
+		Predicate filter = cb.equal(cb.upper(from.get(Community.NAME)), name.toUpperCase());
 		if (district != null) {
 			filter = cb.and(filter, cb.equal(from.get(Community.DISTRICT), district));
 		}

@@ -31,7 +31,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class CaseCriteria extends BaseCriteria implements Cloneable  {
+public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -67,6 +67,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
 	private Boolean archived;
+	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
@@ -265,9 +266,20 @@ public class CaseCriteria extends BaseCriteria implements Cloneable  {
 		this.archived = archived;
 		return this;
 	}
-	
+
+	@IgnoreForUrl
 	public Boolean getArchived() {
 		return archived;
+	}
+	
+	public CaseCriteria deleted(Boolean deleted) {
+		this.deleted = deleted;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Boolean getDeleted() {
+		return deleted;
 	}
 
 	/**

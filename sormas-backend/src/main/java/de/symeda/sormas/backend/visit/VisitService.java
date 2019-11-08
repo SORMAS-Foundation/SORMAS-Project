@@ -361,7 +361,6 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Visit,Visit> visitPath, Date date) {
-
 		Predicate dateFilter = cb.greaterThan(visitPath.get(Visit.CHANGE_DATE), date);
 
 		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
@@ -369,4 +368,5 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 		return dateFilter;
 	}
+	
 }
