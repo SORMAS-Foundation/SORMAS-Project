@@ -45,9 +45,11 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -88,9 +90,28 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public List<DistrictDto> getAllAfter(Date date) {
-		return districtService.getAllAfter(date, null).stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DistrictDto> cq = cb.createQuery(DistrictDto.class);
+		Root<District> district = cq.from(District.class);
+
+		selectDtoFields(cq, district);
+
+		Predicate filter = districtService.createChangeDateFilter(cb, district, date);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	private void selectDtoFields(CriteriaQuery<DistrictDto> cq, Root<District> root) {
+		
+		Join<District, Region> region = root.join(District.REGION, JoinType.LEFT);
+		
+		cq.multiselect(root.get(District.CREATION_DATE), root.get(District.CHANGE_DATE), root.get(District.UUID),
+				root.get(District.NAME), root.get(District.EPID_CODE), root.get(District.GROWTH_RATE), region.get(Region.UUID), region.get(Region.NAME));
 	}
 
 	@Override
