@@ -158,7 +158,6 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		kindOfExposureField.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(kindOfExposureField, KIND_OF_EXPOSURE_LOC);	
 		addDefaultAdditionalValidators(kindOfExposureField);
-//		kindOfExposureField.setData(kindOfExposure);
 		
 		addValueChangeListener(e -> {
 			kindOfExposureField.setValue(EpiDataHelper.getKindOfExposure(this.getValue()));
