@@ -23,8 +23,8 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -93,8 +93,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				if (e.getItem().getCaseUuid() != null) {
 					ControllerProvider.getCaseController().navigateToCase(e.getItem().getCaseUuid());
 				} else {
-					EventDto event = FacadeProvider.getEventFacade().getEventByUuid(e.getItem().getEventUuid());
-					ControllerProvider.getCaseController().create(e.getItem().getPersonUuid(), event.getDisease(), e.getItem().getUuid());
+					EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getItem().getUuid());
+					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 				}
 			} else if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
 	       		ControllerProvider.getEventParticipantController().editEventParticipant(e.getItem().getUuid());
