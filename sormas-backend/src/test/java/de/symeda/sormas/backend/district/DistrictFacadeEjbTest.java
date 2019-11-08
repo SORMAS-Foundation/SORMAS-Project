@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.region;
+package de.symeda.sormas.backend.district;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.region.Region;
 
 public class DistrictFacadeEjbTest extends AbstractBeanTest {
 
