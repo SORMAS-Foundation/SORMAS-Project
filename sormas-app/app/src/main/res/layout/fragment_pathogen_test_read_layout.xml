@@ -25,6 +25,8 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.sample.PathogenTestType" />
+        <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.PathogenTest"/>
     </data>
