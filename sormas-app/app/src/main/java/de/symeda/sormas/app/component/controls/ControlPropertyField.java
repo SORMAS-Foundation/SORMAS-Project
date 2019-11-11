@@ -398,6 +398,25 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         setDependencyParentField(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
     }
 
+    @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParent2Field", "dependencyParent2Value", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
+    public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, ControlPropertyField dependencyParent2Field, Object dependencyParent2Value, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
+
+        Map<ControlPropertyField, List<Object>> visibilityDependencies = new HashMap<> ();
+
+        if (dependencyParentField != null) {
+            visibilityDependencies.put(dependencyParentField, new ArrayList<Object>() { { add(dependencyParentValue); } });
+        }
+
+        if (dependencyParent2Field != null) {
+            visibilityDependencies.put(dependencyParent2Field, new ArrayList<Object>() { { add(dependencyParent2Value); } });
+        }
+
+        if (visibilityDependencies.size() == 0)
+            visibilityDependencies = null;
+
+        setDependencyParentField(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
+    }
+
     @BindingAdapter(value = {"dependencyParentField", "dependencyParentMinValue", "dependencyParentMaxValue", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
     public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Integer dependencyParentMinValue, Integer dependencyParentMaxValue, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
 

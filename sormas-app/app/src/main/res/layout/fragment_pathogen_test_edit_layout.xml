@@ -28,6 +28,7 @@
         <import type="de.symeda.sormas.api.sample.SpecimenCondition" />
         <import type="de.symeda.sormas.api.sample.SampleMaterial" />
         <import type="de.symeda.sormas.api.sample.PathogenTestType" />
+        <import type="de.symeda.sormas.api.sample.PathogenTestResultType" />
         <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.PathogenTest"/>
@@ -126,6 +127,8 @@
                         android:id="@+id/pathogenTest_serotype"
                         app:dependencyParentField="@{pathogenTestTestedDisease}"
                         app:dependencyParentValue="@{Disease.CSM}"
+                        app:dependencyParent2Field="@{pathogenTestTestResult}"
+                        app:dependencyParent2Value="@{PathogenTestResultType.POSITIVE}"
                         app:value="@={data.serotype}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
