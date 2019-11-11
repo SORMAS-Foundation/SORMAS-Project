@@ -380,6 +380,9 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
     @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParentValue2", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
     public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Object dependencyParentValue, Object dependencyParentValue2, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
+
+        Map<ControlPropertyField, List<Object>> visibilityDependencies = null;
+
         if (dependencyParentField != null) {
             List<Object> dependencyValues = new ArrayList();
             dependencyValues.add(dependencyParentValue);
@@ -387,29 +390,19 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
                 dependencyValues.add(dependencyParentValue2);
             }
 
-            field.visibilityDependencies = new HashMap<ControlPropertyField, List<Object>> () {{
+            visibilityDependencies = new HashMap<ControlPropertyField, List<Object>> () {{
                 put(dependencyParentField, dependencyValues);
             }};
         }
 
-        if (dependencyParentVisibility != null) {
-            field.dependencyParentVisibility = dependencyParentVisibility;
-        }
-
-        final ControlPropertyField thisField = field;
-        if (dependencyParentField != null) {
-            thisField.setVisibilityBasedOnParentField(false);
-            dependencyParentField.addValueChangedListener(new ValueChangeListener() {
-                @Override
-                public void onChange(ControlPropertyField field) {
-                    thisField.setVisibilityBasedOnParentField(dependencyParentClearOnHide != null ? dependencyParentClearOnHide : true);
-                }
-            });
-        }
+        setDependencyParentField(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
     }
 
     @BindingAdapter(value = {"dependencyParentField", "dependencyParentMinValue", "dependencyParentMaxValue", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
     public static void setDependencyParentField(ControlPropertyField field, ControlPropertyField dependencyParentField, Integer dependencyParentMinValue, Integer dependencyParentMaxValue, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
+
+        Map<ControlPropertyField, List<Object>> visibilityDependencies = null;
+
         if (dependencyParentField != null) {
             List<Object> dependencyValues = new ArrayList();
             while (dependencyParentMinValue <= dependencyParentMaxValue) {
@@ -417,20 +410,12 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
                 dependencyParentMinValue += 1;
             }
 
-            field.visibilityDependencies = new HashMap<ControlPropertyField, List<Object>> () {{
+            visibilityDependencies = new HashMap<ControlPropertyField, List<Object>> () {{
                 put(dependencyParentField, dependencyValues);
             }};
         }
 
-        if (dependencyParentVisibility != null) {
-            field.dependencyParentVisibility = dependencyParentVisibility;
-        }
-
-        final ControlPropertyField thisField = field;
-        if (dependencyParentField != null) {
-            thisField.setVisibilityBasedOnParentField(false);
-            dependencyParentField.addValueChangedListener(field1 -> thisField.setVisibilityBasedOnParentField(dependencyParentClearOnHide != null ? dependencyParentClearOnHide : true));
-        }
+        setDependencyParentField(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
     }
 
     @BindingAdapter(value = {"visibilityDependencies", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
@@ -441,17 +426,11 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             field.dependencyParentVisibility = dependencyParentVisibility;
         }
 
-        final ControlPropertyField thisField = field;
         if (visibilityDependencies != null) {
-            thisField.setVisibilityBasedOnParentField(false);
+            field.setVisibilityBasedOnParentField(false);
 
             for (Map.Entry<ControlPropertyField, List<Object>> dependency : visibilityDependencies.entrySet()) {
-                dependency.getKey().addValueChangedListener(new ValueChangeListener() {
-                    @Override
-                    public void onChange(ControlPropertyField field) {
-                        thisField.setVisibilityBasedOnParentField(dependencyParentClearOnHide != null ? dependencyParentClearOnHide : true);
-                    }
-                });
+                dependency.getKey().addValueChangedListener(parentField -> field.setVisibilityBasedOnParentField(dependencyParentClearOnHide != null ? dependencyParentClearOnHide : true));
             }
         }
     }
