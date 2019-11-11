@@ -148,10 +148,8 @@ public class CaseImporter extends DataImporter {
 							currentEntityHasEntries = true;					
 							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
 						}
-					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(CaseDataDto.class))) {
-						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
 					} else {
-						throw new InvalidColumnException(buildEntityProperty(cellData.getEntityPropertyPath()));
+						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
 					}
 				} catch (ImportErrorException | InvalidColumnException e) {
 					return e;
@@ -225,9 +223,18 @@ public class CaseImporter extends DataImporter {
 								final PersonDto matchingCasePersonTmp = FacadeProvider.getPersonFacade().getPersonByUuid(matchingCaseTmp.getPerson().getUuid());
 								caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, new Function<ImportCellData, Exception>() {
 									@Override
-									public Exception apply(ImportCellData importColumnInformation) {
+									public Exception apply(ImportCellData cellData) {
 										try {
-											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, importColumnInformation.getValue(), importColumnInformation.getEntityPropertyPath());
+											if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))
+													|| DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
+												return null;
+											}
+											
+											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
+											
+											for (SampleDto sample : samples) {
+												sample.setAssociatedCase(new CaseReferenceDto(matchingCaseTmp.getUuid()));
+											}
 										} catch (ImportErrorException | InvalidColumnException e) {
 											return e;
 										}
