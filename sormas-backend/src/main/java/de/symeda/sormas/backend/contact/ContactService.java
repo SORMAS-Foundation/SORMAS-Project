@@ -40,6 +40,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -766,10 +767,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getFollowUpUntilFrom() != null && contactCriteria.getFollowUpUntilTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom(), contactCriteria.getFollowUpUntilTo()));
 		}
-		if (Boolean.TRUE.equals(contactCriteria.getArchived())) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
-		} else {
-			filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
+		if (contactCriteria.getRelevanceStatus() != null) {
+			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+							cb.equal(caze.get(Case.ARCHIVED), false),
+							cb.isNull(caze.get(Case.ARCHIVED))));
+			} else if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+			}
 		}
 		if (contactCriteria.getDeleted() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), contactCriteria.getDeleted()));

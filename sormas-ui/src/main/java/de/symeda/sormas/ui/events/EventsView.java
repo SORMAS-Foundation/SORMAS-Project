@@ -24,6 +24,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -35,6 +36,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
@@ -72,10 +74,10 @@ public class EventsView extends AbstractView {
 	private ComboBox diseaseFilter;
 	private ComboBox reportedByFilter;
 	private Button resetButton;
+	private ComboBox relevanceStatusFilter;
 
 	private VerticalLayout gridLayout;
 
-	private Button switchArchivedActiveButton;
 	private String originalViewTitle;
 
 	// Bulk operations
@@ -90,8 +92,8 @@ public class EventsView extends AbstractView {
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(EventsView.class).get(EventCriteria.class);
-		if (criteria.getArchived() == null) {
-			criteria.archived(false);
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
 		grid = new EventGrid(criteria);
@@ -126,14 +128,14 @@ public class EventsView extends AbstractView {
 			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
-			
+
 			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
 			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
 			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(btnLeaveBulkEditMode);
-			
+
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
 				viewConfiguration.setInEagerMode(true);
@@ -231,15 +233,20 @@ public class EventsView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			// Show archived/active cases button
+			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption(Captions.eventShowArchived));
-				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-				switchArchivedActiveButton.addClickListener(e -> {
-					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.eventActiveEvents));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.eventArchivedEvents));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.eventAllEvents));
+				relevanceStatusFilter.addValueChangeListener(e -> {
+					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
-				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
 			// Bulk operation dropdown
@@ -301,22 +308,23 @@ public class EventsView extends AbstractView {
 		updateFilterComponents();
 		grid.reload();
 	}
-	
+
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
-		updateStatusButtons();
-		updateArchivedButton();
 
+		updateStatusButtons();
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
 		diseaseFilter.setValue(criteria.getDisease());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
-		
+
 		applyingCriteria = false;
 	}
-	
+
 	private void updateStatusButtons() {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
@@ -330,30 +338,6 @@ public class EventsView extends AbstractView {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton)
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
-	}
-	
-	private void updateArchivedButton() {
-		if (switchArchivedActiveButton == null) {
-			return;
-		}
-		
-		if (Boolean.TRUE.equals(criteria.getArchived())) {
-			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.eventShowActive)));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-			if (archiveItem != null && dearchiveItem != null) {
-				archiveItem.setVisible(false);
-				dearchiveItem.setVisible(true);
-			}
-		} else {
-			getViewTitleLabel().setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.eventShowArchived)));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-			if (archiveItem != null && dearchiveItem != null) {
-				dearchiveItem.setVisible(false);
-				archiveItem.setVisible(true);
-			}
-		} 
 	}
 
 }

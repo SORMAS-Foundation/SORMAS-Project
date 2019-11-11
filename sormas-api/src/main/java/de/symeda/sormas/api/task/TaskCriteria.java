@@ -21,11 +21,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class TaskCriteria extends BaseCriteria implements Serializable {
 
@@ -45,7 +47,7 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private Date startDateTo;
 	private Date statusChangeDateFrom;
 	private Date statusChangeDateTo;
-	private Boolean archived;
+	private EntityRelevanceStatus relevanceStatus;
 
 	public TaskCriteria taskStatus(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
@@ -191,12 +193,14 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 		return statusChangeDateTo;
 	}
 	
-	public TaskCriteria archived(Boolean archived) {
-		this.archived = archived;
+	public TaskCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
 	
-	public Boolean getArchived() {
-		return archived;
+	@IgnoreForUrl
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
 	}
+	
 }

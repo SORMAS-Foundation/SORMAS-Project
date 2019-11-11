@@ -36,6 +36,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -362,10 +363,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getEventStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
 		}
-		if (Boolean.TRUE.equals(eventCriteria.getArchived())) {
-			filter = and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
-		} else {
-			filter = and(cb, filter, cb.or(cb.equal(from.get(Event.ARCHIVED), false), cb.isNull(from.get(Event.ARCHIVED))));
+		if (eventCriteria.getRelevanceStatus() != null) {
+			if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+							cb.equal(from.get(Event.ARCHIVED), false),
+							cb.isNull(from.get(Event.ARCHIVED))));
+			} else if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
+			}
 		}
 		if (eventCriteria.getDeleted() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.DELETED), eventCriteria.getDeleted()));
