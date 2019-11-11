@@ -1223,8 +1223,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"testedDisease character varying(255)," +
 							"testedDiseaseDetails character varying(512)," +
 							"UNIQUE(snapshot, uuid));");
-				case 167:
-					currentVersion = 167;
+				case 166:
+					currentVersion = 166;
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN samplePurpose varchar(255);");
 					// ATTENTION: break should only be done after last version
 					break;
