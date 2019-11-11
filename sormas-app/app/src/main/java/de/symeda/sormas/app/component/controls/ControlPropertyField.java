@@ -395,7 +395,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             }};
         }
 
-        setDependencyParentField(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
+        setVisibilityDependencies(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
     }
 
     @BindingAdapter(value = {"dependencyParentField", "dependencyParentValue", "dependencyParent2Field", "dependencyParent2Value", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
@@ -414,7 +414,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
         if (visibilityDependencies.size() == 0)
             visibilityDependencies = null;
 
-        setDependencyParentField(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
+        setVisibilityDependencies(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
     }
 
     @BindingAdapter(value = {"dependencyParentField", "dependencyParentMinValue", "dependencyParentMaxValue", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
@@ -434,11 +434,11 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
             }};
         }
 
-        setDependencyParentField(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
+        setVisibilityDependencies(field, visibilityDependencies, dependencyParentVisibility, dependencyParentClearOnHide);
     }
 
     @BindingAdapter(value = {"visibilityDependencies", "dependencyParentVisibility", "dependencyParentClearOnHide"}, requireAll = false)
-    public static void setDependencyParentField(ControlPropertyField field, Map<ControlPropertyField, List<Object>> visibilityDependencies, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
+    public static void setVisibilityDependencies(ControlPropertyField field, Map<ControlPropertyField, List<Object>> visibilityDependencies, Boolean dependencyParentVisibility, Boolean dependencyParentClearOnHide) {
         field.visibilityDependencies = visibilityDependencies;
 
         if (dependencyParentVisibility != null) {
