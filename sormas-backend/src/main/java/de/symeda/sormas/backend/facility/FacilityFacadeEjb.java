@@ -180,8 +180,8 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	private void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
 
 		Join<Facility, Community> community = root.join(Facility.COMMUNITY, JoinType.LEFT);
-		Join<Community, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
-		Join<District, Region> region = root.join(Facility.REGION, JoinType.LEFT);
+		Join<Facility, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
+		Join<Facility, Region> region = root.join(Facility.REGION, JoinType.LEFT);
 
 		cq.multiselect(root.get(Facility.CREATION_DATE), root.get(Facility.CHANGE_DATE), root.get(Facility.UUID),
 				root.get(Facility.NAME), region.get(Region.UUID), region.get(Region.NAME), district.get(District.UUID),
