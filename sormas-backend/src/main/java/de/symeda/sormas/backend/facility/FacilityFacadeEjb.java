@@ -145,9 +145,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		Predicate filter = facilityService.createChangeDateFilter(cb, facility, date);
 
-		Predicate regionFilter = cb.equal(facility.get(Facility.REGION), regionService.getByUuid(regionUuid));
+		if (regionUuid != null) {
 
-		filter = AbstractAdoService.and(cb, filter, regionFilter);
+			Predicate regionFilter = cb.equal(facility.get(Facility.REGION), regionService.getByUuid(regionUuid));
+			filter = AbstractAdoService.and(cb, filter, regionFilter);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
