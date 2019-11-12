@@ -441,7 +441,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 
         EpiDataDto dto = new EpiDataDto();
         new EpiDataDtoHelper().fillInnerFromAdo(dto, record);
-        contentBinding.epiDataKindOfExposure.setValue(EpiDataHelper.getKindOfExposure(dto));
+        contentBinding.epiDataKindOfExposure.setValue(EpiDataHelper.hadExposureToAnimals(dto) ? YesNoUnknown.YES : YesNoUnknown.UNKNOWN);
     }
 
     @Override

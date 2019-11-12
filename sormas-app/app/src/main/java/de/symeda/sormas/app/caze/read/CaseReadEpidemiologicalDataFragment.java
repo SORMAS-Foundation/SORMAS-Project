@@ -35,6 +35,7 @@ import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseReadEpidLayoutBinding;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<FragmentCaseReadEpidLayoutBinding, EpiData, Case> {
 
@@ -117,7 +118,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
         EpiDataDto dto = new EpiDataDto();
         new EpiDataDtoHelper().fillInnerFromAdo(dto, record);
-        contentBinding.epiDataKindOfExposure.setValue(EpiDataHelper.getKindOfExposure(dto));
+        contentBinding.epiDataKindOfExposure.setValue(EpiDataHelper.hadExposureToAnimals(dto) ? YesNoUnknown.YES : YesNoUnknown.UNKNOWN);
     }
 
     @Override
