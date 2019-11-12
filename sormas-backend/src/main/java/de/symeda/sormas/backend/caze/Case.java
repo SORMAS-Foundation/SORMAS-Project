@@ -178,7 +178,7 @@ public class Case extends CoreAdo {
 	private String vaccinationDoses;
 	private VaccinationInfoSource vaccinationInfoSource;
 	private Date vaccinationDate;
-	private String whichVaccine;
+	private String vaccine;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
 
@@ -584,12 +584,12 @@ public class Case extends CoreAdo {
 	}
 
 	@Column(length = 512)
-	public String getWhichVaccine() {
-		return whichVaccine;
+	public String getVaccine() {
+		return vaccine;
 	}
 
-	public void setWhichVaccine(String whichVaccine) {
-		this.whichVaccine = whichVaccine;
+	public void setVaccine(String vaccine) {
+		this.vaccine = vaccine;
 	}
 
 	@Enumerated(EnumType.STRING)

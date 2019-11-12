@@ -311,7 +311,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_whichVaccine"
-                    app:value="@={data.whichVaccine}"
+                    app:value="@={data.vaccine}"
                     app:dependencyParentField="@{caseDataVaccination}"
                     app:dependencyParentValue="@{Vaccination.VACCINATED}"
                     style="@style/ControlSingleColumnStyle" />

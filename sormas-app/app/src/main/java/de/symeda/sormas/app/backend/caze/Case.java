@@ -168,7 +168,7 @@ public class Case extends AbstractDomainObject {
     private Vaccination vaccination;
 
     @Column(length = 512)
-    private String whichVaccine;
+    private String vaccine;
 
     @Column(length = 512)
     private String vaccinationDoses;
@@ -445,12 +445,12 @@ public class Case extends AbstractDomainObject {
         this.vaccination = vaccination;
     }
 
-    public String getWhichVaccine() {
-        return whichVaccine;
+    public String getVaccine() {
+        return vaccine;
     }
 
-    public void setWhichVaccine(String whichVaccine) {
-        this.whichVaccine = whichVaccine;
+    public void setVaccine(String vaccine) {
+        this.vaccine = vaccine;
     }
 
     public String getVaccinationDoses() {

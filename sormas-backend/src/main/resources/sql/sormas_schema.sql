@@ -3651,8 +3651,8 @@ UPDATE samples SET pathogentestresultchangedate = (SELECT testdatetime FROM path
 INSERT INTO schema_version (version_number, comment) VALUES (167, 'Fill samples with accurate pathogenTestResultChangeDate #1349');
 
 -- 2019-09-04 Add new disease, human rabies
-ALTER TABLE cases ADD COLUMN whichvaccine varchar(512);
-ALTER TABLE cases_history ADD COLUMN whichvaccine varchar(512);
+ALTER TABLE cases ADD COLUMN vaccine varchar(512);
+ALTER TABLE cases_history ADD COLUMN vaccine varchar(512);
 
 ALTER TABLE epidata ADD COLUMN kindofexposurebite varchar(255);
 ALTER TABLE epidata_history ADD COLUMN kindofexposurebite varchar(255);
