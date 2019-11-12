@@ -158,7 +158,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_humanRabiesType"
-                    app:value="@={data.humanRabiesType}"
+                    app:value="@={data.rabiesType}"
                     app:dependencyParentField="@{caseDataDisease}"
                     app:dependencyParentValue="@{Disease.RABIES}"
                     style="@style/ControlSingleColumnStyle" />

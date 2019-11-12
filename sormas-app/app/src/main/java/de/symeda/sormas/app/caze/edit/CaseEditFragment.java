@@ -30,7 +30,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
-import de.symeda.sormas.api.caze.HumanRabiesType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -185,7 +185,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
-        humanRabiesTypeList = DataUtils.getEnumItems(HumanRabiesType.class, true);
+        humanRabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
         hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
 
         initialRegions = InfrastructureHelper.loadRegions();

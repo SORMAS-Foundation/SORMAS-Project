@@ -93,7 +93,7 @@
                 style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{caseDataDisease}"
                 app:dependencyParentValue="@{Disease.RABIES}"
-                app:value="@={data.humanRabiesType}"/>
+                app:value="@={data.rabiesType}"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

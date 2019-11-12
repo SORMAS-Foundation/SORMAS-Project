@@ -59,7 +59,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
-	public static final String HUMAN_RABIES_TYPE = "humanRabiesType";
+	public static final String RABIES_TYPE = "rabiesType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -119,7 +119,7 @@ public class CaseDataDto extends EntityDto {
 	private DengueFeverType dengueFeverType;
 	@Diseases({ Disease.RABIES })
 	@Outbreaks
-	private HumanRabiesType humanRabiesType;
+	private RabiesType rabiesType;
 	@Required
 	private PersonReferenceDto person;
 	@Outbreaks
@@ -332,12 +332,12 @@ public class CaseDataDto extends EntityDto {
 		this.dengueFeverType = dengueFeverType;
 	}
 
-	public HumanRabiesType getHumanRabiesType() {
-		return humanRabiesType;
+	public RabiesType getRabiesType() {
+		return rabiesType;
 	}
 
-	public void setHumanRabiesType(HumanRabiesType humanRabiesType) {
-		this.humanRabiesType = humanRabiesType;
+	public void setRabiesType(RabiesType rabiesType) {
+		this.rabiesType = rabiesType;
 	}
 
 	public FacilityReferenceDto getHealthFacility() {

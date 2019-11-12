@@ -44,7 +44,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
-import de.symeda.sormas.api.caze.HumanRabiesType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -80,7 +80,7 @@ public class Case extends CoreAdo {
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
-	public static final String HUMAN_RABIES_TYPE = "humanRabiesType";
+	public static final String RABIES_TYPE = "rabiesType";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
@@ -128,7 +128,7 @@ public class Case extends CoreAdo {
 	private String diseaseDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
-	private HumanRabiesType humanRabiesType;
+	private RabiesType rabiesType;
 
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
@@ -259,12 +259,12 @@ public class Case extends CoreAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public HumanRabiesType getHumanRabiesType() {
-		return humanRabiesType;
+	public RabiesType getRabiesType() {
+		return rabiesType;
 	}
 
-	public void setHumanRabiesType(HumanRabiesType humanRabiesType) {
-		this.humanRabiesType = humanRabiesType;
+	public void setRabiesType(RabiesType rabiesType) {
+		this.rabiesType = rabiesType;
 	}
 
 	@Enumerated(EnumType.STRING)

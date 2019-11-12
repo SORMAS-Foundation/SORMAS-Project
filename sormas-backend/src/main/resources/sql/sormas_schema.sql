@@ -3707,8 +3707,8 @@ ALTER TABLE symptoms_history ADD COLUMN erraticbehaviour varchar(255);
 ALTER TABLE symptoms ADD COLUMN coma varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN coma varchar(255);
 
-ALTER TABLE cases ADD COLUMN humanrabiestype varchar(255);
-ALTER TABLE cases_history ADD COLUMN humanrabiestype varchar(255);
+ALTER TABLE cases ADD COLUMN rabiestype varchar(255);
+ALTER TABLE cases_history ADD COLUMN rabiestype varchar(255);
 
 ALTER TABLE epidata ADD COLUMN dogs varchar(255);
 ALTER TABLE epidata_history ADD COLUMN dogs varchar(255);
