@@ -103,6 +103,7 @@
                         app:dependencyParentValue="@{Disease.CSM}"
                         app:dependencyParent2Field="@{pathogenTestTestResult}"
                         app:dependencyParent2Value="@{PathogenTestResultType.POSITIVE}"
+                        app:dependencyParentClearOnHide="@{false}"
                         app:value="@{data.serotype}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
@@ -110,6 +111,7 @@
                         android:id="@+id/pathogenTest_cqValue"
                         app:dependencyParentField="@{pathogenTestTestType}"
                         app:dependencyParentValue="@{PathogenTestType.CQ_VALUE_DETECTION}"
+                        app:dependencyParentClearOnHide="@{false}"
                         app:value="@{data.cqValue}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
