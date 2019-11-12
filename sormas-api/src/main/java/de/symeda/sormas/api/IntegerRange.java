@@ -103,11 +103,15 @@ public class IntegerRange implements Serializable, StatisticsGroupingKey {
 		if (this.equals(o)) {
 			return 0;
 		}
-		if (this.getFrom() < ((IntegerRange) o).getFrom() || 
-				(this.getFrom() == ((IntegerRange) o).getFrom() && this.getTo() < ((IntegerRange) o).getTo())) {
+		IntegerRange oir = (IntegerRange) o;
+		
+		if (this.getFrom() == null) {
+			return 1;
+		} else if (oir.getFrom() == null) {
 			return -1;
 		}
-		return 1;
+		
+		return Integer.compare(this.getFrom(), oir.getFrom());
 	}
 
 }

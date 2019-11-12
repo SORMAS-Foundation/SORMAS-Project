@@ -624,6 +624,7 @@ public interface Captions {
 	public static String MaternalHistory_swollenLymphsOnset = "MaternalHistory.swollenLymphsOnset";
 	public static String menu = "menu";
 	public static String name = "name";
+	public static String notAvailableShort = "notAvailableShort";
 	public static String options = "options";
 	public static String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	public static String outbreakNoOutbreak = "outbreakNoOutbreak";
@@ -877,8 +878,6 @@ public interface Captions {
 	public static String statisticsAttribute = "statisticsAttribute";
 	public static String statisticsAttributeSelect = "statisticsAttributeSelect";
 	public static String statisticsAttributeSpecification = "statisticsAttributeSpecification";
-	public static String statisticsCaseCount = "statisticsCaseCount";
-	public static String statisticsCaseIncidence = "statisticsCaseIncidence";
 	public static String statisticsChartType = "statisticsChartType";
 	public static String statisticsDatabaseExport = "statisticsDatabaseExport";
 	public static String statisticsDataDisplayed = "statisticsDataDisplayed";

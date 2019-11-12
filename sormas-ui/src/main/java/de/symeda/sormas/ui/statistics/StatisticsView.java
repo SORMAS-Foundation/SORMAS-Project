@@ -39,15 +39,15 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.RadioButtonGroup;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.CaseMeasure;
@@ -67,7 +67,6 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -101,7 +100,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	private VerticalLayout filtersLayout;
 	private VerticalLayout resultsLayout;
 	private CheckBox cbShowZeroValues;
-	private OptionGroup ogCaseCountOrIncidence;
+	private RadioButtonGroup<CaseCountOrIncidence> ogCaseCountOrIncidence;
 	private TextField tfIncidenceDivisor;
 	private Button exportButton;
 	private final Label emptyResultLabel;
@@ -251,17 +250,14 @@ public class StatisticsView extends AbstractStatisticsView {
 		optionsLayout.setSpacing(true);
 		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
 		{
-			ogCaseCountOrIncidence = new OptionGroup(I18nProperties.getCaption(Captions.statisticsDataDisplayed), Arrays.asList(CaseCountOrIncidence.values()));
+			ogCaseCountOrIncidence = new RadioButtonGroup<CaseCountOrIncidence>(I18nProperties.getCaption(Captions.statisticsDataDisplayed), Arrays.asList(CaseCountOrIncidence.values()));
 			ogCaseCountOrIncidence.setValue(CaseCountOrIncidence.CASE_COUNT);
-			ogCaseCountOrIncidence.setItemCaption(CaseCountOrIncidence.CASE_COUNT, I18nProperties.getCaption(Captions.statisticsCaseCount));
-			ogCaseCountOrIncidence.setItemCaption(CaseCountOrIncidence.CASE_INCIDENCE, I18nProperties.getCaption(Captions.statisticsCaseIncidence));
 			ogCaseCountOrIncidence.addValueChangeListener(e -> {
-				showCaseIncidence = e.getProperty().getValue() == CaseCountOrIncidence.CASE_INCIDENCE;
+				showCaseIncidence = e.getValue() == CaseCountOrIncidence.CASE_INCIDENCE;
 				tfIncidenceDivisor.setVisible(showCaseIncidence);
 				visualizationComponent.setStackedColumnAndPieEnabled(!showCaseIncidence);
 			});
 			CssStyles.style(ogCaseCountOrIncidence, CssStyles.VSPACE_NONE, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.SOFT_REQUIRED);
-			ogCaseCountOrIncidence.setNullSelectionAllowed(false);
 			optionsLayout.addComponent(ogCaseCountOrIncidence);
 
 			tfIncidenceDivisor = new TextField(I18nProperties.getCaption(Captions.statisticsIncidenceDivisor));
@@ -269,7 +265,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			tfIncidenceDivisor.addValueChangeListener(e -> {
 				try {
 					// Store value in a temporary variable to trigger possible exception
-					int newDivisor = Integer.valueOf((String) e.getProperty().getValue());
+					int newDivisor = Integer.valueOf(e.getValue());
 					incidenceDivisor = newDivisor;
 				} catch (NumberFormatException ex) {
 					tfIncidenceDivisor.setValue(String.valueOf(incidenceDivisor));
@@ -450,6 +446,9 @@ public class StatisticsView extends AbstractStatisticsView {
 		hcjs.append("', " + " backgroundColor: 'transparent' " + "}," + "credits:{ enabled: false }," + "exporting:{ "
 				+ " enabled: true," + " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }" + "},"
 				+ "title:{ text: '' },");
+		
+		boolean showZeroValues = cbShowZeroValues.getValue();
+		CaseCountOrIncidence dataStyle = showCaseIncidence && caseIncidencePossible ?CaseCountOrIncidence.CASE_INCIDENCE : CaseCountOrIncidence.CASE_COUNT;
 
 		TreeMap<StatisticsGroupingKey, String> xAxisCaptions = new TreeMap<>(new StatisticsKeyComparator());
 		TreeMap<StatisticsGroupingKey, String> seriesCaptions = new TreeMap<>(new StatisticsKeyComparator());
@@ -457,6 +456,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		if (seriesAttribute != null || xAxisAttribute != null) {
 			// Build captions for x-axis and/or series
 			for (CaseCountDto row : resultData) {
+				
 				if (xAxisAttribute != null) {
 					if (!StatisticsHelper.isNullOrUnknown(row.getColumnKey())) {
 						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) row.getColumnKey(),
@@ -479,13 +479,14 @@ public class StatisticsView extends AbstractStatisticsView {
 			// every possible value of the chosen attribute unless a filter has been
 			// set for the same attribute; in this case, only values that are part of the
 			// filter are chosen
-			if (cbShowZeroValues.getValue() == true && xAxisAttribute != null) {
-				List<Object> values = StatisticsHelper.getAllAttributeValues(xAxisAttribute, xAxisSubAttribute);
-				List<StatisticsGroupingKey> filterValues = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
-				for (Object value : values) {
-					Object formattedValue = StatisticsHelper.buildGroupingKey(value, xAxisAttribute, xAxisSubAttribute);
-					if (formattedValue != null && (CollectionUtils.isEmpty(filterValues) || filterValues.contains(formattedValue))) {
-						xAxisCaptions.putIfAbsent((StatisticsGroupingKey) formattedValue, formattedValue.toString());
+			if (showZeroValues && xAxisAttribute != null) {
+				List<StatisticsGroupingKey> allGroupingKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
+				if (allGroupingKeys == null) {
+					allGroupingKeys = StatisticsHelper.getAttributeGroupingKeys(xAxisAttribute, xAxisSubAttribute);
+				}
+				for (StatisticsGroupingKey groupingKey : allGroupingKeys) {
+					if (groupingKey != null) {
+						xAxisCaptions.putIfAbsent(groupingKey, StringEscapeUtils.escapeEcmaScript(groupingKey.toString()));
 					}
 				}
 			}
@@ -507,7 +508,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			int numberOfCategories = xAxisAttribute != null ? appendUnknownXAxisCaption ? xAxisCaptions.size() + 1 : xAxisCaptions.size() : 1;
 			hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
 
-			hcjs.append("yAxis: { min: 0, title: { text: '").append(getEscapedFragment(StatisticsHelper.CASE_COUNT))
+			hcjs.append("yAxis: { min: 0, title: { text: '").append(dataStyle)
 			.append("' },").append("allowDecimals: false, softMax: ").append(showCaseIncidence && caseIncidencePossible ? 1 : 10).append(", stackLabels: { enabled: true, ")
 			.append("style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
 
@@ -537,9 +538,9 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		hcjs.append("series: [");
 		if (seriesAttribute == null && xAxisAttribute == null) {
-			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
+			hcjs.append("{ name: '").append(dataStyle)
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [['")
-			.append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',");
+			.append(dataStyle).append("',");
 			if (!showCaseIncidence || !caseIncidencePossible) {
 				hcjs.append(resultData.get(0).getCaseCount().toString());
 			} else {
@@ -547,7 +548,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 			hcjs.append("]]}");
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
-			hcjs.append("{ name: '").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT))
+			hcjs.append("{ name: '").append(dataStyle)
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [");
 			TreeMap<StatisticsGroupingKey, CaseCountDto> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
 			CaseCountDto unknownSeriesElement = null;
@@ -577,7 +578,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				} else {
 					seriesValue = unknownSeriesElement.getIncidence(incidenceDivisor);
 				}
-				hcjs.append("['").append(getEscapedFragment(showCaseIncidence && caseIncidencePossible ? StatisticsHelper.CASE_INCIDENCE : StatisticsHelper.CASE_COUNT)).append("',")
+				hcjs.append("['").append(dataStyle).append("',")
 				.append(seriesValue).append("],");
 			}
 			hcjs.append("]}");
@@ -886,32 +887,21 @@ public class StatisticsView extends AbstractStatisticsView {
 		fillCaseCriteria(showCaseIncidence);
 
 		if (showCaseIncidence) {	
+			hasMissingPopulationData = false;
 			caseIncidencePossible = true;
 			missingPopulationDataNames = null;
 
-			boolean showMapRegions = visualizationComponent.getVisualizationType() == StatisticsVisualizationType.MAP && visualizationComponent.getVisualizationMapType() == StatisticsVisualizationMapType.REGIONS;
-			boolean showMapDistricts = visualizationComponent.getVisualizationType() == StatisticsVisualizationType.MAP && visualizationComponent.getVisualizationMapType() == StatisticsVisualizationMapType.DISTRICTS;
-
-			List<Long> missingPopulationData = FacadeProvider.getPopulationDataFacade().getMissingPopulationDataForStatistics(caseCriteria, 
-					showMapRegions ? true : visualizationComponent.hasRegionGrouping(), 
-							showMapDistricts ? true : visualizationComponent.hasDistrictGrouping(), 
-									visualizationComponent.hasSexGrouping(), visualizationComponent.hasAgeGroupGrouping());
-			hasMissingPopulationData = missingPopulationData.size() > 0;
-			if (hasMissingPopulationData) {
-				List<String> missingPopulationDataNamesList;
-				if (visualizationComponent.hasDistrictGrouping() || hasDistrictFilter() || showMapDistricts) {
-					missingPopulationDataNamesList = FacadeProvider.getDistrictFacade().getNamesByIds(missingPopulationData);
-				} else {
-					missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationData);
-				}			
-				StringBuilder populationDataNamesBuilder = new StringBuilder();
-				missingPopulationDataNamesList.forEach(s -> populationDataNamesBuilder.append(s).append(", "));
-				if (populationDataNamesBuilder.length() > 0) {
-					populationDataNamesBuilder.delete(populationDataNamesBuilder.lastIndexOf(","), populationDataNamesBuilder.length());
-				}
-				missingPopulationDataNames = populationDataNamesBuilder.toString();
-
-				caseIncidencePossible = !hasMissingPopulationData || visualizationComponent.hasPopulationGrouping() || hasDistrictFilter() || showMapDistricts;
+			if (!visualizationComponent.hasRegionGrouping() && !visualizationComponent.hasDistrictGrouping()) {
+				// we don't have a territorial grouping, so the system will sum up the population of all regions.
+				// make sure the user is informed about regions with missing population data
+				
+				 List<Long> missingPopulationDataRegionIds = FacadeProvider.getPopulationDataFacade().getMissingPopulationDataForStatistics(caseCriteria, false, false, visualizationComponent.hasSexGrouping(), visualizationComponent.hasAgeGroupGrouping());
+				 hasMissingPopulationData = missingPopulationDataRegionIds.size() > 0;
+				 if (hasMissingPopulationData) {
+					 caseIncidencePossible = false;
+					 List<String> missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationDataRegionIds);
+					 missingPopulationDataNames = String.join(", ", missingPopulationDataNamesList);
+				 }
 			}
 
 			// Calculate projected population by either using the current year or, if a date filter has been selected, the maximum year from the date filter
@@ -1170,11 +1160,6 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 			}
 		}
-	}
-
-	private enum CaseCountOrIncidence {
-		CASE_COUNT,
-		CASE_INCIDENCE;
 	}
 
 }

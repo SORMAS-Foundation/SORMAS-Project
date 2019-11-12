@@ -17,11 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -68,7 +65,6 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -92,17 +88,12 @@ import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
-import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -134,13 +125,11 @@ import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -2032,6 +2021,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			query.setParameter(i + 1, sqlBuilderAndParameters.getElement1().get(i));
 		}
 		
+		// TODO
+		// population column nach hinten verschieben
+		// CaseCountDto ordentlich befüllen
+		
 		return ((Stream<Object[]>) query.getResultStream())
 				.map(result -> new CaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, result[1] != null ? ((Number)result[1]).intValue() : null,
 						"".equals(result[2]) ? null : result[2], "".equals(result[3]) ? null : result[3]))
@@ -2081,21 +2074,15 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		StringBuilder caseJoinBuilder = new StringBuilder();
 
-		if (!includePopulation && (subGroupingA == StatisticsCaseSubAttribute.REGION || subGroupingB == StatisticsCaseSubAttribute.REGION
-				|| caseCriteria.getRegions() != null)) {
-			caseJoinBuilder.append(" LEFT JOIN ").append(Region.TABLE_NAME).append(" ON ").append(Case.TABLE_NAME)
-			.append(".").append(Case.REGION).append("_id").append(" = ").append(Region.TABLE_NAME).append(".").append(Region.ID);
-		} else if (includePopulation) {
-			caseJoinBuilder.append(" LEFT JOIN ").append(Case.TABLE_NAME).append(" ON ").append(Case.TABLE_NAME)
-			.append(".").append(Case.REGION).append("_id").append(" = ").append(Region.TABLE_NAME).append(".").append(Region.ID);
-		}
-
-		if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT
-				|| caseCriteria.getDistricts() != null) {
+		if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
 			caseJoinBuilder.append(" LEFT JOIN ").append(District.TABLE_NAME).append(" ON ").append(Case.TABLE_NAME)
 			.append(".").append(Case.DISTRICT).append("_id").append(" = ").append(District.TABLE_NAME)
 			.append(".").append(District.ID);
+		} else {
+			caseJoinBuilder.append(" LEFT JOIN ").append(Region.TABLE_NAME).append(" ON ").append(Case.TABLE_NAME)
+			.append(".").append(Case.REGION).append("_id").append(" = ").append(Region.TABLE_NAME).append(".").append(Region.ID);
 		}
+		
 
 		if (groupingA == StatisticsCaseAttribute.ONSET_TIME || groupingB == StatisticsCaseAttribute.ONSET_TIME
 				|| caseCriteria.hasOnsetDate()) {
@@ -2127,9 +2114,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		StringBuilder caseFilterBuilder = new StringBuilder(" WHERE ");
 
 		caseFilterBuilder.append("(").append(Case.TABLE_NAME).append(".").append(Case.DELETED).append(" = false");
-		if (includePopulation) {
-			caseFilterBuilder.append(" OR ").append(Case.TABLE_NAME).append(".").append(Case.DELETED).append(" IS NULL ");
-		}
+		// needed for the full join on population
+		caseFilterBuilder.append(" OR ").append(Case.TABLE_NAME).append(".").append(Case.DELETED).append(" IS NULL ");
 		caseFilterBuilder.append(")");
 		List<Object> filterBuilderParameters = new ArrayList<Object>();
 
@@ -2309,22 +2295,22 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getRegions())) {
-			extendFilterBuilderWithSimpleValue(caseFilterBuilder, filterBuilderParameters, Region.TABLE_NAME, Region.ID,
+			extendFilterBuilderWithSimpleValue(caseFilterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.REGION + "_id",
 					regionIds, entry -> entry);
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getDistricts())) {
-			extendFilterBuilderWithSimpleValue(caseFilterBuilder, filterBuilderParameters, District.TABLE_NAME,
-					District.ID, districtIds, entry -> entry);
+			extendFilterBuilderWithSimpleValue(caseFilterBuilder, filterBuilderParameters, Case.TABLE_NAME, Case.DISTRICT + "_id",
+					districtIds, entry -> entry);
 		}
 
-		if (includePopulation && (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT)) {
-			if (caseFilterBuilder.length() > 0) {
-				caseFilterBuilder.append(" AND ");
-			}
-
-			caseFilterBuilder.append(Case.TABLE_NAME).append(".").append(Case.DISTRICT).append("_id = ").append(District.TABLE_NAME).append(".").append(District.ID);
-		}
+//		if (includePopulation && (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT)) {
+//			if (caseFilterBuilder.length() > 0) {
+//				caseFilterBuilder.append(" AND ");
+//			}
+//
+//			caseFilterBuilder.append(Case.TABLE_NAME).append(".").append(Case.DISTRICT).append("_id = ").append(District.TABLE_NAME).append(".").append(District.ID);
+//		}
 
 		// 3. Add selected groupings
 
@@ -2376,18 +2362,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// Include case counts
-		if (includePopulation) {
-			queryBuilder.append("casecounts AS(SELECT COUNT(").append(Case.TABLE_NAME).append(") AS casecount");
-		} else {
-			queryBuilder.append("casecounts AS(SELECT COUNT(*) AS casecount");
-		}
+		queryBuilder.append("casecounts AS(SELECT COUNT(").append(Case.TABLE_NAME).append(") AS casecount");
+
 		if (groupingSelectQueryB != null) {
 			queryBuilder.append(",").append(groupingSelectQueryB);
 		}
 		if (groupingSelectQueryA != null) {
 			queryBuilder.append(",").append(groupingSelectQueryA);
 		}
-		queryBuilder.append(" FROM ").append(includePopulation ? Region.TABLE_NAME : Case.TABLE_NAME).append(caseJoinBuilder).append(caseFilterBuilder).append(caseGroupByBuilder).append(")");
+		queryBuilder.append(" FROM ").append(Case.TABLE_NAME).append(caseJoinBuilder).append(caseFilterBuilder).append(caseGroupByBuilder).append(")");
 
 		// Include population data to calculate incidence
 		if (includePopulation) {
@@ -2500,6 +2483,29 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			queryBuilder.append(", '' AS ").append(groupBAlias);
 		}
+		
+		if (includePopulation) {
+			if (hasRegionGrouping) {
+				queryBuilder.append(", populationinfo.").append(PopulationData.REGION).append("_id");
+			} else {
+				queryBuilder.append(", ''");
+			}
+			if (hasDistrictGrouping) {
+				queryBuilder.append(", populationinfo.").append(PopulationData.DISTRICT).append("_id");
+			} else {
+				queryBuilder.append(", ''");
+			}
+			if (hasSexGrouping) {
+				queryBuilder.append(", populationinfo.").append(PopulationData.SEX);
+			} else {
+				queryBuilder.append(", ''");
+			}
+			if (hasAgeGroupGrouping) {
+				queryBuilder.append(", populationinfo.").append(PopulationData.AGE_GROUP);
+			} else {
+				queryBuilder.append(", ''");
+			}
+		}
 		queryBuilder.append(" FROM casecounts ");
 		
 		if (includePopulation) {
@@ -2520,7 +2526,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			if (hasSexGrouping || hasDistrictGrouping || hasRegionGrouping || hasAgeGroupGrouping) {
 				StringBuilder populationJoinBuilder = new StringBuilder();
-				queryBuilder.append(" LEFT JOIN populationinfo ON");
+				queryBuilder.append(" FULL JOIN populationinfo ON");
 
 				if (hasRegionGrouping) {
 					populationJoinBuilder.append(" populationinfo.").append(PopulationData.REGION).append("_id = casecounts.").append(subGroupingA == StatisticsCaseSubAttribute.REGION ? groupAAlias : groupBAlias);
@@ -2552,12 +2558,25 @@ public class CaseFacadeEjb implements CaseFacade {
 				queryBuilder.append(", populationinfo ");
 			}
 
-			queryBuilder.append(" WHERE casecounts.casecount > 0");
+			//queryBuilder.append(" WHERE casecounts.casecount > 0");
 		}
 
 		if (groupingA != null || groupingB != null) {
 			if (includePopulation) {
 				queryBuilder.append(" GROUP BY ").append("casecounts." + groupAAlias).append(", casecounts." + groupBAlias);
+				
+				if (hasRegionGrouping) {
+					queryBuilder.append(", populationinfo.").append(PopulationData.REGION).append("_id");
+				}
+				if (hasDistrictGrouping) {
+					queryBuilder.append(", populationinfo.").append(PopulationData.DISTRICT).append("_id");
+				}
+				if (hasSexGrouping) {
+					queryBuilder.append(", populationinfo.").append(PopulationData.SEX);
+				}
+				if (hasAgeGroupGrouping) {
+					queryBuilder.append(", populationinfo.").append(PopulationData.AGE_GROUP);
+				}
 			} else {
 				queryBuilder.append(" GROUP BY casecount ").append(", casecounts.").append(groupAAlias).append(", casecounts.").append(groupBAlias);
 			}
@@ -2678,6 +2697,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
 
 		cq.select(cb.least((Path<Timestamp>) symptoms.<Timestamp>get(Symptoms.ONSET_DATE)));
+		cq.where(cb.greaterThan(symptoms.get(Symptoms.ONSET_DATE), DateHelper.getDateZero(2000, 1, 1)));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -2688,6 +2708,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> from = cq.from(Case.class);
 
 		cq.select(cb.least(from.<Timestamp>get(Case.REPORT_DATE)));
+		cq.where(cb.greaterThan(from.get(Case.REPORT_DATE), DateHelper.getDateZero(2000, 1, 1)));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -2939,7 +2960,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				.append(" >= 80 THEN '").append(AgeGroup.getAgeGroupFromIntegerRange(new IntegerRange(80, null)).name()).append("' ");
 			}
 		}
-		groupingBuilder.append("ELSE 'VALUE_UNKNOWN' END AS " + groupAlias);
+		groupingBuilder.append("ELSE NULL END AS " + groupAlias);
 	}
 
 	private void addAgeIntervalToStringBuilder(StringBuilder groupingBuilder, int number, int increase) {

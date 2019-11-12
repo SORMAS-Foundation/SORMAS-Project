@@ -28,6 +28,11 @@ public class MonthOfYear implements Serializable, Comparable<MonthOfYear>, Stati
 	private Month month;
 	private Year year;
 
+	public MonthOfYear(Month month, int year) {
+		this.month = month;
+		this.year = new Year(year);
+	}
+
 	public MonthOfYear(Month month, Year year) {
 		this.month = month;
 		this.year = year;

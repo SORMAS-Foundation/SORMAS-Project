@@ -18,14 +18,13 @@
 package de.symeda.sormas.ui.statistics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.explicatis.ext_token_field.Tokenizable;
 import com.vaadin.ui.HorizontalLayout;
 
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
-import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 @SuppressWarnings("serial")
 public abstract class StatisticsFilterElement extends HorizontalLayout {
@@ -37,18 +36,20 @@ public abstract class StatisticsFilterElement extends HorizontalLayout {
 	
 	abstract public List<TokenizableValue> getSelectedValues();
 
-	protected List<TokenizableValue> createTokens(Object ...values) {
-		return createTokens(null, null, values);
+	protected List<TokenizableValue> createTokens(StatisticsGroupingKey ...groupingKeys) {
+		List<TokenizableValue> result = new ArrayList<>(groupingKeys.length);
+		for (int i = 0; i < groupingKeys.length; i++) {
+			result.add(new TokenizableValue(groupingKeys[i], i));
+		}
+
+		return result;
 	}
 	
-	protected List<TokenizableValue> createTokens(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, Object ...values) {
-		List<TokenizableValue> result = new ArrayList<>(values.length);
-		for (int i = 0; i < values.length; i++) {
-			if (attribute != null || subAttribute != null) {
-				result.add(new TokenizableValue(StatisticsHelper.buildGroupingKey(values[i], attribute, subAttribute), i));
-			} else {
-				result.add(new TokenizableValue(values[i], i));
-			}
+	protected List<TokenizableValue> createTokens(Collection<? extends StatisticsGroupingKey> groupingKeys) {
+		List<TokenizableValue> result = new ArrayList<>(groupingKeys.size());
+		int index = 0;
+		for (StatisticsGroupingKey groupingKey : groupingKeys) {
+			result.add(new TokenizableValue(groupingKey, index++));
 		}
 
 		return result;
