@@ -21,11 +21,12 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public final class EpiDataHelper {
 
-	public static boolean hadExposureToAnimals (EpiDataDto dto) {
+	public static YesNoUnknown getKindOfExposure (EpiDataDto dto) {
 		return dto == null || (dto.getKindOfExposureBite() == null
 				&& dto.getKindOfExposureLick() == null
 				&& dto.getKindOfExposureScratch() == null
 				&& dto.getKindOfExposureTouch() == null
-				&& dto.getKindOfExposureOther() == null);
+				&& dto.getKindOfExposureOther() == null)
+				? YesNoUnknown.UNKNOWN : YesNoUnknown.YES;
 	}
 }

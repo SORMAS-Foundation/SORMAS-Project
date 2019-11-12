@@ -160,7 +160,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addDefaultAdditionalValidators(kindOfExposureField);
 		
 		addValueChangeListener(e -> {
-			kindOfExposureField.setValue(EpiDataHelper.hadExposureToAnimals(this.getValue()) ? YesNoUnknown.YES : YesNoUnknown.UNKNOWN);
+			kindOfExposureField.setValue(EpiDataHelper.getKindOfExposure(this.getValue()));
 		});
 		
 		addField(EpiDataDto.ANIMAL_VACCINATION_STATUS, OptionGroup.class);
