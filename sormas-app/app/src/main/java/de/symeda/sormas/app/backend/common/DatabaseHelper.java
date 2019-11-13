@@ -1225,7 +1225,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"UNIQUE(snapshot, uuid));");
 				case 166:
 					currentVersion = 166;
-					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN samplePurpose varchar(255);");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples RENAME TO tmp_samples;");
+					getDao(Sample.class).executeRaw("CREATE TABLE samples (associatedCase_id BIGINT, comment VARCHAR, lab_id BIGINT, " +
+							"labDetails VARCHAR, labSampleID VARCHAR, noTestPossibleReason VARCHAR, received SMALLINT, receivedDate BIGINT, referredToUuid VARCHAR, " +
+							"reportDateTime BIGINT, reportLat DOUBLE PRECISION, reportLatLonAccuracy FLOAT, reportLon DOUBLE PRECISION, " +
+							"reportingUser_id BIGINT, sampleDateTime BIGINT, sampleMaterial VARCHAR, sampleMaterialText VARCHAR, " +
+							"sampleSource VARCHAR, shipmentDate BIGINT, shipmentDetails VARCHAR, shipped SMALLINT, specimenCondition VARCHAR, " +
+							"pathogenTestingRequested SMALLINT, additionalTestingRequested SMALLINT, requestedPathogenTestsString VARCHAR, requestedAdditionalTestsString VARCHAR, " +
+							"requestedOtherPathogenTests varchar(512), requestedOtherAdditionalTests varchar(512), samplePurpose varchar(255), pathogenTestResult varchar(255), " +
+							"changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT, lastOpenedDate BIGINT, " +
+							"localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, UNIQUE (snapshot, uuid));");
+					getDao(Sample.class).executeRaw("INSERT INTO samples(associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, " +
+							"received, receivedDate, referredToUuid, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, " +
+							"sampleDateTime, sampleMaterial, sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, " +
+							"pathogenTestingRequested, additionalTestingRequested, requestedPathogenTestsString, requestedAdditionalTestsString, " +
+							"requestedOtherPathogenTests, requestedOtherAdditionalTests, samplePurpose, pathogenTestResult, " +
+							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) " +
+							"SELECT associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, " +
+							"received, receivedDate, referredToUuid, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, " +
+							"sampleDateTime, sampleMaterial, sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, " +
+							"pathogenTestingRequested, additionalTestingRequested, requestedPathogenTestsString, requestedAdditionalTestsString, " +
+							"requestedOtherPathogenTests, requestedOtherAdditionalTests, 'EXTERNAL', pathogenTestResult, " +
+							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_samples;");
+					getDao(Sample.class).executeRaw("DROP TABLE tmp_samples;");
+
 					// ATTENTION: break should only be done after last version
 					break;
 				default:

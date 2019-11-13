@@ -290,7 +290,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				conditionalBleedingSymptomFieldIds,
 				SymptomsDto.UNEXPLAINED_BLEEDING,
-				Arrays.asList(SymptomState.YES), true, SymptomsDto.class, disease);
+				Arrays.asList(SymptomState.YES), true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT,

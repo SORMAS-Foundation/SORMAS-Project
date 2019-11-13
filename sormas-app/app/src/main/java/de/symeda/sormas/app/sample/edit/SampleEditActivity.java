@@ -76,9 +76,9 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
     public List<PageMenuItem> getPageMenuData() {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(SampleSection.values(), getContext());
         Sample sample = getStoredRootEntity();
-        if(sample != null && sample.getSamplePurpose().equals(SamplePurpose.INTERNAL)){
-            menuItems.remove(SampleSection.PATHOGEN_TESTS.ordinal());
-        }
+//        if(sample != null && sample.getSamplePurpose().equals(SamplePurpose.INTERNAL)){
+//            menuItems.remove(SampleSection.PATHOGEN_TESTS.ordinal());
+//        }
         return menuItems;
     }
 

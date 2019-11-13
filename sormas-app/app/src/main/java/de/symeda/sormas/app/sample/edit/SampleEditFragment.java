@@ -66,7 +66,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private List<Item> sampleSourceList;
     private List<Facility> labList;
     private List<Item> samplePurposeList;
-    private List<String> requestedPathogenTests;
+    private List<String> requestedPathogenTests = new ArrayList<>();
     private List<String> requestedAdditionalTests = new ArrayList<>();
 
     public static SampleEditFragment newInstance(Sample activityRootData) {
@@ -146,13 +146,14 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
         samplePurposeList = DataUtils.getEnumItems(SamplePurpose.class, true);
 
-        requestedPathogenTests = new ArrayList<>();
         for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
+            requestedPathogenTests.clear();
             if (pathogenTest != PathogenTestType.OTHER) {
                 requestedPathogenTests.add(pathogenTest.toString());
             }
         }
         if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            requestedAdditionalTests.clear();
             for (AdditionalTestType additionalTest : record.getRequestedAdditionalTests()) {
                 requestedAdditionalTests.add(additionalTest.toString());
             }
@@ -274,7 +275,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 contentBinding.sampleAdditionalTestingRequested.setVisibility(VISIBLE);
                 contentBinding.sampleRequestedAdditionalTests.setVisibility(VISIBLE);
                 contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(VISIBLE);
-                contentBinding.sampleLab.setRequired(true);
+                contentBinding.sampleLab.setVisibility(VISIBLE);
                 break;
             case INTERNAL:
                 contentBinding.sampleShipped.setVisibility(GONE);
@@ -289,7 +290,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
                 contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
                 contentBinding.sampleRequestedAdditionalTests.setVisibility(GONE);
                 contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
-                contentBinding.sampleLab.setRequired(false);
+                contentBinding.sampleLab.setVisibility(GONE);
                 break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(samplePurpose));

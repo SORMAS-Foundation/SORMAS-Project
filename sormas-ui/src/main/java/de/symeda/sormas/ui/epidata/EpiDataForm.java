@@ -131,7 +131,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
 		
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.SICK_DEAD_ANIMALS_DETAILS, EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION), EpiDataDto.SICK_DEAD_ANIMALS, Arrays.asList(YesNoUnknown.YES), true, EpiDataDto.class, disease);
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.SICK_DEAD_ANIMALS_DETAILS, EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION), EpiDataDto.SICK_DEAD_ANIMALS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.EATING_RAW_ANIMALS_DETAILS), EpiDataDto.EATING_RAW_ANIMALS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.OTHER_ANIMALS_DETAILS, EpiDataDto.OTHER_ANIMALS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_SOURCE, Arrays.asList(WaterSource.OTHER), true);

@@ -19,8 +19,6 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 
-import com.vaadin.v7.data.Buffered.SourceException;
-import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -36,6 +34,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Buffered.SourceException;
+import com.vaadin.v7.data.Validator.InvalidValueException;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -75,9 +75,9 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
-		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
+		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
 		createForm.setValue(SampleDto.buildSample(UserProvider.getCurrent().getUserReference(), caseRef));
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -94,10 +94,10 @@ public class SampleController {
 	}
 
 	public void createReferral(SampleDto sample) {
-		SampleCreateForm createForm = new SampleCreateForm(UserRight.SAMPLE_CREATE);
+		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
 		SampleDto referralSample = SampleDto.buildReferralSample(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<SampleCreateForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
 
 		createView.addCommitListener(new CommitListener() {
 			@Override

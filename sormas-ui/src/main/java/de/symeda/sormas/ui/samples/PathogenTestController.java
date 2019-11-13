@@ -33,7 +33,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -64,10 +63,9 @@ public class PathogenTestController {
 
 	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback,
 			BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
-		PathogenTestForm createForm = new PathogenTestForm(
-				FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid()), true,
-				UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
-		createForm.setValue(PathogenTestDto.build(sampleRef, UserProvider.getCurrent().getUser()));
+		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
+		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(
 				createForm, createForm.getFieldGroup());
 

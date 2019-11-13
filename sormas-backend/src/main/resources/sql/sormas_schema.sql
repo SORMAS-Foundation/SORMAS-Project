@@ -3651,4 +3651,10 @@ UPDATE samples SET pathogentestresultchangedate = (SELECT testdatetime FROM path
 INSERT INTO schema_version (version_number, comment) VALUES (167, 'Fill samples with accurate pathogenTestResultChangeDate #1349');
 
 -- 2019-11-06 Bed-side lab testing #1109
-ALTER TABLE samples ADD COLUMN samplepurpose  varchar(255) DEFAULT 'EXTERNAL' NOT NULL;
+ALTER TABLE samples ADD COLUMN samplepurpose varchar(255) DEFAULT 'EXTERNAL' NOT NULL;
+ALTER TABLE samples ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest ALTER COLUMN labuser_id DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (168, ' Bed-side lab testing #1109');
+

@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -55,6 +56,9 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
         pathogenTest.setLab(associatedSample.getLab());
         pathogenTest.setLabDetails(associatedSample.getLabDetails());
         pathogenTest.setLabUser(ConfigProvider.getUser());
+        if (associatedSample.getSamplePurpose() == SamplePurpose.INTERNAL) {
+            pathogenTest.setTestResultVerified(true);
+        }
         return pathogenTest;
     }
 

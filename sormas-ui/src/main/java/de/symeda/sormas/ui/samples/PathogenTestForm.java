@@ -34,6 +34,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -85,6 +86,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		ComboBox lab = addField(PathogenTestDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
+		labDetails.setVisible(false);
 		addDiseaseField(PathogenTestDto.TESTED_DISEASE, true);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		
@@ -121,9 +123,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		});
 
-		
-		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB,
-				PathogenTestDto.TEST_RESULT);
+		if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
+			setRequired(true, PathogenTestDto.LAB);
+		}
+		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT);
 	}
 	
 	@Override

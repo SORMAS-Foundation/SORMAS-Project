@@ -62,19 +62,16 @@ public class Sample extends AbstractDomainObject {
     public static final String SHIPPED = "shipped";
     public static final String RECEIVED = "received";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Case associatedCase;
-
-    @Column(length = 512)
-    private String sampleCode;
 
     @Column(length = 512)
     private String labSampleID;
 
-    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
+    @DatabaseField(dataType = DataType.DATE_LONG)
     private Date sampleDateTime;
 
-    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
+    @DatabaseField(dataType = DataType.DATE_LONG)
     private Date reportDateTime;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -88,13 +85,12 @@ public class Sample extends AbstractDomainObject {
     private Float reportLatLonAccuracy;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private SampleMaterial sampleMaterial;
 
     @Column(length = 512)
     private String sampleMaterialText;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3, canBeNull = false)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility lab;
 
     @Column(length = 512)
@@ -166,14 +162,6 @@ public class Sample extends AbstractDomainObject {
 
     public void setAssociatedCase(Case associatedCase) {
         this.associatedCase = associatedCase;
-    }
-
-    public String getSampleCode() {
-        return sampleCode;
-    }
-
-    public void setSampleCode(String sampleCode) {
-        this.sampleCode = sampleCode;
     }
 
     public String getLabSampleID() {

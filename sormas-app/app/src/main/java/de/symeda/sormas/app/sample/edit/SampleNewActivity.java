@@ -100,7 +100,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
-        BaseEditFragment fragment = SampleNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = SampleEditFragment.newInstance(activityRootData);
         fragment.setLiveValidationDisabled(true);
         return fragment;
     }
@@ -125,7 +125,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
         }
 
         final Sample sampleToSave = getStoredRootEntity();
-        SampleNewFragment fragment = (SampleNewFragment) getActiveFragment();
+        SampleEditFragment fragment = (SampleEditFragment) getActiveFragment();
 
         if (sampleToSave.getReportingUser() == null) {
             sampleToSave.setReportingUser(ConfigProvider.getUser());

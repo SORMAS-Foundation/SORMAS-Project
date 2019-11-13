@@ -192,7 +192,7 @@ public class Sample extends CoreAdo {
 	}
 	
 	@Enumerated(EnumType.STRING)
-	@JoinColumn(nullable = false)
+	@Column(nullable = false)
 	public SamplePurpose getSamplePurpose() {
 		return samplePurpose;
 	}
@@ -201,7 +201,7 @@ public class Sample extends CoreAdo {
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn
 	public Facility getLab() {
 		return lab;
 	}
