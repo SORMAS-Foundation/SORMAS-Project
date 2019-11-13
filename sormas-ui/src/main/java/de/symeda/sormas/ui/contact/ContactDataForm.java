@@ -21,25 +21,24 @@ import java.util.Arrays;
 
 import org.joda.time.LocalDate;
 
-import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.validator.DateRangeValidator;
-import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.validator.DateRangeValidator;
+import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.ui.Link;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -47,7 +46,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
@@ -137,10 +135,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	    				toCaseButton.addClickListener(new ClickListener() {
 	    					@Override
 	    					public void buttonClick(ClickEvent event) {
-	    						PersonReferenceDto personRef = getValue().getPerson();
-	    						CaseReferenceDto caseRef = getValue().getCaze();
-	    						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
-	    						ControllerProvider.getCaseController().create(personRef, caze.getDisease(), getValue());
+	    						ControllerProvider.getCaseController().createFromContact(getValue());
 	    					}
 	    				});
 	    				

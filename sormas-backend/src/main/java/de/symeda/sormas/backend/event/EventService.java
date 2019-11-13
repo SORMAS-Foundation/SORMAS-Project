@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -35,12 +36,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -81,7 +84,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			filter = cb.and(filter, dateFilter);		
 		}
 
@@ -320,7 +323,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Event, Event> eventPath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Event, Event> eventPath, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(eventPath.get(AbstractDomainObject.CHANGE_DATE), date);
 
 		Join<Event, Location> address = eventPath.join(Event.EVENT_LOCATION);
@@ -360,10 +363,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getEventStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
 		}
-		if (Boolean.TRUE.equals(eventCriteria.getArchived())) {
-			filter = and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
-		} else {
-			filter = and(cb, filter, cb.or(cb.equal(from.get(Event.ARCHIVED), false), cb.isNull(from.get(Event.ARCHIVED))));
+		if (eventCriteria.getRelevanceStatus() != null) {
+			if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+							cb.equal(from.get(Event.ARCHIVED), false),
+							cb.isNull(from.get(Event.ARCHIVED))));
+			} else if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
+			}
 		}
 		if (eventCriteria.getDeleted() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.DELETED), eventCriteria.getDeleted()));

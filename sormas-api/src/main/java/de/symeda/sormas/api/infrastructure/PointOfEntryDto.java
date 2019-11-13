@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.infrastructure;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -33,6 +35,23 @@ public class PointOfEntryDto extends EntityDto {
 	private Double latitude;
 	private Double longitude;
 	private boolean active;
+
+	public PointOfEntryDto(Date creationDate, Date changeDate, String uuid, PointOfEntryType pointOfEntryType,
+			String name, String regionUuid, String regionName, String districtUuid, String districtName,
+			Double latitude, Double longitude, boolean active) {
+		super(creationDate, changeDate, uuid);
+		this.pointOfEntryType = pointOfEntryType;
+		this.name = name;
+		this.region = new RegionReferenceDto(regionUuid, regionName);
+		this.district = new DistrictReferenceDto(districtUuid, districtName);
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.active = active;
+	}
+
+	public PointOfEntryDto() {
+		super();
+	}
 
 	public static PointOfEntryDto build() {
 		PointOfEntryDto dto = new PointOfEntryDto();

@@ -42,6 +42,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -72,7 +73,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
-import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -122,8 +122,8 @@ public class ContactsView extends AbstractView {
 	private EpiWeekAndDateFilterComponent<ContactDateType> weekAndDateFilter;
 	private Button expandFiltersButton;
 	private Button collapseFiltersButton;
+	private ComboBox relevanceStatusFilter;
 
-	private Button switchArchivedActiveButton;
 	private String originalViewTitle;
 
 	public ContactsView() {
@@ -133,8 +133,8 @@ public class ContactsView extends AbstractView {
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(ContactsView.class).get(ContactCriteria.class);
-		if (criteria.getArchived() == null) {
-			criteria.archived(false);
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
 		grid = new ContactGrid(criteria, getClass());
@@ -212,14 +212,14 @@ public class ContactsView extends AbstractView {
 			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
-			
+
 			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
 			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
 			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(btnLeaveBulkEditMode);
-			
+
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
 				viewConfiguration.setInEagerMode(true);
@@ -262,7 +262,7 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(classificationFilter);
-			
+
 			diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
 			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
@@ -292,7 +292,7 @@ public class ContactsView extends AbstractView {
 				grid.reload();
 			});
 			firstFilterRowLayout.addComponent(searchField);
-			
+
 			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
 
 			resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
@@ -406,7 +406,7 @@ public class ContactsView extends AbstractView {
 		dateFilterRowLayout.setSizeUndefined();
 		{
 			Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
-			
+
 			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, ContactDateType.class, I18nProperties.getString(Strings.promptContactDateType), ContactDateType.REPORT_DATE);
 			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
 			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
@@ -414,7 +414,7 @@ public class ContactsView extends AbstractView {
 			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateTo));
 			dateFilterRowLayout.addComponent(weekAndDateFilter);
 			dateFilterRowLayout.addComponent(applyButton);
-			
+
 			applyButton.addClickListener(e -> {
 				DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 				Date fromDate, toDate;
@@ -491,15 +491,20 @@ public class ContactsView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			// Show archived/active cases button
+			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption(Captions.contactShowArchived));
-				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-				switchArchivedActiveButton.addClickListener(e -> {
-					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.contactActiveContacts));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.contactAllContacts));
+				relevanceStatusFilter.addValueChangeListener(e -> {
+					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
-				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
 			// Bulk operation dropdown
@@ -551,7 +556,7 @@ public class ContactsView extends AbstractView {
 
 		return statusFilterLayout;
 	}
-	
+
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
 		expandFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), VaadinIcons.CHEVRON_DOWN);
 		CssStyles.style(expandFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
@@ -572,7 +577,7 @@ public class ContactsView extends AbstractView {
 		parentLayout.setComponentAlignment(collapseFiltersButton, Alignment.TOP_LEFT);
 		collapseFiltersButton.setVisible(false);
 	}
-	
+
 	public void setFiltersExpanded(boolean expanded) {
 		expandFiltersButton.setVisible(!expanded);
 		collapseFiltersButton.setVisible(expanded);
@@ -589,16 +594,17 @@ public class ContactsView extends AbstractView {
 		updateFilterComponents();
 		grid.reload();
 	}
-	
+
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
-		
+
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
+
 		updateStatusButtons();
-		updateArchivedButton();
-		
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
 		classificationFilter.setValue(criteria.getContactClassification());
 		diseaseFilter.setValue(criteria.getCaseDisease());
 		regionFilter.setValue(criteria.getCaseRegion());
@@ -608,39 +614,39 @@ public class ContactsView extends AbstractView {
 		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
 		searchField.setValue(criteria.getNameUuidCaseLike());		
-		
+
 		ContactDateType contactDateType = criteria.getReportDateFrom() != null ? ContactDateType.REPORT_DATE 
 				: criteria.getLastContactDateFrom() != null ? ContactDateType.LAST_CONTACT_DATE : null;
 		weekAndDateFilter.getDateTypeSelector().setValue(contactDateType);
 		Date dateFrom = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateFrom()
 				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateFrom() : null;
-		Date dateTo = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateTo() 
-				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateTo() : null;
-		// Reconstruct date/epi week choice
-		if ((dateFrom != null && dateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(dateFrom)).equals(dateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(dateTo)).equals(dateTo)))
-				|| (dateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(dateFrom)).equals(dateFrom))
-				|| (dateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(dateTo)).equals(dateTo))) {
-			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
-			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(dateFrom));
-			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(dateTo));
-		} else {
-			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
-			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
-			weekAndDateFilter.getDateToFilter().setValue(dateTo);
-		}
-		
-		boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
-				.anyMatch(f -> !f.isEmpty());
-		hasExpandedFilter |=  FieldHelper.streamFields(dateFilterRowLayout)
-				.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter())
-				.anyMatch(f -> !f.isEmpty());
-		if (hasExpandedFilter) {
-			setFiltersExpanded(true);
-		}	
-		
-		applyingCriteria = false;
+				Date dateTo = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateTo() 
+						: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateTo() : null;
+						// Reconstruct date/epi week choice
+						if ((dateFrom != null && dateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(dateFrom)).equals(dateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(dateTo)).equals(dateTo)))
+								|| (dateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(dateFrom)).equals(dateFrom))
+								|| (dateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(dateTo)).equals(dateTo))) {
+							weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
+							weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(dateFrom));
+							weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(dateTo));
+						} else {
+							weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+							weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
+							weekAndDateFilter.getDateToFilter().setValue(dateTo);
+						}
+
+						boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
+								.anyMatch(f -> !f.isEmpty());
+						hasExpandedFilter |=  FieldHelper.streamFields(dateFilterRowLayout)
+								.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter())
+								.anyMatch(f -> !f.isEmpty());
+						if (hasExpandedFilter) {
+							setFiltersExpanded(true);
+						}	
+
+						applyingCriteria = false;
 	}
-	
+
 	private void updateStatusButtons() {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
@@ -655,21 +661,5 @@ public class ContactsView extends AbstractView {
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
-	
-	private void updateArchivedButton() {
-		if (switchArchivedActiveButton == null) {
-			return;
-		}
-		
-		if (Boolean.TRUE.equals(criteria.getArchived())) {
-			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.contactShowActive)));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		} else {
-			getViewTitleLabel().setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.contactShowArchived)));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-		} 
-	}
-	
+
 }

@@ -148,9 +148,9 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 	}
 
 	@Override
-	public void savePopulationData(List<PopulationDataDto> populationDatas) throws ValidationRuntimeException {
+	public void savePopulationData(List<PopulationDataDto> populationDataList) throws ValidationRuntimeException {
 		
-		for (PopulationDataDto populationData : populationDatas) {
+		for (PopulationDataDto populationData : populationDataList) {
 			validate(populationData);
 			PopulationData entity = fromDto(populationData);
 			service.ensurePersisted(entity);

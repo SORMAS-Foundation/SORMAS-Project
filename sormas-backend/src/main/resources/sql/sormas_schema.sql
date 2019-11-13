@@ -3649,3 +3649,13 @@ INSERT INTO schema_version (version_number, comment) VALUES (166, 'Add pathogenT
 UPDATE samples SET pathogentestresultchangedate = (SELECT testdatetime FROM pathogentest WHERE pathogentest.sample_id = samples.id ORDER BY pathogentest.testdatetime DESC LIMIT 1);
 
 INSERT INTO schema_version (version_number, comment) VALUES (167, 'Fill samples with accurate pathogenTestResultChangeDate #1349');
+
+-- 2016-10-18; #982 additional fields to meningitis
+
+ALTER TABLE pathogentest ADD COLUMN serotype varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN serotype varchar(255);
+
+ALTER TABLE pathogentest ADD COLUMN cqvalue real;
+ALTER TABLE pathogentest_history ADD COLUMN cqvalue real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (168, 'Additional fields to meningitis #982');

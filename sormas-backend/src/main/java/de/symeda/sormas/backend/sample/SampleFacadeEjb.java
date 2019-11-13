@@ -43,8 +43,6 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -552,7 +550,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
-		target.setSampleCode(source.getSampleCode());
 		target.setLabSampleID(source.getLabSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
@@ -594,7 +591,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
-		target.setSampleCode(source.getSampleCode());
 		target.setLabSampleID(source.getLabSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
@@ -653,18 +649,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 			for (User recipient : messageRecipients) {
 				try {
-					if (!StringUtils.isEmpty(newSample.getSampleCode())) {
-						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED), 
-										newSample.getSampleCode(), 
-										DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
-								MessageType.EMAIL, MessageType.SMS);
-					} else {
-						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
-										DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
-								MessageType.EMAIL, MessageType.SMS);
-					}
+					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
+						String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
+							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
+							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the shipment of a lab sample. "
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));

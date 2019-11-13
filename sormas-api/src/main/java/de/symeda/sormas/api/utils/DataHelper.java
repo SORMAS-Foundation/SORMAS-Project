@@ -255,4 +255,9 @@ public final class DataHelper {
 		}
 	}
 	
+	public static String getHumanClassName(Class<?> classType) {
+		String className = classType.getSimpleName();
+		className = className.replaceAll("Dto$", "");
+		return className;
+	}
 }

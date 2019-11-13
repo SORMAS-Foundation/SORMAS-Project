@@ -61,6 +61,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -265,8 +266,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(columnNames, entityNames, PersonDto.class, prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else {
-				String className = clazz.getSimpleName();
-				entityNames.add(className.substring(0, className.lastIndexOf("Dto")));
+				entityNames.add(DataHelper.getHumanClassName(clazz));
 				columnNames.add(prefix + field.getName());
 			}
 		}
