@@ -140,7 +140,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 			if (filter != null) {
 				filter = cb.and(filter, createChangeDateFilter(cb, from, date));
 			} else {
-				filter = createChangeDateFilter(cb, from, date);
+				filter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			}
 		}
 		if (filter != null) {
@@ -194,7 +194,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(from.get(Facility.NAME), name);
+		Predicate filter = cb.equal(cb.upper(from.get(Facility.NAME)), name.toUpperCase());
 		// Additional null check is required because notEqual returns true if one of the
 		// values is null
 		filter = cb.and(filter, cb.or(cb.isNull(from.get(Facility.TYPE)),
@@ -219,7 +219,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(from.get(Facility.NAME), name);
+		Predicate filter = cb.equal(cb.upper(from.get(Facility.NAME)), name.toUpperCase());
 		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
 		
 		cq.where(filter);
@@ -230,7 +230,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from, User user) {
-		// no fitler by user needed
+		// no filter by user needed
 		return null;
 	}
 

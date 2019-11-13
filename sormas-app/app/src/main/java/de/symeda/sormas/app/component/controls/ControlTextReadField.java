@@ -229,6 +229,11 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         label.setEnabled(enabled);
     }
 
+    @Override
+    public void hideField(boolean eraseValue) {
+        setVisibility(GONE);
+    }
+
     public static void setValue(ControlTextReadField textField, String stringValue, String appendValue, String valueFormat, String defaultValue, Object originalValue) {
         if (StringUtils.isEmpty(stringValue)) {
             textField.setValue(textField.getDefaultValue(defaultValue), originalValue);
@@ -276,9 +281,9 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     }
 
     // Abstract Domain Object
-    @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
-    public static void setValue(ControlTextReadField textField, AbstractDomainObject ado, String valueFormat, String defaultValue) {
-        setValue(textField, ado != null ? ado.toString() : null, null, valueFormat, defaultValue, ado);
+    @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
+    public static void setValue(ControlTextReadField textField, AbstractDomainObject ado, String appendValue, String valueFormat, String defaultValue) {
+        setValue(textField, ado != null ? ado.toString() : null, appendValue, valueFormat, defaultValue, ado);
     }
 
     // Date & date range

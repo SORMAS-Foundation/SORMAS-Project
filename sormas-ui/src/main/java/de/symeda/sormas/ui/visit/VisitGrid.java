@@ -18,11 +18,10 @@
 package de.symeda.sormas.ui.visit;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -30,7 +29,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -44,25 +42,20 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 	private static final String EDIT_BTN_ID = "edit";
 
 	@SuppressWarnings("unchecked")
-	public VisitGrid() {
+	public VisitGrid(VisitCriteria criteria) {
 		super(VisitIndexDto.class);
 		setSizeFull();
+
+		setInEagerMode(true);
+		setCriteria(criteria);
+		ListDataProvider<VisitIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getVisitFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
         	setSelectionMode(SelectionMode.NONE);
         }
-
-		DataProvider<VisitIndexDto, VisitCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getVisitFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getVisitFacade().count(query.getFilter().orElse(null));
-				});
-		setDataProvider(dataProvider);
 
 		Column<VisitIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);

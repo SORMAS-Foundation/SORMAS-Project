@@ -33,6 +33,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
@@ -147,20 +148,27 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@Override
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid) {
+		return saveClinicalVisit(clinicalVisit, caseUuid, true);
+	}
+	
+	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid, boolean handleChanges) {
 		SymptomsHelper.updateIsSymptomatic(clinicalVisit.getSymptoms());
 		ClinicalVisit entity = fromDto(clinicalVisit);
 
 		service.ensurePersisted(entity);
 
-		// Update case symptoms
-		CaseDataDto caze = caseFacade.getCaseDataByUuid(caseUuid);
-		SymptomsDto caseSymptoms = caze.getSymptoms();
-		SymptomsHelper.updateSymptoms(clinicalVisit.getSymptoms(), caseSymptoms);
-		caseFacade.saveCase(caze);
-
+		if (handleChanges) {
+			// Update case symptoms
+			CaseDataDto caze = caseFacade.getCaseDataByUuid(caseUuid);
+			SymptomsDto caseSymptoms = caze.getSymptoms();
+			SymptomsHelper.updateSymptoms(clinicalVisit.getSymptoms(), caseSymptoms);
+			caseFacade.saveCase(caze);
+		}
+		
 		return toDto(entity);
 	}
 
+	
 	/**
 	 * Should only be used for synchronization purposes since the associated
 	 * case symptoms are not updated from this method.
@@ -183,7 +191,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		ClinicalVisit clinicalVisit = service.getByUuid(clinicalVisitUuid);
 		service.delete(clinicalVisit);
 	}
-
+	
 	@Override
 	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
@@ -239,8 +247,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit, user);
 		Join<Case, Case> casePath = clinicalCourse.join(ClinicalCourse.CASE);
-		Predicate criteriaFilter = caseService.buildCriteriaFilter(criteria, cb, cq, casePath);
-		filter = cb.and(filter, criteriaFilter);
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(caze.get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));
 		
@@ -297,6 +305,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	@LocalBean
 	@Stateless
 	public static class ClinicalVisitFacadeEjbLocal extends ClinicalVisitFacadeEjb {
+
 	}
 	
 }

@@ -64,6 +64,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 	
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
+	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
@@ -87,6 +88,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	protected double getDouble(String name, double defaultValue) {
 		return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
+	}
+	
+	protected int getInt(String name, int defaultValue) {
+		return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
 	}
 
 	@Override
@@ -171,6 +176,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public double getNameSimilarityThreshold() {
 		return getDouble(NAME_SIMILARITY_THRESHOLD, 0.4D);
+	}
+	
+	@Override
+	public int getInfrastructureSyncThreshold() {
+		return getInt(INFRASTRUCTURE_SYNC_THRESHOLD, 1000);
 	}
 	
 	@Override

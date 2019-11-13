@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="de.symeda.sormas.api.sample.SpecimenCondition" />
+        <import type="de.symeda.sormas.api.sample.SampleMaterial" />
+        <import type="de.symeda.sormas.api.sample.PathogenTestType" />
+        <import type="de.symeda.sormas.api.sample.PathogenTestResultType" />
+        <import type="de.symeda.sormas.api.Disease" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.sample.PathogenTest"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/main_content">
+
+                <requestFocus/>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/pathogenTest_testType"
+                    app:required="true"
+                    app:value="@={data.testType}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/pathogenTest_testTypeText"
+                    style="@style/ControlSingleColumnStyle"
+                    app:dependencyParentField="@{pathogenTestTestType}"
+                    app:dependencyParentValue="@{PathogenTestType.OTHER}"
+                    app:dependencyParentValue2="@{PathogenTestType.PCR_RT_PCR}"
+                    app:softRequired="true"
+                    app:value="@={data.testTypeText}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/pathogenTest_testedDisease"
+                    app:required="true"
+                    app:value="@={data.testedDisease}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/pathogenTest_testedDiseaseDetails"
+                    style="@style/ControlSingleColumnStyle"
+                    app:dependencyParentField="@{pathogenTestTestedDisease}"
+                    app:dependencyParentValue="@{Disease.OTHER}"
+                    app:required="true"
+                    app:value="@={data.testedDiseaseDetails}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlDateTimeField
+                    android:id="@+id/pathogenTest_testDateTime"
+                    app:dateHint="@string/caption_date_of_sampling"
+                    app:timeHint="@string/caption_time_of_sampling"
+                    app:required="true"
+                    app:value="@={data.testDateTime}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/pathogenTest_lab"
+                    app:required="true"
+                    app:value="@={data.lab}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/pathogenTest_labDetails"
+                    app:required="true"
+                    app:value="@={data.labDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/pathogenTest_testResult"
+                    app:required="true"
+                    app:value="@={data.testResult}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/pathogenTest_fourFoldIncreaseAntibodyTiter"
+                    app:dependencyParentField="@{pathogenTestTestType}"
+                    app:dependencyParentValue="@{PathogenTestType.IGM_SERUM_ANTIBODY}"
+                    app:dependencyParentValue2="@{PathogenTestType.IGG_SERUM_ANTIBODY}"
+                    app:useBoolean="true"
+                    app:value="@={data.fourFoldIncreaseAntibodyTiter}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/pathogenTest_serotype"
+                        app:dependencyParentField="@{pathogenTestTestedDisease}"
+                        app:dependencyParentValue="@{Disease.CSM}"
+                        app:dependencyParent2Field="@{pathogenTestTestResult}"
+                        app:dependencyParent2Value="@{PathogenTestResultType.POSITIVE}"
+                        app:value="@={data.serotype}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/pathogenTest_cqValue"
+                        app:dependencyParentField="@{pathogenTestTestType}"
+                        app:dependencyParentValue="@{PathogenTestType.CQ_VALUE_DETECTION}"
+                        app:value="@={data.cqValue}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/pathogenTest_testResultVerified"
+                    app:useBoolean="true"
+                    app:required="true"
+                    app:value="@={data.testResultVerified}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/pathogenTest_testResultText"
+                    app:inputType="textMultiLine"
+                    app:textAlignment="gravity"
+                    app:gravity="top|start"
+                    app:textArea="true"
+                    app:singleLine="false"
+                    app:maxLines="3"
+                    app:value="@={data.testResultText}"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

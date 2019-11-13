@@ -47,6 +47,7 @@ public class PersonHelper {
 			birthDate = birthDate.replaceAll("d+", birthdateDD != null ? birthdateDD.toString() : "");
 			birthDate = birthDate.replaceAll("M+", birthdateMM != null ? birthdateMM.toString() : "");
 			birthDate = birthDate.replaceAll("y+", birthdateYYYY != null ? birthdateYYYY.toString() : "");
+			birthDate = birthDate.replaceAll("^\\D+", "").replaceAll("\\D+$", "");
 			return birthDate;
 		}
 	}

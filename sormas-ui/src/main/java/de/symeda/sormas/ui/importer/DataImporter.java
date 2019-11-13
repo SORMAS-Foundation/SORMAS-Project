@@ -31,7 +31,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -39,8 +38,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
@@ -54,6 +51,10 @@ public abstract class DataImporter {
 	protected static final String ERROR_COLUMN_NAME = I18nProperties.getCaption(Captions.importErrorDescription);
 	protected static final Logger logger = LoggerFactory.getLogger(CaseImporter.class);
 
+	protected UserReferenceDto currentUser;
+	protected UI currentUI;
+	protected boolean hasEntityClassRow;
+	
 	protected Consumer<ImportResult> importedCallback;
 	protected ImportProgressLayout progressLayout;
 	protected Integer importFileLength;
@@ -61,15 +62,14 @@ public abstract class DataImporter {
 	protected CSVWriter csvWriter;
 	protected boolean cancelAfterCurrent;
 	protected boolean hasImportError;
-	protected UserReferenceDto currentUser;
-	protected UI currentUI;
 	protected String errorReportFilePath;
 
-	public DataImporter(File inputFile, UserReferenceDto currentUser, UI currentUI) throws IOException {
-		this(inputFile, null, currentUser, currentUI);
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser, UI currentUI) throws IOException {
+		this(inputFile, hasEntityClassRow, null, currentUser, currentUI);
 	}
 
-	public DataImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
+	public DataImporter(File inputFile, boolean hasEntityClassRow, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
+		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
 		this.currentUI = currentUI;
 
@@ -112,7 +112,7 @@ public abstract class DataImporter {
 
 	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback) {
 		Window window = VaadinUiUtil.createPopupWindow();
-		window.setCaption(I18nProperties.getString(Strings.headingPointOfEntryImport));
+		window.setCaption(I18nProperties.getString(Strings.headingDataImport));
 		window.setWidth(800, Unit.PIXELS);
 		window.setContent(progressLayout);
 		window.setClosable(false);
@@ -127,10 +127,14 @@ public abstract class DataImporter {
 		}
 
 		try (CSVReader caseCountReader = CSVUtils.createCSVReader(inputReader, FacadeProvider.getConfigFacade().getCsvSeparator())) {
-			// Initialize with -2 to not count header lines
-			importFileLength = -2;
+			importFileLength = 0;
 			while (caseCountReader.readNext() != null) {
 				importFileLength++;
+			}
+			// subtract header line(s)
+			importFileLength--;
+			if (hasEntityClassRow) {
+				importFileLength--;
 			}
 		}
 
@@ -141,26 +145,37 @@ public abstract class DataImporter {
 		this.importedCallback = importedCallback;
 
 		// Build dictionary of entity headers
-		List<String> entityHeaders = Arrays.asList(csvReader.readNext());
+		String[] entityClasses;
+		if (hasEntityClassRow) {
+			entityClasses = csvReader.readNext();
+		} else {
+			entityClasses = null;
+		}
 
 		// Build dictionary of column paths
-		String[] headersLine = csvReader.readNext();
-		List<String[]> headers = new ArrayList<>();
-		for (String header : headersLine) {
-			String[] headerPath = header.split("\\.");
-			headers.add(headerPath);
+		String[] entityProperties = csvReader.readNext();
+		String[][] entityPropertyPaths = new String[entityProperties.length][];
+		for (int i=0; i<entityProperties.length; i++) {
+			String[] entityPropertyPath = entityProperties[i].split("\\.");
+			entityPropertyPaths[i] = entityPropertyPath;
 		}
 
 		// Write first line to the error report writer
-		List<String> columnNames = new ArrayList<>();
-		columnNames.add(ERROR_COLUMN_NAME);
-		for (String column : headersLine) {
-			columnNames.add(column);
+		String[] columnNames = new String[entityProperties.length+1];
+		columnNames[0] = ERROR_COLUMN_NAME;
+		for (int i=0; i<entityProperties.length; i++) {
+			columnNames[i+1] = entityProperties[i];
 		}
-		csvWriter.writeNext(columnNames.toArray(new String[columnNames.size()]));
+		csvWriter.writeNext(columnNames);
 
-		// Create a new case for each line in the .csv file
-		readNextLineFromCsv(entityHeaders, headersLine, headers);
+		String[] nextLine = csvReader.readNext();
+		while (nextLine != null) {
+			importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths);
+			if (cancelAfterCurrent) {
+				break;
+			}
+			nextLine = csvReader.readNext();
+		}
 
 		csvReader.close();
 		csvWriter.flush();
@@ -183,18 +198,7 @@ public abstract class DataImporter {
 		cancelAfterCurrent = true;
 	}
 
-	protected void readNextLineFromCsv(List<String> entityHeaders, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException {
-		if (cancelAfterCurrent) {
-			return;
-		}
-
-		String[] nextLine = csvReader.readNext();
-		if (nextLine != null) {
-			importDataFromCsvLine(nextLine, entityHeaders, headersLine, headers);
-		}
-	}
-
-	protected abstract void importDataFromCsvLine(String[] nextLine, List<String> entityHeaders, String[] headersLine, List<String[]> headers) throws IOException, InvalidColumnException, InterruptedException;
+	protected abstract void importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath) throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
@@ -227,9 +231,9 @@ public abstract class DataImporter {
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
 			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry);
 			if (region.isEmpty()) {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
 			} else if (region.size() > 1) {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildHeaderPathString(entryHeaderPath)));
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
 				pd.getWriteMethod().invoke(element, region.get(0));
 				return true;
@@ -241,7 +245,7 @@ public abstract class DataImporter {
 				pd.getWriteMethod().invoke(element, user.toReference());
 				return true;
 			} else {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildHeaderPathString(entryHeaderPath)));
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
 			}
 		}
 		if (propertyType.isAssignableFrom(String.class)) {
@@ -252,40 +256,28 @@ public abstract class DataImporter {
 		return false;
 	}
 
-	protected boolean insertRowIntoData(String[] row, List<String> entityHeaders, List<String[]> headers, boolean ignoreEmptyEntries, Function<ImportColumnInformation, Exception> insertCallback) throws IOException, InvalidColumnException {
+	protected boolean insertRowIntoData(String[] values, String[] entityClasses, String[][] entityPropertyPaths, boolean ignoreEmptyEntries, Function<ImportCellData, Exception> insertCallback) throws IOException, InvalidColumnException {
 		boolean dataHasImportError = false;
 
-		for (int i = 0; i < row.length; i++) {
-			String entry = row[i];
-			if (entry == null || entry.isEmpty()) {
+		for (int i = 0; i < values.length; i++) {
+			String value = values[i];
+			if (value == null || value.isEmpty()) {
 				continue;
 			}
 
-			String[] entryHeaderPath = headers.get(i);
+			String[] entityPropertyPath = entityPropertyPaths[i];
 			// Error description column is ignored
-			if (entryHeaderPath[0].equals(ERROR_COLUMN_NAME)) {
+			if (entityPropertyPath[0].equals(ERROR_COLUMN_NAME)) {
 				continue;
 			}
 
-			if (!(ignoreEmptyEntries && (StringUtils.isEmpty(entry)))) {
-				Class<?> entityClass;
-				switch (entityHeaders.get(i)) {
-				case "Sample":
-					entityClass = SampleDto.class;
-					break;
-				case "PathogenTest":
-					entityClass = PathogenTestDto.class;
-					break;
-				default:
-					entityClass = CaseDataDto.class;
-					break;
-				}
-				Exception exception = insertCallback.apply(new ImportColumnInformation(entry, entryHeaderPath, entityClass));
+			if (!(ignoreEmptyEntries && (StringUtils.isEmpty(value)))) {
+				Exception exception = insertCallback.apply(new ImportCellData(value, hasEntityClassRow ? entityClasses[i] : null, entityPropertyPath));
 				if (exception != null) {
 					if (exception instanceof ImportErrorException) {
 						hasImportError = true;
 						dataHasImportError = true;
-						writeImportError(row, exception.getMessage());
+						writeImportError(values, exception.getMessage());
 						break;
 					} else if (exception instanceof InvalidColumnException) {
 						csvReader.close();
@@ -308,19 +300,8 @@ public abstract class DataImporter {
 		csvWriter.writeNext(errorLineAsList.toArray(new String[errorLineAsList.size()]));
 	}
 
-	protected String buildHeaderPathString(String[] entryHeaderPath) {
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (String headerPathElement : entryHeaderPath) {
-			if (first) {
-				sb.append(headerPathElement);
-				first = false;
-			} else {
-				sb.append(".").append(headerPathElement);
-			}
-		}
-
-		return sb.toString();
+	protected String buildEntityProperty(String[] entityPropertyPath) {
+		return String.join(".", entityPropertyPath);
 	}
 
 	private class ImportThread extends Thread {
@@ -381,19 +362,6 @@ public abstract class DataImporter {
 						currentUI.setPollInterval(-1);
 					}
 				});
-			} catch (IOException | InterruptedException e) {
-				currentUI.access(new Runnable() {
-					@Override
-					public void run() {
-						window.setClosable(true);
-						progressLayout.makeClosable(() -> {
-							window.close();
-						});
-						progressLayout.displayErrorIcon();
-						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
-						currentUI.setPollInterval(-1);
-					}
-				});
 			} catch (InvalidColumnException e) {
 				currentUI.access(new Runnable() {
 					@Override
@@ -407,7 +375,23 @@ public abstract class DataImporter {
 						currentUI.setPollInterval(-1);
 					}
 				});
-			}
+			} catch (Exception e) { //IOException | InterruptedException e) {
+				
+				logger.error(e.getMessage(), e);
+				
+				currentUI.access(new Runnable() {
+					@Override
+					public void run() {
+						window.setClosable(true);
+						progressLayout.makeClosable(() -> {
+							window.close();
+						});
+						progressLayout.displayErrorIcon();
+						progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
+						currentUI.setPollInterval(-1);
+					}
+				});
+			} 
 		}
 	}
 

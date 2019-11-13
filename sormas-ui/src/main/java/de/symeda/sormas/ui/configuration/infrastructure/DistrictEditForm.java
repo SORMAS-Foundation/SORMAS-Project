@@ -17,14 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import com.vaadin.v7.data.util.converter.StringToFloatConverter;
-import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -36,8 +32,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 	private static final String HTML_LAYOUT =
 			LayoutUtil.fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE)
-			+ LayoutUtil.loc(DistrictDto.REGION)
-			+ LayoutUtil.fluidRowLocs(DistrictDto.POPULATION, DistrictDto.GROWTH_RATE);
+			+ LayoutUtil.fluidRowLocs(DistrictDto.REGION);//, DistrictDto.GROWTH_RATE);
 
 	private boolean create;
 	
@@ -58,12 +53,9 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		addField(DistrictDto.NAME, TextField.class);
 		addField(DistrictDto.EPID_CODE, TextField.class);
 		ComboBox region = addField(DistrictDto.REGION, ComboBox.class);
-		TextField population = addField(DistrictDto.POPULATION, TextField.class);
-		population.setConverter(new StringToIntegerConverter());
-		population.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, population.getCaption()));
-		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class);
-		growthRate.setConverter(new StringToFloatConverter());
-		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
+//		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class);
+//		growthRate.setConverter(new StringToFloatConverter());
+//		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 
 		setRequired(true, DistrictDto.NAME, DistrictDto.EPID_CODE, DistrictDto.REGION);
 		

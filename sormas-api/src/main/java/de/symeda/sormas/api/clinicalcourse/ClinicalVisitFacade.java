@@ -27,5 +27,4 @@ public interface ClinicalVisitFacade {
 	List<String> getAllActiveUuids(String userUuid);
 	
 	List<ClinicalVisitExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max);
-	
 }

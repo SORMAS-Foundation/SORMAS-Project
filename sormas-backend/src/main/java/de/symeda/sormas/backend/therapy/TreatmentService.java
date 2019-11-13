@@ -8,6 +8,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -17,6 +18,7 @@ import javax.persistence.criteria.Root;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -49,15 +51,25 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 		return resultList;
 	}
 
-	public int getTreatmentCountByCase(long caseId) {
+	public List<Object[]> getTreatmentCountByCases(List<Long> caseIds) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Treatment> from = cq.from(getElementClass());
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Treatment> treatmentRoot = cq.from(getElementClass());
+		Join<Treatment, Therapy> therapyJoin = treatmentRoot.join(Treatment.THERAPY, JoinType.LEFT);
+		Root<Case> caseRoot = cq.from(Case.class);
+		Join<Case, Therapy> caseTherapyJoin = caseRoot.join(Case.THERAPY, JoinType.LEFT); 
+		
+		cq.multiselect(
+				caseRoot.get(Case.ID),
+				cb.count(treatmentRoot));
+		
+		Expression<String> caseIdsExpression = caseRoot.get(Case.ID);
+		cq.where(cb.and(
+				caseIdsExpression.in(caseIds),
+				cb.equal(therapyJoin.get(Therapy.ID), caseTherapyJoin.get(Therapy.ID))));
+		cq.groupBy(caseRoot.get(Case.ID));
 
-		cq.select(cb.count(from));
-		cq.where(cb.equal(from.join(Treatment.THERAPY, JoinType.LEFT).get(Therapy.CASE).get(Case.ID), caseId));
-
-		return em.createQuery(cq).getSingleResult().intValue();
+		return em.createQuery(cq).getResultList();
 	}
 	
 	public List<Treatment> getAllActiveTreatmentsAfter(Date date, User user) {
@@ -73,12 +85,12 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 		
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = cb.and(filter, dateFilter);
+			filter = AbstractAdoService.and(cb, filter, dateFilter);
 		}
 		
 		cq.where(filter);
@@ -101,7 +113,7 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 		
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from, user);
-			filter = cb.and(filter, userFilter);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
 		cq.where(filter);

@@ -32,13 +32,13 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
 @Audited
-public class PathogenTest extends AbstractDomainObject {
+public class PathogenTest extends CoreAdo {
 
 	private static final long serialVersionUID = 2290351143518627813L;
 
@@ -56,6 +56,8 @@ public class PathogenTest extends AbstractDomainObject {
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
+	public static final String SEROTYPE = "serotype";
+	public static final String CQ_VALUE = "cqValue";
 	
 	private Sample sample;
 	private Disease testedDisease;
@@ -70,6 +72,8 @@ public class PathogenTest extends AbstractDomainObject {
 	private String testResultText;
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
+	private String serotype;
+	private Float cqValue;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -179,6 +183,22 @@ public class PathogenTest extends AbstractDomainObject {
 	}
 	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+	}
+	
+	@Column(length=255)
+	public String getSerotype() {
+		return serotype;
+	}
+	public void setSerotype(String serotype) {
+		this.serotype = serotype;
+	}
+	
+	@Column
+	public Float getCqValue() {
+		return cqValue;
+	}
+	public void setCqValue(Float cqValue) {
+		this.cqValue = cqValue;
 	}
 	
 }

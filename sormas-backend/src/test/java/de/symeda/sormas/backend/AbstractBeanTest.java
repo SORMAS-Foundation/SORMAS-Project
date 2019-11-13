@@ -38,6 +38,8 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
+import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -74,6 +76,9 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLoca
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -179,6 +184,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SymptomsFacadeEjbLocal.class);
 	}
 
+	public PointOfEntryFacade getPointOfEntryFacade() {
+		return getBean(PointOfEntryFacadeEjbLocal.class);
+	}
+
 	public FacilityFacade getFacilityFacade() {
 		return getBean(FacilityFacadeEjbLocal.class);
 	}
@@ -231,6 +240,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(FacilityService.class);
 	}
 
+	public PointOfEntryService getPointOfEntryService() {
+		return getBean(PointOfEntryService.class);
+	}
+
 	public RegionService getRegionService() {
 		return getBean(RegionService.class);
 	}
@@ -266,7 +279,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public DiseaseConfigurationService getDiseaseConfigurationService() {
 		return getBean(DiseaseConfigurationService.class);
 	}
-
+	
+	public PopulationDataFacade getPopulationDataFacade() {
+		return getBean(PopulationDataFacadeEjbLocal.class);
+	}
 
 	public DiseaseFacade getDiseaseFacade() {
 		return getBean(DiseaseFacadeEjbLocal.class);

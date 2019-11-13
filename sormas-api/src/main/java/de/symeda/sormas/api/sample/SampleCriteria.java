@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -43,8 +44,9 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private Disease disease;
 	private SpecimenCondition specimenCondition;
 	private CaseReferenceDto caze;
-	private Boolean archived;
+	private Boolean deleted = Boolean.FALSE;
 	private String caseCodeIdLike;
+	private EntityRelevanceStatus relevanceStatus;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -144,15 +146,27 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		this.specimenCondition = specimenCondition;
 		return this;
 	}
-
-	public Boolean getArchived() {
-		return archived;
-	}
-
-	public SampleCriteria archived(Boolean archived) {
-		this.archived = archived;
+	
+	public SampleCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
+	
+	@IgnoreForUrl
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
+	}
+	
+	public SampleCriteria deleted(Boolean deleted) {
+		this.deleted = deleted;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
 	
 	/**
 	 * returns all entries that match ALL of the passed words

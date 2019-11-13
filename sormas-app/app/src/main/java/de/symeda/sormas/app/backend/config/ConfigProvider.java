@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.security.KeyPairGeneratorSpec;
 import android.util.Base64;
 import android.util.Log;
@@ -30,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -74,8 +76,10 @@ public final class ConfigProvider {
     private static String KEY_REPULL_NEEDED = "repullNeeded";
     private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
     private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
+    private static String LAST_DELETED_SYNC_DATE = "lastDeletedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
     private static String LOCALE = "locale";
+    private static String INITIAL_SYNC_REQUIRED = "initialSyncRequired";
 
     public static ConfigProvider instance = null;
 
@@ -96,10 +100,12 @@ public final class ConfigProvider {
     private Set<UserRight> userRights; // just a cache
     private Date lastNotificationDate;
     private Date lastArchivedSyncDate;
+    private Date lastDeletedSyncDate;
     private Long currentAppDownloadId;
     private Boolean accessGranted;
     private String locale;
     private Boolean repullNeeded;
+    private Boolean initialSyncRequired;
 
     private ConfigProvider(Context context) {
         this.context = context;
@@ -335,10 +341,15 @@ public final class ConfigProvider {
             }
 
             PublicKey publicKey;
-            try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 publicKey = keyStore.getCertificate(keyStoreAlias).getPublicKey();
-            } catch (Exception e) { // root cause can be a KeyStoreException - try again (see #866)
-                publicKey = keyStore.getCertificate(keyStoreAlias).getPublicKey();
+            } else {
+                KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry)keyStore.getEntry(keyStoreAlias, null);
+                publicKey = privateKeyEntry.getCertificate().getPublicKey();
+            }
+
+            if (publicKey == null) {
+                return null;
             }
 
             Cipher input = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -353,21 +364,7 @@ public final class ConfigProvider {
             String result = Base64.encodeToString(resultByteArray, Base64.DEFAULT);
             return result;
 
-        } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (CertificateException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchProviderException e) {
+        } catch (KeyStoreException | NoSuchAlgorithmException | NoSuchProviderException | UnrecoverableEntryException | IOException | NoSuchPaddingException | InvalidKeyException | CertificateException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         }
     }
@@ -387,11 +384,13 @@ public final class ConfigProvider {
             keyStore.load(null);
 
             PrivateKey privateKey;
-            try {
-                privateKey = (PrivateKey) keyStore.getKey(keyStoreAlias, null);
-            } catch (KeyStoreException e) { // root cause can be a KeyStoreException - try again (see #866)
-                privateKey = (PrivateKey) keyStore.getKey(keyStoreAlias, null);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                privateKey = (PrivateKey)keyStore.getKey(keyStoreAlias, null);
+            } else {
+                KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry)keyStore.getEntry(keyStoreAlias, null);
+                privateKey = privateKeyEntry.getPrivateKey();
             }
+
             if (privateKey == null) {
                 return null;
             }
@@ -409,19 +408,7 @@ public final class ConfigProvider {
             String result = new String(passwordBytes, 0, passwordByteLength, "UTF-8");
             return result;
 
-        } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
-        } catch (UnrecoverableEntryException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (CertificateException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchPaddingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (KeyStoreException | UnrecoverableEntryException | NoSuchAlgorithmException | CertificateException | InvalidKeyException | NoSuchPaddingException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -524,6 +511,35 @@ public final class ConfigProvider {
         }
     }
 
+    public static Date getLastDeletedSyncDate() {
+        if (instance.lastDeletedSyncDate == null) {
+            synchronized (ConfigProvider.class) {
+                if (instance.lastDeletedSyncDate == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(LAST_DELETED_SYNC_DATE);
+                    if (config != null) {
+                        instance.lastDeletedSyncDate = new Date(Long.parseLong(config.getValue()));
+                    }
+
+                }
+            }
+        }
+
+        return instance.lastDeletedSyncDate;
+    }
+
+    public static void setLastDeletedSyncDate(Date lastDeletedSyncDate) {
+        if (lastDeletedSyncDate != null && lastDeletedSyncDate.equals(instance.lastDeletedSyncDate)) {
+            return;
+        }
+
+        instance.lastDeletedSyncDate = lastDeletedSyncDate;
+        if (lastDeletedSyncDate == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(LAST_DELETED_SYNC_DATE, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_DELETED_SYNC_DATE, String.valueOf(lastDeletedSyncDate.getTime())));
+        }
+    }
+
     public static Long getCurrentAppDownloadId() {
         if (instance.currentAppDownloadId == null) {
             synchronized (ConfigProvider.class) {
@@ -623,17 +639,36 @@ public final class ConfigProvider {
                 instance.repullNeeded = Boolean.parseBoolean(config.getValue());
             }
         }
-        return instance.repullNeeded != null ? instance.repullNeeded.booleanValue() : false;
+        return instance.repullNeeded != null && instance.repullNeeded;
     }
 
     public static void setRepullNeeded(boolean repullNeeded) {
-        if (instance.repullNeeded != null && instance.repullNeeded.booleanValue() == repullNeeded) {
+        if (instance.repullNeeded != null && instance.repullNeeded == repullNeeded) {
             return;
         }
 
         instance.repullNeeded = repullNeeded;
 
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_REPULL_NEEDED, String.valueOf(repullNeeded)));
+    }
+
+    public static boolean isInitialSyncRequired() {
+        if (instance.initialSyncRequired == null) {
+            Config config = DatabaseHelper.getConfigDao().queryForId(INITIAL_SYNC_REQUIRED);
+            if (config != null) {
+                instance.initialSyncRequired = Boolean.parseBoolean(config.getValue());
+            }
+        }
+        return instance.initialSyncRequired == null || instance.initialSyncRequired;
+    }
+
+    public static void setInitialSyncRequired(boolean initialSyncRequired) {
+        if (instance.initialSyncRequired != null && instance.initialSyncRequired == initialSyncRequired) {
+            return;
+        }
+
+        instance.initialSyncRequired = initialSyncRequired;
+        DatabaseHelper.getConfigDao().createOrUpdate(new Config(INITIAL_SYNC_REQUIRED, String.valueOf(initialSyncRequired)));
     }
 
 }

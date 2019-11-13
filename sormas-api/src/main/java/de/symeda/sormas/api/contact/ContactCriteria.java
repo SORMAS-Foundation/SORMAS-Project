@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -50,8 +51,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date followUpUntilTo;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
-	private Boolean archived;
+	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidCaseLike;
+	private EntityRelevanceStatus relevanceStatus;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -214,14 +216,25 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public Date getFollowUpUntilTo() {
 		return followUpUntilTo;
 	}
-
-	public Boolean getArchived() {
-		return archived;
+	
+	public ContactCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
+		return this;
+	}
+	
+	@IgnoreForUrl
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
+	}
+	
+	public ContactCriteria deleted(Boolean deleted) {
+		this.deleted = deleted;
+		return this;
 	}
 
-	public ContactCriteria archived(Boolean archived) {
-		this.archived = archived;
-		return this;
+	@IgnoreForUrl
+	public Boolean getDeleted() {
+		return deleted;
 	}
 	
 	/**

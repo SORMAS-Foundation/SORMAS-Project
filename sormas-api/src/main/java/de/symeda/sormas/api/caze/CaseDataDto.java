@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -25,7 +29,9 @@ import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
@@ -41,6 +47,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
 
 public class CaseDataDto extends EntityDto {
 
@@ -219,10 +226,42 @@ public class CaseDataDto extends EntityDto {
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
-		caze.setReportDate(new Date());
 		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		return caze;
 	}
+	
+	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getCaseDisease());
+		SymptomsDto newSymptoms = cazeData.getSymptoms();
+		if(lastVisit != null) {
+			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
+	
+			try {
+				// reflection to call the setters of the new symptoms object with the getters
+				// from the one in the visit
+				for (PropertyDescriptor pd : Introspector.getBeanInfo(SymptomsDto.class, EntityDto.class)
+						.getPropertyDescriptors()) {
+					if (pd.getWriteMethod() != null) {
+						try {
+							pd.getWriteMethod().invoke(newSymptoms, pd.getReadMethod().invoke(oldSymptoms));
+						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
+			} catch (IntrospectionException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		cazeData.setSymptoms(newSymptoms);
+		return cazeData;
+	}
+	
+	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, Disease eventDisease) {
+		CaseDataDto cazeData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
+		return cazeData;
+	}
+
 
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,10 +44,12 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictFacade;
+import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -64,6 +67,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	private UserService userService;
 	@EJB
 	private RegionService regionService;
+	@EJB
+	protected PopulationDataFacadeEjbLocal populationDataFacade;
 
 	@Override
 	public List<DistrictReferenceDto> getAllAsReference() {
@@ -84,13 +89,32 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public List<DistrictDto> getAllAfter(Date date) {
-		return districtService.getAllAfter(date, null).stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DistrictDto> cq = cb.createQuery(DistrictDto.class);
+		Root<District> district = cq.from(District.class);
+
+		selectDtoFields(cq, district);
+
+		Predicate filter = districtService.createChangeDateFilter(cb, district, date);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	private void selectDtoFields(CriteriaQuery<DistrictDto> cq, Root<District> root) {
+		
+		Join<District, Region> region = root.join(District.REGION, JoinType.LEFT);
+		
+		cq.multiselect(root.get(District.CREATION_DATE), root.get(District.CHANGE_DATE), root.get(District.UUID),
+				root.get(District.NAME), root.get(District.EPID_CODE), root.get(District.GROWTH_RATE), region.get(Region.UUID), region.get(Region.NAME));
 	}
 
 	@Override
-	public List<DistrictDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(District.class);
 		Root<District> district = cq.from(District.class);
@@ -109,7 +133,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 				switch (sortProperty.propertyName) {
 				case District.NAME:
 				case District.EPID_CODE:
-				case District.POPULATION:
 				case District.GROWTH_RATE:
 					expression = district.get(sortProperty.propertyName);
 					break;
@@ -129,7 +152,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		cq.select(district);
 
 		List<District> districts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return districts.stream().map(d -> toDto(d)).collect(Collectors.toList());
+		return districts.stream().map(d -> toIndexDto(d)).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -221,7 +244,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return dto;
 	}
 
-	public static DistrictDto toDto(District entity) {
+	public DistrictDto toDto(District entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -230,8 +253,23 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());
-		dto.setPopulation(entity.getPopulation());
 		dto.setGrowthRate(entity.getGrowthRate());
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+
+		return dto;
+	}	
+
+	public DistrictIndexDto toIndexDto(District entity) {
+		if (entity == null) {
+			return null;
+		}
+		DistrictIndexDto dto = new DistrictIndexDto();
+		DtoHelper.fillDto(dto, entity);
+
+		dto.setName(entity.getName());
+		dto.setEpidCode(entity.getEpidCode());
+		dto.setGrowthRate(entity.getGrowthRate());
+		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 
 		return dto;
@@ -247,7 +285,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());
-		target.setPopulation(source.getPopulation());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		

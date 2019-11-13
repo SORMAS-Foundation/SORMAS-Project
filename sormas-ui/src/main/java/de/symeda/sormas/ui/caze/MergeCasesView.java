@@ -59,6 +59,9 @@ public class MergeCasesView extends AbstractView {
 				navigateTo(null);
 			}
 		});
+		filterComponent.setIgnoreRegionCallback((ignoreRegion) -> {
+			grid.reload(ignoreRegion);
+		});
 		gridLayout.addComponent(filterComponent);
 		
 		gridLayout.addComponent(grid);

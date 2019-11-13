@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1000,11 +1001,16 @@ public final class DateHelper {
 		String endDateString = endDate != null ? formatLocalDate(endDate) : "?";
 		if (startDate == null && endDate == null) {
 			return "";
-		} else if (startDate != null && DateHelper.isSameDay(startDate, endDate)) {
+		} else if (startDate != null && endDate != null && DateHelper.isSameDay(startDate, endDate)) {
 			return startDateString;
 		} else {
 			return startDateString + " - " + endDateString;
 		}
 	}
 
+	public static Timestamp toTimestampUpper(Date date) {
+		Timestamp timestamp = new Timestamp(date.getTime());
+		timestamp.setNanos(timestamp.getNanos() + 999999);
+		return timestamp;
+	}
 }

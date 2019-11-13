@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -31,7 +33,7 @@ public interface RegionFacade {
 
 	List<RegionDto> getAllAfter(Date date);
 	
-	List<RegionDto> getIndexList(RegionCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<RegionIndexDto> getIndexList(RegionCriteria criteria, int first, int max, List<SortProperty> sortProperties);
 	
 	long count(RegionCriteria criteria);
 	
@@ -50,5 +52,5 @@ public interface RegionFacade {
 	void saveRegion(RegionDto dto);
 	
 	List<RegionReferenceDto> getByName(String name);
-
+	
 }

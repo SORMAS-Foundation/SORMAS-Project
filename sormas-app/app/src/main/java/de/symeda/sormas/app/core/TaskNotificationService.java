@@ -113,9 +113,6 @@ public class TaskNotificationService extends Service {
         if (notificationRangeStart == null) {
             notificationRangeStart = new DateTime().minusDays(1).toDate();
         }
-        // start after the last check
-        notificationRangeStart = new Date(notificationRangeStart.getTime() + 1);
-
         Date notificationRangeEnd = new Date();
 
         TaskDao taskDao = DatabaseHelper.getTaskDao();

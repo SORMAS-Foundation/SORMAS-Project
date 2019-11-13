@@ -46,7 +46,6 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -170,7 +169,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		
 		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
-		filter = AbstractAdoService.and(cb, filter, caseService.buildCriteriaFilter(caseCriteria, cb, cq, root));
+		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 		
 		if (filter != null) {
@@ -502,6 +501,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@LocalBean
 	@Stateless
 	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {
+
 	}
 
 }

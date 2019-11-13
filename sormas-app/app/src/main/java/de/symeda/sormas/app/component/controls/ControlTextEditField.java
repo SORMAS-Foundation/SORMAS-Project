@@ -117,40 +117,40 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         });
     }
 
-    private void setUpOnFocusChangeListener() {
-        input.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!v.isEnabled()) {
-                    return;
-                }
-
-                showOrHideNotifications(hasFocus);
-
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                if (imm != null) {
-                    if (hasFocus) {
-                        changeVisualState(VisualState.FOCUSED);
-                        imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-                        // Prevent the content from being automatically selected
-                        input.setSelection(input.getText().length(), input.getText().length());
-                        if (onClickListener != null) {
-                            input.setOnClickListener(onClickListener);
-                        }
-                    } else {
-                        if (hasError) {
-                            changeVisualState(VisualState.ERROR);
-                        } else {
-                            changeVisualState(VisualState.NORMAL);
-                        }
-                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                        input.setOnClickListener(null);
-                    }
-                }
-            }
-        });
-    }
+//    private void setUpOnFocusChangeListener() {
+//        input.setOnFocusChangeListener(new OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (!v.isEnabled()) {
+//                    return;
+//                }
+//
+//                showOrHideNotifications(hasFocus);
+//
+//                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//
+//                if (imm != null) {
+//                    if (hasFocus) {
+//                        changeVisualState(VisualState.FOCUSED);
+//                        imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+//                        // Prevent the content from being automatically selected
+//                        input.setSelection(input.getText().length(), input.getText().length());
+//                        if (onClickListener != null) {
+//                            input.setOnClickListener(onClickListener);
+//                        }
+//                    } else {
+//                        if (hasError) {
+//                            changeVisualState(VisualState.ERROR);
+//                        } else {
+//                            changeVisualState(VisualState.NORMAL);
+//                        }
+//                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                        input.setOnClickListener(null);
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void initializeOnClickListener() {
         if (onClickListener != null) {
@@ -289,7 +289,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         });
 
         setUpOnEditorActionListener();
-        setUpOnFocusChangeListener();
+//        setUpOnFocusChangeListener();
         initializeOnClickListener();
     }
 
@@ -366,6 +366,15 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         }
     }
 
+    @BindingAdapter("value")
+    public static void setValue(ControlTextEditField view, Float floatValue) {
+        if (floatValue != null) {
+            view.setFieldValue(String.valueOf(floatValue));
+        } else {
+            view.setFieldValue(null);
+        }
+    }
+
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static String getValue(ControlTextEditField view) {
         return view.getFieldValue();
@@ -375,6 +384,15 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     public static Integer getIntegerValue(ControlTextEditField view) {
         if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
             return Integer.valueOf(view.getFieldValue());
+        } else {
+            return null;
+        }
+    }
+
+    @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
+    public static Float getFloatValue(ControlTextEditField view) {
+        if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
+            return Float.valueOf(view.getFieldValue());
         } else {
             return null;
         }

@@ -49,6 +49,8 @@ import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestNegativeResultCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestOtherPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
@@ -112,6 +114,7 @@ public final class RetroProvider {
     private AdditionalTestFacadeRetro additionalTestFacadeRetro;
     private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
     private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
+    private InfrastructureFacadeRetro infrastructureFacadeRetro;
 
     private RetroProvider(Context context) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -126,6 +129,8 @@ public final class RetroProvider {
                 .registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
                 .registerSubtype(ClassificationPersonAgeBetweenYearsCriteriaDto.class, "ClassificationPersonAgeBetweenYearsCriteriaDto")
                 .registerSubtype(ClassificationPathogenTestPositiveResultCriteriaDto.class, "ClassificationPathogenTestPositiveResultCriteriaDto")
+                .registerSubtype(ClassificationPathogenTestNegativeResultCriteriaDto.class, "ClassificationPathogenTestNegativeResultCriteriaDto")
+                .registerSubtype(ClassificationPathogenTestOtherPositiveResultCriteriaDto.class, "ClassificationPathogenTestOtherPositiveResultCriteriaDto")
                 .registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
                 .registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
                 .registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
@@ -694,6 +699,18 @@ public final class RetroProvider {
             }
         }
         return instance.diseaseConfigurationFacadeRetro;
+    }
+
+    public static InfrastructureFacadeRetro getInfrastructureFacadeRetro() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
+        if (instance.infrastructureFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.infrastructureFacadeRetro == null) {
+                    instance.infrastructureFacadeRetro = instance.retrofit.create(InfrastructureFacadeRetro.class);
+                }
+            }
+        }
+        return instance.infrastructureFacadeRetro;
     }
 
     public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

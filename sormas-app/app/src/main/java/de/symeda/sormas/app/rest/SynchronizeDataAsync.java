@@ -22,11 +22,17 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.AddTrace;
+import com.google.firebase.perf.metrics.Trace;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
@@ -40,6 +46,7 @@ import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -91,29 +98,49 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         }
 
         try {
+            Trace syncModeTrace = null;
             switch (syncMode) {
                 case Changes:
+                    syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeChangesTrace");
+                    syncModeTrace.start();
+
                     // infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
                     pullInfrastructure();
+                    // pull and remove deleted entities when the last time this has been doen is more than 24 hours ago
+                    if (ConfigProvider.getLastDeletedSyncDate() == null || DateHelper.getFullDaysBetween(ConfigProvider.getLastDeletedSyncDate(), new Date()) >= 1) {
+                        pullAndRemoveDeletedUuidsSince(ConfigProvider.getLastDeletedSyncDate());
+                    }
                     // pull and remove archived entities when the last time this has been done is more than 24 hours ago
                     if (ConfigProvider.getLastArchivedSyncDate() == null || DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
                         pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
                     }
                     synchronizeChangedData();
+
+                    syncModeTrace.stop();
                     break;
                 case Complete:
+                    syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeCompleteTrace");
+                    syncModeTrace.start();
+
                     pullInfrastructure(); // do before missing, because we may have a completely empty database
                     pullMissingAndDeleteInvalidInfrastructure();
                     pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
+
+                    syncModeTrace.stop();
                     break;
                 case CompleteAndRepull:
+                    syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeCompleteAndRepullTrace");
+                    syncModeTrace.start();
+
                     pullInfrastructure(); // do before missing, because we may have a completely empty database
                     pullMissingAndDeleteInvalidInfrastructure();
                     repullData();
                     pushNewPullMissingAndDeleteInvalidData();
                     synchronizeChangedData();
                     ConfigProvider.setRepullNeeded(false);
+
+                    syncModeTrace.stop();
                     break;
                 default:
                     throw new IllegalArgumentException(syncMode.toString());
@@ -198,6 +225,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 DatabaseHelper.getClinicalVisitDao().isAnyModified();
     }
 
+    @AddTrace(name = "synchronizeChangedDataTrace")
     private void synchronizeChangedData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
@@ -266,6 +294,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             clinicalVisitDtoHelper.pullEntities(true);
     }
 
+    @AddTrace(name = "repullDataTrace")
     private void repullData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
         PersonDtoHelper personDtoHelper = new PersonDtoHelper();
         CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
@@ -305,8 +334,36 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         clinicalVisitDtoHelper.repullEntities();
     }
 
+    @AddTrace(name = "pullInfrastructureTrace")
     private void pullInfrastructure() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+        if (ConfigProvider.isInitialSyncRequired()) {
+            pullInitialInfrastructure();
+        } else {
+            InfrastructureChangeDatesDto changeDates = InfrastructureHelper.getInfrastructureChangeDates();
 
+            try {
+                Response<InfrastructureSyncDto> response = RetroProvider.getInfrastructureFacadeRetro().pullInfrastructureSyncData(changeDates).execute();
+                if (!response.isSuccessful()) {
+                    RetroProvider.throwException(response);
+                }
+
+                InfrastructureSyncDto infrastructureData = response.body();
+                if (infrastructureData != null) {
+                    if (infrastructureData.isInitialSyncRequired()) {
+                        ConfigProvider.setInitialSyncRequired(true);
+                        pullInfrastructure();
+                    } else {
+                        InfrastructureHelper.handlePulledInfrastructureData(infrastructureData);
+                    }
+                }
+            } catch (IOException e) {
+                Log.e(SynchronizeDataAsync.class.getSimpleName(), "Error when trying to pull infrastructure data: " + e.getMessage());
+            }
+        }
+    }
+
+    @AddTrace(name = "pullInitialInfrastructureTrace")
+    private void pullInitialInfrastructure() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
         new RegionDtoHelper().pullEntities(false);
         new DistrictDtoHelper().pullEntities(false);
         new CommunityDtoHelper().pullEntities(false);
@@ -319,12 +376,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // user role configurations may be removed, so have to pull the deleted uuids
         // this may be applied to other entities later as well
         Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
-        List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() + 1 : 0));
+        List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() : 0));
         DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
 
         new UserRoleConfigDtoHelper().pullEntities(false);
+
+        ConfigProvider.setInitialSyncRequired(false);
     }
 
+    @AddTrace(name = "pullAndRemoveArchivedUuidsSinceTrace")
     private void pullAndRemoveArchivedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
         Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullArchivedUuidsSince");
 
@@ -353,6 +413,42 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         }
     }
 
+    @AddTrace(name = "pullAndRemoveDeletedUuidsSinceTrace")
+    private void pullAndRemoveDeletedUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
+        Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullDeletedUuidsSince");
+
+        try {
+            // Cases
+            List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+            for (String caseUuid : caseUuids) {
+                DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+            }
+
+            // Events
+            List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+            for (String eventUuid : eventUuids) {
+                DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+            }
+
+            // Contacts
+            List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+            for (String contactUuid : contactUuids) {
+                DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+            }
+
+            // Samples
+            List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+            for (String sampleUuid : sampleUuids) {
+                DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
+            }
+
+            ConfigProvider.setLastDeletedSyncDate(new Date());
+        } catch (SQLException e) {
+            Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveDeletedUuidsSince failed: " + e.getMessage());
+        }
+    }
+
+    @AddTrace(name = "pushNewPullMissingAndDeleteInvalidDataTrace")
     private void pushNewPullMissingAndDeleteInvalidData() throws NoConnectionException, ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 
@@ -443,6 +539,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
     }
 
+    @AddTrace(name = "pullMissingAndDeleteInvalidInfrastructureTrace")
     private void pullMissingAndDeleteInvalidInfrastructure() throws NoConnectionException, ServerConnectionException, ServerCommunicationException, DaoException {
         // ATTENTION: Since we are working with UUID lists we have no type safety. Look for typos!
 

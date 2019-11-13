@@ -208,6 +208,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
     }
 
     protected void hideNotification() {
+        // TODO Ideally only hide notifications shown by this field
         if (notificationContext != null) {
             NotificationHelper.hideNotification(notificationContext);
         }

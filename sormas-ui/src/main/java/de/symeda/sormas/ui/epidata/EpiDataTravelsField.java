@@ -22,12 +22,14 @@ import java.util.function.Consumer;
 import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -131,4 +133,9 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		}
 	}
 
+	@Override
+	protected EpiDataTravelDto createEntry() {
+		EpiDataTravelDto travel = EpiDataTravelDto.build();
+		return travel;
+	}
 }

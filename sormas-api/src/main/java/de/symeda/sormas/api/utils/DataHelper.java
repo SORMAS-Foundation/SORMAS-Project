@@ -33,10 +33,12 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.Sex;
 
 public final class DataHelper {
 
@@ -245,4 +247,17 @@ public final class DataHelper {
 		}
 	}
 	
+	public static String getSexAndAgeGroupString(AgeGroup ageGroup, Sex sex) {
+		if (sex == null) {
+			return I18nProperties.getString(Strings.total) + " " + ageGroup.toString();
+		} else {
+			return sex.toString() + " " + ageGroup.toString();
+		}
+	}
+	
+	public static String getHumanClassName(Class<?> classType) {
+		String className = classType.getSimpleName();
+		className = className.replaceAll("Dto$", "");
+		return className;
+	}
 }

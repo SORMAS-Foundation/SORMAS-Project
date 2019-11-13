@@ -73,7 +73,7 @@ public class DistrictService extends AbstractAdoService<District> {
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
 	
-		Predicate filter = cb.equal(from.get(District.NAME), name);
+		Predicate filter = cb.equal(cb.upper(from.get(District.NAME)), name.toUpperCase());
 		if (region != null) {
 			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));
 		}
@@ -86,7 +86,7 @@ public class DistrictService extends AbstractAdoService<District> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from, User user) {
-		// no fitler by user needed
+		// no filter by user needed
 		return null;
 	}	
 
@@ -96,8 +96,7 @@ public class DistrictService extends AbstractAdoService<District> {
 			private Region cachedRegion = null;
 			
 			@Override
-			public void consume(String regionName, String districtName, String epidCode, Integer population, Float growthRate) {
-					
+			public void consume(String regionName, String districtName, String epidCode, Float growthRate) {
 				if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
 					Optional<Region> regionResult = regions.stream()
 							.filter(r -> r.getName().equals(regionName))
@@ -129,7 +128,6 @@ public class DistrictService extends AbstractAdoService<District> {
 				}
 				
 				district.setEpidCode(epidCode);
-				district.setPopulation(population);
 				district.setGrowthRate(growthRate);
 
 				persist(district);

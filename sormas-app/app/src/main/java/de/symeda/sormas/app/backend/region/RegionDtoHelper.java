@@ -28,9 +28,6 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-/**
- * Created by Martin Wahnschaffe on 27.07.2016.
- */
 public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
 
     @Override
