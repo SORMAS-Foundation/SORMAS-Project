@@ -163,16 +163,16 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
-	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.YELLOW_FEVER, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.YELLOW_FEVER, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private String vaccinationDoses;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Date vaccinationDate;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.ANTHRAX, Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
 	@Diseases({ Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
