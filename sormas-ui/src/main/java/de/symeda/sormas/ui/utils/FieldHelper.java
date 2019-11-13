@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -162,6 +164,54 @@ public final class FieldHelper {
 //				}
 			}
 		});
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot,
+			final boolean clearOnHidden) {
+
+		onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden);
+
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			fieldGroup.getField(sourcePropertyId).addValueChangeListener(event -> onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden));
+		});
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(final FieldGroup fieldGroup, String targetPropertyId,
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot,
+			final boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void setVisibleWhen(final FieldGroup fieldGroup, String targetPropertyId,
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, false, clearOnHidden);
+	}
+	
+	private static void onValueChangedSetVisible (final FieldGroup fieldGroup, List<String> targetPropertyIds, 
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot, final boolean clearOnHidden) {
+		
+		//a workaround variable to be modified in the forEach lambda
+		boolean[] visible_ = { true }; 
+		
+		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
+			if (!sourceValues.contains(fieldGroup.getField(sourcePropertyId).getValue()))
+				visible_[0] = false;
+		});
+		
+		boolean visible = visible_[0];
+		visible = visible != visibleWhenNot;
+		
+		for (Object targetPropertyId : targetPropertyIds) {
+			Field targetField = fieldGroup.getField(targetPropertyId);
+			targetField.setVisible(visible);
+			if (!visible && clearOnHidden && targetField.getValue() != null) {
+				targetField.clear();
+			}
+		}
 	}
 
 	public static void setRequiredWhen(FieldGroup fieldGroup, Object sourcePropertyId, List<String> targetPropertyIds,

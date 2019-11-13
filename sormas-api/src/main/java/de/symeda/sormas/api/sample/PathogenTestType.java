@@ -32,6 +32,9 @@ public enum PathogenTestType {
 	MICROSCOPY,
 	NEUTRALIZING_ANTIBODIES,
 	PCR_RT_PCR,
+	GRAM_STAIN,
+	LATEX_AGGLUTINATION,
+	CQ_VALUE_DETECTION,
 	OTHER;
 	
 	public String toString() {
