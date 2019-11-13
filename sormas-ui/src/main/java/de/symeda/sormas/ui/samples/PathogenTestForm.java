@@ -137,6 +137,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		});
 
+		addValueChangeListener(e -> {
+			if (isVisibleAllowed(labDetails)) {
+				labDetails.setVisible(getValue().getLab() != null && getValue().getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID));
+				labDetails.setRequired(getValue().getLab() != null && getValue().getLab().getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID));
+			}
+		});
 		
 		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB,
 				PathogenTestDto.TEST_RESULT);
