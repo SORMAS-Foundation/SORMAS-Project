@@ -173,7 +173,7 @@ public class SymptomsDto extends EntityDto {
 		symptoms.setUuid(DataHelper.createUuid());
 		return symptoms;
 	}
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private SymptomState abdominalPain;
 	// complications
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
@@ -192,7 +192,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState bleedingVagina;	
-	@Diseases({Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private SymptomState bloodInStool;
 	private Integer bloodPressureDiastolic;
 	private Integer bloodPressureSystolic;
@@ -208,10 +208,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.CSM,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState bulgingFontanelle;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState chestPain;
-	@Diseases({Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.MONKEYPOX,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState chillsSweats;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
@@ -219,7 +219,7 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState confusedDisoriented;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private SymptomState conjunctivitis;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState cough;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
@@ -230,10 +230,10 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState darkUrine;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.CHOLERA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private SymptomState dehydration;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState diarrhea;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private SymptomState difficultyBreathing;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
@@ -244,10 +244,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.YELLOW_FEVER,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState eyesBleeding;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState fatigueWeakness;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState fever;
 	@Diseases({Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
@@ -256,7 +256,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState gumsBleeding;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState headache;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.CONGENITAL_RUBELLA,Disease.UNDEFINED,Disease.OTHER})
@@ -286,16 +286,16 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState jointPain;
 	@Diseases({Disease.MEASLES,Disease.UNDEFINED,Disease.OTHER})
 	private SymptomState kopliksSpots;
-	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.MONKEYPOX,Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	/** Vesiculopustular rash */
 	private SymptomState lesions;
 	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(LESIONS)
 	private Boolean lesionsAllOverBody;
-	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.MONKEYPOX,Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(LESIONS)
 	private Boolean lesionsArms;
-	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.MONKEYPOX,Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(LESIONS)
 	private SymptomState lesionsDeepProfound;
 	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
@@ -307,7 +307,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(LESIONS)
 	private Boolean lesionsLegs;
-	@Diseases({Disease.MONKEYPOX})
+	@Diseases({Disease.MONKEYPOX,Disease.ANTHRAX})
 	@DependantOn(LESIONS)
 	private Date lesionsOnsetDate;
 	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
@@ -357,7 +357,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState musclePain;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState nausea;
 	@Diseases({Disease.CSM,Disease.UNDEFINED,Disease.OTHER})
@@ -419,7 +419,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState sepsis;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState shock;
 	@Diseases({Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
@@ -431,7 +431,7 @@ public class SymptomsDto extends EntityDto {
 	@Outbreaks
 	/** Maculopapular rash */
 	private SymptomState skinRash;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.MEASLES,Disease.MONKEYPOX,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private SymptomState soreThroat;
 	@Diseases({Disease.YELLOW_FEVER,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
@@ -481,7 +481,7 @@ public class SymptomsDto extends EntityDto {
 	private String congenitalHeartDiseaseDetails;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private SymptomState unexplainedBleeding;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState vomiting;
 
