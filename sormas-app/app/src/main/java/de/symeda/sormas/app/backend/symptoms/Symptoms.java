@@ -264,6 +264,10 @@ public class Symptoms extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SymptomState tremor;
     @Enumerated(EnumType.STRING)
+    private SymptomState convulsion;
+    @Enumerated(EnumType.STRING)
+    private SymptomState skinLesion;
+    @Enumerated(EnumType.STRING)
     private SymptomState otherHemorrhagicSymptoms;
     @Column(length = 255)
     private String otherHemorrhagicSymptomsText;
@@ -1139,6 +1143,11 @@ public class Symptoms extends AbstractDomainObject {
     public void setTremor(SymptomState tremor) {
         this.tremor = tremor;
     }
+
+    public SymptomState getConvulsion() { return convulsion; }
+    public void setConvulsion(SymptomState convulsion) { this.convulsion = convulsion; }
+    public SymptomState getSkinLesion() { return skinLesion; }
+    public void setSkinLesion(SymptomState skinLesion) { this.skinLesion = skinLesion; }
 
     public String getPatientIllLocation() {
         return patientIllLocation;
