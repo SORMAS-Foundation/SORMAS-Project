@@ -101,7 +101,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.JAUNDICE, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.JOINT_PAIN, SymptomsDto.KOPLIKS_SPOTS, SymptomsDto.LOSS_SKIN_TURGOR, 
 									SymptomsDto.SKIN_RASH, SymptomsDto.MALAISE, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.OTITIS_MEDIA, SymptomsDto.MICROCEPHALY, SymptomsDto.MUSCLE_PAIN, 
 									SymptomsDto.NAUSEA, SymptomsDto.NECK_STIFFNESS, SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, 
-									SymptomsDto.PAINFUL_LYMPHADENITIS)),
+									SymptomsDto.PAINFUL_LYMPHADENITIS, SymptomsDto.CONVULSION, SymptomsDto.SKIN_LESION)),
 					LayoutUtil.fluidColumn(6, 0, 
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE, SymptomsDto.PIGMENTARY_RETINOPATHY,
@@ -230,7 +230,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR, SymptomsDto.BILATERAL_CATARACTS, SymptomsDto.UNILATERAL_CATARACTS,
 				SymptomsDto.CONGENITAL_GLAUCOMA, SymptomsDto.CONGENITAL_HEART_DISEASE, SymptomsDto.PIGMENTARY_RETINOPATHY, SymptomsDto.RADIOLUCENT_BONE_DISEASE,
 				SymptomsDto.SPLENOMEGALY, SymptomsDto.MICROCEPHALY, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.PURPURIC_RASH, SymptomsDto.DEVELOPMENTAL_DELAY, 
-				SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.PATIENT_ILL_LOCATION);
+				SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.PATIENT_ILL_LOCATION,
+				SymptomsDto.CONVULSION, SymptomsDto.SKIN_LESION);
 		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 		// complications
