@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -163,7 +165,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			if (dateFilter != null) {
 				filter = cb.and(filter, dateFilter);	
 			}
@@ -447,8 +449,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.exists(treatmentSubquery),
 							cb.exists(clinicalVisitSubquery)));
 		}
-		if (caseCriteria.getArchived() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), caseCriteria.getArchived()));
+		if (caseCriteria.getRelevanceStatus() != null) {
+			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+							cb.equal(from.get(Case.ARCHIVED), false),
+							cb.isNull(from.get(Case.ARCHIVED))));
+			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
+			}
 		}
 		if (caseCriteria.getDeleted() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
@@ -546,7 +554,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Case,Case> casePath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Case,Case> casePath, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(casePath.get(Case.CHANGE_DATE), date);
 
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);

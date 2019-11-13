@@ -35,7 +35,6 @@ public class SampleDto extends EntityDto {
 	public static final String I18N_PREFIX = "Sample";
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
-//	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -65,7 +64,6 @@ public class SampleDto extends EntityDto {
 	
 	@Required
 	private CaseReferenceDto associatedCase;
-	private String sampleCode;
 	private String labSampleID;
 	@Required
 	private Date sampleDateTime;
@@ -112,15 +110,6 @@ public class SampleDto extends EntityDto {
 
 	public void setAssociatedCase(CaseReferenceDto associatedCase) {
 		this.associatedCase = associatedCase;
-	}
-
-	@ImportIgnore
-	public String getSampleCode() {
-		return sampleCode;
-	}
-
-	public void setSampleCode(String sampleCode) {
-		this.sampleCode = sampleCode;
 	}
 
 	public String getLabSampleID() {
@@ -352,7 +341,6 @@ public class SampleDto extends EntityDto {
 	public static SampleDto buildReferralSample(UserReferenceDto userRef, SampleDto referredSample) {
 		SampleDto sample = buildSample(userRef, referredSample.getAssociatedCase());
 		sample.setSampleDateTime(referredSample.getSampleDateTime());
-		sample.setSampleCode(referredSample.getSampleCode());
 		sample.setSampleMaterial(referredSample.getSampleMaterial());
 		sample.setSampleMaterialText(referredSample.getSampleMaterialText());
 		sample.setSampleSource(referredSample.getSampleSource());

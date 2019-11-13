@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -67,23 +69,43 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 	@Override
 	public List<CommunityReferenceDto> getAllByDistrict(String districtUuid) {
-		
+
 		District district = districtService.getByUuid(districtUuid);
-		
-		return district.getCommunities().stream()
-				.map(f -> toReferenceDto(f))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public List<CommunityDto> getAllAfter(Date date) {
-		return communityService.getAllAfter(date, null).stream()
-			.map(c -> toDto(c))
-			.collect(Collectors.toList());
+
+		return district.getCommunities().stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<CommunityDto> getIndexList(CommunityCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<CommunityDto> getAllAfter(Date date) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CommunityDto> cq = cb.createQuery(CommunityDto.class);
+		Root<Community> community = cq.from(Community.class);
+
+		selectDtoFields(cq, community);
+
+		Predicate filter = communityService.createChangeDateFilter(cb, community, date);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	private void selectDtoFields(CriteriaQuery<CommunityDto> cq, Root<Community> root) {
+
+		Join<Community, District> district = root.join(Community.DISTRICT, JoinType.LEFT);
+		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+
+		cq.multiselect(root.get(Community.CREATION_DATE), root.get(Community.CHANGE_DATE), root.get(Community.UUID),
+				root.get(Community.NAME), region.get(Region.UUID), region.get(Region.NAME), district.get(District.UUID),
+				district.get(District.NAME));
+	}
+
+	@Override
+	public List<CommunityDto> getIndexList(CommunityCriteria criteria, int first, int max,
+			List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Community> cq = cb.createQuery(Community.class);
 		Root<Community> community = cq.from(Community.class);
@@ -91,11 +113,11 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
 		Predicate filter = communityService.buildCriteriaFilter(criteria, cb, community);
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
@@ -117,11 +139,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)),
+					cb.asc(community.get(Community.NAME)));
 		}
-		
+
 		cq.select(community);
-		
+
 //		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
 //				community.get(Community.UUID), community.get(Community.NAME),
 //				region.get(Region.UUID), region.get(Region.NAME),
@@ -130,57 +153,54 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		List<Community> communities = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return communities.stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public long count(CommunityCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Community> root = cq.from(Community.class);
-		
+
 		Predicate filter = communityService.buildCriteriaFilter(criteria, cb, root);
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
-	
+
 	@Override
 	public List<String> getAllUuids(String userUuid) {
-		
+
 		User user = userService.getByUuid(userUuid);
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return communityService.getAllUuids(user);
 	}
-	
+
 	@Override
 	public CommunityDto getByUuid(String uuid) {
 		return toDto(communityService.getByUuid(uuid));
 	}
-	
+
 	@Override
 	public List<CommunityDto> getByUuids(List<String> uuids) {
-		return communityService.getByUuids(uuids)
-				.stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
+		return communityService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public CommunityReferenceDto getCommunityReferenceByUuid(String uuid) {
 		return toReferenceDto(communityService.getByUuid(uuid));
 	}
-	
+
 	@Override
 	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
 		Community community = communityService.getByUuid(dto.getUuid());
-		
+
 		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
@@ -191,9 +211,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 	@Override
 	public List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef) {
-		return communityService.getByName(name, districtService.getByReferenceDto(districtRef)).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+		return communityService.getByName(name, districtService.getByReferenceDto(districtRef)).stream()
+				.map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
-	
+
 	public static CommunityReferenceDto toReferenceDto(Community entity) {
 		if (entity == null) {
 			return null;
@@ -201,35 +222,35 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
-	
+
 	private CommunityDto toDto(Community entity) {
 		if (entity == null) {
 			return null;
 		}
 		CommunityDto dto = new CommunityDto();
 		DtoHelper.fillDto(dto, entity);
-		
+
 		dto.setName(entity.getName());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 
 		return dto;
 	}
-	
+
 	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target) {
 		if (target == null) {
 			target = new Community();
 			target.setUuid(source.getUuid());
 		}
-		
+
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setName(source.getName());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
-		
+
 		return target;
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class CommunityFacadeEjbLocal extends CommunityFacadeEjb {

@@ -140,7 +140,7 @@ public class FacilityService extends AbstractAdoService<Facility> {
 			if (filter != null) {
 				filter = cb.and(filter, createChangeDateFilter(cb, from, date));
 			} else {
-				filter = createChangeDateFilter(cb, from, date);
+				filter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			}
 		}
 		if (filter != null) {

@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -34,12 +35,12 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private EventStatus eventStatus;
 	private Disease disease;
 	private UserRole reportingUserRole;
-	private Boolean archived;
 	private Boolean deleted = Boolean.FALSE;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Date reportedDateFrom;
 	private Date reportedDateTo;
+	private EntityRelevanceStatus relevanceStatus;
 	
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -62,13 +63,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		this.reportingUserRole = reportingUserRole;
 		return this;
 	}
-	@IgnoreForUrl
-	public Boolean getArchived() {
-		return archived;
-	}
-	public EventCriteria archived(Boolean archived) {
-		this.archived = archived;
+	public EventCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
 		return this;
+	}
+	@IgnoreForUrl
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
 	}
 	public EventCriteria deleted(Boolean deleted) {
 		this.deleted = deleted;

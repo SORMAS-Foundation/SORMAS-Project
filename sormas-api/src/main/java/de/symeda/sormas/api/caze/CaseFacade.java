@@ -26,6 +26,9 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;

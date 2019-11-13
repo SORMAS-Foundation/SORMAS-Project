@@ -61,7 +61,6 @@ public class Sample extends CoreAdo {
 	public static final String TABLE_NAME = "samples";
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
-	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -92,7 +91,6 @@ public class Sample extends CoreAdo {
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
 	
 	private Case associatedCase;
-	private String sampleCode;
 	private String labSampleID;
 	private Date sampleDateTime;
 
@@ -139,14 +137,6 @@ public class Sample extends CoreAdo {
 	}
 	public void setAssociatedCase(Case associatedCase) {
 		this.associatedCase = associatedCase;
-	}
-
-	@Column(length=512)
-	public String getSampleCode() {
-		return sampleCode;
-	}
-	public void setSampleCode(String sampleCode) {
-		this.sampleCode = sampleCode;
 	}
 
 	@Column(length=512)

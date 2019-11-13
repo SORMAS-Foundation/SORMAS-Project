@@ -56,6 +56,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -116,7 +117,7 @@ public class CaseImporter extends DataImporter {
 			@Override
 			public Exception apply(ImportCellData cellData) {
 				try {
-					if (cellData.getEntityClass() == "Sample") {
+					if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))) {
 						if (firstSampleColumnName == null) {
 							firstSampleColumnName = String.join(".", cellData.getEntityPropertyPath());
 						}
@@ -131,7 +132,7 @@ public class CaseImporter extends DataImporter {
 							currentEntityHasEntries = true;
 							insertColumnEntryIntoSampleData(samples.get(samples.size() - 1), null, cellData.getValue(), cellData.getEntityPropertyPath());
 						}
-					} else if (cellData.getEntityClass() == "PathogenTest") {
+					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
 						if (firstPathogenTestColumnName == null) {
 							firstPathogenTestColumnName = String.join(".", cellData.getEntityPropertyPath());
 						}
@@ -147,10 +148,8 @@ public class CaseImporter extends DataImporter {
 							currentEntityHasEntries = true;					
 							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
 						}
-					} else if (cellData.getEntityClass() == "CaseData") {
-						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
 					} else {
-						throw new InvalidColumnException(buildEntityProperty(cellData.getEntityPropertyPath()));
+						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
 					}
 				} catch (ImportErrorException | InvalidColumnException e) {
 					return e;
@@ -224,9 +223,18 @@ public class CaseImporter extends DataImporter {
 								final PersonDto matchingCasePersonTmp = FacadeProvider.getPersonFacade().getPersonByUuid(matchingCaseTmp.getPerson().getUuid());
 								caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, new Function<ImportCellData, Exception>() {
 									@Override
-									public Exception apply(ImportCellData importColumnInformation) {
+									public Exception apply(ImportCellData cellData) {
 										try {
-											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, importColumnInformation.getValue(), importColumnInformation.getEntityPropertyPath());
+											if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))
+													|| DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
+												return null;
+											}
+											
+											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
+											
+											for (SampleDto sample : samples) {
+												sample.setAssociatedCase(new CaseReferenceDto(matchingCaseTmp.getUuid()));
+											}
 										} catch (ImportErrorException | InvalidColumnException e) {
 											return e;
 										}
