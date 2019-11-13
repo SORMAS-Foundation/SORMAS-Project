@@ -101,39 +101,39 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown percutaneousCaseBlood;
 	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown directContactDeadUnsafe;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown processingSuspectedCaseSampleUnsafe;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown areaInfectedAnimals;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown sickDeadAnimals;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private String sickDeadAnimalsDetails;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private Date sickDeadAnimalsDate;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private String sickDeadAnimalsLocation;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown eatingRawAnimalsInInfectedArea;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown eatingRawAnimals;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private String eatingRawAnimalsDetails;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown rodents;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown bats;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown primates;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown swine;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown birds;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown cattle;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown otherAnimals;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private String otherAnimalsDetails;
 	@Diseases({Disease.CHOLERA,Disease.UNDEFINED,Disease.OTHER})
 	private WaterSource waterSource;
