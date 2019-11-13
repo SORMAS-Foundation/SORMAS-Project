@@ -163,6 +163,8 @@ public class SymptomsDto extends EntityDto {
 	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
 	public static final String UNILATERAL_CATARACTS = "unilateralCataracts";
 	public static final String VOMITING = "vomiting";	
+	public static final String CONVULSION = "convulsion";
+	public static final String SKIN_LESION = "skinLesion";
 	
 	public static final String WEIGHT = "weight";
 
@@ -484,6 +486,10 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	@Outbreaks
 	private SymptomState vomiting;
+	@Diseases({Disease.ANTHRAX})
+	private SymptomState convulsion;
+	@Diseases({Disease.ANTHRAX})
+	private SymptomState skinLesion; /* oedema */
 
 	private Integer weight;
 	
@@ -1324,6 +1330,18 @@ public class SymptomsDto extends EntityDto {
 	public void setVomiting(SymptomState vomiting) {
 		this.vomiting = vomiting;
 	}	
+	public SymptomState getConvulsion() {
+		return convulsion;
+	}
+	public void setConvulsion(SymptomState convulsion) {
+		this.convulsion = convulsion;
+	}
+	public SymptomState getSkinLesion() {
+		return skinLesion;
+	}
+	public void setSkinLesion(SymptomState skinLesion) {
+		this.skinLesion = skinLesion;
+	}
 	public void setJaundiceWithin24HoursOfBirth(YesNoUnknown jaundiceWithin24HoursOfBirth) {
 		this.jaundiceWithin24HoursOfBirth = jaundiceWithin24HoursOfBirth;
 	}

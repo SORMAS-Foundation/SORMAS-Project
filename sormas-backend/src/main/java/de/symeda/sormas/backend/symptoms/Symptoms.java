@@ -172,6 +172,8 @@ public class Symptoms extends AbstractDomainObject {
 	private String congenitalHeartDiseaseDetails;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
+	private SymptomState convulsion;
+	private SymptomState skinLesion;
 
 	// complications
 	private SymptomState alteredConsciousness;
@@ -1111,6 +1113,19 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setMidUpperArmCircumference(Integer midUpperArmCircumference) {
 		this.midUpperArmCircumference = midUpperArmCircumference;
+	}
+	
+	public SymptomState getConvulsion() {
+		return convulsion;
+	}
+	public void setConvulsion(SymptomState convulsion) {
+		this.convulsion = convulsion;
+	}
+	public SymptomState getSkinLesion() {
+		return skinLesion;
+	}
+	public void setSkinLesion(SymptomState skinLesion) {
+		this.skinLesion = skinLesion;
 	}
 
 	public Integer getRespiratoryRate() {

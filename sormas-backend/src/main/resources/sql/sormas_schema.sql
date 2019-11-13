@@ -3569,3 +3569,9 @@ ALTER TABLE cases ADD COLUMN completeness real;
 ALTER TABLE cases_history ADD COLUMN completeness real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (162, 'Add completeness value to case #1253');
+
+-- 2019-11-13 Add new disease, Anthrax
+ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);
+ALTER TABLE symptoms ADD COLUMN skinlesion varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (163, 'Add new disease, Anthrax #833');
