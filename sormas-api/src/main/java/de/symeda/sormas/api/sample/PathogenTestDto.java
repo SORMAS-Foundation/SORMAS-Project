@@ -47,6 +47,8 @@ public class PathogenTestDto extends EntityDto {
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
+	public static final String SEROTYPE = "serotype";
+	public static final String CQ_VALUE = "cqValue";
 
 	@Required
 	private SampleReferenceDto sample;
@@ -69,6 +71,8 @@ public class PathogenTestDto extends EntityDto {
 	private String testResultText;
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
+	private String serotype;
+	private Float cqValue;
 
 	public static PathogenTestDto build(SampleReferenceDto sample, UserDto currentUser) {
 		PathogenTestDto pathogenTest = new PathogenTestDto();
@@ -194,6 +198,22 @@ public class PathogenTestDto extends EntityDto {
 
 	public PathogenTestReferenceDto toReference() {
 		return new PathogenTestReferenceDto(getUuid());
+	}
+
+	public String getSerotype() {
+		return serotype;
+	}
+
+	public void setSerotype(String serotype) {
+		this.serotype = serotype;
+	}
+
+	public Float getCqValue() {
+		return cqValue;
+	}
+
+	public void setCqValue(Float cqValue) {
+		this.cqValue = cqValue;
 	}
 
 }

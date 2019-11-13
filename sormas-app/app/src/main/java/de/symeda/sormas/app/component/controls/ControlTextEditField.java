@@ -366,6 +366,15 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
         }
     }
 
+    @BindingAdapter("value")
+    public static void setValue(ControlTextEditField view, Float floatValue) {
+        if (floatValue != null) {
+            view.setFieldValue(String.valueOf(floatValue));
+        } else {
+            view.setFieldValue(null);
+        }
+    }
+
     @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
     public static String getValue(ControlTextEditField view) {
         return view.getFieldValue();
@@ -375,6 +384,15 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     public static Integer getIntegerValue(ControlTextEditField view) {
         if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
             return Integer.valueOf(view.getFieldValue());
+        } else {
+            return null;
+        }
+    }
+
+    @InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
+    public static Float getFloatValue(ControlTextEditField view) {
+        if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
+            return Float.valueOf(view.getFieldValue());
         } else {
             return null;
         }
