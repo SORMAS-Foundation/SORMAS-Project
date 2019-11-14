@@ -281,6 +281,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.MALAISE, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR, SymptomsDto.BILATERAL_CATARACTS,
 				SymptomsDto.UNILATERAL_CATARACTS, SymptomsDto.CONGENITAL_GLAUCOMA, SymptomsDto.CONGENITAL_HEART_DISEASE, SymptomsDto.RADIOLUCENT_BONE_DISEASE, SymptomsDto.SPLENOMEGALY,
 				SymptomsDto.MICROCEPHALY, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.DEVELOPMENTAL_DELAY, SymptomsDto.PURPURIC_RASH, SymptomsDto.PIGMENTARY_RETINOPATHY,
+				SymptomsDto.CONVULSION, SymptomsDto.SKIN_LESION,
 				// complications
 				SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.HEMORRHAGIC_SYNDROME,
 				SymptomsDto.HYPERGLYCEMIA, SymptomsDto.HYPOGLYCEMIA, SymptomsDto.MENINGEAL_SIGNS,
