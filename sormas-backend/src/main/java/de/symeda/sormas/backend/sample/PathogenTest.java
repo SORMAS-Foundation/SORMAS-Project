@@ -127,7 +127,7 @@ public class PathogenTest extends CoreAdo {
 	}
 	
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = false)
+	@JoinColumn
 	public Facility getLab() {
 		return lab;
 	}
@@ -144,7 +144,7 @@ public class PathogenTest extends CoreAdo {
 	}
 	
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = false)
+	@JoinColumn
 	public User getLabUser() {
 		return labUser;
 	}
@@ -161,7 +161,7 @@ public class PathogenTest extends CoreAdo {
 		this.testResult = testResult;
 	}
 	
-	@Column(length=512, nullable = false)
+	@Column(length=512)
 	public String getTestResultText() {
 		return testResultText;
 	}

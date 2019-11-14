@@ -18,12 +18,17 @@
 
 package de.symeda.sormas.app.backend.sample;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -51,6 +56,9 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
         pathogenTest.setLab(associatedSample.getLab());
         pathogenTest.setLabDetails(associatedSample.getLabDetails());
         pathogenTest.setLabUser(ConfigProvider.getUser());
+        if (associatedSample.getSamplePurpose() == SamplePurpose.INTERNAL) {
+            pathogenTest.setTestResultVerified(true);
+        }
         return pathogenTest;
     }
 
@@ -102,4 +110,34 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
         return PathogenTest.TABLE_NAME;
     }
 
+    public long countByCriteria(PathogenTestCriteria criteria) {
+        try {
+            return buildQueryBuilder(criteria).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform countByCriteria on PathogenTest");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<PathogenTest> queryByCriteria(PathogenTestCriteria criteria, long offset, long limit) {
+        try {
+            return buildQueryBuilder(criteria).orderBy(PathogenTest.TEST_DATE_TIME, true)
+                    .offset(offset).limit(limit).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByCriteria on PathogenTest");
+            throw new RuntimeException(e);
+        }
+    }
+
+    private QueryBuilder<PathogenTest, Long> buildQueryBuilder(PathogenTestCriteria criteria) throws SQLException {
+        QueryBuilder<PathogenTest, Long> queryBuilder = queryBuilder();
+        Where<PathogenTest, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+        if (criteria.getSample() != null) {
+            where.and().eq(PathogenTest.SAMPLE + "_id", criteria.getSample().getId());
+        }
+
+        queryBuilder.setWhere(where);
+        return queryBuilder;
+    }
 }

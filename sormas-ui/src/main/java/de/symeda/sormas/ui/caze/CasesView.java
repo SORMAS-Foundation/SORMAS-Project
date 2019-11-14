@@ -631,7 +631,6 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(portHealthCasesWithoutFacilityFilter);
 			}
-
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				casesWithCaseManagementData = new CheckBox();
 				CssStyles.style(casesWithCaseManagementData, CssStyles.CHECKBOX_FILTER_INLINE);

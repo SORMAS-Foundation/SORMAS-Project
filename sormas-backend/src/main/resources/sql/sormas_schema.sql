@@ -3660,8 +3660,20 @@ ALTER TABLE pathogentest_history ADD COLUMN cqvalue real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (168, 'Additional fields to meningitis #982');
 
+-- 2019-11-06 Bed-side lab testing #1109
+ALTER TABLE samples ADD COLUMN samplepurpose varchar(255) DEFAULT 'EXTERNAL' NOT NULL;
+ALTER TABLE samples_history ADD COLUMN samplepurpose varchar(255) DEFAULT 'EXTERNAL' NOT NULL;
+ALTER TABLE samples ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE samples_history ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest ALTER COLUMN labuser_id DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN labuser_id DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (169, ' Bed-side lab testing #1109');
+
 -- 2019-11-13 Add new disease, Anthrax #833
 ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);
 ALTER TABLE symptoms ADD COLUMN skinlesion varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (169, 'Add new disease, Anthrax #833');
+INSERT INTO schema_version (version_number, comment) VALUES (170, 'Add new disease, Anthrax #833');

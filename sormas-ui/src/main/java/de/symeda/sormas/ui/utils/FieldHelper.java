@@ -97,39 +97,24 @@ public final class FieldHelper {
 	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Object sourcePropertyId,
 			List<Object> sourceValues, boolean clearOnHidden) {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, false,
-				clearOnHidden, null, null);
+				clearOnHidden);
 	}
 
 	public static void setVisibleWhenNotNull(FieldGroup fieldGroup, String targetPropertyId, Object sourcePropertyId,
 			boolean clearOnHidden) {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, Arrays.asList((Object) null),
-				true, clearOnHidden, null, null);
+				true, clearOnHidden);
 	}
 
 	public static void setVisibleWhen(FieldGroup fieldGroup, List<String> targetPropertyIds, Object sourcePropertyId,
 			List<Object> sourceValues, boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, false, clearOnHidden, null, null);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Object sourcePropertyId,
-			List<Object> sourceValues, boolean clearOnHidden, Class fieldClass, Disease disease) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, false,
-				clearOnHidden, fieldClass, disease);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
-			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden, Class fieldClass,
-			Disease disease) {
-		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, false, clearOnHidden, fieldClass,
-				disease);
+		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, false, clearOnHidden);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
 			Object sourcePropertyId, final List<Object> sourceValues, boolean visibleWhenNot,
-			final boolean clearOnHidden, Class fieldClass, Disease disease) {
+			final boolean clearOnHidden) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		if (sourceField instanceof AbstractField<?>) {
@@ -142,12 +127,10 @@ public final class FieldHelper {
 			visible = visible != visibleWhenNot;
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-//				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
 				targetField.setVisible(visible);
 				if (!visible && clearOnHidden && targetField.getValue() != null) {
 					targetField.clear();
 				}
-//				}
 			}
 		}
 
@@ -156,12 +139,10 @@ public final class FieldHelper {
 			visible = visible != visibleWhenNot;
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-//				if(fieldClass == null || disease == null || Diseases.DiseasesConfiguration.isDefined(fieldClass, (String) targetPropertyId, disease)) {
 				targetField.setVisible(visible);
 				if (!visible && clearOnHidden && targetField.getValue() != null) {
 					targetField.clear();
 				}
-//				}
 			}
 		});
 	}

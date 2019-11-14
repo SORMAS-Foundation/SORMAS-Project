@@ -29,8 +29,10 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -41,6 +43,7 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
@@ -167,6 +170,9 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
         if (requestedPathogenTests.isEmpty() && requestedAdditionalTests.isEmpty()) {
             contentBinding.pathogenTestingDivider.setVisibility(GONE);
         }
+
+        if(record.getSamplePurpose() != null)
+            setVisibilitiesBasedOnSamplePurpose(contentBinding, record.getSamplePurpose());
     }
 
     @Override
@@ -177,6 +183,33 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
     @Override
     public Sample getPrimaryData() {
         return record;
+    }
+
+    void setVisibilitiesBasedOnSamplePurpose(FragmentSampleReadLayoutBinding contentBinding, SamplePurpose samplePurpose)
+    {
+        switch(samplePurpose) {
+            case EXTERNAL:
+                contentBinding.sampleShipped.setVisibility(VISIBLE);
+                contentBinding.sampleReceived.setVisibility(VISIBLE);
+                contentBinding.sampleShipmentDetails.setVisibility(VISIBLE);
+                contentBinding.samplePathogenTestResult.setVisibility(VISIBLE);
+                contentBinding.sampleRequestedPathogenTestsTags.setVisibility(VISIBLE);
+                contentBinding.sampleRequestedOtherPathogenTests.setVisibility(VISIBLE);
+                contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(VISIBLE);
+
+                break;
+            case INTERNAL:
+                contentBinding.sampleShipped.setVisibility(GONE);
+                contentBinding.sampleReceived.setVisibility(GONE);
+                contentBinding.sampleShipmentDetails.setVisibility(GONE);
+                contentBinding.samplePathogenTestResult.setVisibility(GONE);
+                contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
+                contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
+                contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
+                break;
+            default:
+                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(samplePurpose));
+        }
     }
 
     @Override

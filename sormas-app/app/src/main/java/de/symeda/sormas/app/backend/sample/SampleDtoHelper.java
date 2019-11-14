@@ -73,11 +73,11 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
         target.setLabDetails(source.getLabDetails());
 
-        target.setSampleCode(source.getSampleCode());
         target.setLabSampleID(source.getLabSampleID());
         target.setSampleDateTime(source.getSampleDateTime());
         target.setSampleMaterial(source.getSampleMaterial());
         target.setSampleMaterialText(source.getSampleMaterialText());
+        target.setSamplePurpose(source.getSamplePurpose());
         target.setShipmentDate(source.getShipmentDate());
         target.setShipmentDetails(source.getShipmentDetails());
         target.setReceivedDate(source.getReceivedDate());
@@ -135,12 +135,12 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
         }
 
         target.setLabDetails(source.getLabDetails());
-        target.setSampleCode(source.getSampleCode());
         target.setLabSampleID(source.getLabSampleID());
         target.setSampleDateTime(source.getSampleDateTime());
         target.setReportDateTime(source.getReportDateTime());
         target.setSampleMaterial(source.getSampleMaterial());
         target.setSampleMaterialText(source.getSampleMaterialText());
+        target.setSamplePurpose(source.getSamplePurpose());
         target.setShipmentDate(source.getShipmentDate());
         target.setShipmentDetails(source.getShipmentDetails());
         target.setReceivedDate(source.getReceivedDate());

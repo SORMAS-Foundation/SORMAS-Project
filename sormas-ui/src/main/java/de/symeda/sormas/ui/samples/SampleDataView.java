@@ -28,6 +28,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -105,14 +106,16 @@ public class SampleDataView extends AbstractSampleView {
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(caseInfoLayout, CASE_LOC);
 
-		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest);
-		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
-			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
-			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
-		}
+		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
+			PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest);
+			pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
+			
+			if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+				AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
+				additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
+				layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
+			}
+		//}
 	}
 }

@@ -122,7 +122,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 167;
+	public static final int DATABASE_VERSION = 168;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1229,6 +1229,31 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN cqValue real;");
 				case 167:
 					currentVersion = 167;
+					getDao(Sample.class).executeRaw("ALTER TABLE samples RENAME TO tmp_samples;");
+					getDao(Sample.class).executeRaw("CREATE TABLE samples (associatedCase_id BIGINT, comment VARCHAR, lab_id BIGINT, " +
+							"labDetails VARCHAR, labSampleID VARCHAR, noTestPossibleReason VARCHAR, received SMALLINT, receivedDate BIGINT, referredToUuid VARCHAR, " +
+							"reportDateTime BIGINT, reportLat DOUBLE PRECISION, reportLatLonAccuracy FLOAT, reportLon DOUBLE PRECISION, " +
+							"reportingUser_id BIGINT, sampleDateTime BIGINT, sampleMaterial VARCHAR, sampleMaterialText VARCHAR, " +
+							"sampleSource VARCHAR, shipmentDate BIGINT, shipmentDetails VARCHAR, shipped SMALLINT, specimenCondition VARCHAR, " +
+							"pathogenTestingRequested SMALLINT, additionalTestingRequested SMALLINT, requestedPathogenTestsString VARCHAR, requestedAdditionalTestsString VARCHAR, " +
+							"requestedOtherPathogenTests varchar(512), requestedOtherAdditionalTests varchar(512), samplePurpose varchar(255), pathogenTestResult varchar(255), " +
+							"changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT, lastOpenedDate BIGINT, " +
+							"localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, UNIQUE (snapshot, uuid));");
+					getDao(Sample.class).executeRaw("INSERT INTO samples(associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, " +
+							"received, receivedDate, referredToUuid, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, " +
+							"sampleDateTime, sampleMaterial, sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, " +
+							"pathogenTestingRequested, additionalTestingRequested, requestedPathogenTestsString, requestedAdditionalTestsString, " +
+							"requestedOtherPathogenTests, requestedOtherAdditionalTests, samplePurpose, pathogenTestResult, " +
+							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) " +
+							"SELECT associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, " +
+							"received, receivedDate, referredToUuid, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, " +
+							"sampleDateTime, sampleMaterial, sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, " +
+							"pathogenTestingRequested, additionalTestingRequested, requestedPathogenTestsString, requestedAdditionalTestsString, " +
+							"requestedOtherPathogenTests, requestedOtherAdditionalTests, 'EXTERNAL', pathogenTestResult, " +
+							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_samples;");
+					getDao(Sample.class).executeRaw("DROP TABLE tmp_samples;");
+				case 168:
+					currentVersion = 168;
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);");
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN skinlesion varchar(255);");
 
