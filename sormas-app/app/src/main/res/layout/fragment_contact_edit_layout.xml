@@ -27,6 +27,7 @@
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <import type="de.symeda.sormas.api.user.UserRight" />
+        <import type="de.symeda.sormas.api.contact.ContactRelation" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -137,6 +138,14 @@
                     android:id="@+id/contact_relationToCase"
                     app:value="@={data.relationToCase}"
                     app:softRequired="true"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_relationDescription"
+                    app:value="@={data.relationDescription}"
+                    app:dependencyParentField="@{contactRelationToCase}"
+                    app:dependencyParentValue="@{ContactRelation.OTHER}"
+                    app:dependencyParentVisibility="@{true}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField

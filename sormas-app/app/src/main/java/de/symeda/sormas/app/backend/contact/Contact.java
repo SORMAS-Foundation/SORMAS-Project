@@ -64,6 +64,7 @@ public class Contact extends AbstractDomainObject {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	public static final String RELATION_TO_CASE = "relationToCase";
+	public static final String RELATION_DESCRIPTION = "relationDescription";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
@@ -105,6 +106,8 @@ public class Contact extends AbstractDomainObject {
 	private String description;
 	@Enumerated(EnumType.STRING)
 	private ContactRelation relationToCase;
+	@Column(length = 512)
+	private String relationDescription;
 
 	@DatabaseField
 	private String resultingCaseUuid;
@@ -202,6 +205,13 @@ public class Contact extends AbstractDomainObject {
 	}
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
+	}
+
+	public String getRelationDescription() {
+		return relationDescription;
+	}
+	public void setRelationDescription(String relationDescription) {
+		this.relationDescription = relationDescription;
 	}
 
 	public Double getReportLat() {

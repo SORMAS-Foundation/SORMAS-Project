@@ -3747,3 +3747,9 @@ ALTER TABLE epidata ADD COLUMN dateofprophylaxis timestamp;
 ALTER TABLE epidata_history ADD COLUMN dateofprophylaxis timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (170, 'Add new disease, human rabies #834');
+
+-- 2019-11-17 Add relationship details field to contact #1067
+ALTER TABLE contact ADD COLUMN relationdescription varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (171, 'Add relationship description to contact #1067');
+
