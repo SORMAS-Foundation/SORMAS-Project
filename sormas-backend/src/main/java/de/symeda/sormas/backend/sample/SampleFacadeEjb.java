@@ -43,8 +43,6 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -240,7 +238,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		cq.multiselect(sample.get(Sample.UUID), 
 				caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
 				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
-				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION), 
+				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SAMPLE_PURPOSE), sample.get(Sample.SPECIMEN_CONDITION), 
 				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 
 				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
@@ -276,6 +274,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				case SampleIndexDto.SHIPMENT_DATE:
 				case SampleIndexDto.RECEIVED_DATE:
 				case SampleIndexDto.SAMPLE_MATERIAL:
+				case SampleIndexDto.SAMPLE_PURPOSE:
 				case SampleIndexDto.PATHOGEN_TEST_RESULT:
 				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
 					expression = sample.get(sortProperty.propertyName);
@@ -328,6 +327,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sample.getSampleMaterial() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
 		}
+		if (sample.getSamplePurpose() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
+		}
 		if (sample.getLab() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
@@ -359,6 +361,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
+				sample.get(Sample.SAMPLE_PURPOSE),
 				sample.get(Sample.SAMPLE_SOURCE),
 				laboratory.get(Facility.UUID),
 				laboratory.get(Facility.NAME),
@@ -552,13 +555,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
-		target.setSampleCode(source.getSampleCode());
 		target.setLabSampleID(source.getLabSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
+		target.setSamplePurpose(source.getSamplePurpose());
 		target.setLab(facilityService.getByReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setShipmentDate(source.getShipmentDate());
@@ -594,13 +597,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
-		target.setSampleCode(source.getSampleCode());
 		target.setLabSampleID(source.getLabSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
+		target.setSamplePurpose(source.getSamplePurpose());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setShipmentDate(source.getShipmentDate());
@@ -653,18 +656,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 			for (User recipient : messageRecipients) {
 				try {
-					if (!StringUtils.isEmpty(newSample.getSampleCode())) {
-						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED), 
-										newSample.getSampleCode(), 
-										DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
-								MessageType.EMAIL, MessageType.SMS);
-					} else {
-						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
-										DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
-								MessageType.EMAIL, MessageType.SMS);
-					}
+					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
+						String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
+							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
+							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the shipment of a lab sample. "
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));

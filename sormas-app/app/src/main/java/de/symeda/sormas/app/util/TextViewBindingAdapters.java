@@ -37,6 +37,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
@@ -852,6 +853,15 @@ public class TextViewBindingAdapters {
             textField.setText(String.format(valueFormat, prependValue, value));
         } else {
             textField.setText(prependValue + ": " + value);
+        }
+    }
+
+    @BindingAdapter(value={"samplePurposeValue", "defaultValue"}, requireAll=false)
+    public static void setPurposeValue(TextView textField, SamplePurpose samplePurpose, String defaultValue) {
+        if (samplePurpose == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(samplePurpose.toString());
         }
     }
 

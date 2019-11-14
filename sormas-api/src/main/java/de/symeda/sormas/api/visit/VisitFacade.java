@@ -50,4 +50,6 @@ public interface VisitFacade {
 	
 	long count(VisitCriteria visitCriteria);
 	
+	VisitDto getLastVisitByContact(ContactReferenceDto contactRef);
+	
 }

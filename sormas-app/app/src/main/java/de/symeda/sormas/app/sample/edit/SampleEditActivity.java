@@ -24,6 +24,7 @@ import android.view.Menu;
 
 import java.util.List;
 
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -74,13 +75,17 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
     @Override
     public List<PageMenuItem> getPageMenuData() {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(SampleSection.values(), getContext());
+        Sample sample = getStoredRootEntity();
+//        if(sample != null && sample.getSamplePurpose().equals(SamplePurpose.INTERNAL)){
+//            menuItems.remove(SampleSection.PATHOGEN_TESTS.ordinal());
+//        }
         return menuItems;
     }
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
         int menuKey =0;
-        if(menuItem !=null)
+        if (menuItem !=null)
             menuKey= menuItem.getKey();
         SampleSection section = SampleSection.fromOrdinal(menuKey);
         BaseEditFragment fragment;

@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
 
+import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
@@ -205,10 +206,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	public String getPersonLastName() {
 		return (String)getField(LAST_NAME).getValue();
 	}
-
+	
 	public void setPerson(PersonDto person) {
-		((TextField) getField(FIRST_NAME)).setValue(person.getFirstName());
-		((TextField) getField(LAST_NAME)).setValue(person.getLastName());
+		if (person != null) {
+			((TextField) getField(FIRST_NAME)).setValue(person.getFirstName());
+			((TextField) getField(LAST_NAME)).setValue(person.getLastName());
+		} else {
+			getField(FIRST_NAME).clear();
+			getField(LAST_NAME).clear();
+		}
 	}
 
 	public void setNameReadOnly(boolean readOnly) {

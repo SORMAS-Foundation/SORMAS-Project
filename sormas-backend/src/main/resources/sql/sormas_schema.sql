@@ -3650,7 +3650,29 @@ UPDATE samples SET pathogentestresultchangedate = (SELECT testdatetime FROM path
 
 INSERT INTO schema_version (version_number, comment) VALUES (167, 'Fill samples with accurate pathogenTestResultChangeDate #1349');
 
--- 2019-09-04 Add new disease, human rabies
+-- 2016-10-18; #982 additional fields to meningitis
+ALTER TABLE pathogentest ADD COLUMN serotype varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN serotype varchar(255);
+
+ALTER TABLE pathogentest ADD COLUMN cqvalue real;
+ALTER TABLE pathogentest_history ADD COLUMN cqvalue real;
+
+INSERT INTO schema_version (version_number, comment) VALUES (168, 'Additional fields to meningitis #982');
+
+-- 2019-11-06 Bed-side lab testing #1109
+ALTER TABLE samples ADD COLUMN samplepurpose varchar(255) DEFAULT 'EXTERNAL' NOT NULL;
+ALTER TABLE samples_history ADD COLUMN samplepurpose varchar(255) DEFAULT 'EXTERNAL' NOT NULL;
+ALTER TABLE samples ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE samples_history ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest ALTER COLUMN labuser_id DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN labuser_id DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (169, ' Bed-side lab testing #1109');
+
+-- 2019-11-14 New disease: Human Rabies #834
+
 ALTER TABLE cases ADD COLUMN vaccine varchar(512);
 ALTER TABLE cases_history ADD COLUMN vaccine varchar(512);
 

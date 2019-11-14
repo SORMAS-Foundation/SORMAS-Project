@@ -22,7 +22,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
@@ -53,7 +52,7 @@ public final class DtoHelper {
 	/**
 	 * @param overrideValues Note: Existing references are NOT overridden
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <T extends EntityDto> void fillDto(T target, T source, boolean overrideValues) {
 
 		try {

@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -66,11 +67,11 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
-	private Boolean archived;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
+	private EntityRelevanceStatus relevanceStatus;
 	
 	@Override
 	public CaseCriteria clone() {
@@ -261,15 +262,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public UserReferenceDto getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
-
-	public CaseCriteria archived(Boolean archived) {
-		this.archived = archived;
+	
+	public CaseCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-
+	
 	@IgnoreForUrl
-	public Boolean getArchived() {
-		return archived;
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
 	}
 	
 	public CaseCriteria deleted(Boolean deleted) {

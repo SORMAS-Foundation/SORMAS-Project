@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
+import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -40,6 +41,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.person.PersonNameDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -136,7 +138,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, date);
+			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date));
 			lgaFilter = cb.and(lgaFilter, dateFilter);
 		}
 		personsQuery.where(lgaFilter);
@@ -150,8 +152,9 @@ public class PersonService extends AbstractAdoService<Person> {
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, date);
-			Predicate caseDateFilter = caseService.createChangeDateFilter(cb, casePersonsRoot, date);
+			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, DateHelper.toTimestampUpper(date));
+			// include case change dates: When a case is relocated it may become available to another user and this will have to include the person as-well
+			Predicate caseDateFilter = caseService.createChangeDateFilter(cb, casePersonsRoot, DateHelper.toTimestampUpper(date));
 			if (casePersonsFilter != null) {
 				casePersonsFilter = cb.and(casePersonsFilter, cb.or(dateFilter, caseDateFilter));
 			} else {
@@ -173,7 +176,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, date);
+			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date));
 			Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
 			contactPersonsFilter = cb.and(contactPersonsFilter, cb.or(dateFilter, contactDateFilter));
 		}
@@ -192,8 +195,8 @@ public class PersonService extends AbstractAdoService<Person> {
 				user);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, date);
-			Predicate eventParticipantDateFilter = eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, date);
+			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, DateHelper.toTimestampUpper(date));
+			Predicate eventParticipantDateFilter = eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, DateHelper.toTimestampUpper(date));
 			eventPersonsFilter = cb.and(eventPersonsFilter, cb.or(dateFilter, eventParticipantDateFilter));
 		}
 		if (eventPersonsFilter != null) {
@@ -339,7 +342,7 @@ public class PersonService extends AbstractAdoService<Person> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Person, Person> from, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Person, Person> from, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		Join<Person, Location> address = from.join(Person.ADDRESS);
 		dateFilter = cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));

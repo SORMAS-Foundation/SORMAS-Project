@@ -72,8 +72,9 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
         target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
-        target.setLabDetails(source.getLabDetails());
+        target.setSerotype(source.getSerotype());
+        target.setCqValue(source.getCqValue());
+        target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));        target.setLabDetails(source.getLabDetails());
         target.setLabUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getLabUser()));
     }
 
@@ -85,7 +86,6 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         } else {
             target.setSample(null);
         }
-
         target.setTestDateTime(source.getTestDateTime());
         target.setTestResult(source.getTestResult());
         target.setTestType(source.getTestType());
@@ -104,6 +104,9 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
         target.setTestResultVerified(source.getTestResultVerified());
         target.setTestResultText(source.getTestResultText());
         target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
+        target.setSerotype(source.getSerotype());
+        target.setCqValue(source.getCqValue());
+
         if (source.getLabUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getLabUser().getId());
             target.setLabUser(UserDtoHelper.toReferenceDto(user));

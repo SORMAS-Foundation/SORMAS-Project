@@ -79,6 +79,7 @@ public final class ConfigProvider {
     private static String LAST_DELETED_SYNC_DATE = "lastDeletedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
     private static String LOCALE = "locale";
+    private static String INITIAL_SYNC_REQUIRED = "initialSyncRequired";
 
     public static ConfigProvider instance = null;
 
@@ -104,6 +105,7 @@ public final class ConfigProvider {
     private Boolean accessGranted;
     private String locale;
     private Boolean repullNeeded;
+    private Boolean initialSyncRequired;
 
     private ConfigProvider(Context context) {
         this.context = context;
@@ -637,17 +639,36 @@ public final class ConfigProvider {
                 instance.repullNeeded = Boolean.parseBoolean(config.getValue());
             }
         }
-        return instance.repullNeeded != null ? instance.repullNeeded.booleanValue() : false;
+        return instance.repullNeeded != null && instance.repullNeeded;
     }
 
     public static void setRepullNeeded(boolean repullNeeded) {
-        if (instance.repullNeeded != null && instance.repullNeeded.booleanValue() == repullNeeded) {
+        if (instance.repullNeeded != null && instance.repullNeeded == repullNeeded) {
             return;
         }
 
         instance.repullNeeded = repullNeeded;
 
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_REPULL_NEEDED, String.valueOf(repullNeeded)));
+    }
+
+    public static boolean isInitialSyncRequired() {
+        if (instance.initialSyncRequired == null) {
+            Config config = DatabaseHelper.getConfigDao().queryForId(INITIAL_SYNC_REQUIRED);
+            if (config != null) {
+                instance.initialSyncRequired = Boolean.parseBoolean(config.getValue());
+            }
+        }
+        return instance.initialSyncRequired == null || instance.initialSyncRequired;
+    }
+
+    public static void setInitialSyncRequired(boolean initialSyncRequired) {
+        if (instance.initialSyncRequired != null && instance.initialSyncRequired == initialSyncRequired) {
+            return;
+        }
+
+        instance.initialSyncRequired = initialSyncRequired;
+        DatabaseHelper.getConfigDao().createOrUpdate(new Config(INITIAL_SYNC_REQUIRED, String.valueOf(initialSyncRequired)));
     }
 
 }

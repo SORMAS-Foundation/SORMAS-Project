@@ -425,11 +425,16 @@ public class LineListingLayout extends VerticalLayout {
 			setRequiredInicatorsVisibility(true);
 
 			dateOfReport.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
+			dateOfReport.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			community.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY));
 			facility.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
+			facility.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			facilityDetails.setCaption(I18nProperties.getCaption(Captions.caseHealthFacilityDetailsShort));
+			facilityDetails.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			firstname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
+			firstname.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			lastname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
+			lastname.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			dateOfBirthYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 			sex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 			dateOfOnset.setCaption(I18nProperties.getCaption(Captions.Contact_caze_symptomsOnset));

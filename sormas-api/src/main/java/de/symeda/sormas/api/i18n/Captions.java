@@ -80,6 +80,9 @@ public interface Captions {
 	public static String bulkInvestigationStatus = "bulkInvestigationStatus";
 	public static String bulkLostToFollowUp = "bulkLostToFollowUp";
 	public static String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
+	public static String caseActiveCases = "caseActiveCases";
+	public static String caseAllCases = "caseAllCases";
+	public static String caseArchivedCases = "caseArchivedCases";
 	public static String caseBackToDirectory = "caseBackToDirectory";
 	public static String caseCalculateCompleteness = "caseCalculateCompleteness";
 	public static String caseCasesList = "caseCasesList";
@@ -213,8 +216,6 @@ public interface Captions {
 	public static String CasePreviousHospitalization_isolated = "CasePreviousHospitalization.isolated";
 	public static String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
 	public static String caseReferToFacility = "caseReferToFacility";
-	public static String caseShowActive = "caseShowActive";
-	public static String caseShowArchived = "caseShowArchived";
 	public static String caseTransferCase = "caseTransferCase";
 	public static String caseTransferCases = "caseTransferCases";
 	public static String city = "city";
@@ -271,6 +272,9 @@ public interface Captions {
 	public static String Contact_resultingCaseUser = "Contact.resultingCaseUser";
 	public static String Contact_uuid = "Contact.uuid";
 	public static String Contact_visits = "Contact.visits";
+	public static String contactActiveContacts = "contactActiveContacts";
+	public static String contactAllContacts = "contactAllContacts";
+	public static String contactArchivedContacts = "contactArchivedContacts";
 	public static String contactCancelFollowUp = "contactCancelFollowUp";
 	public static String contactCaseContacts = "contactCaseContacts";
 	public static String contactContactsList = "contactContactsList";
@@ -285,8 +289,6 @@ public interface Captions {
 	public static String contactPersonVisits = "contactPersonVisits";
 	public static String contactRelated = "contactRelated";
 	public static String contactResumeFollowUp = "contactResumeFollowUp";
-	public static String contactShowActive = "contactShowActive";
-	public static String contactShowArchived = "contactShowArchived";
 	public static String creationDate = "creationDate";
 	public static String dashboardAlive = "dashboardAlive";
 	public static String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
@@ -522,6 +524,9 @@ public interface Captions {
 	public static String Event_typeOfPlace = "Event.typeOfPlace";
 	public static String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	public static String Event_uuid = "Event.uuid";
+	public static String eventActiveEvents = "eventActiveEvents";
+	public static String eventAllEvents = "eventAllEvents";
+	public static String eventArchivedEvents = "eventArchivedEvents";
 	public static String eventEventParticipants = "eventEventParticipants";
 	public static String eventEventsList = "eventEventsList";
 	public static String eventNewEvent = "eventNewEvent";
@@ -535,8 +540,6 @@ public interface Captions {
 	public static String EventParticipant_personSex = "EventParticipant.personSex";
 	public static String EventParticipant_personUuid = "EventParticipant.personUuid";
 	public static String eventParticipantAddPerson = "eventParticipantAddPerson";
-	public static String eventShowActive = "eventShowActive";
-	public static String eventShowArchived = "eventShowArchived";
 	public static String export = "export";
 	public static String exportBasic = "exportBasic";
 	public static String exportCaseCustom = "exportCaseCustom";
@@ -812,6 +815,9 @@ public interface Captions {
 	public static String Sample_testType = "Sample.testType";
 	public static String Sample_typeOfTest = "Sample.typeOfTest";
 	public static String Sample_uuid = "Sample.uuid";
+	public static String sampleActiveSamples = "sampleActiveSamples";
+	public static String sampleAllSamples = "sampleAllSamples";
+	public static String sampleArchivedSamples = "sampleArchivedSamples";
 	public static String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	public static String SampleExport_altSgpt = "SampleExport.altSgpt";
 	public static String SampleExport_arterialVenousBloodGas = "SampleExport.arterialVenousBloodGas";
@@ -886,8 +892,6 @@ public interface Captions {
 	public static String sampleReferredTo = "sampleReferredTo";
 	public static String sampleSamplesList = "sampleSamplesList";
 	public static String sampleShipped = "sampleShipped";
-	public static String sampleShowActive = "sampleShowActive";
-	public static String sampleShowArchived = "sampleShowArchived";
 	public static String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	public static String statisticsAddFilter = "statisticsAddFilter";
 	public static String statisticsAttribute = "statisticsAttribute";
@@ -1081,12 +1085,13 @@ public interface Captions {
 	public static String Task_taskContext = "Task.taskContext";
 	public static String Task_taskStatus = "Task.taskStatus";
 	public static String Task_taskType = "Task.taskType";
+	public static String taskActiveTasks = "taskActiveTasks";
+	public static String taskAllTasks = "taskAllTasks";
+	public static String taskArchivedTasks = "taskArchivedTasks";
 	public static String taskMyTasks = "taskMyTasks";
 	public static String taskNewTask = "taskNewTask";
 	public static String taskNoTasks = "taskNoTasks";
 	public static String taskOfficerTasks = "taskOfficerTasks";
-	public static String taskShowActive = "taskShowActive";
-	public static String taskShowArchived = "taskShowArchived";
 	public static String to = "to";
 	public static String total = "total";
 	public static String Treatment_additionalNotes = "Treatment.additionalNotes";

@@ -1050,7 +1050,6 @@ class SampleGenerator extends BaseDataGenerator {
             Sample data1 = new Sample();
             data1.setUuid(getRandomUuid());
             data1.setAssociatedCase(CaseGenerator.getSingle());
-            data1.setSampleCode(getRandomString());
             data1.setLabSampleID(getRandomString());
             data1.setSampleDateTime(getRandomDate());
             data1.setReportDateTime(getRandomDate());

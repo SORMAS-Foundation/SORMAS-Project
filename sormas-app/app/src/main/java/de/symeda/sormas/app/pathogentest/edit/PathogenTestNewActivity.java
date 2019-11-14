@@ -128,7 +128,8 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
         PathogenTestEditFragment fragment = (PathogenTestEditFragment) getActiveFragment();
 
         if (PathogenTestToSave.getLabUser() == null) {
-            PathogenTestToSave.setLabUser(ConfigProvider.getUser());
+            NotificationHelper.showNotification(this, ERROR, getString(R.string.error_no_pathogentest_labuser));
+            return;
         }
         if (PathogenTestToSave.getTestDateTime() == null) {
             PathogenTestToSave.setTestDateTime(new Date());

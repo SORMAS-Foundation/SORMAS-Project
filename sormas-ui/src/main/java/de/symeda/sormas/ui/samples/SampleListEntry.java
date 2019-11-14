@@ -29,9 +29,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.AdditionalTestingStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -80,8 +82,13 @@ public class SampleListEntry extends HorizontalLayout {
 					+ ": " + DateHelper.formatLocalShortDate(sample.getSampleDateTime()));
 			topLeftLayout.addComponent(dateTimeLabel);
 			
-			Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
-			topLeftLayout.addComponent(labLabel);			
+			if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
+				Label purposeLabel = new Label(SamplePurpose.INTERNAL.toString());
+				topLeftLayout.addComponent(purposeLabel);
+			} else {
+				Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
+				topLeftLayout.addComponent(labLabel);
+			}
 		}
 		topLayout.addComponent(topLeftLayout);
 
@@ -111,19 +118,21 @@ public class SampleListEntry extends HorizontalLayout {
 			if (sample.isReferred()) {
 				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleReferredShort));
 				referredLabel.addStyleName(CssStyles.LABEL_NOT);
-			} else if (sample.isReceived()) {
-				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleReceived) + " " + DateHelper.formatLocalShortDate(sample.getReceivedDate()));
-			} else if (sample.isShipped()) {
-				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleShipped) + " " + DateHelper.formatLocalShortDate(sample.getShipmentDate()));
-			} else {
-				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleNotShippedLong));
+			} else if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
+				if (sample.isReceived()) {
+					referredLabel.setValue(I18nProperties.getCaption(Captions.sampleReceived) + " " + DateHelper.formatLocalShortDate(sample.getReceivedDate()));
+				} else if (sample.isShipped()) {
+					referredLabel.setValue(I18nProperties.getCaption(Captions.sampleShipped) + " " + DateHelper.formatLocalShortDate(sample.getShipmentDate()));
+				} else {
+					referredLabel.setValue(I18nProperties.getCaption(Captions.sampleNotShippedLong));
+				}
 			}
 			topRightLayout.addComponent(referredLabel);
 		}
 		topLayout.addComponent(topRightLayout);
 		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW) && sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED) {
 			Label labelAdditionalTests = new Label(I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
 			mainLayout.addComponent(labelAdditionalTests);
 		}
