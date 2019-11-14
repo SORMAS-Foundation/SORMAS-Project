@@ -59,9 +59,15 @@ public class FacilityDto extends EntityDto {
 			boolean publicOwnership) {
 		super(creationDate, changeDate, uuid);
 		this.name = name;
-		this.region = new RegionReferenceDto(regionUuid, regionName);
-		this.district = new DistrictReferenceDto(districtUuid, districtName);
-		this.community = new CommunityReferenceDto(communityUuid, communityName);
+		if (regionUuid != null) {
+			this.region = new RegionReferenceDto(regionUuid, regionName);
+		}
+		if (districtUuid != null) {
+			this.district = new DistrictReferenceDto(districtUuid, districtName);
+		}
+		if (communityUuid != null) {
+			this.community = new CommunityReferenceDto(communityUuid, communityName);
+		}
 		this.city = city;
 		this.latitude = latitude;
 		this.longitude = longitude;
