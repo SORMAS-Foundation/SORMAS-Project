@@ -27,18 +27,15 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.vaadin.v7.data.Property;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HasComponents;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.ui.HasComponents;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Diseases;
 
@@ -118,19 +115,19 @@ public final class FieldHelper {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		
-		setVisibleWhen(fieldGroup, targetPropertyIds, sourceField, sourceValues, visibleWhenNot, clearOnHidden, fieldClass, disease);
+		setVisibleWhen(fieldGroup, targetPropertyIds, sourceField, sourceValues, visibleWhenNot, clearOnHidden);
 	}
 	
 	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Field sourceField,
 			List<Object> sourceValues, boolean clearOnHidden) {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourceField, sourceValues, false,
-				clearOnHidden, null, null);
+				clearOnHidden);
 	}
 	
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
 			Field sourceField, final List<Object> sourceValues, boolean visibleWhenNot,
-			final boolean clearOnHidden, Class fieldClass, Disease disease) {
+			final boolean clearOnHidden) {
 
 		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);

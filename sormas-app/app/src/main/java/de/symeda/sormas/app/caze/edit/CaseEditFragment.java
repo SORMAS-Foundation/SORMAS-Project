@@ -236,7 +236,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
-        contentBinding.caseDataHumanRabiesType.initializeSpinner(humanRabiesTypeList);
+        contentBinding.caseDataRabiesType.initializeSpinner(humanRabiesTypeList);
         contentBinding.caseDataNotifyingClinic.initializeSpinner(hospitalWardTypeList);
         contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
 

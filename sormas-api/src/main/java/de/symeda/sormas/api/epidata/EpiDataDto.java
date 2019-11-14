@@ -87,6 +87,19 @@ public class EpiDataDto extends EntityDto {
 	public static final String EATING_RAW_ANIMALS_IN_INFECTED_AREA = "eatingRawAnimalsInInfectedArea";
 	public static final String EATING_RAW_ANIMALS = "eatingRawAnimals";
 	public static final String EATING_RAW_ANIMALS_DETAILS = "eatingRawAnimalsDetails";
+	
+	public static final String[] ANIMAL_EXPOSURE_PROPERTIES = new String[] {
+		SICK_DEAD_ANIMALS, RODENTS, BATS, PRIMATES, SWINE, BIRDS, RABBITS, CATTLE, DOGS, CATS, CANIDAE, OTHER_ANIMALS
+	};
+
+	public static final String[] EXPOSURE_DEPENDENT_PROPERTIES = new String[] {
+			DATE_OF_LAST_EXPOSURE, PLACE_OF_LAST_EXPOSURE, ANIMAL_CONDITION, ANIMAL_VACCINATION_STATUS, PROPHYLAXIS_STATUS,
+			KIND_OF_EXPOSURE_BITE, KIND_OF_EXPOSURE_TOUCH, KIND_OF_EXPOSURE_SCRATCH, KIND_OF_EXPOSURE_LICK, KIND_OF_EXPOSURE_OTHER
+	};
+
+	public static final String[] KIND_OF_EXPOSURE_PROPERTIES = new String[] {
+			KIND_OF_EXPOSURE_BITE, KIND_OF_EXPOSURE_TOUCH, KIND_OF_EXPOSURE_SCRATCH, KIND_OF_EXPOSURE_LICK, KIND_OF_EXPOSURE_OTHER
+	};
 
 	// Fields are declared in the order they should appear in the import template
 	
@@ -547,5 +560,4 @@ public class EpiDataDto extends EntityDto {
 		epiData.setUuid(DataHelper.createUuid());
 		return epiData;
 	}
-
 }

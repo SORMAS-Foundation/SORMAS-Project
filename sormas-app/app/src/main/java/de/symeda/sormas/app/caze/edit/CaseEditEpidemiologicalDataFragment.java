@@ -19,16 +19,17 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
-import androidx.databinding.ObservableArrayList;
 import android.view.View;
 
+import androidx.databinding.ObservableArrayList;
+
 import java.util.List;
+import java.util.function.Supplier;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -37,12 +38,12 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.core.BooleanSupplier;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
@@ -381,6 +382,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
         contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
+        contentBinding.setHadAnimalExposureCallback(() -> hadAnimalExposure());
 
         contentBinding.epiDataBurialAttended.addValueChangedListener(new ValueChangeListener() {
             @Override
@@ -422,6 +424,12 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         });
     }
 
+    private Boolean hadAnimalExposure() {
+        return getContentBinding().epiDataRodents.getValue() == YesNoUnknown.YES
+                || getContentBinding().epiDataBats.getValue() == YesNoUnknown.YES
+                || getContentBinding().epiDataPrimates.getValue() == YesNoUnknown.YES;
+    }
+
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
         setVisibilityByDisease(EpiDataDto.class, disease, contentBinding.mainContent);
@@ -438,10 +446,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         verifyBurialStatus();
         verifyGatheringStatus();
         verifyTravelStatus();
-
-        EpiDataDto dto = new EpiDataDto();
-        new EpiDataDtoHelper().fillInnerFromAdo(dto, record);
-        contentBinding.epiDataKindOfExposure.setValue(EpiDataHelper.getKindOfExposure(dto));
     }
 
     @Override

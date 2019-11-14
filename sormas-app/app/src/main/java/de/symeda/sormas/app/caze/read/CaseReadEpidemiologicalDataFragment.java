@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -115,9 +114,9 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
     public void onAfterLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
         setVisibilityByDisease(EpiDataDto.class, getActivityRootData().getDisease(), contentBinding.mainContent);
 
-        EpiDataDto dto = new EpiDataDto();
-        new EpiDataDtoHelper().fillInnerFromAdo(dto, record);
-        contentBinding.epiDataKindOfExposure.setValue(EpiDataHelper.getKindOfExposure(dto));
+//        EpiDataDto dto = new EpiDataDto();
+//        new EpiDataDtoHelper().fillInnerFromAdo(dto, record);
+//        contentBinding.epiDataKindOfExposure.setValue(EpiDataHelper.getKindOfExposure(dto));
     }
 
     @Override

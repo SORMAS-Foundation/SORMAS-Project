@@ -157,7 +157,7 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/caseData_humanRabiesType"
+                    android:id="@+id/caseData_rabiesType"
                     app:value="@={data.rabiesType}"
                     app:dependencyParentField="@{caseDataDisease}"
                     app:dependencyParentValue="@{Disease.RABIES}"
