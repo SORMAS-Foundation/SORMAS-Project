@@ -1296,7 +1296,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN animalVaccinationStatus varchar(255);");
 				case 169:
 					currentVersion = 169;
-					getDao(Contact.class).executeRaw("ALTER TABLE contact ADD COLUMN relationdescription varchar(512);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN relationDescription varchar(512);");
 				case 170:
 					currentVersion = 170;
 					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);");
