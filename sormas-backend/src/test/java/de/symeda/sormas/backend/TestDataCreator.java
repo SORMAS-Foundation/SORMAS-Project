@@ -52,6 +52,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -282,6 +283,7 @@ public class TestDataCreator {
 		sample.setReportDateTime(reportDateTime);
 		sample.setReportingUser(reportingUser);
 		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
