@@ -122,7 +122,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 169;
+	public static final int DATABASE_VERSION = 171;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1255,6 +1255,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Sample.class).executeRaw("DROP TABLE tmp_samples;");
 				case 168:
 					currentVersion = 168;
+
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccine varchar(512);");
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN rabiesType varchar(255);");
 
@@ -1293,10 +1294,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureDetails varchar(512);");
 
 					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN animalVaccinationStatus varchar(255);");
-
+				case 169:
+					currentVersion = 169;
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN relationDescription varchar(512);");
 				case 170:
 					currentVersion = 170;
-					getDao(Contact.class).executeRaw("ALTER TABLE contact ADD COLUMN relationdescription varchar(512);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);");
+
 					// ATTENTION: break should only be done after last version
 					break;
 				default:

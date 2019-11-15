@@ -185,7 +185,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setSplenomegaly(source.getSplenomegaly());
         target.setJaundiceWithin24HoursOfBirth(source.getJaundiceWithin24HoursOfBirth());
         target.setRadiolucentBoneDisease(source.getRadiolucentBoneDisease());
-
         target.setHydrophobia(source.getHydrophobia());
         target.setOpisthotonus(source.getOpisthotonus());
         target.setAnxietyStates(source.getAnxietyStates());
@@ -204,6 +203,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setAscendingFlaccidParalysis(source.getAscendingFlaccidParalysis());
         target.setErraticBehaviour(source.getErraticBehaviour());
         target.setComa(source.getComa());
+        target.setConvulsion(source.getConvulsion());
     }
 
     @Override
@@ -335,7 +335,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setSplenomegaly(source.getSplenomegaly());
         target.setJaundiceWithin24HoursOfBirth(source.getJaundiceWithin24HoursOfBirth());
         target.setRadiolucentBoneDisease(source.getRadiolucentBoneDisease());
-
         target.setHydrophobia(source.getHydrophobia());
         target.setOpisthotonus(source.getOpisthotonus());
         target.setAnxietyStates(source.getAnxietyStates());
@@ -354,5 +353,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setAscendingFlaccidParalysis(source.getAscendingFlaccidParalysis());
         target.setErraticBehaviour(source.getErraticBehaviour());
         target.setComa(source.getComa());
+        target.setConvulsion(source.getConvulsion());
     }
 }

@@ -302,6 +302,8 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState coma;
 
     @Enumerated(EnumType.STRING)
+    private SymptomState convulsion;
+    @Enumerated(EnumType.STRING)
     private SymptomState otherHemorrhagicSymptoms;
     @Column(length = 255)
     private String otherHemorrhagicSymptomsText;
@@ -1320,6 +1322,14 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setComa(SymptomState coma) {
         this.coma = coma;
+    }
+
+    public SymptomState getConvulsion() {
+        return convulsion;
+    }
+
+    public void setConvulsion(SymptomState convulsion) {
+        this.convulsion = convulsion;
     }
 
     public String getPatientIllLocation() {

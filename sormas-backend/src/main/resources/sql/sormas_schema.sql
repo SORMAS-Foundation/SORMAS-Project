@@ -3753,3 +3753,7 @@ ALTER TABLE contact ADD COLUMN relationdescription varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (171, 'Add relationship description to contact #1067');
 
+-- 2019-11-13 Add new disease, Anthrax #833
+ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (172, 'Add new disease, Anthrax #833');
