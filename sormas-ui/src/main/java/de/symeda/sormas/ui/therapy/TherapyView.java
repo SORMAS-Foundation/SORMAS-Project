@@ -72,28 +72,6 @@ public class TherapyView extends AbstractCaseView {
 
 		prescriptionCriteria = ViewModelProviders.of(TherapyView.class).get(PrescriptionCriteria.class);
 		treatmentCriteria = ViewModelProviders.of(TherapyView.class).get(TreatmentCriteria.class);
-
-		VerticalLayout container = new VerticalLayout();
-		container.setSpacing(false);
-		container.setWidth(100, Unit.PERCENTAGE);
-		container.setMargin(true);
-
-		container.addComponent(createPrescriptionsHeader());
-
-		prescriptionGrid = new PrescriptionGrid(this);
-		prescriptionGrid.setCriteria(prescriptionCriteria);
-		prescriptionGrid.setHeightMode(HeightMode.ROW);
-		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
-		container.addComponent(prescriptionGrid);
-
-		container.addComponent(createTreatmentsHeader());
-
-		treatmentGrid = new TreatmentGrid();
-		treatmentGrid.setCriteria(treatmentCriteria);
-		container.addComponent(treatmentGrid);
-		container.setExpandRatio(treatmentGrid, 1);
-
-		setSubComponent(container);
 	}
 
 	private VerticalLayout createPrescriptionsHeader() {
@@ -278,6 +256,29 @@ public class TherapyView extends AbstractCaseView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
+		
+		VerticalLayout container = new VerticalLayout();
+		container.setSpacing(false);
+		container.setWidth(100, Unit.PERCENTAGE);
+		container.setMargin(true);
+
+		container.addComponent(createPrescriptionsHeader());
+
+		prescriptionGrid = new PrescriptionGrid(this);
+		prescriptionGrid.setCriteria(prescriptionCriteria);
+		prescriptionGrid.setHeightMode(HeightMode.ROW);
+		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
+		container.addComponent(prescriptionGrid);
+
+		container.addComponent(createTreatmentsHeader());
+
+		treatmentGrid = new TreatmentGrid();
+		treatmentGrid.setCriteria(treatmentCriteria);
+		container.addComponent(treatmentGrid);
+		container.setExpandRatio(treatmentGrid, 1);
+
+		setSubComponent(container);
+		
 		update();
 		reloadPrescriptionGrid();
 		reloadTreatmentGrid();

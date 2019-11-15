@@ -150,7 +150,6 @@
                     app:value="@{data.relationDescription}"
                     app:dependencyParentField="@{contactRelationToCase}"
                     app:dependencyParentValue="@{ContactRelation.OTHER}"
-                    app:dependencyParentVisibility="@{true}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

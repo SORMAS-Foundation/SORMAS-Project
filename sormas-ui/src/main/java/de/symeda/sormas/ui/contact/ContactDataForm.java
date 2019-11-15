@@ -95,9 +95,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
     	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
     	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
-		TextField relationDescription = addField(ContactDto.RELATION_DESCRIPTION);
-		relationDescription.setVisible(false);
-		relationToCase.addValueChangeListener(e -> updateRelationDescriptionField(relationToCase, relationDescription));
+		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
     	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
@@ -113,6 +111,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.FOLLOW_UP_STATUS, 
     			Arrays.asList(ContactDto.FOLLOW_UP_COMMENT), 
     			Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
+    	FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.RELATION_DESCRIPTION, ContactDto.RELATION_TO_CASE, Arrays.asList(ContactRelation.OTHER), true);
 
     	addValueChangeListener(e -> {
         	if (getValue() != null) {
@@ -152,12 +151,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	
     	setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS);
     	FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
-	}
-    
-	private void updateRelationDescriptionField(ComboBox relationToCase, TextField relationDescription) {
-
-		boolean otherContactRelation = relationToCase.getValue().equals(ContactRelation.OTHER);
-		relationDescription.setVisible(otherContactRelation);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.util.Arrays;
+
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.themes.ValoTheme;
@@ -41,6 +43,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -76,9 +79,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
     	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
-		TextField relationDescription = addField(ContactDto.RELATION_DESCRIPTION);
-		relationDescription.setVisible(false);
-		relationToCase.addValueChangeListener(e -> updateRelationDescriptionField(relationToCase, relationDescription));
+		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
     	
     	CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, lastContactDate, contactProximity, relationToCase);
 
@@ -86,6 +87,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	contactOfficerField.setNullSelectionAllowed(true);
     	
     	setRequired(true, FIRST_NAME, LAST_NAME);
+    	FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.RELATION_DESCRIPTION, ContactDto.RELATION_TO_CASE, Arrays.asList(ContactRelation.OTHER), true);
     	
     	addValueChangeListener(e -> {
     		updateLastContactDateValidator();
