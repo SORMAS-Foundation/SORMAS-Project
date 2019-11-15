@@ -131,9 +131,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     @Override
     protected void prepareFragmentData() {
         record = getActivityRootData();
-        mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
-        if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
-            mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
+        if (record.getId() != null) {
+            mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
+            if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+                mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
+            }
         }
         if (!StringUtils.isEmpty(record.getReferredToUuid())) {
             referredSample = DatabaseHelper.getSampleDao().queryUuid(record.getReferredToUuid());
@@ -182,23 +184,26 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         // Initialize ControlSpinnerFields
         contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
         contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
-        contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                Facility laboratory = (Facility) field.getValue();
-                if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-                    contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
-                } else {
-                    contentBinding.sampleLabDetails.hideField(true);
-                }
+        contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), field -> {
+            Facility laboratory = (Facility) field.getValue();
+            if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+                contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
+            } else {
+                contentBinding.sampleLabDetails.hideField(true);
             }
         });
-        contentBinding.samplePurpose.initializeSpinner(samplePurposeList, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                SamplePurpose samplePurpose = (SamplePurpose) field.getValue();
-                if(samplePurpose != null)
-                    setVisibilitiesBasedOnSamplePurpose(contentBinding, samplePurpose);
+        contentBinding.samplePurpose.initializeSpinner(samplePurposeList, field -> {
+            SamplePurpose samplePurpose = (SamplePurpose) field.getValue();
+            if (SamplePurpose.EXTERNAL == samplePurpose) {
+                contentBinding.externalSampleFieldsLayout.setVisibility(VISIBLE);
+                contentBinding.samplePathogenTestingRequested.setVisibility(
+                        ConfigProvider.getUser().equals(record.getReportingUser()) ? VISIBLE : GONE);
+                contentBinding.sampleAdditionalTestingRequested.setVisibility(
+                        ConfigProvider.getUser().equals(record.getReportingUser()) ? VISIBLE : GONE);
+            } else {
+                contentBinding.externalSampleFieldsLayout.setVisibility(GONE);
+                contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
+                contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
             }
         });
 
@@ -218,6 +223,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleShipped.setEnabled(false);
             contentBinding.sampleShipmentDate.setEnabled(false);
             contentBinding.sampleShipmentDetails.setEnabled(false);
+            contentBinding.samplePurpose.setEnabled(false);
             contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
             contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
             contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
@@ -256,44 +262,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
             contentBinding.additionalTestingLayout.setVisibility(GONE);
-        }
-    }
-
-    void setVisibilitiesBasedOnSamplePurpose(FragmentSampleEditLayoutBinding contentBinding, SamplePurpose samplePurpose)
-    {
-        switch(samplePurpose) {
-            case EXTERNAL:
-                contentBinding.sampleShipped.setVisibility(VISIBLE);
-                contentBinding.sampleShipmentDate.setVisibility(VISIBLE);
-                contentBinding.sampleReceived.setVisibility(VISIBLE);
-                contentBinding.sampleShipmentDetails.setVisibility(VISIBLE);
-                contentBinding.samplePathogenTestResult.setVisibility(VISIBLE);
-                contentBinding.samplePathogenTestingRequested.setVisibility(VISIBLE);
-                contentBinding.sampleRequestedPathogenTests.setVisibility(VISIBLE);
-                contentBinding.sampleRequestedPathogenTestsTags.setVisibility(VISIBLE);
-                contentBinding.sampleRequestedOtherPathogenTests.setVisibility(VISIBLE);
-                contentBinding.sampleAdditionalTestingRequested.setVisibility(VISIBLE);
-                contentBinding.sampleRequestedAdditionalTests.setVisibility(VISIBLE);
-                contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(VISIBLE);
-                contentBinding.sampleLab.setVisibility(VISIBLE);
-                break;
-            case INTERNAL:
-                contentBinding.sampleShipped.setVisibility(GONE);
-                contentBinding.sampleShipmentDate.setVisibility(GONE);
-                contentBinding.sampleReceived.setVisibility(GONE);
-                contentBinding.sampleShipmentDetails.setVisibility(GONE);
-                contentBinding.samplePathogenTestResult.setVisibility(GONE);
-                contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
-                contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
-                contentBinding.sampleRequestedPathogenTestsTags.setVisibility(GONE);
-                contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
-                contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
-                contentBinding.sampleRequestedAdditionalTests.setVisibility(GONE);
-                contentBinding.sampleRequestedOtherAdditionalTests.setVisibility(GONE);
-                contentBinding.sampleLab.setVisibility(GONE);
-                break;
-            default:
-                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(samplePurpose));
         }
     }
 

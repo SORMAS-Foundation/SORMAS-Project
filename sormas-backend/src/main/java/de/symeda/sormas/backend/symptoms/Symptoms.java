@@ -27,12 +27,14 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -170,6 +172,24 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState congenitalHeartDisease;
 	private CongenitalHeartDiseaseType congenitalHeartDiseaseType;
 	private String congenitalHeartDiseaseDetails;
+	private SymptomState hydrophobia;
+	private SymptomState opisthotonus;
+	private SymptomState anxietyStates;
+	private SymptomState delirium;
+	private SymptomState uproariousness;
+	private SymptomState paresthesiaAroundWound;
+	private SymptomState excessSalivation;
+	private SymptomState insomnia;
+	private SymptomState paralysis;
+	private SymptomState excitation;
+	private SymptomState dysphagia;
+	private SymptomState aerophobia;
+	private SymptomState hyperactivity;
+	private SymptomState paresis;
+	private SymptomState agitation;
+	private SymptomState ascendingFlaccidParalysis;
+	private SymptomState erraticBehaviour;
+	private SymptomState coma;
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 	private SymptomState convulsion;
@@ -1313,6 +1333,137 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setCongenitalHeartDiseaseDetails(String congenitalHeartDiseaseDetails) {
 		this.congenitalHeartDiseaseDetails = congenitalHeartDiseaseDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHydrophobia() {
+		return hydrophobia;
+	}
+
+	public void setHydrophobia(SymptomState hydrophobia) {
+		this.hydrophobia = hydrophobia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOpisthotonus() {
+		return opisthotonus;
+	}
+
+	public void setOpisthotonus(SymptomState opisthotonus) {
+		this.opisthotonus = opisthotonus;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAnxietyStates() {
+		return anxietyStates;
+	}
+	public void setAnxietyStates(SymptomState anxietyStates) {
+		this.anxietyStates = anxietyStates;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDelirium() {
+		return delirium;
+	}
+	public void setDelirium(SymptomState delirium) {
+		this.delirium = delirium;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getUproariousness() {
+		return uproariousness;
+	}
+	public void setUproariousness(SymptomState uproariousness) {
+		this.uproariousness = uproariousness;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getParesthesiaAroundWound() {
+		return paresthesiaAroundWound;
+	}
+	public void setParesthesiaAroundWound(SymptomState paresthesiaAroundWound) {
+		this.paresthesiaAroundWound = paresthesiaAroundWound;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getExcessSalivation() {
+		return excessSalivation;
+	}
+	public void setExcessSalivation(SymptomState excessSalivation) {
+		this.excessSalivation = excessSalivation;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getInsomnia() {
+		return insomnia;
+	}
+	public void setInsomnia(SymptomState insomnia) {
+		this.insomnia = insomnia;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getParalysis() {
+		return paralysis;
+	}
+	public void setParalysis(SymptomState paralysis) {
+		this.paralysis = paralysis;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getExcitation() {
+		return excitation;
+	}
+	public void setExcitation(SymptomState excitation) {
+		this.excitation = excitation;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDysphagia() {
+		return dysphagia;
+	}
+	public void setDysphagia(SymptomState dysphagia) {
+		this.dysphagia = dysphagia;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAerophobia() {
+		return aerophobia;
+	}
+	public void setAerophobia(SymptomState aerophobia) {
+		this.aerophobia = aerophobia;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHyperactivity() {
+		return hyperactivity;
+	}
+	public void setHyperactivity(SymptomState hyperactivity) {
+		this.hyperactivity = hyperactivity;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getParesis() {
+		return paresis;
+	}
+	public void setParesis(SymptomState paresis) {
+		this.paresis = paresis;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAgitation() {
+		return agitation;
+	}
+	public void setAgitation(SymptomState agitation) {
+		this.agitation = agitation;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAscendingFlaccidParalysis() {
+		return ascendingFlaccidParalysis;
+	}
+	public void setAscendingFlaccidParalysis(SymptomState ascendingFlaccidParalysis) {
+		this.ascendingFlaccidParalysis = ascendingFlaccidParalysis;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getErraticBehaviour() {
+		return erraticBehaviour;
+	}
+	public void setErraticBehaviour(SymptomState erraticBehaviour) {
+		this.erraticBehaviour = erraticBehaviour;
+	}
+	@Enumerated(EnumType.STRING)
+	public SymptomState getComa() {
+		return coma;
+	}
+	public void setComa(SymptomState coma) {
+		this.coma = coma;
 	}
 
 	@Column(length = 255)

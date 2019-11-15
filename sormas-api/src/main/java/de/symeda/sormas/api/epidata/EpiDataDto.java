@@ -24,6 +24,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -42,7 +43,11 @@ public class EpiDataDto extends EntityDto {
 	public static final String PRIMATES = "primates";
 	public static final String SWINE = "swine";
 	public static final String BIRDS = "birds";
+	public static final String RABBITS = "rabbits";
 	public static final String CATTLE = "cattle";
+	public static final String DOGS = "dogs";
+	public static final String CATS = "cats";
+	public static final String CANIDAE = "canidae";
 	public static final String OTHER_ANIMALS = "otherAnimals";
 	public static final String OTHER_ANIMALS_DETAILS = "otherAnimalsDetails";
 	public static final String WATER_SOURCE = "waterSource";
@@ -51,9 +56,18 @@ public class EpiDataDto extends EntityDto {
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
 	public static final String TICK_BITE = "tickBite";
 	public static final String FLEA_BITE = "fleaBite";
+	public static final String KIND_OF_EXPOSURE_BITE = "kindOfExposureBite";
+	public static final String KIND_OF_EXPOSURE_TOUCH = "kindOfExposureTouch";
+	public static final String KIND_OF_EXPOSURE_SCRATCH = "kindOfExposureScratch";
+	public static final String KIND_OF_EXPOSURE_LICK = "kindOfExposureLick";
+	public static final String KIND_OF_EXPOSURE_OTHER = "kindOfExposureOther";
+	public static final String KIND_OF_EXPOSURE_DETAILS = "kindOfExposureDetails";
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
+	public static final String ANIMAL_VACCINATION_STATUS = "animalVaccinationStatus";
+	public static final String PROPHYLAXIS_STATUS = "prophylaxisStatus";
+	public static final String DATE_OF_PROPHYLAXIS = "dateOfProphylaxis";
 	public static final String BURIALS = "burials";
 	public static final String GATHERINGS = "gatherings";
 	public static final String TRAVELS = "travels";
@@ -73,6 +87,19 @@ public class EpiDataDto extends EntityDto {
 	public static final String EATING_RAW_ANIMALS_IN_INFECTED_AREA = "eatingRawAnimalsInInfectedArea";
 	public static final String EATING_RAW_ANIMALS = "eatingRawAnimals";
 	public static final String EATING_RAW_ANIMALS_DETAILS = "eatingRawAnimalsDetails";
+	
+	public static final String[] ANIMAL_EXPOSURE_PROPERTIES = new String[] {
+		SICK_DEAD_ANIMALS, RODENTS, BATS, PRIMATES, SWINE, BIRDS, RABBITS, CATTLE, DOGS, CATS, CANIDAE, OTHER_ANIMALS
+	};
+
+	public static final String[] EXPOSURE_DEPENDENT_PROPERTIES = new String[] {
+			DATE_OF_LAST_EXPOSURE, PLACE_OF_LAST_EXPOSURE, ANIMAL_CONDITION, ANIMAL_VACCINATION_STATUS, PROPHYLAXIS_STATUS,
+			KIND_OF_EXPOSURE_BITE, KIND_OF_EXPOSURE_TOUCH, KIND_OF_EXPOSURE_SCRATCH, KIND_OF_EXPOSURE_LICK, KIND_OF_EXPOSURE_OTHER
+	};
+
+	public static final String[] KIND_OF_EXPOSURE_PROPERTIES = new String[] {
+			KIND_OF_EXPOSURE_BITE, KIND_OF_EXPOSURE_TOUCH, KIND_OF_EXPOSURE_SCRATCH, KIND_OF_EXPOSURE_LICK, KIND_OF_EXPOSURE_OTHER
+	};
 
 	// Fields are declared in the order they should appear in the import template
 	
@@ -80,7 +107,7 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown burialAttended;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown gatheringAttended;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.MONKEYPOX,Disease.PLAGUE,Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown traveled;
 	
 	private List<EpiDataBurialDto> burials = new ArrayList<>();
@@ -105,11 +132,11 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown processingSuspectedCaseSampleUnsafe;
 	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown areaInfectedAnimals;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.RABIES, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private YesNoUnknown sickDeadAnimals;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.RABIES, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private String sickDeadAnimalsDetails;
-	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({Disease.NEW_INFLUENCA, Disease.RABIES, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private Date sickDeadAnimalsDate;
 	@Diseases({Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER})
 	private String sickDeadAnimalsLocation;
@@ -121,19 +148,27 @@ public class EpiDataDto extends EntityDto {
 	private String eatingRawAnimalsDetails;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.PLAGUE, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown rodents;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF, Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown bats;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown primates;
-	@Diseases({Disease.EVD,Disease.LASSA, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown swine;
 	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown birds;
-	@Diseases({Disease.EVD,Disease.LASSA, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
+	private YesNoUnknown rabbits;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown cattle;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
+	private YesNoUnknown dogs;
+	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
+	private YesNoUnknown cats;
+	@Diseases({Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
+	private YesNoUnknown canidae;
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown otherAnimals;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX, Disease.ANTHRAX,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.EVD,Disease.LASSA,Disease.MONKEYPOX,Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX,Disease.UNDEFINED,Disease.OTHER})
 	private String otherAnimalsDetails;
 	@Diseases({Disease.CHOLERA,Disease.UNDEFINED,Disease.OTHER})
 	private WaterSource waterSource;
@@ -147,12 +182,30 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown tickBite;
 	@Diseases({Disease.PLAGUE,Disease.UNDEFINED,Disease.OTHER})
 	private YesNoUnknown fleaBite;
-	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureBite;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureTouch;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureScratch;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureLick;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown kindOfExposureOther;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private String kindOfExposureDetails;
+	@Diseases({Disease.MONKEYPOX, Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private Date dateOfLastExposure;
-	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})	
+	@Diseases({Disease.MONKEYPOX,Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})	
 	private String placeOfLastExposure;
-	@Diseases({Disease.MONKEYPOX,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({Disease.MONKEYPOX,Disease.RABIES,Disease.UNDEFINED,Disease.OTHER})
 	private AnimalCondition animalCondition;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private Vaccination animalVaccinationStatus;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown prophylaxisStatus;
+	@Diseases({Disease.RABIES, Disease.UNDEFINED, Disease.OTHER})
+	private Date dateOfProphylaxis;
 
 	@ImportIgnore
 	public YesNoUnknown getBurialAttended() {
@@ -213,6 +266,12 @@ public class EpiDataDto extends EntityDto {
 		this.birds = birds;
 	}
 		
+	public YesNoUnknown getRabbits() {
+		return rabbits;
+	}
+	public void setRabbits(YesNoUnknown rabbits) {
+		this.rabbits = rabbits;
+	}
 	public YesNoUnknown getCattle() {
 		return cattle;
 	}
@@ -220,6 +279,24 @@ public class EpiDataDto extends EntityDto {
 		this.cattle = cattle;
 	}
 	
+	public YesNoUnknown getDogs() {
+		return dogs;
+	}
+	public void setDogs(YesNoUnknown dogs) {
+		this.dogs = dogs;
+	}
+	public YesNoUnknown getCats() {
+		return cats;
+	}
+	public void setCats(YesNoUnknown cats) {
+		this.cats = cats;
+	}
+	public YesNoUnknown getCanidae() {
+		return canidae;
+	}
+	public void setCanidae(YesNoUnknown canidae) {
+		this.canidae = canidae;
+	}
 	public YesNoUnknown getOtherAnimals() {
 		return otherAnimals;
 	}
@@ -269,6 +346,48 @@ public class EpiDataDto extends EntityDto {
 		this.tickBite = tickBite;
 	}
 	
+	public YesNoUnknown getKindOfExposureBite() {
+		return kindOfExposureBite;
+	}
+	public void setKindOfExposureBite(YesNoUnknown kindOfExposureBite) {
+		this.kindOfExposureBite = kindOfExposureBite;
+	}
+	
+	public YesNoUnknown getKindOfExposureTouch() {
+		return kindOfExposureTouch;
+	}
+	public void setKindOfExposureTouch(YesNoUnknown kindOfExposureTouch) {
+		this.kindOfExposureTouch = kindOfExposureTouch;
+	}
+	
+	public YesNoUnknown getKindOfExposureScratch() {
+		return kindOfExposureScratch;
+	}
+	public void setKindOfExposureScratch(YesNoUnknown kindOfExposureScratch) {
+		this.kindOfExposureScratch = kindOfExposureScratch;
+	}
+	
+	public YesNoUnknown getKindOfExposureLick() {
+		return kindOfExposureLick;
+	}
+	public void setKindOfExposureLick(YesNoUnknown kindOfExposureLick) {
+		this.kindOfExposureLick = kindOfExposureLick;
+	}
+	
+	public YesNoUnknown getKindOfExposureOther() {
+		return kindOfExposureOther;
+	}
+	public void setKindOfExposureOther(YesNoUnknown kindOfExposureOther) {
+		this.kindOfExposureOther = kindOfExposureOther;
+	}
+	
+	public String getKindOfExposureDetails() {
+		return kindOfExposureDetails;
+	}
+	public void setKindOfExposureDetails(String kindOfExposureDetails) {
+		this.kindOfExposureDetails = kindOfExposureDetails;
+	}
+	
 	public Date getDateOfLastExposure() {
 		return dateOfLastExposure;
 	}
@@ -290,6 +409,25 @@ public class EpiDataDto extends EntityDto {
 		this.animalCondition = animalCondition;
 	}
 	
+	public Vaccination getAnimalVaccinationStatus() {
+		return animalVaccinationStatus;
+	}
+	public void setAnimalVaccinationStatus(Vaccination animalVaccinationStatus) {
+		this.animalVaccinationStatus = animalVaccinationStatus;
+	}
+	
+	public YesNoUnknown getProphylaxisStatus() {
+		return prophylaxisStatus;
+	}
+	public void setProphylaxisStatus(YesNoUnknown prophylaxisStatus) {
+		this.prophylaxisStatus = prophylaxisStatus;
+	}
+	public Date getDateOfProphylaxis() {
+		return dateOfProphylaxis;
+	}
+	public void setDateOfProphylaxis(Date dateOfProphylaxis) {
+		this.dateOfProphylaxis = dateOfProphylaxis;
+	}
 	public YesNoUnknown getFleaBite() {
 		return fleaBite;
 	}
@@ -422,5 +560,4 @@ public class EpiDataDto extends EntityDto {
 		epiData.setUuid(DataHelper.createUuid());
 		return epiData;
 	}
-
 }

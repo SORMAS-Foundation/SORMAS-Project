@@ -33,6 +33,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
@@ -53,9 +54,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, "") +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
-			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "")
-			;
+					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "");
 
     public ContactCreateForm(UserRight editOrCreateUserRight) {
         super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -75,6 +76,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
     	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
+		TextField relationDescription = addField(ContactDto.RELATION_DESCRIPTION);
+		relationDescription.setVisible(false);
+		relationToCase.addValueChangeListener(e -> updateRelationDescriptionField(relationToCase, relationDescription));
     	
     	CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, lastContactDate, contactProximity, relationToCase);
 
@@ -95,6 +99,12 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	});
     }
     
+	private void updateRelationDescriptionField(ComboBox relationToCase, TextField relationDescription) {
+
+		boolean otherContactRelation = relationToCase.getValue().equals(ContactRelation.OTHER);
+		relationDescription.setVisible(otherContactRelation);
+	}
+
     protected void updateLastContactDateValidator() {
     	Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
     	for (Validator validator : dateField.getValidators()) {

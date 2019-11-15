@@ -41,6 +41,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -71,6 +72,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
@@ -93,6 +95,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
     	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
     	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
+		TextField relationDescription = addField(ContactDto.RELATION_DESCRIPTION);
+		relationDescription.setVisible(false);
+		relationToCase.addValueChangeListener(e -> updateRelationDescriptionField(relationToCase, relationDescription));
     	addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
     	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
@@ -149,7 +154,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
 	}
     
-    @SuppressWarnings("unchecked")
+	private void updateRelationDescriptionField(ComboBox relationToCase, TextField relationDescription) {
+
+		boolean otherContactRelation = relationToCase.getValue().equals(ContactRelation.OTHER);
+		relationDescription.setVisible(otherContactRelation);
+	}
+
+	@SuppressWarnings("unchecked")
 	private void updateFollowUpStatusComponents() {
 
 		getContent().removeComponent(CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);

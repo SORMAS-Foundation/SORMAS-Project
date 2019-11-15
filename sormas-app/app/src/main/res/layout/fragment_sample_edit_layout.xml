@@ -27,6 +27,7 @@
     <data>
         <import type="de.symeda.sormas.api.sample.SpecimenCondition" />
         <import type="de.symeda.sormas.api.sample.SampleMaterial" />
+        <import type="de.symeda.sormas.api.sample.SamplePurpose" />
         <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
@@ -122,12 +123,16 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_lab"
                     app:required="true"
+                    app:dependencyParentField="@{samplePurpose}"
+                    app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
                     app:value="@={data.lab}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/sample_labDetails"
                     app:required="true"
+                    app:dependencyParentField="@{samplePurpose}"
+                    app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
                     app:value="@={data.labDetails}"
                     style="@style/ControlSingleColumnStyle" />
 
@@ -141,149 +146,161 @@
                     app:value="@{data.pathogenTestResult}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <ImageView
-                    android:id="@+id/pathogenTestingDivider"
-                    style="@style/FullHorizontalDividerStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/sample_pathogenTestingRequested"
-                    app:useBoolean="true"
-                    app:value="@={data.pathogenTestingRequested}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
-                    android:id="@+id/sample_requestedPathogenTests"
-                    app:enumClass="@{pathogenTestTypeClass}"
-                    app:value="@={data.requestedPathogenTests}"
-                    app:dependencyParentField="@{samplePathogenTestingRequested}"
-                    app:dependencyParentValue="@{true}"
-                    app:dependencyParentClearOnHide="@{false}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTagViewField
-                    android:id="@+id/sample_requestedPathogenTestsTags"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/sample_requestedOtherPathogenTests"
-                    app:value="@={data.requestedOtherPathogenTests}"
-                    app:dependencyParentField="@{samplePathogenTestingRequested}"
-                    app:dependencyParentValue="@{true}"
-                    app:dependencyParentClearOnHide="@{false}"
-                    style="@style/ControlSingleColumnStyle" />
-
                 <LinearLayout
-                    android:id="@+id/additional_testing_layout"
+                    android:id="@+id/external_sample_fields_layout"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/pathogenTestingDivider"
+                        style="@style/FullHorizontalDividerStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlSwitchField
-                        android:id="@+id/sample_additionalTestingRequested"
+                        android:id="@+id/sample_pathogenTestingRequested"
                         app:useBoolean="true"
-                        app:value="@={data.additionalTestingRequested}"
+                        app:value="@={data.pathogenTestingRequested}"
                         style="@style/ControlSingleColumnStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
-                        android:id="@+id/sample_requestedAdditionalTests"
-                        app:enumClass="@{additionalTestTypeClass}"
-                        app:value="@={data.requestedAdditionalTests}"
-                        app:dependencyParentField="@{sampleAdditionalTestingRequested}"
+                        android:id="@+id/sample_requestedPathogenTests"
+                        app:enumClass="@{pathogenTestTypeClass}"
+                        app:value="@={data.requestedPathogenTests}"
+                        app:dependencyParentField="@{samplePathogenTestingRequested}"
                         app:dependencyParentValue="@{true}"
                         app:dependencyParentClearOnHide="@{false}"
                         style="@style/ControlSingleColumnStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTagViewField
-                        android:id="@+id/sample_requestedAdditionalTestsTags"
+                        android:id="@+id/sample_requestedPathogenTestsTags"
                         style="@style/ControlSingleColumnStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/sample_requestedOtherAdditionalTests"
-                        app:value="@={data.requestedOtherAdditionalTests}"
-                        app:dependencyParentField="@{sampleAdditionalTestingRequested}"
+                        android:id="@+id/sample_requestedOtherPathogenTests"
+                        app:value="@={data.requestedOtherPathogenTests}"
+                        app:dependencyParentField="@{samplePathogenTestingRequested}"
                         app:dependencyParentValue="@{true}"
                         app:dependencyParentClearOnHide="@{false}"
                         style="@style/ControlSingleColumnStyle" />
 
-                </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/additional_testing_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
-                <ImageView style="@style/FullHorizontalDividerStyle"/>
+                        <de.symeda.sormas.app.component.controls.ControlSwitchField
+                            android:id="@+id/sample_additionalTestingRequested"
+                            app:useBoolean="true"
+                            app:value="@={data.additionalTestingRequested}"
+                            style="@style/ControlSingleColumnStyle" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                        <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
+                            android:id="@+id/sample_requestedAdditionalTests"
+                            app:enumClass="@{additionalTestTypeClass}"
+                            app:value="@={data.requestedAdditionalTests}"
+                            app:dependencyParentField="@{sampleAdditionalTestingRequested}"
+                            app:dependencyParentValue="@{true}"
+                            app:dependencyParentClearOnHide="@{false}"
+                            style="@style/ControlSingleColumnStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlCheckBoxField
-                        android:id="@+id/sample_shipped"
-                        app:value="@={data.shipped}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
+                        <de.symeda.sormas.app.component.controls.ControlTagViewField
+                            android:id="@+id/sample_requestedAdditionalTestsTags"
+                            style="@style/ControlSingleColumnStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlDateField
-                        android:id="@+id/sample_shipmentDate"
-                        app:required="true"
-                        app:value="@={data.shipmentDate}"
+                        <de.symeda.sormas.app.component.controls.ControlTextEditField
+                            android:id="@+id/sample_requestedOtherAdditionalTests"
+                            app:value="@={data.requestedOtherAdditionalTests}"
+                            app:dependencyParentField="@{sampleAdditionalTestingRequested}"
+                            app:dependencyParentValue="@{true}"
+                            app:dependencyParentClearOnHide="@{false}"
+                            style="@style/ControlSingleColumnStyle" />
+
+                    </LinearLayout>
+
+                    <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                            android:id="@+id/sample_shipped"
+                            app:value="@={data.shipped}"
+                            app:dependencyParentField="@{samplePurpose}"
+                            app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
+                            style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                        <de.symeda.sormas.app.component.controls.ControlDateField
+                            android:id="@+id/sample_shipmentDate"
+                            app:required="true"
+                            app:value="@={data.shipmentDate}"
+                            app:dependencyParentField="@{sampleShipped}"
+                            app:dependencyParentValue="@{true}"
+                            app:allowedDaysInFuture="7"
+                            style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                    </LinearLayout>
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/sample_shipmentDetails"
+                        app:value="@={data.shipmentDetails}"
                         app:dependencyParentField="@{sampleShipped}"
                         app:dependencyParentValue="@{true}"
-                        app:allowedDaysInFuture="7"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
+                        style="@style/ControlSingleColumnStyle" />
+
+                    <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <de.symeda.sormas.app.component.controls.ControlTextImageField
+                            android:id="@+id/sample_received"
+                            app:receivedStatus="@{data}"
+                            app:dependencyParentField="@{samplePurpose}"
+                            app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
+                            style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
+                            android:id="@+id/sample_labSampleID"
+                            app:value="@{data.labSampleID}"
+                            app:dependencyParentField="@{sampleReceived}"
+                            app:dependencyParentValue="@{true}"
+                            style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
+                            android:id="@+id/sample_specimenCondition"
+                            app:value="@{data.specimenCondition}"
+                            app:dependencyParentField="@{sampleReceived}"
+                            app:dependencyParentValue="@{true}"
+                            style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
+                            android:id="@+id/sample_noTestPossibleReason"
+                            app:value="@{data.noTestPossibleReason}"
+                            app:dependencyParentField="@{sampleSpecimenCondition}"
+                            app:dependencyParentValue="@{SpecimenCondition.NOT_ADEQUATE}"
+                            style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                    </LinearLayout>
+
+                    <de.symeda.sormas.app.component.controls.ControlLinkField
+                        android:id="@+id/sample_referredToUuid"
+                        app:value="@{referredSample.lab}"
+                        app:goneIfEmpty="@{referredSample}"
+                        style="@style/ControlSingleColumnStyle" />
 
                 </LinearLayout>
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/sample_shipmentDetails"
-                    app:value="@={data.shipmentDetails}"
-                    app:dependencyParentField="@{sampleShipped}"
-                    app:dependencyParentValue="@{true}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <ImageView style="@style/FullHorizontalDividerStyle"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextImageField
-                        android:id="@+id/sample_received"
-                        app:receivedStatus="@{data}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_labSampleID"
-                        app:value="@{data.labSampleID}"
-                        app:dependencyParentField="@{sampleReceived}"
-                        app:dependencyParentValue="@{true}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_specimenCondition"
-                        app:value="@{data.specimenCondition}"
-                        app:dependencyParentField="@{sampleReceived}"
-                        app:dependencyParentValue="@{true}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_noTestPossibleReason"
-                        app:value="@{data.noTestPossibleReason}"
-                        app:dependencyParentField="@{sampleSpecimenCondition}"
-                        app:dependencyParentValue="@{SpecimenCondition.NOT_ADEQUATE}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
-
-                <de.symeda.sormas.app.component.controls.ControlLinkField
-                    android:id="@+id/sample_referredToUuid"
-                    app:value="@{referredSample.lab}"
-                    app:goneIfEmpty="@{referredSample}"
-                    style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
 

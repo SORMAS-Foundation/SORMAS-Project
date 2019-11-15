@@ -21,16 +21,24 @@ package de.symeda.sormas.app.caze.read;
 import androidx.databinding.ObservableArrayList;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.Arrays;
+import java.util.List;
 
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseReadEpidLayoutBinding;
 
@@ -107,6 +115,32 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
         contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
         contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
+
+        // iterate through all epi data animal fields and add listener
+        ValueChangeListener updateHadAnimalExposureListener = field -> updateHadAnimalExposure();
+        List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
+        FieldHelper.iteratePropertyFields((ViewGroup)contentBinding.getRoot(), field -> {
+            if (animalExposureProperties.contains(field.getSubPropertyId())) {
+                field.addValueChangedListener(updateHadAnimalExposureListener);
+            }
+            return true;
+        });
+    }
+
+    private void updateHadAnimalExposure() {
+        // iterate through all epi data animal fields to get value
+        List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
+        boolean iterationCancelled = !FieldHelper.iteratePropertyFields((ViewGroup)getContentBinding().getRoot(), field -> {
+            if (animalExposureProperties.contains(field.getSubPropertyId())) {
+                YesNoUnknown value = (YesNoUnknown)field.getValue();
+                if (YesNoUnknown.YES.equals(value)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        boolean hadAnimalExposure = iterationCancelled;
+        getContentBinding().setAnimalExposureDependentVisibility(hadAnimalExposure ? View.VISIBLE : View.GONE);
     }
 
     @Override

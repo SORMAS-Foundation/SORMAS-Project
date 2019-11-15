@@ -28,6 +28,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -46,6 +47,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private static final String EPI_DATA_CAPTION_LOC = "epiDataCaptionLoc";
 	private static final String ANIMAL_CAPTION_LOC = "animalCaptionLoc";
 	private static final String ENVIRONMENTAL_LOC = "environmentalLoc";
+	private static final String KIND_OF_EXPOSURE_LOC = "kindOfExposureLoc";
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.loc(EPI_DATA_CAPTION_LOC) +
@@ -63,20 +65,50 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+									EpiDataDto.BATS,  EpiDataDto.BIRDS, EpiDataDto.CANIDAE, EpiDataDto.CATS, EpiDataDto.CATTLE,  
 									EpiDataDto.AREA_INFECTED_ANIMALS,
-									EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES,
-									EpiDataDto.SWINE, EpiDataDto.BIRDS, EpiDataDto.CATTLE, 
 									EpiDataDto.SICK_DEAD_ANIMALS, EpiDataDto.SICK_DEAD_ANIMALS_DETAILS,
 									EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION
 							)
 					),
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, EpiDataDto.EATING_RAW_ANIMALS, 
-									EpiDataDto.EATING_RAW_ANIMALS_DETAILS,
+									EpiDataDto.DOGS, EpiDataDto.PRIMATES, EpiDataDto.SWINE,EpiDataDto.RABBITS, EpiDataDto.RODENTS, 
 									EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
-									EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE,
-									EpiDataDto.ANIMAL_CONDITION
+									EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, EpiDataDto.EATING_RAW_ANIMALS, 
+									EpiDataDto.EATING_RAW_ANIMALS_DETAILS
+							)
+					)
+			) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.fluidColumn(6, 0,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+									EpiDataDto.DATE_OF_LAST_EXPOSURE,
+									EpiDataDto.ANIMAL_CONDITION,
+									EpiDataDto.PROPHYLAXIS_STATUS
+							)
+					),
+					LayoutUtil.fluidColumn(6, 0,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+									EpiDataDto.PLACE_OF_LAST_EXPOSURE,
+									EpiDataDto.ANIMAL_VACCINATION_STATUS,
+									EpiDataDto.DATE_OF_PROPHYLAXIS
+							)
+					)
+			) +			
+			LayoutUtil.loc(KIND_OF_EXPOSURE_LOC) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.fluidColumn(6, 0,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+									EpiDataDto.KIND_OF_EXPOSURE_BITE, 
+									EpiDataDto.KIND_OF_EXPOSURE_TOUCH, 
+									EpiDataDto.KIND_OF_EXPOSURE_SCRATCH)
+					),
+					LayoutUtil.fluidColumn(6, 0,
+							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+									EpiDataDto.KIND_OF_EXPOSURE_LICK,
+									EpiDataDto.KIND_OF_EXPOSURE_OTHER, 
+									EpiDataDto.KIND_OF_EXPOSURE_DETAILS
 							)
 					)
 			) +
@@ -121,9 +153,23 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.SICK_DEAD_ANIMALS_DETAILS, EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION,
 				EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, 
 				EpiDataDto.EATING_RAW_ANIMALS,EpiDataDto.EATING_RAW_ANIMALS_DETAILS,
-				EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.BIRDS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE, 
+				EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.BIRDS, EpiDataDto.RABBITS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE, 
+				EpiDataDto.DOGS, EpiDataDto.CATS, EpiDataDto.CANIDAE,
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
 				EpiDataDto.ANIMAL_CONDITION, EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE);
+		
+		addFields(EpiDataDto.KIND_OF_EXPOSURE_BITE, EpiDataDto.KIND_OF_EXPOSURE_TOUCH,
+				EpiDataDto.KIND_OF_EXPOSURE_SCRATCH, EpiDataDto.KIND_OF_EXPOSURE_LICK, 
+				EpiDataDto.KIND_OF_EXPOSURE_OTHER, EpiDataDto.KIND_OF_EXPOSURE_DETAILS);
+		
+		Label kindOfExposureLabel = new Label(I18nProperties.getCaption(Captions.EpiData_kindOfExposure));
+		CssStyles.style(kindOfExposureLabel, CssStyles.H3);
+		getContent().addComponent(kindOfExposureLabel, KIND_OF_EXPOSURE_LOC);	
+
+		addField(EpiDataDto.ANIMAL_VACCINATION_STATUS, OptionGroup.class);
+		OptionGroup prophylaxisStatus = addField(EpiDataDto.PROPHYLAXIS_STATUS, OptionGroup.class);
+		CssStyles.style(prophylaxisStatus, CssStyles.ERROR_COLOR_PRIMARY);
+		addFields(EpiDataDto.DATE_OF_PROPHYLAXIS);
 		
 		addFields(EpiDataDto.WATER_BODY, EpiDataDto.WATER_BODY_DETAILS, 
 				EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_SOURCE_OTHER, 
@@ -153,19 +199,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			}
 		}
 		
-		List<String> animalContacts = Arrays.asList(EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE,
-				EpiDataDto.OTHER_ANIMALS, EpiDataDto.SICK_DEAD_ANIMALS, EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, EpiDataDto.EATING_RAW_ANIMALS);
-		
-		for (String animalContact : animalContacts) {
-			if (getFieldGroup().getField(animalContact).isVisible()) {
-				String animalCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingAnimalContacts)) + LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.messageAnimalContactsHint));
-				Label animalCaptionLabel = new Label(animalCaptionLayout);
-				animalCaptionLabel.setContentMode(ContentMode.HTML);
-				getContent().addComponent(animalCaptionLabel, ANIMAL_CAPTION_LOC);
-				break;
-			}
-		}
-		
+		String animalCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingAnimalContacts)) + LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.messageAnimalContactsHint));
+		Label animalCaptionLabel = new Label(animalCaptionLayout);
+		animalCaptionLabel.setContentMode(ContentMode.HTML);
+		getContent().addComponent(animalCaptionLabel, ANIMAL_CAPTION_LOC);
+
 		List<String> environmentalExposures = Arrays.asList(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY, EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE);
 		
 		for (String environmentalExp : environmentalExposures) {
@@ -177,6 +215,14 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				break;
 			}
 		}
+		
+		for (String propertyId : EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES) {
+			getField(propertyId).addValueChangeListener(e -> updateAnimalExposureFields());
+		}
+		updateAnimalExposureFields();
+		
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_DETAILS, EpiDataDto.KIND_OF_EXPOSURE_OTHER, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.DATE_OF_PROPHYLAXIS, EpiDataDto.PROPHYLAXIS_STATUS, Arrays.asList(YesNoUnknown.YES), true);
 		
 		burialAttendedField.addValueChangeListener(e -> {
 			updateBurialsHint(burialAttendedField, burialsField);
@@ -199,6 +245,23 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			updateTravelsHint(traveledField, travelsField);
 			traveledField.setEnabled(travelsField.getValue() == null || travelsField.getValue().size() == 0);
 		});
+	}
+	
+	private void updateAnimalExposureFields() {
+		boolean animalsVisible = Arrays.stream(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES)
+				.anyMatch(property -> getField(property).isVisible());
+		getContent().getComponent(ANIMAL_CAPTION_LOC).setVisible(animalsVisible);
+
+		boolean hadExposure = Arrays.stream(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES)
+				.map(property -> getField(property).getValue())
+				.anyMatch(value -> value == YesNoUnknown.YES);
+		
+		setVisible(hadExposure, EpiDataDto.EXPOSURE_DEPENDENT_PROPERTIES);
+		
+		boolean kindOfExposureVisible = Arrays.stream(EpiDataDto.KIND_OF_EXPOSURE_PROPERTIES)
+				.anyMatch(property -> getField(property).isVisible());
+		getContent().getComponent(KIND_OF_EXPOSURE_LOC).setVisible(kindOfExposureVisible);
+
 	}
 	
 	private void updateBurialsHint(OptionGroup burialAttendedField, EpiDataBurialsField burialsField) {

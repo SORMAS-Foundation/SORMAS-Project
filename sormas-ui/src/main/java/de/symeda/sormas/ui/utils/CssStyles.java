@@ -321,7 +321,8 @@ public final class CssStyles {
 			return "background-disease-anthrax";
 		case UNDEFINED:
 			return "background-disease-undefined";
-			
+		case RABIES:
+			return "background-disease-rabies";
 		default:
 			throw new IllegalArgumentException(disease.toString());
 		}

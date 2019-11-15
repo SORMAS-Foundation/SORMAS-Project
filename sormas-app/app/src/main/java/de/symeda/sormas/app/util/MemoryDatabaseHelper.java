@@ -1604,6 +1604,7 @@ class ContactGenerator extends BaseDataGenerator {
             data1.setDescription(getRandomSentence());
             data1.setContactOfficer(UserGenerator.getSingle());
             data1.setRelationToCase(getContactRelation());
+            data1.setRelationDescription(getRandomSentence());
             data1.setReportLat(getRandomDouble());
             data1.setReportLon(getRandomDouble());
 

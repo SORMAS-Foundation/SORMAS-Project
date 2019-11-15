@@ -66,6 +66,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
+	public static final String RABIES_TYPE = "rabiesType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -91,6 +92,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
 	public static final String VACCINATION_DATE = "vaccinationDate";
+	public static final String VACCINE = "vaccine";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
 	public static final String EPID_NUMBER = "epidNumber";
@@ -122,6 +124,9 @@ public class CaseDataDto extends EntityDto {
 	@Diseases({ Disease.DENGUE })
 	@Outbreaks
 	private DengueFeverType dengueFeverType;
+	@Diseases({ Disease.RABIES })
+	@Outbreaks
+	private RabiesType rabiesType;
 	@Required
 	private PersonReferenceDto person;
 	@Outbreaks
@@ -170,17 +175,20 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
-	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.YELLOW_FEVER, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.YELLOW_FEVER, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private String vaccinationDoses;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Date vaccinationDate;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
+	@Diseases({ Disease.RABIES, Disease.OTHER })
+	@Outbreaks
+	private String vaccine;
 	@Diseases({ Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({ Disease.MONKEYPOX })
@@ -361,6 +369,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setDengueFeverType(DengueFeverType dengueFeverType) {
 		this.dengueFeverType = dengueFeverType;
+	}
+
+	public RabiesType getRabiesType() {
+		return rabiesType;
+	}
+
+	public void setRabiesType(RabiesType rabiesType) {
+		this.rabiesType = rabiesType;
 	}
 
 	public FacilityReferenceDto getHealthFacility() {
@@ -595,6 +611,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setVaccinationDate(Date vaccinationDate) {
 		this.vaccinationDate = vaccinationDate;
+	}
+
+	public String getVaccine() {
+		return vaccine;
+	}
+
+	public void setVaccine(String vaccine) {
+		this.vaccine = vaccine;
 	}
 
 	public String getEpidNumber() {

@@ -1626,6 +1626,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
+		target.setRabiesType(source.getRabiesType());
 		if (source.getReportDate() != null) {
 			target.setReportDate(source.getReportDate());
 		} else { // make sure we do have a report date
@@ -1678,6 +1679,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccination(source.getVaccination());
 		target.setVaccinationDoses(source.getVaccinationDoses());
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
+		target.setVaccine(source.getVaccine());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setVaccinationDate(source.getVaccinationDate());
@@ -1722,6 +1724,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
+		target.setRabiesType(source.getRabiesType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
@@ -1767,6 +1770,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccination(source.getVaccination());
 		target.setVaccinationDoses(source.getVaccinationDoses());
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
+		target.setVaccine(source.getVaccine());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setVaccinationDate(source.getVaccinationDate());
