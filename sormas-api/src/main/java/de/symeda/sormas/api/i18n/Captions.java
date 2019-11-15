@@ -114,7 +114,6 @@ public interface Captions {
 	public static String CaseData_healthFacility = "CaseData.healthFacility";
 	public static String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
 	public static String CaseData_hospitalization = "CaseData.hospitalization";
-	public static String CaseData_humanRabiesType = "CaseData.humanRabiesType";
 	public static String CaseData_investigatedDate = "CaseData.investigatedDate";
 	public static String CaseData_investigationStatus = "CaseData.investigationStatus";
 	public static String CaseData_maternalHistory = "CaseData.maternalHistory";
@@ -133,6 +132,7 @@ public interface Captions {
 	public static String CaseData_pointOfEntryName = "CaseData.pointOfEntryName";
 	public static String CaseData_portHealthInfo = "CaseData.portHealthInfo";
 	public static String CaseData_pregnant = "CaseData.pregnant";
+	public static String CaseData_rabiesType = "CaseData.rabiesType";
 	public static String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	public static String CaseData_reportDate = "CaseData.reportDate";
 	public static String CaseData_reportingUser = "CaseData.reportingUser";
@@ -148,7 +148,7 @@ public interface Captions {
 	public static String CaseData_vaccinationDate = "CaseData.vaccinationDate";
 	public static String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	public static String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
-	public static String CaseData_whichVaccine = "CaseData.whichVaccine";
+	public static String CaseData_vaccine = "CaseData.vaccine";
 	public static String caseEditData = "caseEditData";
 	public static String CaseExport_address = "CaseExport.address";
 	public static String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
@@ -265,6 +265,7 @@ public interface Captions {
 	public static String Contact_lastName = "Contact.lastName";
 	public static String Contact_numberOfVisits = "Contact.numberOfVisits";
 	public static String Contact_person = "Contact.person";
+	public static String Contact_relationDescription = "Contact.relationDescription";
 	public static String Contact_relationToCase = "Contact.relationToCase";
 	public static String Contact_reportDateTime = "Contact.reportDateTime";
 	public static String Contact_reportingUser = "Contact.reportingUser";
@@ -649,9 +650,11 @@ public interface Captions {
 	public static String outbreakNormal = "outbreakNormal";
 	public static String outbreakOutbreak = "outbreakOutbreak";
 	public static String PathogenTest = "PathogenTest";
+	public static String PathogenTest_cqValue = "PathogenTest.cqValue";
 	public static String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
 	public static String PathogenTest_lab = "PathogenTest.lab";
 	public static String PathogenTest_labDetails = "PathogenTest.labDetails";
+	public static String PathogenTest_serotype = "PathogenTest.serotype";
 	public static String PathogenTest_testDateTime = "PathogenTest.testDateTime";
 	public static String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	public static String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
@@ -804,6 +807,7 @@ public interface Captions {
 	public static String Sample_sampleDateTime = "Sample.sampleDateTime";
 	public static String Sample_sampleMaterial = "Sample.sampleMaterial";
 	public static String Sample_sampleMaterialText = "Sample.sampleMaterialText";
+	public static String Sample_samplePurpose = "Sample.samplePurpose";
 	public static String Sample_sampleSource = "Sample.sampleSource";
 	public static String Sample_shipmentDate = "Sample.shipmentDate";
 	public static String Sample_shipmentDetails = "Sample.shipmentDetails";
@@ -940,10 +944,10 @@ public interface Captions {
 	public static String Symptoms_congenitalHeartDiseaseDetails = "Symptoms.congenitalHeartDiseaseDetails";
 	public static String Symptoms_congenitalHeartDiseaseType = "Symptoms.congenitalHeartDiseaseType";
 	public static String Symptoms_conjunctivitis = "Symptoms.conjunctivitis";
+	public static String Symptoms_convulsion = "Symptoms.convulsion";
 	public static String Symptoms_cough = "Symptoms.cough";
 	public static String Symptoms_coughingBlood = "Symptoms.coughingBlood";
 	public static String Symptoms_darkUrine = "Symptoms.darkUrine";
-	public static String Symptoms_death = "Symptoms.death";
 	public static String Symptoms_dehydration = "Symptoms.dehydration";
 	public static String Symptoms_delirium = "Symptoms.delirium";
 	public static String Symptoms_developmentalDelay = "Symptoms.developmentalDelay";
