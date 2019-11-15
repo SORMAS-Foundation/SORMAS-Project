@@ -83,6 +83,12 @@ public class PathogenTest extends AbstractDomainObject {
     @Column
     private boolean fourFoldIncreaseAntibodyTiter;
 
+    @Column(length=255)
+    private String serotype;
+
+    @DatabaseField
+    private Float cqValue;
+
     @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility lab;
 
@@ -164,7 +170,7 @@ public class PathogenTest extends AbstractDomainObject {
     }
 
     public String getLabDetails() {
-        return labDetails;
+        return  labDetails;
     }
 
     public void setLabDetails(String labDetails) {
@@ -186,6 +192,23 @@ public class PathogenTest extends AbstractDomainObject {
     public void setTestTypeText(String testTypeText) {
         this.testTypeText = testTypeText;
     }
+
+    public String getSerotype() {
+        return serotype;
+    }
+
+    public void setSerotype(String serotype) {
+        this.serotype = serotype;
+    }
+
+    public Float getCqValue() {
+        return cqValue;
+    }
+
+    public void setCqValue(Float cqValue) {
+        this.cqValue = cqValue;
+    }
+
 
     @Override
     public String getI18nPrefix() {

@@ -24,6 +24,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
@@ -61,6 +62,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
+    private List<Item> rabiesTypeList;
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
     private List<Item> initialCommunities;
@@ -102,6 +104,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         }
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
+        rabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
 
         yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
         monthList = DataUtils.getMonthItems(true);
@@ -130,6 +133,10 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                 contentBinding.caseDataHealthFacility, initialFacilities,
                 contentBinding.caseDataPointOfEntry, initialPointsOfEntry);
 
+        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+        contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
+        contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
+        contentBinding.caseDataHumanRabiesType.initializeSpinner(rabiesTypeList);
         contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
         contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
 
@@ -184,6 +191,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.caseDataDiseaseDetails.setEnabled(false);
             contentBinding.caseDataPlagueType.setEnabled(false);
             contentBinding.caseDataDengueFeverType.setEnabled(false);
+            contentBinding.caseDataHumanRabiesType.setEnabled(false);
         }
 
         // Set up port health visibilities

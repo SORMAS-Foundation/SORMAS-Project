@@ -83,7 +83,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	protected EntityManager em;
 
 	@EJB
-	private VisitService visitService;	
+	private VisitService visitService;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -118,19 +118,21 @@ public class VisitFacadeEjb implements VisitFacade {
 			return Collections.emptyList();
 		}
 
-		return visitService.getAllActiveVisitsAfter(date, user).stream()
-				.map(c -> toDto(c))
+		return visitService.getAllActiveVisitsAfter(date, user).stream().map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<VisitDto> getByUuids(List<String> uuids) {
-		return visitService.getByUuids(uuids)
-				.stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
+		return visitService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
-	
+
+	@Override
+	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
+		Contact contact = contactService.getByReferenceDto(contactRef);
+		return toDto(visitService.getLastVisitByContact(contact, null));
+	}
+
 	@Override
 	public VisitDto getVisitByUuid(String uuid) {
 		return toDto(visitService.getByUuid(uuid));
@@ -191,14 +193,9 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-		cq.multiselect(visit.get(Visit.UUID),
-				visit.get(Visit.VISIT_DATE_TIME),
-				visit.get(Visit.VISIT_STATUS),
-				visit.get(Visit.VISIT_REMARKS),
-				visit.get(Visit.DISEASE),
-				symptoms.get(Symptoms.SYMPTOMATIC),
-				symptoms.get(Symptoms.TEMPERATURE),
-				symptoms.get(Symptoms.TEMPERATURE_SOURCE));
+		cq.multiselect(visit.get(Visit.UUID), visit.get(Visit.VISIT_DATE_TIME), visit.get(Visit.VISIT_STATUS),
+				visit.get(Visit.VISIT_REMARKS), visit.get(Visit.DISEASE), symptoms.get(Symptoms.SYMPTOMATIC),
+				symptoms.get(Symptoms.TEMPERATURE), symptoms.get(Symptoms.TEMPERATURE_SOURCE));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visit);
 		cq.where(filter);
@@ -234,13 +231,13 @@ public class VisitFacadeEjb implements VisitFacade {
 			return em.createQuery(cq).getResultList();
 		}
 	}
-	
+
 	@Override
 	public long count(VisitCriteria visitCriteria) {
 		if (visitCriteria == null || visitCriteria.getContact() == null) {
 			return 0L; // Retrieving a list count independent of a contact is not possible
 		}
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Visit> root = cq.from(Visit.class);
@@ -283,7 +280,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 		VisitReferenceDto target = new VisitReferenceDto(source.getUuid(), source.toString());
 		return target;
-	}	
+	}
 
 	public static VisitDto toDto(Visit source) {
 		if (source == null) {
@@ -308,10 +305,13 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	private void onVisitChanged(VisitDto existingVisit, Visit newVisit) {
-		// Send an email to all responsible supervisors when the contact has become symptomatic
-		boolean previousSymptomaticStatus = existingVisit != null && Boolean.TRUE.equals(existingVisit.getSymptoms().getSymptomatic());
+		// Send an email to all responsible supervisors when the contact has become
+		// symptomatic
+		boolean previousSymptomaticStatus = existingVisit != null
+				&& Boolean.TRUE.equals(existingVisit.getSymptoms().getSymptomatic());
 		if (previousSymptomaticStatus == false && Boolean.TRUE.equals(newVisit.getSymptoms().getSymptomatic())) {
-			Set<Contact> contacts = new HashSet<>(contactService.getAllByVisit(visitService.getByUuid(newVisit.getUuid())));
+			Set<Contact> contacts = new HashSet<>(
+					contactService.getAllByVisit(visitService.getByUuid(newVisit.getUuid())));
 			for (Contact contact : contacts) {
 				Case contactCase = contact.getCaze();
 				// Skip if there is already a symptomatic visit for this contact
@@ -319,16 +319,21 @@ public class VisitFacadeEjb implements VisitFacade {
 					continue;
 				}
 
-				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contactCase.getRegion(), 
+				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contactCase.getRegion(),
 						UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
 				for (User recipient : messageRecipients) {
-					try { 
-						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC), 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC), DataHelper.getShortUuid(contact.getUuid()), DataHelper.getShortUuid(contactCase.getUuid())), 
+					try {
+						messagingService.sendMessage(recipient,
+								I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC),
+								String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
+										DataHelper.getShortUuid(contact.getUuid()),
+										DataHelper.getShortUuid(contactCase.getUuid())),
 								MessageType.EMAIL, MessageType.SMS);
 					} catch (NotificationDeliveryFailedException e) {
-						logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+						logger.error(String.format(
+								"EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
+										+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+								recipient.getUuid()));
 					}
 				}
 			}
@@ -340,5 +345,5 @@ public class VisitFacadeEjb implements VisitFacade {
 	@LocalBean
 	@Stateless
 	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
-	}	
+	}
 }

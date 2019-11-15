@@ -92,8 +92,8 @@ public class PopulationDataImporter extends DataImporter {
 		} else {
 			criteria.district(finalDistrict);
 		}
-		List<PopulationDataDto> existingPopulationDatas = FacadeProvider.getPopulationDataFacade().getPopulationData(criteria);
-		List<PopulationDataDto> modifiedPopulationDatas = new ArrayList<PopulationDataDto>();
+		List<PopulationDataDto> existingPopulationDataList = FacadeProvider.getPopulationDataFacade().getPopulationData(criteria);
+		List<PopulationDataDto> modifiedPopulationDataList = new ArrayList<PopulationDataDto>();
 		
 		boolean populationDataHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, new Function<ImportCellData, Exception>() {
 			@Override
@@ -119,7 +119,7 @@ public class PopulationDataImporter extends DataImporter {
 						PopulationDataDto newPopulationData = PopulationDataDto.build(collectionDate);
 						insertCellValueIntoData(newPopulationData, cellData.getValue(), cellData.getEntityPropertyPath());
 
-						Optional<PopulationDataDto> existingPopulationData = existingPopulationDatas.stream().filter(
+						Optional<PopulationDataDto> existingPopulationData = existingPopulationDataList.stream().filter(
 								populationData -> populationData.getAgeGroup() == newPopulationData.getAgeGroup()
 								&& populationData.getSex() == newPopulationData.getSex()).findFirst();
 						
@@ -127,11 +127,11 @@ public class PopulationDataImporter extends DataImporter {
 						if (existingPopulationData.isPresent()) {
 							existingPopulationData.get().setPopulation(newPopulationData.getPopulation());
 							existingPopulationData.get().setCollectionDate(collectionDate);
-							modifiedPopulationDatas.add(existingPopulationData.get());
+							modifiedPopulationDataList.add(existingPopulationData.get());
 						} else {
 							newPopulationData.setRegion(finalRegion);
 							newPopulationData.setDistrict(finalDistrict);
-							modifiedPopulationDatas.add(newPopulationData);
+							modifiedPopulationDataList.add(newPopulationData);
 						}
 					}
 				} catch (ImportErrorException | InvalidColumnException | NumberFormatException e) {
@@ -144,7 +144,7 @@ public class PopulationDataImporter extends DataImporter {
 
 		if (!populationDataHasImportError) {
 			try {
-				FacadeProvider.getPopulationDataFacade().savePopulationData(modifiedPopulationDatas);
+				FacadeProvider.getPopulationDataFacade().savePopulationData(modifiedPopulationDataList);
 				importedCallback.accept(ImportResult.SUCCESS);
 			} catch (ValidationRuntimeException e) {
 				hasImportError = true;

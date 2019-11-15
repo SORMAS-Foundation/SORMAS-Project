@@ -48,6 +48,7 @@ public class ContactDto extends EntityDto {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	public static final String RELATION_TO_CASE = "relationToCase";
+	public static final String RELATION_DESCRIPTION = "relationDescription";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String RESULTING_CASE = "resultingCase";
@@ -77,6 +78,7 @@ public class ContactDto extends EntityDto {
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
+	private String relationDescription;
 	
 	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
 	private UserReferenceDto resultingCaseUser;
@@ -172,6 +174,12 @@ public class ContactDto extends EntityDto {
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
 	}
+	public String getRelationDescription() {
+		return relationDescription;
+	}
+	public void setRelationDescription(String relationDescription) {
+		this.relationDescription = relationDescription;
+	}
 	public CaseReferenceDto getResultingCase() {
 		return resultingCase;
 	}
@@ -221,5 +229,4 @@ public class ContactDto extends EntityDto {
 	public void setCaseDisease(Disease caseDisease) {
 		this.caseDisease = caseDisease;
 	}
-	
 }

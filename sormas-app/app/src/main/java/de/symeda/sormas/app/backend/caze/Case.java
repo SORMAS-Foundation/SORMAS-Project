@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -97,6 +98,9 @@ public class Case extends AbstractDomainObject {
 
     @Column(length = 255)
     private DengueFeverType dengueFeverType;
+
+    @Column(length = 255)
+    private RabiesType rabiesType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -162,6 +166,9 @@ public class Case extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private Vaccination vaccination;
+
+    @Column(length = 512)
+    private String vaccine;
 
     @Column(length = 512)
     private String vaccinationDoses;
@@ -276,6 +283,14 @@ public class Case extends AbstractDomainObject {
 
     public void setPlagueType(PlagueType plagueType) {
         this.plagueType = plagueType;
+    }
+
+    public RabiesType getRabiesType() {
+        return rabiesType;
+    }
+
+    public void setRabiesType(RabiesType rabiesType) {
+        this.rabiesType = rabiesType;
     }
 
     public CaseClassification getCaseClassification() {
@@ -428,6 +443,14 @@ public class Case extends AbstractDomainObject {
 
     public void setVaccination(Vaccination vaccination) {
         this.vaccination = vaccination;
+    }
+
+    public String getVaccine() {
+        return vaccine;
+    }
+
+    public void setVaccine(String vaccine) {
+        this.vaccine = vaccine;
     }
 
     public String getVaccinationDoses() {

@@ -37,6 +37,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -67,6 +69,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -280,6 +283,7 @@ public class TestDataCreator {
 		sample.setReportDateTime(reportDateTime);
 		sample.setReportingUser(reportingUser);
 		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
@@ -428,6 +432,19 @@ public class TestDataCreator {
 		return facility;
 	}
 	
+	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district) {
+
+		PointOfEntry pointOfEntry = new PointOfEntry();
+		pointOfEntry.setUuid(DataHelper.createUuid());
+		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
+		pointOfEntry.setName(pointOfEntryName);
+		pointOfEntry.setDistrict(district);
+		pointOfEntry.setRegion(region);
+		beanTest.getPointOfEntryService().persist(pointOfEntry);
+
+		return pointOfEntry;
+	}
+
 	public PopulationDataDto createPopulationData(RegionReferenceDto region, DistrictReferenceDto district, Integer population, Date collectionDate) {
 		PopulationDataDto populationData = PopulationDataDto.build(collectionDate);
 		populationData.setRegion(region);
@@ -436,6 +453,7 @@ public class TestDataCreator {
 		beanTest.getPopulationDataFacade().savePopulationData(Arrays.asList(populationData));
 		return populationData;
 	}
+
 
 	/**
 	 * @deprecated Use RDCF instead

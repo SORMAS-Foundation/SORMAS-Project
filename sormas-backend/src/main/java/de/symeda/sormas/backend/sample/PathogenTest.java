@@ -56,6 +56,8 @@ public class PathogenTest extends CoreAdo {
 	public static final String TEST_RESULT_TEXT = "testResultText";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String FOUR_FOLD_INCREASE_ANTIBODY_TITER = "fourFoldIncreaseAntibodyTiter";
+	public static final String SEROTYPE = "serotype";
+	public static final String CQ_VALUE = "cqValue";
 	
 	private Sample sample;
 	private Disease testedDisease;
@@ -70,6 +72,8 @@ public class PathogenTest extends CoreAdo {
 	private String testResultText;
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
+	private String serotype;
+	private Float cqValue;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -123,7 +127,7 @@ public class PathogenTest extends CoreAdo {
 	}
 	
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = false)
+	@JoinColumn
 	public Facility getLab() {
 		return lab;
 	}
@@ -140,7 +144,7 @@ public class PathogenTest extends CoreAdo {
 	}
 	
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = false)
+	@JoinColumn
 	public User getLabUser() {
 		return labUser;
 	}
@@ -157,7 +161,7 @@ public class PathogenTest extends CoreAdo {
 		this.testResult = testResult;
 	}
 	
-	@Column(length=512, nullable = false)
+	@Column(length=512)
 	public String getTestResultText() {
 		return testResultText;
 	}
@@ -179,6 +183,22 @@ public class PathogenTest extends CoreAdo {
 	}
 	public void setFourFoldIncreaseAntibodyTiter(boolean fourFoldIncreaseAntibodyTiter) {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
+	}
+	
+	@Column(length=255)
+	public String getSerotype() {
+		return serotype;
+	}
+	public void setSerotype(String serotype) {
+		this.serotype = serotype;
+	}
+	
+	@Column
+	public Float getCqValue() {
+		return cqValue;
+	}
+	public void setCqValue(Float cqValue) {
+		this.cqValue = cqValue;
 	}
 	
 }

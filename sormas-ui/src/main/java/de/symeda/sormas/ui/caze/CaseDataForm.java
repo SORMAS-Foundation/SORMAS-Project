@@ -96,7 +96,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					new FluidColumn(null, 6, 0, CaseDataDto.DISEASE, null),
 					new FluidColumn(null, 6, 0, null,
 							LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE,
-									CaseDataDto.DENGUE_FEVER_TYPE)))
+									CaseDataDto.DENGUE_FEVER_TYPE, CaseDataDto.RABIES_TYPE)))
 			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE)
 			+ LayoutUtil.fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
@@ -107,6 +107,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			+ LayoutUtil.loc(MEDICAL_INFORMATION_LOC)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINE, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR)
 			+ LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE)
@@ -165,6 +166,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
+		addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 		
@@ -208,7 +210,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addFields(CaseDataDto.PREGNANT,
-				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
+				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE, CaseDataDto.VACCINE, 
 				CaseDataDto.SMALLPOX_VACCINATION_SCAR,CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.VACCINATION_DATE);
 
 		// Set initial visibilities
@@ -251,6 +253,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE,
 					Arrays.asList(Disease.PLAGUE), true);
 		}
+		if (isVisibleAllowed(CaseDataDto.RABIES_TYPE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE,
+					Arrays.asList(Disease.RABIES), true);
+		}
 		if (isVisibleAllowed(CaseDataDto.SMALLPOX_VACCINATION_SCAR)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SMALLPOX_VACCINATION_SCAR,
 					CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
@@ -259,6 +265,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DATE,
 					CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, Arrays.asList(YesNoUnknown.YES), true);
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION,
+					Arrays.asList(Vaccination.VACCINATED), true);
+		}
+		if (isVisibleAllowed(CaseDataDto.VACCINE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINE, CaseDataDto.VACCINATION,
 					Arrays.asList(Vaccination.VACCINATED), true);
 		}
 		if (isVisibleAllowed(CaseDataDto.OUTCOME_DATE)) {

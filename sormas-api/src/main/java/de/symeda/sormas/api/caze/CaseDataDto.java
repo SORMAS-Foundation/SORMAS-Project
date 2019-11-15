@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -25,7 +29,9 @@ import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
@@ -41,6 +47,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
 
 public class CaseDataDto extends EntityDto {
 
@@ -59,6 +66,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
+	public static final String RABIES_TYPE = "rabiesType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -84,6 +92,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
 	public static final String VACCINATION_DATE = "vaccinationDate";
+	public static final String VACCINE = "vaccine";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
 	public static final String EPID_NUMBER = "epidNumber";
@@ -115,6 +124,9 @@ public class CaseDataDto extends EntityDto {
 	@Diseases({ Disease.DENGUE })
 	@Outbreaks
 	private DengueFeverType dengueFeverType;
+	@Diseases({ Disease.RABIES })
+	@Outbreaks
+	private RabiesType rabiesType;
 	@Required
 	private PersonReferenceDto person;
 	@Outbreaks
@@ -163,17 +175,20 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
-	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.YELLOW_FEVER, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.YELLOW_FEVER, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private String vaccinationDoses;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Date vaccinationDate;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.OTHER })
+	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
+	@Diseases({ Disease.RABIES, Disease.OTHER })
+	@Outbreaks
+	private String vaccine;
 	@Diseases({ Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({ Disease.MONKEYPOX })
@@ -219,10 +234,42 @@ public class CaseDataDto extends EntityDto {
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
-		caze.setReportDate(new Date());
 		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		return caze;
 	}
+	
+	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getCaseDisease());
+		SymptomsDto newSymptoms = cazeData.getSymptoms();
+		if(lastVisit != null) {
+			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
+	
+			try {
+				// reflection to call the setters of the new symptoms object with the getters
+				// from the one in the visit
+				for (PropertyDescriptor pd : Introspector.getBeanInfo(SymptomsDto.class, EntityDto.class)
+						.getPropertyDescriptors()) {
+					if (pd.getWriteMethod() != null) {
+						try {
+							pd.getWriteMethod().invoke(newSymptoms, pd.getReadMethod().invoke(oldSymptoms));
+						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
+			} catch (IntrospectionException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		cazeData.setSymptoms(newSymptoms);
+		return cazeData;
+	}
+	
+	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, Disease eventDisease) {
+		CaseDataDto cazeData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
+		return cazeData;
+	}
+
 
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
@@ -322,6 +369,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setDengueFeverType(DengueFeverType dengueFeverType) {
 		this.dengueFeverType = dengueFeverType;
+	}
+
+	public RabiesType getRabiesType() {
+		return rabiesType;
+	}
+
+	public void setRabiesType(RabiesType rabiesType) {
+		this.rabiesType = rabiesType;
 	}
 
 	public FacilityReferenceDto getHealthFacility() {
@@ -556,6 +611,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setVaccinationDate(Date vaccinationDate) {
 		this.vaccinationDate = vaccinationDate;
+	}
+
+	public String getVaccine() {
+		return vaccine;
+	}
+
+	public void setVaccine(String vaccine) {
+		this.vaccine = vaccine;
 	}
 
 	public String getEpidNumber() {

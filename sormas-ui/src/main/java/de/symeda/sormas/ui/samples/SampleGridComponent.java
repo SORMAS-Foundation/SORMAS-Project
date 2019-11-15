@@ -34,6 +34,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -84,10 +85,10 @@ public class SampleGridComponent extends VerticalLayout {
 	TextField searchField;
 	private Button resetButton;
 	MenuBar bulkOperationsDropdown;
+	private ComboBox relevanceStatusFilter;
 
 	private VerticalLayout gridLayout;
 
-	private Button switchArchivedActiveButton;
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
@@ -100,8 +101,8 @@ public class SampleGridComponent extends VerticalLayout {
 		originalViewTitle = viewTitleLabel.getValue();
 
 		criteria = ViewModelProviders.of(SamplesView.class).get(SampleCriteria.class);
-		if (criteria.getArchived() == null) {
-			criteria.archived(false);
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
 		grid = new SampleGrid(criteria);
@@ -270,15 +271,20 @@ public class SampleGridComponent extends VerticalLayout {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			// Show archived/active cases button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption(Captions.sampleShowArchived));
-				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-				switchArchivedActiveButton.addClickListener(e -> {
-					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+			// Show active/archived/all dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW_ARCHIVED)) {
+				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.sampleActiveSamples));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.sampleArchivedSamples));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.sampleAllSamples));
+				relevanceStatusFilter.addValueChangeListener(e -> {
+					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					samplesView.navigateTo(criteria);
 				});
-				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
 			// Bulk operation dropdown
@@ -297,7 +303,7 @@ public class SampleGridComponent extends VerticalLayout {
 				};
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
-				
+
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 		}
@@ -336,8 +342,9 @@ public class SampleGridComponent extends VerticalLayout {
 		resetButton.setVisible(criteria.hasAnyFilterActive());
 
 		updateStatusButtons();
-		updateArchivedButton();
-
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
 		testResultFilter.setValue(criteria.getPathogenTestResult());
 		specimenConditionFilter.setValue(criteria.getSpecimenCondition());
 		classificationFilter.setValue(criteria.getCaseClassification());
@@ -401,22 +408,6 @@ public class SampleGridComponent extends VerticalLayout {
 		}
 	}
 
-	private void updateArchivedButton() {
-		if (switchArchivedActiveButton == null) {
-			return;
-		}
-
-		if (Boolean.TRUE.equals(criteria.getArchived())) {
-			viewTitleLabel.setValue(I18nProperties.getPrefixCaption("View", SamplesView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.sampleShowActive));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		} else {
-			viewTitleLabel.setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.sampleShowArchived));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-		} 
-	}
-
 	public TextField getSearchField() {
 		return searchField;
 	}
@@ -424,9 +415,9 @@ public class SampleGridComponent extends VerticalLayout {
 	public MenuBar getBulkOperationsDropdown() {
 		return bulkOperationsDropdown;
 	}
-	
+
 	public SampleCriteria getCriteria() {
 		return criteria;
 	}
-	
+
 }

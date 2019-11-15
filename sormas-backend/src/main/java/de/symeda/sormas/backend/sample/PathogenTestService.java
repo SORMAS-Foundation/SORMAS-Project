@@ -35,6 +35,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -67,7 +68,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			filter = AbstractAdoService.and(cb, filter, dateFilter);
 		}
 

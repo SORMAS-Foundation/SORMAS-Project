@@ -27,11 +27,11 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 import androidx.paging.PositionalDataSource;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.backend.sample.PathogenTestCriteria;
 import de.symeda.sormas.app.backend.sample.Sample;
 
 public class PathogenTestListViewModel extends ViewModel {
@@ -39,17 +39,11 @@ public class PathogenTestListViewModel extends ViewModel {
     private LiveData<PagedList<PathogenTest>> pathogenTests;
     private PathogenTestDataFactory pathogenTestDataFactory;
 
-    private Sample sample;
     public void initializeViewModel(Sample sample) {
-        this.sample  = sample;
         pathogenTestDataFactory = new PathogenTestDataFactory();
-        pathogenTestDataFactory.setPathogenTestSample(sample);
-        initializeList();
-    }
-
-    public void initializeViewModel() {
-        pathogenTestDataFactory = new PathogenTestDataFactory();
-        pathogenTestDataFactory.setPathogenTestSample(sample);
+        PathogenTestCriteria pathogenTestCriteria = new PathogenTestCriteria();
+        pathogenTestCriteria.sample(sample);
+        pathogenTestDataFactory.setPathogenTestCriteria(pathogenTestCriteria);
         initializeList();
     }
 
@@ -68,34 +62,30 @@ public class PathogenTestListViewModel extends ViewModel {
 
     public static class PathogenTestDataSource extends PositionalDataSource<PathogenTest> {
 
-        private Sample sample;
+        private PathogenTestCriteria pathogenTestCriteria;
 
-        PathogenTestDataSource(Sample sample) {
-            this.sample = sample;
+        PathogenTestDataSource(PathogenTestCriteria pathogenTestCriteria) {
+            this.pathogenTestCriteria = pathogenTestCriteria;
         }
 
         @Override
         public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<PathogenTest> callback) {
-
+            long totalCount = DatabaseHelper.getSampleTestDao().countByCriteria(pathogenTestCriteria);
             int offset = params.requestedStartPosition;
             int count = params.requestedLoadSize;
-            int totalCount = 0;
-            List<PathogenTest> pathogenTests = new ArrayList<PathogenTest>();
-            if(offset==0){
-                pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
-                totalCount = pathogenTests.size();
-            }else{
-
+            if (offset + count > totalCount) {
+                offset = (int) Math.max(0, totalCount - count);
             }
-
-            callback.onResult(pathogenTests, offset, totalCount);
+            List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryByCriteria(pathogenTestCriteria, offset, count);
+            callback.onResult(pathogenTests, offset, (int) totalCount);
         }
 
         @Override
         public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<PathogenTest> callback) {
-            List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
+            List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryByCriteria(pathogenTestCriteria, params.startPosition, params.loadSize);
             callback.onResult(pathogenTests);
         }
+
 
     }
 
@@ -103,7 +93,7 @@ public class PathogenTestListViewModel extends ViewModel {
 
         private MutableLiveData<PathogenTestDataSource> mutableDataSource;
         private PathogenTestDataSource pathogenTestDataSource;
-        private Sample sample;
+        private PathogenTestCriteria pathogenTestCriteria;
 
         PathogenTestDataFactory() {
             this.mutableDataSource = new MutableLiveData<>();
@@ -112,17 +102,17 @@ public class PathogenTestListViewModel extends ViewModel {
         @NonNull
         @Override
         public DataSource create() {
-            pathogenTestDataSource = new PathogenTestDataSource(sample);
+            pathogenTestDataSource = new PathogenTestDataSource(pathogenTestCriteria);
             mutableDataSource.postValue(pathogenTestDataSource);
             return pathogenTestDataSource;
         }
 
-        void setPathogenTestSample(Sample sample) {
-            this.sample = sample;
+        void setPathogenTestCriteria(PathogenTestCriteria pathogenTestCriteria) {
+            this.pathogenTestCriteria = pathogenTestCriteria;
         }
 
-        Sample getPathogenTestSample() {
-            return sample;
+        PathogenTestCriteria getPathogenTestCriteria() {
+            return pathogenTestCriteria;
         }
 
     }

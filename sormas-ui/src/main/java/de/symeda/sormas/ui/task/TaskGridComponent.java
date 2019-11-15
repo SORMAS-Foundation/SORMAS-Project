@@ -32,6 +32,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -51,9 +52,9 @@ public class TaskGridComponent extends VerticalLayout {
 
 	private static final String MY_TASKS = "myTasks";
 	private static final String OFFICER_TASKS = "officerTasks";
-	
+
 	private TaskCriteria criteria;
-	
+
 	private TaskGrid grid;    
 	private TasksView tasksView;
 	private HashMap<Button, String> statusButtons;
@@ -62,12 +63,12 @@ public class TaskGridComponent extends VerticalLayout {
 	// Filter
 	private ComboBox statusFilter;
 	private Button resetButton;
-	
+	private ComboBox relevanceStatusFilter;
+
 	MenuBar bulkOperationsDropdown;
-	
+
 	private VerticalLayout gridLayout;
 
-	private Button switchArchivedActiveButton;
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
@@ -78,9 +79,12 @@ public class TaskGridComponent extends VerticalLayout {
 		this.viewTitleLabel = viewTitleLabel;
 		this.tasksView = tasksView;
 		originalViewTitle = viewTitleLabel.getValue();
-		
+
 		criteria = ViewModelProviders.of(TasksView.class).get(TaskCriteria.class);
-		
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		}
+
 		grid = new TaskGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -138,7 +142,7 @@ public class TaskGridComponent extends VerticalLayout {
 			allTasks.setCaptionAsHtml(true);
 			buttonFilterLayout.addComponent(allTasks);
 			statusButtons.put(allTasks, I18nProperties.getCaption(Captions.all));			
-			
+
 			Button officerTasks = new Button(I18nProperties.getCaption(Captions.taskOfficerTasks), e -> processAssigneeFilterChange(OFFICER_TASKS));
 			initializeStatusButton(officerTasks, buttonFilterLayout, OFFICER_TASKS, I18nProperties.getCaption(Captions.taskOfficerTasks));
 			Button myTasks = new Button(I18nProperties.getCaption(Captions.taskMyTasks), e -> processAssigneeFilterChange(MY_TASKS));
@@ -156,16 +160,22 @@ public class TaskGridComponent extends VerticalLayout {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			// Show archived/active cases button
+			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption(I18nProperties.getCaption(Captions.taskShowArchived)));
-				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-				switchArchivedActiveButton.addClickListener(e -> {
-					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.taskActiveTasks));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.taskArchivedTasks));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.taskAllTasks));
+				relevanceStatusFilter.addValueChangeListener(e -> {
+					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					tasksView.navigateTo(criteria);
 				});
-				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
+
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
@@ -232,7 +242,7 @@ public class TaskGridComponent extends VerticalLayout {
 		updateFilterComponents();
 		grid.reload();
 	}
-	
+
 	private void updateAssigneeFilterButtons() {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
@@ -248,35 +258,20 @@ public class TaskGridComponent extends VerticalLayout {
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
-	
+
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		tasksView.setApplyingCriteria(true);
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
-		updateAssigneeFilterButtons();
-		updateArchivedButton();
 
-		statusFilter.setValue(criteria.getTaskStatus());
-		
-		tasksView.setApplyingCriteria(false);
-	}
-
-	private void updateArchivedButton() {
-		if (switchArchivedActiveButton == null) {
-			return;
+		updateAssigneeFilterButtons();		
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
-		
-		if (Boolean.TRUE.equals(criteria.getArchived())) {
-			viewTitleLabel.setValue(I18nProperties.getPrefixCaption("View", TasksView.VIEW_NAME.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.taskShowActive)));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		} else {
-			viewTitleLabel.setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(I18nProperties.getCaption(Captions.taskShowArchived)));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-		} 
+		statusFilter.setValue(criteria.getTaskStatus());
+
+		tasksView.setApplyingCriteria(false);
 	}
 
 	public TaskGrid getGrid() {
@@ -286,7 +281,7 @@ public class TaskGridComponent extends VerticalLayout {
 	public MenuBar getBulkOperationsDropdown() {
 		return bulkOperationsDropdown;
 	}
-	
+
 	public TaskCriteria getCriteria() {
 		return criteria;
 	}

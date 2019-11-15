@@ -35,6 +35,7 @@ import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
@@ -70,7 +71,7 @@ public class FacadeProvider {
 		} catch (NamingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-	}
+	} 
 
 	public static FacadeProvider get() {
 		if (instance == null) {
@@ -221,6 +222,10 @@ public class FacadeProvider {
 
 	public static PopulationDataFacade getPopulationDataFacade() {
 		return get().lookupEjbRemote(PopulationDataFacade.class);
+	}
+	
+	public static InfrastructureFacade getInfrastructureFacade() {
+		return get().lookupEjbRemote(InfrastructureFacade.class);
 	}
 	
 	@SuppressWarnings("unchecked")

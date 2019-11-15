@@ -101,7 +101,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.JAUNDICE, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.JOINT_PAIN, SymptomsDto.KOPLIKS_SPOTS, SymptomsDto.LOSS_SKIN_TURGOR, 
 									SymptomsDto.SKIN_RASH, SymptomsDto.MALAISE, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.OTITIS_MEDIA, SymptomsDto.MICROCEPHALY, SymptomsDto.MUSCLE_PAIN, 
 									SymptomsDto.NAUSEA, SymptomsDto.NECK_STIFFNESS, SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, 
-									SymptomsDto.PAINFUL_LYMPHADENITIS)),
+									SymptomsDto.PAINFUL_LYMPHADENITIS, SymptomsDto.ANXIETY_STATES, SymptomsDto.DELIRIUM, SymptomsDto.UPROARIOUSNESS, SymptomsDto.PARASTHESIA_AROUND_WOUND, 
+									SymptomsDto.EXCESS_SALIVATION, SymptomsDto.INSOMNIA, SymptomsDto.PARALYSIS, SymptomsDto.EXCITATION, SymptomsDto.DYSPHAGIA, SymptomsDto.AEROPHOBIA, SymptomsDto.CONVULSION)),
 					LayoutUtil.fluidColumn(6, 0, 
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE, SymptomsDto.PIGMENTARY_RETINOPATHY,
@@ -115,7 +116,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									LESIONS_LOCATIONS_LOC, SymptomsDto.LESIONS_FACE, SymptomsDto.LESIONS_LEGS, SymptomsDto.LESIONS_SOLES_FEET, SymptomsDto.LESIONS_PALMS_HANDS, SymptomsDto.LESIONS_THORAX,
 									SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS, SymptomsDto.LESIONS_ALL_OVER_BODY, SymptomsDto.LESIONS_RESEMBLE_IMG1, MONKEYPOX_LESIONS_IMG1, 
 									SymptomsDto.LESIONS_RESEMBLE_IMG2, MONKEYPOX_LESIONS_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, MONKEYPOX_LESIONS_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4, MONKEYPOX_LESIONS_IMG4,
-									SymptomsDto.LESIONS_ONSET_DATE, SymptomsDto.VOMITING,
+									SymptomsDto.LESIONS_ONSET_DATE, SymptomsDto.VOMITING, SymptomsDto.HYDROPHOBIA, SymptomsDto.OPISTHOTONUS, SymptomsDto.HYPERACTIVITY, SymptomsDto.PARESIS, SymptomsDto.AGITATION, 
+									SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA,
 									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)
 							+ LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS))
@@ -230,7 +232,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR, SymptomsDto.BILATERAL_CATARACTS, SymptomsDto.UNILATERAL_CATARACTS,
 				SymptomsDto.CONGENITAL_GLAUCOMA, SymptomsDto.CONGENITAL_HEART_DISEASE, SymptomsDto.PIGMENTARY_RETINOPATHY, SymptomsDto.RADIOLUCENT_BONE_DISEASE,
 				SymptomsDto.SPLENOMEGALY, SymptomsDto.MICROCEPHALY, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.PURPURIC_RASH, SymptomsDto.DEVELOPMENTAL_DELAY, 
-				SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.PATIENT_ILL_LOCATION);
+				SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS, SymptomsDto.JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, SymptomsDto.PATIENT_ILL_LOCATION,
+				SymptomsDto.HYDROPHOBIA, SymptomsDto.OPISTHOTONUS, SymptomsDto.ANXIETY_STATES, SymptomsDto.DELIRIUM, SymptomsDto.UPROARIOUSNESS, SymptomsDto.PARASTHESIA_AROUND_WOUND, 
+				SymptomsDto.EXCESS_SALIVATION, SymptomsDto.INSOMNIA, SymptomsDto.PARALYSIS, SymptomsDto.EXCITATION, SymptomsDto.DYSPHAGIA, SymptomsDto.AEROPHOBIA, SymptomsDto.HYPERACTIVITY, 
+				SymptomsDto.PARESIS, SymptomsDto.AGITATION, SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA, SymptomsDto.CONVULSION);
 		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 		// complications
@@ -280,6 +285,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.MALAISE, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SIDE_PAIN, SymptomsDto.FLUID_IN_LUNG_CAVITY, SymptomsDto.TREMOR, SymptomsDto.BILATERAL_CATARACTS,
 				SymptomsDto.UNILATERAL_CATARACTS, SymptomsDto.CONGENITAL_GLAUCOMA, SymptomsDto.CONGENITAL_HEART_DISEASE, SymptomsDto.RADIOLUCENT_BONE_DISEASE, SymptomsDto.SPLENOMEGALY,
 				SymptomsDto.MICROCEPHALY, SymptomsDto.MENINGOENCEPHALITIS, SymptomsDto.DEVELOPMENTAL_DELAY, SymptomsDto.PURPURIC_RASH, SymptomsDto.PIGMENTARY_RETINOPATHY,
+				SymptomsDto.CONVULSION,
 				// complications
 				SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.HEMORRHAGIC_SYNDROME,
 				SymptomsDto.HYPERGLYCEMIA, SymptomsDto.HYPOGLYCEMIA, SymptomsDto.MENINGEAL_SIGNS,
@@ -290,7 +296,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				conditionalBleedingSymptomFieldIds,
 				SymptomsDto.UNEXPLAINED_BLEEDING,
-				Arrays.asList(SymptomState.YES), true, SymptomsDto.class, disease);
+				Arrays.asList(SymptomState.YES), true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), 
 				SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS_TEXT,

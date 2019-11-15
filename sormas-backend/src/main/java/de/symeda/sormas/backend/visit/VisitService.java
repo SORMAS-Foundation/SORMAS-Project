@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -109,7 +109,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		// date range
 		if (date != null) {
-			filter = cb.and(filter, createChangeDateFilter(cb, visitRoot, date));
+			filter = cb.and(filter, createChangeDateFilter(cb, visitRoot, DateHelper.toTimestampUpper(date)));
 		}
 		cq.where(filter);
 		cq.distinct(true);
@@ -200,23 +200,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 	}
 
 	public Visit getLastVisitByContact(Contact contact, VisitStatus visitStatus) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
-		Root<Visit> from = cq.from(getElementClass());
-
-		Predicate filter = buildVisitFilter(contact, visitStatus, cb, from);
-
-		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
-
-		TypedQuery<Visit> query = em.createQuery(cq);
-		query.setFirstResult(0);
-		query.setMaxResults(1);
-		try {
-			return query.getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		
+		return getLastVisitByContactId(contact.getPerson().getId(), contact.getLastContactDate(),  contact.getReportDateTime(), contact.getFollowUpUntil(), contact.getCaze().getDisease(), visitStatus);
 	}
 
 	public Visit getLastVisitByContactId(long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease, VisitStatus visitStatus) {
@@ -259,13 +244,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(Visit.VISIT_DATE_TIME)));
 
-		try {
-			Visit result = em.createQuery(cq).getSingleResult();
-			return result;
-		} 
-		catch (NoResultException | NonUniqueResultException ex) {
-			return null;
-		}
+		List<Visit> results = em.createQuery(cq).getResultList();
+		return results.size()>0? results.get(0): null;
 	}
 
 	public List<Visit> getAllByPerson(Person person) {
@@ -348,6 +328,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 			Predicate visitFilter = buildVisitFilter(contactService.getByReferenceDto(criteria.getContact()), null, cb, from);
 			filter = and(cb, filter, visitFilter);
 		}
+		if (criteria.getDeleted() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), criteria.getDeleted()));
+		}
 
 		return filter;
 	}
@@ -360,7 +343,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Visit,Visit> visitPath, Date date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Visit,Visit> visitPath, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(visitPath.get(Visit.CHANGE_DATE), date);
 
 		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
