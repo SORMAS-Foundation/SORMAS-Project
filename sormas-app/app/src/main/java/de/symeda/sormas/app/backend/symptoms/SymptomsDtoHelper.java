@@ -186,7 +186,6 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setJaundiceWithin24HoursOfBirth(source.getJaundiceWithin24HoursOfBirth());
         target.setRadiolucentBoneDisease(source.getRadiolucentBoneDisease());
         target.setConvulsion(source.getConvulsion());
-        target.setSkinLesion(source.getSkinLesion());
     }
 
     @Override
@@ -319,6 +318,5 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setJaundiceWithin24HoursOfBirth(source.getJaundiceWithin24HoursOfBirth());
         target.setRadiolucentBoneDisease(source.getRadiolucentBoneDisease());
         target.setConvulsion(source.getConvulsion());
-        target.setSkinLesion(source.getSkinLesion());
     }
 }

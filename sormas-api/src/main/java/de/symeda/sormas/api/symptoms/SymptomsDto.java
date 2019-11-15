@@ -164,7 +164,6 @@ public class SymptomsDto extends EntityDto {
 	public static final String UNILATERAL_CATARACTS = "unilateralCataracts";
 	public static final String VOMITING = "vomiting";	
 	public static final String CONVULSION = "convulsion";
-	public static final String SKIN_LESION = "skinLesion";
 	
 	public static final String WEIGHT = "weight";
 
@@ -488,8 +487,6 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState vomiting;
 	@Diseases({Disease.ANTHRAX})
 	private SymptomState convulsion;
-	@Diseases({Disease.ANTHRAX})
-	private SymptomState skinLesion; /* oedema */
 
 	private Integer weight;
 	
@@ -1335,12 +1332,6 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setConvulsion(SymptomState convulsion) {
 		this.convulsion = convulsion;
-	}
-	public SymptomState getSkinLesion() {
-		return skinLesion;
-	}
-	public void setSkinLesion(SymptomState skinLesion) {
-		this.skinLesion = skinLesion;
 	}
 	public void setJaundiceWithin24HoursOfBirth(YesNoUnknown jaundiceWithin24HoursOfBirth) {
 		this.jaundiceWithin24HoursOfBirth = jaundiceWithin24HoursOfBirth;

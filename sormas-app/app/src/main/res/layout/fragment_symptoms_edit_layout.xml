@@ -887,13 +887,6 @@
                     app:value="@={data.lesionsOnsetDate}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/symptoms_skinLesion"
-                    app:enumClass="@{symptomStateClass}"
-                    app:slim="true"
-                    app:value="@={data.skinLesion}"
-                    style="@style/ControlSingleColumnStyle" />
-
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField

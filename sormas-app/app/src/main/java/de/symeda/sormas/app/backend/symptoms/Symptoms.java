@@ -266,8 +266,6 @@ public class Symptoms extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SymptomState convulsion;
     @Enumerated(EnumType.STRING)
-    private SymptomState skinLesion;
-    @Enumerated(EnumType.STRING)
     private SymptomState otherHemorrhagicSymptoms;
     @Column(length = 255)
     private String otherHemorrhagicSymptomsText;
@@ -1148,8 +1146,6 @@ public class Symptoms extends AbstractDomainObject {
         return convulsion;
     }
 
-    public SymptomState getSkinLesion() { return skinLesion; }
-    public void setSkinLesion(SymptomState skinLesion) { this.skinLesion = skinLesion; }
     public void setConvulsion(SymptomState convulsion) {
         this.convulsion = convulsion;
     }

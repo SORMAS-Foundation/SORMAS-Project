@@ -3674,6 +3674,5 @@ INSERT INTO schema_version (version_number, comment) VALUES (169, ' Bed-side lab
 
 -- 2019-11-13 Add new disease, Anthrax #833
 ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);
-ALTER TABLE symptoms ADD COLUMN skinlesion varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (170, 'Add new disease, Anthrax #833');
