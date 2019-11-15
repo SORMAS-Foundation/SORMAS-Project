@@ -1144,10 +1144,15 @@ public class Symptoms extends AbstractDomainObject {
         this.tremor = tremor;
     }
 
-    public SymptomState getConvulsion() { return convulsion; }
-    public void setConvulsion(SymptomState convulsion) { this.convulsion = convulsion; }
+    public SymptomState getConvulsion() {
+        return convulsion;
+    }
+
     public SymptomState getSkinLesion() { return skinLesion; }
     public void setSkinLesion(SymptomState skinLesion) { this.skinLesion = skinLesion; }
+    public void setConvulsion(SymptomState convulsion) {
+        this.convulsion = convulsion;
+    }
 
     public String getPatientIllLocation() {
         return patientIllLocation;
