@@ -20,11 +20,14 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -43,7 +46,7 @@ import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
-import de.symeda.sormas.app.core.BooleanSupplier;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
@@ -382,7 +385,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
         contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
         contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
-        contentBinding.setHadAnimalExposureCallback(() -> hadAnimalExposure());
 
         contentBinding.epiDataBurialAttended.addValueChangedListener(new ValueChangeListener() {
             @Override
@@ -422,12 +424,32 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
                 verifyTravelStatus();
             }
         });
+
+        // iterate through all epi data animal fields and add listener
+        ValueChangeListener updateHadAnimalExposureListener = field -> updateHadAnimalExposure();
+        List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
+        FieldHelper.iteratePropertyFields((ViewGroup)contentBinding.getRoot(), field -> {
+            if (animalExposureProperties.contains(field.getSubPropertyId())) {
+                field.addValueChangedListener(updateHadAnimalExposureListener);
+            }
+            return true;
+        });
     }
 
-    private Boolean hadAnimalExposure() {
-        return getContentBinding().epiDataRodents.getValue() == YesNoUnknown.YES
-                || getContentBinding().epiDataBats.getValue() == YesNoUnknown.YES
-                || getContentBinding().epiDataPrimates.getValue() == YesNoUnknown.YES;
+    private void updateHadAnimalExposure() {
+        // iterate through all epi data animal fields to get value
+        List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
+        boolean iterationCancelled = !FieldHelper.iteratePropertyFields((ViewGroup)getContentBinding().getRoot(), field -> {
+            if (animalExposureProperties.contains(field.getSubPropertyId())) {
+                YesNoUnknown value = (YesNoUnknown)field.getValue();
+                if (YesNoUnknown.YES.equals(value)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        boolean hadAnimalExposure = iterationCancelled;
+        getContentBinding().setAnimalExposureDependentVisibility(hadAnimalExposure ? View.VISIBLE : View.GONE);
     }
 
     @Override
