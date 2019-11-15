@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.samples;
 import java.util.function.BiConsumer;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -79,7 +80,7 @@ public class SampleDataView extends AbstractSampleView {
 		
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent = ControllerProvider.getSampleController()
 				.getSampleEditComponent(getSampleRef().getUuid());
-		editComponent.setMargin(false);
+		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
