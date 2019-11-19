@@ -9,48 +9,43 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class FacilityFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetAllByRegionAfter() {
+	public void testGetAllByRegionAfter() throws InterruptedException {
 
-		Region region = creator.createRegion("region");
-		District district = creator.createDistrict("district", region);
-		Community community = creator.createCommunity("community", district);
-		creator.createFacility("facility", region, district, community);
+		RDCF rdcf = creator.createRDCF();
+		getFacilityService().doFlush();
 
 		Date date = new Date();
-		String regionUuid = region.getUuid();
-		List<FacilityDto> results = getFacilityFacade().getAllByRegionAfter(regionUuid, date);
+		List<FacilityDto> results = getFacilityFacade().getAllByRegionAfter(rdcf.region.getUuid(), date);
 
 		// List should be empty
 		assertEquals(0, results.size());
 
+		Thread.sleep(1); // delay to ignore known rounding issues in change date filter
 		String facilityName = "facility2";
-		creator.createFacility(facilityName, region, district, community);
-		results = getFacilityFacade().getAllByRegionAfter(regionUuid, date);
+		creator.createFacility(facilityName, rdcf.region, rdcf.district, rdcf.community);
+		results = getFacilityFacade().getAllByRegionAfter(rdcf.region.getUuid(), date);
 
 		// List should have one entry
 		assertEquals(1, results.size());
 		assertEquals(facilityName, results.get(0).getName());
-		assertEquals(community.getUuid(), results.get(0).getCommunity().getUuid());
-		assertEquals(regionUuid, results.get(0).getRegion().getUuid());
+		assertEquals(rdcf.community.getUuid(), results.get(0).getCommunity().getUuid());
+		assertEquals(rdcf.region.getUuid(), results.get(0).getRegion().getUuid());
 	}
 
 	@Test
-	public void testGetAllWithoutRegionAfter() {
+	public void testGetAllWithoutRegionAfter() throws InterruptedException {
 
-		Facility facility = new Facility();
-		facility.setUuid(DataHelper.createUuid());
+		FacilityDto facility = FacilityDto.build();
 		facility.setName("facility");
-		facility.setType(FacilityType.PRIMARY);
-		getFacilityService().ensurePersisted(facility);
+		facility.setType(FacilityType.LABORATORY); // only lab can be saved without region
+		getFacilityFacade().saveFacility(facility);
+		getFacilityService().doFlush();
 
 		Date date = new Date();
 		List<FacilityDto> results = getFacilityFacade().getAllWithoutRegionAfter(date);
@@ -58,18 +53,16 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		// List should be empty
 		assertEquals(0, results.size());
 
+		Thread.sleep(1); // delay to ignore known rounding issues in change date filter
 		String facilityName = "facility2";
-		facility = new Facility();
-		facility.setUuid(DataHelper.createUuid());
+		facility = FacilityDto.build();
 		facility.setName(facilityName);
-		FacilityType facilityType = FacilityType.LABORATORY;
-		facility.setType(facilityType);
-		getFacilityService().ensurePersisted(facility);
+		facility.setType(FacilityType.LABORATORY);
+		getFacilityFacade().saveFacility(facility);
 		results = getFacilityFacade().getAllWithoutRegionAfter(date);
 
 		// List should have one entry
 		assertEquals(1, results.size());
 		assertEquals(facilityName, results.get(0).getName());
-		assertEquals(facilityType, results.get(0).getType());
 	}
 }
