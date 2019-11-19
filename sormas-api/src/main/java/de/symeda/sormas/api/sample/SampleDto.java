@@ -327,7 +327,7 @@ public class SampleDto extends EntityDto {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
 
-	public static SampleDto buildSample(UserReferenceDto userRef, CaseReferenceDto caseRef) {
+	public static SampleDto build(UserReferenceDto userRef, CaseReferenceDto caseRef) {
 		SampleDto sample = new SampleDto();
 		sample.setUuid(DataHelper.createUuid());
 		sample.setAssociatedCase(caseRef);
@@ -338,8 +338,8 @@ public class SampleDto extends EntityDto {
 		return sample;
 	}
 
-	public static SampleDto buildReferralSample(UserReferenceDto userRef, SampleDto referredSample) {
-		SampleDto sample = buildSample(userRef, referredSample.getAssociatedCase());
+	public static SampleDto buildReferral(UserReferenceDto userRef, SampleDto referredSample) {
+		SampleDto sample = build(userRef, referredSample.getAssociatedCase());
 		sample.setSampleDateTime(referredSample.getSampleDateTime());
 		sample.setSampleMaterial(referredSample.getSampleMaterial());
 		sample.setSampleMaterialText(referredSample.getSampleMaterialText());

@@ -251,8 +251,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
-		EpiDataTravelDto travel = new EpiDataTravelDto();
-		travel.setUuid(DataHelper.createUuid());
+		EpiDataTravelDto travel = EpiDataTravelDto.build();
 		travel.setTravelDestination("Ghana");
 		travel.setTravelDateFrom(new Date());
 		travel.setTravelDateTo(new Date());

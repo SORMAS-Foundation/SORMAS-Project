@@ -43,11 +43,11 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	@Outbreaks
 	private String uuid;
 
-	public EntityDto() {
+	protected EntityDto() {
 
 	}
 
-	public EntityDto(Date creationDate, Date changeDate, String uuid) {
+	protected EntityDto(Date creationDate, Date changeDate, String uuid) {
 		this.creationDate = creationDate;
 		this.changeDate = changeDate;
 		this.uuid = uuid;

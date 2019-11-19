@@ -52,7 +52,5 @@ public interface PersonFacade {
 	
 	PersonIndexDto getIndexDto(String uuid);
 	
-	PersonDto buildPerson();
-	
 	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid);
 }

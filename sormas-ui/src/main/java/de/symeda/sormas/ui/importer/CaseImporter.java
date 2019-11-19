@@ -126,7 +126,7 @@ public class CaseImporter extends DataImporter {
 								samples.remove(samples.size() - 1);
 							}
 							currentEntityHasEntries = false;
-							samples.add(SampleDto.buildSample(currentUser, new CaseReferenceDto(newCaseTmp.getUuid())));
+							samples.add(SampleDto.build(currentUser, new CaseReferenceDto(newCaseTmp.getUuid())));
 						}
 						if (!StringUtils.isEmpty(cellData.getValue())) {
 							currentEntityHasEntries = true;

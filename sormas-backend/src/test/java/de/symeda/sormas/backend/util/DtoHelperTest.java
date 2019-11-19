@@ -181,7 +181,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			sourceDto.getRequestedPathogenTests().add(PathogenTestType.ANTIGEN_DETECTION);
 			sourceDto.getRequestedPathogenTests().add(PathogenTestType.NEUTRALIZING_ANTIBODIES);
 
-			SampleDto targetDto = SampleDto.buildSample(user.toReference(), targetCaseDto.toReference());
+			SampleDto targetDto = SampleDto.build(user.toReference(), targetCaseDto.toReference());
 			DtoHelper.fillDto(targetDto, sourceDto, false);
 			assertEquals(2, targetDto.getRequestedPathogenTests().size());
 		}

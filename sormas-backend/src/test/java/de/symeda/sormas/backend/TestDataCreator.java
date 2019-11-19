@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -39,7 +40,6 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -54,7 +54,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -88,8 +87,7 @@ public class TestDataCreator {
 
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
 			String lastName, UserRole... roles) {
-		UserDto user = new UserDto();
-		user.setUuid(DataHelper.createUuid());
+		UserDto user = UserDto.build();
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
@@ -103,8 +101,7 @@ public class TestDataCreator {
 	}
 
 	public PersonDto createPerson(String firstName, String lastName) {
-		PersonDto cazePerson = new PersonDto();
-		cazePerson.setUuid(DataHelper.createUuid());
+		PersonDto cazePerson = PersonDto.build();
 		cazePerson.setFirstName(firstName);
 		cazePerson.setLastName(lastName);
 		cazePerson = beanTest.getPersonFacade().savePerson(cazePerson);
@@ -151,7 +148,7 @@ public class TestDataCreator {
 	}
 	
 	public ClinicalVisitDto createClinicalVisit(CaseDataDto caze) {
-		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(caze.getClinicalCourse().toReference(), SymptomsDto.build(), caze.getDisease());
+		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.build(caze.getClinicalCourse().toReference(), caze.getDisease());
 		
 		clinicalVisit = beanTest.getClinicalVisitFacade().saveClinicalVisit(clinicalVisit, caze.getUuid());
 	
@@ -168,7 +165,7 @@ public class TestDataCreator {
 	}
 	
 	public TreatmentDto createTreatment(CaseDataDto caze) {
-		TreatmentDto treatment = TreatmentDto.buildTreatment(caze.getTherapy().toReference());
+		TreatmentDto treatment = TreatmentDto.build(caze.getTherapy().toReference());
 		treatment.setTreatmentType(TreatmentType.BLOOD_TRANSFUSION);
 		
 		treatment = beanTest.getTreatmentFacade().saveTreatment(treatment);
@@ -178,12 +175,10 @@ public class TestDataCreator {
 
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
 			PersonReferenceDto contactPerson, CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
-		ContactDto contact = new ContactDto();
-		contact.setUuid(DataHelper.createUuid());
+		ContactDto contact = ContactDto.build(caze);
 		contact.setReportingUser(reportingUser);
 		contact.setContactOfficer(contactOfficer);
 		contact.setPerson(contactPerson);
-		contact.setCaze(caze);
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
 
@@ -194,20 +189,28 @@ public class TestDataCreator {
 
 	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseReferenceDto caze,
 			ContactReferenceDto contact, EventReferenceDto event, Date dueDate, UserReferenceDto assigneeUser) {
-		TaskDto task = new TaskDto();
-		task.setUuid(DataHelper.createUuid());
-		task.setTaskContext(context);
+		
+		ReferenceDto entityRef;
+		switch (context) {
+		case CASE:
+			entityRef = caze;
+			break;
+		case CONTACT:
+			entityRef = contact;
+			break;
+		case EVENT:
+			entityRef = event;
+			break;
+		case GENERAL:
+			entityRef = null;
+			break;
+		default:
+			throw new IllegalArgumentException(context.toString());
+		}
+		
+		TaskDto task = TaskDto.build(context, entityRef);
 		task.setTaskType(type);
 		task.setTaskStatus(status);
-		if (caze != null) {
-			task.setCaze(caze);
-		}
-		if (contact != null) {
-			task.setContact(contact);
-		}
-		if (event != null) {
-			task.setEvent(event);
-		}
 		task.setDueDate(dueDate);
 		task.setAssigneeUser(assigneeUser);
 
@@ -218,17 +221,9 @@ public class TestDataCreator {
 
 	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime,
 			VisitStatus visitStatus) {
-		VisitDto visit = new VisitDto();
-		visit.setUuid(DataHelper.createUuid());
-		visit.setDisease(disease);
-		visit.setPerson(contactPerson);
+		VisitDto visit = VisitDto.build(contactPerson, disease);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
-
-		SymptomsDto symptoms = new SymptomsDto();
-		symptoms.setUuid(DataHelper.createUuid());
-		visit.setSymptoms(symptoms);
-
 		visit = beanTest.getVisitFacade().saveVisit(visit);
 
 		return visit;
@@ -236,10 +231,8 @@ public class TestDataCreator {
 
 	public EventDto createEvent(EventStatus eventStatus, String eventDesc, String srcFirstName,
 			String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime,
-			UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease,
-			LocationDto eventLocation) {
-		EventDto event = new EventDto();
-		event.setUuid(DataHelper.createUuid());
+			UserReferenceDto reportingUser, UserReferenceDto surveillanceOfficer, Disease disease, DistrictReferenceDto district) {
+		EventDto event = EventDto.build();
 		event.setEventStatus(eventStatus);
 		event.setEventDesc(eventDesc);
 		event.setSrcFirstName(srcFirstName);
@@ -251,7 +244,7 @@ public class TestDataCreator {
 		event.setReportingUser(reportingUser);
 		event.setSurveillanceOfficer(surveillanceOfficer);
 		event.setDisease(disease);
-		event.setEventLocation(eventLocation);
+		event.getEventLocation().setDistrict(district);
 
 		event = beanTest.getEventFacade().saveEvent(event);
 
@@ -260,8 +253,7 @@ public class TestDataCreator {
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson,
 			String involvementDescription) {
-		EventParticipantDto eventParticipant = new EventParticipantDto();
-		eventParticipant.setEvent(event);
+		EventParticipantDto eventParticipant = EventParticipantDto.build(event);
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 
@@ -276,12 +268,9 @@ public class TestDataCreator {
 	
 	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
 			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
-		SampleDto sample = new SampleDto();
-		sample.setUuid(DataHelper.createUuid());
-		sample.setAssociatedCase(associatedCase);
+		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
 		sample.setSampleDateTime(sampleDateTime);
 		sample.setReportDateTime(reportDateTime);
-		sample.setReportingUser(reportingUser);
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
@@ -294,14 +283,11 @@ public class TestDataCreator {
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Disease testedDisease,
 			Date testDateTime, Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
 			boolean verified) {
-		PathogenTestDto sampleTest = new PathogenTestDto();
-		sampleTest.setUuid(DataHelper.createUuid());
-		sampleTest.setSample(sample);
+		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
 		sampleTest.setTestedDisease(testedDisease);
 		sampleTest.setTestType(testType);
 		sampleTest.setTestDateTime(testDateTime);
 		sampleTest.setLab(lab != null ? beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()) : null);
-		sampleTest.setLabUser(labUser);
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);

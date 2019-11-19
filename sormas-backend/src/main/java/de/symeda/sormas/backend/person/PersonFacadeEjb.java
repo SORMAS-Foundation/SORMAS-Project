@@ -328,14 +328,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		return toIndexDto(person);
 	}
 
-	@Override
-	public PersonDto buildPerson() {
-		PersonDto person = new PersonDto();
-		person.setUuid(DataHelper.createUuid());
-
-		return person;
-	}
-
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target) {
 
 		if(target==null) {

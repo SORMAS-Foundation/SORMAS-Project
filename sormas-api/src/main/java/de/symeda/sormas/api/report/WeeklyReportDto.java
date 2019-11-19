@@ -26,6 +26,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class WeeklyReportDto extends EntityDto {
 
@@ -54,6 +55,13 @@ public class WeeklyReportDto extends EntityDto {
 	private Integer year;
 	private Integer epiWeek;
 	private List<WeeklyReportEntryDto> reportEntries = new ArrayList<>();
+	
+	public static WeeklyReportDto build(UserReferenceDto reportingUser) {
+		WeeklyReportDto dto = new WeeklyReportDto();
+		dto.setUuid(DataHelper.createUuid());
+		dto.setReportingUser(reportingUser);
+		return dto;
+	}
 
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
