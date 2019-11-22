@@ -632,17 +632,29 @@ public class CaseFacadeEjb implements CaseFacade {
 							switch (++count) {
 							case 1:
 								exportDto.setSampleDateTime1(sample.getSampleDateTime());
-								exportDto.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+								if (sample.getLab() != null) {
+									exportDto
+											.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+													sample.getLab().getName(), sample.getLabDetails()));
+								}
 								exportDto.setSampleResult1(sample.getPathogenTestResult());
 								break;
 							case 2:
 								exportDto.setSampleDateTime2(sample.getSampleDateTime());
-								exportDto.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+								if (sample.getLab() != null) {
+									exportDto
+											.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+													sample.getLab().getName(), sample.getLabDetails()));
+								}
 								exportDto.setSampleResult2(sample.getPathogenTestResult());
 								break;
 							case 3:
 								exportDto.setSampleDateTime3(sample.getSampleDateTime());
-								exportDto.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+								if (sample.getLab() != null) {
+									exportDto
+											.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+													sample.getLab().getName(), sample.getLabDetails()));
+								}
 								exportDto.setSampleResult3(sample.getPathogenTestResult());
 								break;
 							default:
