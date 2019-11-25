@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -65,7 +67,7 @@ public class ClinicalVisitNewActivity extends BaseEditActivity<ClinicalVisit> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setCaseUuid(caseUuid);
     }

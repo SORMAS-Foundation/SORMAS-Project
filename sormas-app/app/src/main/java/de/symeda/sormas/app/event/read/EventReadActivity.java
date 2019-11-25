@@ -59,7 +59,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Event activityRootData) {
-        EventSection section = EventSection.fromOrdinal(menuItem.getKey());
+        EventSection section = EventSection.fromOrdinal(menuItem.getPosition());
         BaseReadFragment fragment;
         switch (section) {
             case EVENT_INFO:
@@ -92,7 +92,7 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
     @Override
     public void goToEditView() {
-        EventSection section = EventSection.fromOrdinal(getActivePage().getKey());
+        EventSection section = EventSection.fromOrdinal(getActivePage().getPosition());
         EventEditActivity.startActivity(this, getRootUuid(), section);
     }
 }

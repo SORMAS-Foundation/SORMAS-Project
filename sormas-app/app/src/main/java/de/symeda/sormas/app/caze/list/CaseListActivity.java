@@ -29,13 +29,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -47,18 +44,14 @@ import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.databinding.FilterCaseListLayoutBinding;
-import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
-import de.symeda.sormas.app.util.ErrorReportingHelper;
 
 import static android.view.View.GONE;
 
@@ -107,7 +100,7 @@ public class CaseListActivity extends PagedBaseListActivity {
 
         setOpenPageCallback(p -> {
             showPreloader();
-            model.getCaseCriteria().setInvestigationStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.getCaseCriteria().setInvestigationStatus(statusFilters[((PageMenuItem) p).getPosition()]);
             model.notifyCriteriaUpdated();
         });
     }
@@ -136,7 +129,7 @@ public class CaseListActivity extends PagedBaseListActivity {
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
-            InvestigationStatus listFilter = statusFilters[menuItem.getKey()];
+            InvestigationStatus listFilter = statusFilters[menuItem.getPosition()];
             return CaseListFragment.newInstance(listFilter);
         }
         return null;

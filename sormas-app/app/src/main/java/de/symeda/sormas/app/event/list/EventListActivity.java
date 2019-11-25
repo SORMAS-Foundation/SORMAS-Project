@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
@@ -83,7 +82,7 @@ public class EventListActivity extends PagedBaseListActivity {
         });
         setOpenPageCallback(p -> {
             showPreloader();
-            model.getEventCriteria().eventStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.getEventCriteria().eventStatus(statusFilters[((PageMenuItem) p).getPosition()]);
             model.notifyCriteriaUpdated();
         });
     }
@@ -111,7 +110,7 @@ public class EventListActivity extends PagedBaseListActivity {
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
-            EventStatus listFilter = statusFilters[menuItem.getKey()];
+            EventStatus listFilter = statusFilters[menuItem.getPosition()];
             return EventListFragment.newInstance(listFilter);
         }
         return null;

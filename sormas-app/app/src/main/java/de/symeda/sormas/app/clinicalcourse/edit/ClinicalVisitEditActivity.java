@@ -25,6 +25,7 @@ import android.view.Menu;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -68,7 +69,7 @@ public class ClinicalVisitEditActivity extends BaseEditActivity<ClinicalVisit> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setCaseUuid(caseUuid);
     }
@@ -95,7 +96,7 @@ public class ClinicalVisitEditActivity extends BaseEditActivity<ClinicalVisit> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, ClinicalVisit activityRootData) {
-        ClinicalVisitSection section = ClinicalVisitSection.fromOrdinal(menuItem.getKey());
+        ClinicalVisitSection section = ClinicalVisitSection.fromOrdinal(menuItem.getPosition());
         BaseEditFragment fragment;
         switch (section) {
             case VISIT_INFO:

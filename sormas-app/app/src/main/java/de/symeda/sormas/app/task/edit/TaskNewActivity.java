@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -100,7 +102,7 @@ public class TaskNewActivity extends BaseEditActivity<Task> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundler bundler = new Bundler(outState);
         bundler.setCaseUuid(caseUuid);
