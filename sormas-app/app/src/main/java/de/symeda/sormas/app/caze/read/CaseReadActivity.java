@@ -42,7 +42,7 @@ import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
 import de.symeda.sormas.app.util.Bundler;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class CaseReadActivity extends BaseReadActivity<Case> {
 
@@ -85,7 +85,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
             menuItems.set(CaseSection.SAMPLES.ordinal(), null);
         }
         if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isUnreferredPortHealthCase())  ||
-                (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
+                (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.set(CaseSection.CONTACTS.ordinal(), null);
         }
         if (caze != null && caze.getDisease() == Disease.CONGENITAL_RUBELLA) {

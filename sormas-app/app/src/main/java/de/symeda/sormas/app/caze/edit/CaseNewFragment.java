@@ -44,7 +44,7 @@ import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
@@ -98,7 +98,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        List<Disease> diseases = DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases();
+        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases();
         diseaseList = DataUtils.toItems(diseases);
         if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
             diseaseList.add(DataUtils.toItem(record.getDisease()));

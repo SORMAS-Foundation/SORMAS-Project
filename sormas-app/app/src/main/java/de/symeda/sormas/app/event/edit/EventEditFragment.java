@@ -35,7 +35,7 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {
 
@@ -92,7 +92,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        List<Disease> diseases = DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases();
+        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases();
         diseaseList = DataUtils.toItems(diseases);
         if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
             diseaseList.add(DataUtils.toItem(record.getDisease()));
