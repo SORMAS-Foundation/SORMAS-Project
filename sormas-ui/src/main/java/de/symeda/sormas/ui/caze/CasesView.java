@@ -83,6 +83,8 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsLayout;
+import de.symeda.sormas.ui.caze.importing.CaseImportLayout;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -293,7 +295,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(btnCustomCaseExport);
 			btnCustomCaseExport.addClickListener(e -> {
 				Window customExportWindow = VaadinUiUtil.createPopupWindow();
-				CaseCustomExportsLayout customExportsLayout = new CaseCustomExportsLayout(
+				CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(
 						() -> {
 							customExportWindow.close();
 						});

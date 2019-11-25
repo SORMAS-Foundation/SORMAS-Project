@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.importer;
+package de.symeda.sormas.ui.caze.importer;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -58,6 +58,13 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.ui.importer.DataImporter;
+import de.symeda.sormas.ui.importer.ImportCellData;
+import de.symeda.sormas.ui.importer.ImportErrorException;
+import de.symeda.sormas.ui.importer.ImportResult;
+import de.symeda.sormas.ui.importer.ImportSimilarityInput;
+import de.symeda.sormas.ui.importer.ImportSimilarityResult;
+import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;

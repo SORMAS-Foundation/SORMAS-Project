@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.importer;
+package de.symeda.sormas.ui.caze.importer;
 
 import java.io.IOException;
 

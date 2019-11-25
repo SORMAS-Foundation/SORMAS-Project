@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.exporter;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public class CaseEditExportConfigurationLayout extends VerticalLayout {
+public class CaseExportConfigurationEditLayout extends VerticalLayout {
 
 	private TextField tfName;
 	private Label lblDescription;
@@ -58,7 +58,7 @@ public class CaseEditExportConfigurationLayout extends VerticalLayout {
 
 	private ExportConfigurationDto exportConfiguration;
 
-	public CaseEditExportConfigurationLayout(ExportConfigurationDto exportConfiguration, Consumer<ExportConfigurationDto> resultCallback, Runnable discardCallback) {
+	public CaseExportConfigurationEditLayout(ExportConfigurationDto exportConfiguration, Consumer<ExportConfigurationDto> resultCallback, Runnable discardCallback) {
 		if (exportConfiguration == null) {
 			exportConfiguration = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference());
 			exportConfiguration.setExportType(ExportType.CASE);

@@ -74,6 +74,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationEditLayout;
+import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsGrid;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoForm;
@@ -969,9 +971,9 @@ public class CaseController {
 		}
 	}
 
-	public void openEditExportConfigurationWindow(CaseCustomExportsGrid grid, ExportConfigurationDto config) {
+	public void openEditExportConfigurationWindow(CaseExportConfigurationsGrid grid, ExportConfigurationDto config) {
 		Window newExportWindow = VaadinUiUtil.createPopupWindow();
-		CaseEditExportConfigurationLayout editLayout = new CaseEditExportConfigurationLayout(config,
+		CaseExportConfigurationEditLayout editLayout = new CaseExportConfigurationEditLayout(config,
 				(exportConfiguration) -> {
 					FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
 					newExportWindow.close();

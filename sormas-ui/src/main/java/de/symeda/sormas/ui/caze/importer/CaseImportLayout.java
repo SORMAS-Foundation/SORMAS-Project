@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.importer;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
-import de.symeda.sormas.ui.importer.CaseImporter;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
 @SuppressWarnings("serial")
