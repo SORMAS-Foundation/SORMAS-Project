@@ -97,7 +97,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected PageMenuControl pageMenu = null;
     private List<PageMenuItem> pageItems = new ArrayList<>();
     private PageMenuItem activePageItem = null;
-    private int activePagePosition = 0;
+    private int activePagePosition;
     private boolean finishInsteadOfUpNav;
 
     private ActionBarDrawerToggle menuDrawerToggle;

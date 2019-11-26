@@ -40,14 +40,14 @@ import de.symeda.sormas.app.util.Callback;
 
 public class SampleListActivity extends PagedBaseListActivity {
 
-    private ShipmentStatus statusFilters[] = new ShipmentStatus[]{
+    private static ShipmentStatus[] statusFilters = new ShipmentStatus[]{null,
             ShipmentStatus.NOT_SHIPPED, ShipmentStatus.SHIPPED,
             ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB
     };
     private SampleListViewModel model;
 
     public static void startActivity(Context context, ShipmentStatus listFilter) {
-        BaseListActivity.startActivity(context, SampleListActivity.class, buildBundle(listFilter));
+        BaseListActivity.startActivity(context, SampleListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
     }
 
     @Override

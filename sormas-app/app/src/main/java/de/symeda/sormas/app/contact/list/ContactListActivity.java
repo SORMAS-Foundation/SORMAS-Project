@@ -40,12 +40,12 @@ import de.symeda.sormas.app.util.Callback;
 
 public class ContactListActivity extends PagedBaseListActivity {
 
-    private FollowUpStatus statusFilters[] = new FollowUpStatus[]{FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
+    private static FollowUpStatus[] statusFilters = new FollowUpStatus[]{null, FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
             FollowUpStatus.CANCELED, FollowUpStatus.LOST, FollowUpStatus.NO_FOLLOW_UP};
     private ContactListViewModel model;
 
     public static void startActivity(Context context, FollowUpStatus listFilter) {
-        BaseListActivity.startActivity(context, ContactListActivity.class, buildBundle(listFilter));
+        BaseListActivity.startActivity(context, ContactListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
     }
 
     @Override

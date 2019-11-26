@@ -52,7 +52,7 @@ public class ContactListViewModel extends ViewModel {
     public void initializeViewModel() {
         contactDataFactory = new ContactDataFactory();
         ContactCriteria contactCriteria = new ContactCriteria();
-        contactCriteria.followUpStatus(FollowUpStatus.FOLLOW_UP);
+        contactCriteria.followUpStatus(null);
         contactDataFactory.setContactCriteria(contactCriteria);
         initializeList();
     }

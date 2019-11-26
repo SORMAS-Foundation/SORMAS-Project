@@ -43,11 +43,11 @@ import de.symeda.sormas.app.util.Callback;
 
 public class EventListActivity extends PagedBaseListActivity {
 
-    private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
+    private static EventStatus[] statusFilters = new EventStatus[]{null, EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
     private EventListViewModel model;
 
     public static void startActivity(Context context, EventStatus listFilter) {
-        BaseListActivity.startActivity(context, EventListActivity.class, buildBundle(listFilter));
+        BaseListActivity.startActivity(context, EventListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
     }
 
     @Override

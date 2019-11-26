@@ -23,6 +23,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
@@ -38,10 +39,14 @@ public class PageMenuItem {
     public static List<PageMenuItem> fromEnum(Enum[] values, Context context) {
         List<PageMenuItem> menuItems = new ArrayList<>();
         int position = 0;
+
         for (Enum value : values) {
-            StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(value);
-            menuItems.add(new PageMenuItem(position, elaborator.getFriendlyName(context), value.toString(), elaborator.getIconResourceId(), false));
-            position++;
+            if (value == null) {
+                menuItems.add(new PageMenuItem(position++, context.getResources().getString(R.string.all), context.getResources().getString(R.string.all), R.drawable.ic_view_comfy_black_24dp, false));
+            } else {
+                StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(value);
+                menuItems.add(new PageMenuItem(position++, elaborator.getFriendlyName(context), value.toString(), elaborator.getIconResourceId(), false));
+            }
         }
 
         return menuItems;

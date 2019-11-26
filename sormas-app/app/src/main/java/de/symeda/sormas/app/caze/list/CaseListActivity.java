@@ -57,12 +57,12 @@ import static android.view.View.GONE;
 
 public class CaseListActivity extends PagedBaseListActivity {
 
-    private InvestigationStatus statusFilters[] = new InvestigationStatus[]{InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
+    private static InvestigationStatus[] statusFilters = new InvestigationStatus[]{null, InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
     private CaseListViewModel model;
     private FilterCaseListLayoutBinding filterBinding;
 
     public static void startActivity(Context context, InvestigationStatus listFilter) {
-        BaseListActivity.startActivity(context, CaseListActivity.class, buildBundle(listFilter));
+        BaseListActivity.startActivity(context, CaseListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
     }
 
     @Override

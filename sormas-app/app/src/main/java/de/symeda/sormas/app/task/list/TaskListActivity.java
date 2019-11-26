@@ -50,11 +50,11 @@ import de.symeda.sormas.app.util.DataUtils;
 
 public class TaskListActivity extends PagedBaseListActivity {
 
-    private TaskStatus statusFilters[] = new TaskStatus[]{TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE};
+    private static TaskStatus[] statusFilters = new TaskStatus[]{null, TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE};
     private TaskListViewModel model;
 
     public static void startActivity(Context context, TaskStatus listFilter) {
-        BaseListActivity.startActivity(context, TaskListActivity.class, buildBundle(listFilter));
+        BaseListActivity.startActivity(context, TaskListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
     }
 
     @Override
