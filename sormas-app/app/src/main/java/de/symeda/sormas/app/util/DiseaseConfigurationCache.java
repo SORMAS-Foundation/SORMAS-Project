@@ -43,7 +43,7 @@ public class DiseaseConfigurationCache {
         for (Disease disease : Disease.values()) {
             DiseaseConfiguration configuration = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(disease);
             if (configuration == null) {
-                continue;
+                configuration = new DiseaseConfiguration();
             }
 
             boolean diseaseActive = false;
