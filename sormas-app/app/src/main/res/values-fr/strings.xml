@@ -24,6 +24,7 @@
     <string name="notAnswered">Pas de réponse</string>
     <string name="system">Système</string>
     <string name="yes">Oui</string>
+    <string name="all">All</string>
     <string name="action_add_missing_case">Ajouter un cas manquant</string>
     <string name="action_allow_gps_access">Autoriser l\'accès GPS</string>
     <string name="action_apply_filters">Appliquer les filtres</string>
