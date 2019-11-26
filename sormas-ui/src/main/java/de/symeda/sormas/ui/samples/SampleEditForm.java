@@ -289,13 +289,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		if (canOnlyReadRequests) {
 			CssLayout requestedPathogenTestsLayout = new CssLayout();
 			CssStyles.style(requestedPathogenTestsLayout, CssStyles.VSPACE_3);
-			for (PathogenTestType testType : getValue().getRequestedPathogenTests()) {
-				Label testLabel = new Label(testType.toString());
-				testLabel.setWidthUndefined();
-				CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
-						CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
-				requestedPathogenTestsLayout.addComponent(testLabel);
+			
+			if (getValue() != null) {
+				for (PathogenTestType testType : getValue().getRequestedPathogenTests()) {
+					Label testLabel = new Label(testType.toString());
+					testLabel.setWidthUndefined();
+					CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
+							CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
+					requestedPathogenTestsLayout.addComponent(testLabel);
+				}
 			}
+			
 			getContent().addComponent(requestedPathogenTestsLayout, REQUESTED_PATHOGEN_TESTS_READ_LOC);
 		} else {
 			getContent().removeComponent(REQUESTED_PATHOGEN_TESTS_READ_LOC);
@@ -304,12 +308,15 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		if (canOnlyReadRequests && canUseAdditionalTests) {
 			CssLayout requestedAdditionalTestsLayout = new CssLayout();
 			CssStyles.style(requestedAdditionalTestsLayout, CssStyles.VSPACE_3);
-			for (AdditionalTestType testType : getValue().getRequestedAdditionalTests()) {
-				Label testLabel = new Label(testType.toString());
-				testLabel.setWidthUndefined();
-				CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
-						CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
-				requestedAdditionalTestsLayout.addComponent(testLabel);
+			
+			if (getValue() != null) {
+				for (AdditionalTestType testType : getValue().getRequestedAdditionalTests()) {
+					Label testLabel = new Label(testType.toString());
+					testLabel.setWidthUndefined();
+					CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
+							CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
+					requestedAdditionalTestsLayout.addComponent(testLabel);
+				}
 			}
 			getContent().addComponent(requestedAdditionalTestsLayout, REQUESTED_ADDITIONAL_TESTS_READ_LOC);
 		} else {
