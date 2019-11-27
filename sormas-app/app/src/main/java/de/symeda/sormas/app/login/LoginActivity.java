@@ -253,7 +253,13 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
     }
 
     private void openLandingActivity() {
-        if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
+        if (ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)
+                || ConfigProvider.getUser().hasUserRole(UserRole.CASE_OFFICER)
+                || ConfigProvider.getUser().hasUserRole(UserRole.POE_INFORMANT)
+                || ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_INFORMANT)
+                || ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
+            NavigationHelper.goToCases(LoginActivity.this);
+        } else if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
             NavigationHelper.goToContacts(LoginActivity.this);
         } else {
             NavigationHelper.goToCases(LoginActivity.this);

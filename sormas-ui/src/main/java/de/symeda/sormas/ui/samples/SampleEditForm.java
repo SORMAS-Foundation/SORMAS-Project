@@ -286,7 +286,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		getContent().getComponent(PATHOGEN_TESTING_READ_HEADLINE_LOC).setVisible(canOnlyReadRequests);
 		getContent().getComponent(ADDITIONAL_TESTING_READ_HEADLINE_LOC).setVisible(canOnlyReadRequests && canUseAdditionalTests);
 		
-		if (canOnlyReadRequests) {
+		if (getValue() != null && canOnlyReadRequests) {
 			CssLayout requestedPathogenTestsLayout = new CssLayout();
 			CssStyles.style(requestedPathogenTestsLayout, CssStyles.VSPACE_3);
 			for (PathogenTestType testType : getValue().getRequestedPathogenTests()) {
@@ -301,7 +301,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			getContent().removeComponent(REQUESTED_PATHOGEN_TESTS_READ_LOC);
 		}
 		
-		if (canOnlyReadRequests && canUseAdditionalTests) {
+		if (getValue() != null && canOnlyReadRequests && canUseAdditionalTests) {
 			CssLayout requestedAdditionalTestsLayout = new CssLayout();
 			CssStyles.style(requestedAdditionalTestsLayout, CssStyles.VSPACE_3);
 			for (AdditionalTestType testType : getValue().getRequestedAdditionalTests()) {
