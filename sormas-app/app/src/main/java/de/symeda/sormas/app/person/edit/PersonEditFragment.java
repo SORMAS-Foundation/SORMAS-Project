@@ -140,7 +140,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
             updateApproximateAgeField(contentBinding);
             updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
-        contentBinding.personBirthdateYYYY.setSelectionOnOpen(2000);
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
         contentBinding.personApproximateAgeType.initializeSpinner(approximateAgeTypeList);
         contentBinding.personSex.initializeSpinner(sexList);
         contentBinding.personCauseOfDeath.initializeSpinner(causeOfDeathList);
