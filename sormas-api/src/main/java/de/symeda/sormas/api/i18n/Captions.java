@@ -24,6 +24,7 @@ public interface Captions {
 	public static String actionDelete = "actionDelete";
 	public static String actionDeselectAll = "actionDeselectAll";
 	public static String actionDiscard = "actionDiscard";
+	public static String actionDiscardChanges = "actionDiscardChanges";
 	public static String actionDismiss = "actionDismiss";
 	public static String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	public static String actionGenerate = "actionGenerate";
@@ -37,6 +38,7 @@ public interface Captions {
 	public static String actionPick = "actionPick";
 	public static String actionResetFilters = "actionResetFilters";
 	public static String actionSave = "actionSave";
+	public static String actionSaveChanges = "actionSaveChanges";
 	public static String actionSelectAll = "actionSelectAll";
 	public static String actionShowLessFilters = "actionShowLessFilters";
 	public static String actionShowMoreFilters = "actionShowMoreFilters";
@@ -236,6 +238,7 @@ public interface Captions {
 	public static String communityName = "communityName";
 	public static String Configuration_HealthFacilities = "Configuration.HealthFacilities";
 	public static String Configuration_Laboratories = "Configuration.Laboratories";
+	public static String Configuration_LineListing = "Configuration.LineListing";
 	public static String Configuration_Outbreaks = "Configuration.Outbreaks";
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
@@ -596,8 +599,15 @@ public interface Captions {
 	public static String info = "info";
 	public static String lastName = "lastName";
 	public static String lineListingAddLine = "lineListingAddLine";
+	public static String lineListingDisableAll = "lineListingDisableAll";
+	public static String lineListingDisableAllShort = "lineListingDisableAllShort";
+	public static String lineListingEdit = "lineListingEdit";
+	public static String lineListingEnableAll = "lineListingEnableAll";
+	public static String lineListingEnableForDisease = "lineListingEnableForDisease";
+	public static String lineListingEndDate = "lineListingEndDate";
 	public static String lineListingInfrastructureData = "lineListingInfrastructureData";
 	public static String lineListingNewCasesList = "lineListingNewCasesList";
+	public static String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	public static String lineListingSharedInformation = "lineListingSharedInformation";
 	public static String Location = "Location";
 	public static String Location_address = "Location.address";
@@ -1160,6 +1170,8 @@ public interface Captions {
 	public static String View_configuration_healthFacilities_short = "View.configuration.healthFacilities.short";
 	public static String View_configuration_laboratories = "View.configuration.laboratories";
 	public static String View_configuration_laboratories_short = "View.configuration.laboratories.short";
+	public static String View_configuration_linelisting = "View.configuration.linelisting";
+	public static String View_configuration_linelisting_short = "View.configuration.linelisting.short";
 	public static String View_configuration_outbreaks = "View.configuration.outbreaks";
 	public static String View_configuration_outbreaks_short = "View.configuration.outbreaks.short";
 	public static String View_configuration_pointsofentry = "View.configuration.pointsofentry";

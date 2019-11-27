@@ -3757,3 +3757,23 @@ INSERT INTO schema_version (version_number, comment) VALUES (171, 'Add relations
 ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (172, 'Add new disease, Anthrax #833');
+
+-- 2019-11-27 Add FeatureConfiguration entity #1346
+CREATE TABLE featureconfiguration(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	featuretype varchar(255),
+	region_id bigint,
+	district_id bigint,
+	disease varchar(255),
+	enddate timestamp,
+	primary key(id)
+);
+
+ALTER TABLE featureconfiguration OWNER TO sormas_user;
+ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (173, 'Add FeatureConfiguration entity #1346');

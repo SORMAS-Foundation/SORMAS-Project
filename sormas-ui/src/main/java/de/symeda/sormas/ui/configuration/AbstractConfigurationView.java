@@ -36,6 +36,7 @@ import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.PopulationDataView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationRegionView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
@@ -87,6 +88,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(DevModeView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 		}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+			menu.addView(LineListingConfigurationRegionView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					LineListingConfigurationRegionView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+		}
 	}
 
 	public static void registerViews(Navigator navigator) {
@@ -112,6 +117,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		if (FacadeProvider.getConfigFacade().isDevMode()
 				&& UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
+		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+			navigator.addView(LineListingConfigurationRegionView.VIEW_NAME, LineListingConfigurationRegionView.class);
 		}
 	}
 

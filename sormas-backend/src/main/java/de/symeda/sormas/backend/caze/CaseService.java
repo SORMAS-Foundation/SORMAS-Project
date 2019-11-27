@@ -124,6 +124,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	TreatmentService treatmentService;
 	@EJB
 	PrescriptionService prescriptionService;
+	
 	public CaseService() {
 		super(Case.class);
 	}

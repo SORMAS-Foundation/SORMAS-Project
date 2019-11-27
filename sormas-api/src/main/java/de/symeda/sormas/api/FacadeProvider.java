@@ -33,6 +33,7 @@ import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
+import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
@@ -231,6 +232,10 @@ public class FacadeProvider {
 	
 	public static InfrastructureFacade getInfrastructureFacade() {
 		return get().lookupEjbRemote(InfrastructureFacade.class);
+	}
+	
+	public static FeatureConfigurationFacade getFeatureConfigurationFacade() {
+		return get().lookupEjbRemote(FeatureConfigurationFacade.class);
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -60,6 +60,16 @@ public class DistrictService extends AbstractAdoService<District> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	public List<District> getAllByRegion(Region region) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
+		Root<District> from = cq.from(getElementClass());
+		cq.where(cb.equal(from.get(District.REGION), region));
+		cq.orderBy(cb.asc(from.get(District.NAME)));
+
+		return em.createQuery(cq).getResultList();
+	}
+	
 	public int getCountByRegion(Region region) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);

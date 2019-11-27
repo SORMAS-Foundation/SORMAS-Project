@@ -47,6 +47,7 @@
 		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
 		<class>de.symeda.sormas.backend.importexport.ExportConfiguration</class>
 		<class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
+		<class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
