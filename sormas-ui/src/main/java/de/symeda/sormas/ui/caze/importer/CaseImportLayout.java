@@ -47,13 +47,13 @@ public class CaseImportLayout extends AbstractImportLayout {
 				resetDownloadErrorReportButton();
 				
 				try {
-					CaseImporter importer = new CaseImporter(file, currentUser, currentUI);
+					CaseImporter importer = new CaseImporter(file, currentUser);
 					importer.startImport(new Consumer<StreamResource>() {
 						@Override
 						public void accept(StreamResource resource) {
 							extendDownloadErrorReportButton(resource);
 						}
-					});
+					}, currentUI);
 				} catch (IOException e) {
 					new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 				}

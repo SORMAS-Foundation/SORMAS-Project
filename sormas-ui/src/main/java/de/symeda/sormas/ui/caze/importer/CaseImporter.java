@@ -21,7 +21,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 
@@ -61,7 +61,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportCellData;
 import de.symeda.sormas.ui.importer.ImportErrorException;
-import de.symeda.sormas.ui.importer.ImportResult;
+import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityInput;
 import de.symeda.sormas.ui.importer.ImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
@@ -93,24 +93,26 @@ public class CaseImporter extends DataImporter {
 	private String firstSampleColumnName;
 	private String firstPathogenTestColumnName;
 	private boolean currentEntityHasEntries;
+	
+	// needed to let the user handle similarities
+	private UI currentUI;
 
-	public CaseImporter(File inputFile, UserReferenceDto currentUser, UI currentUI) throws IOException {
-		this(inputFile, null, currentUser, currentUI);
+	public CaseImporter(File inputFile, UserReferenceDto currentUser) {
+		super(inputFile, true, currentUser);
 	}
-
-	public CaseImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
-		super(inputFile, true, errorReportWriter, currentUser, currentUI);
-
+	
+	@Override
+	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI) throws IOException {
+		this.currentUI = currentUI;
+		super.startImport(addErrorReportToLayoutCallback, currentUI);
 	}
 
 	@Override
-	protected void importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
+	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
-			hasImportError = true;
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
-			importedCallback.accept(ImportResult.ERROR);
-			return;
+			return ImportLineResult.ERROR;
 		}
 
 		final PersonDto newPersonTmp = PersonDto.build();
@@ -180,7 +182,6 @@ public class CaseImporter extends DataImporter {
 					FacadeProvider.getPathogenTestFacade().validate(pathogenTest);
 				}
 			} catch (ValidationRuntimeException e) {
-				hasImportError = true;
 				caseHasImportError = true;
 				writeImportError(values, e.getMessage());
 			}
@@ -259,16 +260,17 @@ public class CaseImporter extends DataImporter {
 
 				if (caseHasImportError) {
 					// In case insertRowIntoCase when matching person/case has thrown an unexpected error
-					importedCallback.accept(ImportResult.ERROR);
+					return ImportLineResult.ERROR;
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.SKIP) {
 					// Reset the import result
 					consumer.result = null;
-					importedCallback.accept(ImportResult.SKIPPED);
+					return ImportLineResult.SKIPPED;
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.PICK) {
 					consumer.result = null;
-					importedCallback.accept(ImportResult.DUPLICATE);
+					return ImportLineResult.DUPLICATE;
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.CANCEL) {
-					cancelAfterCurrent = true;
+					cancelImport();
+					return ImportLineResult.SKIPPED;
 				} else {
 					PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 					newCase.setPerson(savedPerson.toReference());
@@ -281,15 +283,14 @@ public class CaseImporter extends DataImporter {
 					}
 					// Reset the import result
 					consumer.result = null;
-					importedCallback.accept(ImportResult.SUCCESS);
+					return ImportLineResult.SUCCESS;
 				}
 			} catch (ValidationRuntimeException e) {
-				hasImportError = true;
 				writeImportError(values, e.getMessage());
-				importedCallback.accept(ImportResult.ERROR);
+				return ImportLineResult.ERROR;
 			}
 		} else {
-			importedCallback.accept(ImportResult.ERROR);
+			return ImportLineResult.ERROR;
 		}	
 	}
 
@@ -418,7 +419,7 @@ public class CaseImporter extends DataImporter {
 		}
 	}
 
-	private void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
+	protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
 		currentUI.accessSynchronously(new Runnable() {
 			@Override
 			public void run() {
@@ -456,14 +457,9 @@ public class CaseImporter extends DataImporter {
 
 				Button skipButton = new Button(I18nProperties.getCaption(Captions.actionSkip));
 				skipButton.addClickListener(e -> {
-					currentUI.accessSynchronously(new Runnable() {
-						@Override
-						public void run() {
-							component.removeDiscardListener(discardListener);
-							component.discard();
-							resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
-						}
-					});
+					component.removeDiscardListener(discardListener);
+					component.discard();
+					resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
 				});
 				component.getButtonsPanel().addComponentAsFirst(skipButton);
 

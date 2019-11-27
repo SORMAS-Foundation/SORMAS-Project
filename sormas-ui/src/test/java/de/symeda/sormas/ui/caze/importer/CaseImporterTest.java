@@ -1,139 +1,158 @@
 package de.symeda.sormas.ui.caze.importer;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.vaadin.server.VaadinServletRequest;
-
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
+import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.TestDataCreator.RDCF;
+import de.symeda.sormas.ui.importer.ImportResultStatus;
+import de.symeda.sormas.ui.importer.ImportSimilarityInput;
+import de.symeda.sormas.ui.importer.ImportSimilarityResult;
+import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseImporterTest extends AbstractBeanTest {
 
-	@Mock
-	private VaadinServletRequest request;
-
-//	@Before
-//	public void initUI() throws Exception {
-//		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
-//
-//		Principal principal = new Principal() {
-//			@Override
-//			public String getName() {
-//				return "admin";
-//			}
-//		};
-//		when(MockProducer.getSessionContext().getCallerPrincipal()).thenReturn(principal);
-//		when(request.getUserPrincipal()).thenReturn(principal);
-//		
-//		CurrentInstance.set(VaadinRequest.class, request);
-//		CurrentInstance.set(UI.class, new SormasUI());
-//	}
-
 	@Test
 	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException {
-//		UserReferenceDto user = UserProvider.getCurrent().getUserReference();
-//		
-//		new TestDataCreator().createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
-//
-//		// Successful import of 5 cases
-//		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_success.csv").getFile());
-//		CaseImporter caseImporter = new CaseImporter(csvFile, createPseudoOutputStream(), user, UI.getCurrent());
-//		ImportResultStatus importResult = caseImporter.importAllData((resultCallback) -> {
-//			
-//		});
-//		assertEquals(ImportResultStatus.COMPLETED, importResult);
-//		assertEquals(5, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-//		assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
-//
-//		// Failed import of 5 cases because of errors
-//		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_errors.csv").getFile());
-//		caseImporter = new CaseImporter(csvFile, createPseudoOutputStream(), user, UI.getCurrent());
-//		importResult = caseImporter.importAllData((resultCallback) -> {
-//			
-//		});
-//		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
-//		assertEquals(5, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-//		assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
-//
-//		// Failed import
-//		boolean exceptionWasThrown = false;
-//
-//		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_failure.csv").getFile());
-//		caseImporter = new CaseImporter(csvFile, createPseudoOutputStream(), user, UI.getCurrent());
-//		try {
-//			importResult = caseImporter.importAllData((resultCallback) -> {
-//				
-//			});
-//		} catch (InvalidColumnException e) {
-//			exceptionWasThrown = true;
-//		}
-//		assertEquals(true, exceptionWasThrown);
-//		assertEquals(5, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-//		assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
-//		
-//		// Similarity: Merge person
-//		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-//		caseImporter = new CaseImporter(csvFile, createPseudoOutputStream(), user, UI.getCurrent());
-//		importResult = caseImporter.importAllCases((input, resultCallback) -> {
-//			PersonIndexDto matchingPerson = FacadeProvider.getPersonFacade().getIndexDto(
-//					FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).get(0).getUuid());
-//			resultCallback.accept(new ImportSimilarityResult(matchingPerson, null, true, false, false, false));			
-//		}, (result) -> {
-//			assertEquals(ImportResult.SUCCESS, result);
-//			assertEquals(6, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-//			assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
-//		});
-//		
-//		// Similarity: Merge case
-//		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-//		// TODO PROBLEM!
-//		caseImporter = new CaseImporter(csvFile, createPseudoOutputStream(), user, UI.getCurrent());
-//		importResult = caseImporter.importAllCases((input, resultCallback) -> {
-//			PersonIndexDto matchingPerson = FacadeProvider.getPersonFacade().getIndexDto(
-//					FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).get(0).getUuid());
-//			CaseDataDto matchingCase = FacadeProvider.getCaseFacade().getLatestCaseByPerson(matchingPerson.getUuid(), user.getUuid());
-//			resultCallback.accept(new ImportSimilarityResult(matchingPerson, matchingCase, true, true, false, false));			
-//		}, (result) -> {
-//			assertEquals(ImportResult.SUCCESS, result);
-//			assertEquals(6, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-//			assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
-//		});
-//		
-//		// Similarity: Skip
-//		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-//		caseImporter = new CaseImporter(csvFile, createPseudoOutputStream(), user, UI.getCurrent());
-//		importResult = caseImporter.importAllCases((input, resultCallback) -> {
-//			resultCallback.accept(new ImportSimilarityResult(null, null, false, false, true, false));			
-//		}, (result) -> {
-//			assertEquals(ImportResult.SKIPPED, result);
-//			assertEquals(6, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-//			assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
-//		});
-//		
-//		// Similarity: Cancel import
-//		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-//		caseImporter = new CaseImporter(csvFile, createPseudoOutputStream(), user, UI.getCurrent());
-//		importResult = caseImporter.importAllCases((input, resultCallback) -> {
-//			resultCallback.accept(new ImportSimilarityResult(null, null, false, false, false, true));			
-//		}, (result) -> {
-//			assertEquals(6, FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-//			assertEquals(5, FacadeProvider.getPersonFacade().getPersonsAfter(null, user.getUuid()).size());
-//		});
+
+		RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
+				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		// Successful import of 5 cases
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_success.csv").getFile());
+		CaseImporter caseImporter = new CaseImporterExtension(csvFile, user.toReference());
+		ImportResultStatus importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(5, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+
+		// Failed import of 5 cases because of errors
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_errors.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, user.toReference());
+		importResult = caseImporter.runImport();
+			
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
+		assertEquals(5, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+
+		// Failed import
+		boolean exceptionWasThrown = false;
+
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_failure.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, user.toReference());
+		try {
+			importResult = caseImporter.runImport();
+		} catch (InvalidColumnException e) {
+			exceptionWasThrown = true;
+		}
+		assertEquals(true, exceptionWasThrown);
+		assertEquals(5, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+		
+		// Similarity: skip
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+			@Override
+			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
+			}
+		};
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(5, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+		assertEquals("ABC-DEF-GHI-19-5", FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		
+		// Similarity: pick
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+			@Override
+			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new ImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.PICK));
+			}
+		};
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(5, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+		assertEquals("ABC-DEF-GHI-19-5", FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		
+		// Similarity: cancel
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+			@Override
+			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
+			}
+		};
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.CANCELED, importResult);
+		assertEquals(5, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+		assertEquals("ABC-DEF-GHI-19-5", FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		
+		// Similarity: override
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+			@Override
+			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new ImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.OVERRIDE));
+			}
+		};
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(5, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+		assertEquals("ABC-DEF-GHI-19-10", FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		
+		// Similarity: create
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+			@Override
+			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+			}
+		};
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(6, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+		assertEquals("ABC-DEF-GHI-19-10", FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());	
 	}
+
+	private static class CaseImporterExtension extends CaseImporter {
+		private CaseImporterExtension(File inputFile, UserReferenceDto currentUser) {
+			super(inputFile, currentUser);
+		}
 	
-//	private OutputStreamWriter createPseudoOutputStream() {
-//		return new OutputStreamWriter(new OutputStream() {
-//			@Override
-//			public void write(int b) throws IOException {
-//				// Do nothing
-//			}
-//		});
-//	}
+		protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
+			resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+		}
+	
+		protected Writer createErrorReportWriter() {
+			return new OutputStreamWriter(new OutputStream() {
+				@Override
+				public void write(int b) throws IOException {
+					// Do nothing
+				}
+			});
+		}
+	}
 
 }

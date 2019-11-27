@@ -61,7 +61,7 @@ public class MockProducer {
 	private static Session mailSession;
 	static {
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME,"nigeria");
-		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
+		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ",");
 		
 		try {
 			Field instance = InfoProvider.class.getDeclaredField("instance");

@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
+import javax.persistence.EntityManager;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -63,13 +65,14 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import info.novatec.beantest.api.BeanProviderHelper;
 
 public class TestDataCreator {
 
 	public TestDataCreator() {
 
 	}
-
+	
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
 			String lastName, UserRole... roles) {
 		UserDto user = UserDto.build();
