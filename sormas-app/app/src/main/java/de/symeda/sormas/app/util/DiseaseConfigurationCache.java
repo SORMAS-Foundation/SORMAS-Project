@@ -43,6 +43,7 @@ public class DiseaseConfigurationCache {
         for (Disease disease : Disease.values()) {
             DiseaseConfiguration configuration = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(disease);
             if (configuration == null) {
+                //Create empty DiseaseConfiguration to use the default values.
                 configuration = new DiseaseConfiguration();
             }
 
@@ -148,4 +149,7 @@ public class DiseaseConfigurationCache {
         return instance;
     }
 
+    public static void reset(){
+        instance = new DiseaseConfigurationCache();
+    }
 }
