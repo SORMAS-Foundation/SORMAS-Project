@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.caze.edit;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -147,6 +148,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
             updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
+
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        contentBinding.personBirthdateYYYY.setSelectionOnOpen(year-35);
 
         contentBinding.personSex.initializeSpinner(sexList);
     }
