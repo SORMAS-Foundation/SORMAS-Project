@@ -9,4 +9,8 @@ public interface FeatureConfigurationFacade {
 
 	List<FeatureConfigurationIndexDto> getFeatureConfigurations(FeatureConfigurationCriteria criteria, boolean includeInactive);
 	
+	void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType);
+	
+	void deleteAllFeatureConfigurations(FeatureConfigurationCriteria criteria);
+	
 }

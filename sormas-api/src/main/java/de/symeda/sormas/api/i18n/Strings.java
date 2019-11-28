@@ -198,6 +198,7 @@ public interface Strings {
 	public static String headingImportPopulationData = "headingImportPopulationData";
 	public static String headingInformationSource = "headingInformationSource";
 	public static String headingIntroduction = "headingIntroduction";
+	public static String headingInvalidDateEntered = "headingInvalidDateEntered";
 	public static String headingLaboratorySample = "headingLaboratorySample";
 	public static String headingLineListing = "headingLineListing";
 	public static String headingLineListingImport = "headingLineListingImport";
@@ -286,7 +287,9 @@ public interface Strings {
 	public static String infoImportCsvFile = "infoImportCsvFile";
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
+	public static String infoLineListingConfigurationNationEdit = "infoLineListingConfigurationNationEdit";
 	public static String infoLineListingConfigurationRegion = "infoLineListingConfigurationRegion";
+	public static String infoLineListingConfigurationRegionEdit = "infoLineListingConfigurationRegionEdit";
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
 	public static String infoMergeIgnoreRegion = "infoMergeIgnoreRegion";
 	public static String infoMergingExplanation = "infoMergingExplanation";
@@ -377,7 +380,9 @@ public interface Strings {
 	public static String messageImportInvalidColumn = "messageImportInvalidColumn";
 	public static String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	public static String messageImportSuccessful = "messageImportSuccessful";
+	public static String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	public static String messageLineListingDisabled = "messageLineListingDisabled";
+	public static String messageLineListingSaved = "messageLineListingSaved";
 	public static String messageLoginFailed = "messageLoginFailed";
 	public static String messageMissingDateFilter = "messageMissingDateFilter";
 	public static String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
@@ -385,6 +390,7 @@ public interface Strings {
 	public static String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	public static String messageNoContactsSelected = "messageNoContactsSelected";
 	public static String messageNoCsvFile = "messageNoCsvFile";
+	public static String messageNoEndDate = "messageNoEndDate";
 	public static String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	public static String messageNoEventsSelected = "messageNoEventsSelected";
 	public static String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
@@ -493,6 +499,7 @@ public interface Strings {
 	public static String toCase = "toCase";
 	public static String total = "total";
 	public static String unknown = "unknown";
+	public static String until = "until";
 	public static String weekShort = "weekShort";
 	public static String year = "year";
 	public static String years = "years";

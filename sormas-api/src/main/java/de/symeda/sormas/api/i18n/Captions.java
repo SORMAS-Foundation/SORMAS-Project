@@ -561,6 +561,9 @@ public interface Captions {
 	public static String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	public static String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
 	public static String Facility_OTHER_LABORATORY = "Facility.OTHER_LABORATORY";
+	public static String FeatureConfiguration_active = "FeatureConfiguration.active";
+	public static String FeatureConfiguration_districtName = "FeatureConfiguration.districtName";
+	public static String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
 	public static String firstName = "firstName";
 	public static String formatNumberOfVisitsFormat = "formatNumberOfVisitsFormat";
 	public static String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";

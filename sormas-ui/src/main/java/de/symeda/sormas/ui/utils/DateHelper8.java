@@ -34,7 +34,11 @@ public final class DateHelper8 {
 	}
 
 	public static Date toDate(LocalDate date) {
-		return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		if (date != null) {
+			return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		} else {
+			return null;
+		}
 	}
 
 	public static Date toDate(LocalDateTime dateTime) {

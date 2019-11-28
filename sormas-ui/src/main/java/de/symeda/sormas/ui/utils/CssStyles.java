@@ -210,6 +210,9 @@ public final class CssStyles {
 	public static final String STATISTICS_TITLE_BOX = "title-box";
 	public static final String STATISTICS_TITLE = "title";
 	
+	// Notification styles
+	public static final String NOTIFICATION_ERROR = "notification-error";
+	
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
 	 */

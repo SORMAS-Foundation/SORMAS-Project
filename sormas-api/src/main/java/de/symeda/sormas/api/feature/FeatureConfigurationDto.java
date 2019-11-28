@@ -6,6 +6,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class FeatureConfigurationDto extends EntityDto {
 
@@ -22,6 +23,12 @@ public class FeatureConfigurationDto extends EntityDto {
 	private DistrictReferenceDto district;
 	private Disease disease;
 	private Date endDate;
+	
+	public static FeatureConfigurationDto build() {
+		FeatureConfigurationDto config = new FeatureConfigurationDto();
+		config.setUuid(DataHelper.createUuid());
+		return config;
+	}
 	
 	public FeatureType getFeatureType() {
 		return featureType;

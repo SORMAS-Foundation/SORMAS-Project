@@ -20,6 +20,9 @@ import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -85,6 +88,53 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		
 		resultList.sort((c1, c2) -> c1.getDistrictName().compareTo(c2.getDistrictName()));
 		return resultList;
+	}
+	
+	@Override
+	public void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType) {	
+		// Delete an existing configuration that was set inactive
+		if (Boolean.FALSE.equals(configuration.getActive())) {
+			FeatureConfiguration existingConfiguration = service.getByUuid(configuration.getUuid());
+			if (existingConfiguration != null) {
+				service.delete(existingConfiguration);
+			}
+			
+			return;
+		}
+		
+		// Create or update an active configuration
+		FeatureConfigurationDto configurationDto = toDto(service.getByUuid(configuration.getUuid()));
+		if (configurationDto == null) {
+			configurationDto = FeatureConfigurationDto.build();
+			configurationDto.setFeatureType(featureType);
+			configurationDto.setDisease(configuration.getDisease());
+			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid()));
+			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid()));
+		}
+		
+		configurationDto.setEndDate(configuration.getEndDate());
+		
+		FeatureConfiguration entity = fromDto(configurationDto);
+		service.ensurePersisted(entity);
+	}
+	
+	@Override
+	public void deleteAllFeatureConfigurations(FeatureConfigurationCriteria criteria) {
+		if (criteria == null) {
+			return;
+		}
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+		
+		Predicate filter = service.createCriteriaFilter(criteria, cb, cq, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
+		resultList.forEach(result -> service.delete(result));
 	}
 	
 	public static FeatureConfigurationDto toDto(FeatureConfiguration source) {

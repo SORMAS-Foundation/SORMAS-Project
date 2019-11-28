@@ -35,6 +35,7 @@ public interface Validations {
 	public static String noFacilityInCommunity = "noFacilityInCommunity";
 	public static String noFacilityInDistrict = "noFacilityInDistrict";
 	public static String noFacilityInRegion = "noFacilityInRegion";
+	public static String noPastDateAllowed = "noPastDateAllowed";
 	public static String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	public static String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	public static String onlyNumbersAllowed = "onlyNumbersAllowed";
