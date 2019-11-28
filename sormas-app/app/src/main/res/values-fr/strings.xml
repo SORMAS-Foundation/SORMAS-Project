@@ -17,6 +17,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
+<!--
+    All captions are generally stored in properties files in the api-project. They are managed by the class I18nProperties.
+    Here there are only strings, which are only useful for the app.
+ -->
 <resources>
     <string name="app_name">SORMAS</string>
     <string name="and">et</string>
@@ -148,7 +152,7 @@
     <string name="caption_executed_by">Executed by</string>
     <string name="caption_fatalities">Fatalities</string>
     <string name="caption_first_name">First Name</string>
-    <string name="caption_gender">Gender</string>
+    <string name="caption_sex">Sex</string>
     <string name="caption_inadequate_specimen">Inadequate Specimen</string>
     <string name="caption_indeterminate">Indeterminate</string>
     <string name="caption_informant_reports">Informant Reports</string>
@@ -502,7 +506,7 @@
     <string name="value_executing_clinician_unknown">Executing Clinician N/A</string>
     <string name="value_facility_unknown">Health Facility N/A</string>
     <string name="value_frequency_unknown">Frequency N/A</string>
-    <string name="value_gender_unknown">Gender N/A</string>
+    <string name="value_sex_unknown">Sex N/A</string>
     <string name="value_heart_rate_unknown">Heart Rate N/A</string>
     <string name="value_inadequate_specimen_condition">Specimen condition not adequate</string>
     <string name="value_lab_unknown">Lab N/A</string>
