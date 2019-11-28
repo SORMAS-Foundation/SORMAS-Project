@@ -57,7 +57,7 @@ import de.symeda.sormas.app.therapy.edit.PrescriptionNewActivity;
 import de.symeda.sormas.app.therapy.edit.TreatmentNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -111,7 +111,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             menuItems.set(CaseSection.SAMPLES.ordinal(), null);
         }
         if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
-                (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
+                (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.set(CaseSection.CONTACTS.ordinal(), null);
         }
         if (caze != null && caze.getDisease() == Disease.CONGENITAL_RUBELLA) {

@@ -31,14 +31,13 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 /**
  * Created by Mate Strysewske on 07.09.2017.
@@ -138,7 +137,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
 
         WeeklyReportEntryDao entryDao = DatabaseHelper.getWeeklyReportEntryDao();
         List<WeeklyReportEntry> entries = new ArrayList<>();
-        for (Disease disease : DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases()) {
+        for (Disease disease : DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases()) {
             entries.add(entryDao.build(epiWeek, disease, report));
         }
         report.setReportEntries(entries);

@@ -51,7 +51,7 @@ import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.databinding.FilterCaseListLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 import static android.view.View.GONE;
 
@@ -163,7 +163,7 @@ public class CaseListActivity extends PagedBaseListActivity {
         View caseListFilterView = getLayoutInflater().inflate(R.layout.filter_case_list_layout, null);
         filterBinding = DataBindingUtil.bind(caseListFilterView);
 
-        List<Item> diseases = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases());
+        List<Item> diseases = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases());
         filterBinding.diseaseFilter.initializeSpinner(diseases);
         List<Item> classifications = DataUtils.getEnumItems(CaseClassification.class);
         filterBinding.classificationFilter.initializeSpinner(classifications);
