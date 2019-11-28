@@ -70,15 +70,13 @@ public abstract class DataImporter {
 				+ DataHelper.getShortUuid(currentUser.getUuid()) + "_" + DateHelper.formatDateForExport(new Date())
 				+ ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
-
-		
 	}
 
 	/**
 	 * Opens a progress layout and runs the import in a separate thread
 	 */
 	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI) throws IOException {
-		
+
 		ImportProgressLayout progressLayout = new ImportProgressLayout(readImportFileLength(inputFile), currentUI, this::cancelImport);
 
 		importedLineCallback = new Consumer<ImportLineResult>() {
@@ -175,6 +173,8 @@ public abstract class DataImporter {
 	 */
 	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException {
 
+		logger.debug("runImport - " + inputFile.getAbsolutePath());
+		
 		CSVReader csvReader = null;
 		try {
 			csvReader = CSVUtils.createCSVReader(new FileReader(inputFile.getPath()), FacadeProvider.getConfigFacade().getCsvSeparator());
@@ -205,8 +205,10 @@ public abstract class DataImporter {
 			errorReportCsvWriter.writeNext(columnNames);
 	
 			String[] nextLine = csvReader.readNext();
+			int lineCounter = 0;
 			while (nextLine != null) {
 				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths);
+				logger.debug("runImport - line " + lineCounter);
 				if (importedLineCallback != null) {
 					importedLineCallback.accept(lineResult);
 				}
@@ -216,6 +218,7 @@ public abstract class DataImporter {
 				nextLine = csvReader.readNext();
 			}
 	
+			logger.debug("runImport - done");
 
 			if (cancelAfterCurrent) {
 				if (!hasImportError) {
