@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
+
 import java.util.Calendar;
 
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -102,7 +104,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundler bundler = new Bundler(outState);
         bundler.setContactUuid(contactUuid);

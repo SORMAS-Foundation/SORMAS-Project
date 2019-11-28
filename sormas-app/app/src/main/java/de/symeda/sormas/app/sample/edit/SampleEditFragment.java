@@ -29,10 +29,12 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -49,6 +51,7 @@ import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
 
@@ -62,7 +65,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     private List<Item> sampleMaterialList;
     private List<Item> sampleSourceList;
     private List<Facility> labList;
-    private List<String> requestedPathogenTests;
+    private List<Item> samplePurposeList;
+    private List<String> requestedPathogenTests = new ArrayList<>();
     private List<String> requestedAdditionalTests = new ArrayList<>();
 
     public static SampleEditFragment newInstance(Sample activityRootData) {
@@ -127,9 +131,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     @Override
     protected void prepareFragmentData() {
         record = getActivityRootData();
-        mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
-        if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
-            mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
+        if (record.getId() != null) {
+            mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
+            if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+                mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
+            }
         }
         if (!StringUtils.isEmpty(record.getReferredToUuid())) {
             referredSample = DatabaseHelper.getSampleDao().queryUuid(record.getReferredToUuid());
@@ -140,14 +146,16 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
+        samplePurposeList = DataUtils.getEnumItems(SamplePurpose.class, true);
 
-        requestedPathogenTests = new ArrayList<>();
         for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
+            requestedPathogenTests.clear();
             if (pathogenTest != PathogenTestType.OTHER) {
                 requestedPathogenTests.add(pathogenTest.toString());
             }
         }
         if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+            requestedAdditionalTests.clear();
             for (AdditionalTestType additionalTest : record.getRequestedAdditionalTests()) {
                 requestedAdditionalTests.add(additionalTest.toString());
             }
@@ -176,15 +184,26 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         // Initialize ControlSpinnerFields
         contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
         contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
-        contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                Facility laboratory = (Facility) field.getValue();
-                if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-                    contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
-                } else {
-                    contentBinding.sampleLabDetails.hideField(true);
-                }
+        contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), field -> {
+            Facility laboratory = (Facility) field.getValue();
+            if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+                contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
+            } else {
+                contentBinding.sampleLabDetails.hideField(true);
+            }
+        });
+        contentBinding.samplePurpose.initializeSpinner(samplePurposeList, field -> {
+            SamplePurpose samplePurpose = (SamplePurpose) field.getValue();
+            if (SamplePurpose.EXTERNAL == samplePurpose) {
+                contentBinding.externalSampleFieldsLayout.setVisibility(VISIBLE);
+                contentBinding.samplePathogenTestingRequested.setVisibility(
+                        ConfigProvider.getUser().equals(record.getReportingUser()) ? VISIBLE : GONE);
+                contentBinding.sampleAdditionalTestingRequested.setVisibility(
+                        ConfigProvider.getUser().equals(record.getReportingUser()) ? VISIBLE : GONE);
+            } else {
+                contentBinding.externalSampleFieldsLayout.setVisibility(GONE);
+                contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
+                contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
             }
         });
 
@@ -204,6 +223,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleShipped.setEnabled(false);
             contentBinding.sampleShipmentDate.setEnabled(false);
             contentBinding.sampleShipmentDetails.setEnabled(false);
+            contentBinding.samplePurpose.setEnabled(false);
             contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
             contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
             contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);

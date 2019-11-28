@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.importer;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
-import de.symeda.sormas.ui.importer.CaseImporter;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
 @SuppressWarnings("serial")
@@ -48,13 +47,13 @@ public class CaseImportLayout extends AbstractImportLayout {
 				resetDownloadErrorReportButton();
 				
 				try {
-					CaseImporter importer = new CaseImporter(file, currentUser, currentUI);
+					CaseImporter importer = new CaseImporter(file, currentUser);
 					importer.startImport(new Consumer<StreamResource>() {
 						@Override
 						public void accept(StreamResource resource) {
 							extendDownloadErrorReportButton(resource);
 						}
-					});
+					}, currentUI);
 				} catch (IOException e) {
 					new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 				}

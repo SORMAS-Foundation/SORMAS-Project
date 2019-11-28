@@ -22,6 +22,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote

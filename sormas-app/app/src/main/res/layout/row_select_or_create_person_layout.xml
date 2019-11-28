@@ -82,7 +82,7 @@
                     android:textSize="@dimen/row_entry_secondary_text_size"
                     android:textColor="@color/row_entry_secondary_text"
                     app:value="@{data.sex}"
-                    app:prependValue="@{@string/caption_gender}"
+                    app:prependValue="@{@string/caption_sex}"
                     app:defaultValue='@{@string/value_not_available}'
                     app:valueFormat='@{@string/title_detail_format}'
                     />

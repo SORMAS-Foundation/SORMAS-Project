@@ -31,7 +31,7 @@ public class SymptomsHelperTest {
 
 	@Test
 	public void testUpdateIsSymptomatic() {
-		SymptomsDto symptoms = new SymptomsDto();
+		SymptomsDto symptoms = SymptomsDto.build();
 		SymptomsHelper.updateIsSymptomatic(symptoms);
 		
 		assertFalse(symptoms.getSymptomatic());
@@ -44,8 +44,8 @@ public class SymptomsHelperTest {
 	
 	@Test
 	public void testUpdateSymptoms() {
-		SymptomsDto sourceSymptoms = new SymptomsDto();
-		SymptomsDto targetSymptoms = new SymptomsDto();
+		SymptomsDto sourceSymptoms = SymptomsDto.build();
+		SymptomsDto targetSymptoms = SymptomsDto.build();
 		
 		// Set a previously unset symptom to YES
 		sourceSymptoms.setAbdominalPain(SymptomState.YES);

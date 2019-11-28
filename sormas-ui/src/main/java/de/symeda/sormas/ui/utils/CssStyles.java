@@ -315,9 +315,12 @@ public final class CssStyles {
 			return "background-disease-yellow-fever";
 		case CONGENITAL_RUBELLA:
 			return "background-disease-congenital-rubella";
+		case ANTHRAX:
+			return "background-disease-anthrax";
 		case UNDEFINED:
 			return "background-disease-undefined";
-			
+		case RABIES:
+			return "background-disease-rabies";
 		default:
 			throw new IllegalArgumentException(disease.toString());
 		}

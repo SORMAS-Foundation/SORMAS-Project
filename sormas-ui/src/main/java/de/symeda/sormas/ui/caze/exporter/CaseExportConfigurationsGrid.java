@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.exporter;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,14 +20,14 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 
 @SuppressWarnings("serial")
-public class CaseCustomExportsGrid extends Grid<ExportConfigurationDto> {
+public class CaseExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 	public static final String COLUMN_ACTIONS = "actions";
 	
 	private final String userUuid;
 	private Consumer<ExportConfigurationDto> exportCallback;
 	
-	public CaseCustomExportsGrid(String userUuid) {
+	public CaseExportConfigurationsGrid(String userUuid) {
 		this.userUuid = userUuid;
 		buildGrid();
 		reload();

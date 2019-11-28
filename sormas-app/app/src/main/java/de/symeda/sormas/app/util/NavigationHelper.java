@@ -57,19 +57,19 @@ public class NavigationHelper {
     }
 
     public static void goToCases(Context context) {
-        CaseListActivity.startActivity(context, InvestigationStatus.PENDING);
+        CaseListActivity.startActivity(context, null);
     }
 
     public static void goToContacts(Context context) {
-        ContactListActivity.startActivity(context, FollowUpStatus.FOLLOW_UP);
+        ContactListActivity.startActivity(context, null);
     }
 
     public static void goToEvents(Context context) {
-        EventListActivity.startActivity(context, EventStatus.POSSIBLE);
+        EventListActivity.startActivity(context, null);
     }
 
     public static void goToSamples(Context context) {
-        SampleListActivity.startActivity(context, ShipmentStatus.NOT_SHIPPED);
+        SampleListActivity.startActivity(context, null);
     }
 
     public static void goToTasks(Context context) {

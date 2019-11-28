@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -64,7 +66,7 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setContactUuid(contactUuid);
     }

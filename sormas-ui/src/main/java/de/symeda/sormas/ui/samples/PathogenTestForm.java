@@ -18,6 +18,9 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -32,8 +35,10 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -51,7 +56,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
 			LayoutUtil.fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
-			LayoutUtil.fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
+			LayoutUtil.fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") + 
+			LayoutUtil.fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
+			LayoutUtil.fluidRowLocs(PathogenTestDto.CQ_VALUE, "") + 
 			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT);
 
 	private final SampleDto sample;
@@ -85,10 +92,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		ComboBox lab = addField(PathogenTestDto.LAB, ComboBox.class);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
 		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
+		labDetails.setVisible(false);
 		addDiseaseField(PathogenTestDto.TESTED_DISEASE, true);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		
 		addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
+		addField(PathogenTestDto.SEROTYPE, TextField.class);
+		addField(PathogenTestDto.CQ_VALUE, TextField.class);
 		OptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, OptionGroup.class);
 		testResultVerifiedField.setRequired(true);
 		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
@@ -98,6 +108,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.TESTED_DISEASE_DETAILS, PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.OTHER), true);
+		
+		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<Object, List<Object>> () {{
+	        put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CSM));
+	        put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
+	    }};
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, serotypeVisibilityDependencies, true);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.CQ_VALUE, PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.CQ_VALUE_DETECTION), true);
 		
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
@@ -121,9 +139,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		});
 
-		
-		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB,
-				PathogenTestDto.TEST_RESULT);
+		if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
+			setRequired(true, PathogenTestDto.LAB);
+		}
+		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT);
 	}
 	
 	@Override

@@ -25,6 +25,9 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.sample.PathogenTestType" />
+        <import type="de.symeda.sormas.api.sample.PathogenTestResultType" />
+        <import type="de.symeda.sormas.api.Disease" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.PathogenTest"/>
     </data>
@@ -85,6 +88,29 @@
                         app:value="@{data.lab}"
                         app:appendValue="@{data.labDetails}"
                         app:valueFormat="@string/two_strings_with_hyphen_format"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/pathogenTest_serotype"
+                        app:dependencyParentField="@{pathogenTestTestedDisease}"
+                        app:dependencyParentValue="@{Disease.CSM}"
+                        app:dependencyParent2Field="@{pathogenTestTestResult}"
+                        app:dependencyParent2Value="@{PathogenTestResultType.POSITIVE}"
+                        app:value="@{data.serotype}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/pathogenTest_cqValue"
+                        app:dependencyParentField="@{pathogenTestTestType}"
+                        app:dependencyParentValue="@{PathogenTestType.CQ_VALUE_DETECTION}"
+                        app:value="@{data.cqValue}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

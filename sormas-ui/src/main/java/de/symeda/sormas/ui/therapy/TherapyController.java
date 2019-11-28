@@ -104,7 +104,7 @@ public class TherapyController {
 
 	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
 		TreatmentForm form = new TreatmentForm(true, UserRight.TREATMENT_CREATE);
-		form.setValue(TreatmentDto.buildTreatment(therapy));
+		form.setValue(TreatmentDto.build(therapy));
 		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
@@ -124,7 +124,7 @@ public class TherapyController {
 
 	public void openTreatmentCreateForm(PrescriptionDto prescription, Runnable callback) {
 		TreatmentForm form = new TreatmentForm(true, UserRight.TREATMENT_CREATE);
-		form.setValue(TreatmentDto.buildTreatment(prescription));
+		form.setValue(TreatmentDto.build(prescription));
 		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {

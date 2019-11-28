@@ -66,6 +66,7 @@ public class Contact extends CoreAdo {
 	public static final String DESCRIPTION = "description";
 	public static final String TASKS = "tasks";
 	public static final String RELATION_TO_CASE = "relationToCase";
+	public static final String RELATION_DESCRIPTION = "relationDescription";
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -80,6 +81,7 @@ public class Contact extends CoreAdo {
 	private Person person;
 	private Case caze;
 	private ContactRelation relationToCase;
+	private String relationDescription;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -210,6 +212,15 @@ public class Contact extends CoreAdo {
 	
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
+	}
+
+	@Column(length = 512)
+	public String getRelationDescription() {
+		return relationDescription;
+	}
+
+	public void setRelationDescription(String relationDescription) {
+		this.relationDescription = relationDescription;
 	}
 
 	@ManyToOne(cascade = {})

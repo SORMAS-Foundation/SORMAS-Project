@@ -44,6 +44,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -79,6 +80,7 @@ public class Case extends CoreAdo {
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
+	public static final String RABIES_TYPE = "rabiesType";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
@@ -102,6 +104,7 @@ public class Case extends CoreAdo {
 	public static final String VACCINATION_DOSES = "vaccinationDoses";
 	public static final String VACCINATION_DATE = "vaccinationDate";
 	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
+	public static final String WHICH_VACCINE = "whichVaccine";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
@@ -125,6 +128,7 @@ public class Case extends CoreAdo {
 	private String diseaseDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
+	private RabiesType rabiesType;
 
 	private CaseClassification caseClassification;
 	private CaseClassification systemCaseClassification;
@@ -174,6 +178,7 @@ public class Case extends CoreAdo {
 	private String vaccinationDoses;
 	private VaccinationInfoSource vaccinationInfoSource;
 	private Date vaccinationDate;
+	private String vaccine;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
 
@@ -251,6 +256,15 @@ public class Case extends CoreAdo {
 
 	public void setDengueFeverType(DengueFeverType dengueFeverType) {
 		this.dengueFeverType = dengueFeverType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public RabiesType getRabiesType() {
+		return rabiesType;
+	}
+
+	public void setRabiesType(RabiesType rabiesType) {
+		this.rabiesType = rabiesType;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -567,6 +581,15 @@ public class Case extends CoreAdo {
 
 	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
 		this.vaccinationInfoSource = vaccinationInfoSource;
+	}
+
+	@Column(length = 512)
+	public String getVaccine() {
+		return vaccine;
+	}
+
+	public void setVaccine(String vaccine) {
+		this.vaccine = vaccine;
 	}
 
 	@Enumerated(EnumType.STRING)

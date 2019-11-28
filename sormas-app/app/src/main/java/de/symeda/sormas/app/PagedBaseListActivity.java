@@ -43,8 +43,8 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
 
     protected BindingPagedListAdapter<T, ?> adapter;
 
-    public static Bundler buildBundle(Enum listFilter) {
-        return BaseActivity.buildBundle(listFilter.ordinal());
+    public static Bundler buildBundle(int pageMenuPosition) {
+        return BaseActivity.buildBundle(pageMenuPosition);
     }
 
     @Override
@@ -130,8 +130,12 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
 
     @Override
     public void updateSubHeadingTitle() {
-        if (getActiveFragment() != null && getActiveFragment().getListFilter() != null) {
-            setSubHeadingTitle(getActiveFragment().getListFilter().toString());
+        if (getActiveFragment() != null) {
+            if (getActiveFragment().getListFilter() != null) {
+                setSubHeadingTitle(getActiveFragment().getListFilter().toString());
+            } else {
+                setSubHeadingTitle(getResources().getString(R.string.all));
+            }
         } else {
             setSubHeadingTitle("");
         }
@@ -168,4 +172,15 @@ public abstract class PagedBaseListActivity<T extends AbstractDomainObject> exte
     public BindingPagedListAdapter<?, ?> getAdapter() {
         return adapter;
     }
+
+    protected static int getStatusFilterPosition(Enum[] statusFilters, Enum filter) {
+        for (int i = 0; i < statusFilters.length; i++) {
+            if (statusFilters[i] == filter) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
 }

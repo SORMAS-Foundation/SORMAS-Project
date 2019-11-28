@@ -46,6 +46,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -82,6 +83,8 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsLayout;
+import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -146,6 +149,7 @@ public class CasesView extends AbstractView {
 	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private CheckBox casesWithCaseManagementData;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
+	private ComboBox relevanceStatusFilter;
 
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
@@ -153,8 +157,6 @@ public class CasesView extends AbstractView {
 	private MenuItem dearchiveItem;
 	private Button btnEnterBulkEditMode;
 	private Button btnLeaveBulkEditMode;
-
-	private Button switchArchivedActiveButton;
 
 	private Button resetButton;
 	private Button expandFiltersButton;
@@ -166,8 +168,8 @@ public class CasesView extends AbstractView {
 
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
-		if (criteria.getArchived() == null) {
-			criteria.archived(false);
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
 		grid = new CaseGrid(criteria);
@@ -293,7 +295,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(btnCustomCaseExport);
 			btnCustomCaseExport.addClickListener(e -> {
 				Window customExportWindow = VaadinUiUtil.createPopupWindow();
-				CaseCustomExportsLayout customExportsLayout = new CaseCustomExportsLayout(
+				CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(
 						() -> {
 							customExportWindow.close();
 						});
@@ -631,7 +633,6 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(portHealthCasesWithoutFacilityFilter);
 			}
-
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				casesWithCaseManagementData = new CheckBox();
 				CssStyles.style(casesWithCaseManagementData, CssStyles.CHECKBOX_FILTER_INLINE);
@@ -731,15 +732,20 @@ public class CasesView extends AbstractView {
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
 		{
-			// Show archived/active cases button
+			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
-				switchArchivedActiveButton = new Button(I18nProperties.getCaption(Captions.caseShowArchived));
-				switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-				switchArchivedActiveButton.addClickListener(e -> {
-					criteria.archived(Boolean.TRUE.equals(criteria.getArchived()) ? null : Boolean.TRUE);
+				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.caseActiveCases));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.caseAllCases));
+				relevanceStatusFilter.addValueChangeListener(e -> {
+					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
-				actionButtonsLayout.addComponent(switchArchivedActiveButton);
+				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
 			// Bulk operation dropdown
@@ -839,7 +845,9 @@ public class CasesView extends AbstractView {
 		resetButton.setVisible(criteria.hasAnyFilterActive());
 
 		updateStatusButtons();
-		updateArchivedButton();
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
 		if (caseOriginFilter != null) {
 			caseOriginFilter.setValue(criteria.getCaseOrigin());
 		}
@@ -938,30 +946,6 @@ public class CasesView extends AbstractView {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
-	}
-
-	private void updateArchivedButton() {
-		if (switchArchivedActiveButton == null) {
-			return;
-		}
-
-		if (Boolean.TRUE.equals(criteria.getArchived())) {
-			getViewTitleLabel().setValue(I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".archive"));
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.caseShowActive));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
-			if (archiveItem != null && dearchiveItem != null) {
-				archiveItem.setVisible(false);
-				dearchiveItem.setVisible(true);
-			}
-		} else {
-			getViewTitleLabel().setValue(originalViewTitle);
-			switchArchivedActiveButton.setCaption(I18nProperties.getCaption(Captions.caseShowArchived));
-			switchArchivedActiveButton.setStyleName(ValoTheme.BUTTON_LINK);
-			if (archiveItem != null && dearchiveItem != null) {
-				dearchiveItem.setVisible(false);
-				archiveItem.setVisible(true);
-			}
-		} 
 	}
 
 }

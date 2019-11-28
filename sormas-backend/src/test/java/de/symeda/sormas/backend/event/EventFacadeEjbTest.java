@@ -35,26 +35,25 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testDashboardEventListCreation() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		LocationDto eventLocation = new LocationDto();
-		eventLocation.setDistrict(getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
+		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, 
+				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
 
-		List<DashboardEventDto> dashboardEventDtos = getEventFacade().getNewEventsForDashboard(new EventCriteria().region(eventLocation.getRegion()).district(eventLocation.getDistrict()).disease(event.getDisease()).reportedBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1)), user.getUuid());
+		List<DashboardEventDto> dashboardEventDtos = getEventFacade().getNewEventsForDashboard(new EventCriteria().region(event.getEventLocation().getRegion())
+				.district(event.getEventLocation().getDistrict()).disease(event.getDisease()).reportedBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1)), user.getUuid());
 
 		// List should have one entry
 		assertEquals(1, dashboardEventDtos.size());
@@ -64,13 +63,12 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	public void testEventDeletion() {
 		Date since = new Date();
 		
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
-		LocationDto eventLocation = new LocationDto();
-		eventLocation.setDistrict(getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
+		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, 
+				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description");
 
@@ -88,11 +86,10 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		LocationDto eventLocation = new LocationDto();
-		eventLocation.setDistrict(getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
+		creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE,
+				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
 
 		List<EventIndexDto> results = getEventFacade().getIndexList(user.getUuid(), null, 0, 100, null);
 
@@ -102,11 +99,10 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testArchiveOrDearchiveEvent() {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		 RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		LocationDto eventLocation = new LocationDto();
-		eventLocation.setDistrict(getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, eventLocation);
+		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE,
+				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		creator.createEventParticipant(event.toReference(), eventPerson, "Description");
 		Date testStartDate = new Date();

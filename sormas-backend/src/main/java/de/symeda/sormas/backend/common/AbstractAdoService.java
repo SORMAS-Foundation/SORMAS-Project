@@ -125,7 +125,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		Root<ADO> root = cq.from(getElementClass());
 		
 		if (since != null) {
-			cq.where(createChangeDateFilter(cb, root, DateHelper.toTimestampUpper(since)));
+			cq.where(createChangeDateFilter(cb, root, since));
 		}
 		
 		cq.select(cb.count(root));
@@ -141,7 +141,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 		Predicate filter = createUserFilter(cb, cq, root, user);	
 		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, DateHelper.toTimestampUpper(since));
+			Predicate dateFilter = createChangeDateFilter(cb, root, since);
 			if (filter != null) {
 				filter = cb.and(filter, dateFilter);
 			} else {
@@ -215,6 +215,10 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Timestamp date) {		
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		return dateFilter;
+	}
+	
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Date date) {
+		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 	}
 	
 	@Override

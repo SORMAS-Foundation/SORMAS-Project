@@ -59,7 +59,7 @@ public class PersonController {
 	}
 
 	public void create(String firstName, String lastName, Consumer<PersonReferenceDto> doneConsumer) {
-		PersonDto person = createNewPerson();
+		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
 		person.setLastName(lastName);
 
@@ -109,12 +109,6 @@ public class PersonController {
 		} else {
 			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
 		}
-	}
-
-	private PersonDto createNewPerson() {
-		PersonDto person = new PersonDto();
-		person.setUuid(DataHelper.createUuid());
-		return person;
 	}
 
 	public CommitDiscardWrapperComponent<PersonCreateForm> getPersonCreateComponent(PersonDto person, UserRight editOrCreateUserRight) {

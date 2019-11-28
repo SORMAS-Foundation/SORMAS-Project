@@ -177,7 +177,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date));
-			Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, DateHelper.toTimestampUpper(date));
+			Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
 			contactPersonsFilter = cb.and(contactPersonsFilter, cb.or(dateFilter, contactDateFilter));
 		}
 		if (contactPersonsFilter != null) {

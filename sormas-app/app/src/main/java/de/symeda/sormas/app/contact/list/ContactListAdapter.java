@@ -24,13 +24,10 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import de.symeda.sormas.api.DiseaseHelper;
+
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
@@ -38,13 +35,10 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundAdapter;
-import de.symeda.sormas.app.core.adapter.databinding.DataBoundViewHolder;
-import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class ContactListAdapter extends BindingPagedListAdapter<Contact, RowReadContactListItemLayoutBinding> {
 
@@ -78,7 +72,7 @@ public class ContactListAdapter extends BindingPagedListAdapter<Contact, RowRead
                 pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
             }
 
-            if (DiseaseConfigurationHelper.getInstance().hasFollowUp(item.getCaseDisease())
+            if (DiseaseConfigurationCache.getInstance().hasFollowUp(item.getCaseDisease())
                     && (currentListFilter == null || currentListFilter != FollowUpStatus.NO_FOLLOW_UP)) {
                 int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(item, null);
                 int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(item, VisitStatus.COOPERATIVE);

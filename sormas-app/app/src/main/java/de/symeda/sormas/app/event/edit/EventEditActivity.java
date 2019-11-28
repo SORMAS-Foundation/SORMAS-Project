@@ -78,7 +78,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Event activityRootData) {
-        EventSection section = EventSection.fromOrdinal(menuItem.getKey());
+        EventSection section = EventSection.fromOrdinal(menuItem.getPosition());
         BaseEditFragment fragment;
         switch (section) {
             case EVENT_INFO:
@@ -110,7 +110,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
     @Override
     public void goToNewView() {
-        EventSection section = EventSection.fromOrdinal(getActivePage().getKey());
+        EventSection section = EventSection.fromOrdinal(getActivePage().getPosition());
 
         switch (section) {
             case EVENT_PARTICIPANTS:

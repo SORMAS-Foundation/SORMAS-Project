@@ -20,6 +20,7 @@ package de.symeda.sormas.app.backend.common;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -122,7 +123,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 166;
+	public static final int DATABASE_VERSION = 172;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1223,6 +1224,103 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"testedDisease character varying(255)," +
 							"testedDiseaseDetails character varying(512)," +
 							"UNIQUE(snapshot, uuid));");
+
+					// we had an invalid break here - re-execute db update for all versions in between
+
+				case 166:
+				case 167:
+				case 168:
+				case 169:
+				case 170:
+				case 171:
+
+					// this is a special solution to repair broken devices and at the same time not corrupt healthy ones
+
+					try {
+						currentVersion = 166;
+						getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN serotype varchar(255);");
+						getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN cqValue real;");
+					} catch(SQLException e) { }
+
+					try {
+						currentVersion = 167;
+						getDao(Sample.class).executeRaw("ALTER TABLE samples RENAME TO tmp_samples;");
+						getDao(Sample.class).executeRaw("CREATE TABLE samples (associatedCase_id BIGINT, comment VARCHAR, lab_id BIGINT, " +
+								"labDetails VARCHAR, labSampleID VARCHAR, noTestPossibleReason VARCHAR, received SMALLINT, receivedDate BIGINT, referredToUuid VARCHAR, " +
+								"reportDateTime BIGINT, reportLat DOUBLE PRECISION, reportLatLonAccuracy FLOAT, reportLon DOUBLE PRECISION, " +
+								"reportingUser_id BIGINT, sampleDateTime BIGINT, sampleMaterial VARCHAR, sampleMaterialText VARCHAR, " +
+								"sampleSource VARCHAR, shipmentDate BIGINT, shipmentDetails VARCHAR, shipped SMALLINT, specimenCondition VARCHAR, " +
+								"pathogenTestingRequested SMALLINT, additionalTestingRequested SMALLINT, requestedPathogenTestsString VARCHAR, requestedAdditionalTestsString VARCHAR, " +
+								"requestedOtherPathogenTests varchar(512), requestedOtherAdditionalTests varchar(512), samplePurpose varchar(255), pathogenTestResult varchar(255), " +
+								"changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT, lastOpenedDate BIGINT, " +
+								"localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, UNIQUE (snapshot, uuid));");
+						getDao(Sample.class).executeRaw("INSERT INTO samples(associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, " +
+								"received, receivedDate, referredToUuid, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, " +
+								"sampleDateTime, sampleMaterial, sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, " +
+								"pathogenTestingRequested, additionalTestingRequested, requestedPathogenTestsString, requestedAdditionalTestsString, " +
+								"requestedOtherPathogenTests, requestedOtherAdditionalTests, samplePurpose, pathogenTestResult, " +
+								"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) " +
+								"SELECT associatedCase_id, comment, lab_id, labDetails, labSampleID, noTestPossibleReason, " +
+								"received, receivedDate, referredToUuid, reportDateTime, reportLat, reportLatLonAccuracy, reportLon, reportingUser_id, " +
+								"sampleDateTime, sampleMaterial, sampleMaterialText, sampleSource, shipmentDate, shipmentDetails, shipped, specimenCondition, " +
+								"pathogenTestingRequested, additionalTestingRequested, requestedPathogenTestsString, requestedAdditionalTestsString, " +
+								"requestedOtherPathogenTests, requestedOtherAdditionalTests, 'EXTERNAL', pathogenTestResult, " +
+								"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_samples;");
+						getDao(Sample.class).executeRaw("DROP TABLE tmp_samples;");
+					} catch(SQLException e) { }
+
+					try {
+						currentVersion = 168;
+
+						getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN vaccine varchar(512);");
+						getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN rabiesType varchar(255);");
+
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hydrophobia varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN opisthotonus varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN anxietyStates varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN delirium varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN uproariousness varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN paresthesiaAroundWound varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN excessSalivation varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN insomnia varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN paralysis varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN excitation varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN dysphagia varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN aerophobia varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN hyperactivity varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN paresis varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN agitation varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN ascendingFlaccidParalysis varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN erraticBehaviour varchar(255);");
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN coma varchar(255);");
+
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN dogs varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN cats varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN canidae varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN rabbits varchar(255);");
+
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN prophylaxisStatus varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN dateOfProphylaxis timestamp;");
+
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureBite varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureTouch varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureScratch varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureLick varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureOther varchar(255);");
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN kindOfExposureDetails varchar(512);");
+
+						getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN animalVaccinationStatus varchar(255);");
+					} catch(SQLException e) { }
+
+					try {
+						currentVersion = 169;
+						getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN relationDescription varchar(512);");
+					} catch(SQLException e) { }
+
+					try {
+						currentVersion = 170;
+						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);");
+					} catch(SQLException e) { }
 
 					// ATTENTION: break should only be done after last version
 					break;

@@ -154,6 +154,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setNotifyingClinic(source.getNotifyingClinic());
         target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
 
+        target.setVaccine(source.getVaccine());
+        target.setRabiesType(source.getRabiesType());
+
         target.setCreationVersion(source.getCreationVersion());
     }
 
@@ -308,6 +311,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setSequelaeDetails(source.getSequelaeDetails());
         target.setNotifyingClinic(source.getNotifyingClinic());
         target.setNotifyingClinicDetails(source.getNotifyingClinicDetails());
+
+        target.setVaccine(source.getVaccine());
+        target.setRabiesType(source.getRabiesType());
 
         target.setCreationVersion(source.getCreationVersion());
     }

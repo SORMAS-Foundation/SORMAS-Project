@@ -42,6 +42,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
@@ -60,12 +61,12 @@ public class Sample extends CoreAdo {
 	public static final String TABLE_NAME = "samples";
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
-	public static final String SAMPLE_CODE = "sampleCode";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
+	public static final String SAMPLE_PURPOSE = "samplePurpose";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String LAB = "lab";
 	public static final String LAB_DETAILS = "labDetails";
@@ -90,7 +91,6 @@ public class Sample extends CoreAdo {
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
 	
 	private Case associatedCase;
-	private String sampleCode;
 	private String labSampleID;
 	private Date sampleDateTime;
 
@@ -101,6 +101,7 @@ public class Sample extends CoreAdo {
 	private Float reportLatLonAccuracy;
 
 	private SampleMaterial sampleMaterial;
+	private SamplePurpose samplePurpose;
 	private String sampleMaterialText;
 	private Facility lab;
 	private String labDetails;
@@ -136,14 +137,6 @@ public class Sample extends CoreAdo {
 	}
 	public void setAssociatedCase(Case associatedCase) {
 		this.associatedCase = associatedCase;
-	}
-
-	@Column(length=512)
-	public String getSampleCode() {
-		return sampleCode;
-	}
-	public void setSampleCode(String sampleCode) {
-		this.sampleCode = sampleCode;
 	}
 
 	@Column(length=512)
@@ -197,9 +190,18 @@ public class Sample extends CoreAdo {
 	public void setSampleMaterialText(String sampleMaterialText) {
 		this.sampleMaterialText = sampleMaterialText;
 	}
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public SamplePurpose getSamplePurpose() {
+		return samplePurpose;
+	}
+	public void setSamplePurpose(SamplePurpose samplePurpose) {
+		this.samplePurpose = samplePurpose;
+	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn
 	public Facility getLab() {
 		return lab;
 	}

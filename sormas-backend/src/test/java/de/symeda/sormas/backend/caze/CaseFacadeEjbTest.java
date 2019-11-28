@@ -216,10 +216,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		String districtName = "District";
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", districtName, "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		String lastName = "Person";
+		PersonDto cazePerson = creator.createPerson("Case", lastName);
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 
@@ -231,6 +233,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have one entry
 		assertEquals(1, results.size());
+		
+		assertEquals(districtName, results.get(0).getDistrictName());
+		assertEquals(lastName, results.get(0).getPersonLastName());
 	}
 
 	@Test
@@ -245,8 +250,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
-		EpiDataTravelDto travel = new EpiDataTravelDto();
-		travel.setUuid(DataHelper.createUuid());
+		EpiDataTravelDto travel = EpiDataTravelDto.build();
 		travel.setTravelDestination("Ghana");
 		travel.setTravelDateFrom(new Date());
 		travel.setTravelDateTo(new Date());

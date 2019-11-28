@@ -15,7 +15,6 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -32,7 +31,7 @@ public class ClinicalCourseController {
 
 	public void openClinicalVisitCreateForm(ClinicalCourseReferenceDto clinicalCourse, String caseUuid, Runnable callback) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.buildClinicalVisit(clinicalCourse, new SymptomsDto(), caze.getDisease());
+		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.build(clinicalCourse, caze.getDisease());
 		ClinicalVisitForm form = new ClinicalVisitForm(true, clinicalVisit.getDisease(),
 				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
 				UserRight.CLINICAL_VISIT_CREATE);

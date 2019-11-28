@@ -141,7 +141,7 @@
                             android:fontFamily="sans-serif-medium"
                             android:textAllCaps="true"
                             app:value="@{data.person.sex}"
-                            app:defaultValue='@{@string/value_gender_unknown}'
+                            app:defaultValue='@{@string/value_sex_unknown}'
                             />
 
                         <ImageView

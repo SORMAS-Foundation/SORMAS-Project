@@ -63,10 +63,9 @@ public class PathogenTestController {
 
 	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback,
 			BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
-		PathogenTestForm createForm = new PathogenTestForm(
-				FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid()), true,
-				UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
-		createForm.setValue(PathogenTestDto.build(sampleRef, UserProvider.getCurrent().getUser()));
+		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
+		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(
 				createForm, createForm.getFieldGroup());
 

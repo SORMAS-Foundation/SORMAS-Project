@@ -32,6 +32,7 @@ public class SampleExportDto implements Serializable {
 	private String disease;
 	private Date sampleDateTime;
 	private String sampleMaterial;
+	private String samplePurpose;
 	private SampleSource sampleSource;
 	private String lab;
 	private PathogenTestResultType pathogenTestResult;
@@ -85,7 +86,7 @@ public class SampleExportDto implements Serializable {
 	private String otherAdditionalTestsDetails = "";
 
 	public SampleExportDto(long id, String uuid, String labSampleId, String epidNumber, String firstName, String lastName, 
-			Disease disease, String diseaseDetails, Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails,
+			Disease disease, String diseaseDetails, Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails, SamplePurpose samplePurpose,
 			SampleSource sampleSource, String laboratoryUuid, String laboratory, String laboratoryDetails,
 			PathogenTestResultType pathogenTestResult, Boolean pathogenTestingRequested, String requestedPathogenTests, String requestedOtherPathogenTests, 
 			Boolean additionalTestingRequested, String requestedAdditionalTests, String requestedOtherAdditionalTests, boolean shipped, Date shipmentDate,
@@ -103,6 +104,8 @@ public class SampleExportDto implements Serializable {
 		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
 		this.sampleDateTime = sampleDateTime;
 		this.sampleMaterial = SampleMaterial.toString(sampleMaterial, sampleMaterialDetails);
+		if( samplePurpose != null)
+			this.samplePurpose = samplePurpose.toString();
 		this.sampleSource = sampleSource;
 		this.lab = FacilityHelper.buildFacilityString(laboratoryUuid, laboratory, laboratoryDetails);
 		this.pathogenTestResult = pathogenTestResult;
@@ -224,8 +227,17 @@ public class SampleExportDto implements Serializable {
 	public void setSampleMaterial(String sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
 	}
-
+	
 	@Order(12)
+	public String getSamplePurpose() {
+		return samplePurpose;
+	}
+	
+	public void setSamplePurpose(String samplePurpose) {
+		this.samplePurpose = samplePurpose;
+	}
+
+	@Order(13)
 	public SampleSource getSampleSource() {
 		return sampleSource;
 	}
@@ -234,7 +246,7 @@ public class SampleExportDto implements Serializable {
 		this.sampleSource = sampleSource;
 	}
 
-	@Order(13)
+	@Order(14)
 	public String getLab() {
 		return lab;
 	}
@@ -243,7 +255,7 @@ public class SampleExportDto implements Serializable {
 		this.lab = lab;
 	}
 
-	@Order(14)
+	@Order(15)
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;
 	}
@@ -252,7 +264,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestResult = pathogenTestResult;
 	}
 
-	@Order(15)
+	@Order(16)
 	public Boolean getPathogenTestingRequested() {
 		return pathogenTestingRequested;
 	}
@@ -261,7 +273,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestingRequested = pathogenTestingRequested;
 	}
 
-	@Order(16)
+	@Order(17)
 	public Set<PathogenTestType> getRequestedPathogenTests() {
 		return requestedPathogenTests;
 	}
@@ -270,7 +282,7 @@ public class SampleExportDto implements Serializable {
 		this.requestedPathogenTests = requestedPathogenTests;
 	}
 
-	@Order(17)
+	@Order(18)
 	public String getRequestedOtherPathogenTests() {
 		return requestedOtherPathogenTests;
 	}
@@ -279,7 +291,7 @@ public class SampleExportDto implements Serializable {
 		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
 	}
 
-	@Order(20)
+	@Order(21)
 	public Boolean getAdditionalTestingRequested() {
 		return additionalTestingRequested;
 	}
@@ -288,7 +300,7 @@ public class SampleExportDto implements Serializable {
 		this.additionalTestingRequested = additionalTestingRequested;
 	}
 
-	@Order(21)
+	@Order(22)
 	public Set<AdditionalTestType> getRequestedAdditionalTests() {
 		return requestedAdditionalTests;
 	}
@@ -297,7 +309,7 @@ public class SampleExportDto implements Serializable {
 		this.requestedAdditionalTests = requestedAdditionalTests;
 	}
 
-	@Order(22)
+	@Order(23)
 	public String getRequestedOtherAdditionalTests() {
 		return requestedOtherAdditionalTests;
 	}
@@ -306,7 +318,7 @@ public class SampleExportDto implements Serializable {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
 
-	@Order(23)
+	@Order(24)
 	public boolean isShipped() {
 		return shipped;
 	}
@@ -315,7 +327,7 @@ public class SampleExportDto implements Serializable {
 		this.shipped = shipped;
 	}
 
-	@Order(24)
+	@Order(25)
 	public Date getShipmentDate() {
 		return shipmentDate;
 	}
@@ -324,7 +336,7 @@ public class SampleExportDto implements Serializable {
 		this.shipmentDate = shipmentDate;
 	}
 
-	@Order(25)
+	@Order(26)
 	public String getShipmentDetails() {
 		return shipmentDetails;
 	}
@@ -333,7 +345,7 @@ public class SampleExportDto implements Serializable {
 		this.shipmentDetails = shipmentDetails;
 	}
 
-	@Order(26)
+	@Order(27)
 	public boolean isReceived() {
 		return received;
 	}
@@ -342,7 +354,7 @@ public class SampleExportDto implements Serializable {
 		this.received = received;
 	}
 
-	@Order(27)
+	@Order(28)
 	public Date getReceivedDate() {
 		return receivedDate;
 	}
@@ -351,7 +363,7 @@ public class SampleExportDto implements Serializable {
 		this.receivedDate = receivedDate;
 	}
 
-	@Order(30)
+	@Order(31)
 	public SpecimenCondition getSpecimenCondition() {
 		return specimenCondition;
 	}
@@ -360,7 +372,7 @@ public class SampleExportDto implements Serializable {
 		this.specimenCondition = specimenCondition;
 	}
 
-	@Order(31)
+	@Order(32)
 	public String getNoTestPossibleReason() {
 		return noTestPossibleReason;
 	}
@@ -369,7 +381,7 @@ public class SampleExportDto implements Serializable {
 		this.noTestPossibleReason = noTestPossibleReason;
 	}
 
-	@Order(32)
+	@Order(33)
 	public String getComment() {
 		return comment;
 	}
@@ -378,7 +390,7 @@ public class SampleExportDto implements Serializable {
 		this.comment = comment;
 	}
 
-	@Order(33)
+	@Order(34)
 	public String getReferredToUuid() {
 		return referredToUuid;
 	}
@@ -387,7 +399,7 @@ public class SampleExportDto implements Serializable {
 		this.referredToUuid = referredToUuid;
 	}
 
-	@Order(34)
+	@Order(35)
 	public String getCaseUuid() {
 		return caseUuid;
 	}
@@ -396,7 +408,7 @@ public class SampleExportDto implements Serializable {
 		this.caseUuid = caseUuid;
 	}
 
-	@Order(35)
+	@Order(36)
 	public String getCaseAge() {
 		return caseAge;
 	}
@@ -405,7 +417,7 @@ public class SampleExportDto implements Serializable {
 		this.caseAge = caseAge;
 	}
 
-	@Order(36)
+	@Order(37)
 	public Sex getCaseSex() {
 		return caseSex;
 	}
@@ -414,7 +426,7 @@ public class SampleExportDto implements Serializable {
 		this.caseSex = caseSex;
 	}
 
-	@Order(41)
+	@Order(42)
 	public String getCaseAddress() {
 		return caseAddress;
 	}
@@ -423,7 +435,7 @@ public class SampleExportDto implements Serializable {
 		this.caseAddress = caseAddress;
 	}
 
-	@Order(42)
+	@Order(43)
 	public Date getCaseReportDate() {
 		return caseReportDate;
 	}
@@ -432,7 +444,7 @@ public class SampleExportDto implements Serializable {
 		this.caseReportDate = caseReportDate;
 	}
 
-	@Order(43)
+	@Order(44)
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -441,7 +453,7 @@ public class SampleExportDto implements Serializable {
 		this.caseClassification = caseClassification;
 	}
 
-	@Order(44)
+	@Order(45)
 	public CaseOutcome getCaseOutcome() {
 		return caseOutcome;
 	}
@@ -450,7 +462,7 @@ public class SampleExportDto implements Serializable {
 		this.caseOutcome = caseOutcome;
 	}
 
-	@Order(45)
+	@Order(46)
 	public String getCaseRegion() {
 		return caseRegion;
 	}
@@ -459,7 +471,7 @@ public class SampleExportDto implements Serializable {
 		this.caseRegion = caseRegion;
 	}
 
-	@Order(46)
+	@Order(47)
 	public String getCaseDistrict() {
 		return caseDistrict;
 	}
@@ -468,7 +480,7 @@ public class SampleExportDto implements Serializable {
 		this.caseDistrict = caseDistrict;
 	}
 
-	@Order(47)
+	@Order(48)
 	public String getCaseCommunity() {
 		return caseCommunity;
 	}
@@ -477,7 +489,7 @@ public class SampleExportDto implements Serializable {
 		this.caseCommunity = caseCommunity;
 	}
 
-	@Order(48)
+	@Order(49)
 	public String getCaseFacility() {
 		return caseFacility;
 	}
@@ -486,7 +498,7 @@ public class SampleExportDto implements Serializable {
 		this.caseFacility = caseFacility;
 	}
 
-	@Order(50)
+	@Order(51)
 	public String getPathogenTestType1() {
 		return pathogenTestType1;
 	}
@@ -495,7 +507,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestType1 = pathogenTestType1;
 	}
 
-	@Order(51)
+	@Order(52)
 	public String getPathogenTestDisease1() {
 		return pathogenTestDisease1;
 	}
@@ -504,7 +516,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDisease1 = pathogenTestDisease1;
 	}
 
-	@Order(52)
+	@Order(53)
 	public Date getPathogenTestDateTime1() {
 		return pathogenTestDateTime1;
 	}
@@ -513,7 +525,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDateTime1 = pathogenTestDateTime1;
 	}
 
-	@Order(53)
+	@Order(54)
 	public String getPathogenTestLab1() {
 		return pathogenTestLab1;
 	}
@@ -522,7 +534,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestLab1 = pathogenTestLab1;
 	}
 
-	@Order(54)
+	@Order(55)
 	public PathogenTestResultType getPathogenTestResult1() {
 		return pathogenTestResult1;
 	}
@@ -531,7 +543,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestResult1 = pathogenTestResult1;
 	}
 
-	@Order(55)
+	@Order(56)
 	public Boolean getPathogenTestVerified1() {
 		return pathogenTestVerified1;
 	}
@@ -540,7 +552,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestVerified1 = pathogenTestVerified1;
 	}
 
-	@Order(60)
+	@Order(61)
 	public String getPathogenTestType2() {
 		return pathogenTestType2;
 	}
@@ -549,7 +561,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestType2 = pathogenTestType2;
 	}
 
-	@Order(61)
+	@Order(62)
 	public String getPathogenTestDisease2() {
 		return pathogenTestDisease2;
 	}
@@ -558,7 +570,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDisease2 = pathogenTestDisease2;
 	}
 
-	@Order(62)
+	@Order(63)
 	public Date getPathogenTestDateTime2() {
 		return pathogenTestDateTime2;
 	}
@@ -567,7 +579,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDateTime2 = pathogenTestDateTime2;
 	}
 
-	@Order(63)
+	@Order(64)
 	public String getPathogenTestLab2() {
 		return pathogenTestLab2;
 	}
@@ -576,7 +588,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestLab2 = pathogenTestLab2;
 	}
 
-	@Order(64)
+	@Order(65)
 	public PathogenTestResultType getPathogenTestResult2() {
 		return pathogenTestResult2;
 	}
@@ -585,7 +597,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestResult2 = pathogenTestResult2;
 	}
 
-	@Order(65)
+	@Order(66)
 	public Boolean getPathogenTestVerified2() {
 		return pathogenTestVerified2;
 	}
@@ -594,7 +606,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestVerified2 = pathogenTestVerified2;
 	}
 
-	@Order(70)
+	@Order(71)
 	public String getPathogenTestType3() {
 		return pathogenTestType3;
 	}
@@ -603,7 +615,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestType3 = pathogenTestType3;
 	}
 
-	@Order(71)
+	@Order(72)
 	public String getPathogenTestDisease3() {
 		return pathogenTestDisease3;
 	}
@@ -612,7 +624,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDisease3 = pathogenTestDisease3;
 	}
 
-	@Order(72)
+	@Order(73)
 	public Date getPathogenTestDateTime3() {
 		return pathogenTestDateTime3;
 	}
@@ -621,7 +633,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDateTime3 = pathogenTestDateTime3;
 	}
 
-	@Order(73)
+	@Order(74)
 	public String getPathogenTestLab3() {
 		return pathogenTestLab3;
 	}
@@ -630,7 +642,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestLab3 = pathogenTestLab3;
 	}
 
-	@Order(74)
+	@Order(75)
 	public PathogenTestResultType getPathogenTestResult3() {
 		return pathogenTestResult3;
 	}
@@ -639,7 +651,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestResult3 = pathogenTestResult3;
 	}
 
-	@Order(75)
+	@Order(76)
 	public Boolean getPathogenTestVerified3() {
 		return pathogenTestVerified3;
 	}
@@ -648,7 +660,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestVerified3 = pathogenTestVerified3;
 	}
 
-	@Order(76)
+	@Order(77)
 	public String getOtherPathogenTestsDetails() {
 		return otherPathogenTestsDetails;
 	}
@@ -657,7 +669,7 @@ public class SampleExportDto implements Serializable {
 		this.otherPathogenTestsDetails = otherPathogenTestsDetails;
 	}
 
-	@Order(80)
+	@Order(81)
 	public AdditionalTestDto getAdditionalTest() {
 		return additionalTest;
 	}
@@ -666,7 +678,7 @@ public class SampleExportDto implements Serializable {
 		this.additionalTest = additionalTest;
 	}
 
-	@Order(81)
+	@Order(82)
 	public String getOtherAdditionalTestsDetails() {
 		return otherAdditionalTestsDetails;
 	}

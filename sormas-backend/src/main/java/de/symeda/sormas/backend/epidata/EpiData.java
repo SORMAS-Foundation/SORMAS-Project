@@ -31,8 +31,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -55,7 +58,11 @@ public class EpiData extends AbstractDomainObject {
 	public static final String PRIMATES = "primates";
 	public static final String SWINE = "swine";
 	public static final String BIRDS = "birds";
+	public static final String RABBITS = "rabbits";
 	public static final String CATTLE = "cattle";
+	public static final String DOGS = "dogs";
+	public static final String CATS = "cats";
+	public static final String CANIDAE = "canidae";
 	public static final String OTHER_ANIMALS = "otherAnimals";
 	public static final String OTHER_ANIMALS_DETAILS = "otherAnimalsDetails";
 	public static final String WATER_SOURCE = "waterSource";
@@ -63,10 +70,20 @@ public class EpiData extends AbstractDomainObject {
 	public static final String WATER_BODY = "waterBody";
 	public static final String WATER_BODY_DETAILS = "waterBodyDetails";
 	public static final String TICKBITE = "tickBite";
+	public static final String KIND_OF_EXPOSURE_BITE = "kindOfExposureBite";
+	public static final String KIND_OF_EXPOSURE_TOUCH = "kindOfExposureTouch";
+	public static final String KIND_OF_EXPOSURE_SCRATCH = "kindOfExposureScratch";
+	public static final String KIND_OF_EXPOSURE_LICK = "kindOfExposureLick";
+	public static final String KIND_OF_EXPOSURE_OTHER = "kindOfExposureOther";
+	public static final String KIND_OF_EXPOSURE_DETAILS = "kindOfExposureDetails";
 	public static final String DATE_OF_LAST_EXPOSURE = "dateOfLastExposure";
 	public static final String PLACE_OF_LAST_EXPOSURE = "placeOfLastExposure";
 	public static final String ANIMAL_CONDITION = "animalCondition";
+	public static final String ANIMAL_VACCINATION_STATUS = "animalVaccinationStatus";
 	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
+	public static final String PROPHYLAXIS_STATUS = "prophylaxisStatus";
+	public static final String DATE_OF_PROPHYLAXIS = "dateOfProphylaxis";
+	
 	
 	private YesNoUnknown burialAttended;
 	private YesNoUnknown gatheringAttended;
@@ -101,7 +118,11 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown primates;
 	private YesNoUnknown swine;
 	private YesNoUnknown birds;
+	private YesNoUnknown rabbits;
 	private YesNoUnknown cattle;
+	private YesNoUnknown dogs;
+	private YesNoUnknown cats;
+	private YesNoUnknown canidae;
 	private YesNoUnknown otherAnimals;
 	private String otherAnimalsDetails;
 	private WaterSource waterSource;
@@ -110,9 +131,18 @@ public class EpiData extends AbstractDomainObject {
 	private String waterBodyDetails;
 	private YesNoUnknown tickBite;
 	private YesNoUnknown fleaBite;
+	private YesNoUnknown kindOfExposureBite;
+	private YesNoUnknown kindOfExposureTouch;
+	private YesNoUnknown kindOfExposureScratch;
+	private YesNoUnknown kindOfExposureLick;
+	private YesNoUnknown kindOfExposureOther;
+	private String kindOfExposureDetails;
 	private Date dateOfLastExposure;
 	private String placeOfLastExposure;
 	private AnimalCondition animalCondition;
+	private Vaccination animalVaccinationStatus;
+	private YesNoUnknown prophylaxisStatus;
+	private Date dateOfProphylaxis;
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getBurialAttended() {
@@ -177,6 +207,14 @@ public class EpiData extends AbstractDomainObject {
 	public void setBirds(YesNoUnknown birds) {
 		this.birds = birds;
 	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getRabbits() {
+		return rabbits;
+	}
+	public void setRabbits(YesNoUnknown rabbits) {
+		this.rabbits = rabbits;
+	}
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getCattle() {
@@ -184,6 +222,28 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setCattle(YesNoUnknown cattle) {
 		this.cattle = cattle;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getDogs() {
+		return dogs;
+	}
+	public void setDogs(YesNoUnknown dogs) {
+		this.dogs = dogs;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCats() {
+		return cats;
+	}
+	public void setCats(YesNoUnknown cats) {
+		this.cats = cats;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCanidae() {
+		return canidae;
+	}
+	public void setCanidae(YesNoUnknown canidae) {
+		this.canidae = canidae;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -250,6 +310,54 @@ public class EpiData extends AbstractDomainObject {
 		this.fleaBite = fleaBite;
 	}
 	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureBite() {
+		return kindOfExposureBite;
+	}
+	public void setKindOfExposureBite(YesNoUnknown kindOfExposureBite) {
+		this.kindOfExposureBite = kindOfExposureBite;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureTouch() {
+		return kindOfExposureTouch;
+	}
+	public void setKindOfExposureTouch(YesNoUnknown kindOfExposureTouch) {
+		this.kindOfExposureTouch = kindOfExposureTouch;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureScratch() {
+		return kindOfExposureScratch;
+	}
+	public void setKindOfExposureScratch(YesNoUnknown kindOfExposureScratch) {
+		this.kindOfExposureScratch = kindOfExposureScratch;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureLick() {
+		return kindOfExposureLick;
+	}
+	public void setKindOfExposureLick(YesNoUnknown kindOfExposureLick) {
+		this.kindOfExposureLick = kindOfExposureLick;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getKindOfExposureOther() {
+		return kindOfExposureOther;
+	}
+	public void setKindOfExposureOther(YesNoUnknown kindOfExposureOther) {
+		this.kindOfExposureOther = kindOfExposureOther;
+	}
+	
+	@Column(length=512)
+	public String getKindOfExposureDetails() {
+		return kindOfExposureDetails;
+	}
+	public void setKindOfExposureDetails(String kindOfExposureDetails) {
+		this.kindOfExposureDetails = kindOfExposureDetails;
+	}
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getDateOfLastExposure() {
 		return dateOfLastExposure;
@@ -265,13 +373,36 @@ public class EpiData extends AbstractDomainObject {
 	public void setPlaceOfLastExposure(String placeOfLastExposure) {
 		this.placeOfLastExposure = placeOfLastExposure;
 	}
-
+	
 	@Enumerated(EnumType.STRING)
 	public AnimalCondition getAnimalCondition() {
 		return animalCondition;
 	}
 	public void setAnimalCondition(AnimalCondition animalCondition) {
 		this.animalCondition = animalCondition;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Vaccination getAnimalVaccinationStatus() {
+		return animalVaccinationStatus;
+	}
+	public void setAnimalVaccinationStatus(Vaccination animalVaccinationStatus) {
+		this.animalVaccinationStatus = animalVaccinationStatus;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getProphylaxisStatus() {
+		return prophylaxisStatus;
+	}
+	public void setProphylaxisStatus(YesNoUnknown prophylaxisStatus) {
+		this.prophylaxisStatus = prophylaxisStatus;
+	}
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfProphylaxis() {
+		return dateOfProphylaxis;
+	}
+	public void setDateOfProphylaxis(Date dateOfProphylaxis) {
+		this.dateOfProphylaxis = dateOfProphylaxis;
 	}
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = EpiDataBurial.EPI_DATA)

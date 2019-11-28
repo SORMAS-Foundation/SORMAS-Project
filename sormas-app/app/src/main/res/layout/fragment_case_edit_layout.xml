@@ -156,6 +156,13 @@
                     app:dependencyParentValue="@{Disease.DENGUE}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_rabiesType"
+                    app:value="@={data.rabiesType}"
+                    app:dependencyParentField="@{caseDataDisease}"
+                    app:dependencyParentValue="@{Disease.RABIES}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
                 <LinearLayout
@@ -300,6 +307,13 @@
                     android:id="@+id/caseData_smallpoxVaccinationReceived"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:value="@={data.smallpoxVaccinationReceived}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_vaccine"
+                    app:value="@={data.vaccine}"
+                    app:dependencyParentField="@{caseDataVaccination}"
+                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

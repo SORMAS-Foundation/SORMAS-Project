@@ -66,10 +66,10 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 					DataImporter importer;
 					switch (infrastructureType) {
 					case POINT_OF_ENTRY:
-						importer = new PointOfEntryImporter(file, currentUser, currentUI);
+						importer = new PointOfEntryImporter(file, currentUser);
 						break;
 					case POPULATION_DATA:
-						importer = new PopulationDataImporter(file, currentUser, currentUI, dfCollectionDate.getValue());
+						importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue());
 						break;
 					default:
 						throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());
@@ -80,7 +80,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 						public void accept(StreamResource resource) {
 							extendDownloadErrorReportButton(resource);
 						}
-					});
+					}, currentUI);
 				} catch (IOException e) {
 					new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 				}

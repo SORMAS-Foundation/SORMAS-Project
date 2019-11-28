@@ -112,7 +112,6 @@ import de.symeda.sormas.api.statistics.CaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -634,17 +633,29 @@ public class CaseFacadeEjb implements CaseFacade {
 							switch (++count) {
 							case 1:
 								exportDto.setSampleDateTime1(sample.getSampleDateTime());
-								exportDto.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+								if (sample.getLab() != null) {
+									exportDto
+											.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+													sample.getLab().getName(), sample.getLabDetails()));
+								}
 								exportDto.setSampleResult1(sample.getPathogenTestResult());
 								break;
 							case 2:
 								exportDto.setSampleDateTime2(sample.getSampleDateTime());
-								exportDto.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+								if (sample.getLab() != null) {
+									exportDto
+											.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+													sample.getLab().getName(), sample.getLabDetails()));
+								}
 								exportDto.setSampleResult2(sample.getPathogenTestResult());
 								break;
 							case 3:
 								exportDto.setSampleDateTime3(sample.getSampleDateTime());
-								exportDto.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()));
+								if (sample.getLab() != null) {
+									exportDto
+											.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+													sample.getLab().getName(), sample.getLabDetails()));
+								}
 								exportDto.setSampleResult3(sample.getPathogenTestResult());
 								break;
 							default:
@@ -1616,6 +1627,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
+		target.setRabiesType(source.getRabiesType());
 		if (source.getReportDate() != null) {
 			target.setReportDate(source.getReportDate());
 		} else { // make sure we do have a report date
@@ -1668,6 +1680,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccination(source.getVaccination());
 		target.setVaccinationDoses(source.getVaccinationDoses());
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
+		target.setVaccine(source.getVaccine());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setVaccinationDate(source.getVaccinationDate());
@@ -1712,6 +1725,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
+		target.setRabiesType(source.getRabiesType());
 		target.setCaseClassification(source.getCaseClassification());
 		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
@@ -1757,6 +1771,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setVaccination(source.getVaccination());
 		target.setVaccinationDoses(source.getVaccinationDoses());
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
+		target.setVaccine(source.getVaccine());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
 		target.setVaccinationDate(source.getVaccinationDate());
@@ -3023,7 +3038,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Sample> samples = sampleService.findBy(new SampleCriteria().caze(otherCase.toReference()), null);
 		for (Sample sample : samples) {
 			if (cloning) {
-				SampleDto newSample = SampleDto.buildSample(sample.getReportingUser().toReference(),
+				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(),
 						leadCase.toReference());
 				fillDto(newSample, SampleFacadeEjb.toDto(sample), cloning);
 				sampleFacade.saveSample(newSample, false);
@@ -3061,7 +3076,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		TherapyReferenceDto leadCaseTherapyReference = new TherapyReferenceDto(leadCase.getTherapy().getUuid());
 		for (Treatment treatment : treatments) {
 			if (cloning) {
-				TreatmentDto newTreatment = TreatmentDto.buildTreatment(leadCaseTherapyReference);
+				TreatmentDto newTreatment = TreatmentDto.build(leadCaseTherapyReference);
 				fillDto(newTreatment, TreatmentFacadeEjb.toDto(treatment), cloning);
 				treatmentFacade.saveTreatment(newTreatment);
 			} else {
@@ -3092,8 +3107,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				.clinicalCourse(new ClinicalCourseReferenceDto(otherCase.getClinicalCourse().getUuid())));
 		for (ClinicalVisit clinicalVisit : clinicalVisits) {
 			if (cloning) {
-				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.buildClinicalVisit(
-						leadCaseData.getClinicalCourse().toReference(), SymptomsDto.build(), leadCase.getDisease());
+				ClinicalVisitDto newClinicalVisit = ClinicalVisitDto.build(
+						leadCaseData.getClinicalCourse().toReference(), leadCase.getDisease());
 				fillDto(newClinicalVisit, ClinicalVisitFacadeEjb.toDto(clinicalVisit), cloning);
 				clinicalVisitFacade.saveClinicalVisit(newClinicalVisit, leadCase.getUuid(), false);
 			} else {

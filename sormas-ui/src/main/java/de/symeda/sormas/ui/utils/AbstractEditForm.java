@@ -394,6 +394,18 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 	}
 
+	protected void setVisibleClear(boolean visible, String ...fieldOrPropertyIds) {
+		for (String propertyId : fieldOrPropertyIds) {
+			if (visible == false || isVisibleAllowed(propertyId)) {
+				Field<?> field = getField(propertyId);
+				if (!visible) {
+					field.clear();
+				}
+				field.setVisible(visible);
+			}
+		}
+	}
+
 	protected void discard(String ...propertyIds) {
 		for (String propertyId : propertyIds) {
 			getField(propertyId).discard();

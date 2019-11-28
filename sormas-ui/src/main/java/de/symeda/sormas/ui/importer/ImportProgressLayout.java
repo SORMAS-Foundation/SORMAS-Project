@@ -142,21 +142,21 @@ public class ImportProgressLayout extends VerticalLayout {
 		warningIcon.setWidth(35, Unit.PIXELS);
 	}
 	
-	public void updateProgress(ImportResult result) {		
+	public void updateProgress(ImportLineResult result) {		
 		currentUI.access(new Runnable() {
 			@Override
 			public void run() {
 				processedImportsCount++;
-				if (result == ImportResult.SUCCESS) {
+				if (result == ImportLineResult.SUCCESS) {
 					successfulImportsCount++;
 					successfulImportsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importImports), successfulImportsCount));
-				} else if (result == ImportResult.ERROR) {
+				} else if (result == ImportLineResult.ERROR) {
 					importErrorsCount++;
 					importErrorsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importErrors), importErrorsCount));
-				} else if (result == ImportResult.SKIPPED) {
+				} else if (result == ImportLineResult.SKIPPED) {
 					importSkipsCount++;
 					importSkipsLabel.setValue(String.format(I18nProperties.getCaption(Captions.importSkips), importSkipsCount));
-				} else if (result == ImportResult.DUPLICATE) {
+				} else if (result == ImportLineResult.DUPLICATE) {
 					importDuplicatesCount++;
 					importDuplicatesLabel.setValue(String.format(I18nProperties.getCaption(Captions.importDuplicates), importDuplicatesCount));
 				}

@@ -36,6 +36,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -109,7 +110,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = AbstractAdoService.and(cb, filter, dateFilter);	
 		}
 
@@ -370,10 +371,14 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		if (criteria.getSpecimenCondition() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
 		}
-		if (Boolean.TRUE.equals(criteria.getArchived())) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
-		} else {
-			filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+							cb.equal(caze.get(Case.ARCHIVED), false),
+							cb.isNull(caze.get(Case.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+			}
 		}
 		if (criteria.getDeleted() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Sample.DELETED), criteria.getDeleted()));

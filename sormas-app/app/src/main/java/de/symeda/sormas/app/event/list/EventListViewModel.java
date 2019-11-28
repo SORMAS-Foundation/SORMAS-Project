@@ -43,7 +43,7 @@ public class EventListViewModel extends ViewModel {
     public EventListViewModel() {
         eventDataFactory = new EventDataFactory();
         EventCriteria eventCriteria = new EventCriteria();
-        eventCriteria.eventStatus(EventStatus.POSSIBLE);
+        eventCriteria.eventStatus(null);
         eventDataFactory.setEventCriteria(eventCriteria);
 
         PagedList.Config config = new PagedList.Config.Builder()

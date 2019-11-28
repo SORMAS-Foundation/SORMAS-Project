@@ -22,19 +22,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.user.User;
 
-public class DiseaseConfigurationHelper {
+public class DiseaseConfigurationCache {
 
-    private static DiseaseConfigurationHelper instance;
+    private static DiseaseConfigurationCache instance;
 
     private List<Disease> activeDiseases = new ArrayList<>();
     private List<Disease> primaryDiseases = new ArrayList<>();
@@ -42,11 +39,12 @@ public class DiseaseConfigurationHelper {
     private List<Disease> followUpEnabledDiseases = new ArrayList<>();
     private Map<Disease, Integer> followUpDurations = new HashMap<>();
 
-    private DiseaseConfigurationHelper() {
+    private DiseaseConfigurationCache() {
         for (Disease disease : Disease.values()) {
             DiseaseConfiguration configuration = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(disease);
             if (configuration == null) {
-                continue;
+                //Create empty DiseaseConfiguration to use the default values.
+                configuration = new DiseaseConfiguration();
             }
 
             boolean diseaseActive = false;
@@ -143,12 +141,15 @@ public class DiseaseConfigurationHelper {
         return followUpDurations.get(disease);
     }
 
-    public static DiseaseConfigurationHelper getInstance() {
+    public static DiseaseConfigurationCache getInstance() {
         if (instance == null) {
-            instance = new DiseaseConfigurationHelper();
+            instance = new DiseaseConfigurationCache();
         }
 
         return instance;
     }
 
+    public static void reset(){
+        instance = new DiseaseConfigurationCache();
+    }
 }

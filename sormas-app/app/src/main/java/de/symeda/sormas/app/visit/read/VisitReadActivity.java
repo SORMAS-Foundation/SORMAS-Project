@@ -21,6 +21,8 @@ package de.symeda.sormas.app.visit.read;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -57,7 +59,7 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setContactUuid(contactUuid);
     }
@@ -79,7 +81,7 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Visit activityRootData) {
-        VisitSection section = VisitSection.fromOrdinal(menuItem.getKey());
+        VisitSection section = VisitSection.fromOrdinal(menuItem.getPosition());
         BaseReadFragment fragment;
         switch (section) {
             case VISIT_INFO:
@@ -101,7 +103,7 @@ public class VisitReadActivity extends BaseReadActivity<Visit> {
 
     @Override
     public void goToEditView() {
-        VisitSection section = VisitSection.fromOrdinal(getActivePage().getKey());
+        VisitSection section = VisitSection.fromOrdinal(getActivePage().getPosition());
         VisitEditActivity.startActivity(getContext(), getRootUuid(), contactUuid, section);
     }
 }

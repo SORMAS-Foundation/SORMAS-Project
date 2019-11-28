@@ -85,7 +85,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Contact activityRootData) {
-        ContactSection section = ContactSection.fromOrdinal(menuItem.getKey());
+        ContactSection section = ContactSection.fromOrdinal(menuItem.getPosition());
         BaseEditFragment fragment;
         switch (section) {
             case CONTACT_INFO:
@@ -144,7 +144,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
                 super.onPostExecute(taskResult);
 
                 if (taskResult.getResultStatus().isSuccess()) {
-                    if (getActivePage().getKey() == ContactSection.PERSON_INFO.ordinal()) {
+                    if (getActivePage().getPosition() == ContactSection.PERSON_INFO.ordinal()) {
                         finish();
                     } else {
                         goToNextPage();
@@ -164,7 +164,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     @Override
     public void goToNewView() {
-        ContactSection activeSection = ContactSection.fromOrdinal(getActivePage().getKey());
+        ContactSection activeSection = ContactSection.fromOrdinal(getActivePage().getPosition());
         switch (activeSection) {
             case VISITS:
                 VisitNewActivity.startActivity(this, getRootUuid());

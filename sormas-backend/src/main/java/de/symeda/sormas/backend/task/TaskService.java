@@ -31,6 +31,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -74,7 +75,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = AbstractAdoService.and(cb, filter, dateFilter);	
 		}
 
@@ -214,20 +215,22 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateFrom()));
 			filter = cb.and(filter, cb.lessThan(from.get(Task.STATUS_CHANGE_DATE), taskCriteria.getStatusChangeDateTo()));
 		}
-		if (Boolean.TRUE.equals(taskCriteria.getArchived())) {
-			filter = and(cb, filter,
-					cb.or(
-							cb.and(
-									cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-									cb.equal(caze.get(Case.ARCHIVED), true)),
-							cb.and(
-									cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-									cb.equal(contactCaze.get(Case.ARCHIVED), true)),
-							cb.and(
-									cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-									cb.equal(event.get(Event.ARCHIVED), true))));
-		} else {
-			filter = and(cb, filter, buildActiveTasksFilter(cb, from));
+		if (taskCriteria.getRelevanceStatus() != null) {
+			if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, buildActiveTasksFilter(cb, from));
+			} else if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, 
+						cb.or(
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+										cb.equal(caze.get(Case.ARCHIVED), true)),
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+										cb.equal(contactCaze.get(Case.ARCHIVED), true)),
+								cb.and(
+										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+										cb.equal(event.get(Event.ARCHIVED), true))));
+			}
 		}
 		return filter;
 	}

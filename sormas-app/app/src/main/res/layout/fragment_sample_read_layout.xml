@@ -26,7 +26,9 @@
 
     <data>
         <import type="de.symeda.sormas.api.sample.SpecimenCondition" />
+        <import type="de.symeda.sormas.api.sample.SamplePurpose" />
         <import type="de.symeda.sormas.api.Disease" />
+        <import type="android.view.View" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
@@ -78,6 +80,11 @@
                     app:dateTimeValue="@{data.sampleDateTime}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_purpose"
+                    app:value="@{data.samplePurpose}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -103,6 +110,7 @@
                     android:id="@+id/sample_lab"
                     app:value="@{data.lab}"
                     app:appendValue="@{data.labDetails}"
+                    android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                     app:valueFormat="@string/two_strings_with_hyphen_format"
                     style="@style/ControlSingleColumnStyle" />
 
@@ -122,11 +130,13 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTagViewField
                     android:id="@+id/sample_requestedPathogenTestsTags"
+                    android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_requestedOtherPathogenTests"
                     app:value="@{data.requestedOtherPathogenTests}"
+                    android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
@@ -137,16 +147,20 @@
 
                     <de.symeda.sormas.app.component.controls.ControlTagViewField
                         android:id="@+id/sample_requestedAdditionalTestsTags"
+                        android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                         style="@style/ControlSingleColumnStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/sample_requestedOtherAdditionalTests"
                         app:value="@{data.requestedOtherAdditionalTests}"
+                        android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                         style="@style/ControlSingleColumnStyle" />
 
                 </LinearLayout>
 
-                <ImageView style="@style/FullHorizontalDividerStyle"/>
+                <ImageView
+                    style="@style/FullHorizontalDividerStyle"
+                    android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -156,11 +170,13 @@
                     <de.symeda.sormas.app.component.controls.ControlTextImageField
                         android:id="@+id/sample_shipped"
                         app:shipmentStatus="@{data}"
+                        android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextImageField
                         android:id="@+id/sample_received"
                         app:receivedStatus="@{data}"
+                        android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

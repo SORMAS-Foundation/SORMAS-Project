@@ -465,6 +465,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 		target.setRelationToCase(source.getRelationToCase());
+		target.setRelationDescription(source.getRelationDescription());
 		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
 
 		target.setReportLat(source.getReportLat());
@@ -558,6 +559,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 		target.setRelationToCase(source.getRelationToCase());
+		target.setRelationDescription(source.getRelationDescription());
 		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
 
 		target.setReportLat(source.getReportLat());

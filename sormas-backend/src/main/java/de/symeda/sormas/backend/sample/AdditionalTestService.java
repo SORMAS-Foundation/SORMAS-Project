@@ -45,7 +45,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
 			filter = cb.and(filter, dateFilter);
 		}
 

@@ -19,11 +19,13 @@
 package de.symeda.sormas.app.caze.edit;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
@@ -42,7 +44,7 @@ import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
@@ -61,6 +63,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
+    private List<Item> rabiesTypeList;
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
     private List<Item> initialCommunities;
@@ -95,13 +98,14 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        List<Disease> diseases = DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases();
+        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases();
         diseaseList = DataUtils.toItems(diseases);
         if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
             diseaseList.add(DataUtils.toItem(record.getDisease()));
         }
         plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
+        rabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
 
         yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
         monthList = DataUtils.getMonthItems(true);
@@ -130,6 +134,10 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                 contentBinding.caseDataHealthFacility, initialFacilities,
                 contentBinding.caseDataPointOfEntry, initialPointsOfEntry);
 
+        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+        contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
+        contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
+        contentBinding.caseDataHumanRabiesType.initializeSpinner(rabiesTypeList);
         contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
         contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
 
@@ -140,6 +148,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
             updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
+
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        contentBinding.personBirthdateYYYY.setSelectionOnOpen(year-35);
 
         contentBinding.personSex.initializeSpinner(sexList);
     }
@@ -184,6 +195,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.caseDataDiseaseDetails.setEnabled(false);
             contentBinding.caseDataPlagueType.setEnabled(false);
             contentBinding.caseDataDengueFeverType.setEnabled(false);
+            contentBinding.caseDataHumanRabiesType.setEnabled(false);
         }
 
         // Set up port health visibilities
