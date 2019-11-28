@@ -280,15 +280,15 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_whichVaccine"
-                        app:value="@{data.vaccine}"
+                        android:id="@+id/caseData_vaccinationDoses"
+                        app:value="@{data.vaccinationDoses}"
                         app:dependencyParentField="@{caseDataVaccination}"
                         app:dependencyParentValue="@{Vaccination.VACCINATED}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccinationDoses"
-                        app:value="@{data.vaccinationDoses}"
+                        android:id="@+id/caseData_vaccine"
+                        app:value="@{data.vaccine}"
                         app:dependencyParentField="@{caseDataVaccination}"
                         app:dependencyParentValue="@{Vaccination.VACCINATED}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
