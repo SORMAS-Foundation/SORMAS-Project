@@ -383,7 +383,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return null;
 	}
 
-	public <T> StringBuilder appendInFilterValues(StringBuilder filterBuilder, List<Object> filterBuilderParameters,
+	public static <T> StringBuilder appendInFilterValues(StringBuilder filterBuilder, List<Object> filterBuilderParameters,
 			List<T> values, Function<T, ?> valueMapper) {
 		filterBuilder.append("(");
 		boolean first = true;

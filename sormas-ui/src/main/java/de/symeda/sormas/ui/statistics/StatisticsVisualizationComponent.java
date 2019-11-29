@@ -235,28 +235,68 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 	}
 	
 	public boolean hasRegionGrouping() {
-		return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION;
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION;
+		case MAP:
+			return visualizationMapType == StatisticsVisualizationMapType.REGIONS;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
 	}
 	
 	public boolean hasDistrictGrouping() {
-		return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT;
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT;
+		case MAP:
+			return visualizationMapType == StatisticsVisualizationMapType.DISTRICTS;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
 	}
 	
 	public boolean hasSexGrouping() {
-		return rowsElement.getAttribute() == StatisticsCaseAttribute.SEX || columnsElement.getAttribute() == StatisticsCaseAttribute.SEX;
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return rowsElement.getAttribute() == StatisticsCaseAttribute.SEX || columnsElement.getAttribute() == StatisticsCaseAttribute.SEX;
+		case MAP:
+			return false;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
 	}
 	
-	public boolean hasAgeGroupGrouping() {
-		return rowsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS || columnsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS;
+	public boolean hasAgeGroupGroupingWithPopulationData() {
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return rowsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS || columnsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS;
+		case MAP:
+			return false;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
 	}
 	
 	public boolean hasAgeGroupGroupingWithoutPopulationData() {
-		return (rowsElement.getAttribute() != null && rowsElement.getAttribute().isAgeGroup() && rowsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS)
-				|| (columnsElement.getAttribute() != null && columnsElement.getAttribute().isAgeGroup() && rowsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS);
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return (rowsElement.getAttribute() != null && rowsElement.getAttribute().isAgeGroup() && rowsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS)
+					|| (columnsElement.getAttribute() != null && columnsElement.getAttribute().isAgeGroup() && columnsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS);
+		case MAP:
+			return false;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
 	}
 	
 	public boolean hasPopulationGrouping() {
-		return hasRegionGrouping() || hasDistrictGrouping() || hasSexGrouping() || hasAgeGroupGrouping();
+		return hasRegionGrouping() || hasDistrictGrouping() || hasSexGrouping() || hasAgeGroupGroupingWithPopulationData();
 	}
 	
 	public void setStackedColumnAndPieEnabled(boolean enabled) {

@@ -736,13 +736,6 @@ public class StatisticsView extends AbstractStatisticsView {
 			CssStyles.style(populationDataMissingLabel, CssStyles.VSPACE_TOP_4);
 		}
 
-		//		// Calculate and add incidence to the result list to use it for sorting and comparing later
-		//		if (showCaseIncidence && caseIncidencePossible) {
-		//			for (CaseCountDto result : resultData) {
-		//				result[POPULATION_POSITION] = InfrastructureHelper.getCaseIncidence(((Number) result[COUNT_POSITION]).intValue(), ((Number) result[POPULATION_POSITION]).doubleValue(), incidenceDivisor);
-		//			}
-		//		}
-
 		HorizontalLayout mapLayout = new HorizontalLayout();
 		mapLayout.setSpacing(true);
 		mapLayout.setMargin(false);
@@ -788,23 +781,35 @@ public class StatisticsView extends AbstractStatisticsView {
 			});
 		} else {
 			resultData.sort((a, b) -> {
-				return Integer.compare(a.getPopulation(), b.getPopulation());
+				BigDecimal incidenceA = a.getIncidence(incidenceDivisor);
+				BigDecimal incidenceB = b.getIncidence(incidenceDivisor);
+				return DataHelper.compare(incidenceA, incidenceB);
 			});
 		}
 
 		BigDecimal valuesLowerQuartile, valuesMedian, valuesUpperQuartile;
 		if (!showCaseIncidence || !caseIncidencePossible) {
-			valuesLowerQuartile = new BigDecimal(resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.25)).getCaseCount() : null);
-			valuesMedian = new BigDecimal(resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.5)).getCaseCount() : null);
-			valuesUpperQuartile = new BigDecimal(resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.75)).getCaseCount() : null);
+			valuesLowerQuartile = resultData.size() > 0 ? new BigDecimal(resultData.get((int) (resultData.size() * 0.25)).getCaseCount()) : BigDecimal.ZERO;
+			valuesMedian = resultData.size() > 0 ? new BigDecimal(resultData.get((int) (resultData.size() * 0.5)).getCaseCount()) : BigDecimal.ZERO;
+			valuesUpperQuartile = resultData.size() > 0 ? new BigDecimal(resultData.get((int) (resultData.size() * 0.75)).getCaseCount()) : BigDecimal.ZERO;
 		} else {
-			valuesLowerQuartile = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.25)).getIncidence(incidenceDivisor) : null;
-			valuesMedian = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.5)).getIncidence(incidenceDivisor) : null;
-			valuesUpperQuartile = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.75)).getIncidence(incidenceDivisor) : null;
+			valuesLowerQuartile = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.25)).getIncidence(incidenceDivisor) : BigDecimal.ZERO;
+			if (valuesLowerQuartile == null) {
+				valuesLowerQuartile = BigDecimal.ZERO;
+			}
+			valuesMedian = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.5)).getIncidence(incidenceDivisor) : BigDecimal.ZERO;
+			if (valuesMedian == null) {
+				valuesMedian = BigDecimal.ZERO;
+			}
+			valuesUpperQuartile = resultData.size() > 0 ? resultData.get((int) (resultData.size() * 0.75)).getIncidence(incidenceDivisor) : BigDecimal.ZERO;
+			if (valuesUpperQuartile == null) {
+				valuesUpperQuartile = BigDecimal.ZERO;
+			}
 		}
 
 		List<LeafletPolygon> resultPolygons = new ArrayList<LeafletPolygon>();
 
+		boolean hasNullValue = false;
 		// Draw relevant district fills
 		for (CaseCountDto resultRow : resultData) {
 			ReferenceDto regionOrDistrict = (ReferenceDto) resultRow.getRowKey();
@@ -815,6 +820,8 @@ public class StatisticsView extends AbstractStatisticsView {
 			} else {
 				regionOrDistrictValue = resultRow.getIncidence(incidenceDivisor);
 			}
+			hasNullValue |= regionOrDistrictValue == null;
+			
 			GeoLatLon[][] shape;
 			switch (visualizationComponent.getVisualizationMapType()) {
 			case REGIONS:
@@ -834,8 +841,12 @@ public class StatisticsView extends AbstractStatisticsView {
 			for (int part = 0; part < shape.length; part++) {
 				GeoLatLon[] shapePart = shape[part];
 				String fillColor;
-				if (regionOrDistrictValue.compareTo(BigDecimal.ZERO) == 0) {
+				String fillOpacity = "0.8";
+				if (regionOrDistrictValue == null) {
+					fillColor = "#888";
+				} else if (regionOrDistrictValue.compareTo(BigDecimal.ZERO) == 0) {
 					fillColor = "#000";
+					fillOpacity = "0";
 				} else if (regionOrDistrictValue.compareTo(valuesLowerQuartile) < 0) {
 					fillColor = "#FEDD6C";
 				} else if (regionOrDistrictValue.compareTo(valuesMedian) < 0) {
@@ -847,9 +858,13 @@ public class StatisticsView extends AbstractStatisticsView {
 				}
 
 				LeafletPolygon polygon = new LeafletPolygon();
-				polygon.setCaption(regionOrDistrict.getCaption() + "<br>" + regionOrDistrictValue);
+				if (regionOrDistrictValue == null) {
+					polygon.setCaption(regionOrDistrict.getCaption() + "<br>" + I18nProperties.getCaption(Captions.notAvailableShort));
+				} else {
+					polygon.setCaption(regionOrDistrict.getCaption() + "<br>" + regionOrDistrictValue);
+				}
 				// fillOpacity is used, so we can still hover the region
-				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": 0.8}");
+				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": " + fillOpacity + "}");
 				polygon.setLatLons(shapePart);
 				resultPolygons.add(polygon);
 			}
@@ -860,14 +875,14 @@ public class StatisticsView extends AbstractStatisticsView {
 		mapLayout.setExpandRatio(map, 1);
 
 		if (showCaseIncidence && caseIncidencePossible) {
-			valuesLowerQuartile = valuesLowerQuartile.setScale(3, RoundingMode.HALF_UP);
-			valuesMedian = valuesMedian.setScale(3, RoundingMode.HALF_UP);
-			valuesUpperQuartile = valuesUpperQuartile.setScale(3, RoundingMode.HALF_UP);
+			valuesLowerQuartile = valuesLowerQuartile.setScale(2, RoundingMode.HALF_UP);
+			valuesMedian = valuesMedian.setScale(2, RoundingMode.HALF_UP);
+			valuesUpperQuartile = valuesUpperQuartile.setScale(2, RoundingMode.HALF_UP);
 		}
 
 		AbstractOrderedLayout regionLegend = DashboardMapComponent.buildRegionLegend(true, 
 				showCaseIncidence && caseIncidencePossible ? CaseMeasure.CASE_INCIDENCE : CaseMeasure.CASE_COUNT,
-						false, valuesLowerQuartile, valuesMedian, valuesUpperQuartile, incidenceDivisor);
+						hasNullValue, valuesLowerQuartile, valuesMedian, valuesUpperQuartile, incidenceDivisor);
 		Label legendHeader = new Label(I18nProperties.getCaption(Captions.dashboardMapKey));
 		CssStyles.style(legendHeader, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		regionLegend.addComponent(legendHeader, 0);
@@ -895,7 +910,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				// we don't have a territorial grouping, so the system will sum up the population of all regions.
 				// make sure the user is informed about regions with missing population data
 				
-				 List<Long> missingPopulationDataRegionIds = FacadeProvider.getPopulationDataFacade().getMissingPopulationDataForStatistics(caseCriteria, false, false, visualizationComponent.hasSexGrouping(), visualizationComponent.hasAgeGroupGrouping());
+				 List<Long> missingPopulationDataRegionIds = FacadeProvider.getPopulationDataFacade().getMissingPopulationDataForStatistics(caseCriteria, false, false, visualizationComponent.hasSexGrouping(), visualizationComponent.hasAgeGroupGroupingWithPopulationData());
 				 hasMissingPopulationData = missingPopulationDataRegionIds.size() > 0;
 				 if (hasMissingPopulationData) {
 					 caseIncidencePossible = false;
@@ -915,10 +930,10 @@ public class StatisticsView extends AbstractStatisticsView {
 			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getReportEpiWeeksOfYear(), Comparator.naturalOrder(), e -> e.getYear());
 		}
 
-		List<CaseCountDto> resultData = FacadeProvider.getCaseFacade().queryCaseCount(caseCriteria,
+		List<CaseCountDto> resultData = FacadeProvider.getCaseStatisticsFacade().queryCaseCount(caseCriteria,
 				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
 				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), 
-				showCaseIncidence && caseIncidencePossible, populationReferenceYear);
+				showCaseIncidence && caseIncidencePossible, cbShowZeroValues.getValue(), populationReferenceYear);
 
 		replaceIdsWithGroupingKeys(resultData, visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(), visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute());
 

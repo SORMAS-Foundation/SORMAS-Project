@@ -121,7 +121,6 @@ public class StatisticsCaseGrid extends Grid {
 
 			// If zero values are ticked, add missing columns to the list; this involves every possible value of the chosen column attribute unless a filter has been
 			// set for the same attribute; in this case, only values that are part of the filter are chosen
-			// TODO: These are still not taken into account for case incidence, i.e. the population data from the zero values is ignored
 			if (showZeroValues && columnsAttribute != null) {
 				List<StatisticsGroupingKey> allGroupingKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnsAttribute, columnsSubAttribute);
 				if (allGroupingKeys == null) {
@@ -163,8 +162,8 @@ public class StatisticsCaseGrid extends Grid {
 
 		// Add a row for every value of the selected grouping
 		TreeMap<StatisticsGroupingKey, Object[]> rows = new TreeMap<>(new StatisticsKeyComparator());
-		int[] columnTotals = new int[getColumns().size()];
-		int[] columnPopulations = new int[getColumns().size()];
+		int[] caseCountTotalRow = new int[getColumns().size()];
+		int[] populationTotalRow = new int[getColumns().size()];
 
 		StatisticsGroupingKey currentRowKey = null;
 		Object[] currentRow = null;
@@ -179,7 +178,9 @@ public class StatisticsCaseGrid extends Grid {
 				// New grouping entry has been reached, add the current row to the rows map
 				if (columnsAttribute != null) {
 					// Calculate total
-					if (!showCaseIncidence) {
+					if (rowTotal == 0) {
+						currentRow[totalColumnIndex] = null;					
+					} else if (!showCaseIncidence) {
 						currentRow[totalColumnIndex] = String.valueOf(rowTotal);
 					} else if (rowPopulation > 0) {
 						currentRow[totalColumnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(rowTotal, rowPopulation, incidenceDivisor));
@@ -188,8 +189,8 @@ public class StatisticsCaseGrid extends Grid {
 					}
 					
 					if (!(showCaseIncidence && rowPopulation == 0)) {
-						columnTotals[totalColumnIndex] += rowTotal;
-						columnPopulations[totalColumnIndex] += rowPopulation;
+						caseCountTotalRow[totalColumnIndex] += rowTotal;
+						populationTotalRow[totalColumnIndex] += rowPopulation;
 					}
 				}
 
@@ -226,7 +227,11 @@ public class StatisticsCaseGrid extends Grid {
 			} else {
 				BigDecimal incidence = cellValue.getIncidence(incidenceDivisor);
 				if (incidence != null) {
-					currentRow[columnIndex] = String.valueOf(incidence);
+					if (BigDecimal.ZERO.equals(incidence)) {
+						currentRow[columnIndex] = null;
+					} else {
+						currentRow[columnIndex] = String.valueOf(incidence);
+					}
 				} else {
 					currentRow[columnIndex] = I18nProperties.getCaption(Captions.notAvailableShort);
 				}
@@ -235,7 +240,7 @@ public class StatisticsCaseGrid extends Grid {
 			if (cellValue.getCaseCount() != null && !(showCaseIncidence && cellValue.getPopulation() == null)) {
 				// Don't add to case sum when we are looking at incidence and population is not provided 
 				rowTotal += cellValue.getCaseCount();
-				columnTotals[columnIndex] += cellValue.getCaseCount();
+				caseCountTotalRow[columnIndex] += cellValue.getCaseCount();
 			}
 
 			if (cellValue.getPopulation() != null) {
@@ -245,9 +250,9 @@ public class StatisticsCaseGrid extends Grid {
 					rowPopulation = cellValue.getPopulation();
 				}
 				if (rowsAttribute != null && rowsAttribute.isPopulationData()) {
-					columnPopulations[columnIndex] += cellValue.getPopulation();
-				} else if (columnPopulations[columnIndex] == 0) {
-					columnPopulations[columnIndex] = cellValue.getPopulation();
+					populationTotalRow[columnIndex] += cellValue.getPopulation();
+				} else if (populationTotalRow[columnIndex] == 0) {
+					populationTotalRow[columnIndex] = cellValue.getPopulation();
 				}
 			}
 		}
@@ -256,7 +261,9 @@ public class StatisticsCaseGrid extends Grid {
 		// the totals for the unknown row if this was the last row processed
 		if (currentRow != null) {
 			if (columnsAttribute != null) {
-				if (!showCaseIncidence) {
+				if (rowTotal == 0) {
+					currentRow[totalColumnIndex] = null;
+				} else if (!showCaseIncidence) {
 					currentRow[totalColumnIndex] = String.valueOf(rowTotal);
 				} else if (rowPopulation > 0) {
 					currentRow[totalColumnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(rowTotal, rowPopulation, incidenceDivisor));
@@ -265,8 +272,8 @@ public class StatisticsCaseGrid extends Grid {
 				}
 				
 				if (!(showCaseIncidence && rowPopulation == 0)) {
-					columnTotals[totalColumnIndex] += rowTotal;
-					columnPopulations[totalColumnIndex] += rowPopulation;
+					caseCountTotalRow[totalColumnIndex] += rowTotal;
+					populationTotalRow[totalColumnIndex] += rowPopulation;
 				}				
 			}
 			rows.putIfAbsent(currentRowKey, currentRow);
@@ -294,24 +301,19 @@ public class StatisticsCaseGrid extends Grid {
 			addRow(rows.get(groupingKey));
 		}
 
-		//		// Add unknown row if existing
-		//		if (unknownRow != null && rowsAttribute != null && rowsAttribute.isUnknownValueAllowed()) {
-		//			addRow(unknownRow);
-		//		}
-
 		// Add total row
 		Object[] totalRow = new Object[getColumns().size()];
 		totalRow[0] = I18nProperties.getCaption(StatisticsHelper.TOTAL);
-		for (int i = 1; i < columnTotals.length; i++) {
+		for (int i = 1; i < caseCountTotalRow.length; i++) {
 			if (!showCaseIncidence) {
-				if (columnTotals[i] > 0) {
-					totalRow[i] = String.valueOf(columnTotals[i]);
+				if (caseCountTotalRow[i] > 0) {
+					totalRow[i] = String.valueOf(caseCountTotalRow[i]);
 				} else {
 					totalRow[i] = null;
 				}
 			} else {
-				if (columnTotals[i] > 0 && columnPopulations[i] > 0) {
-					totalRow[i] = String.valueOf(InfrastructureHelper.getCaseIncidence((int) columnTotals[i], columnPopulations[i], incidenceDivisor));
+				if (caseCountTotalRow[i] > 0 && populationTotalRow[i] > 0) {
+					totalRow[i] = String.valueOf(InfrastructureHelper.getCaseIncidence((int) caseCountTotalRow[i], populationTotalRow[i], incidenceDivisor));
 				} else {
 					totalRow[i] = null;
 				}

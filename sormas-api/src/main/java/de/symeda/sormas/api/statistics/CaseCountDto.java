@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class CaseCountDto implements Serializable {
 	
@@ -48,10 +49,32 @@ public class CaseCountDto implements Serializable {
 	}
 	
 	public BigDecimal getIncidence(int divisor) {
-		if (caseCount == null || population == null) {
+		if (population == null) {
 			return null;
+		}
+		if (caseCount == null) {
+			return BigDecimal.ZERO;
 		}
 		
 		return InfrastructureHelper.getCaseIncidence(caseCount.intValue(), population.intValue(), divisor);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof CaseCountDto) {
+			CaseCountDto other = (CaseCountDto)obj;
+			return DataHelper.equal(rowKey, other.rowKey) && DataHelper.equal(columnKey, other.columnKey);
+		}		
+		
+		return super.equals(obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		int prime = 31;
+		int result = 1;
+		result = prime * result + ((rowKey == null) ? 0 : rowKey.hashCode());
+		result = prime * result + ((columnKey == null) ? 0 : columnKey.hashCode());
+		return result;
 	}
 }

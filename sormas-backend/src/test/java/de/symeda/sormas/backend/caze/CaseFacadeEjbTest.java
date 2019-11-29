@@ -34,8 +34,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.IntegerRange;
-import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -57,7 +55,6 @@ import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
-import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -70,9 +67,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.statistics.CaseCountDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -83,7 +77,6 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -442,34 +435,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// getArchivedUuidsSince should return length 0
 		assertEquals(0, getCaseFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
-	}
-
-	@SuppressWarnings("deprecation")
-	@Test
-	public void testQueryCaseCount() throws Exception {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		cazePerson.setApproximateAge(30);
-		cazePerson.setApproximateAgeReferenceDate(new Date());
-		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
-				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
-		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-
-		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
-		criteria.years(
-				Arrays.asList(new Year(caze.getSymptoms().getOnsetDate().getYear() + 1900),
-						new Year(caze.getSymptoms().getOnsetDate().getYear() + 1901)),
-				StatisticsCaseAttribute.ONSET_TIME);
-		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
-		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
-		List<CaseCountDto> results = getCaseFacade().queryCaseCount(criteria, null, null, null, null, false, null);
-
-		// List should have one entry
-		assertEquals(1, results.size());
 	}
 
 	@Test

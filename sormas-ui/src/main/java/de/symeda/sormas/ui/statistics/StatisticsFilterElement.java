@@ -25,6 +25,7 @@ import com.explicatis.ext_token_field.Tokenizable;
 import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.utils.DataHelper;
 
 @SuppressWarnings("serial")
 public abstract class StatisticsFilterElement extends HorizontalLayout {
@@ -82,7 +83,7 @@ public abstract class StatisticsFilterElement extends HorizontalLayout {
 			if (stringRepresentation != null) {
 				return stringRepresentation;
 			} else {
-				return value.toString();
+				return DataHelper.toStringNullable(value);
 			}
 		}
 

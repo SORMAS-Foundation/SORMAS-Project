@@ -28,6 +28,7 @@ import org.junit.Before;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
@@ -60,6 +61,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseStatisticsFacadeEjb.CaseStatisticsFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVisitFacadeEjbLocal;
@@ -134,6 +136,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
+	}
+	
+	public CaseStatisticsFacade getCaseStatisticsFacade() {
+		return getBean(CaseStatisticsFacadeEjbLocal.class);
 	}
 
 	public CaseClassificationFacadeEjb getCaseClassificationLogic() {

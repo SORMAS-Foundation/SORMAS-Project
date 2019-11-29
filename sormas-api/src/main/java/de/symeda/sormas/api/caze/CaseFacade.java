@@ -26,18 +26,11 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.CaseCountDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -84,9 +77,6 @@ public interface CaseFacade {
 	void deleteCase(String caseUuid, String userUuid);
 	
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid);
-	
-	List<CaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
-			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB, boolean includePopulation, Integer populationReferenceYear);
 	
 	Date getOldestCaseOnsetDate();
 	

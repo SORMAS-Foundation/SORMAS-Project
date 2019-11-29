@@ -21,6 +21,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
@@ -82,6 +83,10 @@ public class FacadeProvider {
 
 	public static CaseFacade getCaseFacade() {
 		return get().lookupEjbRemote(CaseFacade.class);
+	}
+
+	public static CaseStatisticsFacade getCaseStatisticsFacade() {
+		return get().lookupEjbRemote(CaseStatisticsFacade.class);
 	}
 
 	public static ContactFacade getContactFacade() {
