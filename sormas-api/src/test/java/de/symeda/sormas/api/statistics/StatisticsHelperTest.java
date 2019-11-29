@@ -2,6 +2,10 @@ package de.symeda.sormas.api.statistics;
 
 import org.junit.Test;
 
+import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsHelper;
+
 public class StatisticsHelperTest {
 
 	@Test

@@ -18,7 +18,9 @@
 package de.symeda.sormas.backend.caze;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,6 +43,8 @@ import de.symeda.sormas.api.statistics.CaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.infrastructure.PopulationData;
@@ -65,12 +69,13 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<CaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA,
-			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
-			StatisticsCaseSubAttribute subGroupingB, boolean includePopulation, boolean includeZeroValues, Integer populationReferenceYear) {
+	public List<CaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, 
+			StatisticsCaseAttribute rowGrouping, StatisticsCaseSubAttribute rowSubGrouping,
+			StatisticsCaseAttribute columnGrouping, StatisticsCaseSubAttribute columnSubGrouping,
+			boolean includePopulation, boolean includeZeroValues, Integer populationReferenceYear) {
 
 		// case counts
-		Pair<String, List<Object>> caseCountQueryAndParams = buildCaseCountQuery(caseCriteria, groupingA, subGroupingA, groupingB, subGroupingB);
+		Pair<String, List<Object>> caseCountQueryAndParams = buildCaseCountQuery(caseCriteria, rowGrouping, rowSubGrouping, columnGrouping, columnSubGrouping);
 
 		Query caseCountQuery = em.createNativeQuery(caseCountQueryAndParams.getElement0().toString());
 		for (int i = 0; i < caseCountQueryAndParams.getElement1().size(); i++) {
@@ -78,35 +83,116 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 		
 		List<CaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream())
-				.map(result -> new CaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, null,
-						"".equals(result[1]) ? null : result[1], "".equals(result[2]) ? null : result[2]))
+				.map(result -> {
+					Object rowKey = "".equals(result[1]) ? null : result[1];
+					Object columnKey = "".equals(result[2]) ? null : result[2];
+					return new CaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, null,
+						StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping),
+						StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping));
+				})
 				.collect(Collectors.toList());
+		
+		if (includeZeroValues) {
+			List<StatisticsGroupingKey> allRowKeys;
+			if (rowGrouping != null) {
+				allRowKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(rowGrouping, rowSubGrouping);
+				if (allRowKeys == null) {
+					allRowKeys = StatisticsHelper.getAttributeGroupingKeys(rowGrouping, rowSubGrouping);
+				}
+			} else {
+				allRowKeys = Arrays.asList((StatisticsGroupingKey)null);
+			}
+			List<StatisticsGroupingKey> allColumnKeys;
+			if (columnGrouping != null) {
+				allColumnKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnGrouping, columnSubGrouping);
+				if (allColumnKeys == null) {
+					allColumnKeys = StatisticsHelper.getAttributeGroupingKeys(columnGrouping, columnSubGrouping);
+				}
+			} else {
+				allColumnKeys = Arrays.asList((StatisticsGroupingKey)null);
+			}
+			
+			for (StatisticsGroupingKey rowKey : allRowKeys) {
+				for (StatisticsGroupingKey columnKey : allColumnKeys) {
+					CaseCountDto zeroDto = new CaseCountDto(0, null, rowKey, columnKey);
+					if (!caseCountResults.contains(zeroDto)) {
+						caseCountResults.add(zeroDto);
+					}
+				}
+			}
+		}
 
 		// population
 		if (includePopulation) {
-			Pair<String, List<Object>> populationQueryAndParams = buildPopulationQuery(caseCriteria, groupingA, subGroupingA, groupingB, subGroupingB, populationReferenceYear);
+			Pair<String, List<Object>> populationQueryAndParams = buildPopulationQuery(caseCriteria, rowGrouping, rowSubGrouping, columnGrouping, columnSubGrouping, populationReferenceYear);
 	
 			Query populationQuery = em.createNativeQuery(populationQueryAndParams.getElement0().toString());
 			for (int i = 0; i < populationQueryAndParams.getElement1().size(); i++) {
 				populationQuery.setParameter(i + 1, populationQueryAndParams.getElement1().get(i));
 			}
 			
-			List<CaseCountDto> populationResults = ((Stream<Object[]>) populationQuery.getResultStream())
-					.map(result -> new CaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null,
-							"".equals(result[1]) ? null : result[1], "".equals(result[2]) ? null : result[2]))
-					.collect(Collectors.toList());
+			// build a two-key-map based on row and column
+			HashMap<Object, HashMap<Object, Integer>> populationData = new HashMap<Object, HashMap<Object,Integer>>();
+			((Stream<Object[]>) populationQuery.getResultStream()).forEach(result -> {
+				Object rowKey = "".equals(result[1]) ? null : result[1];
+				Object columnKey = "".equals(result[2]) ? null : result[2];
+				CaseCountDto populationDto =  new CaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null, 
+					StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping),
+					StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping));
 
-			for (CaseCountDto populationResult : populationResults) {
-				int index = caseCountResults.indexOf(populationResult);
-				if (index >= 0) {
-					caseCountResults.get(index).setPopulation(populationResult.getPopulation());
-				} else if (includeZeroValues) {
-					caseCountResults.add(populationResult);
+				HashMap<Object, Integer> innerPopulationData = populationData.get(populationDto.getRowKey());
+				if (innerPopulationData == null) {
+					innerPopulationData = new HashMap<Object, Integer>();
+					populationData.put(populationDto.getRowKey(), innerPopulationData);
+				}
+				innerPopulationData.put(populationDto.getColumnKey(), populationDto.getPopulation());
+			});
+
+			// add the population data to the case counts
+			// when a key is not present in the population data map, we fall back to no key (null)
+			for (CaseCountDto caseCountResult : caseCountResults) {
+				
+				HashMap<Object, Integer> innerPopulationData = populationData.get(caseCountResult.getRowKey());
+				if (innerPopulationData == null) {
+					innerPopulationData = populationData.get(null);
+				}
+				
+				if (innerPopulationData != null) {
+					Integer population = innerPopulationData.get(caseCountResult.getColumnKey());
+					if (population == null) {
+						population = innerPopulationData.get(null);
+					}
+					
+					if (population != null) {
+						caseCountResult.setPopulation(population);
+					}
 				}
 			}
 		}
 		
 		return caseCountResults;
+	}
+	
+
+	/**
+	 * Replaces the ids in each row with the appropriate StatisticsGroupingKey based
+	 * on the grouping.
+	 */
+	private void replaceIdsWithGroupingKeys(List<CaseCountDto> results, StatisticsCaseAttribute groupingA,
+			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
+			StatisticsCaseSubAttribute subGroupingB) {
+
+		for (CaseCountDto result : results) {
+
+			Object resultsEntry = result.getRowKey();
+			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
+				result.setRowKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingA, subGroupingA));
+			}
+			resultsEntry = result.getColumnKey();
+			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
+				result.setColumnKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingB, subGroupingB));
+			}
+		}
 	}
 
 	/**

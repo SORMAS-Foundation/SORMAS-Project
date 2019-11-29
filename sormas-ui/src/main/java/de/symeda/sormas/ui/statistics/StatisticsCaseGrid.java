@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.TreeMap;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
 
@@ -64,7 +63,7 @@ public class StatisticsCaseGrid extends Grid {
 	 */
 	@SuppressWarnings("unchecked")
 	public StatisticsCaseGrid(StatisticsCaseAttribute rowsAttribute, StatisticsCaseSubAttribute rowsSubAttribute,
-			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, boolean showZeroValues, 
+			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, 
 			boolean showCaseIncidence, int incidenceDivisor, List<CaseCountDto> cellValues, StatisticsCaseCriteria caseCriteria) {
 
 		super();
@@ -116,20 +115,6 @@ public class StatisticsCaseGrid extends Grid {
 					addColumnUnknown = true;
 				} else {
 					columns.putIfAbsent((StatisticsGroupingKey) cellValue.getColumnKey(), cellValue.getColumnKey().toString());
-				}
-			}
-
-			// If zero values are ticked, add missing columns to the list; this involves every possible value of the chosen column attribute unless a filter has been
-			// set for the same attribute; in this case, only values that are part of the filter are chosen
-			if (showZeroValues && columnsAttribute != null) {
-				List<StatisticsGroupingKey> allGroupingKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnsAttribute, columnsSubAttribute);
-				if (allGroupingKeys == null) {
-					allGroupingKeys = StatisticsHelper.getAttributeGroupingKeys(columnsAttribute, columnsSubAttribute);
-				}
-				for (StatisticsGroupingKey groupingKey : allGroupingKeys) {
-					if (groupingKey != null) {
-						columns.putIfAbsent(groupingKey, groupingKey.toString()); 
-					}
 				}
 			}
 
@@ -190,7 +175,12 @@ public class StatisticsCaseGrid extends Grid {
 					
 					if (!(showCaseIncidence && rowPopulation == 0)) {
 						caseCountTotalRow[totalColumnIndex] += rowTotal;
-						populationTotalRow[totalColumnIndex] += rowPopulation;
+						
+						if (rowsAttribute != null && rowsAttribute.isPopulationData()) {
+							populationTotalRow[totalColumnIndex] += rowPopulation;
+						} else if (populationTotalRow[totalColumnIndex] == 0) {
+							populationTotalRow[totalColumnIndex] = rowPopulation;
+						}						
 					}
 				}
 
@@ -223,11 +213,15 @@ public class StatisticsCaseGrid extends Grid {
 			}
 
 			if (!showCaseIncidence) {
-				currentRow[columnIndex] = String.valueOf(cellValue.getCaseCount());
+				if (cellValue.getCaseCount() == 0) {
+					currentRow[columnIndex] = null;
+				} else {
+					currentRow[columnIndex] = String.valueOf(cellValue.getCaseCount());
+				}
 			} else {
 				BigDecimal incidence = cellValue.getIncidence(incidenceDivisor);
 				if (incidence != null) {
-					if (BigDecimal.ZERO.equals(incidence)) {
+					if (BigDecimal.ZERO.compareTo(incidence) == 0) {
 						currentRow[columnIndex] = null;
 					} else {
 						currentRow[columnIndex] = String.valueOf(incidence);
@@ -273,27 +267,15 @@ public class StatisticsCaseGrid extends Grid {
 				
 				if (!(showCaseIncidence && rowPopulation == 0)) {
 					caseCountTotalRow[totalColumnIndex] += rowTotal;
-					populationTotalRow[totalColumnIndex] += rowPopulation;
+
+					if (rowsAttribute != null && rowsAttribute.isPopulationData()) {
+						populationTotalRow[totalColumnIndex] += rowPopulation;
+					} else if (populationTotalRow[totalColumnIndex] == 0) {
+						populationTotalRow[totalColumnIndex] = rowPopulation;
+					}
 				}				
 			}
 			rows.putIfAbsent(currentRowKey, currentRow);
-		}
-
-		// If zero values are ticked, add missing rows to the list; this involves every possible value of the chosen row attribute unless a filter has been
-		// set for the same attribute; in this case, only values that are part of the filter are chosen
-		if (showZeroValues && rowsAttribute != null) {
-			List<StatisticsGroupingKey> allGroupingKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(rowsAttribute, rowsSubAttribute);
-			if (allGroupingKeys == null) {
-				allGroupingKeys = StatisticsHelper.getAttributeGroupingKeys(rowsAttribute, rowsSubAttribute);
-			}
-			for (StatisticsGroupingKey groupingKey : allGroupingKeys) {
-				if (groupingKey != null) {
-					Object[] zeroRow = new Object[getColumns().size()];
-					zeroRow[0] = groupingKey.toString();
-					zeroRow[zeroRow.length - 1] = null;
-					rows.putIfAbsent(groupingKey, zeroRow); 
-				}
-			}
 		}
 
 		// Add rows to the grid

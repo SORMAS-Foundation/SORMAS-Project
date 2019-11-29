@@ -87,7 +87,6 @@ import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
-import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationMapType;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
@@ -372,9 +371,9 @@ public class StatisticsView extends AbstractStatisticsView {
 		resultsLayout.addComponent(exportButton);
 		resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
 
-		statisticsCaseGrid = new StatisticsCaseGrid(visualizationComponent.getRowsAttribute(),
-				visualizationComponent.getRowsSubAttribute(), visualizationComponent.getColumnsAttribute(),
-				visualizationComponent.getColumnsSubAttribute(), cbShowZeroValues.getValue(), 
+		statisticsCaseGrid = new StatisticsCaseGrid(
+				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
+				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), 
 				showCaseIncidence && caseIncidencePossible, incidenceDivisor, resultData, caseCriteria);
 		resultsLayout.addComponent(statisticsCaseGrid);
 		resultsLayout.setExpandRatio(statisticsCaseGrid, 1);
@@ -390,7 +389,6 @@ public class StatisticsView extends AbstractStatisticsView {
 		fileDownloader.extend(exportButton);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void generateChart() {
 		List<CaseCountDto> resultData = generateStatistics();
 
@@ -447,7 +445,6 @@ public class StatisticsView extends AbstractStatisticsView {
 				+ " enabled: true," + " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }" + "},"
 				+ "title:{ text: '' },");
 		
-		boolean showZeroValues = cbShowZeroValues.getValue();
 		CaseCountOrIncidence dataStyle = showCaseIncidence && caseIncidencePossible ?CaseCountOrIncidence.CASE_INCIDENCE : CaseCountOrIncidence.CASE_COUNT;
 
 		TreeMap<StatisticsGroupingKey, String> xAxisCaptions = new TreeMap<>(new StatisticsKeyComparator());
@@ -475,21 +472,6 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 
 		if (chartType != StatisticsVisualizationChartType.PIE) {
-			// If zero values are ticked, add missing captions to the list; this involves
-			// every possible value of the chosen attribute unless a filter has been
-			// set for the same attribute; in this case, only values that are part of the
-			// filter are chosen
-			if (showZeroValues && xAxisAttribute != null) {
-				List<StatisticsGroupingKey> allGroupingKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(xAxisAttribute, xAxisSubAttribute);
-				if (allGroupingKeys == null) {
-					allGroupingKeys = StatisticsHelper.getAttributeGroupingKeys(xAxisAttribute, xAxisSubAttribute);
-				}
-				for (StatisticsGroupingKey groupingKey : allGroupingKeys) {
-					if (groupingKey != null) {
-						xAxisCaptions.putIfAbsent(groupingKey, StringEscapeUtils.escapeEcmaScript(groupingKey.toString()));
-					}
-				}
-			}
 
 			hcjs.append("xAxis: { categories: [");
 			if (xAxisAttribute != null) {
@@ -934,22 +916,17 @@ public class StatisticsView extends AbstractStatisticsView {
 				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
 				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), 
 				showCaseIncidence && caseIncidencePossible, cbShowZeroValues.getValue(), populationReferenceYear);
-
-		replaceIdsWithGroupingKeys(resultData, visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(), visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute());
+		
+		StatisticsKeyComparator keyComparator = new StatisticsKeyComparator();
+		resultData.sort((c1, c2) -> {
+			int result = keyComparator.compare(c1.getRowKey(), c2.getRowKey());
+			if (result == 0) {
+				result = keyComparator.compare(c1.getColumnKey(), c2.getColumnKey());
+			}
+			return result;
+		});
 
 		return resultData;
-	}
-
-	private boolean hasDistrictFilter() {
-		for (StatisticsFilterComponent filterComponent : filterComponents) {
-			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.REGION_DISTRICT) {
-				if (!CollectionUtils.isEmpty(((StatisticsFilterRegionDistrictElement) filterComponent.getFilterElement()).getSelectedDistricts())) {
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	private boolean hasPopulationFilterUnknownValue() {
@@ -991,26 +968,6 @@ public class StatisticsView extends AbstractStatisticsView {
 		return currentMaxYear != null ? ((maxYear != null && maxYear > currentMaxYear) ? maxYear : currentMaxYear) : maxYear;
 	}
 
-	/**
-	 * Replaces the ids in each row with the appropriate StatisticsGroupingKey based
-	 * on the grouping.
-	 */
-	private void replaceIdsWithGroupingKeys(List<CaseCountDto> results, StatisticsCaseAttribute groupingA,
-			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
-			StatisticsCaseSubAttribute subGroupingB) {
-
-		for (CaseCountDto result : results) {
-
-			Object resultsEntry = result.getRowKey();
-			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
-				result.setRowKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingA, subGroupingA));
-			}
-			resultsEntry = result.getColumnKey();
-			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
-				result.setColumnKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingB, subGroupingB));
-			}
-		}
-	}
 
 	private void fillCaseCriteria(boolean showCaseIncidence) {
 		caseCriteria = new StatisticsCaseCriteria();

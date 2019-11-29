@@ -12,10 +12,10 @@ public class CaseCountDto implements Serializable {
 
 	private Integer caseCount;
 	private Integer population;
-	private Object rowKey;
-	private Object columnKey;
+	private StatisticsGroupingKey rowKey;
+	private StatisticsGroupingKey columnKey;
 	
-	public CaseCountDto(Integer caseCount, Integer population, Object rowKey, Object columnKey) {
+	public CaseCountDto(Integer caseCount, Integer population, StatisticsGroupingKey rowKey, StatisticsGroupingKey columnKey) {
 		super();
 		this.caseCount = caseCount;
 		this.population = population;
@@ -35,16 +35,16 @@ public class CaseCountDto implements Serializable {
 	public void setPopulation(Integer population) {
 		this.population = population;
 	}
-	public Object getRowKey() {
+	public StatisticsGroupingKey getRowKey() {
 		return rowKey;
 	}
-	public void setRowKey(Object rowKey) {
+	public void setRowKey(StatisticsGroupingKey rowKey) {
 		this.rowKey = rowKey;
 	}
-	public Object getColumnKey() {
+	public StatisticsGroupingKey getColumnKey() {
 		return columnKey;
 	}
-	public void setColumnKey(Object columnKey) {
+	public void setColumnKey(StatisticsGroupingKey columnKey) {
 		this.columnKey = columnKey;
 	}
 	
@@ -52,7 +52,7 @@ public class CaseCountDto implements Serializable {
 		if (population == null) {
 			return null;
 		}
-		if (caseCount == null) {
+		if (caseCount == null || caseCount.intValue() == 0) {
 			return BigDecimal.ZERO;
 		}
 		
