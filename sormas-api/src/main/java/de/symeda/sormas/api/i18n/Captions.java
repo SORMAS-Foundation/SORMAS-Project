@@ -12,6 +12,7 @@ public interface Captions {
 	public static String actionApplyDateFilter = "actionApplyDateFilter";
 	public static String actionArchive = "actionArchive";
 	public static String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
+	public static String actionBackToNationOverview = "actionBackToNationOverview";
 	public static String actionCancel = "actionCancel";
 	public static String actionClear = "actionClear";
 	public static String actionClearAll = "actionClearAll";

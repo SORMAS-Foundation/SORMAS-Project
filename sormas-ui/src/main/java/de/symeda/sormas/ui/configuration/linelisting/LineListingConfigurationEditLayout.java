@@ -62,7 +62,8 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 	}
 
 	private void buildLayout() {
-		Label lblInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(Strings.infoLineListingConfigurationRegionEdit), disease.toString(), regionName), ContentMode.HTML);
+		Label lblInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(I18nProperties.getString(regionName != null ? Strings.infoLineListingConfigurationRegionEdit : Strings.infoLineListingConfigurationNationEdit), 
+				disease.toString(), regionName), ContentMode.HTML);
 		CssStyles.style(lblInfo, CssStyles.VSPACE_4);
 		addComponent(lblInfo);
 		
@@ -97,7 +98,7 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 
 		addComponent(controlLayout);
 
-		grid = new LineListingConfigurationsGrid(configurations, changedConfigurations);
+		grid = new LineListingConfigurationsGrid(configurations, changedConfigurations, regionName == null);
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
 

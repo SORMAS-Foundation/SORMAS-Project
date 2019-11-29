@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.feature;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -12,5 +13,7 @@ public interface FeatureConfigurationFacade {
 	void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType);
 	
 	void deleteAllFeatureConfigurations(FeatureConfigurationCriteria criteria);
+	
+	void deleteAllExpiredFeatureConfigurations(Date date);
 	
 }

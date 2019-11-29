@@ -137,6 +137,8 @@ public final class CssStyles {
 	public static final String BUTTON_FILTER_LIGHT = "filter-light";
 	public static final String BUTTON_FILTER_DARK = "filter-dark";
 	public static final String BUTTON_FILTER_SMALL = "filter-small";
+	public static final String BUTTON_FILTER_ENABLED = "filter-enabled";
+	public static final String BUTTON_FILTER_DISABLED = "filter-disabled";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
 	
 	// List styles

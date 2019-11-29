@@ -36,6 +36,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 
@@ -51,6 +52,8 @@ public class CronService {
 	private WeeklyReportFacadeEjbLocal weeklyReportFacade;
 	@EJB
 	private TaskFacadeEjbLocal taskFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public static final int REPEATEDLY_PER_HOUR_INTERVAL = 10;
 	
@@ -91,6 +94,11 @@ public class CronService {
 		}
 		
 		logger.info("Deleted " + numberOfDeletedFiles + " export files");
+		
+		// Remove all feature configurations whose end dates have been reached
+		featureConfigurationFacade.deleteAllExpiredFeatureConfigurations(now);
+		
+		logger.info("Deleted expired feature configurations");
 	}
 	
 }

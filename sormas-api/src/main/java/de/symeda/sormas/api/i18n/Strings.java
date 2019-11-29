@@ -53,6 +53,7 @@ public interface Strings {
 	public static String confirmationDeleteTasks = "confirmationDeleteTasks";
 	public static String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	public static String confirmationDeleteVisits = "confirmationDeleteVisits";
+	public static String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
 	public static String confirmationDisableAllLineListingRegion = "confirmationDisableAllLineListingRegion";
 	public static String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
@@ -287,6 +288,7 @@ public interface Strings {
 	public static String infoImportCsvFile = "infoImportCsvFile";
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
+	public static String infoLineListingConfigurationNation = "infoLineListingConfigurationNation";
 	public static String infoLineListingConfigurationNationEdit = "infoLineListingConfigurationNationEdit";
 	public static String infoLineListingConfigurationRegion = "infoLineListingConfigurationRegion";
 	public static String infoLineListingConfigurationRegionEdit = "infoLineListingConfigurationRegionEdit";

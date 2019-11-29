@@ -1,10 +1,12 @@
 package de.symeda.sormas.backend.feature;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -53,8 +55,9 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		Join<FeatureConfiguration, Region> regionJoin = root.join(FeatureConfiguration.REGION, JoinType.LEFT);
 		Join<FeatureConfiguration, District> districtJoin = root.join(FeatureConfiguration.DISTRICT, JoinType.LEFT);
 		
-		cq.multiselect(root.get(FeatureConfiguration.UUID), regionJoin.get(Region.UUID), districtJoin.get(District.UUID), 
-				districtJoin.get(District.NAME), root.get(FeatureConfiguration.DISEASE), root.get(FeatureConfiguration.END_DATE));
+		cq.multiselect(root.get(FeatureConfiguration.UUID), regionJoin.get(Region.UUID), regionJoin.get(Region.NAME),
+				districtJoin.get(District.UUID), districtJoin.get(District.NAME), root.get(FeatureConfiguration.DISEASE),
+				root.get(FeatureConfiguration.END_DATE));
 		
 		if (criteria != null) {
 			Predicate filter = service.createCriteriaFilter(criteria, cb, cq, root);
@@ -80,13 +83,23 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				districts = districts.stream().filter(district -> !activeUuids.contains(district.getUuid())).collect(Collectors.toList());
 				
 				for (District district : districts) {
-					resultList.add(new FeatureConfigurationIndexDto(null, criteria.getRegion() != null ? criteria.getRegion().getUuid() : null, 
+					resultList.add(new FeatureConfigurationIndexDto(null, district.getRegion().getUuid(), district.getRegion().getName(), 
 							district.getUuid(), district.getName(), criteria.getDisease(), null));
 				}
 			}
 		}
 		
-		resultList.sort((c1, c2) -> c1.getDistrictName().compareTo(c2.getDistrictName()));
+		if (criteria.getRegion() != null) {
+			resultList.sort((c1, c2) -> c1.getDistrictName().compareTo(c2.getDistrictName()));
+		} else {
+			resultList.sort((c1, c2) -> {
+				if (c1.getRegionName().equals(c2.getRegionName())) {
+					return c1.getDistrictName().compareTo(c2.getDistrictName());
+				} else {
+					return c1.getRegionName().compareTo(c2.getRegionName());
+				}
+			});
+		}
 		return resultList;
 	}
 	
@@ -137,6 +150,17 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		resultList.forEach(result -> service.delete(result));
 	}
 	
+	@Override
+	public void deleteAllExpiredFeatureConfigurations(Date date) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+		
+		cq.where(cb.lessThan(root.get(FeatureConfiguration.END_DATE), date));
+		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
+		resultList.forEach(result -> service.delete(result));
+	}
+	
 	public static FeatureConfigurationDto toDto(FeatureConfiguration source) {
 		if (source == null) {
 			return null;
@@ -172,6 +196,12 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setEndDate(source.getEndDate());
 		
 		return target;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class FeatureConfigurationFacadeEjbLocal extends FeatureConfigurationFacadeEjb {
+
 	}
 	
 }

@@ -37,6 +37,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	protected final String viewName;
 	private final HorizontalLayout viewHeader;
 	private final Label viewTitleLabel;
+	private final Label viewSubTitleLabel;
 
 	protected boolean applyingCriteria;
 
@@ -67,7 +68,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			viewTitleLabel.setSizeUndefined();
 			CssStyles.style(viewTitleLabel, CssStyles.H1, CssStyles.VSPACE_NONE);
 			viewTitleLayout.addComponent(viewTitleLabel);
-			Label viewSubTitleLabel = new Label(viewSubTitle);
+			viewSubTitleLabel = new Label(viewSubTitle);
 			viewSubTitleLabel.setSizeUndefined();
 			CssStyles.style(viewSubTitleLabel, CssStyles.H4, CssStyles.VSPACE_TOP_NONE);
 			viewTitleLayout.addComponent(viewSubTitleLabel);
@@ -96,6 +97,10 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 	public Label getViewTitleLabel() {
 		return viewTitleLabel;
+	}
+	
+	public Label getViewSubTitleLabel() {
+		return viewSubTitleLabel;
 	}
 
 	public void navigateTo(BaseCriteria criteria) {

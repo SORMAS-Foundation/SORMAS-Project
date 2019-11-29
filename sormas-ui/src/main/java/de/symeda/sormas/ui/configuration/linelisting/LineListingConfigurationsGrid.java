@@ -21,12 +21,14 @@ import de.symeda.sormas.ui.utils.DateHelper8;
 @SuppressWarnings("serial")
 public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationIndexDto> {
 
+	private boolean nationLevel;
 	private List<FeatureConfigurationIndexDto> configurations;
 	private Set<FeatureConfigurationIndexDto> changedConfigurations;
 	private Set<CheckBox> activeCheckBoxes;
 	private Set<DateField> endDateFields;
 
-	public LineListingConfigurationsGrid(List<FeatureConfigurationIndexDto> configurations, Set<FeatureConfigurationIndexDto> changedConfigurations) {
+	public LineListingConfigurationsGrid(List<FeatureConfigurationIndexDto> configurations, Set<FeatureConfigurationIndexDto> changedConfigurations, boolean nationLevel) {
+		this.nationLevel = nationLevel;
 		this.configurations = configurations;
 		this.changedConfigurations = changedConfigurations;
 		this.activeCheckBoxes = new HashSet<>();
@@ -60,7 +62,12 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 
 	private void buildGrid() {
 		setSelectionMode(SelectionMode.NONE);
-
+		
+		if (nationLevel) {
+			addColumn(FeatureConfigurationIndexDto::getRegionName)
+			.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.REGION_NAME));
+		}
+		
 		addColumn(FeatureConfigurationIndexDto::getDistrictName)
 		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.DISTRICT_NAME));
 		addComponentColumn(config -> {
