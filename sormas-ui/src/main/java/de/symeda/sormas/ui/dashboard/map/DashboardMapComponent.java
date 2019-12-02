@@ -66,7 +66,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -914,8 +913,8 @@ public class DashboardMapComponent extends VerticalLayout {
 				}
 				mapCaseDtos.add(caze);
 			} else {
-				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID)
-						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID) || !hasFacilityGps) {
+				if (FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacilityUuid())
+						|| FacilityDto.OTHER_FACILITY_UUID.equals(caze.getHealthFacilityUuid()) || !hasFacilityGps) {
 					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 						if (!hasCaseGps) {
 							continue;
