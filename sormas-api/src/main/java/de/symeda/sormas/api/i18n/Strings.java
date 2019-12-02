@@ -197,6 +197,7 @@ public interface Strings {
 	public static String headingIntroduction = "headingIntroduction";
 	public static String headingLaboratorySample = "headingLaboratorySample";
 	public static String headingLineListing = "headingLineListing";
+	public static String headingLineListingImport = "headingLineListingImport";
 	public static String headingLocation = "headingLocation";
 	public static String headingLoginFailed = "headingLoginFailed";
 	public static String headingMaternalHistory = "headingMaternalHistory";

@@ -136,6 +136,23 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals("ABC-DEF-GHI-19-10", FacadeProvider.getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());	
 	}
 
+	@Test
+	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException {
+
+		RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		// Successful import of 5 cases
+		File csvFile = new File(
+				getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").getFile());
+		CaseImporter caseImporter = new CaseImporterExtension(csvFile, user.toReference());
+		ImportResultStatus importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(5, FacadeProvider.getCaseFacade().count(null, user.getUuid()));
+	}
+
 	private static class CaseImporterExtension extends CaseImporter {
 		private CaseImporterExtension(File inputFile, UserReferenceDto currentUser) {
 			super(inputFile, currentUser);

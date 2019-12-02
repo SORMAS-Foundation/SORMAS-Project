@@ -579,6 +579,7 @@ public interface Captions {
 	public static String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	public static String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	public static String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	public static String importDetailed = "importDetailed";
 	public static String importDownloadCaseImportTemplate = "importDownloadCaseImportTemplate";
 	public static String importDownloadDataDictionary = "importDownloadDataDictionary";
 	public static String importDownloadErrorReport = "importDownloadErrorReport";
@@ -589,6 +590,7 @@ public interface Captions {
 	public static String importErrors = "importErrors";
 	public static String importImportData = "importImportData";
 	public static String importImports = "importImports";
+	public static String importLineListing = "importLineListing";
 	public static String importProcessed = "importProcessed";
 	public static String importSkips = "importSkips";
 	public static String info = "info";

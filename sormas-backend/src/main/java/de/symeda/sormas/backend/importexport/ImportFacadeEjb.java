@@ -127,7 +127,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
-			+ "_import_case_line_listing_template.csv";
+			+ "_import_line_listing_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
 	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
 	
@@ -185,9 +185,16 @@ public class ImportFacadeEjb implements ImportFacade {
 		columnNames.add(CaseDataDto.HEALTH_FACILITY_DETAILS);
 		columnNames.add(CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE);
 
+		List<String> entityNames = new ArrayList<>();
+		String humanClassName = DataHelper.getHumanClassName(CaseDataDto.class);
+		for (int i = 0; i < columnNames.size(); i++) {
+			entityNames.add(humanClassName);
+		}
+
 		Path filePath = Paths.get(getCaseLineListingImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()),
 				configFacade.getCsvSeparator())) {
+			writer.writeNext(entityNames.toArray(new String[entityNames.size()]));
 			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 			writer.flush();
 		}
