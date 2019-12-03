@@ -70,7 +70,7 @@ public class CronService {
 		taskFacade.sendNewAndDueTaskMessages();
 	}
 	
-	@Schedule(hour = "0", minute ="0", second = "0", persistent = false)
+	@Schedule(hour = "0", minute = "0", second = "0", persistent = false)
 	public void runAtMidnight() {
 		// Remove all files with the sormas prefix from the export folder that are older than two hours
 		Date now = new Date();

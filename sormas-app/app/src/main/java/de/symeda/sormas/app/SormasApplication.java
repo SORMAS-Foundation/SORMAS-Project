@@ -32,6 +32,7 @@ import java.util.Locale;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.core.FeatureConfigurationService;
 import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.core.VibrationHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -74,6 +75,7 @@ public class SormasApplication extends Application implements Application.Activi
         NotificationHelper.createNotificationChannels(this);
 
         TaskNotificationService.startTaskNotificationAlarm(this);
+        FeatureConfigurationService.startFeatureConfigurationService(this);
 
         super.onCreate();
 

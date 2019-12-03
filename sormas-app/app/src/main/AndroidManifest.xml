@@ -382,6 +382,14 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <service
+            android:enabled="true"
+            android:name=".core.TaskNotificationService" />
+
+        <service
+            android:enabled="true"
+            android:name=".core.FeatureConfigurationService" />
+
         <!--<service android:name="com.google.android.gms.analytics.CampaignTrackingService" />-->
         <!--<service-->
             <!--android:name=".core.TaskNotificationService"-->

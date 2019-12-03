@@ -9,6 +9,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
@@ -29,6 +30,7 @@ public class InfrastructureHelper {
         changeDates.setDiseaseClassificationChangeDate(DatabaseHelper.getDiseaseClassificationCriteriaDao().getLatestChangeDate());
         changeDates.setDiseaseConfigurationChangeDate(DatabaseHelper.getDiseaseConfigurationDao().getLatestChangeDate());
         changeDates.setUserRoleConfigurationChangeDate(DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate());
+        changeDates.setFeatureConfigurationChangeDate(DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate());
 
         return changeDates;
     }
@@ -44,6 +46,8 @@ public class InfrastructureHelper {
         new DiseaseConfigurationDtoHelper().handlePulledList(DatabaseHelper.getDiseaseConfigurationDao(), infrastructureData.getDiseaseConfigurations());
         DatabaseHelper.getUserRoleConfigDao().delete(infrastructureData.getDeletedUserRoleConfigurationUuids());
         new UserRoleConfigDtoHelper().handlePulledList(DatabaseHelper.getUserRoleConfigDao(), infrastructureData.getUserRoleConfigurations());
+        DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
+        new FeatureConfigurationDtoHelper().handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations());
     }
 
 }

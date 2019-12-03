@@ -3769,11 +3769,18 @@ CREATE TABLE featureconfiguration(
 	district_id bigint,
 	disease varchar(255),
 	enddate timestamp,
+	sys_period tstzrange not null,
 	primary key(id)
 );
 
 ALTER TABLE featureconfiguration OWNER TO sormas_user;
 ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_region_id FOREIGN KEY (region_id) REFERENCES region(id);
 ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+
+CREATE TABLE featureconfiguration_history (LIKE featureconfiguration);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON featureconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'featureconfiguration_history', true);
+ALTER TABLE featureconfiguration_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (173, 'Add FeatureConfiguration entity #1346');

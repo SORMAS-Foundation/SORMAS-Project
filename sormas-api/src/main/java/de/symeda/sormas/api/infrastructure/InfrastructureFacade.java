@@ -5,6 +5,6 @@ import javax.ejb.Remote;
 @Remote
 public interface InfrastructureFacade {
 
-	InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates);
+	InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates, String userUuid);
 	
 }

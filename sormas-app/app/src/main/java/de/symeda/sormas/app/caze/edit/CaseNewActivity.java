@@ -201,7 +201,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             if (pickedCase.getUuid().equals(caze.getUuid())) {
                 saveDataInner(caze);
             } else {
-                if (fragment.isRapidCaseEntry()) {
+                if (DatabaseHelper.getFeatureConfigurationDao().isLineListingEnabled(caze.getDisease())) {
                     fragment.clearFieldsForRapidCaseEntry();
                 } else{
                     finish();
@@ -257,7 +257,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 if (taskResult.getResultStatus().isSuccess()) {
 
                     CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
-                    if (fragment.isRapidCaseEntry()) {
+                    if (DatabaseHelper.getFeatureConfigurationDao().isLineListingEnabled(caseToSave.getDisease())) {
                         fragment.updateLastCaseInfo(caseToSave.getPerson());
                         fragment.clearFieldsForRapidCaseEntry();
                     } else {

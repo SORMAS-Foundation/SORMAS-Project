@@ -46,6 +46,7 @@ import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
@@ -80,7 +81,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     private SyncMode syncMode;
     private final Context context;
-
 
     private SynchronizeDataAsync(SyncMode syncMode, Context context) {
         this.syncMode = syncMode;
@@ -318,6 +318,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserDtoHelper().repullEntities();
         new OutbreakDtoHelper().repullEntities();
         new DiseaseConfigurationDtoHelper().repullEntities();
+        new FeatureConfigurationDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
         caseDtoHelper.repullEntities();
         eventDtoHelper.repullEntities();
@@ -380,6 +381,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
 
         new UserRoleConfigDtoHelper().pullEntities(false);
+
+        Date featureConfigurationChangeDate = DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate();
+        List<String> featureConfigurationConfigUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullDeletedUuidsSince(featureConfigurationChangeDate != null ? featureConfigurationChangeDate.getTime() : 0));
+        DatabaseHelper.getFeatureConfigurationDao().delete(featureConfigurationConfigUuids);
+
+        new FeatureConfigurationDtoHelper().pullEntities(false);
 
         ConfigProvider.setInitialSyncRequired(false);
     }
@@ -553,6 +560,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // disease configurations
         List<String> diseaseConfigurationUuids = executeUuidCall(RetroProvider.getDiseaseConfigurationFacade().pullUuids());
         DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids);
+        // feature configurations
+        List<String> featureConfigurationUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullUuids());
+        DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids);
         // user role config
         List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
         DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
@@ -582,6 +592,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
         new UserDtoHelper().pullMissing(userUuids);
         new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
+        new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
     }
 
     private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException, ServerCommunicationException {

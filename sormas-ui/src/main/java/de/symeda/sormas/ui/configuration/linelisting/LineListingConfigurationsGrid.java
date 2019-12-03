@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.configuration.linelisting;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.DateHelper8;
 
 @SuppressWarnings("serial")
@@ -75,7 +77,13 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 			cbActive.setValue(config.getActive() != null ? config.getActive() : Boolean.FALSE);
 			cbActive.addValueChangeListener(e -> {
 				config.setActive(e.getValue());
+				if (Boolean.TRUE.equals(e.getValue())) {
+					config.setEndDate(DateHelper.addDays(new Date(), 21));
+				} else {
+					config.setEndDate(null);
+				}
 				changedConfigurations.add(config);
+				reload();
 			});
 			activeCheckBoxes.add(cbActive);
 			return cbActive;

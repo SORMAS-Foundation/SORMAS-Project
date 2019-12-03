@@ -25,12 +25,15 @@ import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -46,6 +49,40 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private UserService userService;
+
+	@Override
+	public List<FeatureConfigurationDto> getAllAfter(Date date, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return service.getAllAfter(date, user)
+				.stream()
+				.map(d -> toDto(d))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FeatureConfigurationDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids)
+				.stream()
+				.map(d -> toDto(d))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllUuids(String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return service.getAllUuids(user);
+	}
+	
+	@Override
+	public List<String> getDeletedUuids(Date since, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return service.getDeletedUuids(since, user);
+	}
 	
 	@Override
 	public List<FeatureConfigurationIndexDto> getFeatureConfigurations(FeatureConfigurationCriteria criteria, boolean includeInactive) {
@@ -125,7 +162,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid()));
 		}
 		
-		configurationDto.setEndDate(configuration.getEndDate());
+		configurationDto.setEndDate(DateHelper.getEndOfDay(configuration.getEndDate()));
 		
 		FeatureConfiguration entity = fromDto(configurationDto);
 		service.ensurePersisted(entity);

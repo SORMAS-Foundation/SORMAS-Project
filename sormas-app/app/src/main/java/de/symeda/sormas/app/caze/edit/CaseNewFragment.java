@@ -70,17 +70,15 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> initialFacilities;
     private List<Item> initialPointsOfEntry;
 
-    private String subHeadingTitle;
-
     public static CaseNewFragment newInstance(Case activityRootData) {
         return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle().get(), activityRootData);
     }
 
-    public static CaseNewFragment newInstanceFromContact(Case activityRootData, String contactUuid) {
+    static CaseNewFragment newInstanceFromContact(Case activityRootData, String contactUuid) {
         return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithContact(contactUuid).get(), activityRootData);
     }
 
-    public static CaseNewFragment newInstanceFromEventParticipant(Case activityRootData, String eventParticipantUuid) {
+    static CaseNewFragment newInstanceFromEventParticipant(Case activityRootData, String eventParticipantUuid) {
         return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithEventParticipant(eventParticipantUuid).get(), activityRootData);
     }
 
@@ -235,8 +233,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         return R.layout.fragment_case_new_layout;
     }
 
-    public void clearFieldsForRapidCaseEntry() {
-
+    void clearFieldsForRapidCaseEntry() {
         setLiveValidationDisabled(true);
 
         getContentBinding().symptomsOnsetDate.setValue(null);
@@ -257,11 +254,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         }
     }
 
-    public boolean isRapidCaseEntry() {
-        return false;//(boolean) getContentBinding().rapidCaseEntry.getValue();
-    }
-
-    public void updateLastCaseInfo(Person person) {
+    void updateLastCaseInfo(Person person) {
         StringBuilder lastCaseText = new StringBuilder();
         lastCaseText.append(getResources().getString(R.string.caption_last_case)).append(": ").append(person.getFirstName()).append(" ").append(person.getLastName());
         String dobText = PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
@@ -272,6 +265,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             lastCaseText.append(" | ").append(person.getSex());
         }
 
-        ((IUpdateSubHeadingTitle)getActivity()).updateSubHeadingTitle(lastCaseText.toString());
+        ((IUpdateSubHeadingTitle) getActivity()).updateSubHeadingTitle(lastCaseText.toString());
     }
 }

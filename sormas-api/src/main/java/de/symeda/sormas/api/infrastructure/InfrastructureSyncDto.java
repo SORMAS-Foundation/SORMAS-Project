@@ -6,6 +6,7 @@ import java.util.List;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
@@ -27,6 +28,8 @@ public class InfrastructureSyncDto implements Serializable {
 	private List<DiseaseConfigurationDto> diseaseConfigurations;
 	private List<UserRoleConfigDto> userRoleConfigurations;
 	private List<String> deletedUserRoleConfigurationUuids;
+	private List<FeatureConfigurationDto> featureConfigurations;
+	private List<String> deletedFeatureConfigurationUuids;
 	
 	public boolean isInitialSyncRequired() {
 		return initialSyncRequired;
@@ -114,6 +117,22 @@ public class InfrastructureSyncDto implements Serializable {
 
 	public void setDeletedUserRoleConfigurationUuids(List<String> deletedUserRoleConfigurationUuids) {
 		this.deletedUserRoleConfigurationUuids = deletedUserRoleConfigurationUuids;
+	}
+
+	public List<FeatureConfigurationDto> getFeatureConfigurations() {
+		return featureConfigurations;
+	}
+
+	public void setFeatureConfigurations(List<FeatureConfigurationDto> featureConfigurations) {
+		this.featureConfigurations = featureConfigurations;
+	}
+
+	public List<String> getDeletedFeatureConfigurationUuids() {
+		return deletedFeatureConfigurationUuids;
+	}
+
+	public void setDeletedFeatureConfigurationUuids(List<String> deletedFeatureConfigurationUuids) {
+		this.deletedFeatureConfigurationUuids = deletedFeatureConfigurationUuids;
 	}
 
 }
