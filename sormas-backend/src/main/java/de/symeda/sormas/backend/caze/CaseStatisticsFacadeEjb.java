@@ -498,7 +498,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			StringBuilder queryBuilder = new StringBuilder("WITH ");
 	
 			// Include case counts
-			queryBuilder.append("casecounts AS(SELECT COUNT(").append(Case.TABLE_NAME).append(") AS casecount");
+			queryBuilder.append("casecounts AS(SELECT COUNT(*) AS casecount");
 	
 			if (groupingSelectQueryB != null) {
 				queryBuilder.append(",").append(groupingSelectQueryB);

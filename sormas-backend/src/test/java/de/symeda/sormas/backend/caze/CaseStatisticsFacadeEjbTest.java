@@ -60,7 +60,6 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testBuildCaseCountQuery() throws Exception {
-
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
