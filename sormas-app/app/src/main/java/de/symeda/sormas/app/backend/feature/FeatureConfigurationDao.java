@@ -4,12 +4,15 @@ import android.util.Log;
 
 import com.google.android.gms.common.Feature;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import org.apache.commons.collections.ListUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,20 +37,17 @@ public class FeatureConfigurationDao extends AbstractAdoDao<FeatureConfiguration
         return FeatureConfiguration.TABLE_NAME;
     }
 
-    public boolean isLineListingEnabled(Disease disease) {
-        try {
-            QueryBuilder builder = queryBuilder();
-            Where where = builder.where();
-            where.and(
-                    where.eq(FeatureConfiguration.FEATURE_TYPE, FeatureType.LINE_LISTING),
-                    where.eq(FeatureConfiguration.DISEASE, disease),
-                    where.ge(FeatureConfiguration.END_DATE, DateHelper.getStartOfDay(new Date())));
-            List<FeatureConfiguration> result = builder.query();
-            return result != null && !result.isEmpty();
-        } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform isLineListingEnabled");
-            throw new RuntimeException(e);
+    public List<Disease> getDiseasesWithLineListing() {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT ").append(FeatureConfiguration.DISEASE).append(" FROM ").append(getTableName())
+                .append(" WHERE ").append(FeatureConfiguration.FEATURE_TYPE).append(" = '").append(FeatureType.LINE_LISTING).append("'")
+                .append(" AND ").append(FeatureConfiguration.END_DATE).append(" <= '").append(DateHelper.getStartOfDay(new Date())).append("'");
+        GenericRawResults<Object[]> rawResult = queryRaw(queryBuilder.toString(), new DataType[]{DataType.ENUM_STRING});
+        List<Disease> diseases = new ArrayList<>();
+        for (Object[] result : rawResult) {
+            diseases.add(Disease.valueOf((String) result[0]));
         }
+        return diseases;
     }
 
     public void deleteExpiredFeatureConfigurations() {

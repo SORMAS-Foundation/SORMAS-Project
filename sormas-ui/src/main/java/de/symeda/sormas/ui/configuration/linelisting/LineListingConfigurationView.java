@@ -117,6 +117,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 			HorizontalLayout diseaseConfigurationLayout = createDiseaseConfigurationLayout(disease, null);
 			lineListingConfigurationsLayout.addComponent(diseaseConfigurationLayout);
 			addDiseaseLayout.removeDiseaseFromList(disease);
+			openEditWindow(disease);
 		});
 
 		contentLayout.addComponent(addDiseaseLayout);
@@ -147,24 +148,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 			CssStyles.style(diseaseLayout, CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
 
 			diseaseLayout.setEditCallback(() -> {
-				Window editWindow = VaadinUiUtil.createPopupWindow();
-
-				FeatureConfigurationCriteria criteria = new FeatureConfigurationCriteria().disease(disease).region(region).featureType(FeatureType.LINE_LISTING);
-				LineListingConfigurationEditLayout editLayout = new LineListingConfigurationEditLayout(
-						FacadeProvider.getFeatureConfigurationFacade().getFeatureConfigurations(criteria, true), disease, region != null ? region.toString() : null);
-
-				editLayout.setSaveCallback(() -> {
-					Notification.show(null, I18nProperties.getString(Strings.messageLineListingSaved), Type.TRAY_NOTIFICATION);
-					UI.getCurrent().getPage().reload();
-				});
-				editLayout.setDiscardCallback(() -> {
-					editWindow.close();
-				});
-
-				editWindow.setWidth(1024, Unit.PIXELS);
-				editWindow.setCaption(I18nProperties.getString(Strings.headingEditLineListing));
-				editWindow.setContent(editLayout);
-				UI.getCurrent().addWindow(editWindow);
+				openEditWindow(disease);
 			});
 
 			diseaseLayout.setDisableAllCallback(() -> {
@@ -211,4 +195,25 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		addComponent(contentLayout);
 	}
 
+	private void openEditWindow(Disease disease) {
+		Window editWindow = VaadinUiUtil.createPopupWindow();
+
+		FeatureConfigurationCriteria criteria = new FeatureConfigurationCriteria().disease(disease).region(region).featureType(FeatureType.LINE_LISTING);
+		LineListingConfigurationEditLayout editLayout = new LineListingConfigurationEditLayout(
+				FacadeProvider.getFeatureConfigurationFacade().getFeatureConfigurations(criteria, true), disease, region != null ? region.toString() : null);
+
+		editLayout.setSaveCallback(() -> {
+			Notification.show(null, I18nProperties.getString(Strings.messageLineListingSaved), Type.TRAY_NOTIFICATION);
+			UI.getCurrent().getPage().reload();
+		});
+		editLayout.setDiscardCallback(() -> {
+			editWindow.close();
+		});
+
+		editWindow.setWidth(1024, Unit.PIXELS);
+		editWindow.setCaption(I18nProperties.getString(Strings.headingEditLineListing));
+		editWindow.setContent(editLayout);
+		UI.getCurrent().addWindow(editWindow);
+	}
+	
 }

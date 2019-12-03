@@ -133,6 +133,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                 contentBinding.caseDataPointOfEntry, initialPointsOfEntry);
 
         contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+        contentBinding.caseDataDisease.addValueChangedListener(e -> {
+            contentBinding.rapidCaseEntryInfo.setVisibility(
+                    e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
+        });
+
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
         contentBinding.caseDataHumanRabiesType.initializeSpinner(rabiesTypeList);

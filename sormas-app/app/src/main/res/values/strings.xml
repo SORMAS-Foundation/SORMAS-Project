@@ -384,6 +384,7 @@
     <string name="hint_select_year">Select Year</string>
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
+    <string name="hint_rapid_case_entry_enabled">Rapid case entry is enabled for this disease!</string>
 
     <string name="indicator_error">ERROR</string>
     <string name="indicator_required">*</string>

@@ -51,6 +51,9 @@ public class LineListingAddDiseaseLayout extends HorizontalLayout {
 		cbDiseases.setItemCaptionGenerator(disease -> disease.toString());
 		cbDiseases.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		cbDiseases.setWidth(200, Unit.PIXELS);
+		cbDiseases.addValueChangeListener(e -> {
+			btnAddDisease.setEnabled(e.getValue() != null);
+		});
 		addComponent(cbDiseases);
 
 		btnAddDisease = new Button(I18nProperties.getCaption(Captions.lineListingEnableForDisease));
@@ -59,6 +62,7 @@ public class LineListingAddDiseaseLayout extends HorizontalLayout {
 				addDiseaseCallback.accept(cbDiseases.getValue());
 			}
 		});
+		btnAddDisease.setEnabled(false);
 		CssStyles.style(btnAddDisease, ValoTheme.BUTTON_PRIMARY);
 		addComponent(btnAddDisease);
 
