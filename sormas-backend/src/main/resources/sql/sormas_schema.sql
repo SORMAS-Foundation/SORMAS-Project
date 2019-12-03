@@ -3784,3 +3784,18 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'featureconfiguration_hi
 ALTER TABLE featureconfiguration_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (173, 'Add FeatureConfiguration entity #1346');
+
+-- 2019-12-03 Add port health infos to cases that are missing one #1377
+DO $$
+DECLARE rec RECORD;
+DECLARE new_porthealthinfo_id INTEGER;
+BEGIN
+FOR rec IN SELECT id FROM public.cases WHERE porthealthinfo_id IS NULL
+LOOP
+INSERT INTO porthealthinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_porthealthinfo_id;
+UPDATE cases SET porthealthinfo_id = new_porthealthinfo_id WHERE id = rec.id;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (174, 'Add port health infos to cases that are missing one #1377');
