@@ -18,7 +18,6 @@ import javax.persistence.criteria.Root;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -138,9 +137,11 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
 				if (!StringUtils.isEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(treatment.get(Treatment.TREATMENT_TYPE)), textFilter),
+// #1389: Disabled the possibility to search in TREATMENT_TYPE and TYPE_OF_DRUG
+//			Should be undone as soon as a possibility was found to search an enum value by string
+//							cb.like(cb.lower(treatment.get(Treatment.TREATMENT_TYPE)), textFilter),
 							cb.like(cb.lower(treatment.get(Treatment.TREATMENT_DETAILS)), textFilter),
-							cb.like(cb.lower(treatment.get(Treatment.TYPE_OF_DRUG)), textFilter),
+//							cb.like(cb.lower(treatment.get(Treatment.TYPE_OF_DRUG)), textFilter),
 							cb.like(cb.lower(treatment.get(Treatment.EXECUTING_CLINICIAN)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
