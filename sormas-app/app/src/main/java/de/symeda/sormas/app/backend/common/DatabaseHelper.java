@@ -86,6 +86,8 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDao;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDao;
+import de.symeda.sormas.app.backend.report.AggregateReport;
+import de.symeda.sormas.app.backend.report.AggregateReportDao;
 import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.report.WeeklyReportDao;
 import de.symeda.sormas.app.backend.report.WeeklyReportEntry;
@@ -125,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 173;
+	public static final int DATABASE_VERSION = 174;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -186,6 +188,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, EpiDataTravel.class);
 			TableUtils.clearTable(connectionSource, WeeklyReport.class);
 			TableUtils.clearTable(connectionSource, WeeklyReportEntry.class);
+			TableUtils.clearTable(connectionSource, AggregateReport.class);
 			TableUtils.clearTable(connectionSource, Location.class);
 			TableUtils.clearTable(connectionSource, Outbreak.class);
 			TableUtils.clearTable(connectionSource, SyncLog.class);
@@ -262,6 +265,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, SyncLog.class);
 			TableUtils.createTable(connectionSource, WeeklyReport.class);
 			TableUtils.createTable(connectionSource, WeeklyReportEntry.class);
+			TableUtils.createTable(connectionSource, AggregateReport.class);
 			TableUtils.createTable(connectionSource, Outbreak.class);
 			TableUtils.createTable(connectionSource, DiseaseClassificationCriteria.class);
 		} catch (SQLException e) {
@@ -1325,8 +1329,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						currentVersion = 170;
 						getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);");
 					} catch(SQLException e) { }
-
-					// ATTENTION: break should only be done after last version
 				case 172:
 					currentVersion = 172;
 					getDao(FeatureConfiguration.class).executeRaw("CREATE TABLE featureConfiguration(" +
@@ -1342,6 +1344,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"featureType varchar(255)," +
 							"endDate timestamp," +
 							"UNIQUE(snapshot, uuid));");
+				case 173:
+					currentVersion = 173;
+					getDao(AggregateReport.class).executeRaw("CREATE TABLE aggregateReport(" +
+							"id integer primary key autoincrement," +
+							"uuid varchar(36) not null," +
+							"changeDate timestamp not null," +
+							"creationDate timestamp not null," +
+							"lastOpenedDate timestamp," +
+							"localChangeDate timestamp not null," +
+							"modified integer," +
+							"snapshot integer," +
+							"disease varchar(255)," +
+							"reportingUser_id bigint REFERENCES users(id)," +
+							"region_id bigint REFERENCES region(id)," +
+							"district_id bigint REFERENCES district(id)," +
+							"healthFacility_id bigint REFERENCES district(id)," +
+							"year integer," +
+							"epiWeek integer," +
+							"newCases integer," +
+							"labConfirmations integer," +
+							"deaths integer," +
+							"UNIQUE(snapshot, uuid));");
+
+					// ATTENTION: break should only be done after last version
 					break;
 				default:
 					throw new IllegalStateException(
@@ -1390,6 +1416,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, SyncLog.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReport.class, true);
 			TableUtils.dropTable(connectionSource, WeeklyReportEntry.class, true);
+			TableUtils.dropTable(connectionSource, AggregateReport.class, true);
 			TableUtils.dropTable(connectionSource, Outbreak.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseClassificationCriteria.class, true);
 			TableUtils.dropTable(connectionSource, DiseaseConfiguration.class, true);
@@ -1491,6 +1518,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new WeeklyReportDao((Dao<WeeklyReport, Long>) innerDao);
 				} else if (type.equals(WeeklyReportEntry.class)) {
 					dao = (AbstractAdoDao<ADO>) new WeeklyReportEntryDao((Dao<WeeklyReportEntry, Long>) innerDao);
+				} else if (type.equals(AggregateReport.class)) {
+					dao = (AbstractAdoDao<ADO>) new AggregateReportDao((Dao<AggregateReport, Long>) innerDao);
 				} else if (type.equals(Outbreak.class)) {
 					dao = (AbstractAdoDao<ADO>) new OutbreakDao((Dao<Outbreak, Long>) innerDao);
 				} else if (type.equals(DiseaseClassificationCriteria.class)) {
@@ -1706,6 +1735,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static DiseaseClassificationCriteriaDao getDiseaseClassificationCriteriaDao() {
 		return (DiseaseClassificationCriteriaDao) getAdoDao(DiseaseClassificationCriteria.class);
+	}
+
+	public static AggregateReportDao getAggregateReportDao() {
+		return (AggregateReportDao) getAdoDao(AggregateReport.class);
 	}
 
 	/**

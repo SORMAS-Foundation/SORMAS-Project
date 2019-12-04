@@ -3799,3 +3799,37 @@ END;
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (174, 'Add port health infos to cases that are missing one #1377');
+
+-- 2019-12-04 Aggregate reports #1277
+CREATE TABLE aggregatereport(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	reportinguser_id bigint,
+	region_id bigint,
+	district_id bigint,
+	healthfacility_id bigint,
+	disease varchar(255),
+	year integer,
+	epiweek integer,
+	newcases integer,
+	labconfirmations integer,
+	deaths integer,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE aggregatereport OWNER TO sormas_user;
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+
+CREATE TABLE aggregatereport_history (LIKE aggregatereport);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON aggregatereport
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aggregatereport_history', true);
+ALTER TABLE aggregatereport_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (175, 'Aggregate reports #1277');

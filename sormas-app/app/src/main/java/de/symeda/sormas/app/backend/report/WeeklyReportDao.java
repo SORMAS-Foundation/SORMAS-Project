@@ -39,10 +39,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
-/**
- * Created by Mate Strysewske on 07.09.2017.
- */
-
 public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
 
     public WeeklyReportDao(Dao<WeeklyReport, Long> innerDao) throws SQLException {

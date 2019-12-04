@@ -46,6 +46,7 @@ import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
@@ -236,6 +237,10 @@ public class FacadeProvider {
 	
 	public static FeatureConfigurationFacade getFeatureConfigurationFacade() {
 		return get().lookupEjbRemote(FeatureConfigurationFacade.class);
+	}
+	
+	public static AggregateReportFacade getAggregateReportFacade() {
+		return get().lookupEjbRemote(AggregateReportFacade.class);
 	}
 	
 	@SuppressWarnings("unchecked")

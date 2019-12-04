@@ -116,6 +116,7 @@ public final class RetroProvider {
     private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
     private InfrastructureFacadeRetro infrastructureFacadeRetro;
     private FeatureConfigurationFacadeRetro featureConfigurationFacadeRetro;
+    private AggregateReportFacadeRetro aggregateReportFacadeRetro;
 
     private RetroProvider(Context context) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
@@ -714,7 +715,7 @@ public final class RetroProvider {
         return instance.featureConfigurationFacadeRetro;
     }
 
-    public static InfrastructureFacadeRetro getInfrastructureFacadeRetro() throws NoConnectionException {
+    public static InfrastructureFacadeRetro getInfrastructureFacade() throws NoConnectionException {
         if (instance == null) throw new NoConnectionException();
         if (instance.infrastructureFacadeRetro == null) {
             synchronized ((RetroProvider.class)) {
@@ -724,6 +725,18 @@ public final class RetroProvider {
             }
         }
         return instance.infrastructureFacadeRetro;
+    }
+
+    public static AggregateReportFacadeRetro getAggregateReportFacade() throws NoConnectionException {
+        if (instance == null) throw new NoConnectionException();
+        if (instance.aggregateReportFacadeRetro == null) {
+            synchronized ((RetroProvider.class)) {
+                if (instance.aggregateReportFacadeRetro == null) {
+                    instance.aggregateReportFacadeRetro = instance.retrofit.create(AggregateReportFacadeRetro.class);
+                }
+            }
+        }
+        return instance.aggregateReportFacadeRetro;
     }
 
     public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

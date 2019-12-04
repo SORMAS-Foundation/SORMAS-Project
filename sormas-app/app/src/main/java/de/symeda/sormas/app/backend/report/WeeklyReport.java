@@ -36,9 +36,6 @@ import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.user.User;
 
-/**
- * Created by Mate Strysewske on 07.09.2017.
- */
 @Entity(name = WeeklyReport.TABLE_NAME)
 @DatabaseTable(tableName = WeeklyReport.TABLE_NAME)
 public class WeeklyReport extends AbstractDomainObject {
