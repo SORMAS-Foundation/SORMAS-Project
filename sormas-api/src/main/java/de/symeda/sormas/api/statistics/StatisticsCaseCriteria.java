@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 
 public class StatisticsCaseCriteria implements Serializable {
@@ -68,6 +69,7 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<CaseOutcome> outcomes;
 	private List<RegionReferenceDto> regions;
 	private List<DistrictReferenceDto> districts;
+	private List<UserRole> reportingUserRoles;
 	
 	public List<Year> getOnsetYears() {
 		return onsetYears;
@@ -175,6 +177,10 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public List<DistrictReferenceDto> getDistricts() {
 		return districts;
+	}
+
+	public List<UserRole> getReportingUserRoles() {
+		return reportingUserRoles;
 	}
 
 	public StatisticsCaseCriteria years(List<Year> years, StatisticsCaseAttribute mainAttribute) {
@@ -352,6 +358,11 @@ public class StatisticsCaseCriteria implements Serializable {
 		return this;
 	}
 
+	public StatisticsCaseCriteria reportingUserRoles(List<UserRole> reportingUserRoles) {
+		this.reportingUserRoles = reportingUserRoles;
+		return this;
+	}
+
 	public List<? extends StatisticsGroupingKey> getFilterValuesForGrouping(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
 		if (subAttribute != null) {
 			switch (subAttribute) {
@@ -441,6 +452,8 @@ public class StatisticsCaseCriteria implements Serializable {
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
 			case AGE_INTERVAL_BASIC:
 				return ageIntervals;
+			case REPORTING_USER_ROLE:
+				return reportingUserRoles;
 			default: throw new IllegalArgumentException(attribute.toString());
 			}
 		}

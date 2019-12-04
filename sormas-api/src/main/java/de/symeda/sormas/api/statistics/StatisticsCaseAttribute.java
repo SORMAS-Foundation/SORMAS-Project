@@ -35,7 +35,7 @@ public enum StatisticsCaseAttribute {
 	AGE_INTERVAL_BASIC(StatisticsCaseAttributeGroup.PERSON, false, true),
 	DISEASE(StatisticsCaseAttributeGroup.CASE, true, false),
 	CLASSIFICATION(StatisticsCaseAttributeGroup.CASE, true, false),
-	OUTCOME(StatisticsCaseAttributeGroup.CASE, true, false);
+	OUTCOME(StatisticsCaseAttributeGroup.CASE, true, false), REPORTING_USER_ROLE(StatisticsCaseAttributeGroup.CASE, true, false);
 	
 	private final StatisticsCaseAttributeGroup attributeGroup;
 	private final boolean sortByCaption;

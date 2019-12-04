@@ -45,6 +45,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.infrastructure.PopulationData;
@@ -54,6 +55,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "CaseStatisticsFacade")
@@ -248,7 +250,13 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(".").append(Case.PERSON).append("_id").append(" = ").append(Person.TABLE_NAME).append(".")
 				.append(Person.ID);
 			}
-	
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())) {
+			caseJoinBuilder.append(" LEFT JOIN ").append(User.TABLE_NAME_USERROLES).append(" ON ")
+					.append(Case.TABLE_NAME).append(".").append(Case.REPORTING_USER).append("_id").append(" = ")
+					.append(User.TABLE_NAME_USERROLES).append(".").append(UserDto.COLUMN_NAME_USER_ID);
+		}
+
 			/////////////
 			// 2. Build filter based on caseCriteria
 			/////////////
@@ -450,6 +458,11 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			} else {
 				districtIds = null;
 			}
+
+		if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())) {
+			extendFilterBuilderWithSimpleValue(caseFilterBuilder, filterBuilderParameters, User.TABLE_NAME_USERROLES,
+					UserDto.COLUMN_NAME_USERROLE, caseCriteria.getReportingUserRoles(), entry -> entry.name());
+		}
 	
 			//////////////
 			// 3. Add selected groupings

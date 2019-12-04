@@ -78,6 +78,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -1055,6 +1056,15 @@ public class StatisticsView extends AbstractStatisticsView {
 						districts.add((DistrictReferenceDto) tokenizableValue.getValue());
 					}
 					caseCriteria.districts(districts);
+				}
+				break;
+			case REPORTING_USER_ROLE:
+				if (filterElement.getSelectedValues() != null) {
+					List<UserRole> reportingUserRoles = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
+						reportingUserRoles.add((UserRole) tokenizableValue.getValue());
+					}
+					caseCriteria.reportingUserRoles(reportingUserRoles);
 				}
 				break;
 			default:

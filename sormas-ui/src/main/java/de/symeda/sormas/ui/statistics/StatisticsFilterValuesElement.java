@@ -46,6 +46,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -191,6 +192,8 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				return createTokens(CaseClassification.values());
 			case OUTCOME:
 				return createTokens(CaseOutcome.values());
+			case REPORTING_USER_ROLE:
+				return createTokens(UserRole.values());
 			default:
 				throw new IllegalArgumentException(this.toString());
 			}
