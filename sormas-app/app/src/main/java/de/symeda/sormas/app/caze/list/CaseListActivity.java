@@ -57,7 +57,7 @@ import static android.view.View.GONE;
 
 public class CaseListActivity extends PagedBaseListActivity {
 
-    private static InvestigationStatus[] statusFilters = new InvestigationStatus[]{null, InvestigationStatus.PENDING, InvestigationStatus.DONE, InvestigationStatus.DISCARDED};
+    private static InvestigationStatus[] statusFilters = new InvestigationStatus[]{null, InvestigationStatus.PENDING, InvestigationStatus.DONE};
     private CaseListViewModel model;
     private FilterCaseListLayoutBinding filterBinding;
 

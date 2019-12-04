@@ -92,8 +92,7 @@
                         android:id="@+id/imgCaseStatusIcon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        />
+                        android:layout_gravity="center_vertical" />
 
                     <TextView
                         android:id="@+id/txtCaseStatus"
@@ -106,8 +105,8 @@
                         android:textColor="@color/row_entry_status_text"
                         android:fontFamily="sans-serif-medium"
                         app:value="@{data.caseClassification}"
-                        app:defaultValue='@{@string/value_status_unknown}'
-                        />
+                        app:defaultValue='@{@string/value_status_unknown}' />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -136,8 +135,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         app:personValue="@{data.person}"
-                        app:defaultValue='@{@string/value_person_unknown}'
-                        />
+                        app:defaultValue='@{@string/value_person_unknown}' />
 
                     <TextView
                         android:id="@+id/txtFacilityName"
@@ -149,8 +147,7 @@
                         android:textColor="@color/row_entry_secondary_text"
                         app:facilityValue="@{data.healthFacility}"
                         app:goneIfEmpty="@{data.healthFacility}"
-                        app:defaultValue='@{@string/value_facility_unknown}'
-                        />
+                        app:defaultValue='@{@string/value_facility_unknown}' />
 
                     <TextView
                         android:id="@+id/txtPointOfEntryName"
@@ -162,20 +159,18 @@
                         android:textColor="@color/row_entry_secondary_text"
                         app:pointOfEntryValue="@{data.pointOfEntry}"
                         app:goneIfEmpty="@{data.pointOfEntry}"
-                        app:defaultValue='@{@string/value_point_of_entry_unknown}'
-                        />
+                        app:defaultValue='@{@string/value_point_of_entry_unknown}' />
 
                     <TextView
-                        android:id="@+id/txtReporter"
+                        android:id="@+id/txtInvestigationStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/listActivityRowTertiaryTextSize"
                         android:textColor="@color/listActivityRowLeastText"
                         android:fontFamily="sans-serif-medium"
                         android:layout_marginTop="@dimen/listActivityRowSecondaryTextVerticalMargin"
-                        app:userValue="@{data.reportingUser}"
-                        app:defaultValue='@{@string/value_person_unknown}'
-                        />
+                        app:investigationStatusValue="@{data.investigationStatus}"
+                        app:defaultValue='@{@string/value_investigation_status_unknown}' />
 
                 </LinearLayout>
 
