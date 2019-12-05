@@ -291,6 +291,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                     NavigationHelper.goToTasks(getContext());
                 } else if (id == R.id.menu_item_cases) {
                     NavigationHelper.goToCases(getContext());
+                } else if (id == R.id.menu_item_aggregate_reports) {
+                    NavigationHelper.goToAggregateReports(getContext());
                 } else if (id == R.id.menu_item_contacts) {
                     NavigationHelper.goToContacts(getContext());
                 } else if (id == R.id.menu_item_events) {
@@ -395,6 +397,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             MenuItem dashboardMenu = menuNav.findItem(R.id.menu_item_dashboard);
             MenuItem taskMenu = menuNav.findItem(R.id.menu_item_tasks);
             MenuItem caseMenu = menuNav.findItem(R.id.menu_item_cases);
+            MenuItem aggregateReportsMenu = menuNav.findItem(R.id.menu_item_aggregate_reports);
             MenuItem contactMenu = menuNav.findItem(R.id.menu_item_contacts);
             MenuItem eventMenu = menuNav.findItem(R.id.menu_item_events);
             MenuItem sampleMenu = menuNav.findItem(R.id.menu_item_samples);
@@ -409,6 +412,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
             if (caseMenu != null)
                 caseMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CASE_VIEW));
+
+            if (aggregateReportsMenu != null)
+                aggregateReportsMenu.setVisible(ConfigProvider.hasUserRight(UserRight.AGGREGATE_REPORT_VIEW));
 
             if (sampleMenu != null)
                 sampleMenu.setVisible(ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW));

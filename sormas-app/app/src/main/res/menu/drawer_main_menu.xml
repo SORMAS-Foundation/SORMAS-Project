@@ -47,10 +47,17 @@
             />
 
         <item
+            android:id="@+id/menu_item_aggregate_reports"
+            android:title="@string/main_menu_aggregate_reports"
+            android:icon="@drawable/ic_storage_blue_36dp"
+            android:orderInCategory="4"
+            />
+
+        <item
             android:id="@+id/menu_item_contacts"
             android:title="@string/main_menu_contacts"
             android:icon="@drawable/ic_drawer_contact_blue_36dp"
-            android:orderInCategory="4"
+            android:orderInCategory="5"
             app:actionLayout="@layout/drawer_main_menu_notification_counter"
             />
 
@@ -58,7 +65,7 @@
             android:id="@+id/menu_item_events"
             android:title="@string/main_menu_events"
             android:icon="@drawable/ic_alert_36dp"
-            android:orderInCategory="5"
+            android:orderInCategory="6"
             app:actionLayout="@layout/drawer_main_menu_notification_counter"
             />
 
@@ -67,7 +74,7 @@
             android:title="@string/main_menu_samples"
             android:textSize="16sp"
             android:icon="@drawable/ic_drawer_sample_blue_36dp"
-            android:orderInCategory="6"
+            android:orderInCategory="7"
             app:actionLayout="@layout/drawer_main_menu_notification_counter"
             />
 
@@ -75,7 +82,7 @@
             android:id="@+id/menu_item_reports"
             android:title="@string/main_menu_reports"
             android:icon="@drawable/ic_drawer_assessment_blue_36dp"
-            android:orderInCategory="7"
+            android:orderInCategory="8"
             />
 
     </group>

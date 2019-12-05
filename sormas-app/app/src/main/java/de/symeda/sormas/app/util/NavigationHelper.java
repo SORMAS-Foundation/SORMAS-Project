@@ -34,6 +34,7 @@ import de.symeda.sormas.app.contact.list.ContactListActivity;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.event.list.EventListActivity;
 import de.symeda.sormas.app.report.ReportActivity;
+import de.symeda.sormas.app.report.aggregate.AggregateReportActivity;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
 import de.symeda.sormas.app.task.list.TaskListActivity;
@@ -58,6 +59,11 @@ public class NavigationHelper {
 
     public static void goToCases(Context context) {
         CaseListActivity.startActivity(context, null);
+    }
+
+    public static void goToAggregateReports(Context context) {
+        Intent intent = new Intent(context, AggregateReportActivity.class);
+        context.startActivity(intent);
     }
 
     public static void goToContacts(Context context) {
