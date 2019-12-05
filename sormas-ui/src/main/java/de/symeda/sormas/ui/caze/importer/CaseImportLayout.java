@@ -47,7 +47,7 @@ public class CaseImportLayout extends AbstractImportLayout {
 				resetDownloadErrorReportButton();
 				
 				try {
-					CaseImporter importer = new CaseImporter(file, currentUser);
+					CaseImporter importer = new CaseImporter(file, true, currentUser);
 					importer.startImport(new Consumer<StreamResource>() {
 						@Override
 						public void accept(StreamResource resource) {

@@ -38,7 +38,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_success.csv").getFile());
-		CaseImporter caseImporter = new CaseImporterExtension(csvFile, user.toReference());
+		CaseImporter caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		ImportResultStatus importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -46,7 +46,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		// Failed import of 5 cases because of errors
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_errors.csv").getFile());
-		caseImporter = new CaseImporterExtension(csvFile, user.toReference());
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		importResult = caseImporter.runImport();
 			
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
@@ -56,7 +56,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		boolean exceptionWasThrown = false;
 
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_failure.csv").getFile());
-		caseImporter = new CaseImporterExtension(csvFile, user.toReference());
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		try {
 			importResult = caseImporter.runImport();
 		} catch (InvalidColumnException e) {
@@ -67,7 +67,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		
 		// Similarity: skip
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
 			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
@@ -81,7 +81,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		
 		// Similarity: pick
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
 			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new ImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.PICK));
@@ -95,7 +95,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		
 		// Similarity: cancel
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
 			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
@@ -109,7 +109,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		
 		// Similarity: override
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
 			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new ImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.OVERRIDE));
@@ -123,7 +123,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		
 		// Similarity: create
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
-		caseImporter = new CaseImporterExtension(csvFile, user.toReference()) {
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
 			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
@@ -146,7 +146,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Successful import of 5 cases
 		File csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").getFile());
-		CaseImporter caseImporter = new CaseImporterExtension(csvFile, user.toReference());
+		CaseImporter caseImporter = new CaseImporterExtension(csvFile, false, user.toReference());
 		ImportResultStatus importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -154,8 +154,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 	}
 
 	private static class CaseImporterExtension extends CaseImporter {
-		private CaseImporterExtension(File inputFile, UserReferenceDto currentUser) {
-			super(inputFile, currentUser);
+		private CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
+			super(inputFile, hasEntityClassRow, currentUser);
 		}
 	
 		protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {

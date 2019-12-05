@@ -97,8 +97,8 @@ public class CaseImporter extends DataImporter {
 	// needed to let the user handle similarities
 	private UI currentUI;
 
-	public CaseImporter(File inputFile, UserReferenceDto currentUser) {
-		super(inputFile, true, currentUser);
+	public CaseImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
+		super(inputFile, hasEntityClassRow, currentUser);
 	}
 	
 	@Override

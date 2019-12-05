@@ -59,7 +59,6 @@ public abstract class DataImporter {
 	private boolean cancelAfterCurrent;
 	private boolean hasImportError;
 
-	
 	public DataImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;

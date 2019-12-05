@@ -34,7 +34,7 @@ public class LineListingImportLayout extends AbstractImportLayout {
 				resetDownloadErrorReportButton();
 
 				try {
-					CaseImporter importer = new CaseImporter(file, currentUser);
+					CaseImporter importer = new CaseImporter(file, false, currentUser);
 					importer.startImport(new Consumer<StreamResource>() {
 						@Override
 						public void accept(StreamResource resource) {

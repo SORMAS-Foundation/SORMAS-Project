@@ -178,23 +178,18 @@ public class ImportFacadeEjb implements ImportFacade {
 		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_YYYY);
 		columnNames.add(CaseDataDto.EPID_NUMBER);
 		columnNames.add(CaseDataDto.REPORT_DATE);
+		columnNames.add(CaseDataDto.CASE_ORIGIN);
 		columnNames.add(CaseDataDto.REGION);
 		columnNames.add(CaseDataDto.DISTRICT);
 		columnNames.add(CaseDataDto.COMMUNITY);
 		columnNames.add(CaseDataDto.HEALTH_FACILITY);
 		columnNames.add(CaseDataDto.HEALTH_FACILITY_DETAILS);
+		columnNames.add(CaseDataDto.POINT_OF_ENTRY);
+		columnNames.add(CaseDataDto.POINT_OF_ENTRY_DETAILS);
 		columnNames.add(CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE);
 
-		List<String> entityNames = new ArrayList<>();
-		String humanClassName = DataHelper.getHumanClassName(CaseDataDto.class);
-		for (int i = 0; i < columnNames.size(); i++) {
-			entityNames.add(humanClassName);
-		}
-
 		Path filePath = Paths.get(getCaseLineListingImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()),
-				configFacade.getCsvSeparator())) {
-			writer.writeNext(entityNames.toArray(new String[entityNames.size()]));
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
 			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 			writer.flush();
 		}
