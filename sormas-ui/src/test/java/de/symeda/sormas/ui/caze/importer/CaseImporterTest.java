@@ -138,14 +138,12 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException {
-
 		RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		// Successful import of 5 cases
-		File csvFile = new File(
-				getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").getFile());
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").getFile());
 		CaseImporter caseImporter = new CaseImporterExtension(csvFile, false, user.toReference());
 		ImportResultStatus importResult = caseImporter.runImport();
 
