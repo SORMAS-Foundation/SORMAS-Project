@@ -17,6 +17,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
+<!--
+    All captions are generally stored in properties files in the api-project. They are managed by the class I18nProperties.
+    Here there are only strings, which are only useful for the app.
+ -->
 <resources>
     <string name="app_name">SORMAS</string>
     <string name="and">et</string>
@@ -24,6 +28,7 @@
     <string name="notAnswered">Pas de réponse</string>
     <string name="system">Système</string>
     <string name="yes">Oui</string>
+    <string name="all">All</string>
     <string name="action_add_missing_case">Ajouter un cas manquant</string>
     <string name="action_allow_gps_access">Autoriser l\'accès GPS</string>
     <string name="action_apply_filters">Appliquer les filtres</string>
@@ -338,6 +343,7 @@
     <string name="heading_treatment_new">New Treatment</string>
     <string name="heading_unsynchronized_changes">Unsynchronized Changes</string>
     <string name="heading_user_report">Report a problem</string>
+    <string name="heading_change_laboratory_result">Change Laboratory Result</string>
     <string name="hint_add_to_empty_list">Add a new entry by pressing the \"+\" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
     <string name="hint_create_pin">Please choose a four-digit PIN which you will use to authenticate yourself whenever you open the SORMAS app.</string>
@@ -368,6 +374,7 @@
     <string name="hint_select_year">Select Year</string>
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
+    <string name="hint_rapid_case_entry_enabled">Rapid case entry is enabled for this disease!</string>
     <string name="indicator_error">ERROR</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
@@ -439,6 +446,7 @@
     <string name="message_update_app_required">A new version of the SORMAS app is available. It is strongly recommended to download it by clicking the \'Download\' button below.</string>
     <string name="message_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
     <string name="message_weekly_report_submitted">Thank you for submitting your weekly report.</string>
+    <string name="message_change_final_laboratory_result">The result of this pathogen test differs from the current final laboratory result of the sample. Do you want to update the final laboratory result?</string>
     <string name="notification_channel_tasks_name">New or Updated Tasks</string>
     <string name="notification_channel_tasks_description">Receive a notification when a new task is assigned to you or a task assigned to you has been edited</string>
     <string name="notification_channel_case_changes_name">Important Case Changes</string>
@@ -530,4 +538,5 @@
     <string name="value_visit_remarks_unknown">Remarks N/A</string>
     <string name="value_visit_time_unknown">Visit Time N/A</string>
     <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
+    <string name="value_investigation_status_unknown">Investigation Status N/A</string>
 </resources>
