@@ -27,11 +27,11 @@ public class ClinicalVisitDto extends EntityDto {
 	private String visitRemarks;
 	private String visitingPerson;
 	
-	public static ClinicalVisitDto buildClinicalVisit(ClinicalCourseReferenceDto clinicalCourse, SymptomsDto symptoms, Disease disease) {
+	public static ClinicalVisitDto build(ClinicalCourseReferenceDto clinicalCourse, Disease disease) {
 		ClinicalVisitDto clinicalVisit = new ClinicalVisitDto();
 		clinicalVisit.setUuid(DataHelper.createUuid());
 		clinicalVisit.setClinicalCourse(clinicalCourse);
-		clinicalVisit.setSymptoms(symptoms);
+		clinicalVisit.setSymptoms(SymptomsDto.build());
 		clinicalVisit.setDisease(disease);
 		clinicalVisit.setVisitDateTime(new Date());
 		

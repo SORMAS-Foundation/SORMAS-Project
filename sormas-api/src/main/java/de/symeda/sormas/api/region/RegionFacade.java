@@ -45,7 +45,7 @@ public interface RegionFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
-	List<String> getAllUuids();
+	List<Integer> getAllIds();
 	
 	List<RegionDto> getByUuids(List<String> uuids);
 	
@@ -53,4 +53,6 @@ public interface RegionFacade {
 	
 	List<RegionReferenceDto> getByName(String name);
 	
+	List<String> getNamesByIds(List<Long> regionIds);
+
 }

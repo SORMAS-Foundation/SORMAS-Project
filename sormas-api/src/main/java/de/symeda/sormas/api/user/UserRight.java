@@ -842,7 +842,14 @@ public enum UserRight {
 			),
 	POPULATION_MANAGE(
 			ADMIN
-			);
+			),
+	LINE_LISTING_CONFIGURE(
+			ADMIN,
+			NATIONAL_USER,
+			SURVEILLANCE_SUPERVISOR),
+	LINE_LISTING_CONFIGURE_NATION(
+			ADMIN,
+			NATIONAL_USER);
 
 	private final Set<UserRole> defaultUserRoles;
 

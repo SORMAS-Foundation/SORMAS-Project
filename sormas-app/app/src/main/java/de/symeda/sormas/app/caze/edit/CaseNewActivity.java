@@ -23,8 +23,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
-import java.util.Calendar;
+import androidx.annotation.NonNull;
 
+import java.util.Calendar;
+import java.util.List;
+
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -59,6 +63,8 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     private boolean emptyReportDate;
     private String contactUuid;
     private String eventParticipantUuid;
+
+    private List<Disease> lineListingDiseases;
 
     public static void startActivity(Context fromActivity) {
         BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundle());
@@ -99,10 +105,12 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         contactUuid = bundler.getContactUuid();
         eventParticipantUuid = bundler.getEventParticipantUuid();
         emptyReportDate = bundler.getEmptyReportDate();
+
+        lineListingDiseases = DatabaseHelper.getFeatureConfigurationDao().getDiseasesWithLineListing();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundler bundler = new Bundler(outState);
         bundler.setContactUuid(contactUuid);
@@ -199,7 +207,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             if (pickedCase.getUuid().equals(caze.getUuid())) {
                 saveDataInner(caze);
             } else {
-                if (fragment.isRapidCaseEntry()) {
+                if (lineListingDiseases.contains(caze.getDisease())) {
                     fragment.clearFieldsForRapidCaseEntry();
                 } else{
                     finish();
@@ -255,7 +263,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 if (taskResult.getResultStatus().isSuccess()) {
 
                     CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
-                    if (fragment.isRapidCaseEntry()) {
+                    if (lineListingDiseases.contains(caseToSave.getDisease())) {
                         fragment.updateLastCaseInfo(caseToSave.getPerson());
                         fragment.clearFieldsForRapidCaseEntry();
                     } else {
@@ -278,6 +286,10 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);
+    }
+
+    public List<Disease> getLineListingDiseases() {
+        return lineListingDiseases;
     }
 
 }

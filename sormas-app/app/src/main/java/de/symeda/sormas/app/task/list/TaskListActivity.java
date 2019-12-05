@@ -20,11 +20,9 @@ package de.symeda.sormas.app.task.list;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 
 import org.joda.time.DateTime;
 
@@ -34,19 +32,17 @@ import java.util.Random;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
-import de.symeda.sormas.api.caze.CaseClassification;
+
 import de.symeda.sormas.api.task.TaskAssignee;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.task.TaskCriteria;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FilterTaskListLayoutBinding;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.util.Callback;
@@ -54,11 +50,11 @@ import de.symeda.sormas.app.util.DataUtils;
 
 public class TaskListActivity extends PagedBaseListActivity {
 
-    private TaskStatus statusFilters[] = new TaskStatus[]{TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE};
+    private static TaskStatus[] statusFilters = new TaskStatus[]{null, TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.NOT_EXECUTABLE};
     private TaskListViewModel model;
 
     public static void startActivity(Context context, TaskStatus listFilter) {
-        BaseListActivity.startActivity(context, TaskListActivity.class, buildBundle(listFilter));
+        BaseListActivity.startActivity(context, TaskListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
     }
 
     @Override
@@ -87,7 +83,7 @@ public class TaskListActivity extends PagedBaseListActivity {
         });
         setOpenPageCallback(p -> {
             showPreloader();
-            model.getTaskCriteria().taskStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.getTaskCriteria().taskStatus(statusFilters[((PageMenuItem) p).getPosition()]);
             model.notifyCriteriaUpdated();
         });
     }
@@ -115,7 +111,7 @@ public class TaskListActivity extends PagedBaseListActivity {
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
-            TaskStatus listFilter = statusFilters[menuItem.getKey()];
+            TaskStatus listFilter = statusFilters[menuItem.getPosition()];
             return TaskListFragment.newInstance(listFilter);
         }
         return null;

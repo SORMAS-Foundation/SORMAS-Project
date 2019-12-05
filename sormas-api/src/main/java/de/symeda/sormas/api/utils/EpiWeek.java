@@ -26,7 +26,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 @SuppressWarnings("serial")
-public class EpiWeek implements Serializable, StatisticsGroupingKey {
+public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGroupingKey {
 	
 	private final Integer year;
 	private final Integer week;
@@ -124,6 +124,11 @@ public class EpiWeek implements Serializable, StatisticsGroupingKey {
 				return 1;
 			}
 		}
+	}
+
+	@Override
+	public int compareTo(EpiWeek o) {
+		return keyCompareTo(o);
 	}
 
 }

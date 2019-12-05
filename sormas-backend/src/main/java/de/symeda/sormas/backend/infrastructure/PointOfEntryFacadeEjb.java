@@ -134,24 +134,6 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 				.collect(Collectors.toList());
 	}
 
-	private PointOfEntryDto toDto(PointOfEntry entity) {
-		if (entity == null) {
-			return null;
-		}
-		PointOfEntryDto dto = new PointOfEntryDto();
-		DtoHelper.fillDto(dto, entity);
-
-		dto.setName(entity.getName());
-		dto.setPointOfEntryType(entity.getPointOfEntryType());
-		dto.setActive(entity.isActive());
-		dto.setLatitude(entity.getLatitude());
-		dto.setLongitude(entity.getLongitude());
-		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
-		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
-
-		return dto;
-	}
-
 	@Override
 	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
 		PointOfEntry pointOfEntry = service.getByUuid(dto.getUuid());
@@ -242,7 +224,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		cq.select(pointOfEntry);
 
 		List<PointOfEntry> pointsOfEntry = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return pointsOfEntry.stream().map(p -> buildDto(p)).collect(Collectors.toList());
+		return pointsOfEntry.stream().map(p -> toDto(p)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -290,22 +272,22 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		return target;
 	}
 
-	private PointOfEntryDto buildDto(PointOfEntry source) {
-		if (source == null) {
+	private PointOfEntryDto toDto(PointOfEntry entity) {
+		if (entity == null) {
 			return null;
 		}
-		PointOfEntryDto target = new PointOfEntryDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setName(source.getName());
-		target.setPointOfEntryType(source.getPointOfEntryType());
-		target.setLatitude(source.getLatitude());
-		target.setLongitude(source.getLongitude());
-		target.setActive(source.isActive());
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-
-		return target;
+		PointOfEntryDto dto = new PointOfEntryDto();
+		DtoHelper.fillDto(dto, entity);
+	
+		dto.setName(entity.getName());
+		dto.setPointOfEntryType(entity.getPointOfEntryType());
+		dto.setActive(entity.isActive());
+		dto.setLatitude(entity.getLatitude());
+		dto.setLongitude(entity.getLongitude());
+		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+	
+		return dto;
 	}
 
 	@LocalBean

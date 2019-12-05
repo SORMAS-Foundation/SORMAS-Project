@@ -178,7 +178,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	protected void setSubComponent(Component newComponent) {
 		super.setSubComponent(newComponent);
 		
-		if (FacadeProvider.getCaseFacade().isDeleted(caseRef.getUuid())) {
+		if (caseRef != null && FacadeProvider.getCaseFacade().isDeleted(caseRef.getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}

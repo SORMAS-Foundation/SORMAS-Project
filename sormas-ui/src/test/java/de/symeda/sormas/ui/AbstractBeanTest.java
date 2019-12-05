@@ -18,8 +18,15 @@
 
 package de.symeda.sormas.ui;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.junit.Before;
 
+import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public class AbstractBeanTest extends BaseBeanTest {
@@ -31,7 +38,28 @@ public class AbstractBeanTest extends BaseBeanTest {
 	 * shared between tests.
 	 */
 	@Before
-	public void resetMocks() {
+	public void init() {
 		MockProducer.resetMocks();
+		initH2Functions();
+	}
+
+	private void initH2Functions() {
+		EntityManager em = getEntityManager();
+		em.getTransaction().begin();
+		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.ui.H2Function.similarity\"");
+		nativeQuery.executeUpdate();
+		em.getTransaction().commit();
+	}
+	
+	public PersonFacade getPersonFacade() {
+		return getBean(PersonFacadeEjbLocal.class);
+	}
+
+	public CaseFacade getCaseFacade() {
+		return getBean(CaseFacadeEjbLocal.class);
+	}
+
+	public EntityManager getEntityManager() {
+		return getBean(EntityManagerWrapper.class).getEntityManager();
 	}
 }

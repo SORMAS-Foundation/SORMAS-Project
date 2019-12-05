@@ -85,7 +85,7 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setRootUuid(rootUuid);
     }

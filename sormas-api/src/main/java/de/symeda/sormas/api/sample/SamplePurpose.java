@@ -15,13 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.importer;
+package de.symeda.sormas.api.sample;
 
-public enum ImportResult {
+import de.symeda.sormas.api.i18n.I18nProperties;
+
+public enum SamplePurpose {
+
+	EXTERNAL,
+	INTERNAL;
 	
-	SUCCESS,
-	ERROR,
-	SKIPPED,
-	DUPLICATE;
-
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
+	
 }

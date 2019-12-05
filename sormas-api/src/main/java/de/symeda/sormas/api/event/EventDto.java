@@ -79,9 +79,7 @@ public class EventDto extends EntityDto {
 		event.setUuid(DataHelper.createUuid());
 
 		event.setEventStatus(EventStatus.POSSIBLE);
-		LocationDto location = new LocationDto();
-		location.setUuid(DataHelper.createUuid());
-		event.setEventLocation(location);
+		event.setEventLocation(LocationDto.build());
 		event.setReportDateTime(new Date());
 
 		return event;

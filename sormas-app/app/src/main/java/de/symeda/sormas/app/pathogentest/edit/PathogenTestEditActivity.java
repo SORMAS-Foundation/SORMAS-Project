@@ -32,6 +32,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -55,8 +56,6 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
     public static void startActivity(Context context, String rootUuid) {
         BaseActivity.startActivity(context, PathogenTestEditActivity.class, buildBundle(rootUuid));
     }
-
-
 
     @Override
     protected PathogenTest queryRootEntity(String recordUuid) {
@@ -88,7 +87,6 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 
     @Override
     public void saveData() {
-
         if (saveTask != null) {
             NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
             return; // don't save multiple times
@@ -104,7 +102,6 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
         }
 
         saveTask = new SavingAsyncTask(getRootView(), pathogenTestToSave) {
-
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
                 DatabaseHelper.getSampleTestDao().saveAndSnapshot(pathogenTestToSave);
@@ -115,8 +112,36 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
                 super.onPostExecute(taskResult);
 
                 if (taskResult.getResultStatus().isSuccess()) {
-                    finish();
-                }  else {
+                    if (Boolean.TRUE == pathogenTestToSave.getTestResultVerified()
+                            && pathogenTestToSave.getTestedDisease() == pathogenTestToSave.getSample().getAssociatedCase().getDisease()
+                            && pathogenTestToSave.getTestResult() != pathogenTestToSave.getSample().getPathogenTestResult()) {
+                        final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActiveActivity(),
+                                R.string.heading_change_laboratory_result,
+                                R.string.message_change_final_laboratory_result,
+                                R.string.yes,
+                                R.string.no);
+
+                        confirmationDialog.setPositiveCallback(() -> {
+                            pathogenTestToSave.getSample().setPathogenTestResult(pathogenTestToSave.getTestResult());
+                            try {
+                                DatabaseHelper.getSampleDao().saveAndSnapshot(pathogenTestToSave.getSample());
+                            } catch (DaoException e) {
+                                NotificationHelper.showNotification(getActiveActivity().getRootView(), ERROR, String.format(getActiveActivity().getResources().getString(R.string.message_save_error), pathogenTestToSave.getEntityName()));
+                            } finally {
+                                confirmationDialog.dismiss();
+                                finish();
+                            }
+                        });
+                        confirmationDialog.setNegativeCallback(() -> {
+                            confirmationDialog.dismiss();
+                            finish();
+                        });
+
+                        confirmationDialog.show();
+                    } else {
+                        finish();
+                    }
+                } else {
                     onResume(); // reload data
                 }
                 saveTask = null;

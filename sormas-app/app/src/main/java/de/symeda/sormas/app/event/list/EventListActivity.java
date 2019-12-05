@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
@@ -44,11 +43,11 @@ import de.symeda.sormas.app.util.Callback;
 
 public class EventListActivity extends PagedBaseListActivity {
 
-    private EventStatus statusFilters[] = new EventStatus[]{EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
+    private static EventStatus[] statusFilters = new EventStatus[]{null, EventStatus.POSSIBLE, EventStatus.CONFIRMED, EventStatus.NO_EVENT};
     private EventListViewModel model;
 
     public static void startActivity(Context context, EventStatus listFilter) {
-        BaseListActivity.startActivity(context, EventListActivity.class, buildBundle(listFilter));
+        BaseListActivity.startActivity(context, EventListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
     }
 
     @Override
@@ -83,7 +82,7 @@ public class EventListActivity extends PagedBaseListActivity {
         });
         setOpenPageCallback(p -> {
             showPreloader();
-            model.getEventCriteria().eventStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.getEventCriteria().eventStatus(statusFilters[((PageMenuItem) p).getPosition()]);
             model.notifyCriteriaUpdated();
         });
     }
@@ -111,7 +110,7 @@ public class EventListActivity extends PagedBaseListActivity {
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
-            EventStatus listFilter = statusFilters[menuItem.getKey()];
+            EventStatus listFilter = statusFilters[menuItem.getPosition()];
             return EventListFragment.newInstance(listFilter);
         }
         return null;

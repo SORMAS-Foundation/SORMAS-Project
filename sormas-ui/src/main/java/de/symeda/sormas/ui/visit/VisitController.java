@@ -28,7 +28,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -123,9 +122,8 @@ public class VisitController {
 	
     private VisitDto createNewVisit(ContactReferenceDto contactRef) {
     	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
-    	CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
     	
-    	VisitDto visit = VisitDto.build(contact, caze);
+    	VisitDto visit = VisitDto.build(contact.getPerson(), contact.getCaseDisease());
     	UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
     	visit.setVisitUser(userReference);
     	

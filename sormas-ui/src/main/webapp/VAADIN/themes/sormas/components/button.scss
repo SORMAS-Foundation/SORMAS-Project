@@ -62,6 +62,23 @@
       	color: #FFFFFF;
       }
      
+      &.v-button-filter-enabled {
+      	background-color: #2eb82e;
+      	  color: #FFFFFF;
+      	
+      	&:hover {
+      	  background-color: #248f24;
+      	}
+      }
+     
+      &.v-button-filter-disabled {
+      	background-color: #C8C8C8;
+      	
+      	&:hover {
+      	  background-color: #B8B8B8;
+      	}
+      }
+     
       &.v-button-filter-small {
       	height: 26px;
       	padding: 0px 7px;

@@ -20,8 +20,6 @@ package de.symeda.sormas.app.person.edit;
 
 import android.view.View;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,7 +29,6 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
@@ -58,7 +55,7 @@ import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
@@ -102,7 +99,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         List<Item> approximateAgeTypeList = DataUtils.getEnumItems(ApproximateAgeType.class, true);
         List<Item> sexList = DataUtils.getEnumItems(Sex.class, true);
         List<Item> causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
-        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationHelper.getInstance().getAllActiveDiseases());
+        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllActiveDiseases());
         List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
         List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 
@@ -140,7 +137,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
             updateApproximateAgeField(contentBinding);
             updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
-        contentBinding.personBirthdateYYYY.setSelectionOnOpen(2000);
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
         contentBinding.personApproximateAgeType.initializeSpinner(approximateAgeTypeList);
         contentBinding.personSex.initializeSpinner(sexList);
         contentBinding.personCauseOfDeath.initializeSpinner(causeOfDeathList);

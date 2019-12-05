@@ -3651,7 +3651,6 @@ UPDATE samples SET pathogentestresultchangedate = (SELECT testdatetime FROM path
 INSERT INTO schema_version (version_number, comment) VALUES (167, 'Fill samples with accurate pathogenTestResultChangeDate #1349');
 
 -- 2016-10-18; #982 additional fields to meningitis
-
 ALTER TABLE pathogentest ADD COLUMN serotype varchar(255);
 ALTER TABLE pathogentest_history ADD COLUMN serotype varchar(255);
 
@@ -3659,3 +3658,144 @@ ALTER TABLE pathogentest ADD COLUMN cqvalue real;
 ALTER TABLE pathogentest_history ADD COLUMN cqvalue real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (168, 'Additional fields to meningitis #982');
+
+-- 2019-11-06 Bed-side lab testing #1109
+ALTER TABLE samples ADD COLUMN samplepurpose varchar(255) DEFAULT 'EXTERNAL' NOT NULL;
+ALTER TABLE samples_history ADD COLUMN samplepurpose varchar(255) DEFAULT 'EXTERNAL' NOT NULL;
+ALTER TABLE samples ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE samples_history ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN lab_id DROP NOT NULL;
+ALTER TABLE pathogentest ALTER COLUMN labuser_id DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN labuser_id DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (169, ' Bed-side lab testing #1109');
+
+-- 2019-11-14 New disease: Human Rabies #834
+
+ALTER TABLE cases ADD COLUMN vaccine varchar(512);
+ALTER TABLE cases_history ADD COLUMN vaccine varchar(512);
+
+ALTER TABLE epidata ADD COLUMN kindofexposurebite varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindofexposurebite varchar(255);
+ALTER TABLE epidata ADD COLUMN kindofexposuretouch varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindofexposuretouch varchar(255);
+ALTER TABLE epidata ADD COLUMN kindofexposurescratch varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindofexposurescratch varchar(255);
+ALTER TABLE epidata ADD COLUMN kindofexposurelick varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindofexposurelick varchar(255);
+ALTER TABLE epidata ADD COLUMN kindofexposureother varchar(255);
+ALTER TABLE epidata_history ADD COLUMN kindofexposureother varchar(255);
+ALTER TABLE epidata ADD COLUMN kindofexposuredetails varchar(512);
+ALTER TABLE epidata_history ADD COLUMN kindofexposuredetails varchar(512);
+
+ALTER TABLE epidata ADD COLUMN animalvaccinationstatus varchar(255);
+ALTER TABLE epidata_history ADD COLUMN animalvaccinationstatus varchar(255);
+
+ALTER TABLE symptoms ADD COLUMN hydrophobia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hydrophobia varchar(255);
+ALTER TABLE symptoms ADD COLUMN opisthotonus varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN opisthotonus varchar(255);
+ALTER TABLE symptoms ADD COLUMN anxietystates varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN anxietystates varchar(255);
+ALTER TABLE symptoms ADD COLUMN delirium varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN delirium varchar(255);
+ALTER TABLE symptoms ADD COLUMN uproariousness varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN uproariousness varchar(255);
+ALTER TABLE symptoms ADD COLUMN paresthesiaaroundwound varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN paresthesiaaroundwound varchar(255);
+ALTER TABLE symptoms ADD COLUMN excesssalivation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN excesssalivation varchar(255);
+ALTER TABLE symptoms ADD COLUMN insomnia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN insomnia varchar(255);
+ALTER TABLE symptoms ADD COLUMN paralysis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN paralysis varchar(255);
+ALTER TABLE symptoms ADD COLUMN excitation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN excitation varchar(255);
+ALTER TABLE symptoms ADD COLUMN dysphagia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN dysphagia varchar(255);
+ALTER TABLE symptoms ADD COLUMN aerophobia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN aerophobia varchar(255);
+ALTER TABLE symptoms ADD COLUMN hyperactivity varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN hyperactivity varchar(255);
+ALTER TABLE symptoms ADD COLUMN paresis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN paresis varchar(255);
+ALTER TABLE symptoms ADD COLUMN agitation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN agitation varchar(255);
+ALTER TABLE symptoms ADD COLUMN ascendingflaccidparalysis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN ascendingflaccidparalysis varchar(255);
+ALTER TABLE symptoms ADD COLUMN erraticbehaviour varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN erraticbehaviour varchar(255);
+ALTER TABLE symptoms ADD COLUMN coma varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coma varchar(255);
+
+ALTER TABLE cases ADD COLUMN rabiestype varchar(255);
+ALTER TABLE cases_history ADD COLUMN rabiestype varchar(255);
+
+ALTER TABLE epidata ADD COLUMN dogs varchar(255);
+ALTER TABLE epidata_history ADD COLUMN dogs varchar(255);
+ALTER TABLE epidata ADD COLUMN cats varchar(255);
+ALTER TABLE epidata_history ADD COLUMN cats varchar(255);
+ALTER TABLE epidata ADD COLUMN canidae varchar(255);
+ALTER TABLE epidata_history ADD COLUMN canidae varchar(255);
+ALTER TABLE epidata ADD COLUMN rabbits varchar(255);
+ALTER TABLE epidata_history ADD COLUMN rabbits varchar(255);
+
+ALTER TABLE epidata ADD COLUMN prophylaxisstatus varchar(255);
+ALTER TABLE epidata_history ADD COLUMN prophylaxisstatus varchar(255);
+ALTER TABLE epidata ADD COLUMN dateofprophylaxis timestamp;
+ALTER TABLE epidata_history ADD COLUMN dateofprophylaxis timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (170, 'Add new disease, human rabies #834');
+
+-- 2019-11-17 Add relationship details field to contact #1067
+ALTER TABLE contact ADD COLUMN relationdescription varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (171, 'Add relationship description to contact #1067');
+
+-- 2019-11-13 Add new disease, Anthrax #833
+ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (172, 'Add new disease, Anthrax #833');
+
+-- 2019-11-27 Add FeatureConfiguration entity #1346
+CREATE TABLE featureconfiguration(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	featuretype varchar(255),
+	region_id bigint,
+	district_id bigint,
+	disease varchar(255),
+	enddate timestamp,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE featureconfiguration OWNER TO sormas_user;
+ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+
+CREATE TABLE featureconfiguration_history (LIKE featureconfiguration);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON featureconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'featureconfiguration_history', true);
+ALTER TABLE featureconfiguration_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (173, 'Add FeatureConfiguration entity #1346');
+
+-- 2019-12-03 Add port health infos to cases that are missing one #1377
+DO $$
+DECLARE rec RECORD;
+DECLARE new_porthealthinfo_id INTEGER;
+BEGIN
+FOR rec IN SELECT id FROM public.cases WHERE porthealthinfo_id IS NULL
+LOOP
+INSERT INTO porthealthinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_porthealthinfo_id;
+UPDATE cases SET porthealthinfo_id = new_porthealthinfo_id WHERE id = rec.id;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (174, 'Add port health infos to cases that are missing one #1377');

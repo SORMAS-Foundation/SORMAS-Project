@@ -36,9 +36,6 @@ import de.symeda.sormas.ui.user.UserController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 import de.symeda.sormas.ui.visit.VisitController;
 
-/**
- * @author Stefan Szczesny
- */
 public class ControllerProvider extends BaseControllerProvider {
 
 	private final CaseController caseController;

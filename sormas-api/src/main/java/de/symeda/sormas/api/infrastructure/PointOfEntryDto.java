@@ -42,8 +42,12 @@ public class PointOfEntryDto extends EntityDto {
 		super(creationDate, changeDate, uuid);
 		this.pointOfEntryType = pointOfEntryType;
 		this.name = name;
-		this.region = new RegionReferenceDto(regionUuid, regionName);
-		this.district = new DistrictReferenceDto(districtUuid, districtName);
+		if (regionUuid != null) {
+			this.region = new RegionReferenceDto(regionUuid, regionName);
+		}
+		if (districtUuid != null) {
+			this.district = new DistrictReferenceDto(districtUuid, districtName);
+		}
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.active = active;

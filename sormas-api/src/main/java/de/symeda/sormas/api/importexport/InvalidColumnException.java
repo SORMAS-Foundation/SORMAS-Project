@@ -24,7 +24,7 @@ public class InvalidColumnException extends Exception {
 	private String columnName;
 	
 	public InvalidColumnException(String columnName) {
-		super();
+		super(columnName);
 		this.columnName = columnName;
 	}
 	

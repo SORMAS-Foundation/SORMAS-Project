@@ -137,6 +137,8 @@ public final class CssStyles {
 	public static final String BUTTON_FILTER_LIGHT = "filter-light";
 	public static final String BUTTON_FILTER_DARK = "filter-dark";
 	public static final String BUTTON_FILTER_SMALL = "filter-small";
+	public static final String BUTTON_FILTER_ENABLED = "filter-enabled";
+	public static final String BUTTON_FILTER_DISABLED = "filter-disabled";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
 	
 	// List styles
@@ -159,10 +161,8 @@ public final class CssStyles {
 	public static final String SVG_STROKE_MINOR = "svg-stroke-minor";
 	public static final String SVG_STROKE_BACKGROUND = "svg-stroke-background";
 
-	/**
-	 * Stellt sicher, dass CM-Checkboxen dieselbe Höhe wie Textfelder etc. haben
-	 */
 	public static final String FORCE_CAPTION = "force-caption";
+	public static final String FORCE_CAPTION_CHECKBOX = "force-caption-checkbox";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
 	
@@ -211,6 +211,9 @@ public final class CssStyles {
 	// Statistics layout
 	public static final String STATISTICS_TITLE_BOX = "title-box";
 	public static final String STATISTICS_TITLE = "title";
+	
+	// Notification styles
+	public static final String NOTIFICATION_ERROR = "notification-error";
 	
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
@@ -317,9 +320,12 @@ public final class CssStyles {
 			return "background-disease-yellow-fever";
 		case CONGENITAL_RUBELLA:
 			return "background-disease-congenital-rubella";
+		case ANTHRAX:
+			return "background-disease-anthrax";
 		case UNDEFINED:
 			return "background-disease-undefined";
-			
+		case RABIES:
+			return "background-disease-rabies";
 		default:
 			throw new IllegalArgumentException(disease.toString());
 		}

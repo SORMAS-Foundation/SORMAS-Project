@@ -57,7 +57,7 @@ import de.symeda.sormas.app.therapy.edit.PrescriptionNewActivity;
 import de.symeda.sormas.app.therapy.edit.TreatmentNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -99,32 +99,32 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         // Sections must be removed in reverse order
         if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
                 (caze != null && caze.getClinicalCourse() == null)) {
-            menuItems.remove(CaseSection.CLINICAL_VISITS.ordinal());
-            menuItems.remove(CaseSection.HEALTH_CONDITIONS.ordinal());
+            menuItems.set(CaseSection.CLINICAL_VISITS.ordinal(), null);
+            menuItems.set(CaseSection.HEALTH_CONDITIONS.ordinal(), null);
         }
         if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
                 (caze != null && caze.getTherapy() == null)) {
-            menuItems.remove(CaseSection.TREATMENTS.ordinal());
-            menuItems.remove(CaseSection.PRESCRIPTIONS.ordinal());
+            menuItems.set(CaseSection.TREATMENTS.ordinal(), null);
+            menuItems.set(CaseSection.PRESCRIPTIONS.ordinal(), null);
         }
         if (caze != null && caze.isUnreferredPortHealthCase()) {
-            menuItems.remove(CaseSection.SAMPLES.ordinal());
+            menuItems.set(CaseSection.SAMPLES.ordinal(), null);
         }
         if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
-                (caze != null && !DiseaseConfigurationHelper.getInstance().hasFollowUp(caze.getDisease()))) {
-            menuItems.remove(CaseSection.CONTACTS.ordinal());
+                (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
+            menuItems.set(CaseSection.CONTACTS.ordinal(), null);
         }
         if (caze != null && caze.getDisease() == Disease.CONGENITAL_RUBELLA) {
-            menuItems.remove(CaseSection.EPIDEMIOLOGICAL_DATA.ordinal());
+            menuItems.set(CaseSection.EPIDEMIOLOGICAL_DATA.ordinal(), null);
         }
         if (caze != null && (caze.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || !ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW))) {
-            menuItems.remove(CaseSection.PORT_HEALTH_INFO.ordinal());
+            menuItems.set(CaseSection.PORT_HEALTH_INFO.ordinal(), null);
         }
         if (caze != null && (caze.isUnreferredPortHealthCase() || UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles()))) {
-            menuItems.remove(CaseSection.HOSPITALIZATION.ordinal());
+            menuItems.set(CaseSection.HOSPITALIZATION.ordinal(), null);
         }
         if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
-            menuItems.remove(CaseSection.MATERNAL_HISTORY.ordinal());
+            menuItems.set(CaseSection.MATERNAL_HISTORY.ordinal(), null);
         }
 
         return menuItems;
@@ -132,7 +132,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Case activityRootData) {
-        CaseSection section = CaseSection.fromOrdinal(menuItem.getKey());
+        CaseSection section = CaseSection.fromOrdinal(menuItem.getPosition());
         BaseEditFragment fragment;
         switch (section) {
 
@@ -262,7 +262,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     @Override
     public void goToNewView() {
-        CaseSection activeSection = CaseSection.fromOrdinal(getActivePage().getKey());
+        CaseSection activeSection = CaseSection.fromOrdinal(getActivePage().getPosition());
 
         if (activeSection == CaseSection.CONTACTS) {
             ContactNewActivity.startActivity(getContext(), getRootUuid());

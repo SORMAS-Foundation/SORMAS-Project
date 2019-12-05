@@ -11,6 +11,7 @@ import javax.ws.rs.core.SecurityContext;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/infrastructure")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
@@ -19,7 +20,8 @@ public class InfrastructureResource {
 
 	@POST @Path("/sync")
 	public InfrastructureSyncDto getInfrastructureSyncData(@Context SecurityContext sc, InfrastructureChangeDatesDto changeDates) {
-		return FacadeProvider.getInfrastructureFacade().getInfrastructureSyncData(changeDates);
+		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
+		return FacadeProvider.getInfrastructureFacade().getInfrastructureSyncData(changeDates, userDto.getUuid());
 	}
 	
 }

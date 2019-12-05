@@ -74,11 +74,18 @@ public class PathogenTestDto extends EntityDto {
 	private String serotype;
 	private Float cqValue;
 
-	public static PathogenTestDto build(SampleReferenceDto sample, UserDto currentUser) {
+	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 		PathogenTestDto pathogenTest = new PathogenTestDto();
 		pathogenTest.setUuid(DataHelper.createUuid());
-		pathogenTest.setSample(sample);
+		pathogenTest.setSample(sample.toReference());
+		if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
+			pathogenTest.setTestResultVerified(true);
+		}
 		pathogenTest.setLab(currentUser.getLaboratory());
+		if (pathogenTest.getLab() == null) {
+			pathogenTest.setLab(sample.getLab());
+			pathogenTest.setLabDetails(sample.getLabDetails());
+		}
 		pathogenTest.setLabUser(currentUser.toReference());
 		return pathogenTest;
 	}

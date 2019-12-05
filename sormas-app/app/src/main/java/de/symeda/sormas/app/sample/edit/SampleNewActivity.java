@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.ValidationException;
@@ -74,7 +76,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setCaseUuid(caseUuid);
     }
@@ -100,7 +102,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
 
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
-        BaseEditFragment fragment = SampleNewFragment.newInstance(activityRootData);
+        BaseEditFragment fragment = SampleEditFragment.newInstance(activityRootData);
         fragment.setLiveValidationDisabled(true);
         return fragment;
     }
@@ -125,7 +127,7 @@ public class SampleNewActivity extends BaseEditActivity<Sample> {
         }
 
         final Sample sampleToSave = getStoredRootEntity();
-        SampleNewFragment fragment = (SampleNewFragment) getActiveFragment();
+        SampleEditFragment fragment = (SampleEditFragment) getActiveFragment();
 
         if (sampleToSave.getReportingUser() == null) {
             sampleToSave.setReportingUser(ConfigProvider.getUser());

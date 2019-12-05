@@ -25,10 +25,11 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
 import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
@@ -36,6 +37,7 @@ import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.PopulationDataView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
@@ -87,6 +89,12 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(DevModeView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
 					DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
 		}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
+			menu.addView(LineListingConfigurationView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
+					LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), 
+					region != null ? region.getUuid() : null, false);
+		}
 	}
 
 	public static void registerViews(Navigator navigator) {
@@ -112,6 +120,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		if (FacadeProvider.getConfigFacade().isDevMode()
 				&& UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
+		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
 		}
 	}
 

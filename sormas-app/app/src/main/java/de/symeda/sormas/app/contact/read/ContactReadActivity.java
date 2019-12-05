@@ -61,7 +61,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Contact activityRootData) {
-        ContactSection section = ContactSection.fromOrdinal(menuItem.getKey());
+        ContactSection section = ContactSection.fromOrdinal(menuItem.getPosition());
         BaseReadFragment fragment;
         switch (section) {
             case CONTACT_INFO:
@@ -97,7 +97,7 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     @Override
     public void goToEditView() {
-        ContactSection section = ContactSection.fromOrdinal(getActivePage().getKey());
+        ContactSection section = ContactSection.fromOrdinal(getActivePage().getPosition());
         ContactEditActivity.startActivity(ContactReadActivity.this, getRootUuid(), section);
     }
 }

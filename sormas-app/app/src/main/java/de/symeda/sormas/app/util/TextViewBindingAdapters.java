@@ -32,11 +32,14 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
@@ -511,6 +514,15 @@ public class TextViewBindingAdapters {
         }
     }
 
+    @BindingAdapter(value ={"investigationStatusValue", "defaultValue"}, requireAll=false)
+    public static void setInvestigationStatusValue(TextView textField, InvestigationStatus status, String defaultValue) {
+        if (status == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(status.toString());
+        }
+    }
+
     @BindingAdapter(value={"userValue", "defaultValue"}, requireAll=false)
     public static void setUserValue(TextView textField, User user, String defaultValue) {
         if (user == null) {
@@ -852,6 +864,15 @@ public class TextViewBindingAdapters {
             textField.setText(String.format(valueFormat, prependValue, value));
         } else {
             textField.setText(prependValue + ": " + value);
+        }
+    }
+
+    @BindingAdapter(value={"samplePurposeValue", "defaultValue"}, requireAll=false)
+    public static void setPurposeValue(TextView textField, SamplePurpose samplePurpose, String defaultValue) {
+        if (samplePurpose == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(samplePurpose.toString());
         }
     }
 

@@ -64,8 +64,8 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictIndexDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -572,7 +572,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 			legendLayout.addComponent(districtsKeyLabel);
 			legendLayout.addComponent(buildRegionLegend(false, caseMeasure, emptyPopulationDistrictPresent,
-					districtValuesLowerQuartile, districtValuesMedian, districtValuesUpperQuartile));
+					districtValuesLowerQuartile, districtValuesMedian, districtValuesUpperQuartile, InfrastructureHelper.CASE_INCIDENCE_DIVISOR));
 
 			Label descLabel = new Label(I18nProperties.getString(Strings.infoDashboardIncidence));
 			CssStyles.style(descLabel, CssStyles.LABEL_SMALL);
@@ -608,7 +608,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	public static AbstractOrderedLayout buildRegionLegend(boolean vertical, CaseMeasure caseMeasure,
 			boolean emptyPopulationDistrictPresent, BigDecimal districtShapesLowerQuartile,
-			BigDecimal districtShapesMedian, BigDecimal districtShapesUpperQuartile) {
+			BigDecimal districtShapesMedian, BigDecimal districtShapesUpperQuartile, int caseIncidenceDivisor) {
 		AbstractOrderedLayout regionLegendLayout = vertical ? new VerticalLayout() : new HorizontalLayout();
 		regionLegendLayout.setSpacing(true);
 		CssStyles.style(regionLegendLayout, CssStyles.LAYOUT_MINIMAL);
@@ -625,7 +625,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		case CASE_INCIDENCE:
 			legendEntry = buildMapIconLegendEntry("lowest-region-small",
 					"<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-							+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
+							+ caseIncidenceDivisor);
 			break;
 		default:
 			throw new IllegalArgumentException(caseMeasure.toString());
@@ -646,7 +646,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						DataHelper.getTruncatedBigDecimal(
 								districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP))
 						+ " - " + DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-						+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
+						+ caseIncidenceDivisor);
 				break;
 			default:
 				throw new IllegalArgumentException(caseMeasure.toString());
@@ -669,7 +669,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						DataHelper.getTruncatedBigDecimal(
 								districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - "
 								+ DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-								+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
+								+ caseIncidenceDivisor);
 				break;
 			default:
 				throw new IllegalArgumentException(caseMeasure.toString());
@@ -686,7 +686,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		case CASE_INCIDENCE:
 			legendEntry = buildMapIconLegendEntry("highest-region-small",
 					"> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-							+ DistrictIndexDto.CASE_INCIDENCE_DIVISOR);
+							+ caseIncidenceDivisor);
 			break;
 		default:
 			throw new IllegalArgumentException(caseMeasure.toString());
@@ -913,8 +913,8 @@ public class DashboardMapComponent extends VerticalLayout {
 				}
 				mapCaseDtos.add(caze);
 			} else {
-				if (caze.getHealthFacilityUuid().equals(FacilityDto.NONE_FACILITY_UUID)
-						|| caze.getHealthFacilityUuid().equals(FacilityDto.OTHER_FACILITY_UUID) || !hasFacilityGps) {
+				if (FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacilityUuid())
+						|| FacilityDto.OTHER_FACILITY_UUID.equals(caze.getHealthFacilityUuid()) || !hasFacilityGps) {
 					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
 						if (!hasCaseGps) {
 							continue;

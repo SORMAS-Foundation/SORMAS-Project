@@ -33,7 +33,6 @@ import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.report.WeeklyReportRegionSummaryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -141,9 +140,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 	}
 	
 	public WeeklyReportDto createFacilityInformantReport(UserDto reportingUser, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
-		WeeklyReportDto report = new WeeklyReportDto();
-		report.setUuid(DataHelper.createUuid());
-		report.setReportingUser(reportingUser.toReference());
+		WeeklyReportDto report = WeeklyReportDto.build(reportingUser.toReference());
 		report.setAssignedOfficer(reportingUser.getAssociatedOfficer());
 		report.setDistrict(reportingUser.getDistrict());
 		report.setHealthFacility(reportingUser.getHealthFacility());
@@ -157,9 +154,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 	}
 	
 	public WeeklyReportDto createCommunityInformantReport(UserDto reportingUser, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
-		WeeklyReportDto report = new WeeklyReportDto();
-		report.setUuid(DataHelper.createUuid());
-		report.setReportingUser(reportingUser.toReference());
+		WeeklyReportDto report = WeeklyReportDto.build(reportingUser.toReference());
 		report.setAssignedOfficer(reportingUser.getAssociatedOfficer());
 		report.setDistrict(reportingUser.getDistrict());
 		report.setCommunity(reportingUser.getCommunity());
@@ -173,9 +168,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	public WeeklyReportDto createOfficerReport(UserDto reportingUser, Date reportDateTime, int epiWeek, int year, int numberOfCases) {
-		WeeklyReportDto report = new WeeklyReportDto();
-		report.setUuid(DataHelper.createUuid());
-		report.setReportingUser(reportingUser.toReference());
+		WeeklyReportDto report = WeeklyReportDto.build(reportingUser.toReference());
 		report.setDistrict(reportingUser.getDistrict());
 		report.setReportDateTime(reportDateTime);
 		report.setEpiWeek(epiWeek);

@@ -124,7 +124,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	TreatmentService treatmentService;
 	@EJB
 	PrescriptionService prescriptionService;
-
+	
 	public CaseService() {
 		super(Case.class);
 	}
@@ -328,7 +328,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return em.createQuery(cq).getResultList();
 	}
-
+	
 	/**
 	 * Creates a filter that checks whether the case is considered "relevant" in the time frame specified by {@code fromDate} and 
 	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are 
@@ -444,7 +444,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			Subquery<ClinicalVisit> clinicalVisitSubquery = cq.subquery(ClinicalVisit.class);
 			Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitSubquery.from(ClinicalVisit.class);
 			clinicalVisitSubquery.select(clinicalVisitRoot).where(cb.equal(clinicalVisitRoot.get(ClinicalVisit.CLINICAL_COURSE), from.get(Case.CLINICAL_COURSE)));
-
 			filter = and(cb, filter,
 					cb.or(
 							cb.exists(prescriptionSubquery),

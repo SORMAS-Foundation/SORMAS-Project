@@ -74,6 +74,23 @@ public final class DataHelper {
 
 		return equal;
 	}
+	
+	/**
+	 * @return a equals b, where a and/or b are allowed to be null
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> int compare(Comparable<T> a, Comparable<T> b) {
+		if (a == null) {
+			if (b == null) {
+				return 0;
+			} else {
+				return -1;
+			}
+		} else if (b == null) {
+			return 1;
+		}
+		return a.compareTo((T)b);
+	}
 
 	/**
 	 * @param nullable

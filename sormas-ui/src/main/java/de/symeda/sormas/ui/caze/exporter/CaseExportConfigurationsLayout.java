@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.exporter;
 
 import java.util.function.Consumer;
 
@@ -17,14 +17,14 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
-public class CaseCustomExportsLayout extends VerticalLayout {
+public class CaseExportConfigurationsLayout extends VerticalLayout {
 
 	private Label lblDescription;
 	private Button btnNewExportConfiguration;
 	private Button btnExport;
-	private CaseCustomExportsGrid grid;
+	private CaseExportConfigurationsGrid grid;
 
-	public CaseCustomExportsLayout(Runnable closeCallback) {	
+	public CaseExportConfigurationsLayout(Runnable closeCallback) {	
 		lblDescription = new Label(I18nProperties.getString(Strings.infoCustomCaseExport));
 		lblDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblDescription);
@@ -39,7 +39,7 @@ public class CaseCustomExportsLayout extends VerticalLayout {
 			ControllerProvider.getCaseController().openEditExportConfigurationWindow(grid, null);
 		});
 
-		grid = new CaseCustomExportsGrid(UserProvider.getCurrent().getUuid());
+		grid = new CaseExportConfigurationsGrid(UserProvider.getCurrent().getUuid());
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
 

@@ -125,7 +125,7 @@ public class MemoryDatabaseHelper {
     private static List<TypeOfPlace> typeOfPlaceList = new ArrayList<>();
     private static List<OccupationType> occupationTypeList = new ArrayList<>();
     private static List<CauseOfDeath> causeOfDeathList = new ArrayList<>();
-    //private static List<Sex> genderList = new ArrayList<>();
+    //private static List<Sex> sexList = new ArrayList<>();
     private static List<ContactRelation> contactRelationshipList = new ArrayList<>();
 
 
@@ -166,7 +166,7 @@ public class MemoryDatabaseHelper {
         TypeOfPlaceGenerator.initialize();
         OccupationTypeGenerator.initialize();
         DeathCauseGenerator.initialize();
-        GenderGenerator.initialize();
+        SexGenerator.initialize();
         AgeTypeGenerator.initialize();
     }
 
@@ -285,10 +285,10 @@ public class MemoryDatabaseHelper {
         }
     }
 
-    public static class GENDER {
+    public static class SEX {
 
-        public static List<Sex> getGenders() {
-            return GenderGenerator.getAll();
+        public static List<Sex> getSexes() {
+            return SexGenerator.getAll();
         }
     }
 
@@ -793,11 +793,11 @@ class AgeTypeGenerator extends BaseDataGenerator {
     }
 }
 
-class GenderGenerator extends BaseDataGenerator {
+class SexGenerator extends BaseDataGenerator {
     private static final List<Sex> pool = new ArrayList<Sex>();
 
     public static void initialize() {
-        pool.addAll(getGenders());
+        pool.addAll(getSexes());
     }
 
     public static List<Sex> getAll() {
@@ -1050,7 +1050,6 @@ class SampleGenerator extends BaseDataGenerator {
             Sample data1 = new Sample();
             data1.setUuid(getRandomUuid());
             data1.setAssociatedCase(CaseGenerator.getSingle());
-            data1.setSampleCode(getRandomString());
             data1.setLabSampleID(getRandomString());
             data1.setSampleDateTime(getRandomDate());
             data1.setReportDateTime(getRandomDate());
@@ -1605,6 +1604,7 @@ class ContactGenerator extends BaseDataGenerator {
             data1.setDescription(getRandomSentence());
             data1.setContactOfficer(UserGenerator.getSingle());
             data1.setRelationToCase(getContactRelation());
+            data1.setRelationDescription(getRandomSentence());
             data1.setReportLat(getRandomDouble());
             data1.setReportLon(getRandomDouble());
 
@@ -2370,7 +2370,7 @@ abstract class BaseDataGenerator {
         return randomItem(list);
     }
 
-    public static List<Sex> getGenders() {
+    public static List<Sex> getSexes() {
         return new ArrayList<Sex>() {{
             add(Sex.MALE);
             add(Sex.FEMALE);

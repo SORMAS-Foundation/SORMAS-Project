@@ -83,6 +83,9 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsLayout;
+import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
+import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -184,17 +187,45 @@ public class CasesView extends AbstractView {
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
-			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+			PopupButton importButton = new PopupButton(I18nProperties.getCaption(Captions.actionImport));
+			importButton.setId("import");
 			importButton.setIcon(VaadinIcons.UPLOAD);
-			importButton.addClickListener(e -> {
+			VerticalLayout importLayout = new VerticalLayout();
+			importLayout.setSpacing(true);
+			importLayout.setMargin(true);
+			importLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			importLayout.setWidth(250, Unit.PIXELS);
+			importButton.setContent(importLayout);
+			addHeaderComponent(importButton);
+
+			Button lineListingImportButton = new Button(I18nProperties.getCaption(Captions.importLineListing));
+			lineListingImportButton.setId("lineListingImport");
+			lineListingImportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			lineListingImportButton.setIcon(VaadinIcons.UPLOAD);
+			lineListingImportButton.setWidth(100, Unit.PERCENTAGE);
+			lineListingImportButton.addClickListener(e -> {
+				Window popupWindow = VaadinUiUtil.showPopupWindow(new LineListingImportLayout());
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingLineListingImport));
+				popupWindow.addCloseListener(c -> {
+					grid.reload();
+				});
+			});
+			importLayout.addComponent(lineListingImportButton);
+
+			Button extendedImportButton = new Button(I18nProperties.getCaption(Captions.importDetailed));
+			extendedImportButton.setId("extendedImport");
+			extendedImportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			extendedImportButton.setIcon(VaadinIcons.UPLOAD);
+			extendedImportButton.setWidth(100, Unit.PERCENTAGE);
+			extendedImportButton.addClickListener(e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new CaseImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCases));
 				popupWindow.addCloseListener(c -> {
 					grid.reload();
 				});
 			});
-			addHeaderComponent(importButton);
+			importLayout.addComponent(extendedImportButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
@@ -293,7 +324,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(btnCustomCaseExport);
 			btnCustomCaseExport.addClickListener(e -> {
 				Window customExportWindow = VaadinUiUtil.createPopupWindow();
-				CaseCustomExportsLayout customExportsLayout = new CaseCustomExportsLayout(
+				CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(
 						() -> {
 							customExportWindow.close();
 						});
@@ -631,7 +662,6 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(portHealthCasesWithoutFacilityFilter);
 			}
-
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				casesWithCaseManagementData = new CheckBox();
 				CssStyles.style(casesWithCaseManagementData, CssStyles.CHECKBOX_FILTER_INLINE);

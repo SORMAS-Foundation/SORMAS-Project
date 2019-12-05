@@ -67,12 +67,16 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     @Override
     public List<PageMenuItem> getPageMenuData() {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(SampleSection.values(), getContext());
+        Sample sample = getStoredRootEntity();
+//        if(sample != null && sample.getSamplePurpose().equals(SamplePurpose.INTERNAL)){
+//            menuItems.remove(SampleSection.PATHOGEN_TESTS.ordinal());
+//        }
         return menuItems;
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Sample activityRootData) {
-        SampleSection section = SampleSection.fromOrdinal(menuItem.getKey());
+        SampleSection section = SampleSection.fromOrdinal(menuItem.getPosition());
         BaseReadFragment fragment;
         switch (section) {
             case SAMPLE_INFO:
@@ -101,7 +105,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     public void goToEditView() {
-        SampleSection section = SampleSection.fromOrdinal(getActivePage().getKey());
+        SampleSection section = SampleSection.fromOrdinal(getActivePage().getPosition());
         SampleEditActivity.startActivity(getContext(), getRootUuid(), section);
     }
 }

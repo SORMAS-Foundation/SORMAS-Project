@@ -23,6 +23,7 @@ import android.os.Bundle;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -58,7 +59,7 @@ public class ClinicalVisitReadActivity extends BaseReadActivity<ClinicalVisit> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setCaseUuid(caseUuid);
     }
@@ -75,7 +76,7 @@ public class ClinicalVisitReadActivity extends BaseReadActivity<ClinicalVisit> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, ClinicalVisit activityRootData) {
-        ClinicalVisitSection section = ClinicalVisitSection.fromOrdinal(menuItem.getKey());
+        ClinicalVisitSection section = ClinicalVisitSection.fromOrdinal(menuItem.getPosition());
         BaseReadFragment fragment;
         switch (section) {
             case VISIT_INFO:
@@ -100,7 +101,7 @@ public class ClinicalVisitReadActivity extends BaseReadActivity<ClinicalVisit> {
 
     @Override
     public void goToEditView() {
-        ClinicalVisitSection section = ClinicalVisitSection.fromOrdinal(getActivePage().getKey());
+        ClinicalVisitSection section = ClinicalVisitSection.fromOrdinal(getActivePage().getPosition());
         ClinicalVisitEditActivity.startActivity(getContext(), getRootUuid(), caseUuid, section);
     }
 

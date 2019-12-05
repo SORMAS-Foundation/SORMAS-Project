@@ -43,7 +43,7 @@ public class ChangeEvent {
 		this.changeDate = null;
 		this.userId = null;
 		this.transactionId = null;
-	}
+	} 
 
 	public ChangeEvent(ChangeEvent changeEvent, EntityId oid, LocalDateTime changeDate, UserId userId, TransactionId transactionId) {
 

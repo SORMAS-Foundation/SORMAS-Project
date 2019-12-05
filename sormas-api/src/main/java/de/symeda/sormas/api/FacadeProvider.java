@@ -21,6 +21,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
@@ -32,6 +33,7 @@ import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
+import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
@@ -71,7 +73,7 @@ public class FacadeProvider {
 		} catch (NamingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-	}
+	} 
 
 	public static FacadeProvider get() {
 		if (instance == null) {
@@ -82,6 +84,10 @@ public class FacadeProvider {
 
 	public static CaseFacade getCaseFacade() {
 		return get().lookupEjbRemote(CaseFacade.class);
+	}
+
+	public static CaseStatisticsFacade getCaseStatisticsFacade() {
+		return get().lookupEjbRemote(CaseStatisticsFacade.class);
 	}
 
 	public static ContactFacade getContactFacade() {
@@ -226,6 +232,10 @@ public class FacadeProvider {
 	
 	public static InfrastructureFacade getInfrastructureFacade() {
 		return get().lookupEjbRemote(InfrastructureFacade.class);
+	}
+	
+	public static FeatureConfigurationFacade getFeatureConfigurationFacade() {
+		return get().lookupEjbRemote(FeatureConfigurationFacade.class);
 	}
 	
 	@SuppressWarnings("unchecked")

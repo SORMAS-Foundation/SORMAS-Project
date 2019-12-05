@@ -59,6 +59,7 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -125,6 +126,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final Logger logger = LoggerFactory.getLogger(ImportFacadeEjb.class);
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
+	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_line_listing_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
 	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
 	
@@ -151,6 +154,47 @@ public class ImportFacadeEjb implements ImportFacade {
 		}
 	}
 	
+	@Override
+	public void generateCaseLineListingImportTemplateFile() throws IOException {
+		// Create the export directory if it doesn't exist
+		try {
+			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
+		} catch (IOException e) {
+			logger.error("Generated files directory doesn't exist and creation failed.");
+			throw e;
+		}
+
+		List<String> columnNames = new ArrayList<>();
+		columnNames.add(CaseDataDto.DISEASE);
+		columnNames.add(CaseDataDto.DISEASE_DETAILS);
+		columnNames.add(CaseDataDto.PLAGUE_TYPE);
+		columnNames.add(CaseDataDto.DENGUE_FEVER_TYPE);
+		columnNames.add(CaseDataDto.RABIES_TYPE);
+		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.FIRST_NAME);
+		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.LAST_NAME);
+		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.SEX);
+		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_DD);
+		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_MM);
+		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_YYYY);
+		columnNames.add(CaseDataDto.EPID_NUMBER);
+		columnNames.add(CaseDataDto.REPORT_DATE);
+		columnNames.add(CaseDataDto.CASE_ORIGIN);
+		columnNames.add(CaseDataDto.REGION);
+		columnNames.add(CaseDataDto.DISTRICT);
+		columnNames.add(CaseDataDto.COMMUNITY);
+		columnNames.add(CaseDataDto.HEALTH_FACILITY);
+		columnNames.add(CaseDataDto.HEALTH_FACILITY_DETAILS);
+		columnNames.add(CaseDataDto.POINT_OF_ENTRY);
+		columnNames.add(CaseDataDto.POINT_OF_ENTRY_DETAILS);
+		columnNames.add(CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE);
+
+		Path filePath = Paths.get(getCaseLineListingImportTemplateFilePath());
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.flush();
+		}
+	}
+
 	@Override
 	public void generatePointOfEntryImportTemplateFile() throws IOException {
 		// Create the export directory if it doesn't exist
@@ -207,6 +251,13 @@ public class ImportFacadeEjb implements ImportFacade {
 		return filePath.toString();
 	}
 	
+	@Override
+	public String getCaseLineListingImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
 	@Override
 	public String getPointOfEntryImportTemplateFilePath() {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());

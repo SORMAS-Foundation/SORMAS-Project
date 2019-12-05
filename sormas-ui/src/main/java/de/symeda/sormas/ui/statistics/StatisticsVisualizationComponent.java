@@ -19,16 +19,16 @@ package de.symeda.sormas.ui.statistics;
 
 import java.util.Arrays;
 
-import com.vaadin.v7.data.Property.ValueChangeEvent;
-import com.vaadin.v7.data.Property.ValueChangeListener;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.Property.ValueChangeListener;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -232,6 +232,81 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 
 	public StatisticsVisualizationChartType getVisualizationChartType() {
 		return visualizationChartType;
+	}
+	
+	public boolean hasRegionGrouping() {
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION;
+		case MAP:
+			return visualizationMapType == StatisticsVisualizationMapType.REGIONS;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
+	}
+	
+	public boolean hasDistrictGrouping() {
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT;
+		case MAP:
+			return visualizationMapType == StatisticsVisualizationMapType.DISTRICTS;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
+	}
+	
+	public boolean hasSexGrouping() {
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return rowsElement.getAttribute() == StatisticsCaseAttribute.SEX || columnsElement.getAttribute() == StatisticsCaseAttribute.SEX;
+		case MAP:
+			return false;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
+	}
+	
+	public boolean hasAgeGroupGroupingWithPopulationData() {
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return rowsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS || columnsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS;
+		case MAP:
+			return false;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
+	}
+	
+	public boolean hasAgeGroupGroupingWithoutPopulationData() {
+		switch (visualizationType) {
+		case TABLE:
+		case CHART:
+			return (rowsElement.getAttribute() != null && rowsElement.getAttribute().isAgeGroup() && rowsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS)
+					|| (columnsElement.getAttribute() != null && columnsElement.getAttribute().isAgeGroup() && columnsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS);
+		case MAP:
+			return false;
+		default:
+			throw new IllegalArgumentException(visualizationType.toString());
+		}
+	}
+	
+	public boolean hasPopulationGrouping() {
+		return hasRegionGrouping() || hasDistrictGrouping() || hasSexGrouping() || hasAgeGroupGroupingWithPopulationData();
+	}
+	
+	public void setStackedColumnAndPieEnabled(boolean enabled) {
+		visualizationChartSelect.setItemEnabled(StatisticsVisualizationChartType.STACKED_COLUMN, enabled);
+		visualizationChartSelect.setItemEnabled(StatisticsVisualizationChartType.PIE, enabled);
+		
+		if (!enabled && (StatisticsVisualizationChartType.STACKED_COLUMN == visualizationChartSelect.getValue()
+				|| StatisticsVisualizationChartType.PIE == visualizationChartSelect.getValue())) {
+			visualizationChartSelect.setValue(StatisticsVisualizationChartType.COLUMN);
+		}
 	}
 
 }

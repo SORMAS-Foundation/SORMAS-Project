@@ -49,8 +49,10 @@ import de.symeda.sormas.backend.region.Region;
 @Entity(name="users")
 @Audited
 public class User extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = -629432920970152112L;
+
+	public static final String TABLE_NAME_USERROLES = "users_userroles";
 
 	public static final String USER_NAME = "userName";
 	public static final String PASSWORD = "password";
@@ -186,7 +188,7 @@ public class User extends AbstractDomainObject {
 	@ElementCollection(fetch=FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(
-	        name="users_userroles",
+			name = TABLE_NAME_USERROLES,
 	        joinColumns=@JoinColumn(name="user_id", referencedColumnName=User.ID, nullable = false),
 	        uniqueConstraints=@UniqueConstraint(columnNames={"user_id", "userrole"})
 	  )

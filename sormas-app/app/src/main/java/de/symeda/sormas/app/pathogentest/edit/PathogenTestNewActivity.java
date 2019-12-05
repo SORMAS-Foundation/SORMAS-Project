@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
+
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.ValidationException;
@@ -74,7 +76,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setCaseUuid(sampleUuid);
     }
@@ -128,7 +130,8 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
         PathogenTestEditFragment fragment = (PathogenTestEditFragment) getActiveFragment();
 
         if (PathogenTestToSave.getLabUser() == null) {
-            PathogenTestToSave.setLabUser(ConfigProvider.getUser());
+            NotificationHelper.showNotification(this, ERROR, getString(R.string.error_no_pathogentest_labuser));
+            return;
         }
         if (PathogenTestToSave.getTestDateTime() == null) {
             PathogenTestToSave.setTestDateTime(new Date());

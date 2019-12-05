@@ -20,11 +20,10 @@ package de.symeda.sormas.ui.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.navigator.View;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -37,12 +36,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -119,21 +116,10 @@ public class UserController {
 		return editView;
 	}
 
-	private UserDto createNewUser() {
-		UserDto user = new UserDto();
-		user.setUuid(DataHelper.createUuid());
-
-		LocationDto address = new LocationDto();
-		address.setUuid(DataHelper.createUuid());
-		user.setAddress(address);
-
-		return user;
-	}
-
 	public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent() {
 
 		UserEditForm createForm = new UserEditForm(true, UserRight.USER_CREATE);
-		createForm.setValue(createNewUser());
+		createForm.setValue(UserDto.build());
 		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {

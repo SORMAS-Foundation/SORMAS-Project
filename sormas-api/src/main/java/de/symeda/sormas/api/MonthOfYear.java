@@ -21,12 +21,17 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public class MonthOfYear implements Serializable, StatisticsGroupingKey {
+public class MonthOfYear implements Serializable, Comparable<MonthOfYear>, StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -5776682012649885759L;
 
 	private Month month;
 	private Year year;
+
+	public MonthOfYear(Month month, int year) {
+		this.month = month;
+		this.year = new Year(year);
+	}
 
 	public MonthOfYear(Month month, Year year) {
 		this.month = month;
@@ -92,6 +97,11 @@ public class MonthOfYear implements Serializable, StatisticsGroupingKey {
 			return -1;
 		}
 		return 1;
+	}
+
+	@Override
+	public int compareTo(MonthOfYear o) {
+		return keyCompareTo(o);
 	}
 
 }

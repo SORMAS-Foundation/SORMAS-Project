@@ -45,6 +45,7 @@ public class SampleIndexDto implements Serializable {
 	public static final String RECEIVED_DATE = "receivedDate";
 	public static final String LAB = "lab";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
+	public static final String SAMPLE_PURPOSE = "samplePurpose";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
 	public static final String REFERRED = "referred";
@@ -68,13 +69,14 @@ public class SampleIndexDto implements Serializable {
 	private Date receivedDate;
 	private FacilityReferenceDto lab;
 	private SampleMaterial sampleMaterial;
+	private SamplePurpose samplePurpose;
 	private SpecimenCondition specimenCondition;
 	private PathogenTestResultType pathogenTestResult;
 	private AdditionalTestingStatus additionalTestingStatus;
 
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 			boolean shipped, Date shipmentDate, boolean received, Date receivedDate, 
-			SampleMaterial sampleMaterial, SpecimenCondition specimenCondition,
+			SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
 			String labUuid, String labName, String referredSampleUuid, 
 			String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
 			Disease disease, String diseaseDetails, String caseRegionUuid, 
@@ -96,6 +98,7 @@ public class SampleIndexDto implements Serializable {
 		this.receivedDate = receivedDate;
 		this.lab = new FacilityReferenceDto(labUuid, FacilityHelper.buildFacilityString(labUuid, labName));
 		this.sampleMaterial = sampleMaterial;
+		this.samplePurpose = samplePurpose;
 		this.specimenCondition = specimenCondition;
 		this.pathogenTestResult = pathogenTestResult;
 		this.additionalTestingStatus =  Boolean.TRUE.equals(additionalTestPerformed) ? AdditionalTestingStatus.PERFORMED : 
@@ -167,6 +170,12 @@ public class SampleIndexDto implements Serializable {
 	}
 	public void setSampleMaterial(SampleMaterial sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
+	}
+	public SamplePurpose getSamplePurpose() {
+		return samplePurpose;
+	}
+	public void setSamplePurpose(SamplePurpose samplePurpose) {
+		this.samplePurpose = samplePurpose;
 	}
 	public boolean isShipped() {
 		return shipped;

@@ -238,7 +238,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		cq.multiselect(sample.get(Sample.UUID), 
 				caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
 				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
-				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SPECIMEN_CONDITION), 
+				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SAMPLE_PURPOSE), sample.get(Sample.SPECIMEN_CONDITION), 
 				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 
 				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
 				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
@@ -274,6 +274,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				case SampleIndexDto.SHIPMENT_DATE:
 				case SampleIndexDto.RECEIVED_DATE:
 				case SampleIndexDto.SAMPLE_MATERIAL:
+				case SampleIndexDto.SAMPLE_PURPOSE:
 				case SampleIndexDto.PATHOGEN_TEST_RESULT:
 				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
 					expression = sample.get(sortProperty.propertyName);
@@ -326,6 +327,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sample.getSampleMaterial() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
 		}
+		if (sample.getSamplePurpose() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
+		}
 		if (sample.getLab() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
@@ -357,6 +361,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
+				sample.get(Sample.SAMPLE_PURPOSE),
 				sample.get(Sample.SAMPLE_SOURCE),
 				laboratory.get(Facility.UUID),
 				laboratory.get(Facility.NAME),
@@ -425,7 +430,11 @@ public class SampleFacadeEjb implements SampleFacade {
 					exportDto.setPathogenTestType1(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
 					exportDto.setPathogenTestDisease1(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
 					exportDto.setPathogenTestDateTime1(pathogenTest.getTestDateTime());
-					exportDto.setPathogenTestLab1(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					if (pathogenTest.getLab() != null) {
+						exportDto
+								.setPathogenTestLab1(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					}
 					exportDto.setPathogenTestResult1(pathogenTest.getTestResult());
 					exportDto.setPathogenTestVerified1(pathogenTest.getTestResultVerified());
 					break;
@@ -433,7 +442,11 @@ public class SampleFacadeEjb implements SampleFacade {
 					exportDto.setPathogenTestType2(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
 					exportDto.setPathogenTestDisease2(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
 					exportDto.setPathogenTestDateTime2(pathogenTest.getTestDateTime());
-					exportDto.setPathogenTestLab2(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					if (pathogenTest.getLab() != null) {
+						exportDto
+								.setPathogenTestLab2(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					}
 					exportDto.setPathogenTestResult2(pathogenTest.getTestResult());
 					exportDto.setPathogenTestVerified2(pathogenTest.getTestResultVerified());
 					break;
@@ -441,7 +454,11 @@ public class SampleFacadeEjb implements SampleFacade {
 					exportDto.setPathogenTestType3(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
 					exportDto.setPathogenTestDisease3(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
 					exportDto.setPathogenTestDateTime3(pathogenTest.getTestDateTime());
-					exportDto.setPathogenTestLab3(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					if (pathogenTest.getLab() != null) {
+						exportDto
+								.setPathogenTestLab3(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					}
 					exportDto.setPathogenTestResult3(pathogenTest.getTestResult());
 					exportDto.setPathogenTestVerified3(pathogenTest.getTestResultVerified());
 					break;
@@ -556,6 +573,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
+		target.setSamplePurpose(source.getSamplePurpose());
 		target.setLab(facilityService.getByReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setShipmentDate(source.getShipmentDate());
@@ -597,6 +615,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
+		target.setSamplePurpose(source.getSamplePurpose());
 		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setShipmentDate(source.getShipmentDate());

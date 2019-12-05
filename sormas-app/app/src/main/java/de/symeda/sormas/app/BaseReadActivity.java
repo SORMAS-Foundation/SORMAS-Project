@@ -20,6 +20,8 @@ package de.symeda.sormas.app;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,7 +64,7 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setRootUuid(rootUuid);
     }

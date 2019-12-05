@@ -33,6 +33,11 @@ public enum SampleMaterial {
 	CRUST,
 	TISSUE,
 	URINE,
+	CORNEA_PM,
+	SALIVA,
+	URINE_PM,
+	NUCHAL_SKIN_BIOPSY,
+	BRAIN_TISSUE,
 	OTHER;
 	
 	public String toString() {

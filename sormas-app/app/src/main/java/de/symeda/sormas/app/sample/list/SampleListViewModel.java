@@ -52,7 +52,7 @@ public class SampleListViewModel extends ViewModel {
     public void initializeViewModel() {
         sampleDataFactory = new SampleDataFactory();
         SampleCriteria sampleCriteria = new SampleCriteria();
-        sampleCriteria.shipmentStatus(ShipmentStatus.NOT_SHIPPED);
+        sampleCriteria.shipmentStatus(null);
         sampleDataFactory.setSampleCriteria(sampleCriteria);
         initializeList();
     }

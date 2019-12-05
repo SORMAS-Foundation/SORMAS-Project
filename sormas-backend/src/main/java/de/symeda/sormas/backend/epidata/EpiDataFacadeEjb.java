@@ -93,7 +93,11 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setPrimates(source.getPrimates());
 		target.setSwine(source.getSwine());
 		target.setBirds(source.getBirds());
+		target.setRabbits(source.getRabbits());
 		target.setCattle(source.getCattle());
+		target.setDogs(source.getDogs());
+		target.setCats(source.getCats());
+		target.setCanidae(source.getCanidae());
 		target.setOtherAnimals(source.getOtherAnimals());
 		target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
 		target.setWaterSource(source.getWaterSource());
@@ -102,9 +106,18 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setWaterBodyDetails(source.getWaterBodyDetails());
 		target.setTickBite(source.getTickBite());
 		target.setFleaBite(source.getFleaBite());
+		target.setKindOfExposureBite(source.getKindOfExposureBite());
+		target.setKindOfExposureTouch(source.getKindOfExposureTouch());
+		target.setKindOfExposureScratch(source.getKindOfExposureScratch());
+		target.setKindOfExposureLick(source.getKindOfExposureLick());
+		target.setKindOfExposureOther(source.getKindOfExposureOther());
+		target.setKindOfExposureDetails(source.getKindOfExposureDetails());
 		target.setDateOfLastExposure(source.getDateOfLastExposure());
 		target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
 		target.setAnimalCondition(source.getAnimalCondition());
+		target.setAnimalVaccinationStatus(source.getAnimalVaccinationStatus());
+		target.setProphylaxisStatus(source.getProphylaxisStatus());
+		target.setDateOfProphylaxis(source.getDateOfProphylaxis());
 		
 		List<EpiDataBurial> burials = new ArrayList<>();
 		for (EpiDataBurialDto burialDto : source.getBurials()) {
@@ -265,7 +278,11 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setPrimates(source.getPrimates());
 		target.setSwine(source.getSwine());
 		target.setBirds(source.getBirds());
+		target.setRabbits(source.getRabbits());
 		target.setCattle(source.getCattle());
+		target.setDogs(source.getDogs());
+		target.setCats(source.getCats());
+		target.setCanidae(source.getCanidae());
 		target.setOtherAnimals(source.getOtherAnimals());
 		target.setOtherAnimalsDetails(source.getOtherAnimalsDetails());
 		target.setWaterSource(source.getWaterSource());
@@ -274,9 +291,18 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setWaterBodyDetails(source.getWaterBodyDetails());
 		target.setTickBite(source.getTickBite());
 		target.setFleaBite(source.getFleaBite());
+		target.setKindOfExposureBite(source.getKindOfExposureBite());
+		target.setKindOfExposureTouch(source.getKindOfExposureTouch());
+		target.setKindOfExposureScratch(source.getKindOfExposureScratch());
+		target.setKindOfExposureLick(source.getKindOfExposureLick());
+		target.setKindOfExposureOther(source.getKindOfExposureOther());
+		target.setKindOfExposureDetails(source.getKindOfExposureDetails());
 		target.setDateOfLastExposure(source.getDateOfLastExposure());
 		target.setPlaceOfLastExposure(source.getPlaceOfLastExposure());
 		target.setAnimalCondition(source.getAnimalCondition());
+		target.setAnimalVaccinationStatus(source.getAnimalVaccinationStatus());
+		target.setProphylaxisStatus(source.getProphylaxisStatus());
+		target.setDateOfProphylaxis(source.getDateOfProphylaxis());
 		
 		List<EpiDataBurialDto> burialDtos = new ArrayList<>();
 		for (EpiDataBurial burial : source.getBurials()) {

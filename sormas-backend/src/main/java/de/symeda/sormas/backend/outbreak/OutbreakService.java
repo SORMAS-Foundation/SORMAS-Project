@@ -34,7 +34,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
@@ -129,7 +128,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		if (criteria.getActive() != null) {
 			Predicate activeFilter = cb.and(
 					cb.lessThanOrEqualTo(from.get(Outbreak.START_DATE), criteria.getActiveUpper()),
-					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThanOrEqualTo(from.get(Outbreak.END_DATE), criteria.getActiveLower())));
+					cb.or(cb.isNull(from.get(Outbreak.END_DATE)), cb.greaterThan(from.get(Outbreak.END_DATE), criteria.getActiveLower())));
 			if (Boolean.FALSE.equals(criteria.getActive())) {
 				activeFilter = cb.not(activeFilter);
 			}

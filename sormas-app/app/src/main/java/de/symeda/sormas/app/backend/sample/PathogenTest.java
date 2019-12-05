@@ -170,7 +170,7 @@ public class PathogenTest extends AbstractDomainObject {
     }
 
     public String getLabDetails() {
-        return labDetails;
+        return  labDetails;
     }
 
     public void setLabDetails(String labDetails) {

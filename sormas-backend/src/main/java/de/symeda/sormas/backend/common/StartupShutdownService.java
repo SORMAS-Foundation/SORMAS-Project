@@ -331,6 +331,12 @@ public class StartupShutdownService {
 		}
 		
 		try {
+			importFacade.generateCaseLineListingImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create line listing import template .csv file.");
+		}
+
+		try {
 			importFacade.generatePointOfEntryImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create point of entry import template .csv file.");

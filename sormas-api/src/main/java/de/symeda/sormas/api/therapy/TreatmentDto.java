@@ -52,7 +52,7 @@ public class TreatmentDto extends EntityDto {
 	private String additionalNotes;
 	private PrescriptionReferenceDto prescription;
 	
-	public static TreatmentDto buildTreatment(TherapyReferenceDto therapy) {
+	public static TreatmentDto build(TherapyReferenceDto therapy) {
 		TreatmentDto treatment = new TreatmentDto();
 		treatment.setUuid(DataHelper.createUuid());
 		treatment.setTherapy(therapy);
@@ -61,7 +61,7 @@ public class TreatmentDto extends EntityDto {
 		return treatment;
 	}
 	
-	public static TreatmentDto buildTreatment(PrescriptionDto prescription) {
+	public static TreatmentDto build(PrescriptionDto prescription) {
 		TreatmentDto treatment = new TreatmentDto();
 		treatment.setUuid(DataHelper.createUuid());
 		treatment.setTherapy(prescription.getTherapy());

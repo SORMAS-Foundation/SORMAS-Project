@@ -16,6 +16,7 @@ public class InfrastructureChangeDatesDto implements Serializable {
 	private Date diseaseClassificationChangeDate;
 	private Date diseaseConfigurationChangeDate;
 	private Date userRoleConfigurationChangeDate;
+	private Date featureConfigurationChangeDate;
 	
 	public Date getRegionChangeDate() {
 		return regionChangeDate;
@@ -87,6 +88,14 @@ public class InfrastructureChangeDatesDto implements Serializable {
 	
 	public void setUserRoleConfigurationChangeDate(Date userRoleConfigurationChangeDate) {
 		this.userRoleConfigurationChangeDate = userRoleConfigurationChangeDate;
+	}
+
+	public Date getFeatureConfigurationChangeDate() {
+		return featureConfigurationChangeDate;
+	}
+
+	public void setFeatureConfigurationChangeDate(Date featureConfigurationChangeDate) {
+		this.featureConfigurationChangeDate = featureConfigurationChangeDate;
 	}
 	
 }
