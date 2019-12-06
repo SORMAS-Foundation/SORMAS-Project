@@ -26,7 +26,7 @@
 #	a2ensite your.sormas.server.url.conf
 #	apache2ctl graceful
 
-# CAUTION: Only change these variables when your server setup differs from the official server setup instructions!
+# CAUTION: Configure these variables in server-update.conf when your server setup differs from the official server setup instructions!
 # Paths need to be specified WITHOUT a trailing slash.
 
 DEPLOY_PATH=/root/deploy/sormas/$(date +%F)
@@ -42,6 +42,13 @@ UPDATE_LOG_PATH=$DOMAIN_PATH/$DOMAIN_NAME/update-logs
 UPDATE_LOG_FILE_NAME=server_update_`date +"%Y-%m-%d_%H-%M-%S"`.txt
 CUSTOM_DIR=/opt/sormas/custom
 USER_NAME=payara
+
+# Override default configuration by system dependent .conf file if present (read "dirname" to be able to call the script remote via SSH)
+CONF_FILE=$(dirname "$0")/server-update.conf
+if test -f "$CONF_FILE"; then
+	echo "Read-in system dependent configuration ..."
+	source $CONF_FILE
+fi
 
 echo "# SORMAS SERVER UPDATE"
 echo "# Welcome to the SORMAS server update routine. This script will automatically update your SORMAS server."
