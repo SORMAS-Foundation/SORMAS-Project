@@ -208,7 +208,6 @@ ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO $DB_USER;
 CREATE EXTENSION temporal_tables;
 CREATE EXTENSION pg_trgm;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
-GRANT ALL ON TABLE schema_version TO sormas_user;
 \c $DB_NAME_AUDIT
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -217,7 +216,7 @@ ALTER TABLE IF EXISTS schema_version OWNER TO $DB_USER;
 EOF
 
 if [ ${LINUX} = true ]; then
-	su - postgres -c "psql -p ${DB_PORT} -f setup.sql"
+	su postgres -c "psql -p ${DB_PORT} -f setup.sql"
 else
 	echo "--- Enter the name install path of Postgres on your system (default: \"C:\\Program Files\\PostgreSQL\\10\":"
 	read -r PSQL
