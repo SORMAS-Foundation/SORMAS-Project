@@ -42,6 +42,7 @@ UPDATE_LOG_PATH=$DOMAIN_PATH/$DOMAIN_NAME/update-logs
 UPDATE_LOG_FILE_NAME=server_update_`date +"%Y-%m-%d_%H-%M-%S"`.txt
 CUSTOM_DIR=/opt/sormas/custom
 USER_NAME=payara
+CONTINUOUS_DELIVERY=no
 
 # Override default configuration by system dependent .conf file if present (read "dirname" to be able to call the script remote via SSH)
 CONF_FILE=$(dirname "$0")/server-update.conf
@@ -153,6 +154,9 @@ if [ $? -ne 0 ]; then
 	fi
 fi
 
+# Wait for undeployment and shutdown of the domain
+sleep 10s
+
 rm $DOMAIN_PATH/$DOMAIN_NAME/lib/*.jar
 
 echo "Copying server libs..."
@@ -212,9 +216,17 @@ cp $DEPLOY_PATH/android/release/*.apk $DOWNLOADS_PATH
 
 exec 2>&6
 
-read -p "SORMAS update successfully completed. The server will now be deployed and logs will be displayed to notify you if anything goes wrong. Press [Enter] to continue."
+if [ "$CONTINUOUS_DELIVERY" == "yes" ]; then
+	# Wait some seconds for the fully started domain
+	sleep 10s
+	echo "Deploying sormas artifacts"
+else
+	read -p "SORMAS update successfully completed. The server will now be deployed and logs will be displayed to notify you if anything goes wrong. Press [Enter] to continue."
+fi
 
 cp $DEPLOY_PATH/apps/*.ear $DOMAIN_PATH/$DOMAIN_NAME/autodeploy/
 cp $DEPLOY_PATH/apps/*.war $DOMAIN_PATH/$DOMAIN_NAME/autodeploy/
 
-tail -f $LOG_FILE_PATH/server.log
+if [ "$CONTINUOUS_DELIVERY" != "yes" ]; then
+	tail -f $LOG_FILE_PATH/server.log
+fi
