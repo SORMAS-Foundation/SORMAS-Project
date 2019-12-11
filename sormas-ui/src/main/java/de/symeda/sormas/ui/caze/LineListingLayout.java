@@ -31,6 +31,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractSelect;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -46,6 +47,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -85,7 +87,7 @@ public class LineListingLayout extends VerticalLayout {
 		HorizontalLayout sharedInformationBar = new HorizontalLayout();
 		sharedInformationBar.addStyleName(CssStyles.SPACING_SMALL);
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
-		disease.setItems(Disease.values());
+		disease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 		sharedInformationBar.addComponent(disease);
 
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));

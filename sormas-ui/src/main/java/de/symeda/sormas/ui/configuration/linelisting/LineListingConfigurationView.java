@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.configuration.linelisting;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -91,8 +90,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		contentLayout.addComponent(lineListingConfigurationsLayout);
 
 		// Retrieve existing line listing configurations from the database
-		List<Disease> diseasesWithoutConfigurations = new ArrayList<>();
-		diseasesWithoutConfigurations.addAll(Arrays.asList(Disease.values()));
+		List<Disease> diseasesWithoutConfigurations = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 
 		List<FeatureConfigurationIndexDto> lineListingConfigurations = FacadeProvider.getFeatureConfigurationFacade().getFeatureConfigurations(
 				new FeatureConfigurationCriteria().featureType(FeatureType.LINE_LISTING).region(region), false);

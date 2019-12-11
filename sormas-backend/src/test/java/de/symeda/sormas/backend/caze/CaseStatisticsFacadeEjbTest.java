@@ -20,7 +20,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.CaseCountDto;
+import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -51,8 +51,9 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		criteria.years(Arrays.asList(new Year(year), new Year(year+1)), StatisticsCaseAttribute.ONSET_TIME);
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
+		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, null, null, null, null, false, false, null);
 		
-		List<CaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, null, null, null, null, false, false, null);
+		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, null, null, null, null, false, false, null);
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -78,7 +79,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
 		
-		List<CaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.SEX, null, null, null, false, true, null);
+		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.SEX, null, null, null, false, true, null);
 
 		// List should have one entry per sex and also unknown
 		assertEquals(Sex.values().length + 1, results.size());
@@ -101,7 +102,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
 		criteria.regions(Arrays.asList(rdcf.region));
 
-		List<CaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, null, null, true, false, null);
+		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, null, null, true, false, null);
 		assertNull(results.get(0).getPopulation());
 		
 		PopulationDataDto populationData = PopulationDataDto.build(new Date());

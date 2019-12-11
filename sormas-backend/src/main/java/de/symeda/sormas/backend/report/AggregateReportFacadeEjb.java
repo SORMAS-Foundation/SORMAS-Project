@@ -1,17 +1,31 @@
 package de.symeda.sormas.backend.report;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
+import de.symeda.sormas.api.report.AggregatedCaseCountDto;
+import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
@@ -24,10 +38,14 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "AggregateReportFacade")
 public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	protected EntityManager em;
+	
 	@EJB
 	private AggregateReportService service;
 	@EJB
@@ -40,6 +58,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	private FacilityService facilityService;
 	@EJB
 	private PointOfEntryService pointOfEntryService;
+	@EJB
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	
 	@Override
 	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date, String userUuid) {
@@ -73,6 +93,48 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		return service.getAllUuids(user);
+	}
+	
+	@Override
+	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<AggregateReport> cq = cb.createQuery(AggregateReport.class);
+		Root<AggregateReport> root = cq.from(AggregateReport.class);
+		
+		Predicate filter = service.createUserFilter(cb, cq, root, user);
+		if (criteria != null) {
+			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+		
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		List<AggregateReport> resultList = em.createQuery(cq).getResultList();
+		Map<Disease, AggregatedCaseCountDto> reportSet = new HashMap<>();
+		for (AggregateReport result : resultList) {
+			if (!reportSet.containsKey(result.getDisease())) {
+				reportSet.put(result.getDisease(), new AggregatedCaseCountDto(result.getDisease(), 0, 0, 0));
+			}
+			
+			AggregatedCaseCountDto report = reportSet.get(result.getDisease());
+			report.setNewCases(report.getNewCases() + result.getNewCases());
+			report.setLabConfirmations(report.getLabConfirmations() + result.getLabConfirmations());
+			report.setDeaths(report.getDeaths() + result.getDeaths());
+		}
+		
+		for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, false, false)) {
+			if (!reportSet.containsKey(disease)) {
+				reportSet.put(disease, new AggregatedCaseCountDto(disease, 0, 0, 0));
+			}
+		}
+		
+		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet.values());
+		reportList.sort((r1, r2) -> r1.getDisease().toString().compareTo(r2.getDisease().toString()));
+		return reportList;
 	}
 	
 	public AggregateReport fromDto(@NotNull AggregateReportDto source) {

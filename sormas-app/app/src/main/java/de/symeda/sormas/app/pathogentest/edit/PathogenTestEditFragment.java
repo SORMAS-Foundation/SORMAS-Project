@@ -81,7 +81,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
         record = getActivityRootData();
         sample = record.getSample();
         testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
-        diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+        diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, false, true));
         testResultList = DataUtils.getEnumItems(PathogenTestResultType.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
     }

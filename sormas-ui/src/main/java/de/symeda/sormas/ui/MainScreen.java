@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.reports.ReportsView;
+import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
@@ -114,6 +115,9 @@ public class MainScreen extends HorizontalLayout {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
+		}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_VIEW)) {
+			menu.addView(AggregateReportsView.class, AggregateReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAggregateReports), VaadinIcons.GRID_SMALL);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);

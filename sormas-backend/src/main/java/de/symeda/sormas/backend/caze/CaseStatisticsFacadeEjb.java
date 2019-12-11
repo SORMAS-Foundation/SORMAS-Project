@@ -40,9 +40,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
+import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.CaseCountDto;
+import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -80,7 +81,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<CaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, 
+	public List<StatisticsCaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, 
 			StatisticsCaseAttribute rowGrouping, StatisticsCaseSubAttribute rowSubGrouping,
 			StatisticsCaseAttribute columnGrouping, StatisticsCaseSubAttribute columnSubGrouping,
 			boolean includePopulation, boolean includeZeroValues, Integer populationReferenceYear) {
@@ -93,14 +94,15 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			caseCountQuery.setParameter(i + 1, caseCountQueryAndParams.getValue().get(i));
 		}
 		
+		List<StatisticsCaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream())
 		Function<Integer, RegionReferenceDto> regionProvider = id -> regionFacade.getRegionReferenceById(id);
 		Function<Integer, DistrictReferenceDto> districtProvider = id -> districtFacade.getDistrictReferenceById(id);
 		
-		List<CaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream())
+		List<StatisticsCaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream())
 				.map(result -> {
 					Object rowKey = "".equals(result[1]) ? null : result[1];
 					Object columnKey = "".equals(result[2]) ? null : result[2];
-					return new CaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, null,
+					return new StatisticsCaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, null,
 						StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping, regionProvider, districtProvider),
 						StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping, regionProvider, districtProvider));
 				})
@@ -128,7 +130,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			
 			for (StatisticsGroupingKey rowKey : allRowKeys) {
 				for (StatisticsGroupingKey columnKey : allColumnKeys) {
-					CaseCountDto zeroDto = new CaseCountDto(0, null, rowKey, columnKey);
+					StatisticsCaseCountDto zeroDto = new StatisticsCaseCountDto(0, null, rowKey, columnKey);
 					if (!caseCountResults.contains(zeroDto)) {
 						caseCountResults.add(zeroDto);
 					}
@@ -145,12 +147,13 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				populationQuery.setParameter(i + 1, populationQueryAndParams.getValue().get(i));
 			}
 			
+				StatisticsCaseCountDto populationDto =  new StatisticsCaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null, 
 //			// build a two-key-map based on row and column
 //			HashMap<Pair<StatisticsGroupingKey, StatisticsGroupingKey>, Integer> populationData = new HashMap<Object, HashMap<Object,Integer>>();
 //			((Stream<Object[]>) populationQuery.getResultStream()).forEach(result -> {
 //				Object rowKey = "".equals(result[1]) ? null : result[1];
 //				Object columnKey = "".equals(result[2]) ? null : result[2];
-//				CaseCountDto populationDto =  new CaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null, 
+//				StatisticsCaseCountDto populationDto =  new StatisticsCaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null, 
 //					StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping),
 //					StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping));
 //
@@ -162,11 +165,11 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 //				innerPopulationData.put(populationDto.getColumnKey(), populationDto.getPopulation());
 //			});
 			
-			List<CaseCountDto> populationResults = ((Stream<Object[]>) populationQuery.getResultStream())
+			List<StatisticsCaseCountDto> populationResults = ((Stream<Object[]>) populationQuery.getResultStream())
 					.map(result -> {
 						Object rowKey = "".equals(result[1]) ? null : result[1];
 						Object columnKey = "".equals(result[2]) ? null : result[2];
-						return new CaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null,
+						return new StatisticsCaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null,
 							StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping, regionProvider, districtProvider),
 							StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping, regionProvider, districtProvider));
 					})
@@ -181,8 +184,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			
 			// add the population data to the case counts
 			// when a key is not a population data key, we use null instead
-			CaseCountDto searchDto = new CaseCountDto(null, null, null, null);
-			for (CaseCountDto caseCountResult : caseCountResults) {
+			StatisticsCaseCountDto searchDto = new StatisticsCaseCountDto(null, null, null, null);
+			for (StatisticsCaseCountDto caseCountResult : caseCountResults) {
 				
 				if (rowIsPopulation) {
 					searchDto.setRowKey(caseCountResult.getRowKey());
@@ -202,6 +205,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	}
 
 	/**
+	private void replaceIdsWithGroupingKeys(List<StatisticsCaseCountDto> results, StatisticsCaseAttribute groupingA,
+		for (StatisticsCaseCountDto result : results) {
 	 * Builds SQL query string and list of parameters (for filters)
 	 */
 	public Pair<String, List<Object>> buildCaseCountQuery(StatisticsCaseCriteria caseCriteria, 

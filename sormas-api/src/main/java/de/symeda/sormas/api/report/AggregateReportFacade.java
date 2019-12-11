@@ -16,4 +16,6 @@ public interface AggregateReportFacade {
 	
 	List<String> getAllUuids(String userUuid);
 	
+	List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria, String userUuid);
+	
 }

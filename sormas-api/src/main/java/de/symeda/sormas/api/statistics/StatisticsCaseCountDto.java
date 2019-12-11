@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class CaseCountDto implements Serializable {
+public class StatisticsCaseCountDto implements Serializable {
 	
 	private static final long serialVersionUID = 8900419282951754875L;
 
@@ -15,7 +15,7 @@ public class CaseCountDto implements Serializable {
 	private StatisticsGroupingKey rowKey;
 	private StatisticsGroupingKey columnKey;
 	
-	public CaseCountDto(Integer caseCount, Integer population, StatisticsGroupingKey rowKey, StatisticsGroupingKey columnKey) {
+	public StatisticsCaseCountDto(Integer caseCount, Integer population, StatisticsGroupingKey rowKey, StatisticsGroupingKey columnKey) {
 		super();
 		this.caseCount = caseCount;
 		this.population = population;
@@ -61,8 +61,8 @@ public class CaseCountDto implements Serializable {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof CaseCountDto) {
-			CaseCountDto other = (CaseCountDto)obj;
+		if (obj instanceof StatisticsCaseCountDto) {
+			StatisticsCaseCountDto other = (StatisticsCaseCountDto)obj;
 			return DataHelper.equal(rowKey, other.rowKey) && DataHelper.equal(columnKey, other.columnKey);
 		}		
 		

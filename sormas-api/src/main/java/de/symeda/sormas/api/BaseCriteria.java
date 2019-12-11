@@ -60,6 +60,8 @@ public abstract class BaseCriteria implements Serializable {
 						stringValue = ((Enum<?>)value).name();
 					} else if (String.class.isAssignableFrom(type)) {
 						stringValue = (String)value;
+					} else if (Integer.class.isAssignableFrom(type)) {
+						stringValue = String.valueOf(value);
 					} else {
 						throw new NotImplementedException(type.toString());
 					}

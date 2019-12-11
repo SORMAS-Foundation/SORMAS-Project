@@ -71,7 +71,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.CaseCountDto;
+import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -341,7 +341,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	public void generateTable() {
-		List<CaseCountDto> resultData = generateStatistics();
+		List<StatisticsCaseCountDto> resultData = generateStatistics();
 
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
@@ -391,7 +391,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	public void generateChart() {
-		List<CaseCountDto> resultData = generateStatistics();
+		List<StatisticsCaseCountDto> resultData = generateStatistics();
 
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
@@ -453,7 +453,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		boolean appendUnknownXAxisCaption = false;
 		if (seriesAttribute != null || xAxisAttribute != null) {
 			// Build captions for x-axis and/or series
-			for (CaseCountDto row : resultData) {
+			for (StatisticsCaseCountDto row : resultData) {
 				
 				if (xAxisAttribute != null) {
 					if (!StatisticsHelper.isNullOrUnknown(row.getColumnKey())) {
@@ -533,9 +533,9 @@ public class StatisticsView extends AbstractStatisticsView {
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
 			hcjs.append("{ name: '").append(dataStyle)
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [");
-			TreeMap<StatisticsGroupingKey, CaseCountDto> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
-			CaseCountDto unknownSeriesElement = null;
-			for (CaseCountDto row : resultData) {
+			TreeMap<StatisticsGroupingKey, StatisticsCaseCountDto> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
+			StatisticsCaseCountDto unknownSeriesElement = null;
+			for (StatisticsCaseCountDto row : resultData) {
 				Object seriesId = row.getRowKey();
 				if (StatisticsHelper.isNullOrUnknown(seriesId)) {
 					unknownSeriesElement = row;
@@ -573,7 +573,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			final StringBuilder totalSeriesString = new StringBuilder();
 			TreeMap<Integer, Number> currentSeriesValues = new TreeMap<>();
 
-			for (CaseCountDto row : resultData) {
+			for (StatisticsCaseCountDto row : resultData) {
 				// Retrieve series caption of the current row
 				Object rowSeriesKey;
 				if (seriesAttribute != null) {
@@ -695,7 +695,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	public void generateMap() {
-		List<CaseCountDto> resultData = generateStatistics();
+		List<StatisticsCaseCountDto> resultData = generateStatistics();
 
 		if (resultData.isEmpty()) {
 			resultsLayout.addComponent(emptyResultLabel);
@@ -794,7 +794,7 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		boolean hasNullValue = false;
 		// Draw relevant district fills
-		for (CaseCountDto resultRow : resultData) {
+		for (StatisticsCaseCountDto resultRow : resultData) {
 			ReferenceDto regionOrDistrict = (ReferenceDto) resultRow.getRowKey();
 			String shapeUuid = regionOrDistrict.getUuid();
 			BigDecimal regionOrDistrictValue;
@@ -881,7 +881,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 	}
 
-	private List<CaseCountDto> generateStatistics() {
+	private List<StatisticsCaseCountDto> generateStatistics() {
 		fillCaseCriteria(showCaseIncidence);
 
 		if (showCaseIncidence) {	
@@ -913,7 +913,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			populationReferenceYear = calculateMaximumReferenceYear(populationReferenceYear, caseCriteria.getReportEpiWeeksOfYear(), Comparator.naturalOrder(), e -> e.getYear());
 		}
 
-		List<CaseCountDto> resultData = FacadeProvider.getCaseStatisticsFacade().queryCaseCount(caseCriteria,
+		List<StatisticsCaseCountDto> resultData = FacadeProvider.getCaseStatisticsFacade().queryCaseCount(caseCriteria,
 				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
 				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), 
 				showCaseIncidence && caseIncidencePossible, cbShowZeroValues.getValue(), populationReferenceYear);

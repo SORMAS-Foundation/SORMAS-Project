@@ -27,7 +27,7 @@ import com.vaadin.v7.ui.Grid;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.statistics.CaseCountDto;
+import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
@@ -64,7 +64,7 @@ public class StatisticsCaseGrid extends Grid {
 	@SuppressWarnings("unchecked")
 	public StatisticsCaseGrid(StatisticsCaseAttribute rowsAttribute, StatisticsCaseSubAttribute rowsSubAttribute,
 			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, 
-			boolean showCaseIncidence, int incidenceDivisor, List<CaseCountDto> cellValues, StatisticsCaseCriteria caseCriteria) {
+			boolean showCaseIncidence, int incidenceDivisor, List<StatisticsCaseCountDto> cellValues, StatisticsCaseCriteria caseCriteria) {
 
 		super();
 
@@ -110,7 +110,7 @@ public class StatisticsCaseGrid extends Grid {
 		} else {
 			boolean addColumnUnknown = false;
 			// Iterate over content and add new columns to the list
-			for (CaseCountDto cellValue : cellValues) {
+			for (StatisticsCaseCountDto cellValue : cellValues) {
 				if (StatisticsHelper.isNullOrUnknown(cellValue.getColumnKey())) {
 					addColumnUnknown = true;
 				} else {
@@ -155,7 +155,7 @@ public class StatisticsCaseGrid extends Grid {
 		int rowTotal = 0;
 		int rowPopulation = 0;
 
-		for (CaseCountDto cellValue : cellValues) {
+		for (StatisticsCaseCountDto cellValue : cellValues) {
 			boolean isUnknownColumn = StatisticsHelper.isNullOrUnknown(cellValue.getColumnKey());
 			boolean isUnknownRow = StatisticsHelper.isNullOrUnknown(cellValue.getRowKey());
 
