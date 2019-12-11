@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.sun.imageio.plugins.common.I18N;
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.ValidationException;
@@ -285,7 +284,7 @@ public class LineListingLayout extends VerticalLayout {
 			}
 		}
 		if (validationFailed) {
-			throw new ValidationRuntimeException(I18N.getString(Strings.errorFieldValidationFailed));
+			throw new ValidationRuntimeException(I18nProperties.getString(Strings.errorFieldValidationFailed));
 		}
 	}
 
