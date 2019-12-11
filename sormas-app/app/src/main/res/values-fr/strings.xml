@@ -28,7 +28,7 @@
     <string name="notAnswered">Pas de réponse</string>
     <string name="system">Système</string>
     <string name="yes">Oui</string>
-    <string name="all">All</string>
+    <string name="all">Tous</string>
     <string name="action_add_missing_case">Ajouter un cas manquant</string>
     <string name="action_allow_gps_access">Autoriser l\'accès GPS</string>
     <string name="action_apply_filters">Appliquer les filtres</string>
@@ -74,7 +74,7 @@
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_person_case">Open Case of Event Person</string>
+    <string name="action_open_event_person_case">Ouvrez le cas associé à cette personne de l\'événement</string>
     <string name="action_open_prescription">Ouvrir l\'ordonnance</string>
     <string name="action_open_resulting_case">Ouvrir le cas de résultat</string>
     <string name="action_open_source_case">Open Source Case</string>
@@ -167,6 +167,7 @@
     <string name="caption_new_contact">New Contact</string>
     <string name="caption_new_event_participant">New Person Involved</string>
     <string name="caption_new_sample">New Sample</string>
+    <string name="caption_new_pathogen_test">New Pathogen Test</string>
     <string name="caption_new_task">New Task</string>
     <string name="caption_not_a_contact">Not a Contact</string>
     <string name="caption_not_an_event">Not an Event</string>
@@ -215,7 +216,6 @@
     <string name="caption_visit_symptoms">Symptom Information</string>
     <string name="caption_visit_time">Time of Visit</string>
     <string name="caption_year">Year</string>
-    <string name="caption_new_pathogen_test">New Pathogen test</string>
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
     <string name="confirmation_pick_gps">Are you in this place right now?</string>
