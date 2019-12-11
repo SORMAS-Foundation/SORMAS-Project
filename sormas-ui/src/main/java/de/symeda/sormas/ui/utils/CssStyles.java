@@ -292,6 +292,8 @@ public final class CssStyles {
 	 */
 	public static String getDiseaseColor(Disease disease) {
 		switch (disease) {
+		case AFP:
+			return "background-disease-afp";
 		case CHOLERA:
 			return "background-disease-cholera";
 		case CSM:
@@ -300,6 +302,8 @@ public final class CssStyles {
 			return "background-disease-dengue";
 		case EVD:
 			return "background-disease-evd";
+		case GUINEA_WORM:
+			return "background-disease-guinea-worm";
 		case LASSA:
 			return "background-disease-lassa";
 		case MEASLES:
@@ -312,6 +316,8 @@ public final class CssStyles {
 			return "background-disease-other";
 		case PLAGUE:
 			return "background-disease-plague";
+		case POLIO:
+			return "background-disease-polio";
 		case UNSPECIFIED_VHF:
 			return "background-disease-unspecified-vhf";
 		case WEST_NILE_FEVER:
