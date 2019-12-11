@@ -35,11 +35,17 @@ public class EpiDataGatheringDto extends EntityDto {
 	public static final String GATHERING_DATE = "gatheringDate";
 	public static final String GATHERING_ADDRESS = "gatheringAddress";
 	
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM,
+			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.UNDEFINED,
+			Disease.OTHER })
 	private String description;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM,
+			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.UNDEFINED,
+			Disease.OTHER })
 	private Date gatheringDate;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.NEW_INFLUENCA,Disease.CSM,Disease.CHOLERA,Disease.MEASLES,Disease.YELLOW_FEVER,Disease.DENGUE,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM,
+			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.UNDEFINED,
+			Disease.OTHER })
 	private LocationDto gatheringAddress;
 	
 	public String getDescription() {

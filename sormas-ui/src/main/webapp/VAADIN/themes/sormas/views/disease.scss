@@ -1,6 +1,15 @@
 
 @mixin sormas-disease-styles {
 
+  .background-disease-afp {
+  	background-color: #00E0A1;
+  	fill: #00E0A1;
+  	
+  	&.background-darker {
+  		background-color: #00B582;
+  		fill: #00B582;
+  	}
+  }
   .background-disease-cholera {
   	background-color: #FEBA01;
   	fill: #FEBA01;
@@ -35,6 +44,15 @@
   	&.background-darker {
   		background-color: #7E3E9C;
   		fill: #7E3E9C;
+  	}
+  }
+  .background-disease-guinea-worm {
+  	background-color: #3FD100;
+  	fill: #3FD100;
+  	
+  	&.background-darker {
+  		background-color: #38BA00;
+  		fill: #38BA00;
   	}
   }
   .background-disease-lassa {
@@ -80,6 +98,15 @@
   	&.background-darker {
   		background-color: #7565B8;
   		fill: #7565B8;
+  	}
+  }
+  .background-disease-polio {
+  	background-color: #A6E300;
+  	fill: #A6E300;
+  	
+  	&.background-darker {
+  		background-color: #96CC00;
+  		fill: #96CC00;
   	}
   }
   .background-disease-unspecified-vhf {

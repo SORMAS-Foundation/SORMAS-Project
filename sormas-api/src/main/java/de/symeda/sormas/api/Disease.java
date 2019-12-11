@@ -22,16 +22,19 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public enum Disease implements StatisticsGroupingKey {
 	
+	AFP(true, true, true, 21),
 	CHOLERA(true, true, true, 5),
 	CONGENITAL_RUBELLA(true, true, true, 21),
 	CSM(true, true, false, 10),
 	DENGUE(true, true, false, 14),
 	EVD(true, true, true, 21),
+	GUINEA_WORM(true, true, true, 21),
 	LASSA(true, true, true, 21),
 	MEASLES(true, true, false, 21),
 	MONKEYPOX(true, true, true, 21),
 	NEW_INFLUENCA(true, true, true, 17),
 	PLAGUE(true, true, true, 7),
+	POLIO(true, true, true, 21),
 	UNSPECIFIED_VHF(true, true, true, 21),
 	WEST_NILE_FEVER(true, false, false, 0),
 	YELLOW_FEVER(true, true, false, 6),
