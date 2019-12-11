@@ -25,7 +25,6 @@
         <variable name="testResultMessage" type="String" />
     </data>
 
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"

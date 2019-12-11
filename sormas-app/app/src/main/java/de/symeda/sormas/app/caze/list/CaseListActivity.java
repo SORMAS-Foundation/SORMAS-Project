@@ -163,7 +163,7 @@ public class CaseListActivity extends PagedBaseListActivity {
         View caseListFilterView = getLayoutInflater().inflate(R.layout.filter_case_list_layout, null);
         filterBinding = DataBindingUtil.bind(caseListFilterView);
 
-        List<Item> diseases = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases());
+        List<Item> diseases = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
         filterBinding.diseaseFilter.initializeSpinner(diseases);
         List<Item> classifications = DataUtils.getEnumItems(CaseClassification.class);
         filterBinding.classificationFilter.initializeSpinner(classifications);

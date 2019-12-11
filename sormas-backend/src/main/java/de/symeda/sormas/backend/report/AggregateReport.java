@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -26,6 +27,7 @@ public class AggregateReport extends AbstractDomainObject {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String NEW_CASES = "newCases";
 	public static final String LAB_CONFIRMATIONS = "labConfirmations";
 	public static final String DEATHS = "deaths";
@@ -37,9 +39,10 @@ public class AggregateReport extends AbstractDomainObject {
 	private Region region;
 	private District district;
 	private Facility healthFacility;
-	private int newCases;
-	private int labConfirmations;
-	private int deaths;
+	private PointOfEntry pointOfEntry;
+	private Integer newCases;
+	private Integer labConfirmations;
+	private Integer deaths;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn
@@ -107,30 +110,39 @@ public class AggregateReport extends AbstractDomainObject {
 		this.healthFacility = healthFacility;
 	}
 
+	@ManyToOne(cascade = {})
+	public PointOfEntry getPointOfEntry() {
+		return pointOfEntry;
+	}
+
+	public void setPointOfEntry(PointOfEntry pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
+	}
+
 	@Column
-	public int getNewCases() {
+	public Integer getNewCases() {
 		return newCases;
 	}
 
-	public void setNewCases(int newCases) {
+	public void setNewCases(Integer newCases) {
 		this.newCases = newCases;
 	}
 
 	@Column
-	public int getLabConfirmations() {
+	public Integer getLabConfirmations() {
 		return labConfirmations;
 	}
 
-	public void setLabConfirmations(int labConfirmations) {
+	public void setLabConfirmations(Integer labConfirmations) {
 		this.labConfirmations = labConfirmations;
 	}
 
 	@Column
-	public int getDeaths() {
+	public Integer getDeaths() {
 		return deaths;
 	}
 
-	public void setDeaths(int deaths) {
+	public void setDeaths(Integer deaths) {
 		this.deaths = deaths;
 	}
 

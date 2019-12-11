@@ -219,6 +219,7 @@
         <item name="android:layout_height">@dimen/slimControlHeight</item>
         <item name="android:minHeight">@dimen/slimControlHeight</item>
         <item name="android:maxHeight">@dimen/slimControlHeight</item>
+        <item name="android:layout_marginBottom">0dp</item>
     </style>
 
     <style name="ControlTextFieldReadStyle">

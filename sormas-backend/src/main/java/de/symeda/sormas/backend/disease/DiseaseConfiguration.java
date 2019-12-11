@@ -22,6 +22,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Disease disease;
 	private Boolean active;
 	private Boolean primaryDisease;
+	private Boolean caseBased;
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
 
@@ -54,6 +55,14 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	}
 	public void setPrimaryDisease(Boolean primaryDisease) {
 		this.primaryDisease = primaryDisease;
+	}
+
+	@Column
+	public Boolean getCaseBased() {
+		return caseBased;
+	}
+	public void setCaseBased(Boolean caseBased) {
+		this.caseBased = caseBased;
 	}
 
 	@Column

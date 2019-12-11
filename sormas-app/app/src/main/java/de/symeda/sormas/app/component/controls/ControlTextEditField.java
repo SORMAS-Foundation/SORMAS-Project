@@ -304,8 +304,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
     @Override
     protected void requestFocusForContentView(View nextView) {
-        ((ControlTextEditField) nextView).input.requestFocus();
-        ((ControlTextEditField) nextView).setCursorToRight();
+        if (nextView != null) {
+            ((ControlTextEditField) nextView).input.requestFocus();
+            ((ControlTextEditField) nextView).setCursorToRight();
+        }
     }
 
     @Override

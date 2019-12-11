@@ -171,7 +171,7 @@ public class EventsView extends AbstractView {
 		diseaseFilter = new ComboBox();
 		diseaseFilter.setWidth(140, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.DISEASE));
-		diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray());
+		diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
 		diseaseFilter.addValueChangeListener(e -> {
 			criteria.disease(((Disease)e.getProperty().getValue()));
 			navigateTo(criteria);

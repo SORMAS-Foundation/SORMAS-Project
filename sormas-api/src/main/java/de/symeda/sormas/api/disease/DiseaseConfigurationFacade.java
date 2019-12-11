@@ -16,6 +16,8 @@ public interface DiseaseConfigurationFacade {
 	
 	List<String> getAllUuids();
 	
+	List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased);
+	
 	boolean isActiveDisease(Disease disease);
 	
 	List<Disease> getAllActiveDiseases();
@@ -23,8 +25,6 @@ public interface DiseaseConfigurationFacade {
 	boolean isPrimaryDisease(Disease disease);
 	
 	List<Disease> getAllPrimaryDiseases();
-	
-	List<Disease> getAllActivePrimaryDiseases();
 	
 	boolean hasFollowUp(Disease disease);
 	

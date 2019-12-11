@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.report.AggregateReport"/>
+    </data>
+
+    <LinearLayout
+        android:id="@+id/row_item"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_list_activity_row_no_unread_status"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+        <TextView
+            android:id="@+id/disease_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:textSize="16sp"
+            android:textColor="@color/listActivityRowTertiaryText"
+            android:fontFamily="sans-serif-medium"
+            android:ellipsize="none"
+            android:scrollHorizontally="false"
+            android:paddingTop="18dp"
+            android:paddingEnd="8dp"
+            app:value="@{data.disease}" />
+
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
+            android:id="@+id/aggregateReport_newCases"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="12dp"
+            app:inputType="number"
+            app:hint="@string/caption_aggregate_new_cases_abbr"
+            app:slim="true"
+            app:value="@={data.newCases}"
+            app:showCaption="false" />
+
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
+            android:id="@+id/aggregateReport_labConfirmations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="12dp"
+            app:inputType="number"
+            app:hint="@string/caption_aggregate_lab_confirmations_abbr"
+            app:slim="true"
+            app:value="@={data.labConfirmations}"
+            app:showCaption="false" />
+
+        <de.symeda.sormas.app.component.controls.ControlTextEditField
+            android:id="@+id/aggregateReport_deaths"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:paddingStart="2dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="12dp"
+            app:inputType="number"
+            app:hint="@string/caption_aggregate_deaths_abbr"
+            app:slim="true"
+            app:value="@={data.deaths}"
+            app:showCaption="false" />
+
+    </LinearLayout>
+
+</layout>
+

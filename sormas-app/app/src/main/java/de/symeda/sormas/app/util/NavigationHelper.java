@@ -24,9 +24,6 @@ import androidx.core.app.NavUtils;
 import androidx.core.app.TaskStackBuilder;
 import androidx.appcompat.app.AppCompatActivity;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.list.CaseListActivity;
@@ -34,8 +31,7 @@ import de.symeda.sormas.app.contact.list.ContactListActivity;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.event.list.EventListActivity;
 import de.symeda.sormas.app.report.ReportActivity;
-import de.symeda.sormas.app.report.aggregate.AggregateReportActivity;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.report.aggregate.AggregateReportsActivity;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
 import de.symeda.sormas.app.task.list.TaskListActivity;
 
@@ -62,7 +58,7 @@ public class NavigationHelper {
     }
 
     public static void goToAggregateReports(Context context) {
-        Intent intent = new Intent(context, AggregateReportActivity.class);
+        Intent intent = new Intent(context, AggregateReportsActivity.class);
         context.startActivity(intent);
     }
 

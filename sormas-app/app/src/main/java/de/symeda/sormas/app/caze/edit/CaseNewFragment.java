@@ -96,7 +96,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases();
+        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
         diseaseList = DataUtils.toItems(diseases);
         if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
             diseaseList.add(DataUtils.toItem(record.getDisease()));

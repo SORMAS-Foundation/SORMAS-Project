@@ -133,7 +133,7 @@ public class WeeklyReportDao extends AbstractAdoDao<WeeklyReport> {
 
         WeeklyReportEntryDao entryDao = DatabaseHelper.getWeeklyReportEntryDao();
         List<WeeklyReportEntry> entries = new ArrayList<>();
-        for (Disease disease : DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases()) {
+        for (Disease disease : DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true)) {
             entries.add(entryDao.build(epiWeek, disease, report));
         }
         report.setReportEntries(entries);

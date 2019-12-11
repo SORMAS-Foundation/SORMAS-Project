@@ -63,7 +63,7 @@ public class ReportOverviewFragment extends ReportFragment {
     protected void onAfterLayoutBinding(FragmentReportWeeklyLayoutBinding contentBinding) {
         super.onAfterLayoutBinding(contentBinding);
 
-        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllActivePrimaryDiseases());
+        List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
         contentBinding.weeklyReportEntryDisease.initializeSpinner(diseaseList);
         contentBinding.weeklyReportEntryDisease.setVisibility(VISIBLE);
         contentBinding.weeklyReportEntryDisease.addValueChangedListener(new ValueChangeListener() {

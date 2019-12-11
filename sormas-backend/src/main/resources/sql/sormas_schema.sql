@@ -3810,6 +3810,7 @@ CREATE TABLE aggregatereport(
 	region_id bigint,
 	district_id bigint,
 	healthfacility_id bigint,
+	pointofentry_id bigint,
 	disease varchar(255),
 	year integer,
 	epiweek integer,
@@ -3824,6 +3825,7 @@ ALTER TABLE aggregatereport OWNER TO sormas_user;
 ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_region_id FOREIGN KEY (region_id) REFERENCES region(id);
 ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_district_id FOREIGN KEY (district_id) REFERENCES district(id);
 ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry(id);
 ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
 
 CREATE TABLE aggregatereport_history (LIKE aggregatereport);
@@ -3833,3 +3835,9 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aggregatereport_history
 ALTER TABLE aggregatereport_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (175, 'Aggregate reports #1277');
+
+-- 2019-12-05 Add caseBased column to diseaseconfiguration #1277
+ALTER TABLE diseaseconfiguration ADD COLUMN casebased boolean;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN casebased boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (176, 'Add caseBased column to diseaseconfiguration #1277');

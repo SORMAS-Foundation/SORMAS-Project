@@ -274,7 +274,7 @@ public class StatisticsHelper {
 				return sexList;
 			case DISEASE:
 				ArrayList<StatisticsGroupingKey> diseaseList = new ArrayList<>();
-				for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases()) {
+				for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true)) {
 					diseaseList.add(disease);
 				}
 				return diseaseList;

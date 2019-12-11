@@ -14,6 +14,8 @@ import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
@@ -36,6 +38,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	private DistrictService districtService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private PointOfEntryService pointOfEntryService;
 	
 	@Override
 	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date, String userUuid) {
@@ -86,6 +90,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
+		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setNewCases(source.getNewCases());
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());
@@ -107,6 +112,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
 		target.setNewCases(source.getNewCases());
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());

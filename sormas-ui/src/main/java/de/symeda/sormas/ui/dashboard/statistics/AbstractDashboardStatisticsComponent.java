@@ -92,7 +92,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 			if (FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp().size() > 6) {
 				addShowMoreAndLessButtons();
 			}
-		} else if (FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().size() > 6) {
+		} else if (FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).size() > 6) {
 			addShowMoreAndLessButtons();
 		}
 	}
@@ -124,7 +124,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 			}
 		}
 
-		int visibleDiseasesCount = currentDisease == null ? (isFullMode() ? FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().size() : 6) : 0; 
+		int visibleDiseasesCount = currentDisease == null ? (isFullMode() ? FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).size() : 6) : 0; 
 		updateFirstComponent(visibleDiseasesCount);
 		updateSecondComponent(visibleDiseasesCount);
 		updateThirdComponent(visibleDiseasesCount);

@@ -19,9 +19,14 @@
 package de.symeda.sormas.app.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -34,8 +39,11 @@ public class DiseaseConfigurationCache {
     private static DiseaseConfigurationCache instance;
 
     private List<Disease> activeDiseases = new ArrayList<>();
+    private List<Disease> inactiveDiseases = new ArrayList<>();
     private List<Disease> primaryDiseases = new ArrayList<>();
-    private List<Disease> activePrimaryDiseases = new ArrayList<>();
+    private List<Disease> nonPrimaryDiseases = new ArrayList<>();
+    private List<Disease> caseBasedDiseases = new ArrayList<>();
+    private List<Disease> aggregateDiseases = new ArrayList<>();
     private List<Disease> followUpEnabledDiseases = new ArrayList<>();
     private Map<Disease, Integer> followUpDurations = new HashMap<>();
 
@@ -47,20 +55,23 @@ public class DiseaseConfigurationCache {
                 configuration = new DiseaseConfiguration();
             }
 
-            boolean diseaseActive = false;
-            boolean diseasePrimary = false;
             if (Boolean.TRUE.equals(configuration.getActive())
                     || (configuration.getActive() == null && disease.isDefaultActive())) {
                 activeDiseases.add(disease);
-                diseaseActive = true;
+            } else {
+                inactiveDiseases.add(disease);
             }
             if (Boolean.TRUE.equals(configuration.getPrimaryDisease())
                     || (configuration.getPrimaryDisease() == null && disease.isDefaultPrimary())) {
                 primaryDiseases.add(disease);
-                diseasePrimary = true;
+            } else {
+                nonPrimaryDiseases.add(disease);
             }
-            if (diseaseActive && diseasePrimary) {
-                activePrimaryDiseases.add(disease);
+            if (Boolean.TRUE.equals(configuration.getCaseBased())
+                    || (configuration.getCaseBased() == null && disease.isDefaultCaseBased())) {
+                caseBasedDiseases.add(disease);
+            } else {
+                aggregateDiseases.add(disease);
             }
             if (Boolean.TRUE.equals(configuration.getFollowUpEnabled())
                     || (configuration.getFollowUpEnabled() == null && disease.isDefaultFollowUpEnabled())) {
@@ -72,6 +83,101 @@ public class DiseaseConfigurationCache {
                 followUpDurations.put(disease, disease.getDefaultFollowUpDuration());
             }
         }
+    }
+
+    public List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased) {
+        User currentUser = ConfigProvider.getUser();
+        Set<Disease> diseases = new HashSet<>();
+
+        if (Boolean.TRUE.equals(active)) {
+            if (currentUser.getLimitedDisease() != null && activeDiseases.contains(currentUser.getLimitedDisease())) {
+                diseases.add(currentUser.getLimitedDisease());
+            } else {
+                diseases.addAll(activeDiseases);
+            }
+        } else if (Boolean.FALSE.equals(active)) {
+            if (currentUser.getLimitedDisease() != null && inactiveDiseases.contains(currentUser.getLimitedDisease())) {
+                diseases.add(currentUser.getLimitedDisease());
+            } else {
+                diseases.addAll(inactiveDiseases);
+            }
+        }
+
+        if (Boolean.TRUE.equals(primary)) {
+            if (currentUser.getLimitedDisease() != null && primaryDiseases.contains(currentUser.getLimitedDisease())) {
+                diseases.add(currentUser.getLimitedDisease());
+            } else {
+                diseases.addAll(primaryDiseases);
+            }
+        } else if (Boolean.FALSE.equals(primary)) {
+            if (currentUser.getLimitedDisease() != null && nonPrimaryDiseases.contains(currentUser.getLimitedDisease())) {
+                diseases.add(currentUser.getLimitedDisease());
+            } else {
+                diseases.addAll(nonPrimaryDiseases);
+            }
+        }
+
+        if (Boolean.TRUE.equals(caseBased)) {
+            if (currentUser.getLimitedDisease() != null && caseBasedDiseases.contains(currentUser.getLimitedDisease())) {
+                diseases.add(currentUser.getLimitedDisease());
+            } else {
+                diseases.addAll(caseBasedDiseases);
+            }
+        } else if (Boolean.FALSE.equals(caseBased)) {
+            if (currentUser.getLimitedDisease() != null && aggregateDiseases.contains(currentUser.getLimitedDisease())) {
+                diseases.add(currentUser.getLimitedDisease());
+            } else {
+                diseases.addAll(aggregateDiseases);
+            }
+        }
+
+        Iterator<Disease> iterator = diseases.iterator();
+        while (iterator.hasNext()) {
+            Disease disease = iterator.next();
+            if (Boolean.TRUE.equals(active)) {
+                if (inactiveDiseases.contains(disease)) {
+                    iterator.remove();
+                    continue;
+                }
+            } else if (Boolean.FALSE.equals(active)) {
+                if (activeDiseases.contains(disease)) {
+                    iterator.remove();
+                    continue;
+                }
+            }
+
+            if (Boolean.TRUE.equals(primary)) {
+                if (nonPrimaryDiseases.contains(disease)) {
+                    iterator.remove();
+                    continue;
+                }
+            } else if (Boolean.FALSE.equals(primary)) {
+                if (primaryDiseases.contains(disease)) {
+                    iterator.remove();
+                    continue;
+                }
+            }
+
+            if (Boolean.TRUE.equals(caseBased)) {
+                if (aggregateDiseases.contains(disease)) {
+                    iterator.remove();
+                }
+            } else if (Boolean.FALSE.equals(caseBased)) {
+                if (caseBasedDiseases.contains(disease)) {
+                    iterator.remove();
+                }
+            }
+        }
+
+        List<Disease> diseaseList = new ArrayList<>(diseases);
+        Collections.sort(diseaseList, new Comparator<Disease>() {
+            @Override
+            public int compare(Disease o1, Disease o2) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        });
+
+        return diseaseList;
     }
 
     public boolean isActiveDisease(Disease disease) {
@@ -105,19 +211,6 @@ public class DiseaseConfigurationCache {
             return list;
         } else {
             return primaryDiseases;
-        }
-    }
-
-    public List<Disease> getAllActivePrimaryDiseases() {
-        User currentUser = ConfigProvider.getUser();
-        if (currentUser.getLimitedDisease() != null) {
-            ArrayList<Disease> list = new ArrayList<>();
-            if (isPrimaryDisease(currentUser.getLimitedDisease()) && isActiveDisease(currentUser.getLimitedDisease())) {
-                list.add(currentUser.getLimitedDisease());
-            }
-            return list;
-        } else {
-            return activePrimaryDiseases;
         }
     }
 

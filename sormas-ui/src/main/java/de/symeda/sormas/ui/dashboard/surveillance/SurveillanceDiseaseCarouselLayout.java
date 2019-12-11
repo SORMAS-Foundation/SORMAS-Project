@@ -61,7 +61,7 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		statisticsComponent = new DiseaseStatisticsComponent(dashboardDataProvider);
 		epiCurveComponent = new SurveillanceEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
-		diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
+		diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 		//remove 'other' and 'undefined' if present
 		diseases.removeAll(Arrays.asList(Disease.OTHER, Disease.UNDEFINED));
 

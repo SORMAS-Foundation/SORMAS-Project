@@ -187,7 +187,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				List<StatisticsGroupingKey> ageIntervalValues = StatisticsHelper.getAgeIntervalGroupingKeys(attribute);
 				return createTokens(ageIntervalValues);
 			case DISEASE:
-				return createTokens(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases());
+				return createTokens(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 			case CLASSIFICATION:
 				return createTokens(CaseClassification.values());
 			case OUTCOME:

@@ -45,7 +45,9 @@ public abstract class BaseReportActivity extends BaseActivity implements IUpdate
     public void setSubHeadingTitle(String title) {
         if (subHeadingActivityTitle != null) {
             if (!DataHelper.isNullOrEmpty(title)) {
-                subHeadingActivityTitle.setText(title);
+                runOnUiThread(() -> {
+                    subHeadingActivityTitle.setText(title);
+                });
                 subHeadingActivityTitle.setVisibility(View.VISIBLE);
             } else {
                 subHeadingActivityTitle.setVisibility(View.GONE);

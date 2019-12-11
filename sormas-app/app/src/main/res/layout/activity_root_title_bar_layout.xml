@@ -27,8 +27,8 @@
     android:paddingTop="@dimen/activitySubHeadingVerticalPadding"
     android:paddingBottom="@dimen/activitySubHeadingVerticalPadding"
     android:background="@drawable/background_activity_sub_heading_bar"
-    android:elevation="@dimen/activitySubHeadingElevation"
-    >
+    android:elevation="@dimen/activitySubHeadingElevation">
+
     <TextView
         android:id="@+id/subHeadingActivityTitle"
         android:layout_width="0dp"
@@ -39,7 +39,6 @@
         android:textAllCaps="true"
         android:textSize="@dimen/activitySubHeadingTextSize"
         android:textColor="@color/activitySubHeadingText"/>
-
 
     <LinearLayout
         android:id="@+id/statusFrame"

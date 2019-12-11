@@ -11,6 +11,7 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
@@ -21,7 +22,7 @@ public class AggregateReport extends AbstractDomainObject {
 
     private static final long serialVersionUID = -2809338755584760337L;
 
-    public static final String TABLE_NAME = "aggregatereport";
+    public static final String TABLE_NAME = "aggregateReport";
     public static final String I18N_PREFIX = "AggregateReport";
 
     public static final String REPORTING_USER = "reportingUser";
@@ -31,6 +32,7 @@ public class AggregateReport extends AbstractDomainObject {
     public static final String REGION = "region";
     public static final String DISTRICT = "district";
     public static final String HEALTH_FACILITY = "healthFacility";
+    public static final String POINT_OF_ENTRY = "pointOfEntry";
     public static final String NEW_CASES = "newCases";
     public static final String LAB_CONFIRMATIONS = "labConfirmations";
     public static final String DEATHS = "deaths";
@@ -49,12 +51,14 @@ public class AggregateReport extends AbstractDomainObject {
     private District district;
     @DatabaseField(foreign=true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
     private Facility healthFacility;
+    @DatabaseField(foreign=true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+    private PointOfEntry pointOfEntry;
     @Column
-    private int newCases;
+    private Integer newCases;
     @Column
-    private int labConfirmations;
+    private Integer labConfirmations;
     @Column
-    private int deaths;
+    private Integer deaths;
 
     public User getReportingUser() {
         return reportingUser;
@@ -112,27 +116,35 @@ public class AggregateReport extends AbstractDomainObject {
         this.healthFacility = healthFacility;
     }
 
-    public int getNewCases() {
+    public PointOfEntry getPointOfEntry() {
+        return pointOfEntry;
+    }
+
+    public void setPointOfEntry(PointOfEntry pointOfEntry) {
+        this.pointOfEntry = pointOfEntry;
+    }
+
+    public Integer getNewCases() {
         return newCases;
     }
 
-    public void setNewCases(int newCases) {
+    public void setNewCases(Integer newCases) {
         this.newCases = newCases;
     }
 
-    public int getLabConfirmations() {
+    public Integer getLabConfirmations() {
         return labConfirmations;
     }
 
-    public void setLabConfirmations(int labConfirmations) {
+    public void setLabConfirmations(Integer labConfirmations) {
         this.labConfirmations = labConfirmations;
     }
 
-    public int getDeaths() {
+    public Integer getDeaths() {
         return deaths;
     }
 
-    public void setDeaths(int deaths) {
+    public void setDeaths(Integer deaths) {
         this.deaths = deaths;
     }
 

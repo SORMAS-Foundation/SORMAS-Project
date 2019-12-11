@@ -8,6 +8,8 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
@@ -52,6 +54,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
         target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
+        target.setPointOfEntry(DatabaseHelper.getPointOfEntryDao().getByReferenceDto(source.getPointOfEntry()));
         target.setYear(source.getYear());
         target.setEpiWeek(source.getEpiWeek());
         target.setNewCases(source.getNewCases());
@@ -87,6 +90,13 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
             target.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));
         } else {
             target.setHealthFacility(null);
+        }
+
+        if (source.getPointOfEntry() != null) {
+            PointOfEntry pointOfEntry = DatabaseHelper.getPointOfEntryDao().queryForId(source.getPointOfEntry().getId());
+            target.setPointOfEntry(PointOfEntryDtoHelper.toReferenceDto(pointOfEntry));
+        } else {
+            target.setPointOfEntry(null);
         }
 
         target.setDisease(source.getDisease());

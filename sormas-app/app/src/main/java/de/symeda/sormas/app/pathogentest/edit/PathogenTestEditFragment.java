@@ -42,6 +42,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentPathogenTestEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 import static android.view.View.GONE;
 
@@ -80,7 +81,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
         record = getActivityRootData();
         sample = record.getSample();
         testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
-        diseaseList = DataUtils.getEnumItems(Disease.class, true);
+        diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
         testResultList = DataUtils.getEnumItems(PathogenTestResultType.class, true);
         labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
     }
