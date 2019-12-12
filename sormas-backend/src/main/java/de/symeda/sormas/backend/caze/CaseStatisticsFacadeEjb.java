@@ -255,7 +255,9 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(Person.ID);
 			}
 
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())) {
+		if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())
+				|| groupingA == StatisticsCaseAttribute.REPORTING_USER_ROLE
+				|| groupingB == StatisticsCaseAttribute.REPORTING_USER_ROLE) {
 			caseJoinBuilder.append(" LEFT JOIN ").append(User.TABLE_NAME_USERROLES).append(" ON ")
 					.append(Case.TABLE_NAME).append(".").append(Case.REPORTING_USER).append("_id").append(" = ")
 					.append(User.TABLE_NAME_USERROLES).append(".").append(UserDto.COLUMN_NAME_USER_ID);
@@ -531,12 +533,12 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			if (groupingA != null) {
 				queryBuilder.append(", casecounts.").append(groupAAlias);
 			} else {
-				queryBuilder.append(", '' AS ").append(groupAAlias);
+			queryBuilder.append(", ''\\:\\:text AS ").append(groupAAlias);
 			}
 			if (groupingB != null) {
 				queryBuilder.append(", casecounts.").append(groupBAlias);
 			} else {
-				queryBuilder.append(", '' AS ").append(groupBAlias);
+			queryBuilder.append(", ''\\:\\:text AS ").append(groupBAlias);
 			}
 			
 			queryBuilder.append(" FROM casecounts ");
@@ -973,8 +975,12 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				throw new IllegalArgumentException(subGrouping.toString());
 			}
 			break;
+		case REPORTING_USER_ROLE:
+			groupingSelectPartBuilder.append(User.TABLE_NAME_USERROLES).append(".").append(UserDto.COLUMN_NAME_USERROLE)
+					.append(" AS ").append(groupAlias);
+			break;
 		default:
-			throw new IllegalArgumentException(subGrouping.toString());
+			throw new IllegalArgumentException(grouping.toString());
 		}
 		return groupingSelectPartBuilder.toString();
 	}
