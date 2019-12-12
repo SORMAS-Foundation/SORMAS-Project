@@ -25,6 +25,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.utils.Outbreaks;
 
 /**
+ * All inheriting classes of EntityDto must include a buildt() method that sets
+ * the necessary default values. This method should then be used instead of the
+ * constructor.
+ * 
  * @JsonInclude We don't need to transfer properties with a null value. This
  *              will reduce data transferred to something between 20% and 50% -
  *              especially for fields that are not needed for all diseases

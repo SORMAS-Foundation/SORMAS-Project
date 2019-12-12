@@ -23,12 +23,9 @@ import java.util.List;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -42,7 +39,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
-public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
+public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
 	private static final String CLASSIFICATION_CHECKBOX = "classificationCheckbox";
 	private static final String INVESTIGATION_STATUS_CHECKBOX = "investigationStatusCheckbox";
@@ -52,15 +49,15 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
 	private static final String HTML_LAYOUT =
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, CLASSIFICATION_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION) +
+			LayoutUtil.fluidRowLocs(CaseBulkEditData.CASE_CLASSIFICATION) +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, INVESTIGATION_STATUS_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.INVESTIGATION_STATUS) +
+			LayoutUtil.fluidRowLocs(CaseBulkEditData.INVESTIGATION_STATUS) +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, OUTCOME_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.OUTCOME) +
+			LayoutUtil.fluidRowLocs(CaseBulkEditData.OUTCOME) +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, SURVEILLANCE_OFFICER_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, "") +
+			LayoutUtil.fluidRowLocs(CaseBulkEditData.SURVEILLANCE_OFFICER, "") +
 			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, HEALTH_FACILITY_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
+			LayoutUtil.fluidRowLocs(CaseBulkEditData.REGION, CaseBulkEditData.DISTRICT, CaseBulkEditData.COMMUNITY, CaseBulkEditData.HEALTH_FACILITY);
 	
 	private final DistrictReferenceDto singleSelectedDistrict;
 	
@@ -73,7 +70,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox healthFacilityCheckbox;
 	
 	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict) {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, null);
+		super(CaseBulkEditData.class, CaseDataDto.I18N_PREFIX, null);
 		this.singleSelectedDistrict = singleSelectedDistrict;
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -93,19 +90,19 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(investigationStatusCheckBox, INVESTIGATION_STATUS_CHECKBOX);
 		outcomeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseOutcome));
 		getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
-		OptionGroup caseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
+		OptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, OptionGroup.class);
 		caseClassification.setEnabled(false);
-		OptionGroup investigationStatus = addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
+		OptionGroup investigationStatus = addField(CaseBulkEditData.INVESTIGATION_STATUS, OptionGroup.class);
 		investigationStatus.setEnabled(false);
-		OptionGroup outcome = addField(CaseDataDto.OUTCOME, OptionGroup.class);
+		OptionGroup outcome = addField(CaseBulkEditData.OUTCOME, OptionGroup.class);
 		outcome.setEnabled(false);
 		
 		if (singleSelectedDistrict != null) {
 			surveillanceOfficerCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkSurveillanceOfficer));
 			getContent().addComponent(surveillanceOfficerCheckBox, SURVEILLANCE_OFFICER_CHECKBOX);
-			ComboBox surveillanceOfficer = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
+			ComboBox surveillanceOfficer = addField(CaseBulkEditData.SURVEILLANCE_OFFICER, ComboBox.class);
 			surveillanceOfficer.setEnabled(false);
-			FieldHelper.addSoftRequiredStyleWhen(getFieldGroup(), surveillanceOfficerCheckBox, Arrays.asList(CaseDataDto.SURVEILLANCE_OFFICER), Arrays.asList(true), null);
+			FieldHelper.addSoftRequiredStyleWhen(getFieldGroup(), surveillanceOfficerCheckBox, Arrays.asList(CaseBulkEditData.SURVEILLANCE_OFFICER), Arrays.asList(true), null);
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
 			
@@ -117,14 +114,14 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 		healthFacilityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkHealthFacility));
 		getContent().addComponent(healthFacilityCheckbox, HEALTH_FACILITY_CHECKBOX);
 		
-		ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
+		ComboBox region = addField(CaseBulkEditData.REGION, ComboBox.class);
 		region.setEnabled(false);
-		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
+		ComboBox district = addField(CaseBulkEditData.DISTRICT, ComboBox.class);
 		district.setEnabled(false);
-		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		ComboBox community = addField(CaseBulkEditData.COMMUNITY, ComboBox.class);
 		community.setNullSelectionAllowed(true);
 		community.setEnabled(false);
-		ComboBox healthFacility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+		ComboBox healthFacility = addField(CaseBulkEditData.HEALTH_FACILITY, ComboBox.class);
 		healthFacility.setImmediate(true);
 		healthFacility.setEnabled(false);
 		
@@ -150,10 +147,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
 		
-		FieldHelper.setRequiredWhen(getFieldGroup(), classificationCheckBox, Arrays.asList(CaseDataDto.CASE_CLASSIFICATION), Arrays.asList(true));
-		FieldHelper.setRequiredWhen(getFieldGroup(), investigationStatusCheckBox, Arrays.asList(CaseDataDto.INVESTIGATION_STATUS), Arrays.asList(true));
-		FieldHelper.setRequiredWhen(getFieldGroup(), outcomeCheckBox, Arrays.asList(CaseDataDto.OUTCOME), Arrays.asList(true));
-		FieldHelper.setRequiredWhen(getFieldGroup(), healthFacilityCheckbox, Arrays.asList(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY), Arrays.asList(true));
+		FieldHelper.setRequiredWhen(getFieldGroup(), classificationCheckBox, Arrays.asList(CaseBulkEditData.CASE_CLASSIFICATION), Arrays.asList(true));
+		FieldHelper.setRequiredWhen(getFieldGroup(), investigationStatusCheckBox, Arrays.asList(CaseBulkEditData.INVESTIGATION_STATUS), Arrays.asList(true));
+		FieldHelper.setRequiredWhen(getFieldGroup(), outcomeCheckBox, Arrays.asList(CaseBulkEditData.OUTCOME), Arrays.asList(true));
+		FieldHelper.setRequiredWhen(getFieldGroup(), healthFacilityCheckbox, Arrays.asList(CaseBulkEditData.REGION, CaseBulkEditData.DISTRICT, CaseBulkEditData.HEALTH_FACILITY), Arrays.asList(true));
 		
 		classificationCheckBox.addValueChangeListener(e -> {
 			caseClassification.setEnabled((boolean) e.getProperty().getValue());

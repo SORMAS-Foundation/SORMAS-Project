@@ -31,7 +31,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -242,10 +241,10 @@ public class ContactController {
 		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
 			
 		// Create a temporary contact in order to use the CommitDiscardWrapperComponent
-		ContactDto tempContact = new ContactDto();
+		ContactBulkEditData bulkEditData = new ContactBulkEditData();
 
 		BulkContactDataForm form = new BulkContactDataForm(district);
-		form.setValue(tempContact);
+		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkContactDataForm> editView = new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditContacts));
@@ -253,15 +252,15 @@ public class ContactController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				ContactDto updatedTempContact = form.getValue();
+				ContactBulkEditData updatedBulkEditData = form.getValue();
 				for (ContactIndexDto indexDto : selectedContacts) {
 					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
 					if (form.getClassificationCheckBox().getValue() == true) {
-						contactDto.setContactClassification(updatedTempContact.getContactClassification());
+						contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
 					}
 					// Setting the contact officer is only allowed if all selected contacts are in the same district
 					if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
-						contactDto.setContactOfficer(updatedTempContact.getContactOfficer());
+						contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
 					}
 
 					FacadeProvider.getContactFacade().saveContact(contactDto);

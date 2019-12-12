@@ -512,12 +512,12 @@ public class CaseController {
 		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
 
 		// Create a temporary case in order to use the CommitDiscardWrapperComponent
-		CaseDataDto tempCase = new CaseDataDto();
-		tempCase.setRegion(region);
-		tempCase.setDistrict(district);
+		CaseBulkEditData bulkEditData = new CaseBulkEditData();
+		bulkEditData.setRegion(region);
+		bulkEditData.setDistrict(district);
 		
 		BulkCaseDataForm form = new BulkCaseDataForm(district);
-		form.setValue(tempCase);
+		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView = new CommitDiscardWrapperComponent<BulkCaseDataForm>(
 				form, form.getFieldGroup());
 
@@ -527,7 +527,7 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				CaseDataDto updatedTempCase = form.getValue();
+				CaseBulkEditData updatedBulkEditData = form.getValue();
 
 				boolean classificationChange = form.getClassificationCheckBox().getValue();
 				boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
@@ -542,64 +542,25 @@ public class CaseController {
 							new Label(I18nProperties.getString(Strings.messageHealthFacilityMulitChanged)),
 							I18nProperties.getCaption(Captions.caseTransferCases),
 							I18nProperties.getCaption(Captions.caseEditData), 500, e -> {
-								CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-								for (CaseIndexDto indexDto : selectedCases) {
-									CaseDataDto updatedCase = changeCaseDto(updatedTempCase,
-											caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange,
-											investigationStatusChange, outcomeChange, surveillanceOfficerChange);
-									updatedCase.setRegion(updatedTempCase.getRegion());
-									updatedCase.setDistrict(updatedTempCase.getDistrict());
-									updatedCase.setCommunity(updatedTempCase.getCommunity());
-									updatedCase.setHealthFacility(updatedTempCase.getHealthFacility());
-									boolean doTransfer = e.booleanValue();
-									if (doTransfer) {
-										CaseDataDto oldCase = caseFacade.getCaseDataByUuid(indexDto.getUuid());
-										CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(updatedCase, oldCase);
-									}
-									caseFacade.saveCase(updatedCase);
-								}
-								
+								bulkEditWithHealthFacilities(selectedCases, updatedBulkEditData,
+										classificationChange, investigationStatusChange, outcomeChange,
+										surveillanceOfficerChange, e.booleanValue());
+
 								popupWindow.close();
 								navigateToIndex();
-								Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
+								Notification.show(I18nProperties.getString(Strings.messageCasesEdited),
+										Type.HUMANIZED_MESSAGE);
 							});
 
 				} else {
 					CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-					for (CaseIndexDto indexDto : selectedCases) {
-						CaseDataDto caseDto = changeCaseDto(updatedTempCase,
-								caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange,
-								investigationStatusChange, outcomeChange, surveillanceOfficerChange);
+					bulkEdit(selectedCases, updatedBulkEditData, classificationChange, investigationStatusChange,
+							outcomeChange, surveillanceOfficerChange, caseFacade);
 
-						caseFacade.saveCase(caseDto);
-					}
-					
 					popupWindow.close();
 					navigateToIndex();
 					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 				}
-			}
-
-			private CaseDataDto changeCaseDto(CaseDataDto updatedTempCase, CaseDataDto caseDto,
-					boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
-					boolean surveillanceOfficerChange) {
-
-				if (classificationChange) {
-					caseDto.setCaseClassification(updatedTempCase.getCaseClassification());
-				}
-				if (investigationStatusChange) {
-					caseDto.setInvestigationStatus(updatedTempCase.getInvestigationStatus());
-				}
-				if (outcomeChange) {
-					caseDto.setOutcome(updatedTempCase.getOutcome());
-				}
-				// Setting the surveillance officer is only allowed if all selected cases are in
-				// the same district
-				if (surveillanceOfficerChange) {
-					caseDto.setSurveillanceOfficer(updatedTempCase.getSurveillanceOfficer());
-				}
-
-				return caseDto;
 			}
 		});
 
@@ -609,6 +570,60 @@ public class CaseController {
 				popupWindow.close();
 			}
 		});
+	}
+
+	private void bulkEdit(Collection<CaseIndexDto> selectedCases, CaseBulkEditData updatedCaseBulkEditData,
+			boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
+			boolean surveillanceOfficerChange, CaseFacade caseFacade) {
+		for (CaseIndexDto indexDto : selectedCases) {
+			CaseDataDto caseDto = changeCaseDto(updatedCaseBulkEditData,
+					caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange, investigationStatusChange,
+					outcomeChange, surveillanceOfficerChange);
+
+			caseFacade.saveCase(caseDto);
+		}
+	}
+
+	private void bulkEditWithHealthFacilities(Collection<CaseIndexDto> selectedCases,
+			CaseBulkEditData updatedCaseBulkEditData, boolean classificationChange, boolean investigationStatusChange,
+			boolean outcomeChange, boolean surveillanceOfficerChange, Boolean doTransfer) {
+		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+		for (CaseIndexDto indexDto : selectedCases) {
+			CaseDataDto updatedCase = changeCaseDto(updatedCaseBulkEditData,
+					caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange, investigationStatusChange,
+					outcomeChange, surveillanceOfficerChange);
+			updatedCase.setRegion(updatedCaseBulkEditData.getRegion());
+			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
+			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
+			updatedCase.setHealthFacility(updatedCaseBulkEditData.getHealthFacility());
+			if (doTransfer) {
+				CaseDataDto oldCase = caseFacade.getCaseDataByUuid(indexDto.getUuid());
+				CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(updatedCase, oldCase);
+			}
+			caseFacade.saveCase(updatedCase);
+		}
+	}
+
+	private CaseDataDto changeCaseDto(CaseBulkEditData updatedCaseBulkEditData, CaseDataDto caseDto,
+			boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
+			boolean surveillanceOfficerChange) {
+
+		if (classificationChange) {
+			caseDto.setCaseClassification(updatedCaseBulkEditData.getCaseClassification());
+		}
+		if (investigationStatusChange) {
+			caseDto.setInvestigationStatus(updatedCaseBulkEditData.getInvestigationStatus());
+		}
+		if (outcomeChange) {
+			caseDto.setOutcome(updatedCaseBulkEditData.getOutcome());
+		}
+		// Setting the surveillance officer is only allowed if all selected cases are in
+		// the same district
+		if (surveillanceOfficerChange) {
+			caseDto.setSurveillanceOfficer(updatedCaseBulkEditData.getSurveillanceOfficer());
+		}
+
+		return caseDto;
 	}
 
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
