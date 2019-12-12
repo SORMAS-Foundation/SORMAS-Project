@@ -485,14 +485,14 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 					groupingSelectQueryA = buildCaseGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
 					caseGroupByBuilder.append(groupAAlias);
 				} else {
-					groupingSelectQueryA = " ''::text AS " + groupAAlias;
+					groupingSelectQueryA = " ''\\:\\:text AS " + groupAAlias;
 					caseGroupByBuilder.append(groupAAlias);
 				}
 				if (groupingB != null) {
 					groupingSelectQueryB = buildCaseGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
 					caseGroupByBuilder.append(",").append(groupBAlias);
 				} else {
-					groupingSelectQueryB = " ''::text AS " + groupBAlias;
+					groupingSelectQueryB = " ''\\:\\:text AS " + groupBAlias;
 					caseGroupByBuilder.append(", ").append(groupBAlias);
 				}
 			}
@@ -584,12 +584,12 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 		
 		if (groupASelect == null) {
-			groupASelect = "''::text";
+			groupASelect = "''\\:\\:text";
 		}
 		groupASelect += " AS " + groupAAlias;
 		
 		if (groupBSelect == null) {
-			groupBSelect = "''::text";
+			groupBSelect = "''\\:\\:text";
 		}
 		groupBSelect += " AS " + groupBAlias;
 
