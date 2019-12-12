@@ -20,7 +20,6 @@ package de.symeda.sormas.backend.caze;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,10 +34,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.CaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
@@ -46,13 +49,14 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.infrastructure.PopulationData;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -69,6 +73,11 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	@EJB
 	private DistrictService districtService;
 
+	@EJB
+	private RegionFacadeEjbLocal regionFacade;
+	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<CaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, 
@@ -79,18 +88,21 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		// case counts
 		Pair<String, List<Object>> caseCountQueryAndParams = buildCaseCountQuery(caseCriteria, rowGrouping, rowSubGrouping, columnGrouping, columnSubGrouping);
 
-		Query caseCountQuery = em.createNativeQuery(caseCountQueryAndParams.getElement0().toString());
-		for (int i = 0; i < caseCountQueryAndParams.getElement1().size(); i++) {
-			caseCountQuery.setParameter(i + 1, caseCountQueryAndParams.getElement1().get(i));
+		Query caseCountQuery = em.createNativeQuery(caseCountQueryAndParams.getKey().toString());
+		for (int i = 0; i < caseCountQueryAndParams.getValue().size(); i++) {
+			caseCountQuery.setParameter(i + 1, caseCountQueryAndParams.getValue().get(i));
 		}
+		
+		Function<Integer, RegionReferenceDto> regionProvider = id -> regionFacade.getRegionReferenceById(id);
+		Function<Integer, DistrictReferenceDto> districtProvider = id -> districtFacade.getDistrictReferenceById(id);
 		
 		List<CaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream())
 				.map(result -> {
 					Object rowKey = "".equals(result[1]) ? null : result[1];
 					Object columnKey = "".equals(result[2]) ? null : result[2];
 					return new CaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, null,
-						StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping),
-						StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping));
+						StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping, regionProvider, districtProvider),
+						StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping, regionProvider, districtProvider));
 				})
 				.collect(Collectors.toList());
 		
@@ -128,73 +140,65 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		if (includePopulation) {
 			Pair<String, List<Object>> populationQueryAndParams = buildPopulationQuery(caseCriteria, rowGrouping, rowSubGrouping, columnGrouping, columnSubGrouping, populationReferenceYear);
 	
-			Query populationQuery = em.createNativeQuery(populationQueryAndParams.getElement0().toString());
-			for (int i = 0; i < populationQueryAndParams.getElement1().size(); i++) {
-				populationQuery.setParameter(i + 1, populationQueryAndParams.getElement1().get(i));
+			Query populationQuery = em.createNativeQuery(populationQueryAndParams.getKey().toString());
+			for (int i = 0; i < populationQueryAndParams.getValue().size(); i++) {
+				populationQuery.setParameter(i + 1, populationQueryAndParams.getValue().get(i));
 			}
 			
-			// build a two-key-map based on row and column
-			HashMap<Object, HashMap<Object, Integer>> populationData = new HashMap<Object, HashMap<Object,Integer>>();
-			((Stream<Object[]>) populationQuery.getResultStream()).forEach(result -> {
-				Object rowKey = "".equals(result[1]) ? null : result[1];
-				Object columnKey = "".equals(result[2]) ? null : result[2];
-				CaseCountDto populationDto =  new CaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null, 
-					StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping),
-					StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping));
+//			// build a two-key-map based on row and column
+//			HashMap<Pair<StatisticsGroupingKey, StatisticsGroupingKey>, Integer> populationData = new HashMap<Object, HashMap<Object,Integer>>();
+//			((Stream<Object[]>) populationQuery.getResultStream()).forEach(result -> {
+//				Object rowKey = "".equals(result[1]) ? null : result[1];
+//				Object columnKey = "".equals(result[2]) ? null : result[2];
+//				CaseCountDto populationDto =  new CaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null, 
+//					StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping),
+//					StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping));
+//
+//				HashMap<Object, Integer> innerPopulationData = populationData.get(populationDto.getRowKey());
+//				if (innerPopulationData == null) {
+//					innerPopulationData = new HashMap<Object, Integer>();
+//					populationData.put(populationDto.getRowKey(), innerPopulationData);
+//				}
+//				innerPopulationData.put(populationDto.getColumnKey(), populationDto.getPopulation());
+//			});
+			
+			List<CaseCountDto> populationResults = ((Stream<Object[]>) populationQuery.getResultStream())
+					.map(result -> {
+						Object rowKey = "".equals(result[1]) ? null : result[1];
+						Object columnKey = "".equals(result[2]) ? null : result[2];
+						return new CaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null,
+							StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping, regionProvider, districtProvider),
+							StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping, regionProvider, districtProvider));
+					})
+					.collect(Collectors.toList());
 
-				HashMap<Object, Integer> innerPopulationData = populationData.get(populationDto.getRowKey());
-				if (innerPopulationData == null) {
-					innerPopulationData = new HashMap<Object, Integer>();
-					populationData.put(populationDto.getRowKey(), innerPopulationData);
-				}
-				innerPopulationData.put(populationDto.getColumnKey(), populationDto.getPopulation());
-			});
-
+			boolean rowIsPopulation = rowGrouping != null && rowGrouping.isPopulationData();
+			boolean columnIsPopulation = columnGrouping != null && columnGrouping.isPopulationData();
+			if (!populationResults.isEmpty()) {
+				assert((populationResults.get(0).getRowKey() != null) == rowIsPopulation);
+				assert((populationResults.get(0).getColumnKey() != null) == columnIsPopulation);
+			}
+			
 			// add the population data to the case counts
-			// when a key is not present in the population data map, we fall back to no key (null)
+			// when a key is not a population data key, we use null instead
+			CaseCountDto searchDto = new CaseCountDto(null, null, null, null);
 			for (CaseCountDto caseCountResult : caseCountResults) {
 				
-				HashMap<Object, Integer> innerPopulationData = populationData.get(caseCountResult.getRowKey());
-				if (innerPopulationData == null) {
-					innerPopulationData = populationData.get(null);
+				if (rowIsPopulation) {
+					searchDto.setRowKey(caseCountResult.getRowKey());
+				}
+				if (columnIsPopulation) {
+					searchDto.setColumnKey(caseCountResult.getColumnKey());
 				}
 				
-				if (innerPopulationData != null) {
-					Integer population = innerPopulationData.get(caseCountResult.getColumnKey());
-					if (population == null) {
-						population = innerPopulationData.get(null);
-					}
-					
-					if (population != null) {
-						caseCountResult.setPopulation(population);
-					}
+				int index = populationResults.indexOf(searchDto);
+				if (index >= 0) {
+					caseCountResult.setPopulation(populationResults.get(index).getPopulation());
 				}
 			}
 		}
 		
 		return caseCountResults;
-	}
-	
-
-	/**
-	 * Replaces the ids in each row with the appropriate StatisticsGroupingKey based
-	 * on the grouping.
-	 */
-	private void replaceIdsWithGroupingKeys(List<CaseCountDto> results, StatisticsCaseAttribute groupingA,
-			StatisticsCaseSubAttribute subGroupingA, StatisticsCaseAttribute groupingB,
-			StatisticsCaseSubAttribute subGroupingB) {
-
-		for (CaseCountDto result : results) {
-
-			Object resultsEntry = result.getRowKey();
-			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
-				result.setRowKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingA, subGroupingA));
-			}
-			resultsEntry = result.getColumnKey();
-			if (resultsEntry != null && !StatisticsHelper.VALUE_UNKNOWN.equals(resultsEntry)) {
-				result.setColumnKey(StatisticsHelper.buildGroupingKey(resultsEntry, groupingB, subGroupingB));
-			}
-		}
 	}
 
 	/**
@@ -459,10 +463,10 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				districtIds = null;
 			}
 
-		if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())) {
-			extendFilterBuilderWithSimpleValue(caseFilterBuilder, filterBuilderParameters, User.TABLE_NAME_USERROLES,
-					UserDto.COLUMN_NAME_USERROLE, caseCriteria.getReportingUserRoles(), entry -> entry.name());
-		}
+			if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())) {
+				extendFilterBuilderWithSimpleValue(caseFilterBuilder, filterBuilderParameters, User.TABLE_NAME_USERROLES,
+						UserDto.COLUMN_NAME_USERROLE, caseCriteria.getReportingUserRoles(), entry -> entry.name());
+			}
 	
 			//////////////
 			// 3. Add selected groupings
@@ -481,14 +485,14 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 					groupingSelectQueryA = buildCaseGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
 					caseGroupByBuilder.append(groupAAlias);
 				} else {
-					groupingSelectQueryA = " '' AS " + groupAAlias;
+					groupingSelectQueryA = " ''::text AS " + groupAAlias;
 					caseGroupByBuilder.append(groupAAlias);
 				}
 				if (groupingB != null) {
 					groupingSelectQueryB = buildCaseGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
 					caseGroupByBuilder.append(",").append(groupBAlias);
 				} else {
-					groupingSelectQueryB = " '' AS " + groupBAlias;
+					groupingSelectQueryB = " ''::text AS " + groupBAlias;
 					caseGroupByBuilder.append(", ").append(groupBAlias);
 				}
 			}
@@ -545,7 +549,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				queryBuilder.append(orderByBuilder);
 			}
 	
-			return new Pair<String, List<Object>>(queryBuilder.toString(), filterBuilderParameters);
+			return new ImmutablePair<String, List<Object>>(queryBuilder.toString(), filterBuilderParameters);
 		}
 
 	/**
@@ -580,12 +584,12 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 		
 		if (groupASelect == null) {
-			groupASelect = "''";
+			groupASelect = "''::text";
 		}
 		groupASelect += " AS " + groupAAlias;
 		
 		if (groupBSelect == null) {
-			groupBSelect = "''";
+			groupBSelect = "''::text";
 		}
 		groupBSelect += " AS " + groupBAlias;
 
@@ -691,15 +695,17 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		// SELECT
 		///////
 		
-		StringBuilder selectBuilder = new StringBuilder(" SELECT SUM(").append(PopulationData.POPULATION).append("*power(exp(1), (growthsource.growthrate").append("*0.01)*");
-		
-		if (populationReferenceYear == null) {
-			selectBuilder.append("date_part('year', age(date_trunc('year', ").append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp)))))");
-		} else {
-			selectBuilder.append("GREATEST(0, date_part('year', age(date_trunc('year', '").append(populationReferenceYear).append("-01-01'\\:\\:timestamp), date_trunc('year', ")
-			.append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp))))))");
-		}
-		selectBuilder.append(" AS population, ");
+		StringBuilder selectBuilder = new StringBuilder(" SELECT SUM(").append(PopulationData.POPULATION)
+				;
+//				.append("*power(exp(1), (growthsource.growthrate").append("*0.01)*");
+//		
+//		if (populationReferenceYear == null) {
+//			selectBuilder.append("date_part('year', age(date_trunc('year', ").append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp))))");
+//		} else {
+//			selectBuilder.append("GREATEST(0, date_part('year', age(date_trunc('year', '").append(populationReferenceYear).append("-01-01'\\:\\:timestamp), date_trunc('year', ")
+//			.append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp)))))");
+//		}
+		selectBuilder.append(") AS population, ");
 		selectBuilder.append(groupASelect).append(", ").append(groupBSelect);
 		selectBuilder.append(" FROM ").append(PopulationData.TABLE_NAME);
 		
@@ -729,7 +735,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		queryBuilder.append(groupByBuilder);
 		queryBuilder.append(orderByBuilder);
 
-		return new Pair<String, List<Object>>(queryBuilder.toString(), filterBuilderParameters);
+		return new ImmutablePair<String, List<Object>>(queryBuilder.toString(), filterBuilderParameters);
 	}
 
 	private String buildPopulationGroupingSelect(StatisticsCaseAttribute grouping,

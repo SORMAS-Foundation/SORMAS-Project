@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
@@ -36,6 +37,8 @@ import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 
@@ -45,7 +48,7 @@ public class StatisticsHelper {
 	public static final String TOTAL = "total";
 	public static final String UNKNOWN = "unknown";
 	
-	public static StatisticsGroupingKey buildGroupingKey(Object attributeValue, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+	public static StatisticsGroupingKey buildGroupingKey(Object attributeValue, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, Function<Integer, RegionReferenceDto> regionProvider, Function<Integer, DistrictReferenceDto> districtProvider) {
 		if (isNullOrUnknown(attributeValue)) {
 			return null;
 		}
@@ -70,9 +73,9 @@ public class StatisticsHelper {
 				entryAsString = String.valueOf(attributeValue);
 				return new EpiWeek(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 2)), Integer.valueOf(entryAsString.substring(entryAsString.length() - 2)));
 			case REGION:
-				return FacadeProvider.getRegionFacade().getRegionReferenceById(((Number) attributeValue).intValue());
+				return regionProvider.apply(((Number) attributeValue).intValue());
 			case DISTRICT:
-				return FacadeProvider.getDistrictFacade().getDistrictReferenceById(((Number) attributeValue).intValue());
+				return districtProvider.apply(((Number) attributeValue).intValue());
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());
 			}
