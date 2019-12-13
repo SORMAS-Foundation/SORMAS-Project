@@ -74,6 +74,7 @@
                     android:id="@+id/caseData_caseClassification"
                     app:required="true"
                     app:value="@={data.caseClassification}"
+                    app:userEditRight="@{UserRight.CASE_CLASSIFY}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
