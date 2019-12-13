@@ -40,11 +40,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
-import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
@@ -94,7 +93,6 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			caseCountQuery.setParameter(i + 1, caseCountQueryAndParams.getValue().get(i));
 		}
 		
-		List<StatisticsCaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream())
 		Function<Integer, RegionReferenceDto> regionProvider = id -> regionFacade.getRegionReferenceById(id);
 		Function<Integer, DistrictReferenceDto> districtProvider = id -> districtFacade.getDistrictReferenceById(id);
 		
@@ -147,7 +145,6 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				populationQuery.setParameter(i + 1, populationQueryAndParams.getValue().get(i));
 			}
 			
-				StatisticsCaseCountDto populationDto =  new StatisticsCaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null, 
 //			// build a two-key-map based on row and column
 //			HashMap<Pair<StatisticsGroupingKey, StatisticsGroupingKey>, Integer> populationData = new HashMap<Object, HashMap<Object,Integer>>();
 //			((Stream<Object[]>) populationQuery.getResultStream()).forEach(result -> {
