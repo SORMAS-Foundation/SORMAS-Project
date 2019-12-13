@@ -41,6 +41,8 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 
 	private static final String SEQ_GEN_NAME = "ENTITY_SEQ_GEN";
 	private static final String SEQ_SQL_NAME = "ENTITY_SEQ";
+	
+	public static final String HISTORY_TABLE_SUFFIX = "_history";
 
 	public static final String ID = "id";
 	public static final String UUID = "uuid";

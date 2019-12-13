@@ -10,6 +10,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -19,10 +20,12 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class LineListingRegionsLayout extends CssLayout {
 
+	private Disease disease;
 	private Map<String, List<String>> regions;
 	private Map<String, String> regionNames;
 
-	public LineListingRegionsLayout(List<FeatureConfigurationIndexDto> configurations) {
+	public LineListingRegionsLayout(List<FeatureConfigurationIndexDto> configurations, Disease disease) {
+		this.disease = disease;
 		this.regionNames = new HashMap<>();
 		this.regions = new TreeMap<>((r1, r2) -> regionNames.get(r1).compareTo(regionNames.get(r2)));
 
@@ -58,7 +61,7 @@ public class LineListingRegionsLayout extends CssLayout {
 				CssStyles.style(configButton, CssStyles.BUTTON_FILTER_DISABLED);
 			}
 			configButton.addClickListener(e -> {
-				SormasUI.get().getNavigator().navigateTo(LineListingConfigurationView.VIEW_NAME + "/" + regionUuid);
+				SormasUI.get().getNavigator().navigateTo(LineListingConfigurationView.VIEW_NAME + "/" + regionUuid + "/?disease=" + disease.getName());
 			});
 			addComponent(configButton);
 		}

@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.feature;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -138,6 +139,13 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			});
 		}
 		return resultList;
+	}
+	
+	@Override
+	public void saveFeatureConfigurations(Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType) {
+		for (FeatureConfigurationIndexDto config : configurations) {
+			saveFeatureConfiguration(config, featureType);
+		}
 	}
 	
 	@Override

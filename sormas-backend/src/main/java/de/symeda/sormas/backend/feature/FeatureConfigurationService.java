@@ -30,7 +30,7 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 	public List<String> getDeletedUuids(Date since, User user) {
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append("SELECT ").append(AbstractDomainObject.UUID).append(" FROM ").append(FeatureConfiguration.TABLE_NAME)
-		.append("_history h WHERE sys_period @> CAST (?1 AS timestamptz) ");
+		.append(AbstractDomainObject.HISTORY_TABLE_SUFFIX).append(" h WHERE sys_period @> CAST (?1 AS timestamptz) ");
 		
 		if (user.getRegion() != null) {
 			queryBuilder.append(" AND h.").append(FeatureConfiguration.REGION).append("_id = ").append(user.getRegion().getId()).append(" ");

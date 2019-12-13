@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.feature;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface FeatureConfigurationFacade {
 	List<String> getDeletedUuids(Date date, String userUuid);
 
 	List<FeatureConfigurationIndexDto> getFeatureConfigurations(FeatureConfigurationCriteria criteria, boolean includeInactive);
+	
+	void saveFeatureConfigurations(Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType);
 	
 	void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType);
 	

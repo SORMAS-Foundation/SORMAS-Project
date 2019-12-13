@@ -1,9 +1,7 @@
 package de.symeda.sormas.ui.configuration.linelisting;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -40,14 +38,12 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 	private Disease disease;
 	private String regionName;
 	private List<FeatureConfigurationIndexDto> configurations;
-	private Set<FeatureConfigurationIndexDto> changedConfigurations;
 
 	private Runnable saveCallback;
 	private Runnable discardCallback;
 
 	public LineListingConfigurationEditLayout(List<FeatureConfigurationIndexDto> configurations, Disease disease, String regionName) {
 		this.configurations = configurations;
-		this.changedConfigurations = new HashSet<>();
 		this.disease = disease;
 		this.regionName = regionName;
 		buildLayout();
@@ -98,7 +94,7 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 
 		addComponent(controlLayout);
 
-		grid = new LineListingConfigurationsGrid(configurations, changedConfigurations, regionName == null);
+		grid = new LineListingConfigurationsGrid(configurations, regionName == null);
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
 
@@ -123,9 +119,7 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 		btnSave.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		btnSave.addClickListener(e -> {
 			if (grid.validateDates()) {
-				for (FeatureConfigurationIndexDto changedConfig : changedConfigurations) {
-					FacadeProvider.getFeatureConfigurationFacade().saveFeatureConfiguration(changedConfig, FeatureType.LINE_LISTING);
-				}
+				FacadeProvider.getFeatureConfigurationFacade().saveFeatureConfigurations(grid.getChangedConfigurations(), FeatureType.LINE_LISTING);
 				if (saveCallback != null) {
 					saveCallback.run();
 				}

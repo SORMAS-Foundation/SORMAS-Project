@@ -2,8 +2,10 @@ package de.symeda.sormas.ui.configuration.linelisting;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.vaadin.server.Page;
@@ -26,35 +28,46 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 	private boolean nationLevel;
 	private List<FeatureConfigurationIndexDto> configurations;
 	private Set<FeatureConfigurationIndexDto> changedConfigurations;
-	private Set<CheckBox> activeCheckBoxes;
-	private Set<DateField> endDateFields;
+	private Map<FeatureConfigurationIndexDto, DateField> dateFieldMap;
 
-	public LineListingConfigurationsGrid(List<FeatureConfigurationIndexDto> configurations, Set<FeatureConfigurationIndexDto> changedConfigurations, boolean nationLevel) {
+	public LineListingConfigurationsGrid(List<FeatureConfigurationIndexDto> configurations, boolean nationLevel) {
 		this.nationLevel = nationLevel;
 		this.configurations = configurations;
-		this.changedConfigurations = changedConfigurations;
-		this.activeCheckBoxes = new HashSet<>();
-		this.endDateFields = new HashSet<>();
+		this.changedConfigurations = new HashSet<>();
+		this.dateFieldMap = new HashMap<>();
 		buildGrid();
 		reload();		
 	}
 
 	public void enableAll() {
-		activeCheckBoxes.stream().forEach(checkBox -> checkBox.setValue(true));
+		configurations.stream().forEach(config -> { 
+			config.setActive(true);
+			if (config.getEndDate() == null) {
+				config.setEndDate(DateHelper.addDays(new Date(), 21));
+			}
+		});
+		changedConfigurations.addAll(configurations);
+		reload();
 	}
 
 	public void disableAll() {
-		activeCheckBoxes.stream().forEach(checkBox -> checkBox.setValue(false));
-		endDateFields.stream().forEach(dateField -> dateField.setValue(null));
+		configurations.stream().forEach(config -> {
+			config.setActive(false);
+			config.setEndDate(null);
+		});
+		changedConfigurations.addAll(configurations);
+		reload();
 	}
 
 	public void setEndDateForAll(LocalDate endDate) {
-		endDateFields.stream().forEach(dateField -> dateField.setValue(endDate));
+		configurations.stream().forEach(config -> config.setEndDate(DateHelper8.toDate(endDate)));
+		changedConfigurations.addAll(configurations);
+		reload();
 	}
 	
 	public boolean validateDates() {
-		for (DateField dateField : endDateFields) {
-			if (dateField.getErrorMessage() != null) {
+		for (FeatureConfigurationIndexDto config : configurations) {
+			if (dateFieldMap.get(config).getErrorMessage() != null) {
 				return false;
 			}
 		}
@@ -79,13 +92,13 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 				config.setActive(e.getValue());
 				if (Boolean.TRUE.equals(e.getValue())) {
 					config.setEndDate(DateHelper.addDays(new Date(), 21));
+					dateFieldMap.get(config).setValue(DateHelper8.toLocalDate(DateHelper.addDays(new Date(), 21)));
 				} else {
 					config.setEndDate(null);
+					dateFieldMap.get(config).setValue(null);
 				}
 				changedConfigurations.add(config);
-				reload();
 			});
-			activeCheckBoxes.add(cbActive);
 			return cbActive;
 		})
 		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.ACTIVE));
@@ -104,7 +117,7 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 				}
 			});
 			dfEndDate.setRangeStart(LocalDate.now());
-			endDateFields.add(dfEndDate);
+			dateFieldMap.put(config, dfEndDate);
 			return dfEndDate;
 		})
 		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.END_DATE));
@@ -112,6 +125,10 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 
 	public void reload() {
 		setItems(configurations);
+	}
+	
+	public Set<FeatureConfigurationIndexDto> getChangedConfigurations() {
+		return changedConfigurations;
 	}
 
 }

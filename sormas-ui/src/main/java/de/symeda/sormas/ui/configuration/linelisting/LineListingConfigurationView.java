@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
@@ -58,7 +56,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		});
 	}
 
-	private void buildView() {		
+	private void buildView(Disease enteredDisease) {
 		if (region != null && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
 			Button btnBackToNationView = new Button(I18nProperties.getCaption(Captions.actionBackToNationOverview));
 			btnBackToNationView.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -68,11 +66,11 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 			});
 			addHeaderComponent(btnBackToNationView);
 		}
-		
+
 		if (region != null) {
 			getViewSubTitleLabel().setValue(region.toString());
 		}
-		
+
 		Label infoTextLabel;
 		if (region != null) {
 			infoTextLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoLineListingConfigurationRegion), ContentMode.HTML);
@@ -107,6 +105,10 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		configurationMap.keySet().stream().forEach(disease -> {
 			lineListingConfigurationsLayout.addComponent(createDiseaseConfigurationLayout(disease, configurationMap.get(disease)));
 		});
+		
+		if (enteredDisease != null && !configurationMap.containsKey(enteredDisease)) {
+			lineListingConfigurationsLayout.addComponent(createDiseaseConfigurationLayout(enteredDisease, null));
+		}
 
 		addDiseaseLayout = new LineListingAddDiseaseLayout(diseasesWithoutConfigurations);
 		addDiseaseLayout.setWidth(600, Unit.PIXELS);
@@ -115,7 +117,9 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 			HorizontalLayout diseaseConfigurationLayout = createDiseaseConfigurationLayout(disease, null);
 			lineListingConfigurationsLayout.addComponent(diseaseConfigurationLayout);
 			addDiseaseLayout.removeDiseaseFromList(disease);
-			openEditWindow(disease);
+			if (region != null) {
+				openEditWindow(disease);
+			}
 		});
 
 		contentLayout.addComponent(addDiseaseLayout);
@@ -161,7 +165,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 			if (region != null) {
 				districtsOrRegionsLayout = new LineListingActiveDistrictsLayout(configurations);
 			} else {
-				districtsOrRegionsLayout = new LineListingRegionsLayout(configurations);
+				districtsOrRegionsLayout = new LineListingRegionsLayout(configurations, disease);
 			}
 			districtsOrRegionsLayout.setWidth(100, Unit.PERCENTAGE);
 			CssStyles.style(districtsOrRegionsLayout, CssStyles.VSPACE_4, CssStyles.HSPACE_LEFT_1);
@@ -175,9 +179,15 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
+		Disease disease = null;
 
-		if (!StringUtils.isEmpty(event.getParameters())) {
-			this.region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(event.getParameters());
+		String[] params = event.getParameters().split("\\?");
+		if (params.length > 0) {
+			String regionUuid = params[0].replaceAll("/", "");
+			this.region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid);
+			if (params.length > 1) {
+				disease = Disease.valueOf(params[1].substring(params[1].indexOf("=") + 1));
+			}
 		} else if (!UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
 			this.region = UserProvider.getCurrent().getUser().getRegion();
 		}
@@ -188,7 +198,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		contentLayout.setWidth(100, Unit.PERCENTAGE);
 		contentLayout.setStyleName("crud-main-layout");
 
-		buildView();
+		buildView(disease);
 
 		addComponent(contentLayout);
 	}
@@ -213,5 +223,5 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		editWindow.setContent(editLayout);
 		UI.getCurrent().addWindow(editWindow);
 	}
-	
+
 }

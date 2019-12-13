@@ -74,7 +74,7 @@ public class UserRoleConfigService extends AbstractAdoService<UserRoleConfig> {
 	public List<String> getDeletedUuids(Date since) {
 
 		String queryString = "SELECT " + AbstractDomainObject.UUID 
-				+ " FROM " + UserRoleConfig.TABLE_NAME + "_history h"
+				+ " FROM " + UserRoleConfig.TABLE_NAME + AbstractDomainObject.HISTORY_TABLE_SUFFIX + " h"
 				+ " WHERE sys_period @> CAST (?1 AS timestamptz)"
 				+ " AND NOT EXISTS (SELECT FROM " + UserRoleConfig.TABLE_NAME 
 					+ " WHERE " + AbstractDomainObject.ID + " = h." + AbstractDomainObject.ID + ")";
