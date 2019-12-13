@@ -5,32 +5,40 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.EpiWeek;
 
 @SuppressWarnings("serial")
 public class AggregateReportCriteria extends BaseCriteria implements Cloneable {
 
-	private Integer year;
-	private Integer epiWeek;
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	public static final String EPI_WEEK_FROM = "epiWeekFrom";
+	public static final String EPI_WEEK_TO = "epiWeekTo";
+	
+	private EpiWeek epiWeekFrom;
+	private EpiWeek epiWeekTo;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private FacilityReferenceDto healthFacility;
 	private PointOfEntryReferenceDto pointOfEntry;
 	
-	public Integer getYear() {
-		return year;
+	public EpiWeek getEpiWeekFrom() {
+		return epiWeekFrom;
 	}
 	
-	public AggregateReportCriteria year(Integer year) {
-		this.year = year;
+	public AggregateReportCriteria epiWeekFrom(EpiWeek epiWeekFrom) {
+		this.epiWeekFrom = epiWeekFrom;
 		return this;
 	}
 	
-	public Integer getEpiWeek() {
-		return epiWeek;
+	public EpiWeek getEpiWeekTo() {
+		return epiWeekTo;
 	}
 	
-	public AggregateReportCriteria epiWeek(Integer epiWeek) {
-		this.epiWeek = epiWeek;
+	public AggregateReportCriteria epiWeekTo(EpiWeek epiWeekTo) {
+		this.epiWeekTo = epiWeekTo;
 		return this;
 	}
 	
@@ -68,6 +76,30 @@ public class AggregateReportCriteria extends BaseCriteria implements Cloneable {
 	public AggregateReportCriteria pointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
 		this.pointOfEntry = pointOfEntry;
 		return this;
+	}
+
+	public void setEpiWeekFrom(EpiWeek epiWeekFrom) {
+		this.epiWeekFrom = epiWeekFrom;
+	}
+
+	public void setEpiWeekTo(EpiWeek epiWeekTo) {
+		this.epiWeekTo = epiWeekTo;
+	}
+
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
+	}
+
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
+	}
+
+	public void setHealthFacility(FacilityReferenceDto healthFacility) {
+		this.healthFacility = healthFacility;
+	}
+
+	public void setPointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
 	}
 
 }

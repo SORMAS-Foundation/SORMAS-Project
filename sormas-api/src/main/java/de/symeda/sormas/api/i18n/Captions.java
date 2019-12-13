@@ -68,6 +68,12 @@ public interface Captions {
 	public static String AdditionalTest_urea = "AdditionalTest.urea";
 	public static String AdditionalTest_wbcCount = "AdditionalTest.wbcCount";
 	public static String additionalTestNewTest = "additionalTestNewTest";
+	public static String AggregateReport_deaths = "AggregateReport.deaths";
+	public static String AggregateReport_disease = "AggregateReport.disease";
+	public static String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
+	public static String AggregateReport_newCases = "AggregateReport.newCases";
+	public static String aggregateReportLastWeek = "aggregateReportLastWeek";
+	public static String aggregateReportThisWeek = "aggregateReportThisWeek";
 	public static String all = "all";
 	public static String bulkActions = "bulkActions";
 	public static String bulkCancelFollowUp = "bulkCancelFollowUp";
@@ -1151,6 +1157,8 @@ public interface Captions {
 	public static String userNewUser = "userNewUser";
 	public static String userResetPassword = "userResetPassword";
 	public static String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
+	public static String View_aggregatereports = "View.aggregatereports";
+	public static String View_aggregatereports_sub = "View.aggregatereports.sub";
 	public static String View_cases = "View.cases";
 	public static String View_cases_archive = "View.cases.archive";
 	public static String View_cases_clinicalcourse = "View.cases.clinicalcourse";

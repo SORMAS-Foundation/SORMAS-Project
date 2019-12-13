@@ -58,5 +58,36 @@ public class AggregatedCaseCountDto implements Serializable {
 	public void setDeaths(int deaths) {
 		this.deaths = deaths;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + deaths;
+		result = prime * result + ((disease == null) ? 0 : disease.hashCode());
+		result = prime * result + labConfirmations;
+		result = prime * result + newCases;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AggregatedCaseCountDto other = (AggregatedCaseCountDto) obj;
+		if (deaths != other.deaths)
+			return false;
+		if (disease != other.disease)
+			return false;
+		if (labConfirmations != other.labConfirmations)
+			return false;
+		if (newCases != other.newCases)
+			return false;
+		return true;
+	}
 	
 }

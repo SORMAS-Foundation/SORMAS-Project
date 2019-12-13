@@ -17,6 +17,7 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 @SuppressWarnings("serial")
@@ -62,6 +63,8 @@ public abstract class BaseCriteria implements Serializable {
 						stringValue = (String)value;
 					} else if (Integer.class.isAssignableFrom(type)) {
 						stringValue = String.valueOf(value);
+					} else if (EpiWeek.class.isAssignableFrom(type)) {
+						stringValue = "year-" + ((EpiWeek) value).getYear() + "-week-" + ((EpiWeek) value).getWeek();
 					} else {
 						throw new NotImplementedException(type.toString());
 					}
@@ -159,6 +162,13 @@ public abstract class BaseCriteria implements Serializable {
 						} catch (IllegalArgumentException e) { } // ignore
 					} else if (String.class.isAssignableFrom(type)) {
 						value = fieldParams.get(0);
+					} else if (Integer.class.isAssignableFrom(type)) {
+						value = Integer.valueOf(fieldParams.get(0));
+					} else if (EpiWeek.class.isAssignableFrom(type)) {
+						int dashIndex = fieldParams.get(0).indexOf("-");
+						int year = Integer.valueOf(fieldParams.get(0).substring(dashIndex + 1, fieldParams.get(0).indexOf("-", dashIndex + 1)));
+						int week = Integer.valueOf(fieldParams.get(0).substring(fieldParams.get(0).lastIndexOf("-") + 1));
+						value = new EpiWeek(year, week);
 					} else {
 						throw new NotImplementedException(type.toString());
 					}

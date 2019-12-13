@@ -360,6 +360,15 @@ public final class DateHelper {
 		}
 		return x;
 	}
+	
+	public static List<Integer> getYearsToNow(int startingYear) {
+		List<Integer> x = new ArrayList<Integer>();
+		Calendar now = new GregorianCalendar();
+		for (int i = startingYear; i <= now.get(Calendar.YEAR); i++) {
+			x.add(i);
+		}
+		return x;
+	}
 
 	/**
 	 * Returns a list of years from 1900 to now.
@@ -367,12 +376,7 @@ public final class DateHelper {
 	 * @return
 	 */
 	public static List<Integer> getYearsToNow() {
-		List<Integer> x = new ArrayList<Integer>();
-		Calendar now = new GregorianCalendar();
-		for (int i = 1900; i <= now.get(Calendar.YEAR); i++) {
-			x.add(i);
-		}
-		return x;
+		return getYearsToNow(1900);
 	}
 
 	/**

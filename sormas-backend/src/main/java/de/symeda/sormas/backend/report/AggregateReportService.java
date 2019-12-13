@@ -41,11 +41,17 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 		if (criteria.getPointOfEntry() != null) {
 			filter = and(cb, filter, cb.equal(from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), criteria.getPointOfEntry().getUuid()));
 		}
-		if (criteria.getYear() != null) {
-			filter = and(cb, filter, cb.equal(from.get(AggregateReport.YEAR), criteria.getYear()));
-		}
-		if (criteria.getEpiWeek() != null) {
-			filter = and(cb, filter, cb.equal(from.get(AggregateReport.EPI_WEEK), criteria.getEpiWeek()));
+		if (criteria.getEpiWeekFrom() != null || criteria.getEpiWeekTo() != null) {
+			if (criteria.getEpiWeekFrom() == null) {
+				filter = and(cb, filter, cb.le(from.get(AggregateReport.YEAR), criteria.getEpiWeekTo().getYear()));
+				filter = and(cb, filter, cb.le(from.get(AggregateReport.EPI_WEEK), criteria.getEpiWeekTo().getWeek()));
+			} else if (criteria.getEpiWeekTo() == null) {
+				filter = and(cb, filter, cb.ge(from.get(AggregateReport.YEAR), criteria.getEpiWeekFrom().getYear()));
+				filter = and(cb, filter, cb.ge(from.get(AggregateReport.EPI_WEEK), criteria.getEpiWeekFrom().getWeek()));
+			} else {
+				filter = and(cb, filter, cb.between(from.get(AggregateReport.YEAR), criteria.getEpiWeekFrom().getYear(), criteria.getEpiWeekTo().getYear()));
+				filter = and(cb, filter, cb.between(from.get(AggregateReport.EPI_WEEK), criteria.getEpiWeekFrom().getWeek(), criteria.getEpiWeekTo().getWeek()));
+			}
 		}
 		
 		return filter;
@@ -82,7 +88,6 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 		}
 
 		return filter;
-		
 	}
 	
 }
