@@ -46,6 +46,7 @@ public final class DateHelper {
 	private static final SimpleDateFormat SHORT_DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 	private static final SimpleDateFormat DATABASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat DATABASE_FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITHOUT_YEAR_FORMAT = new SimpleDateFormat("dd/MM");
 	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM yyyy");
@@ -250,6 +251,15 @@ public final class DateHelper {
 			return "";
 		}
 	}
+
+	public static String formatFullDateForDatabase(Date date) {
+		if (date != null) {
+			return clone(DATABASE_FULL_DATE_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+
 
 	public static String formatDateForExport(Date date) {
 		if (date != null) {

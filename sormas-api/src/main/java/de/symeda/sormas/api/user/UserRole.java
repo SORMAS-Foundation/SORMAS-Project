@@ -130,7 +130,7 @@ public enum UserRole implements StatisticsGroupingKey {
 			defaultUserRights = new HashSet<UserRight>();
 			for (UserRight userRight : UserRight.values()) {
 				if (userRight.isDefaultForRole(this)) {
-					getDefaultUserRights().add(userRight);
+					defaultUserRights.add(userRight);
 				}
 			}
 		}

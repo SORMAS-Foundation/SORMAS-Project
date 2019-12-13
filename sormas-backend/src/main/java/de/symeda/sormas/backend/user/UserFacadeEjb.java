@@ -330,7 +330,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
 
-		target.setUserRoles(source.getUserRoles());
+		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
 
 		return target;
 	}
