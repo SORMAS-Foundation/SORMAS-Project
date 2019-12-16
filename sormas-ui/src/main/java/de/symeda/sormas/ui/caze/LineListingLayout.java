@@ -36,6 +36,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -51,6 +52,7 @@ public class LineListingLayout extends VerticalLayout {
 	private static final long serialVersionUID = -5565485322654993085L;
 
 	public static final float DEFAULT_WIDTH = 1696;
+	public static final float WITDH_WITHOUT_EPID_NUMBER = 1536;
 
 	private ComboBox<Disease> disease;
 	private TextField diseaseDetails;
@@ -405,8 +407,12 @@ public class LineListingLayout extends VerticalLayout {
 				}
 			});
 
-			addComponents(dateOfReport, epidNumber, community, facility, facilityDetails, firstname, lastname,
-					dateOfBirthYear, dateOfBirthMonth, dateOfBirthDay, sex, dateOfOnset, delete);
+			addComponent(dateOfReport);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
+				addComponent(epidNumber);
+			}
+			addComponents(community, facility, facilityDetails, firstname, lastname, dateOfBirthYear, dateOfBirthMonth,
+					dateOfBirthDay, sex, dateOfOnset, delete);
 
 			if (firstLine) {
 				formatAsFirstLine();
