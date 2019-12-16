@@ -1360,7 +1360,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"region_id bigint REFERENCES region(id)," +
 							"district_id bigint REFERENCES district(id)," +
 							"healthFacility_id bigint REFERENCES facility(id)," +
-							"pointOfEntry_id bigint REFERENCES pointOfEntry(id);" +
+							"pointOfEntry_id bigint REFERENCES pointOfEntry(id)," +
 							"year integer," +
 							"epiWeek integer," +
 							"newCases integer," +
