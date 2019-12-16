@@ -315,7 +315,8 @@ public class StartupShutdownService {
 			} 
 			
 			int updatedRows = em
-				.createNativeQuery("UPDATE schema_version SET upgradeNeeded=false WHERE version_number=" + versionNeedingUpgrade)
+				.createNativeQuery("UPDATE schema_version SET upgradeNeeded=false WHERE version_number=?1")
+				.setParameter(1, versionNeedingUpgrade)
 				.executeUpdate();
 			if (updatedRows != 1) {
 				logger.error("Could not UPDATE schema_version table. Missing user rights?");

@@ -124,7 +124,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	TreatmentService treatmentService;
 	@EJB
 	PrescriptionService prescriptionService;
-	
+
 	public CaseService() {
 		super(Case.class);
 	}
@@ -265,8 +265,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public String getHighestEpidNumber(String epidNumberPrefix) {
 		try {
-			Query query = em.createNativeQuery("SELECT epidnumber FROM " + Case.TABLE_NAME + " WHERE " + Case.TABLE_NAME + ".epidnumber LIKE '" 
-					+ epidNumberPrefix + "%' ORDER BY CAST(NULLIF(regexp_replace(" + Case.TABLE_NAME + ".epidnumber, '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
+			StringBuilder queryBuilder = new StringBuilder();
+			queryBuilder.append("SELECT ").append(Case.EPID_NUMBER).append(" FROM ").append(Case.TABLE_NAME).append(" WHERE ").append(Case.TABLE_NAME)
+			.append(".").append(Case.EPID_NUMBER).append(" LIKE ?1 ORDER BY CAST(NULLIF(regexp_replace(")
+			.append(Case.TABLE_NAME).append(".").append(Case.EPID_NUMBER).append(", '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
+			Query query = em.createNativeQuery(queryBuilder.toString()).setParameter(1, epidNumberPrefix + "%");
 			return (String) query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
@@ -328,7 +331,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * Creates a filter that checks whether the case is considered "relevant" in the time frame specified by {@code fromDate} and 
 	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are 
@@ -453,8 +456,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getRelevanceStatus() != null) {
 			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(
-							cb.equal(from.get(Case.ARCHIVED), false),
-							cb.isNull(from.get(Case.ARCHIVED))));
+						cb.equal(from.get(Case.ARCHIVED), false),
+						cb.isNull(from.get(Case.ARCHIVED))));
 			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
 			}
