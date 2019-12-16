@@ -87,7 +87,7 @@ public class LineListingLayout extends VerticalLayout {
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE_DETAILS));
 		diseaseDetails.setVisible(false);
 		sharedInformationBar.addComponent(diseaseDetails);
-		disease.addValueChangeListener(event -> diseaseDetails.setVisible(disease.getValue().equals(Disease.OTHER)));
+		disease.addValueChangeListener(event -> diseaseDetails.setVisible(Disease.OTHER.equals(disease.getValue())));
 
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
 		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
