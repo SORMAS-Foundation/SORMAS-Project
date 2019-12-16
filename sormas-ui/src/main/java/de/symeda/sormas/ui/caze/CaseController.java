@@ -98,8 +98,6 @@ import de.symeda.sormas.ui.utils.ViewMode;
 
 public class CaseController {
 
-	private static final float LINELISTING_FORM_WIDTH = 1532;
-
 	public CaseController() {
 
 	}
@@ -1011,12 +1009,13 @@ public class CaseController {
 		
 		LineListingLayout lineListingForm = new LineListingLayout(window);
 		
-		lineListingForm.setWidth(LINELISTING_FORM_WIDTH, Unit.PIXELS);
+		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
 
 		window.setContent(lineListingForm);
 		
 		window.setModal(true);
-		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - LINELISTING_FORM_WIDTH)) / 2);
+		window.setPositionX(
+				(int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - LineListingLayout.DEFAULT_WIDTH)) / 2);
 		window.setPositionY(70);
 		
 		window.setResizable(false);
