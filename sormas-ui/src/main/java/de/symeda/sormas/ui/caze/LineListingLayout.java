@@ -4,16 +4,12 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.ValidationException;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -25,15 +21,11 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.AbstractSelect;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -51,17 +43,17 @@ import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.caze.LineListingLayout.CaseLineDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
 
 public class LineListingLayout extends VerticalLayout {
 
 	private static final long serialVersionUID = -5565485322654993085L;
 
 	private ComboBox<Disease> disease;
+	private TextField diseaseDetails;
 
 	private ComboBox<RegionReferenceDto> region;
 	private ComboBox<DistrictReferenceDto> district;
@@ -89,6 +81,11 @@ public class LineListingLayout extends VerticalLayout {
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
 		disease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 		sharedInformationBar.addComponent(disease);
+		diseaseDetails = new TextField(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE_DETAILS));
+		diseaseDetails.setVisible(false);
+		sharedInformationBar.addComponent(diseaseDetails);
+		disease.addValueChangeListener(event -> diseaseDetails.setVisible(disease.getValue().equals(Disease.OTHER)));
 
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
 		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
@@ -145,6 +142,7 @@ public class LineListingLayout extends VerticalLayout {
 			CaseLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
 			CaseLineDto newLineDto = new CaseLineDto();
 			newLineDto.setDisease(lastLineDto.getDisease());
+			newLineDto.setDiseaseDetails(lastLineDto.getDiseaseDetails());
 			newLineDto.setRegion(lastLineDto.getRegion());
 			newLineDto.setDistrict(lastLineDto.getDistrict());
 			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
@@ -204,6 +202,7 @@ public class LineListingLayout extends VerticalLayout {
 
 			CaseDataDto newCase = CaseDataDto.build(PersonDto.build().toReference(), caseLineDto.getDisease());
 
+			newCase.setDiseaseDetails(caseLineDto.getDiseaseDetails());
 			newCase.setRegion(caseLineDto.getRegion());
 			newCase.setDistrict(caseLineDto.getDistrict());
 			if (caseLineDto.getDateOfReport() != null) {
@@ -320,6 +319,8 @@ public class LineListingLayout extends VerticalLayout {
 			setMargin(false);
 
 			binder.forField(disease).asRequired().bind(CaseLineDto.DISEASE);
+			binder.forField(diseaseDetails).asRequired(new FieldVisibleAndNotEmptyValidator<String>(""))
+					.bind(CaseLineDto.DISEASE_DETAILS);
 			binder.forField(region).asRequired().bind(CaseLineDto.REGION);
 			binder.forField(district).asRequired().bind(CaseLineDto.DISTRICT);
 
@@ -346,7 +347,8 @@ public class LineListingLayout extends VerticalLayout {
 			facilityDetails = new TextField();
 			facilityDetails.setVisible(false);
 			updateFacilityFields(facility, facilityDetails);
-			binder.forField(facilityDetails).bind(CaseLineDto.FACILITIY_DETAILS);
+			binder.forField(facilityDetails).asRequired(new FieldVisibleAndNotEmptyValidator<String>(""))
+					.bind(CaseLineDto.FACILITIY_DETAILS);
 
 			firstname = new TextField();
 			binder.forField(firstname).asRequired().bind(CaseLineDto.FIRST_NAME);
@@ -531,6 +533,7 @@ public class LineListingLayout extends VerticalLayout {
 		private static final long serialVersionUID = -6638490209881568126L;
 
 		public static final String DISEASE = "disease";
+		public static final String DISEASE_DETAILS = "diseaseDetails";
 		public static final String REGION = "region";
 		public static final String DISTRICT = "district";
 		public static final String DATE_OF_REPORT = "dateOfReport";
@@ -546,6 +549,7 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String DATE_OF_ONSET = "dateOfOnset";
 
 		private Disease disease;
+		private String diseaseDetails;
 		private RegionReferenceDto region;
 		private DistrictReferenceDto district;
 		private LocalDate dateOfReport;
@@ -560,12 +564,14 @@ public class LineListingLayout extends VerticalLayout {
 		private Sex sex;
 		private LocalDate dateOfOnset;
 
-		public CaseLineDto(Disease disease, RegionReferenceDto region, DistrictReferenceDto district,
+		public CaseLineDto(Disease disease, String diseaseDetails, RegionReferenceDto region,
+				DistrictReferenceDto district,
 				LocalDate dateOfReport, CommunityReferenceDto community, FacilityReferenceDto facility,
 				String facilityDetails, String firstname, String lastname, Integer dateOfBirthYear,
 				Integer dateOfBirthMonth, Integer dateOfBirthDay, Sex sex, LocalDate dateOfOnset) {
 
 			this.disease = disease;
+			this.diseaseDetails = diseaseDetails;
 			this.region = region;
 			this.district = district;
 			this.dateOfReport = dateOfReport;
@@ -590,6 +596,14 @@ public class LineListingLayout extends VerticalLayout {
 
 		public void setDisease(Disease disease) {
 			this.disease = disease;
+		}
+
+		public String getDiseaseDetails() {
+			return diseaseDetails;
+		}
+
+		public void setDiseaseDetails(String diseaseDetails) {
+			this.diseaseDetails = diseaseDetails;
 		}
 
 		public RegionReferenceDto getRegion() {
