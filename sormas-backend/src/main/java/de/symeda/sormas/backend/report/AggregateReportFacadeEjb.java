@@ -100,7 +100,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		User user = userService.getByUuid(userUuid);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<AggregateReport> cq = cb.createQuery(AggregateReport.class);
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
 		
 		Predicate filter = service.createUserFilter(cb, cq, root, user);
@@ -113,17 +113,15 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 			cq.where(filter);
 		}
 		
-		List<AggregateReport> resultList = em.createQuery(cq).getResultList();
+		cq.multiselect(root.get(AggregateReport.DISEASE), cb.sum(root.get(AggregateReport.NEW_CASES)),
+				cb.sum(root.get(AggregateReport.LAB_CONFIRMATIONS)), cb.sum(root.get(AggregateReport.DEATHS)));
+		cq.groupBy(root.get(AggregateReport.DISEASE));
+		
+		List<Object[]> resultList = em.createQuery(cq).getResultList();
 		Map<Disease, AggregatedCaseCountDto> reportSet = new HashMap<>();
-		for (AggregateReport result : resultList) {
-			if (!reportSet.containsKey(result.getDisease())) {
-				reportSet.put(result.getDisease(), new AggregatedCaseCountDto(result.getDisease(), 0, 0, 0));
-			}
-			
-			AggregatedCaseCountDto report = reportSet.get(result.getDisease());
-			report.setNewCases(report.getNewCases() + result.getNewCases());
-			report.setLabConfirmations(report.getLabConfirmations() + result.getLabConfirmations());
-			report.setDeaths(report.getDeaths() + result.getDeaths());
+		
+		for (Object[] result : resultList) {
+			reportSet.put((Disease) result[0], new AggregatedCaseCountDto((Disease) result[0], ((Long) result[1]).intValue(), ((Long) result[2]).intValue(), ((Long) result[3]).intValue()));
 		}
 		
 		for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, false, false)) {

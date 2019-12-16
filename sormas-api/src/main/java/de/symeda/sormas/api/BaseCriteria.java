@@ -64,7 +64,7 @@ public abstract class BaseCriteria implements Serializable {
 					} else if (Integer.class.isAssignableFrom(type)) {
 						stringValue = String.valueOf(value);
 					} else if (EpiWeek.class.isAssignableFrom(type)) {
-						stringValue = "year-" + ((EpiWeek) value).getYear() + "-week-" + ((EpiWeek) value).getWeek();
+						stringValue = ((EpiWeek) value).toUrlString();
 					} else {
 						throw new NotImplementedException(type.toString());
 					}
@@ -165,10 +165,7 @@ public abstract class BaseCriteria implements Serializable {
 					} else if (Integer.class.isAssignableFrom(type)) {
 						value = Integer.valueOf(fieldParams.get(0));
 					} else if (EpiWeek.class.isAssignableFrom(type)) {
-						int dashIndex = fieldParams.get(0).indexOf("-");
-						int year = Integer.valueOf(fieldParams.get(0).substring(dashIndex + 1, fieldParams.get(0).indexOf("-", dashIndex + 1)));
-						int week = Integer.valueOf(fieldParams.get(0).substring(fieldParams.get(0).lastIndexOf("-") + 1));
-						value = new EpiWeek(year, week);
+						value = EpiWeek.fromUrlString(fieldParams.get(0));
 					} else {
 						throw new NotImplementedException(type.toString());
 					}
