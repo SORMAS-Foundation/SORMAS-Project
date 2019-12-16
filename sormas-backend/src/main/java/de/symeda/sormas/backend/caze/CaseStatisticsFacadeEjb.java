@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -144,23 +145,6 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			for (int i = 0; i < populationQueryAndParams.getValue().size(); i++) {
 				populationQuery.setParameter(i + 1, populationQueryAndParams.getValue().get(i));
 			}
-			
-//			// build a two-key-map based on row and column
-//			HashMap<Pair<StatisticsGroupingKey, StatisticsGroupingKey>, Integer> populationData = new HashMap<Object, HashMap<Object,Integer>>();
-//			((Stream<Object[]>) populationQuery.getResultStream()).forEach(result -> {
-//				Object rowKey = "".equals(result[1]) ? null : result[1];
-//				Object columnKey = "".equals(result[2]) ? null : result[2];
-//				StatisticsCaseCountDto populationDto =  new StatisticsCaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null, 
-//					StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping),
-//					StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping));
-//
-//				HashMap<Object, Integer> innerPopulationData = populationData.get(populationDto.getRowKey());
-//				if (innerPopulationData == null) {
-//					innerPopulationData = new HashMap<Object, Integer>();
-//					populationData.put(populationDto.getRowKey(), innerPopulationData);
-//				}
-//				innerPopulationData.put(populationDto.getColumnKey(), populationDto.getPopulation());
-//			});
 			
 			List<StatisticsCaseCountDto> populationResults = ((Stream<Object[]>) populationQuery.getResultStream())
 					.map(result -> {
@@ -488,17 +472,11 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				if (groupingA != null) {
 					groupingSelectQueryA = buildCaseGroupingSelectQuery(groupingA, subGroupingA, groupAAlias);
 					caseGroupByBuilder.append(groupAAlias);
-				} else {
-					groupingSelectQueryA = " ''\\:\\:text AS " + groupAAlias;
-					caseGroupByBuilder.append(groupAAlias);
-				}
+				} 
 				if (groupingB != null) {
 					groupingSelectQueryB = buildCaseGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
 					caseGroupByBuilder.append(",").append(groupBAlias);
-				} else {
-					groupingSelectQueryB = " ''\\:\\:text AS " + groupBAlias;
-					caseGroupByBuilder.append(", ").append(groupBAlias);
-				}
+				} 
 			}
 			
 			//////////////
@@ -507,47 +485,34 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	
 			orderByBuilder.append(" ORDER BY ");
 			if (groupingA != null) {
-				orderByBuilder.append("casecounts.").append(groupAAlias).append(" NULLS LAST");
+				orderByBuilder.append(groupAAlias).append(" NULLS LAST");
 			}
 			if (groupingB != null) {
 				if (groupingA != null) {
 					orderByBuilder.append(",");
 				}
-				orderByBuilder.append("casecounts.").append(groupBAlias).append(" NULLS LAST");
+				orderByBuilder.append(groupBAlias).append(" NULLS LAST");
 			}
 	
-			StringBuilder queryBuilder = new StringBuilder("WITH ");
-	
-			// Include case counts
-			queryBuilder.append("casecounts AS(SELECT COUNT(*) AS casecount");
-	
-			if (groupingSelectQueryB != null) {
-				queryBuilder.append(",").append(groupingSelectQueryB);
-			}
-			if (groupingSelectQueryA != null) {
-				queryBuilder.append(",").append(groupingSelectQueryA);
-			}
-			queryBuilder.append(" FROM ").append(Case.TABLE_NAME).append(caseJoinBuilder).append(caseFilterBuilder).append(caseGroupByBuilder).append(")");
-	
+			StringBuilder queryBuilder = new StringBuilder();
 
-			queryBuilder.append("SELECT casecount ");
+			queryBuilder.append("SELECT COUNT(*) AS casecount ");
 	
-			if (groupingA != null) {
-				queryBuilder.append(", casecounts.").append(groupAAlias);
+			if (groupingSelectQueryA != null) {
+				queryBuilder.append(", ").append(groupingSelectQueryA);
 			} else {
-			queryBuilder.append(", ''\\:\\:text AS ").append(groupAAlias);
+				queryBuilder.append(", null\\:\\:text AS ").append(groupAAlias);
 			}
-			if (groupingB != null) {
-				queryBuilder.append(", casecounts.").append(groupBAlias);
+			if (groupingSelectQueryB != null) {
+				queryBuilder.append(", ").append(groupingSelectQueryB);
 			} else {
-			queryBuilder.append(", ''\\:\\:text AS ").append(groupBAlias);
+				queryBuilder.append(", null\\:\\:text AS ").append(groupBAlias);
 			}
 			
-			queryBuilder.append(" FROM casecounts ");
-			
-			if (groupingA != null || groupingB != null) {
-				queryBuilder.append(" GROUP BY casecount ").append(", casecounts.").append(groupAAlias).append(", casecounts.").append(groupBAlias);
-			}
+			queryBuilder.append(" FROM ").append(Case.TABLE_NAME)
+			.append(caseJoinBuilder)
+			.append(caseFilterBuilder)
+			.append(caseGroupByBuilder);
 			
 			if (groupingA != null || groupingB != null) {
 				queryBuilder.append(orderByBuilder);
@@ -588,12 +553,12 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 		
 		if (groupASelect == null) {
-			groupASelect = "''\\:\\:text";
+			groupASelect = "null\\:\\:text";
 		}
 		groupASelect += " AS " + groupAAlias;
 		
 		if (groupBSelect == null) {
-			groupBSelect = "''\\:\\:text";
+			groupBSelect = "null\\:\\:text";
 		}
 		groupBSelect += " AS " + groupBAlias;
 
@@ -700,16 +665,15 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		///////
 		
 		StringBuilder selectBuilder = new StringBuilder(" SELECT SUM(").append(PopulationData.POPULATION)
-				;
-//				.append("*power(exp(1), (growthsource.growthrate").append("*0.01)*");
-//		
-//		if (populationReferenceYear == null) {
-//			selectBuilder.append("date_part('year', age(date_trunc('year', ").append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp))))");
-//		} else {
-//			selectBuilder.append("GREATEST(0, date_part('year', age(date_trunc('year', '").append(populationReferenceYear).append("-01-01'\\:\\:timestamp), date_trunc('year', ")
-//			.append(PopulationData.COLLECTION_DATE).append("\\:\\:timestamp)))))");
-//		}
-		selectBuilder.append(") AS population, ");
+				.append("*POWER(1 + growthsource.growthrate").append("*0.01, ")
+				.append("(?").append(filterBuilderParameters.size() + 1)
+				.append(" - date_part('year', " + PopulationData.COLLECTION_DATE).append("\\:\\:timestamp)").append("))) AS population, ");
+		
+		if (populationReferenceYear == null) {
+			filterBuilderParameters.add(LocalDate.now().getYear());
+		} else {
+			filterBuilderParameters.add(populationReferenceYear);
+		}
 		selectBuilder.append(groupASelect).append(", ").append(groupBSelect);
 		selectBuilder.append(" FROM ").append(PopulationData.TABLE_NAME);
 		

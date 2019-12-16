@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.caze;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
@@ -101,17 +103,20 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
 		criteria.regions(Arrays.asList(rdcf.region));
 
-		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, null, null, true, false, null);
+		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, null);
 		assertNull(results.get(0).getPopulation());
 		
 		PopulationDataDto populationData = PopulationDataDto.build(new Date());
+		RegionDto region = getRegionFacade().getRegionByUuid(rdcf.region.getUuid());
+		region.setGrowthRate(10f);
+		getRegionFacade().saveRegion(region);
 		populationData.setRegion(rdcf.region);
 		populationData.setPopulation(new Integer(10000));
 		getPopulationDataFacade().savePopulationData(Arrays.asList(populationData));
 
-		results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, null);
+		results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, LocalDate.now().getYear() + 2);
 		// List should have one entry
-		assertEquals(populationData.getPopulation(), results.get(0).getPopulation());
+		assertEquals(Integer.valueOf(12100), results.get(0).getPopulation());
 
 	}
 }

@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -115,11 +118,22 @@ public class AbstractBeanTest extends BaseBeanTest {
 	 * shared between tests.
 	 */
 	@Before
-	public void resetMocks() {
+	public void init() {
 		MockProducer.resetMocks();
-
+		initH2Functions();
+		
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+	}
+
+	private void initH2Functions() {
+		EntityManager em = getEntityManager();
+		em.getTransaction().begin();
+		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
+		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
+		nativeQuery.executeUpdate();
+		em.getTransaction().commit();
 	}
 	
 	@Before
@@ -130,6 +144,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			getDiseaseConfigurationService().ensurePersisted(configuration);
 		});
+	}
+	
+	public EntityManager getEntityManager() {
+		return getBean(EntityManagerWrapper.class).getEntityManager();
 	}
 
 	public ConfigFacade getConfigFacade() {

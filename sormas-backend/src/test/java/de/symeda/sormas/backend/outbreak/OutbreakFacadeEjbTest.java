@@ -35,8 +35,8 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 	private RDCFEntities rdcf;
 
 	@Override
-	public void resetMocks() {
-		super.resetMocks();
+	public void init() {
+		super.init();
 
 		rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup",
