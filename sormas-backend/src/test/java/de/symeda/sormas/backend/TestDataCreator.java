@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -67,6 +68,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
@@ -408,7 +410,7 @@ public class TestDataCreator {
 	}
 	
 	public FacilityDto createFacility(String facilityName, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community) {
-		FacilityDto facility = FacilityDto.build();
+		FacilityDto facility = 	FacilityDto.build();
 		facility.setName(facilityName);
 		facility.setType(FacilityType.PRIMARY);
 		facility.setCommunity(community);
@@ -439,7 +441,14 @@ public class TestDataCreator {
 		beanTest.getPopulationDataFacade().savePopulationData(Arrays.asList(populationData));
 		return populationData;
 	}
-
+	
+	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseBased) {
+		DiseaseConfigurationDto config = DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
+		config.setActive(active);
+		config.setPrimaryDisease(primary);
+		config.setCaseBased(caseBased);
+		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
+	}
 
 	/**
 	 * @deprecated Use RDCF instead

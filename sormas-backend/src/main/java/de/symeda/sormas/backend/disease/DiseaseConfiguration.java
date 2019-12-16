@@ -25,7 +25,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean caseBased;
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
-
+	
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
 		configuration.setDisease(disease);

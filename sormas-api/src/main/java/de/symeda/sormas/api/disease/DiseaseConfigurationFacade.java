@@ -16,6 +16,11 @@ public interface DiseaseConfigurationFacade {
 	
 	List<String> getAllUuids();
 	
+	/**
+	 * Returns a list containing all diseases whose configurations match the defined attributes
+	 * (e.g. if active and primary are both true, only diseases that are both active and primary
+	 * are returned). Attributes that are set to null are ignored.
+	 */
 	List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased);
 	
 	boolean isActiveDisease(Disease disease);
@@ -32,5 +37,6 @@ public interface DiseaseConfigurationFacade {
 	
 	int getFollowUpDuration(Disease disease);
 	
+	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
 	
 }
