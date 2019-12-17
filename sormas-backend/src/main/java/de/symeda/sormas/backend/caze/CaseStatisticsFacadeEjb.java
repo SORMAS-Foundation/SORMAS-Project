@@ -665,7 +665,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		///////
 		
 		StringBuilder selectBuilder = new StringBuilder(" SELECT SUM(").append(PopulationData.POPULATION)
-				.append("*POWER(1 + growthsource.growthrate").append("*0.01, ")
+				.append("*EXP(growthsource.growthrate*0.01*")
 				.append("(?").append(filterBuilderParameters.size() + 1)
 				.append(" - date_part('year', " + PopulationData.COLLECTION_DATE).append("\\:\\:timestamp)").append("))) AS population, ");
 		

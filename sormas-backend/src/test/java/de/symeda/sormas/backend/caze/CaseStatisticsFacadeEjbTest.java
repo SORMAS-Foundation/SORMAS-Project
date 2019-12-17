@@ -116,7 +116,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 
 		results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, LocalDate.now().getYear() + 2);
 		// List should have one entry
-		assertEquals(Integer.valueOf(12100), results.get(0).getPopulation());
+		assertEquals(Integer.valueOf(12214), results.get(0).getPopulation());
 
 	}
 }
