@@ -39,6 +39,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 
@@ -112,6 +113,8 @@ public class StatisticsHelper {
 				} else {
 					return new IntegerRange(Integer.valueOf(entryAsString), Integer.valueOf(entryAsString));
 				}
+			case REPORTING_USER_ROLE:
+				return UserRole.valueOf(attributeValue.toString());
 			default:
 				throw new IllegalArgumentException(attribute.toString());
 			}
