@@ -1472,9 +1472,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			// doesn't match the pattern
 			Calendar calendar = Calendar.getInstance();
 			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-			newEpidNumber = (caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : "") + "-"
-					+ (caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : "") + "-" + year
-					+ "-";
+			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(caze.getDistrict().getUuid()) + "-" + year + "-";
 		}
 
 		// Generate a suffix number

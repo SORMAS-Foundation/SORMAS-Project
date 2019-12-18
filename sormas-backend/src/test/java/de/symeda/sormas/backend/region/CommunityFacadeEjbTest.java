@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.community;
+package de.symeda.sormas.backend.region;
 
 import static org.junit.Assert.assertEquals;
 

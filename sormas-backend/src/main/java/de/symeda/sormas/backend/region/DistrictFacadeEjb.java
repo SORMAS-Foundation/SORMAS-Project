@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -301,6 +300,15 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		
 		return target;
+	}
+
+	@Override
+	public String getFullEpidCodeForDistrict(String districtUuid) {
+
+		District district = districtService.getByUuid(districtUuid);
+		String fullEpidCode = (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "")
+				+ "-" + (district.getEpidCode() != null ? district.getEpidCode() : "");
+		return fullEpidCode;
 	}
 
 	@LocalBean

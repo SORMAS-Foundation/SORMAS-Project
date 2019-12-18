@@ -1,15 +1,16 @@
-package de.symeda.sormas.backend.district;
+package de.symeda.sormas.backend.region;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.region.Region;
 
 public class DistrictFacadeEjbTest extends AbstractBeanTest {
 
@@ -35,6 +36,14 @@ public class DistrictFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(districtName, results.get(0).getName());
 		assertEquals(region.getUuid(), results.get(0).getRegion().getUuid());
+	}
+
+	@Test
+	public void testGetFullEpidCodeForDistrict() {
+
+		District district = creator.createDistrict("abcdef", creator.createRegion("ghijkl"));
+		String epidNumberPrefix = getDistrictFacade().getFullEpidCodeForDistrict(district.getUuid()) + "-34-";
+		assertTrue(CaseLogic.isEpidNumberPrefix(epidNumberPrefix));
 	}
 
 }

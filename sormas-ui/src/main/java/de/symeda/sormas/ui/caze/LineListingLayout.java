@@ -99,6 +99,7 @@ public class LineListingLayout extends VerticalLayout {
 		sharedInformationBar.addComponent(region);
 
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
+		district.addValueChangeListener(e -> setEpidNumberPrefixes());
 		sharedInformationBar.addComponent(district);
 
 		region.addValueChangeListener(e -> {
@@ -139,8 +140,8 @@ public class LineListingLayout extends VerticalLayout {
 		addLine.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		addLine.addClickListener(e -> {
 			CaseLineLayout newLine = new CaseLineLayout(false, lineComponent);
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) district.getValue();
-			updateCommunityAndFacility(districtDto, newLine);
+			DistrictReferenceDto districtReferenceDto = (DistrictReferenceDto) district.getValue();
+			updateCommunityAndFacility(districtReferenceDto, newLine);
 			CaseLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
 			CaseLineDto newLineDto = new CaseLineDto();
 			newLineDto.setDisease(lastLineDto.getDisease());
@@ -148,6 +149,9 @@ public class LineListingLayout extends VerticalLayout {
 			newLineDto.setRegion(lastLineDto.getRegion());
 			newLineDto.setDistrict(lastLineDto.getDistrict());
 			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
+			if (district.getValue() != null) {
+				newLineDto.setEpidNumber(getEpidNumberPrefix());
+			}
 			newLineDto.setCommunity(lastLineDto.getCommunity());
 			newLineDto.setFacility(lastLineDto.getFacility());
 			newLineDto.setFacilityDetails(lastLineDto.getFacilityDetails());
@@ -186,6 +190,21 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
+	}
+
+	private void setEpidNumberPrefixes() {
+
+		if (district.getValue() != null) {
+			for (CaseLineLayout layout : caseLines) {
+				layout.epidNumber.setValue(getEpidNumberPrefix());
+			}
+		}
+	}
+
+	private String getEpidNumberPrefix() {
+
+		return FacadeProvider.getDistrictFacade().getFullEpidCodeForDistrict(district.getValue().getUuid()) + "-";
+
 	}
 
 	private void closeWindow() {
