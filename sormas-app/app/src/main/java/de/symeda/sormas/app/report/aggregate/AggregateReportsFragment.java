@@ -77,7 +77,6 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
     protected void onAfterLayoutBinding(FragmentReportsAggregateLayoutBinding contentBinding) {
         super.onAfterLayoutBinding(contentBinding);
         contentBinding.reportSelector.setValue(EpiWeekFilterOption.THIS_WEEK);
-        showReportData();
     }
 
     private void setupControls() {
