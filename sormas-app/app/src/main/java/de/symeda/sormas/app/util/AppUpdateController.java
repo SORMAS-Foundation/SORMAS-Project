@@ -29,6 +29,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.StrictMode;
 
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
@@ -388,7 +389,16 @@ public class AppUpdateController {
         installIntent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
         installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         installIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        installIntent.setDataAndType(FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", file), "application/vnd.android.package-archive");
+
+        Uri fileUri;
+        try {
+            fileUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", file);
+        } catch (IllegalArgumentException e) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+            fileUri = Uri.fromFile(file);
+        }
+        installIntent.setDataAndType(fileUri, "application/vnd.android.package-archive");
         activity.startActivityForResult(installIntent, AppUpdateController.INSTALL_RESULT);
     }
 
