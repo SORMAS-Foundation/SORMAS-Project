@@ -91,12 +91,14 @@ public class SampleDataView extends AbstractSampleView {
 			public void accept(PathogenTestDto pathogenTestDto, Runnable callback) {
 				if (pathogenTestDto != null 
 						&& pathogenTestDto.getTestResult() != null
-						&& pathogenTestDto.getTestResultVerified() == Boolean.TRUE
+						&& Boolean.TRUE.equals(pathogenTestDto.getTestResultVerified())
 						&& pathogenTestDto.getTestedDisease() == caseDisease) {
 					SampleDto componentSample = editComponent.getWrappedComponent().getValue();
 					if (pathogenTestDto.getTestResult()  != componentSample.getPathogenTestResult()) {
 						ControllerProvider.getSampleController().showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestDto.getTestResult(), callback);
 					}
+				} else {
+					callback.run();
 				}
 				
 				editComponent.getWrappedComponent().makePathogenTestResultRequired();
