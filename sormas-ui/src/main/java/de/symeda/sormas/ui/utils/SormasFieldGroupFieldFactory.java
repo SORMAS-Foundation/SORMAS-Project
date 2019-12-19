@@ -158,7 +158,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		}
 		diseaseField.addContainerProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID, String.class, "");
 		diseaseField.setItemCaptionPropertyId(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID);
-		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
+		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 		for (Disease disease : diseases) {
 			Item newItem = diseaseField.addItem(disease);
 			newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(disease.toString());

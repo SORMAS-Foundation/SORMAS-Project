@@ -46,6 +46,7 @@ import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
@@ -53,6 +54,7 @@ import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.report.AggregateReportDtoHelper;
 import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
 import de.symeda.sormas.app.backend.sample.AdditionalTestDtoHelper;
 import de.symeda.sormas.app.backend.sample.PathogenTestDtoHelper;
@@ -80,7 +82,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
     private SyncMode syncMode;
     private final Context context;
-
 
     private SynchronizeDataAsync(SyncMode syncMode, Context context) {
         this.syncMode = syncMode;
@@ -220,6 +221,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
                 DatabaseHelper.getTaskDao().isAnyModified() ||
                 DatabaseHelper.getVisitDao().isAnyModified() ||
                 DatabaseHelper.getWeeklyReportDao().isAnyModified() ||
+                DatabaseHelper.getAggregateReportDao().isAnyModified() ||
                 DatabaseHelper.getPrescriptionDao().isAnyModified() ||
                 DatabaseHelper.getTreatmentDao().isAnyModified() ||
                 DatabaseHelper.getClinicalVisitDao().isAnyModified();
@@ -238,6 +240,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
+        AggregateReportDtoHelper aggregateReportDtoHelper = new AggregateReportDtoHelper();
         PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
         TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
         ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
@@ -258,6 +261,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities();
         boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities();
         boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities();
+        boolean aggregateReportsNeedPull = aggregateReportDtoHelper.pullAndPushEntities();
         boolean prescriptionsNeedPull = prescriptionDtoHelper.pullAndPushEntities();
         boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities();
         boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities();
@@ -286,6 +290,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             taskDtoHelper.pullEntities(true);
         if (weeklyReportsNeedPull)
             weeklyReportDtoHelper.pullEntities(true);
+        if (aggregateReportsNeedPull)
+            aggregateReportDtoHelper.pullEntities(true);
         if (prescriptionsNeedPull)
             prescriptionDtoHelper.pullEntities(true);
         if (treatmentsNeedPull)
@@ -307,6 +313,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
         TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
         WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
+        AggregateReportDtoHelper aggregateReportDtoHelper = new AggregateReportDtoHelper();
         PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
         TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
         ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
@@ -318,6 +325,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserDtoHelper().repullEntities();
         new OutbreakDtoHelper().repullEntities();
         new DiseaseConfigurationDtoHelper().repullEntities();
+        new FeatureConfigurationDtoHelper().repullEntities();
         personDtoHelper.repullEntities();
         caseDtoHelper.repullEntities();
         eventDtoHelper.repullEntities();
@@ -329,6 +337,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         visitDtoHelper.repullEntities();
         taskDtoHelper.repullEntities();
         weeklyReportDtoHelper.repullEntities();
+        aggregateReportDtoHelper.repullEntities();
         prescriptionDtoHelper.repullEntities();
         treatmentDtoHelper.repullEntities();
         clinicalVisitDtoHelper.repullEntities();
@@ -342,7 +351,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
             InfrastructureChangeDatesDto changeDates = InfrastructureHelper.getInfrastructureChangeDates();
 
             try {
-                Response<InfrastructureSyncDto> response = RetroProvider.getInfrastructureFacadeRetro().pullInfrastructureSyncData(changeDates).execute();
+                Response<InfrastructureSyncDto> response = RetroProvider.getInfrastructureFacade().pullInfrastructureSyncData(changeDates).execute();
                 if (!response.isSuccessful()) {
                     RetroProvider.throwException(response);
                 }
@@ -380,6 +389,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
 
         new UserRoleConfigDtoHelper().pullEntities(false);
+
+        Date featureConfigurationChangeDate = DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate();
+        List<String> featureConfigurationConfigUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullDeletedUuidsSince(featureConfigurationChangeDate != null ? featureConfigurationChangeDate.getTime() : 0));
+        DatabaseHelper.getFeatureConfigurationDao().delete(featureConfigurationConfigUuids);
+
+        new FeatureConfigurationDtoHelper().pullEntities(false);
 
         ConfigProvider.setInitialSyncRequired(false);
     }
@@ -469,6 +484,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new VisitDtoHelper().pushEntities(true);
         new TaskDtoHelper().pushEntities(true);
         new WeeklyReportDtoHelper().pushEntities(true);
+        new AggregateReportDtoHelper().pushEntities(true);
         new PrescriptionDtoHelper().pushEntities(true);
         new TreatmentDtoHelper().pushEntities(true);
         new ClinicalVisitDtoHelper().pushEntities(true);
@@ -476,6 +492,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // weekly reports and entries
         List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
         DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
+        // aggregate reports
+        List<String> aggregateReportUuids = executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids());
+        DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids);
         // tasks
         List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
         DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
@@ -534,6 +553,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new VisitDtoHelper().pullMissing(visitUuids);
         new TaskDtoHelper().pullMissing(taskUuids);
         new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
+        new AggregateReportDtoHelper().pullMissing(aggregateReportUuids);
         new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
         new TreatmentDtoHelper().pullMissing(treatmentUuids);
         new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
@@ -553,6 +573,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         // disease configurations
         List<String> diseaseConfigurationUuids = executeUuidCall(RetroProvider.getDiseaseConfigurationFacade().pullUuids());
         DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids);
+        // feature configurations
+        List<String> featureConfigurationUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullUuids());
+        DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids);
         // user role config
         List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
         DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
@@ -582,6 +605,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
         new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
         new UserDtoHelper().pullMissing(userUuids);
         new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
+        new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
     }
 
     private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException, ServerCommunicationException {

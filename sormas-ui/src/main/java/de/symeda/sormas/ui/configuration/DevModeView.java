@@ -102,7 +102,7 @@ public class DevModeView extends AbstractConfigurationView {
 		caseGeneratorConfigBinder.bind(endDateField, CaseGenerationConfig::getEndDate, CaseGenerationConfig::setEndDate);
 		caseGeneratorLayout.addComponent(endDateField);
 
-		ComboBox<Disease> diseaseField = new ComboBox<>(null, FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases());
+		ComboBox<Disease> diseaseField = new ComboBox<>(null, FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 		diseaseField.setCaption(I18nProperties.getCaption(Captions.devModeDisease));
 		caseGeneratorConfigBinder.bind(diseaseField, CaseGenerationConfig::getDisease, CaseGenerationConfig::setDisease);
 		caseGeneratorLayout.addComponent(diseaseField);
@@ -176,7 +176,7 @@ public class DevModeView extends AbstractConfigurationView {
 					Object[] enumConstants = null;
 					// Only use active primary diseases
 					if (parameterType == Disease.class) {
-						enumConstants = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray();
+						enumConstants = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray();
 					} else {
 						enumConstants = parameterType.getEnumConstants();
 					}
@@ -205,7 +205,7 @@ public class DevModeView extends AbstractConfigurationView {
 	public void generateCases() {
 		CaseGenerationConfig config = caseGeneratorConfigBinder.getBean();
 
-		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases();
+		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
 		Random random = new Random();
 		float baseOffset = random.nextFloat();
 		int daysBetween = (int)ChronoUnit.DAYS.between(config.startDate, config.endDate);

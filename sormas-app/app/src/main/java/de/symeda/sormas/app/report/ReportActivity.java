@@ -19,7 +19,6 @@
 package de.symeda.sormas.app.report;
 
 import android.content.Context;
-import android.view.View;
 
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class ReportActivity extends BaseReportActivity {
     public List<PageMenuItem> getPageMenuData() {
         List<PageMenuItem> menuItems = PageMenuItem.fromEnum(ReportSection.values(), getContext());
         if (!(ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER))) {
-            menuItems.remove(ReportSection.INFORMANT_REPORTS.ordinal());
+            menuItems.set(ReportSection.INFORMANT_REPORTS.ordinal(), null);
             setPageMenuVisibility(false);
         }
 
@@ -61,7 +60,7 @@ public class ReportActivity extends BaseReportActivity {
 
     @Override
     public BaseReportFragment buildReportFragment(PageMenuItem menuItem) {
-        ReportSection section = ReportSection.fromOrdinal(menuItem.getKey());
+        ReportSection section = ReportSection.fromOrdinal(menuItem.getPosition());
         BaseReportFragment fragment;
         switch (section) {
             case MY_REPORTS:

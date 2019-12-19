@@ -302,7 +302,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
      * @throws DaoException
      */
     public ADO saveAndSnapshot(ADO ado) throws DaoException {
-
         if (ado.isSnapshot()) {
             throw new IllegalArgumentException("Can't save a snapshot");
         }

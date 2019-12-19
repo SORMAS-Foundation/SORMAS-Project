@@ -48,7 +48,7 @@ public interface DistrictFacade {
 
 	List<String> getAllUuids(String userUuid);
 	
-	List<String> getAllUuids();
+	List<Integer> getAllIds();
 	
 	List<DistrictDto> getByUuids(List<String> uuids);
 	
@@ -56,4 +56,7 @@ public interface DistrictFacade {
 	
 	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef);
 	
+	List<String> getNamesByIds(List<Long> districtIds);
+
+	String getFullEpidCodeForDistrict(String districtUuid);
 }

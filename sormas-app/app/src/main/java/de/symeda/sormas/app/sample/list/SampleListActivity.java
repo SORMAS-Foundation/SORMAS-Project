@@ -31,28 +31,23 @@ import java.util.Random;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BaseListActivity;
-import de.symeda.sormas.app.BaseListFragment;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.sample.PathogenTestDtoHelper;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
-import de.symeda.sormas.app.rest.ServerCommunicationException;
-import de.symeda.sormas.app.rest.ServerConnectionException;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.util.Callback;
 
 public class SampleListActivity extends PagedBaseListActivity {
 
-    private ShipmentStatus statusFilters[] = new ShipmentStatus[]{
+    private static ShipmentStatus[] statusFilters = new ShipmentStatus[]{null,
             ShipmentStatus.NOT_SHIPPED, ShipmentStatus.SHIPPED,
             ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB
     };
     private SampleListViewModel model;
 
     public static void startActivity(Context context, ShipmentStatus listFilter) {
-        BaseListActivity.startActivity(context, SampleListActivity.class, buildBundle(listFilter));
+        BaseListActivity.startActivity(context, SampleListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
     }
 
     @Override
@@ -88,7 +83,7 @@ public class SampleListActivity extends PagedBaseListActivity {
         });
         setOpenPageCallback(p -> {
             showPreloader();
-            model.getSampleCriteria().shipmentStatus(statusFilters[((PageMenuItem) p).getKey()]);
+            model.getSampleCriteria().shipmentStatus(statusFilters[((PageMenuItem) p).getPosition()]);
             model.notifyCriteriaUpdated();
         });
     }
@@ -116,7 +111,7 @@ public class SampleListActivity extends PagedBaseListActivity {
     @Override
     protected PagedBaseListFragment buildListFragment(PageMenuItem menuItem) {
         if (menuItem != null) {
-            ShipmentStatus listFilter = statusFilters[menuItem.getKey()];
+            ShipmentStatus listFilter = statusFilters[menuItem.getPosition()];
             return SampleListFragment.newInstance(listFilter);
         }
         return null;

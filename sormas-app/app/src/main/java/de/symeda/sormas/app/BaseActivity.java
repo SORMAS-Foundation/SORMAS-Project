@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -96,7 +97,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected PageMenuControl pageMenu = null;
     private List<PageMenuItem> pageItems = new ArrayList<>();
     private PageMenuItem activePageItem = null;
-    private int activePageIndex = 0;
+    private int activePagePosition;
     private boolean finishInsteadOfUpNav;
 
     private ActionBarDrawerToggle menuDrawerToggle;
@@ -126,7 +127,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     protected static Bundler buildBundle(int activePageKey) {
-        return new Bundler().setActivePageIndex(activePageKey);
+        return new Bundler().setActivePagePosition(activePageKey);
     }
 
     public static <TActivity extends BaseActivity> void startActivity(Context context, Class<TActivity> toActivity, Bundler bundler) {
@@ -136,9 +137,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        new Bundler(outState).setActivePageIndex(activePageIndex).setFinishInsteadOfUpNav(finishInsteadOfUpNav);
+        new Bundler(outState).setActivePagePosition(activePagePosition).setFinishInsteadOfUpNav(finishInsteadOfUpNav);
     }
 
     @Override
@@ -157,7 +158,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         }
 
         Bundler bundler = new Bundler(savedInstanceState);
-        activePageIndex = bundler.getActivePageIndex();
+        activePagePosition = bundler.getActivePagePosition();
         finishInsteadOfUpNav = bundler.isFinishInsteadOfUpNav();
 
         setContentView(getRootActivityLayout());
@@ -170,15 +171,12 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         pageMenu = findViewById(R.id.landingPageMenuControl);
         if (pageMenu != null) {
-            pageMenu.setPageMenuClickListener((parent, view, menuItem, position, id) -> setActivePage(menuItem));
-            pageMenu.setPageMenuInititalSelectionProvider(this::initPageMenuAndGetInitialSelection);
-
+            pageMenu.setPageMenuItemClickCallback(this::setActivePage);
         }
 
-        Drawable drawable = ContextCompat.getDrawable(this,
-                R.drawable.selector_actionbar_back_button);
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.selector_actionbar_back_button);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.applicationToolbar);
+        final Toolbar toolbar = findViewById(R.id.applicationToolbar);
         if (toolbar != null) {
             toolbar.setNavigationIcon(drawable);
 
@@ -192,8 +190,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         preSetupDrawer(savedInstanceState);
         onCreateInner(savedInstanceState);
 
-        if (!isSubActivity())
+        if (!isSubActivity()) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_blue_36dp);
+        }
 
         setupDrawer(navigationView);
     }
@@ -247,15 +246,24 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         if (pageMenu != null && menuItems != null) {
             ensureFabHiddenOnSoftKeyboardShown(pageMenu);
             pageMenu.hide();
-            pageMenu.setMenuData(menuItems);
+
+            List<PageMenuItem> displayedMenuItems = new ArrayList<>();
+            for (PageMenuItem item : menuItems) {
+                if (item != null) {
+                    displayedMenuItems.add(item);
+                }
+            }
+            pageMenu.setMenuData(displayedMenuItems);
+            pageMenu.markActiveMenuItem(initializePageMenu(menuItems));
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (activeActivity != null && activeActivity.get() == this)
+        if (activeActivity != null && activeActivity.get() == this) {
             activeActivity = null;
+        }
     }
 
     @Override
@@ -283,6 +291,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
                     NavigationHelper.goToTasks(getContext());
                 } else if (id == R.id.menu_item_cases) {
                     NavigationHelper.goToCases(getContext());
+                } else if (id == R.id.menu_item_aggregate_reports) {
+                    NavigationHelper.goToAggregateReports(getContext());
                 } else if (id == R.id.menu_item_contacts) {
                     NavigationHelper.goToContacts(getContext());
                 } else if (id == R.id.menu_item_events) {
@@ -310,9 +320,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     protected abstract boolean isSubActivity();
 
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (!isSubActivity()
-                && menuDrawerToggle.onOptionsItemSelected(item)) {
+        if (!isSubActivity() && menuDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
@@ -359,8 +367,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         if (navView != null) {
             View headerView = navView.getHeaderView(0);
 
-            if (headerView == null)
+            if (headerView == null) {
                 return;
+            }
 
             TextView userName = (TextView) headerView.findViewById(R.id.userFullName);
             TextView userRole = (TextView) headerView.findViewById(R.id.userRole);
@@ -373,9 +382,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
             User user = ConfigProvider.getUser();
 
-            if (user == null)
+            if (user == null) {
                 return;
-            else {
+            } else {
                 userName.setText(R.string.value_no_username);
                 userRole.setText(R.string.value_role_unassigned);
             }
@@ -388,6 +397,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
             MenuItem dashboardMenu = menuNav.findItem(R.id.menu_item_dashboard);
             MenuItem taskMenu = menuNav.findItem(R.id.menu_item_tasks);
             MenuItem caseMenu = menuNav.findItem(R.id.menu_item_cases);
+            MenuItem aggregateReportsMenu = menuNav.findItem(R.id.menu_item_aggregate_reports);
             MenuItem contactMenu = menuNav.findItem(R.id.menu_item_contacts);
             MenuItem eventMenu = menuNav.findItem(R.id.menu_item_events);
             MenuItem sampleMenu = menuNav.findItem(R.id.menu_item_samples);
@@ -402,6 +412,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
             if (caseMenu != null)
                 caseMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CASE_VIEW));
+
+            if (aggregateReportsMenu != null)
+                aggregateReportsMenu.setVisible(ConfigProvider.hasUserRight(UserRight.AGGREGATE_REPORT_VIEW));
 
             if (sampleMenu != null)
                 sampleMenu.setVisible(ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW));
@@ -470,7 +483,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         }
 
         activePageItem = menuItem;
-        activePageIndex = pageItems.indexOf(activePageItem);
+        activePagePosition = activePageItem.getPosition();
         return openPage(activePageItem);
     }
 
@@ -519,8 +532,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         if (pageStatus != null) {
             StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
-            if (elaborator != null)
+            if (elaborator != null) {
                 return elaborator.getFriendlyName(getContext());
+            }
         }
 
         return "";
@@ -531,15 +545,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
 
         if (pageStatus != null) {
             StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(pageStatus);
-            if (elaborator != null)
+            if (elaborator != null) {
                 return elaborator.getColorIndicatorResource();
+            }
         }
 
         return R.color.noColor;
     }
 
     public void synchronizeChangedData() {
-        SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        SwipeRefreshLayout refreshLayout = findViewById(R.id.swiperefresh);
         synchronizeData(SynchronizeDataAsync.SyncMode.Changes, true, true, refreshLayout, getSynchronizeResultCallback(), null);
     }
 
@@ -554,7 +569,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showUpgradePrompt, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback resultCallback, final Callback beforeSyncCallback) {
-
         if (!checkActiveUser()) return;
 
         if (RetroProvider.isConnected()) {
@@ -639,7 +653,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     }
 
     private void showConflictSnackbar() {
-
         NotificationHelper.showNotification(BaseActivity.this, NotificationType.ERROR, R.string.message_sync_conflict);
 
         // TODO allow user to open sync log from here
@@ -699,23 +712,35 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
         return null;
     }
 
-    private PageMenuItem initPageMenuAndGetInitialSelection(List<PageMenuItem> menuList) {
+    private PageMenuItem initializePageMenu(List<PageMenuItem> menuList) {
         this.pageItems = menuList;
         activePageItem = menuList.get(0);
         for (int i = 0; i < menuList.size(); i++) {
-            if (i == activePageIndex) {
+            if (i == activePagePosition) {
                 activePageItem = menuList.get(i);
             }
         }
+
         return activePageItem;
     }
 
     protected boolean goToNextPage() {
-        if (activePageIndex >= pageItems.size() - 1) {
+        if (activePagePosition >= pageItems.size() - 1) {
             return false; // last page
         }
-        int newMenukey = activePageIndex + 1;
-        PageMenuItem pageItem = pageItems.get(newMenukey);
+
+        int newPosition = activePagePosition + 1;
+        PageMenuItem pageItem = null;
+
+        while (pageItem == null) {
+            pageItem = pageItems.get(newPosition);
+            newPosition++;
+
+            if (newPosition >= pageItems.size() - 1) {
+                return false;
+            }
+        }
+
         pageMenu.markActiveMenuItem(pageItem);
         return setActivePage(pageItem);
     }

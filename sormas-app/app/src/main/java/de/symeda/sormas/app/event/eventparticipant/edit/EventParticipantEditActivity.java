@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -68,7 +70,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setEventUuid(eventUuid);
     }

@@ -136,15 +136,20 @@ public class PersonDto extends EntityDto {
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
 	private String causeOfDeathDetails;
-	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+			Disease.UNDEFINED, Disease.OTHER })
 	private DeathPlaceType deathPlaceType;
-	@Diseases({Disease.EVD,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+			Disease.UNDEFINED, Disease.OTHER })
 	private String deathPlaceDescription;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+			Disease.UNDEFINED, Disease.OTHER })
 	private Date burialDate;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+			Disease.UNDEFINED, Disease.OTHER })
 	private String burialPlaceDescription;
-	@Diseases({Disease.EVD,Disease.LASSA,Disease.UNSPECIFIED_VHF,Disease.UNDEFINED,Disease.OTHER})
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+			Disease.UNDEFINED, Disease.OTHER })
 	private BurialConductor burialConductor;
 	private String phone;
 	private String phoneOwner;

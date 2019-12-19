@@ -76,7 +76,7 @@ public class SampleController {
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
 		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
-		createForm.setValue(SampleDto.buildSample(UserProvider.getCurrent().getUserReference(), caseRef));
+		createForm.setValue(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -95,7 +95,7 @@ public class SampleController {
 
 	public void createReferral(SampleDto sample) {
 		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
-		SampleDto referralSample = SampleDto.buildReferralSample(UserProvider.getCurrent().getUserReference(), sample);
+		SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
 		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
 

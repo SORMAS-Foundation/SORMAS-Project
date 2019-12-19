@@ -28,6 +28,7 @@ import java.sql.SQLException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class DiseaseConfigurationDao extends AbstractAdoDao<DiseaseConfiguration> {
 
@@ -57,4 +58,15 @@ public class DiseaseConfigurationDao extends AbstractAdoDao<DiseaseConfiguration
         }
     }
 
+    @Override
+    public void create(DiseaseConfiguration data) throws SQLException {
+        super.create(data);
+        DiseaseConfigurationCache.reset();
+    }
+
+    @Override
+    protected void update(DiseaseConfiguration data) throws SQLException {
+        super.update(data);
+        DiseaseConfigurationCache.reset();
+    }
 }

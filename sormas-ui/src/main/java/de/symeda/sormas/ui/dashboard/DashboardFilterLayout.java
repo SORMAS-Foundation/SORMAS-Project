@@ -139,7 +139,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp());
 		} else {
-			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray());
+			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
 		}
 		diseaseFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());

@@ -26,7 +26,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 @SuppressWarnings("serial")
-public class EpiWeek implements Serializable, StatisticsGroupingKey {
+public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGroupingKey {
 	
 	private final Integer year;
 	private final Integer week;
@@ -93,7 +93,18 @@ public class EpiWeek implements Serializable, StatisticsGroupingKey {
 	public String toShortString() {
 		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year) : "");
 	}
+	
+	public String toUrlString() {
+		return "year-" + year + "-week-" + week;
+	}
 
+	public static EpiWeek fromUrlString(String urlString) {
+		int dashIndex = urlString.indexOf("-");
+		int year = Integer.valueOf(urlString.substring(dashIndex + 1, urlString.indexOf("-", dashIndex + 1)));
+		int week = Integer.valueOf(urlString.substring(urlString.lastIndexOf("-") + 1));
+		return new EpiWeek(year, week);
+	}
+	
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
 		EpiWeek other = (EpiWeek) o;
@@ -124,6 +135,11 @@ public class EpiWeek implements Serializable, StatisticsGroupingKey {
 				return 1;
 			}
 		}
+	}
+
+	@Override
+	public int compareTo(EpiWeek o) {
+		return keyCompareTo(o);
 	}
 
 }

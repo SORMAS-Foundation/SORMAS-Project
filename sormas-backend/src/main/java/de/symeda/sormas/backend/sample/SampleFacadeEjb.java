@@ -430,7 +430,11 @@ public class SampleFacadeEjb implements SampleFacade {
 					exportDto.setPathogenTestType1(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
 					exportDto.setPathogenTestDisease1(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
 					exportDto.setPathogenTestDateTime1(pathogenTest.getTestDateTime());
-					exportDto.setPathogenTestLab1(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					if (pathogenTest.getLab() != null) {
+						exportDto
+								.setPathogenTestLab1(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					}
 					exportDto.setPathogenTestResult1(pathogenTest.getTestResult());
 					exportDto.setPathogenTestVerified1(pathogenTest.getTestResultVerified());
 					break;
@@ -438,7 +442,11 @@ public class SampleFacadeEjb implements SampleFacade {
 					exportDto.setPathogenTestType2(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
 					exportDto.setPathogenTestDisease2(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
 					exportDto.setPathogenTestDateTime2(pathogenTest.getTestDateTime());
-					exportDto.setPathogenTestLab2(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					if (pathogenTest.getLab() != null) {
+						exportDto
+								.setPathogenTestLab2(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					}
 					exportDto.setPathogenTestResult2(pathogenTest.getTestResult());
 					exportDto.setPathogenTestVerified2(pathogenTest.getTestResultVerified());
 					break;
@@ -446,7 +454,11 @@ public class SampleFacadeEjb implements SampleFacade {
 					exportDto.setPathogenTestType3(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
 					exportDto.setPathogenTestDisease3(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
 					exportDto.setPathogenTestDateTime3(pathogenTest.getTestDateTime());
-					exportDto.setPathogenTestLab3(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					if (pathogenTest.getLab() != null) {
+						exportDto
+								.setPathogenTestLab3(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+					}
 					exportDto.setPathogenTestResult3(pathogenTest.getTestResult());
 					exportDto.setPathogenTestVerified3(pathogenTest.getTestResultVerified());
 					break;

@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -44,7 +45,7 @@ import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
@@ -60,6 +61,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> yearList;
     private List<Item> monthList;
     private List<Item> sexList;
+    private List<Item> presentConditionList;
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
@@ -70,17 +72,15 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> initialFacilities;
     private List<Item> initialPointsOfEntry;
 
-    private String subHeadingTitle;
-
     public static CaseNewFragment newInstance(Case activityRootData) {
         return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle().get(), activityRootData);
     }
 
-    public static CaseNewFragment newInstanceFromContact(Case activityRootData, String contactUuid) {
+    static CaseNewFragment newInstanceFromContact(Case activityRootData, String contactUuid) {
         return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithContact(contactUuid).get(), activityRootData);
     }
 
-    public static CaseNewFragment newInstanceFromEventParticipant(Case activityRootData, String eventParticipantUuid) {
+    static CaseNewFragment newInstanceFromEventParticipant(Case activityRootData, String eventParticipantUuid) {
         return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundleWithEventParticipant(eventParticipantUuid).get(), activityRootData);
     }
 
@@ -98,7 +98,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
-        List<Disease> diseases = DiseaseConfigurationHelper.getInstance().getAllActivePrimaryDiseases();
+        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
         diseaseList = DataUtils.toItems(diseases);
         if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
             diseaseList.add(DataUtils.toItem(record.getDisease()));
@@ -111,6 +111,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         monthList = DataUtils.getMonthItems(true);
 
         sexList = DataUtils.getEnumItems(Sex.class, true);
+        presentConditionList = DataUtils.getEnumItems(PresentCondition.class, true);
 
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
@@ -135,6 +136,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                 contentBinding.caseDataPointOfEntry, initialPointsOfEntry);
 
         contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+        contentBinding.caseDataDisease.addValueChangedListener(e -> {
+            contentBinding.rapidCaseEntryInfo.setVisibility(
+                    e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
+        });
+
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
         contentBinding.caseDataHumanRabiesType.initializeSpinner(rabiesTypeList);
@@ -153,6 +159,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.personBirthdateYYYY.setSelectionOnOpen(year-35);
 
         contentBinding.personSex.initializeSpinner(sexList);
+
+        contentBinding.personPresentCondition.initializeSpinner(presentConditionList);
     }
 
     @Override
@@ -235,8 +243,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         return R.layout.fragment_case_new_layout;
     }
 
-    public void clearFieldsForRapidCaseEntry() {
-
+    void clearFieldsForRapidCaseEntry() {
         setLiveValidationDisabled(true);
 
         getContentBinding().symptomsOnsetDate.setValue(null);
@@ -257,11 +264,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         }
     }
 
-    public boolean isRapidCaseEntry() {
-        return false;//(boolean) getContentBinding().rapidCaseEntry.getValue();
-    }
-
-    public void updateLastCaseInfo(Person person) {
+    void updateLastCaseInfo(Person person) {
         StringBuilder lastCaseText = new StringBuilder();
         lastCaseText.append(getResources().getString(R.string.caption_last_case)).append(": ").append(person.getFirstName()).append(" ").append(person.getLastName());
         String dobText = PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
@@ -272,6 +275,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             lastCaseText.append(" | ").append(person.getSex());
         }
 
-        ((IUpdateSubHeadingTitle)getActivity()).updateSubHeadingTitle(lastCaseText.toString());
+        ((IUpdateSubHeadingTitle) getActivity()).updateSubHeadingTitle(lastCaseText.toString());
     }
 }

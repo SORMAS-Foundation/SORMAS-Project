@@ -2,14 +2,11 @@ package de.symeda.sormas.ui.importer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-
-import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.FacadeProvider;
@@ -33,23 +30,17 @@ public class PopulationDataImporter extends DataImporter {
 	private static final String TOTAL_HEADER_PATTERN = "[A-Z]+_TOTAL";
 	private final Date collectionDate;
 
-	public PopulationDataImporter(File inputFile, UserReferenceDto currentUser, UI currentUI, Date collectionDate) throws IOException {
-		this(inputFile, null, currentUser, currentUI, collectionDate);
-	}
-
-	public PopulationDataImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI, Date collectionDate) throws IOException {
-		super(inputFile, false, errorReportWriter, currentUser, currentUI);
+	public PopulationDataImporter(File inputFile, UserReferenceDto currentUser, Date collectionDate) {
+		super(inputFile, false, currentUser);
 		this.collectionDate = collectionDate;
 	}
 
 	@Override
-	protected void importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
+	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
-			hasImportError = true;
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
-			importedCallback.accept(ImportResult.ERROR);
-			return;
+			return ImportLineResult.ERROR;
 		}
 
 		// Reference population data that contains the region and district for this line
@@ -60,10 +51,8 @@ public class PopulationDataImporter extends DataImporter {
 			if (PopulationDataDto.REGION.equalsIgnoreCase(entityProperties[i])) {
 				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getByName(values[i]);
 				if (regions.size() != 1) {
-					hasImportError = true;
 					writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
-					importedCallback.accept(ImportResult.ERROR);
-					return;
+					return ImportLineResult.ERROR;
 				}
 				region = regions.get(0);
 			} 
@@ -73,10 +62,8 @@ public class PopulationDataImporter extends DataImporter {
 				} else {
 					List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getByName(values[i], region);
 					if (districts.size() != 1) {
-						hasImportError = true;
 						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
-						importedCallback.accept(ImportResult.ERROR);
-						return;
+						return ImportLineResult.ERROR;
 					}
 					district = districts.get(0);
 				}
@@ -145,15 +132,13 @@ public class PopulationDataImporter extends DataImporter {
 		if (!populationDataHasImportError) {
 			try {
 				FacadeProvider.getPopulationDataFacade().savePopulationData(modifiedPopulationDataList);
-				importedCallback.accept(ImportResult.SUCCESS);
+				return ImportLineResult.SUCCESS;
 			} catch (ValidationRuntimeException e) {
-				hasImportError = true;
 				writeImportError(values, e.getMessage());
-				importedCallback.accept(ImportResult.ERROR);
+				return ImportLineResult.ERROR;
 			}
 		} else {
-			hasImportError = true;
-			importedCallback.accept(ImportResult.ERROR);
+			return ImportLineResult.ERROR;
 		}
 	}
 

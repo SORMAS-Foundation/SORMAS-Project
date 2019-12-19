@@ -47,6 +47,8 @@
 		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
 		<class>de.symeda.sormas.backend.importexport.ExportConfiguration</class>
 		<class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
+		<class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
+		<class>de.symeda.sormas.backend.report.AggregateReport</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
@@ -61,8 +63,9 @@
 
       		<property name="hibernate.hbm2ddl.auto" value="create-drop" />
 			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
-      		<property name="show_sql" value="true"/>
-	    	
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
+
 			<!-- 			
 			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> 
 			<property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform"/>		

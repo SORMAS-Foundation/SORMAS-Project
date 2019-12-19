@@ -50,6 +50,9 @@ public class DiseaseConfiguration extends AbstractDomainObject {
     private Boolean primaryDisease;
 
     @DatabaseField
+    private Boolean caseBased;
+
+    @DatabaseField
     private Boolean followUpEnabled;
 
     @Column
@@ -77,6 +80,14 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
     public void setPrimaryDisease(Boolean primaryDisease) {
         this.primaryDisease = primaryDisease;
+    }
+
+    public Boolean getCaseBased() {
+        return caseBased;
+    }
+
+    public void setCaseBased(Boolean caseBased) {
+        this.caseBased = caseBased;
     }
 
     public Boolean getFollowUpEnabled() {

@@ -225,6 +225,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 contentBinding.caseDataDistrict, initialDistricts,
                 contentBinding.caseDataCommunity, initialCommunities,
                 contentBinding.caseDataHealthFacility, initialFacilities);
+
+        if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
+            contentBinding.caseDataHealthFacility.setRequired(false);
+        }
     }
 
     @Override

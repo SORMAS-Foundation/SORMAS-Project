@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
+
+    <data>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
+
+        <variable name="reportFilterOptionClass" type="Class"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
+
+            <requestFocus/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/formListSectionBackground"
+                android:orientation="vertical"
+                android:paddingBottom="0dp"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/report_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:enumClass="@{reportFilterOptionClass}"
+                    app:showCaption="false" />
+
+                <LinearLayout
+                    android:id="@+id/specify_report_selector_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/aggregateReports_year"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:description="@string/description_year"
+                        app:hint="@string/hint_select_year"
+                        app:labelCaption="@string/caption_year" />
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/aggregateReports_week"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/control_spacing"
+                        android:layout_weight="2"
+                        app:description="@string/description_epi_week"
+                        app:hint="@string/hint_select_epi_week"
+                        app:labelCaption="@string/caption_epi_week" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView style="@style/FullHorizontalDividerStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4"
+                    android:paddingEnd="8dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:textSize="16sp"
+                    android:textColor="@color/listActivityRowTertiaryText"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/caption_aggregate_new_cases_abbr" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:textSize="16sp"
+                    android:textColor="@color/listActivityRowTertiaryText"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/caption_aggregate_lab_confirmations_abbr" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.2"
+                    android:textSize="16sp"
+                    android:textColor="@color/listActivityRowTertiaryText"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingStart="4dp"
+                    android:text="@string/caption_aggregate_deaths_abbr" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/report_content"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-12dp"
+                android:background="@color/activityBackground" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/listActivityRowTertiaryText"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginBottom="6dp"
+                android:text="@string/info_aggregate_report_legend" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_default"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/buttonPanelHorizontalMargin"
+                android:paddingRight="@dimen/buttonPanelHorizontalMargin"
+                android:paddingBottom="@dimen/buttonPanelVerticalMargin">
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/submit_report"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/action_submit_case_numbers"
+                    app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                    app:rounded="true"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
+

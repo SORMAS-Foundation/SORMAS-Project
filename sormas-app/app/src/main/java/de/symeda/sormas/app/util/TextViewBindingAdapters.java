@@ -32,6 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -509,6 +511,15 @@ public class TextViewBindingAdapters {
             } else {
                 textField.setText(val + "(" + _dateValue + ")");
             }
+        }
+    }
+
+    @BindingAdapter(value ={"investigationStatusValue", "defaultValue"}, requireAll=false)
+    public static void setInvestigationStatusValue(TextView textField, InvestigationStatus status, String defaultValue) {
+        if (status == null) {
+            textField.setText(defaultValue);
+        } else {
+            textField.setText(status.toString());
         }
     }
 

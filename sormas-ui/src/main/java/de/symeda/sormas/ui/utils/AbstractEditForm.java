@@ -470,7 +470,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	}
 
 	protected void addNonPrimaryDiseasesTo(ComboBox diseaseField) {
-		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActiveDiseases();
+		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, false, true);
 		for (Disease disease : diseases) {
 			if (diseaseField.getItem(disease) != null) {
 				continue;

@@ -23,6 +23,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
@@ -35,7 +37,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
-import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -70,7 +71,7 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setContactUuid(contactUuid);
     }
@@ -98,7 +99,7 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
     @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Visit activityRootData) {
 
-        VisitSection section = VisitSection.fromOrdinal(menuItem.getKey());
+        VisitSection section = VisitSection.fromOrdinal(menuItem.getPosition());
         BaseEditFragment fragment;
         switch (section) {
             case VISIT_INFO:

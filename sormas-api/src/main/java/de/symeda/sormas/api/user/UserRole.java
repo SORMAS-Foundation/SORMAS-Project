@@ -24,12 +24,13 @@ import java.util.HashSet;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.utils.ValidationException;
 
 /**
  * These are also used as user groups in the server realm
  */
-public enum UserRole {
+public enum UserRole implements StatisticsGroupingKey {
 
 	ADMIN(false, false, false, false),
 	NATIONAL_USER(false, false, false, false),	
@@ -129,7 +130,7 @@ public enum UserRole {
 			defaultUserRights = new HashSet<UserRight>();
 			for (UserRight userRight : UserRight.values()) {
 				if (userRight.isDefaultForRole(this)) {
-					getDefaultUserRights().add(userRight);
+					defaultUserRights.add(userRight);
 				}
 			}
 		}
@@ -390,5 +391,18 @@ public enum UserRole {
 		public UserRole getForbiddenUserRole() {
 			return forbiddenUserRole;
 		}
+	}
+
+	@Override
+	public int keyCompareTo(StatisticsGroupingKey o) {
+		if (o == null) {
+			throw new NullPointerException("Can't compare to null.");
+		}
+		if (o.getClass() != this.getClass()) {
+			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName()
+					+ " that differs from " + this.getClass().getName());
+		}
+
+		return this.toString().compareTo(o.toString());
 	}
 }

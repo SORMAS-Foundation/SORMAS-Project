@@ -25,7 +25,6 @@ import android.view.View;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
-import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
 import java.util.ArrayList;
@@ -174,11 +173,11 @@ public class CasePickOrCreateDialog extends AbstractDialog {
         // Needs to be done here because callback needs to be initialized before being bound to the layout
         setupControlListeners();
 
-        if (!binding.setVariable(BR.similarCases, makeObservable(similarCases))) {
+        if (!binding.setVariable(de.symeda.sormas.app.BR.similarCases, makeObservable(similarCases))) {
             Log.e(TAG, "There is no variable 'similarCases' in layout " + layoutName);
         }
 
-        if (!binding.setVariable(BR.similarCaseItemClickCallback, similarCaseItemClickCallback)) {
+        if (!binding.setVariable(de.symeda.sormas.app.BR.similarCaseItemClickCallback, similarCaseItemClickCallback)) {
             Log.e(TAG, "There is no variable 'similarCasesItemClickCallback' in layout " + layoutName);
         }
     }

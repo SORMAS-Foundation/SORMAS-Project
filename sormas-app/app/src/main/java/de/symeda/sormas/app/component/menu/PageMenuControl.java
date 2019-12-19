@@ -25,18 +25,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.percentlayout.widget.PercentFrameLayout;
 import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -47,52 +45,39 @@ import java.util.List;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.OnSwipeTouchListener;
+import de.symeda.sormas.app.util.Consumer;
 
 public class PageMenuControl extends LinearLayout {
 
     public static final String TAG = PageMenuControl.class.getSimpleName();
 
-    private NotificationCountChangingListener mOnNotificationCountChangingListener;
-    private PageMenuClickListener pageMenuClickListener;
-    private PageMenuInitialSelectionProvider pageMenuInitialSelectionProvider;
+    //    private NotificationCountChangingListener mOnNotificationCountChangingListener;
+    private Consumer<PageMenuItem> pageMenuItemClickCallback;
 
     private PageMenuAdapter adapter;
     private List<PageMenuItem> menuItems;
 
     private int cellLayout;
-    private int counterBackgroundColor;
-    private int counterBackgroundActiveColor;
-    private int iconColor;
-    private int iconActiveColor;
-    private int titleColor;
-    private int titleActiveColor;
+    //    private int counterBackgroundColor;
+    //    private int counterBackgroundActiveColor;
+
     private FrameLayout fabFrame;
     private FloatingActionButton fab;
     private LinearLayout subMenuFrame;
     private LinearLayout filtersFrame;
-    private GridView taskLandingMenuGridView;
 
-    private boolean mVisible;
-    private boolean mCollapsible;
-    private int mMarginBottomOffsetResId = -1;
+    private boolean visible;
+    private boolean collapsible;
 
-    private int mCapturedLayoutHeight = 0;
-    private int mFabHeight = 0;
-    private int mParentWidth = 0;
-    private int mParentHeight = 0;
-    private int mParentBottomOffset = 0;
+    private int marginBottomOffsetResId = -1;
+    private int capturedLayoutHeight = 0;
+    private int fabHeight = 0;
+    private int parentHeight = 0;
+    private int openPositionY = 0;
+    private int closePositionY = 0;
 
-    private int mOpenPositionY = 0;
-    private int mClosePositionY = 0;
-
-    private ActionType mEarlyAction;
-    private ActionType mLastAnimation;
-
-
-    private enum ActionType {
-        SHOW,
-        HIDE;
-    }
+    private ActionType earlyAction;
+    private ActionType lastAnimation;
 
     public PageMenuControl(Context context) {
         super(context);
@@ -105,6 +90,8 @@ public class PageMenuControl extends LinearLayout {
     }
 
     protected void initializeViews(Context context, AttributeSet attrs) {
+        int iconColor = 0, iconActiveColor = 0, titleColor = 0, titleActiveColor = 0;
+
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(
                     attrs,
@@ -114,29 +101,24 @@ public class PageMenuControl extends LinearLayout {
             try {
                 cellLayout = a.getResourceId(R.styleable.PageMenuControl_cellLayout, 0);
 
-                counterBackgroundColor = a.getResourceId(R.styleable.PageMenuControl_counterBackgroundColor, 0);
-                counterBackgroundActiveColor = a.getResourceId(R.styleable.PageMenuControl_counterBackgroundActiveColor, 0);
+//                counterBackgroundColor = a.getResourceId(R.styleable.PageMenuControl_counterBackgroundColor, 0);
+//                counterBackgroundActiveColor = a.getResourceId(R.styleable.PageMenuControl_counterBackgroundActiveColor, 0);
                 iconColor = a.getResourceId(R.styleable.PageMenuControl_iconColor, 0);
                 iconActiveColor = a.getResourceId(R.styleable.PageMenuControl_iconActiveColor, 0);
-
                 titleColor = a.getResourceId(R.styleable.PageMenuControl_titleColor, 0);
                 titleActiveColor = a.getResourceId(R.styleable.PageMenuControl_titleActiveColor, 0);
-                mVisible = a.getBoolean(R.styleable.PageMenuControl_visibility, false);
-                mCollapsible = a.getBoolean(R.styleable.PageMenuControl_collapsible, false);
-                mMarginBottomOffsetResId = a.getResourceId(R.styleable.PageMenuControl_marginBottomOffsetResId, -1);
-
+                visible = a.getBoolean(R.styleable.PageMenuControl_visibility, false);
+                collapsible = a.getBoolean(R.styleable.PageMenuControl_collapsible, false);
+                marginBottomOffsetResId = a.getResourceId(R.styleable.PageMenuControl_marginBottomOffsetResId, -1);
             } finally {
                 a.recycle();
             }
         }
 
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.sub_menu_layout, this);
 
-        adapter = new PageMenuAdapter(context);
-        adapter.initialize(cellLayout, counterBackgroundColor, counterBackgroundActiveColor,
-                iconColor, iconActiveColor, titleColor, titleActiveColor);
+        adapter = new PageMenuAdapter(context, cellLayout, iconColor, iconActiveColor, titleColor, titleActiveColor);
     }
 
     public <T extends Enum> void setMenuData(List<PageMenuItem> menuItems) {
@@ -150,94 +132,53 @@ public class PageMenuControl extends LinearLayout {
 
         adapter.setData(this.menuItems);
 
-        selectInitialActiveMenuItem();
-        updateNotificationCount();
+//        updateNotificationCount();
 
         invalidate();
         requestLayout();
     }
 
-    private void updateNotificationCount() {
-        int position = 0;
-        for (final PageMenuItem menuItem : menuItems) {
-            int result = performNotificationCountChange(menuItem, position);
-            menuItem.setNotificationCount(result);
-            position = position + 1;
-        }
-        adapter.notifyDataSetChanged();
-    }
+//    private void updateNotificationCount() {
+//        int position = 0;
+//        for (final PageMenuItem menuItem : menuItems) {
+//            int result = performNotificationCountChange(menuItem, position);
+//            menuItem.setNotificationCount(result);
+//            position = position + 1;
+//        }
+//        adapter.notifyDataSetChanged();
+//    }
+//
+//    public void setOnNotificationCountChangingListener(@Nullable NotificationCountChangingListener listener) {
+//        mOnNotificationCountChangingListener = listener;
+//    }
+//
+//    @Nullable
+//    public final NotificationCountChangingListener getOnNotificationCountChangingListener() {
+//        return mOnNotificationCountChangingListener;
+//    }
+//
+//    public int performNotificationCountChange(PageMenuItem menuItem, int position) {
+//        int result = 0;
+//        if (mOnNotificationCountChangingListener != null) {
+//            result = mOnNotificationCountChangingListener.onNotificationCountChangingAsync(taskLandingMenuGridView, menuItem, position);
+//        }
+//
+//        return result;
+//    }
 
-    public void setOnNotificationCountChangingListener(@Nullable NotificationCountChangingListener listener) {
-        mOnNotificationCountChangingListener = listener;
-    }
-
-    @Nullable
-    public final NotificationCountChangingListener getOnNotificationCountChangingListener() {
-        return mOnNotificationCountChangingListener;
-    }
-
-    public int performNotificationCountChange(PageMenuItem menuItem, int position) {
-        int result = 0;
-        if (mOnNotificationCountChangingListener != null) {
-            result = mOnNotificationCountChangingListener.onNotificationCountChangingAsync(taskLandingMenuGridView, menuItem, position);
-        }
-
-        return result;
-    }
-
-    public void setPageMenuClickListener(@Nullable PageMenuClickListener pageMenuClickListener) {
-        this.pageMenuClickListener = pageMenuClickListener;
-    }
-
-    @Nullable
-    public final PageMenuClickListener getPageMenuClickListener() {
-        return pageMenuClickListener;
-    }
-
-    public void setPageMenuInititalSelectionProvider(@Nullable PageMenuInitialSelectionProvider pageMenuInitialSelectionProvider) {
-        this.pageMenuInitialSelectionProvider = pageMenuInitialSelectionProvider;
-    }
-
-    @Nullable
-    public final PageMenuInitialSelectionProvider getPageMenuInitialSelectionProvider() {
-        return pageMenuInitialSelectionProvider;
+    public void setPageMenuItemClickCallback(Consumer<PageMenuItem> pageMenuItemClickCallback) {
+        this.pageMenuItemClickCallback = pageMenuItemClickCallback;
     }
 
     public void addFilter(View filterView) {
         filtersFrame.addView(filterView);
     }
 
-    public boolean selectInitialActiveMenuItem() {
-        boolean returnVal = false;
-        PageMenuItem result = null;
-        if (pageMenuInitialSelectionProvider != null) {
-            result = pageMenuInitialSelectionProvider.getInititalSelectedPageMenuItem(menuItems);
-
-            if (result != null) {
-                result.setActive(true);
-                returnVal = true;
-                adapter.notifyDataSetChanged();
-            }
-        }
-
-        return returnVal;
-    }
-
-    public boolean performPageMenuItemClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws InstantiationException, IllegalAccessException {
-        boolean result = false;
-        if (pageMenuClickListener != null) {
-            result = pageMenuClickListener.onPageMenuClick(parent, view, menuItem, position, id); //IMPORTANT
-            if (result) {
-                markActiveMenuItem(menuItem);
-            }
-            hide();
-        }
-        return result;
-    }
-
     public void markActiveMenuItem(PageMenuItem menuItem) {
         for (PageMenuItem m : menuItems) {
-            m.setActive(false);
+            if (m != null) {
+                m.setActive(false);
+            }
         }
 
         menuItem.setActive(true);
@@ -254,21 +195,16 @@ public class PageMenuControl extends LinearLayout {
 
         subMenuFrame = findViewById(R.id.sub_menu_frame);
         filtersFrame = findViewById(R.id.filters_frame);
-        taskLandingMenuGridView = findViewById(R.id.sub_menu_grid);
         fabFrame = findViewById(R.id.button_frame);
         fab = findViewById(R.id.sub_menu_button);
 
+        GridView taskLandingMenuGridView = findViewById(R.id.sub_menu_grid);
         taskLandingMenuGridView.setAdapter(adapter);
-        taskLandingMenuGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    performPageMenuItemClick(parent, view, menuItems.get(position), position, id);
-                } catch (InstantiationException e) {
-                    Log.e(TAG, e.getMessage());
-                } catch (IllegalAccessException e) {
-                    Log.e(TAG, e.getMessage());
-                }
+        taskLandingMenuGridView.setOnItemClickListener((parent, view, position, id) -> {
+            if (pageMenuItemClickCallback != null) {
+                pageMenuItemClickCallback.accept(menuItems.get(position));
+                markActiveMenuItem(menuItems.get(position));
+                hide();
             }
         });
 
@@ -289,51 +225,49 @@ public class PageMenuControl extends LinearLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        mParentWidth = MeasureSpec.getSize(widthMeasureSpec);
-        mParentHeight = MeasureSpec.getSize(heightMeasureSpec);
+        parentHeight = MeasureSpec.getSize(heightMeasureSpec);
     }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (fabFrame != null) {
-            this.mFabHeight = fabFrame.getHeight();
+            this.fabHeight = fabFrame.getHeight();
         }
         if (subMenuFrame != null) {
-            this.mCapturedLayoutHeight = subMenuFrame.getHeight() + this.mFabHeight;
+            this.capturedLayoutHeight = subMenuFrame.getHeight() + this.fabHeight;
         }
         if (filtersFrame != null) {
-            this.mCapturedLayoutHeight = this.mCapturedLayoutHeight + filtersFrame.getHeight();
+            this.capturedLayoutHeight = this.capturedLayoutHeight + filtersFrame.getHeight();
         }
 
-        this.mOpenPositionY = this.mParentHeight - this.mCapturedLayoutHeight;
-        this.mClosePositionY = this.mParentHeight - this.mFabHeight;
+        this.openPositionY = this.parentHeight - this.capturedLayoutHeight;
+        this.closePositionY = this.parentHeight - this.fabHeight;
 
-        if (this.mMarginBottomOffsetResId > 0 && getParent() instanceof ViewGroup) {
+        if (this.marginBottomOffsetResId > 0 && getParent() instanceof ViewGroup) {
             View v = null;
 
-            this.mParentBottomOffset = this.mCapturedLayoutHeight - this.mFabHeight;
+            int parentBottomOffset = this.capturedLayoutHeight - this.fabHeight;
 
             if (getRootView() != null)
-                v = getRootView().findViewById(mMarginBottomOffsetResId);
+                v = getRootView().findViewById(marginBottomOffsetResId);
 
             if (v != null) {
                 if (v.getLayoutParams() instanceof LinearLayout.LayoutParams) {
                     LinearLayout.LayoutParams param = (LinearLayout.LayoutParams) v.getLayoutParams();
-                    param.bottomMargin = this.mParentBottomOffset;
+                    param.bottomMargin = parentBottomOffset;
                     v.setLayoutParams(param);
                 } else if (v.getLayoutParams() instanceof RelativeLayout.LayoutParams) {
                     RelativeLayout.LayoutParams param = (RelativeLayout.LayoutParams) v.getLayoutParams();
-                    param.bottomMargin = this.mParentBottomOffset;
+                    param.bottomMargin = parentBottomOffset;
                     v.setLayoutParams(param);
                 } else if (v.getLayoutParams() instanceof FrameLayout.LayoutParams) {
                     FrameLayout.LayoutParams param = (FrameLayout.LayoutParams) v.getLayoutParams();
-                    param.bottomMargin = this.mParentBottomOffset;
+                    param.bottomMargin = parentBottomOffset;
                     v.setLayoutParams(param);
                 } else if (v.getLayoutParams() instanceof ScrollView.LayoutParams) {
                     ScrollView.LayoutParams param = (ScrollView.LayoutParams) v.getLayoutParams();
-                    param.bottomMargin = this.mParentBottomOffset;
+                    param.bottomMargin = parentBottomOffset;
                     v.setLayoutParams(param);
                 }
             }
@@ -341,12 +275,12 @@ public class PageMenuControl extends LinearLayout {
 
         if (!showPageMenu()) {
             setVisibility(View.GONE);
-        } else if (!isVisible() || mEarlyAction == ActionType.HIDE) {
+        } else if (!isVisible() || earlyAction == ActionType.HIDE) {
             hide();
-            mEarlyAction = null;
+            earlyAction = null;
         } else {
             show();
-            mEarlyAction = null;
+            earlyAction = null;
         }
 
         updateFabDrawable();
@@ -356,8 +290,8 @@ public class PageMenuControl extends LinearLayout {
     }
 
     public void show() {
-        if (this.mCapturedLayoutHeight <= 0) {
-            mEarlyAction = ActionType.SHOW;
+        if (this.capturedLayoutHeight <= 0) {
+            earlyAction = ActionType.SHOW;
             return;
         }
 
@@ -368,20 +302,20 @@ public class PageMenuControl extends LinearLayout {
         subMenuFrame.setVisibility(View.VISIBLE);
         filtersFrame.setVisibility(View.VISIBLE);
 
-        if (mLastAnimation == null) {
-            setY(this.mOpenPositionY);
-            mLastAnimation = ActionType.SHOW;
-        } else if (mLastAnimation == ActionType.HIDE) {
-            setY(this.mClosePositionY);
-            this.animate().y(this.mOpenPositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
+        if (lastAnimation == null) {
+            setY(this.openPositionY);
+            lastAnimation = ActionType.SHOW;
+        } else if (lastAnimation == ActionType.HIDE) {
+            setY(this.closePositionY);
+            this.animate().y(this.openPositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    setY(PageMenuControl.this.mOpenPositionY);
-                    mLastAnimation = ActionType.SHOW;
+                    setY(PageMenuControl.this.openPositionY);
+                    lastAnimation = ActionType.SHOW;
                 }
 
                 @Override
@@ -394,7 +328,7 @@ public class PageMenuControl extends LinearLayout {
             }).start();
         }
 
-        this.mVisible = true;
+        this.visible = true;
         updateFabDrawable();
     }
 
@@ -403,12 +337,12 @@ public class PageMenuControl extends LinearLayout {
     }
 
     public void hide() {
-        if (this.mCapturedLayoutHeight <= 0) {
-            mEarlyAction = ActionType.HIDE;
+        if (this.capturedLayoutHeight <= 0) {
+            earlyAction = ActionType.HIDE;
             return;
         }
 
-        if (!mCollapsible)
+        if (!collapsible)
             return;
 
         if (!showPageMenu()) {
@@ -417,13 +351,13 @@ public class PageMenuControl extends LinearLayout {
         }
         setVisibility(View.VISIBLE);
 
-        if (mLastAnimation == null) {
-            setY(this.mClosePositionY);
-            mLastAnimation = ActionType.HIDE;
+        if (lastAnimation == null) {
+            setY(this.closePositionY);
+            lastAnimation = ActionType.HIDE;
             subMenuFrame.setVisibility(View.GONE);
             filtersFrame.setVisibility(View.GONE);
-        } else if (mLastAnimation != null && mLastAnimation == ActionType.SHOW) {
-            this.animate().y(this.mClosePositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
+        } else if (lastAnimation == ActionType.SHOW) {
+            this.animate().y(this.closePositionY).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
 
@@ -431,8 +365,8 @@ public class PageMenuControl extends LinearLayout {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    setY(PageMenuControl.this.mClosePositionY);
-                    mLastAnimation = ActionType.HIDE;
+                    setY(PageMenuControl.this.closePositionY);
+                    lastAnimation = ActionType.HIDE;
                     subMenuFrame.setVisibility(View.GONE);
                     filtersFrame.setVisibility(View.GONE);
                 }
@@ -449,7 +383,7 @@ public class PageMenuControl extends LinearLayout {
             }).start();
         }
 
-        this.mVisible = false;
+        this.visible = false;
         updateFabDrawable();
     }
 
@@ -459,11 +393,11 @@ public class PageMenuControl extends LinearLayout {
     }
 
     public boolean isVisible() {
-        return mVisible;
+        return visible;
     }
 
     public void setCollapsible(boolean collapsible) {
-        this.mCollapsible = collapsible;
+        this.collapsible = collapsible;
         setFabFrameVisibility(true);
         //configureFab();
     }
@@ -473,17 +407,15 @@ public class PageMenuControl extends LinearLayout {
     }
 
     private void configureFab() {
-        if (fab == null)
+        if (fab == null) {
             return;
+        }
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isVisible()) {
-                    hide();
-                } else {
-                    show();
-                }
+        fab.setOnClickListener(view -> {
+            if (isVisible()) {
+                hide();
+            } else {
+                show();
             }
         });
 
@@ -529,11 +461,11 @@ public class PageMenuControl extends LinearLayout {
 
     private void updateFabDrawable() {
         if (isVisible()) {
-            Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_close_black_24dp);
+            Drawable drw = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_close_black_24dp);
             drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
             fab.setImageDrawable(drw);
         } else {
-            Drawable drw = (Drawable) ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_open_black_24dp);
+            Drawable drw = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_open_black_24dp);
             drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
             fab.setImageDrawable(drw);
         }
@@ -541,18 +473,18 @@ public class PageMenuControl extends LinearLayout {
 
     private void setFabFrameVisibility(boolean visibility) {
         if (fabFrame != null) {
-            fabFrame.setVisibility(mCollapsible && visibility && showPageMenu() ? VISIBLE : GONE);
+            fabFrame.setVisibility(collapsible && visibility && showPageMenu() ? VISIBLE : GONE);
         }
 
         if (visibility) {
             // make sure fab is not out of screen
-            if (getY() > mClosePositionY) {
-                if (mLastAnimation == ActionType.SHOW) {
+            if (getY() > closePositionY) {
+                if (lastAnimation == ActionType.SHOW) {
                     // Force re-positioning; this only happens in lists when the soft
                     // keyboard used for text filters is hidden
                     show();
                 } else {
-                    setY(mClosePositionY);
+                    setY(closePositionY);
                 }
             }
         }
@@ -572,16 +504,13 @@ public class PageMenuControl extends LinearLayout {
         }
     }
 
-    public interface PageMenuInitialSelectionProvider {
-        PageMenuItem getInititalSelectedPageMenuItem(List<PageMenuItem> menuList);
-    }
-
-    public interface PageMenuClickListener {
-        boolean onPageMenuClick(AdapterView<?> parent, View view, PageMenuItem menuItem, int position, long id) throws IllegalAccessException, InstantiationException;
-    }
-
     public interface NotificationCountChangingListener {
-        int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
+//        int onNotificationCountChangingAsync(AdapterView<?> parent, PageMenuItem menuItem, int position);
+    }
+
+    private enum ActionType {
+        SHOW,
+        HIDE;
     }
 
 }

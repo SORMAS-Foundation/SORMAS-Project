@@ -86,14 +86,14 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
     protected String getSubHeadingTitle() {
         Resources r = getResources();
         String defaultValue = r.getString(R.string.hint_report_not_submitted);
-        boolean isInformant = ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT)
-                || ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_INFORMANT);
-        if (DataHelper.isNullOrEmpty(reportDate)) {
-            if (isInformant) {
-                return defaultValue;
-            } else {
-                return null;
-            }
+            boolean isInformant = ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT)
+                    || ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_INFORMANT);
+            if (DataHelper.isNullOrEmpty(reportDate)) {
+                if (isInformant) {
+                    return defaultValue;
+                } else {
+                    return null;
+                }
         } else {
             String format = isInformant ? r.getString(R.string.caption_confirmation_date) : r.getString(R.string.caption_report_date);
             return String.format(format, reportDate);

@@ -175,18 +175,22 @@ public class CaseDataDto extends EntityDto {
 	@Outbreaks
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
+			Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
-	@Diseases({ Disease.MEASLES, Disease.CSM, Disease.YELLOW_FEVER, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.CSM, Disease.YELLOW_FEVER,
+			Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private String vaccinationDoses;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.MONKEYPOX, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
+			Disease.MONKEYPOX, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Date vaccinationDate;
-	@Diseases({ Disease.MEASLES, Disease.YELLOW_FEVER, Disease.CSM, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
+			Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
-	@Diseases({ Disease.RABIES, Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.POLIO, Disease.RABIES, Disease.OTHER })
 	@Outbreaks
 	private String vaccine;
 	@Diseases({ Disease.MONKEYPOX })

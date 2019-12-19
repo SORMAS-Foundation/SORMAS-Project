@@ -22,33 +22,62 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public enum Disease implements StatisticsGroupingKey {
 	
-	CHOLERA(true, true, true, 5),
-	CONGENITAL_RUBELLA(true, true, true, 21),
-	CSM(true, true, false, 10),
-	DENGUE(true, true, false, 14),
-	EVD(true, true, true, 21),
-	LASSA(true, true, true, 21),
-	MEASLES(true, true, false, 21),
-	MONKEYPOX(true, true, true, 21),
-	NEW_INFLUENCA(true, true, true, 17),
-	PLAGUE(true, true, true, 7),
-	UNSPECIFIED_VHF(true, true, true, 21),
-	WEST_NILE_FEVER(true, false, false, 0),
-	YELLOW_FEVER(true, true, false, 6),
-	RABIES(true, true, true, 6),
-	ANTHRAX(true, true, false, 0),
-	PNEUMONIA(true, false, false, 0),
-	OTHER(true, true, true, 21),
-	UNDEFINED(true, true, true, 0);
+	AFP(true, true, true, false, 0),
+	CHOLERA(true, true, true, true, 5),
+	CONGENITAL_RUBELLA(true, true, true, true, 21),
+	CSM(true, true, true, false, 10),
+	DENGUE(true, true, true, false, 14),
+	EVD(true, true, true, true, 21),
+	GUINEA_WORM(true, true, true, false, 0),
+	LASSA(true, true, true, true, 21),
+	MEASLES(true, true, true, false, 21),
+	MONKEYPOX(true, true, true, true, 21),
+	NEW_INFLUENCA(true, true, true, true, 17),
+	PLAGUE(true, true, true, true, 7),
+	POLIO(true, true, true, false, 0),
+	UNSPECIFIED_VHF(true, true, true, true, 21),
+	WEST_NILE_FEVER(true, false, true, false, 0),
+	YELLOW_FEVER(true, true, true, false, 6),
+	RABIES(true, true, true, true, 6),
+	ANTHRAX(true, true, true, false, 0),
+	PNEUMONIA(true, false, true, false, 0),
+	MALARIA(true, false, false, false, 0),
+	TYPHOID_FEVER(true, false, false, false, 0),
+	ACUTE_VIRAL_HEPATITIS(true, false, false, false, 0),
+	NON_NEONATAL_TETANUS(true, false, false, false, 0),
+	HIV(true, false, false, false, 0),
+	SCHISTOSOMIASIS(true, false, false, false, 0),
+	SOIL_TRANSMITTED_HELMINTHS(true, false, false, false, 0),
+	TRYPANOSOMIASIS(true, false, false, false, 0),
+	DIARRHEA_DEHYDRATION(true, false, false, false, 0),
+	DIARRHEA_BLOOD(true, false, false, false, 0),
+	SNAKE_BITE(true, false, false, false, 0),
+	RUBELLA(true, false, false, false, 0),
+	TUBERCULOSIS(true, false, false, false, 0),
+	LEPROSY(true, false, false, false, 0),
+	LYMPHATIC_FILARIASIS(true, false, false, false, 0),
+	BURULI_ULCER(true, false, false, false, 0),
+	PERTUSSIS(true, false, false, false, 0),
+	NEONATAL_TETANUS(true, false, false, false, 0),
+	ONCHOCERCIASIS(true, false, false, false, 0),
+	DIPHTERIA(true, false, false, false, 0),
+	TRACHOMA(true, false, false, false, 0),
+	YAWS_ENDEMIC_SYPHILIS(true, false, false, false, 0),
+	MATERNAL_DEATHS(true, false, false, false, 0),
+	PERINATAL_DEATHS(true, false, false, false, 0),
+	OTHER(true, true, true, true, 21),
+	UNDEFINED(true, true, true, true, 0);
 	
 	private boolean defaultActive;
 	private boolean defaultPrimary;
+	private boolean defaultCaseBased;
 	private boolean defaultFollowUpEnabled;
 	private int defaultFollowUpDuration;
 	
-	private Disease(boolean defaultActive, boolean defaultPrimary, boolean defaultFollowUpEnabled, int defaultFollowUpDuration) {
+	private Disease(boolean defaultActive, boolean defaultPrimary, boolean defaultCaseBased, boolean defaultFollowUpEnabled, int defaultFollowUpDuration) {
 		this.defaultActive = defaultActive;
 		this.defaultPrimary = defaultPrimary;
+		this.defaultCaseBased = defaultCaseBased;
 		this.defaultFollowUpEnabled = defaultFollowUpEnabled;
 		this.defaultFollowUpDuration = defaultFollowUpDuration;
 	}
@@ -80,6 +109,10 @@ public enum Disease implements StatisticsGroupingKey {
 
 	public boolean isDefaultPrimary() {
 		return defaultPrimary;
+	}
+	
+	public boolean isDefaultCaseBased() {
+		return defaultCaseBased;
 	}
 	
 	public boolean isDefaultFollowUpEnabled() {

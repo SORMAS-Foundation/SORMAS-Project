@@ -24,13 +24,10 @@ import android.view.Menu;
 
 import java.util.List;
 
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
-import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -44,8 +41,6 @@ import de.symeda.sormas.app.pathogentest.edit.PathogenTestNewActivity;
 import de.symeda.sormas.app.sample.SampleSection;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.sample.read.SampleEditPathogenTestListFragment;
-import de.symeda.sormas.app.sample.read.SampleReadFragment;
-import de.symeda.sormas.app.sample.read.SampleReadPathogenTestListFragment;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -86,7 +81,7 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Sample activityRootData) {
         int menuKey =0;
         if (menuItem !=null)
-            menuKey= menuItem.getKey();
+            menuKey= menuItem.getPosition();
         SampleSection section = SampleSection.fromOrdinal(menuKey);
         BaseEditFragment fragment;
         switch (section) {
@@ -175,7 +170,7 @@ public class SampleEditActivity extends BaseEditActivity<Sample> {
 
     @Override
     public void goToNewView() {
-        SampleSection activeSection = SampleSection.fromOrdinal(getActivePage().getKey());
+        SampleSection activeSection = SampleSection.fromOrdinal(getActivePage().getPosition());
 
         if (activeSection == SampleSection.PATHOGEN_TESTS) {
             PathogenTestNewActivity.startActivity(getContext(), getRootUuid());

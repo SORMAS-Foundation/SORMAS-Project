@@ -26,7 +26,7 @@
 #	a2ensite your.sormas.server.url.conf
 #	apache2ctl graceful
 
-# CAUTION: Only change these variables when your server setup differs from the official server setup instructions!
+# CAUTION: Configure these variables in server-update.conf when your server setup differs from the official server setup instructions!
 # Paths need to be specified WITHOUT a trailing slash.
 
 DEPLOY_PATH=/root/deploy/sormas/$(date +%F)
@@ -42,6 +42,14 @@ UPDATE_LOG_PATH=$DOMAIN_PATH/$DOMAIN_NAME/update-logs
 UPDATE_LOG_FILE_NAME=server_update_`date +"%Y-%m-%d_%H-%M-%S"`.txt
 CUSTOM_DIR=/opt/sormas/custom
 USER_NAME=payara
+CONTINUOUS_DELIVERY=no
+
+# Override default configuration by system dependent .conf file if present (read "dirname" to be able to call the script remote via SSH)
+CONF_FILE=$(dirname "$0")/server-update.conf
+if test -f "$CONF_FILE"; then
+	echo "Read-in system dependent configuration ..."
+	source $CONF_FILE
+fi
 
 echo "# SORMAS SERVER UPDATE"
 echo "# Welcome to the SORMAS server update routine. This script will automatically update your SORMAS server."
@@ -146,6 +154,9 @@ if [ $? -ne 0 ]; then
 	fi
 fi
 
+# Wait for undeployment and shutdown of the domain
+sleep 10s
+
 rm $DOMAIN_PATH/$DOMAIN_NAME/lib/*.jar
 
 echo "Copying server libs..."
@@ -205,9 +216,17 @@ cp $DEPLOY_PATH/android/release/*.apk $DOWNLOADS_PATH
 
 exec 2>&6
 
-read -p "SORMAS update successfully completed. The server will now be deployed and logs will be displayed to notify you if anything goes wrong. Press [Enter] to continue."
+if [ "$CONTINUOUS_DELIVERY" == "yes" ]; then
+	# Wait some seconds for the fully started domain
+	sleep 10s
+	echo "Deploying sormas artifacts"
+else
+	read -p "SORMAS update successfully completed. The server will now be deployed and logs will be displayed to notify you if anything goes wrong. Press [Enter] to continue."
+fi
 
 cp $DEPLOY_PATH/apps/*.ear $DOMAIN_PATH/$DOMAIN_NAME/autodeploy/
 cp $DEPLOY_PATH/apps/*.war $DOMAIN_PATH/$DOMAIN_NAME/autodeploy/
 
-tail -f $LOG_FILE_PATH/server.log
+if [ "$CONTINUOUS_DELIVERY" != "yes" ]; then
+	tail -f $LOG_FILE_PATH/server.log
+fi

@@ -61,10 +61,6 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
 import de.symeda.sormas.app.util.SyncCallback;
 
-/**
- * Created by Stefan Szczesny on 15.11.2016.
- */
-
 public class TaskNotificationService extends Service {
 
     @Override
@@ -84,13 +80,11 @@ public class TaskNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         // don't sync, when user is currently editing data
         BaseActivity activeActivity = BaseActivity.getActiveActivity();
         if (activeActivity == null || !activeActivity.isEditing()) {
             // only when we do have a user and there is currently no other connection
-            if (ConfigProvider.getUser() != null
-                    && !RetroProvider.isConnected()) {
+            if (ConfigProvider.getUser() != null && !RetroProvider.isConnected()) {
 
                 RetroProvider.connectAsync(getApplicationContext(), false,
                         (result, versionCompatible) -> {
@@ -186,7 +180,6 @@ public class TaskNotificationService extends Service {
     }
 
     private static void doWeeklyReportNotification(Context context, Date notificationRangeStart, Date notificationRangeEnd) {
-
         if (ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)) {
             // notify at 6:00
             Date notificationPoint = DateHelper.addSeconds(DateHelper.getStartOfDay(new Date()), 60 * 60 * 6);

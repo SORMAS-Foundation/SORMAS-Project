@@ -40,8 +40,7 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 public class DiseaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testDiseaseBurdenForDashboar() {
-
+	public void testDiseaseBurdenForDashboard() {
 		Date referenceDate = new Date();
 		
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -77,6 +76,5 @@ public class DiseaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(new Long(1), evdBurden.getPreviousCaseCount());
 		assertEquals(rdcf.district.getCaption(), evdBurden.getLastReportedDistrictName());
 	}
-	
 	
 }

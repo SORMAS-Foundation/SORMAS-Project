@@ -102,7 +102,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbDisease.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbDisease, CssStyles.FORCE_CAPTION);
 		cbDisease.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-		cbDisease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases());
+		cbDisease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 		binder.bind(cbDisease, CaseCriteria.DISEASE);
 		firstRowLayout.addComponent(cbDisease);
 

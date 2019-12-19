@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
@@ -34,6 +35,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 
 public class StatisticsCaseCriteria implements Serializable {
@@ -61,12 +63,14 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<Sex> sexes;
 	private Boolean sexUnknown;
 	private List<IntegerRange> ageIntervals;
+	private List<AgeGroup> ageGroups;
 	private List<Disease> diseases;
 	private List<CaseClassification> classifications;
 	private List<CaseOutcome> outcomes;
 	private List<RegionReferenceDto> regions;
 	private List<DistrictReferenceDto> districts;
-
+	private List<UserRole> reportingUserRoles;
+	
 	public List<Year> getOnsetYears() {
 		return onsetYears;
 	}
@@ -150,6 +154,10 @@ public class StatisticsCaseCriteria implements Serializable {
 	public List<IntegerRange> getAgeIntervals() {
 		return ageIntervals;
 	}
+	
+	public List<AgeGroup> getAgeGroups() {
+		return ageGroups;
+	}
 
 	public List<Disease> getDiseases() {
 		return diseases;
@@ -169,6 +177,10 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public List<DistrictReferenceDto> getDistricts() {
 		return districts;
+	}
+
+	public List<UserRole> getReportingUserRoles() {
+		return reportingUserRoles;
 	}
 
 	public StatisticsCaseCriteria years(List<Year> years, StatisticsCaseAttribute mainAttribute) {
@@ -311,6 +323,15 @@ public class StatisticsCaseCriteria implements Serializable {
 		this.ageIntervals.addAll(ageIntervals);
 		return this;
 	}
+	
+	public StatisticsCaseCriteria addAgeGroups(List<AgeGroup> ageGroups) {
+		if (this.ageGroups == null) {
+			this.ageGroups = new ArrayList<>();
+		}
+		
+		this.ageGroups.addAll(ageGroups);
+		return this;
+	}
 
 	public StatisticsCaseCriteria diseases(List<Disease> diseases) {
 		this.diseases = diseases;
@@ -334,6 +355,11 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public StatisticsCaseCriteria districts(List<DistrictReferenceDto> districts) {
 		this.districts = districts;
+		return this;
+	}
+
+	public StatisticsCaseCriteria reportingUserRoles(List<UserRole> reportingUserRoles) {
+		this.reportingUserRoles = reportingUserRoles;
 		return this;
 	}
 
@@ -426,9 +452,17 @@ public class StatisticsCaseCriteria implements Serializable {
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
 			case AGE_INTERVAL_BASIC:
 				return ageIntervals;
+			case REPORTING_USER_ROLE:
+				return reportingUserRoles;
 			default: throw new IllegalArgumentException(attribute.toString());
 			}
 		}
 	}
 
+	public boolean hasOnsetDate() {
+		return onsetDateFrom != null || onsetDateTo != null || onsetEpiWeeks != null || onsetEpiWeeksOfYear != null
+				|| onsetMonths != null || onsetMonthsOfYear != null || onsetQuarters != null || onsetQuartersOfYear != null
+				|| onsetYears != null;
+	}
+	
 }

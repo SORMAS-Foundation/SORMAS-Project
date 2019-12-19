@@ -4,11 +4,8 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
-
-import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -20,22 +17,16 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 public class PointOfEntryImporter extends DataImporter {
 
-	public PointOfEntryImporter(File inputFile, UserReferenceDto currentUser, UI currentUI) throws IOException {
-		this(inputFile, null, currentUser, currentUI);
+	public PointOfEntryImporter(File inputFile, UserReferenceDto currentUser) {
+		super(inputFile, false, currentUser);
 	}
 	
-	public PointOfEntryImporter(File inputFile, OutputStreamWriter errorReportWriter, UserReferenceDto currentUser, UI currentUI) throws IOException {
-		super(inputFile, false, errorReportWriter, currentUser, currentUI);
-	}
-
 	@Override
-	protected void importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
+	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
-			hasImportError = true;
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
-			importedCallback.accept(ImportResult.ERROR);
-			return;
+			return ImportLineResult.ERROR;
 		}
 
 		PointOfEntryDto newPointOfEntry = PointOfEntryDto.build();
@@ -56,15 +47,13 @@ public class PointOfEntryImporter extends DataImporter {
 		if (!poeHasImportError) {
 			try {
 				FacadeProvider.getPointOfEntryFacade().save(newPointOfEntry);
-				importedCallback.accept(ImportResult.SUCCESS);
+				return ImportLineResult.SUCCESS;
 			} catch (ValidationRuntimeException e) {
-				hasImportError = true;
 				writeImportError(values, e.getMessage());
-				importedCallback.accept(ImportResult.ERROR);
+				return ImportLineResult.ERROR;
 			}
 		} else {
-			hasImportError = true;
-			importedCallback.accept(ImportResult.ERROR);
+			return ImportLineResult.ERROR;
 		}
 	}
 

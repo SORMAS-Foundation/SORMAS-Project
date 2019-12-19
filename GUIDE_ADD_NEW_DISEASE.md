@@ -17,7 +17,7 @@ The best way to do this is to follow these steps:
 1. Open the Disease enum class in the API project and add the new disease. Put it in alphabetical order (with the exception of "OTHER").
 2. Add the name of the disease to the enum.properties translation resource file. You may also want to add a short name.
 3. **Very important**: We have now made a change to the API. Old versions are no longer compatible!
-   When data with the new disease is send to a mobile device with an old version, it will not now about the disease type and lead to exceptions on the device.
+   When data with the new disease is send to a mobile device with an old version, it will not know about the disease type and lead to exceptions on the device.
    To avoid this the following has to be done:
    * Open the InfoProvider.getMinimumRequiredVersion method.
    * Set the version to the current development version (without the -SNAPSHOT). You can find the current version in the maven pom.xml configuration file.

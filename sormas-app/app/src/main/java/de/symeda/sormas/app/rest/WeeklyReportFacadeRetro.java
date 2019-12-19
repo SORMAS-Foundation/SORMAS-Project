@@ -28,9 +28,6 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-/**
- * Created by Mate Strysewske on 12.09.2017.
- */
 public interface WeeklyReportFacadeRetro {
 
     @GET("weeklyreports/all/{since}")

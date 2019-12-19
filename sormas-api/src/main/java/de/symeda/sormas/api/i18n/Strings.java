@@ -53,6 +53,8 @@ public interface Strings {
 	public static String confirmationDeleteTasks = "confirmationDeleteTasks";
 	public static String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	public static String confirmationDeleteVisits = "confirmationDeleteVisits";
+	public static String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
+	public static String confirmationDisableAllLineListingRegion = "confirmationDisableAllLineListingRegion";
 	public static String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
@@ -152,6 +154,7 @@ public interface Strings {
 	public static String headingDearchiveCase = "headingDearchiveCase";
 	public static String headingDearchiveEvent = "headingDearchiveEvent";
 	public static String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
+	public static String headingDisableLineListing = "headingDisableLineListing";
 	public static String headingDownloadErrorReport = "headingDownloadErrorReport";
 	public static String headingDownloadImportGuide = "headingDownloadImportGuide";
 	public static String headingDownloadImportTemplate = "headingDownloadImportTemplate";
@@ -161,6 +164,7 @@ public interface Strings {
 	public static String headingEditContacts = "headingEditContacts";
 	public static String headingEditEventParticipant = "headingEditEventParticipant";
 	public static String headingEditEvents = "headingEditEvents";
+	public static String headingEditLineListing = "headingEditLineListing";
 	public static String headingEditPathogenTestResult = "headingEditPathogenTestResult";
 	public static String headingEditPrescription = "headingEditPrescription";
 	public static String headingEditTask = "headingEditTask";
@@ -195,8 +199,10 @@ public interface Strings {
 	public static String headingImportPopulationData = "headingImportPopulationData";
 	public static String headingInformationSource = "headingInformationSource";
 	public static String headingIntroduction = "headingIntroduction";
+	public static String headingInvalidDateEntered = "headingInvalidDateEntered";
 	public static String headingLaboratorySample = "headingLaboratorySample";
 	public static String headingLineListing = "headingLineListing";
+	public static String headingLineListingImport = "headingLineListingImport";
 	public static String headingLocation = "headingLocation";
 	public static String headingLoginFailed = "headingLoginFailed";
 	public static String headingMaternalHistory = "headingMaternalHistory";
@@ -262,6 +268,8 @@ public interface Strings {
 	public static String infoCaseCompleteness = "infoCaseCompleteness";
 	public static String infoCaseDate = "infoCaseDate";
 	public static String infoCaseIncidence = "infoCaseIncidence";
+	public static String infoCaseIncidenceMissingPopulationData = "infoCaseIncidenceMissingPopulationData";
+	public static String infoCaseIncidenceNotPossible = "infoCaseIncidenceNotPossible";
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoContactDashboard = "infoContactDashboard";
@@ -280,6 +288,10 @@ public interface Strings {
 	public static String infoImportCsvFile = "infoImportCsvFile";
 	public static String infoImportProcess = "infoImportProcess";
 	public static String infoImportSimilarity = "infoImportSimilarity";
+	public static String infoLineListingConfigurationNation = "infoLineListingConfigurationNation";
+	public static String infoLineListingConfigurationNationEdit = "infoLineListingConfigurationNationEdit";
+	public static String infoLineListingConfigurationRegion = "infoLineListingConfigurationRegion";
+	public static String infoLineListingConfigurationRegionEdit = "infoLineListingConfigurationRegionEdit";
 	public static String infoLostToFollowUpBy = "infoLostToFollowUpBy";
 	public static String infoMergeIgnoreRegion = "infoMergeIgnoreRegion";
 	public static String infoMergingExplanation = "infoMergingExplanation";
@@ -292,6 +304,7 @@ public interface Strings {
 	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
 	public static String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	public static String infoPopulationDataView = "infoPopulationDataView";
+	public static String infoPopulationReferenceYear = "infoPopulationReferenceYear";
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
@@ -314,6 +327,7 @@ public interface Strings {
 	public static String messageCaseCreated = "messageCaseCreated";
 	public static String messageCaseDearchived = "messageCaseDearchived";
 	public static String messageCaseDuplicateDeleted = "messageCaseDuplicateDeleted";
+	public static String messageCaseIncidenceUnsupportedAgeGroup = "messageCaseIncidenceUnsupportedAgeGroup";
 	public static String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
 	public static String messageCasesArchived = "messageCasesArchived";
 	public static String messageCaseSaved = "messageCaseSaved";
@@ -368,6 +382,9 @@ public interface Strings {
 	public static String messageImportInvalidColumn = "messageImportInvalidColumn";
 	public static String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	public static String messageImportSuccessful = "messageImportSuccessful";
+	public static String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
+	public static String messageLineListingDisabled = "messageLineListingDisabled";
+	public static String messageLineListingSaved = "messageLineListingSaved";
 	public static String messageLoginFailed = "messageLoginFailed";
 	public static String messageMissingDateFilter = "messageMissingDateFilter";
 	public static String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
@@ -375,6 +392,7 @@ public interface Strings {
 	public static String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	public static String messageNoContactsSelected = "messageNoContactsSelected";
 	public static String messageNoCsvFile = "messageNoCsvFile";
+	public static String messageNoEndDate = "messageNoEndDate";
 	public static String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	public static String messageNoEventsSelected = "messageNoEventsSelected";
 	public static String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
@@ -406,6 +424,7 @@ public interface Strings {
 	public static String messageTreatmentCreated = "messageTreatmentCreated";
 	public static String messageTreatmentSaved = "messageTreatmentSaved";
 	public static String messageTreatmentsDeleted = "messageTreatmentsDeleted";
+	public static String messageUnknownFilterAttributeForPopulationData = "messageUnknownFilterAttributeForPopulationData";
 	public static String messageUserRoleCombination = "messageUserRoleCombination";
 	public static String messageVisitsDeleted = "messageVisitsDeleted";
 	public static String messageWrongFileType = "messageWrongFileType";
@@ -482,6 +501,7 @@ public interface Strings {
 	public static String toCase = "toCase";
 	public static String total = "total";
 	public static String unknown = "unknown";
+	public static String until = "until";
 	public static String weekShort = "weekShort";
 	public static String year = "year";
 	public static String years = "years";

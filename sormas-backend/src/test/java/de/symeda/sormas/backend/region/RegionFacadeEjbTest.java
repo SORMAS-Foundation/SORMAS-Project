@@ -13,15 +13,17 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 public class RegionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetAllAfter() {
+	public void testGetAllAfter() throws InterruptedException {
 
 		creator.createRegion("region1");
+		getRegionService().doFlush();
 		Date date = new Date();
 		List<RegionDto> results = getRegionFacade().getAllAfter(date);
 
 		// List should be empty
 		assertEquals(0, results.size());
 
+		Thread.sleep(1); // delay to ignore known rounding issues in change date filter
 		String regionName = "region2";
 		creator.createRegion(regionName);
 		results = getRegionFacade().getAllAfter(date);

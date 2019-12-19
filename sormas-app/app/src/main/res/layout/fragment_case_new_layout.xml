@@ -25,6 +25,7 @@
     <data>
 
         <import type="de.symeda.sormas.api.Disease" />
+        <import type="de.symeda.sormas.api.user.UserRight" />
 
         <variable
             name="data"
@@ -63,6 +64,33 @@
                 style="@style/ControlSingleColumnStyle"
                 app:required="true"
                 app:value="@={data.disease}" />
+
+            <LinearLayout
+                android:id="@+id/rapid_case_entry_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/imgSyncIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="14dp"
+                    android:tint="@color/blue"
+                    android:paddingEnd="5dp"
+                    android:src="@drawable/ic_info_outline_black_24dp" />
+
+                <TextView
+                    android:text="@string/hint_rapid_case_entry_enabled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SubHeadingDescriptionStyle"
+                    android:textColor="@color/blue"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/caseData_diseaseDetails"
@@ -152,6 +180,12 @@
                 app:required="true"
                 app:value="@={data.pointOfEntryDetails}" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/caseData_epidNumber"
+                app:value="@={data.epidNumber}"
+                app:userViewRight="@{UserRight.CASE_CHANGE_EPID_NUMBER}"
+                style="@style/ControlSingleColumnStyle" />
+
             <LinearLayout
                 android:id="@+id/date_fields_layout"
                 android:layout_width="match_parent"
@@ -233,11 +267,10 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.person.sex}" />
 
-<!--            <de.symeda.sormas.app.component.controls.ControlCheckBoxField-->
-<!--                android:id="@+id/rapidCaseEntry"-->
-<!--                app:caption="@string/caption_rapid_case_entry"-->
-<!--                style="@style/ControlSingleColumnStyle" />-->
-
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/person_presentCondition"
+                app:value="@={data.person.presentCondition}"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 

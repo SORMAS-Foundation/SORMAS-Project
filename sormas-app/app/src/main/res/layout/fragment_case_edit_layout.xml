@@ -74,6 +74,7 @@
                     android:id="@+id/caseData_caseClassification"
                     app:required="true"
                     app:value="@={data.caseClassification}"
+                    app:userEditRight="@{UserRight.CASE_CLASSIFY}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
@@ -310,7 +311,7 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/caseData_whichVaccine"
+                    android:id="@+id/caseData_vaccine"
                     app:value="@={data.vaccine}"
                     app:dependencyParentField="@{caseDataVaccination}"
                     app:dependencyParentValue="@{Vaccination.VACCINATED}"

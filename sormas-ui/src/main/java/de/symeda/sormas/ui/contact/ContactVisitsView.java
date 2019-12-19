@@ -149,7 +149,8 @@ public class ContactVisitsView extends AbstractContactView {
 		super.enter(event);
 		
 		// Hide the "New visit" button for converted contacts
-		if (FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
+		if (newButton != null
+				&& FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
 			newButton.setVisible(false);
 		}
 

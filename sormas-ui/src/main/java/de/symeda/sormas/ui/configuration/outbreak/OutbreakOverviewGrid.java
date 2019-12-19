@@ -63,7 +63,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
 		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.region));
 
-		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases()) {
+		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true)) {
 			addColumn(disease, OutbreakRegionConfiguration.class)
 			.setMaximumWidth(200)
 			.setHeaderCaption(disease.toShortString())			
@@ -192,7 +192,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		int totalDistricts = FacadeProvider.getDistrictFacade().getCountByRegion(region.getUuid());
 		Item item = getContainerDataSource().addItem(region);
 		item.getItemProperty(REGION).setValue(region);
-		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases()) {
+		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true)) {
 			item.getItemProperty(disease).setValue(new OutbreakRegionConfiguration(disease, region, totalDistricts, new HashSet<>()));
 		}
 	}

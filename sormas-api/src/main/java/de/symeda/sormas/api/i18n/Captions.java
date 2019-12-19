@@ -12,6 +12,7 @@ public interface Captions {
 	public static String actionApplyDateFilter = "actionApplyDateFilter";
 	public static String actionArchive = "actionArchive";
 	public static String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
+	public static String actionBackToNationOverview = "actionBackToNationOverview";
 	public static String actionCancel = "actionCancel";
 	public static String actionClear = "actionClear";
 	public static String actionClearAll = "actionClearAll";
@@ -24,6 +25,7 @@ public interface Captions {
 	public static String actionDelete = "actionDelete";
 	public static String actionDeselectAll = "actionDeselectAll";
 	public static String actionDiscard = "actionDiscard";
+	public static String actionDiscardChanges = "actionDiscardChanges";
 	public static String actionDismiss = "actionDismiss";
 	public static String actionEnterBulkEditMode = "actionEnterBulkEditMode";
 	public static String actionGenerate = "actionGenerate";
@@ -37,6 +39,7 @@ public interface Captions {
 	public static String actionPick = "actionPick";
 	public static String actionResetFilters = "actionResetFilters";
 	public static String actionSave = "actionSave";
+	public static String actionSaveChanges = "actionSaveChanges";
 	public static String actionSelectAll = "actionSelectAll";
 	public static String actionShowLessFilters = "actionShowLessFilters";
 	public static String actionShowMoreFilters = "actionShowMoreFilters";
@@ -65,6 +68,12 @@ public interface Captions {
 	public static String AdditionalTest_urea = "AdditionalTest.urea";
 	public static String AdditionalTest_wbcCount = "AdditionalTest.wbcCount";
 	public static String additionalTestNewTest = "additionalTestNewTest";
+	public static String AggregateReport_deaths = "AggregateReport.deaths";
+	public static String AggregateReport_disease = "AggregateReport.disease";
+	public static String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
+	public static String AggregateReport_newCases = "AggregateReport.newCases";
+	public static String aggregateReportLastWeek = "aggregateReportLastWeek";
+	public static String aggregateReportThisWeek = "aggregateReportThisWeek";
 	public static String all = "all";
 	public static String bulkActions = "bulkActions";
 	public static String bulkCancelFollowUp = "bulkCancelFollowUp";
@@ -236,6 +245,7 @@ public interface Captions {
 	public static String communityName = "communityName";
 	public static String Configuration_HealthFacilities = "Configuration.HealthFacilities";
 	public static String Configuration_Laboratories = "Configuration.Laboratories";
+	public static String Configuration_LineListing = "Configuration.LineListing";
 	public static String Configuration_Outbreaks = "Configuration.Outbreaks";
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
@@ -558,6 +568,9 @@ public interface Captions {
 	public static String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	public static String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
 	public static String Facility_OTHER_LABORATORY = "Facility.OTHER_LABORATORY";
+	public static String FeatureConfiguration_active = "FeatureConfiguration.active";
+	public static String FeatureConfiguration_districtName = "FeatureConfiguration.districtName";
+	public static String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
 	public static String firstName = "firstName";
 	public static String formatNumberOfVisitsFormat = "formatNumberOfVisitsFormat";
 	public static String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";
@@ -579,6 +592,7 @@ public interface Captions {
 	public static String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	public static String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	public static String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	public static String importDetailed = "importDetailed";
 	public static String importDownloadCaseImportTemplate = "importDownloadCaseImportTemplate";
 	public static String importDownloadDataDictionary = "importDownloadDataDictionary";
 	public static String importDownloadErrorReport = "importDownloadErrorReport";
@@ -589,13 +603,21 @@ public interface Captions {
 	public static String importErrors = "importErrors";
 	public static String importImportData = "importImportData";
 	public static String importImports = "importImports";
+	public static String importLineListing = "importLineListing";
 	public static String importProcessed = "importProcessed";
 	public static String importSkips = "importSkips";
 	public static String info = "info";
 	public static String lastName = "lastName";
 	public static String lineListingAddLine = "lineListingAddLine";
+	public static String lineListingDisableAll = "lineListingDisableAll";
+	public static String lineListingDisableAllShort = "lineListingDisableAllShort";
+	public static String lineListingEdit = "lineListingEdit";
+	public static String lineListingEnableAll = "lineListingEnableAll";
+	public static String lineListingEnableForDisease = "lineListingEnableForDisease";
+	public static String lineListingEndDate = "lineListingEndDate";
 	public static String lineListingInfrastructureData = "lineListingInfrastructureData";
 	public static String lineListingNewCasesList = "lineListingNewCasesList";
+	public static String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	public static String lineListingSharedInformation = "lineListingSharedInformation";
 	public static String Location = "Location";
 	public static String Location_address = "Location.address";
@@ -606,6 +628,7 @@ public interface Captions {
 	public static String Location_latLonAccuracy = "Location.latLonAccuracy";
 	public static String Location_longitude = "Location.longitude";
 	public static String mainMenuAbout = "mainMenuAbout";
+	public static String mainMenuAggregateReports = "mainMenuAggregateReports";
 	public static String mainMenuCases = "mainMenuCases";
 	public static String mainMenuConfiguration = "mainMenuConfiguration";
 	public static String mainMenuContacts = "mainMenuContacts";
@@ -644,6 +667,7 @@ public interface Captions {
 	public static String MaternalHistory_swollenLymphsOnset = "MaternalHistory.swollenLymphsOnset";
 	public static String menu = "menu";
 	public static String name = "name";
+	public static String notAvailableShort = "notAvailableShort";
 	public static String options = "options";
 	public static String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	public static String outbreakNoOutbreak = "outbreakNoOutbreak";
@@ -903,14 +927,17 @@ public interface Captions {
 	public static String statisticsAttributeSpecification = "statisticsAttributeSpecification";
 	public static String statisticsChartType = "statisticsChartType";
 	public static String statisticsDatabaseExport = "statisticsDatabaseExport";
+	public static String statisticsDataDisplayed = "statisticsDataDisplayed";
 	public static String statisticsDontGroupColumns = "statisticsDontGroupColumns";
 	public static String statisticsDontGroupRows = "statisticsDontGroupRows";
 	public static String statisticsDontGroupSeries = "statisticsDontGroupSeries";
 	public static String statisticsDontGroupX = "statisticsDontGroupX";
 	public static String statisticsExchange = "statisticsExchange";
+	public static String statisticsIncidenceDivisor = "statisticsIncidenceDivisor";
 	public static String statisticsMapType = "statisticsMapType";
 	public static String statisticsRemoveFilter = "statisticsRemoveFilter";
 	public static String statisticsResetFilters = "statisticsResetFilters";
+	public static String statisticsShowCaseIncidence = "statisticsShowCaseIncidence";
 	public static String statisticsShowZeroValues = "statisticsShowZeroValues";
 	public static String statisticsSpecifySelection = "statisticsSpecifySelection";
 	public static String statisticsStatistics = "statisticsStatistics";
@@ -1130,6 +1157,8 @@ public interface Captions {
 	public static String userNewUser = "userNewUser";
 	public static String userResetPassword = "userResetPassword";
 	public static String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
+	public static String View_aggregatereports = "View.aggregatereports";
+	public static String View_aggregatereports_sub = "View.aggregatereports.sub";
 	public static String View_cases = "View.cases";
 	public static String View_cases_archive = "View.cases.archive";
 	public static String View_cases_clinicalcourse = "View.cases.clinicalcourse";
@@ -1154,6 +1183,8 @@ public interface Captions {
 	public static String View_configuration_healthFacilities_short = "View.configuration.healthFacilities.short";
 	public static String View_configuration_laboratories = "View.configuration.laboratories";
 	public static String View_configuration_laboratories_short = "View.configuration.laboratories.short";
+	public static String View_configuration_linelisting = "View.configuration.linelisting";
+	public static String View_configuration_linelisting_short = "View.configuration.linelisting.short";
 	public static String View_configuration_outbreaks = "View.configuration.outbreaks";
 	public static String View_configuration_outbreaks_short = "View.configuration.outbreaks.short";
 	public static String View_configuration_pointsofentry = "View.configuration.pointsofentry";

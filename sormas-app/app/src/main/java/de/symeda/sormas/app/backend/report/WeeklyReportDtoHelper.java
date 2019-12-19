@@ -39,9 +39,6 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-/**
- * Created by Mate Strysewske on 12.09.2017.
- */
 public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyReportDto> {
 
     private WeeklyReportEntryDtoHelper entryDtoHelper;

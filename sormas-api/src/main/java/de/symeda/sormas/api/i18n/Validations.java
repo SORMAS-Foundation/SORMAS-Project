@@ -35,6 +35,7 @@ public interface Validations {
 	public static String noFacilityInCommunity = "noFacilityInCommunity";
 	public static String noFacilityInDistrict = "noFacilityInDistrict";
 	public static String noFacilityInRegion = "noFacilityInRegion";
+	public static String noPastDateAllowed = "noPastDateAllowed";
 	public static String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	public static String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	public static String onlyNumbersAllowed = "onlyNumbersAllowed";
@@ -44,6 +45,7 @@ public interface Validations {
 	public static String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
 	public static String specifyFirstName = "specifyFirstName";
 	public static String specifyLastName = "specifyLastName";
+	public static String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
 	public static String userNameNotUnique = "userNameNotUnique";
 	public static String validCase = "validCase";
 	public static String validCommunity = "validCommunity";

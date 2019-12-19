@@ -120,7 +120,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setUserRole(source.getUserRole());
-		target.setUserRights(source.getUserRights());
+		target.setUserRights(new HashSet<UserRight>(source.getUserRights()));
 
 		return target;
 	}
@@ -133,7 +133,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setUserRole(source.getUserRole());
-		target.setUserRights(source.getUserRights());
+		target.setUserRights(new HashSet<UserRight>(source.getUserRights()));
 
 		return target;
 	}

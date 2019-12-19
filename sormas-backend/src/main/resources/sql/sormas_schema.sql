@@ -3757,3 +3757,87 @@ INSERT INTO schema_version (version_number, comment) VALUES (171, 'Add relations
 ALTER TABLE symptoms ADD COLUMN convulsion varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (172, 'Add new disease, Anthrax #833');
+
+-- 2019-11-27 Add FeatureConfiguration entity #1346
+CREATE TABLE featureconfiguration(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	featuretype varchar(255),
+	region_id bigint,
+	district_id bigint,
+	disease varchar(255),
+	enddate timestamp,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE featureconfiguration OWNER TO sormas_user;
+ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE featureconfiguration ADD CONSTRAINT fk_featureconfiguration_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+
+CREATE TABLE featureconfiguration_history (LIKE featureconfiguration);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON featureconfiguration
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'featureconfiguration_history', true);
+ALTER TABLE featureconfiguration_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (173, 'Add FeatureConfiguration entity #1346');
+
+-- 2019-12-03 Add port health infos to cases that are missing one #1377
+DO $$
+DECLARE rec RECORD;
+DECLARE new_porthealthinfo_id INTEGER;
+BEGIN
+FOR rec IN SELECT id FROM public.cases WHERE porthealthinfo_id IS NULL
+LOOP
+INSERT INTO porthealthinfo(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_porthealthinfo_id;
+UPDATE cases SET porthealthinfo_id = new_porthealthinfo_id WHERE id = rec.id;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (174, 'Add port health infos to cases that are missing one #1377');
+
+-- 2019-12-04 Aggregate reports #1277
+CREATE TABLE aggregatereport(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	reportinguser_id bigint,
+	region_id bigint,
+	district_id bigint,
+	healthfacility_id bigint,
+	pointofentry_id bigint,
+	disease varchar(255),
+	year integer,
+	epiweek integer,
+	newcases integer,
+	labconfirmations integer,
+	deaths integer,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE aggregatereport OWNER TO sormas_user;
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry(id);
+ALTER TABLE aggregatereport ADD CONSTRAINT fk_aggregatereport_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+
+CREATE TABLE aggregatereport_history (LIKE aggregatereport);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON aggregatereport
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aggregatereport_history', true);
+ALTER TABLE aggregatereport_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (175, 'Aggregate reports #1277');
+
+-- 2019-12-05 Add caseBased column to diseaseconfiguration #1277
+ALTER TABLE diseaseconfiguration ADD COLUMN casebased boolean;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN casebased boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (176, 'Add caseBased column to diseaseconfiguration #1277');

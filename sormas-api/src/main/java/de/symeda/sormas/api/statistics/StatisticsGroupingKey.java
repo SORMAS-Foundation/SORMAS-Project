@@ -27,7 +27,7 @@ package de.symeda.sormas.api.statistics;
  * @author Mate Strysewske
  */
 public interface StatisticsGroupingKey {
-	
+
 	int keyCompareTo(StatisticsGroupingKey o);
 	
 }

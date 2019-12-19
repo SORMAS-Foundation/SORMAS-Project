@@ -17,6 +17,7 @@ import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 @SuppressWarnings("serial")
@@ -60,6 +61,10 @@ public abstract class BaseCriteria implements Serializable {
 						stringValue = ((Enum<?>)value).name();
 					} else if (String.class.isAssignableFrom(type)) {
 						stringValue = (String)value;
+					} else if (Integer.class.isAssignableFrom(type)) {
+						stringValue = String.valueOf(value);
+					} else if (EpiWeek.class.isAssignableFrom(type)) {
+						stringValue = ((EpiWeek) value).toUrlString();
 					} else {
 						throw new NotImplementedException(type.toString());
 					}
@@ -157,6 +162,10 @@ public abstract class BaseCriteria implements Serializable {
 						} catch (IllegalArgumentException e) { } // ignore
 					} else if (String.class.isAssignableFrom(type)) {
 						value = fieldParams.get(0);
+					} else if (Integer.class.isAssignableFrom(type)) {
+						value = Integer.valueOf(fieldParams.get(0));
+					} else if (EpiWeek.class.isAssignableFrom(type)) {
+						value = EpiWeek.fromUrlString(fieldParams.get(0));
 					} else {
 						throw new NotImplementedException(type.toString());
 					}

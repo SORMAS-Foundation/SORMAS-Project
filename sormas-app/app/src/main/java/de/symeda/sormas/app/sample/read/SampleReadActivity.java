@@ -23,7 +23,6 @@ import android.view.Menu;
 
 import java.util.List;
 
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -77,7 +76,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Sample activityRootData) {
-        SampleSection section = SampleSection.fromOrdinal(menuItem.getKey());
+        SampleSection section = SampleSection.fromOrdinal(menuItem.getPosition());
         BaseReadFragment fragment;
         switch (section) {
             case SAMPLE_INFO:
@@ -106,7 +105,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 
     @Override
     public void goToEditView() {
-        SampleSection section = SampleSection.fromOrdinal(getActivePage().getKey());
+        SampleSection section = SampleSection.fromOrdinal(getActivePage().getPosition());
         SampleEditActivity.startActivity(getContext(), getRootUuid(), section);
     }
 }

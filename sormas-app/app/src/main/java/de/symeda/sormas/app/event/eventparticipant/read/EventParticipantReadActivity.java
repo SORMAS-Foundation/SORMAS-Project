@@ -21,6 +21,8 @@ package de.symeda.sormas.app.event.eventparticipant.read;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
@@ -49,7 +51,7 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         new Bundler(outState).setEventUuid(eventUuid);
     }

@@ -9,4 +9,23 @@
 		}
 	}
 
+	.v-Notification.tray {
+		
+		&.notification-error {
+			background: #cc0000;
+			color: white;
+			 
+			&::after {
+				color: white;
+				border-color: white;
+			}
+			 
+			.popupContent {}
+   				.gwt-HTML {}
+      				h1 {color: white;}
+      				p  {}
+		}
+	
+	}
+
 }

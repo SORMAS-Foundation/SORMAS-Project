@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.region;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -31,6 +32,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.region.DistrictCriteria;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -58,6 +60,16 @@ public class DistrictService extends AbstractAdoService<District> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	public List<District> getAllByRegion(Region region) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
+		Root<District> from = cq.from(getElementClass());
+		cq.where(cb.equal(from.get(District.REGION), region));
+		cq.orderBy(cb.asc(from.get(District.NAME)));
+
+		return em.createQuery(cq).getResultList();
+	}
+	
 	public int getCountByRegion(Region region) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -80,6 +92,16 @@ public class DistrictService extends AbstractAdoService<District> {
 
 		cq.where(filter);
 		
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<Long> getIdsByReferenceDtos(List<DistrictReferenceDto> references) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<District> from = cq.from(getElementClass());
+		
+		cq.where(from.get(District.UUID).in(references.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList())));
+		cq.select(from.get(District.ID));
 		return em.createQuery(cq).getResultList();
 	}
 	

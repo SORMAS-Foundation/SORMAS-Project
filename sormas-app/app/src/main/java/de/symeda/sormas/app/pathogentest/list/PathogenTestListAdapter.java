@@ -18,28 +18,15 @@
 
 package de.symeda.sormas.app.pathogentest.list;
 
-import android.content.res.Resources;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
-import de.symeda.sormas.app.core.enumeration.StatusElaborator;
-import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
-import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 import de.symeda.sormas.app.databinding.RowSampleTestLayoutBinding;
-import de.symeda.sormas.app.util.DiseaseConfigurationHelper;
 
 public class PathogenTestListAdapter extends BindingPagedListAdapter<PathogenTest, RowSampleTestLayoutBinding> {
 

@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.statistics;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -34,8 +33,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -47,7 +44,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -150,14 +149,13 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case QUARTER_OF_YEAR:
 			case MONTH_OF_YEAR:
 			case EPI_WEEK_OF_YEAR:
-				List<Object> dateValues = StatisticsHelper.getListOfDateValues(attribute, subAttribute);
-				return createTokens(dateValues.stream().map(v -> StatisticsHelper.buildGroupingKey(v, attribute, subAttribute)).
-						collect(Collectors.toList()).toArray());
+				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
+				return createTokens(dateValues);
 			case REGION:
-				return createTokens(FacadeProvider.getRegionFacade().getAllAsReference().toArray());
+				return createTokens(FacadeProvider.getRegionFacade().getAllAsReference());
 			case DISTRICT:
 				if (regionDistrictElement == null) {
-					return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference().toArray());
+					return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference());
 				}
 				
 				List<TokenizableValue> selectedRegionTokenizables = regionDistrictElement.getSelectedRegions();
@@ -167,9 +165,9 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 						RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
 						districts.addAll(FacadeProvider.getDistrictFacade().getAllByRegion(selectedRegion.getUuid()));
 					}
-					return createTokens(districts.toArray());
+					return createTokens(districts);
 				} else {
-					return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference().toArray());
+					return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference());
 				}
 			default:
 				throw new IllegalArgumentException(this.toString());
@@ -177,7 +175,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		} else {
 			switch (attribute) {
 			case SEX:
-				List<TokenizableValue> tokens = createTokens((Object[]) Sex.values());
+				List<TokenizableValue> tokens = createTokens(Sex.values());
 				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.unknown), tokens.size()));
 				return tokens;
 			case AGE_INTERVAL_1_YEAR:
@@ -186,14 +184,16 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case AGE_INTERVAL_CHILDREN_FINE:
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
 			case AGE_INTERVAL_BASIC:
-				List<Object> ageIntervalValues = StatisticsHelper.getListOfAgeIntervalValues(attribute);
-				return createTokens(ageIntervalValues.toArray());
+				List<StatisticsGroupingKey> ageIntervalValues = StatisticsHelper.getAgeIntervalGroupingKeys(attribute);
+				return createTokens(ageIntervalValues);
 			case DISEASE:
-				return createTokens(FacadeProvider.getDiseaseConfigurationFacade().getAllActivePrimaryDiseases().toArray());
+				return createTokens(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 			case CLASSIFICATION:
-				return createTokens((Object[]) CaseClassification.values());
+				return createTokens(CaseClassification.values());
 			case OUTCOME:
-				return createTokens((Object[]) CaseOutcome.values());
+				return createTokens(CaseOutcome.values());
+			case REPORTING_USER_ROLE:
+				return createTokens(UserRole.values());
 			default:
 				throw new IllegalArgumentException(this.toString());
 			}

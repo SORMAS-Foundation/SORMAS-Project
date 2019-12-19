@@ -74,6 +74,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationEditLayout;
+import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsGrid;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoForm;
@@ -95,8 +97,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class CaseController {
-
-	private static final float LINELISTING_FORM_WIDTH = 1532;
 
 	public CaseController() {
 
@@ -510,12 +510,12 @@ public class CaseController {
 		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
 
 		// Create a temporary case in order to use the CommitDiscardWrapperComponent
-		CaseDataDto tempCase = new CaseDataDto();
-		tempCase.setRegion(region);
-		tempCase.setDistrict(district);
+		CaseBulkEditData bulkEditData = new CaseBulkEditData();
+		bulkEditData.setRegion(region);
+		bulkEditData.setDistrict(district);
 		
 		BulkCaseDataForm form = new BulkCaseDataForm(district);
-		form.setValue(tempCase);
+		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkCaseDataForm> editView = new CommitDiscardWrapperComponent<BulkCaseDataForm>(
 				form, form.getFieldGroup());
 
@@ -525,7 +525,7 @@ public class CaseController {
 		editView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
-				CaseDataDto updatedTempCase = form.getValue();
+				CaseBulkEditData updatedBulkEditData = form.getValue();
 
 				boolean classificationChange = form.getClassificationCheckBox().getValue();
 				boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
@@ -540,64 +540,25 @@ public class CaseController {
 							new Label(I18nProperties.getString(Strings.messageHealthFacilityMulitChanged)),
 							I18nProperties.getCaption(Captions.caseTransferCases),
 							I18nProperties.getCaption(Captions.caseEditData), 500, e -> {
-								CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-								for (CaseIndexDto indexDto : selectedCases) {
-									CaseDataDto updatedCase = changeCaseDto(updatedTempCase,
-											caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange,
-											investigationStatusChange, outcomeChange, surveillanceOfficerChange);
-									updatedCase.setRegion(updatedTempCase.getRegion());
-									updatedCase.setDistrict(updatedTempCase.getDistrict());
-									updatedCase.setCommunity(updatedTempCase.getCommunity());
-									updatedCase.setHealthFacility(updatedTempCase.getHealthFacility());
-									boolean doTransfer = e.booleanValue();
-									if (doTransfer) {
-										CaseDataDto oldCase = caseFacade.getCaseDataByUuid(indexDto.getUuid());
-										CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(updatedCase, oldCase);
-									}
-									caseFacade.saveCase(updatedCase);
-								}
-								
+								bulkEditWithHealthFacilities(selectedCases, updatedBulkEditData,
+										classificationChange, investigationStatusChange, outcomeChange,
+										surveillanceOfficerChange, e.booleanValue());
+
 								popupWindow.close();
 								navigateToIndex();
-								Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
+								Notification.show(I18nProperties.getString(Strings.messageCasesEdited),
+										Type.HUMANIZED_MESSAGE);
 							});
 
 				} else {
 					CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-					for (CaseIndexDto indexDto : selectedCases) {
-						CaseDataDto caseDto = changeCaseDto(updatedTempCase,
-								caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange,
-								investigationStatusChange, outcomeChange, surveillanceOfficerChange);
+					bulkEdit(selectedCases, updatedBulkEditData, classificationChange, investigationStatusChange,
+							outcomeChange, surveillanceOfficerChange, caseFacade);
 
-						caseFacade.saveCase(caseDto);
-					}
-					
 					popupWindow.close();
 					navigateToIndex();
 					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 				}
-			}
-
-			private CaseDataDto changeCaseDto(CaseDataDto updatedTempCase, CaseDataDto caseDto,
-					boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
-					boolean surveillanceOfficerChange) {
-
-				if (classificationChange) {
-					caseDto.setCaseClassification(updatedTempCase.getCaseClassification());
-				}
-				if (investigationStatusChange) {
-					caseDto.setInvestigationStatus(updatedTempCase.getInvestigationStatus());
-				}
-				if (outcomeChange) {
-					caseDto.setOutcome(updatedTempCase.getOutcome());
-				}
-				// Setting the surveillance officer is only allowed if all selected cases are in
-				// the same district
-				if (surveillanceOfficerChange) {
-					caseDto.setSurveillanceOfficer(updatedTempCase.getSurveillanceOfficer());
-				}
-
-				return caseDto;
 			}
 		});
 
@@ -607,6 +568,60 @@ public class CaseController {
 				popupWindow.close();
 			}
 		});
+	}
+
+	private void bulkEdit(Collection<CaseIndexDto> selectedCases, CaseBulkEditData updatedCaseBulkEditData,
+			boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
+			boolean surveillanceOfficerChange, CaseFacade caseFacade) {
+		for (CaseIndexDto indexDto : selectedCases) {
+			CaseDataDto caseDto = changeCaseDto(updatedCaseBulkEditData,
+					caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange, investigationStatusChange,
+					outcomeChange, surveillanceOfficerChange);
+
+			caseFacade.saveCase(caseDto);
+		}
+	}
+
+	private void bulkEditWithHealthFacilities(Collection<CaseIndexDto> selectedCases,
+			CaseBulkEditData updatedCaseBulkEditData, boolean classificationChange, boolean investigationStatusChange,
+			boolean outcomeChange, boolean surveillanceOfficerChange, Boolean doTransfer) {
+		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
+		for (CaseIndexDto indexDto : selectedCases) {
+			CaseDataDto updatedCase = changeCaseDto(updatedCaseBulkEditData,
+					caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange, investigationStatusChange,
+					outcomeChange, surveillanceOfficerChange);
+			updatedCase.setRegion(updatedCaseBulkEditData.getRegion());
+			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
+			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
+			updatedCase.setHealthFacility(updatedCaseBulkEditData.getHealthFacility());
+			if (doTransfer) {
+				CaseDataDto oldCase = caseFacade.getCaseDataByUuid(indexDto.getUuid());
+				CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(updatedCase, oldCase);
+			}
+			caseFacade.saveCase(updatedCase);
+		}
+	}
+
+	private CaseDataDto changeCaseDto(CaseBulkEditData updatedCaseBulkEditData, CaseDataDto caseDto,
+			boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
+			boolean surveillanceOfficerChange) {
+
+		if (classificationChange) {
+			caseDto.setCaseClassification(updatedCaseBulkEditData.getCaseClassification());
+		}
+		if (investigationStatusChange) {
+			caseDto.setInvestigationStatus(updatedCaseBulkEditData.getInvestigationStatus());
+		}
+		if (outcomeChange) {
+			caseDto.setOutcome(updatedCaseBulkEditData.getOutcome());
+		}
+		// Setting the surveillance officer is only allowed if all selected cases are in
+		// the same district
+		if (surveillanceOfficerChange) {
+			caseDto.setSurveillanceOfficer(updatedCaseBulkEditData.getSurveillanceOfficer());
+		}
+
+		return caseDto;
 	}
 
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
@@ -969,9 +984,9 @@ public class CaseController {
 		}
 	}
 
-	public void openEditExportConfigurationWindow(CaseCustomExportsGrid grid, ExportConfigurationDto config) {
+	public void openEditExportConfigurationWindow(CaseExportConfigurationsGrid grid, ExportConfigurationDto config) {
 		Window newExportWindow = VaadinUiUtil.createPopupWindow();
-		CaseEditExportConfigurationLayout editLayout = new CaseEditExportConfigurationLayout(config,
+		CaseExportConfigurationEditLayout editLayout = new CaseExportConfigurationEditLayout(config,
 				(exportConfiguration) -> {
 					FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
 					newExportWindow.close();
@@ -994,12 +1009,16 @@ public class CaseController {
 		
 		LineListingLayout lineListingForm = new LineListingLayout(window);
 		
-		lineListingForm.setWidth(LINELISTING_FORM_WIDTH, Unit.PIXELS);
-
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
+			lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+		} else {
+			lineListingForm.setWidth(LineListingLayout.WITDH_WITHOUT_EPID_NUMBER, Unit.PIXELS);
+		}
 		window.setContent(lineListingForm);
 		
 		window.setModal(true);
-		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - LINELISTING_FORM_WIDTH)) / 2);
+		window.setPositionX(
+				(int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
 		window.setPositionY(70);
 		
 		window.setResizable(false);

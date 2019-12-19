@@ -24,9 +24,6 @@ import androidx.core.app.NavUtils;
 import androidx.core.app.TaskStackBuilder;
 import androidx.appcompat.app.AppCompatActivity;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.list.CaseListActivity;
@@ -34,7 +31,7 @@ import de.symeda.sormas.app.contact.list.ContactListActivity;
 import de.symeda.sormas.app.dashboard.DashboardActivity;
 import de.symeda.sormas.app.event.list.EventListActivity;
 import de.symeda.sormas.app.report.ReportActivity;
-import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.report.aggregate.AggregateReportsActivity;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
 import de.symeda.sormas.app.task.list.TaskListActivity;
 
@@ -57,19 +54,24 @@ public class NavigationHelper {
     }
 
     public static void goToCases(Context context) {
-        CaseListActivity.startActivity(context, InvestigationStatus.PENDING);
+        CaseListActivity.startActivity(context, null);
+    }
+
+    public static void goToAggregateReports(Context context) {
+        Intent intent = new Intent(context, AggregateReportsActivity.class);
+        context.startActivity(intent);
     }
 
     public static void goToContacts(Context context) {
-        ContactListActivity.startActivity(context, FollowUpStatus.FOLLOW_UP);
+        ContactListActivity.startActivity(context, null);
     }
 
     public static void goToEvents(Context context) {
-        EventListActivity.startActivity(context, EventStatus.POSSIBLE);
+        EventListActivity.startActivity(context, null);
     }
 
     public static void goToSamples(Context context) {
-        SampleListActivity.startActivity(context, ShipmentStatus.NOT_SHIPPED);
+        SampleListActivity.startActivity(context, null);
     }
 
     public static void goToTasks(Context context) {

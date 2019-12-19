@@ -27,10 +27,14 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class UserDto extends EntityDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
+
+	public static final String COLUMN_NAME_USERROLE = "userrole";
+	public static final String COLUMN_NAME_USER_ID = "user_id";
 
 	public static final String I18N_PREFIX = "User";
 
@@ -78,6 +82,13 @@ public class UserDto extends EntityDto {
 	private UserReferenceDto associatedOfficer;
 	
 	private Disease limitedDisease;
+	
+	public static UserDto build() {
+		UserDto user = new UserDto();
+		user.setUuid(DataHelper.createUuid());
+		user.setAddress(LocationDto.build());
+		return user;
+	}
 	
 	public boolean isActive() {
 		return active;

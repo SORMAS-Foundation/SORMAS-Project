@@ -69,7 +69,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 			String userUuid) {
 		
 		//diseases
-		List<Disease> diseases = diseaseConfigurationFacade.getAllActivePrimaryDiseases();
+		List<Disease> diseases = diseaseConfigurationFacade.getAllDiseases(true, true, true);
 				
 		//new cases
 		CaseCriteria caseCriteria = new CaseCriteria()
