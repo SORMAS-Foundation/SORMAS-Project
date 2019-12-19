@@ -90,12 +90,6 @@ public class LineListingLayout extends VerticalLayout {
 		disease.addValueChangeListener(event -> diseaseDetails.setVisible(Disease.OTHER.equals(disease.getValue())));
 
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
-		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
-			region.setValue(UserProvider.getCurrent().getUser().getRegion());
-			region.setVisible(false);
-		} else {
-			region.setItems(FacadeProvider.getRegionFacade().getAllAsReference());
-		}
 		sharedInformationBar.addComponent(region);
 
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
@@ -104,8 +98,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = e.getValue();
-			FieldHelper.updateItems(district,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+			updateDistricts(regionDto);
 		});
 		district.addValueChangeListener(e -> {
 			removeFacilitiesIfCommunityIsNotPresent();
@@ -134,6 +127,15 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
 
+		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
+			RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
+			region.setValue(userRegion);
+			region.setVisible(false);
+			updateDistricts(userRegion);
+		} else {
+			region.setItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		}
+
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = new Button(I18nProperties.getCaption(Captions.lineListingAddLine));
 		addLine.setIcon(VaadinIcons.PLUS);
@@ -149,15 +151,14 @@ public class LineListingLayout extends VerticalLayout {
 			newLineDto.setRegion(lastLineDto.getRegion());
 			newLineDto.setDistrict(lastLineDto.getDistrict());
 			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
-			if (district.getValue() != null) {
-				newLineDto.setEpidNumber(getEpidNumberPrefix());
-			}
 			newLineDto.setCommunity(lastLineDto.getCommunity());
 			newLineDto.setFacility(lastLineDto.getFacility());
 			newLineDto.setFacilityDetails(lastLineDto.getFacilityDetails());
 			newLine.setBean(newLineDto);
 			caseLines.add(newLine);
 			lineComponent.addComponent(newLine);
+
+			setEpidNumberPrefix(newLine, lastLineDto.getDateOfReport());
 
 			if (caseLines.size() > 1) {
 				caseLines.get(0).getDelete().setEnabled(true);
@@ -190,21 +191,40 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
+
+	}
+
+	private void updateDistricts(RegionReferenceDto regionDto) {
+		FieldHelper.updateItems(district,
+				regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
 	}
 
 	private void setEpidNumberPrefixes() {
+		for (CaseLineLayout layout : caseLines) {
+			LocalDate dateOfReport = layout.dateOfReport.getValue();
+			setEpidNumberPrefix(layout, dateOfReport);
+		}
+	}
 
+	private void setEpidNumberPrefix(CaseLineLayout layout, LocalDate date) {
 		if (district.getValue() != null) {
-			for (CaseLineLayout layout : caseLines) {
-				layout.epidNumber.setValue(getEpidNumberPrefix());
+			if (date == null) {
+				layout.epidNumber.setValue(getEpidNumberPrefix(null));
+			} else {
+				String year = String.valueOf(date.getYear()).substring(2);
+				layout.epidNumber.setValue(getEpidNumberPrefix(year));
 			}
 		}
 	}
 
-	private String getEpidNumberPrefix() {
-
-		return FacadeProvider.getDistrictFacade().getFullEpidCodeForDistrict(district.getValue().getUuid()) + "-";
-
+	private String getEpidNumberPrefix(String year) {
+		
+		String fullEpidCode = FacadeProvider.getDistrictFacade().getFullEpidCodeForDistrict(district.getValue().getUuid());
+		if (year == null) {
+			return fullEpidCode + "-";
+		}else {
+			return fullEpidCode + "-" + year + "-";
+		}
 	}
 
 	private void closeWindow() {
@@ -350,6 +370,7 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfReport = new DateField();
 			dateOfReport.setWidth(100, Unit.PIXELS);
 			binder.forField(dateOfReport).asRequired().bind(CaseLineDto.DATE_OF_REPORT);
+			dateOfReport.addValueChangeListener(e -> setEpidNumberPrefix(this, dateOfReport.getValue()));
 			epidNumber = new TextField();
 			epidNumber.setWidth(160, Unit.PIXELS);
 			binder.forField(epidNumber).bind(CaseLineDto.EPID_NUMBER);
