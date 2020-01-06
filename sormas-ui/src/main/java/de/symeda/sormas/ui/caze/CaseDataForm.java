@@ -174,6 +174,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
 		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
 		community.setNullSelectionAllowed(true);
+		community.addStyleName(CssStyles.SOFT_REQUIRED);
 		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
 		facility.setImmediate(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);

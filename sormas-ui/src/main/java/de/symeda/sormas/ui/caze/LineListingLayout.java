@@ -375,6 +375,7 @@ public class LineListingLayout extends VerticalLayout {
 			epidNumber.setWidth(160, Unit.PIXELS);
 			binder.forField(epidNumber).bind(CaseLineDto.EPID_NUMBER);
 			community = new ComboBox<>();
+			community.addStyleName(CssStyles.SOFT_REQUIRED);
 			community.addValueChangeListener(e -> {
 				FieldHelper.removeItems(facility);
 				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getValue();
