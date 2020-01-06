@@ -234,6 +234,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     @Override
     public void onAfterLayoutBinding(final FragmentCaseEditLayoutBinding contentBinding) {
         setUpFieldVisibilities(contentBinding);
+        if (ConfigProvider.getUser().getHealthFacility() != null || ConfigProvider.getUser().getCommunity() != null){
+            contentBinding.caseDataDistrictLevelDate.setEnabled(false);
+        }
 
         // Initialize ControlSpinnerFields
         contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
