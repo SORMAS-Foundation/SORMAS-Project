@@ -1918,12 +1918,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public boolean doesEpidNumberExist(String epidNumber, String caseUuid) {
+	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> from = cq.from(Case.class);
 
 		Predicate filter = cb.equal(from.get(Case.EPID_NUMBER), epidNumber);
+		filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), caseDisease));
 		if (caseUuid != null) {
 			filter = cb.and(filter, cb.notEqual(from.get(Case.UUID), caseUuid));
 		}

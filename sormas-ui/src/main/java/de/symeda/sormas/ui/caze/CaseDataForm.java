@@ -427,7 +427,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 	
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, String fieldValue) {
-		if (FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid())) {
+		if (FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(),
+				getValue().getDisease())) {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);
 		} else {
