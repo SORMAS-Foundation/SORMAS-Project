@@ -103,16 +103,17 @@ public class EpiDataDto extends EntityDto {
 
 	// Fields are declared in the order they should appear in the import template
 	
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNDEFINED,
-			Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.UNSPECIFIED_VHF, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO,
+			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown burialAttended;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.POLIO,
-			Disease.CSM, Disease.CHOLERA, Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.UNDEFINED,
-			Disease.OTHER })
+			Disease.CSM, Disease.CHOLERA, Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE,
+			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown gatheringAttended;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.POLIO,
-			Disease.CSM, Disease.CHOLERA, Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.MONKEYPOX,
-			Disease.PLAGUE, Disease.RABIES, Disease.UNDEFINED, Disease.OTHER })
+			Disease.CSM, Disease.CHOLERA, Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE,
+			Disease.UNSPECIFIED_VHF, Disease.MONKEYPOX, Disease.PLAGUE, Disease.RABIES, Disease.UNDEFINED,
+			Disease.OTHER })
 	private YesNoUnknown traveled;
 	
 	private List<EpiDataBurialDto> burials = new ArrayList<>();

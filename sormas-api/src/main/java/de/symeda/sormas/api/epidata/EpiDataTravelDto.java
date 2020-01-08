@@ -36,20 +36,20 @@ public class EpiDataTravelDto extends EntityDto {
 	public static final String TRAVEL_DATE_TO = "travelDateTo";
 	
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.UNDEFINED,
-			Disease.OTHER })
+			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
+			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private TravelType travelType;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.UNDEFINED,
-			Disease.OTHER })
+			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
+			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private String travelDestination;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.UNDEFINED,
-			Disease.OTHER })
+			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
+			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private Date travelDateFrom;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.UNDEFINED,
-			Disease.OTHER })
+			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
+			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private Date travelDateTo;
 
 	

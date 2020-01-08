@@ -176,19 +176,19 @@ public class CaseDataDto extends EntityDto {
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
-			Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Vaccination vaccination;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.CSM, Disease.YELLOW_FEVER,
-			Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private String vaccinationDoses;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
-			Disease.MONKEYPOX, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+			Disease.MONKEYPOX, Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
 	@Outbreaks
 	private Date vaccinationDate;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
-			Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER })
 	private VaccinationInfoSource vaccinationInfoSource;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.POLIO, Disease.RABIES, Disease.OTHER })
 	@Outbreaks
