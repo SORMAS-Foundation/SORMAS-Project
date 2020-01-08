@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app.component.dialog;
 
+import android.app.Notification;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +34,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
@@ -55,16 +58,6 @@ public class LocationDialog extends AbstractDialog {
         this.data = location;
     }
 
-    // Instance methods
-
-    private void updateGpsTextView() {
-        if (contentBinding == null) {
-            return;
-        }
-
-        contentBinding.locationLatLon.setValue(data.getGpsLocation());
-    }
-
     // Overrides
 
     @Override
@@ -78,8 +71,6 @@ public class LocationDialog extends AbstractDialog {
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-        updateGpsTextView();
-
         List<Item> initialRegions = InfrastructureHelper.loadRegions();
         List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
         List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
@@ -106,19 +97,14 @@ public class LocationDialog extends AbstractDialog {
 
                         android.location.Location phoneLocation = LocationService.instance().getLocation(getActivity());
                         if (phoneLocation != null) {
-                            data.setLatitude(phoneLocation.getLatitude());
-                            data.setLongitude(phoneLocation.getLongitude());
-                            data.setLatLonAccuracy(phoneLocation.getAccuracy());
+                            contentBinding.locationLatitude.setDoubleValue(phoneLocation.getLatitude());
+                            contentBinding.locationLongitude.setDoubleValue(phoneLocation.getLongitude());
+                            contentBinding.locationLatLonAccuracy.setFloatValue(phoneLocation.getAccuracy());
                         } else {
-                            data.setLatitude(null);
-                            data.setLongitude(null);
-                            data.setLatLonAccuracy(null);
+                            NotificationHelper.showDialogNotification(LocationDialog.this, NotificationType.WARNING, R.string.message_gps_problem);
                         }
-
-                        updateGpsTextView();
                     }
                 });
-
                 confirmationDialog.show();
             }
         });
