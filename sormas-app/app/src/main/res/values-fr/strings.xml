@@ -453,7 +453,6 @@
     <string name="message_sync_success">Synchronization successful.</string>
     <string name="message_task_reply_required">An assignee reply is required when setting the task status to not executable.</string>
     <string name="message_unsynchronized_changes">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them.</string>
-    <string name="message_unsynchronized_changes_confirmation">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them. Type the word SYNC into the text field below to continue.</string>
     <string name="message_update_app_required">A new version of the SORMAS app is available. It is strongly recommended to download it by clicking the \'Download\' button below.</string>
     <string name="message_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
     <string name="message_weekly_report_submitted">Thank you for submitting your weekly report.</string>

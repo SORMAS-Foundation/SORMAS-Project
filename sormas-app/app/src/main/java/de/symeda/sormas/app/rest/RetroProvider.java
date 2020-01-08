@@ -319,7 +319,7 @@ public final class RetroProvider {
 
                     if (exception.getCustomHtmlErrorCode() == 401 || exception.getCustomHtmlErrorCode() == 403) {
                         // could not authenticate or user does not have access to the app
-                        ConfigProvider.clearUsernameAndPassword();
+                        ConfigProvider.clearUserLogin();
                     }
 
                     if (activityReference.get() != null) {
