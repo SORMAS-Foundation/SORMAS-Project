@@ -426,6 +426,7 @@
     <string name="message_entity_overridden">%1$s refreshed. Unsaved changes discarded.</string>
     <string name="message_gps_activation">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Turn On GPS\" to enable the required functionality on your device.</string>
     <string name="message_gps_permission">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Allow GPS Access\" to allow SORMAS to access the required functionality on your device.</string>
+    <string name="message_gps_problem">No GPS coordinates could be found.</string>
     <string name="message_http_401">Could not authenticate. Please check your username and password.</string>
     <string name="message_http_403">You do not have the needed permissions. Please contact the support.</string>
     <string name="message_http_404">Could not find a SORMAS server at \'%s\'</string>
