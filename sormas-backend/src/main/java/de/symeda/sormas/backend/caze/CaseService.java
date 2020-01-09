@@ -263,13 +263,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return result;
 	}
 
-	public String getHighestEpidNumber(String epidNumberPrefix) {
+	public String getHighestEpidNumber(String epidNumberPrefix, Disease disease) {
 		try {
 			StringBuilder queryBuilder = new StringBuilder();
-			queryBuilder.append("SELECT ").append(Case.EPID_NUMBER).append(" FROM ").append(Case.TABLE_NAME).append(" WHERE ").append(Case.TABLE_NAME)
-			.append(".").append(Case.EPID_NUMBER).append(" LIKE ?1 ORDER BY CAST(NULLIF(regexp_replace(")
-			.append(Case.TABLE_NAME).append(".").append(Case.EPID_NUMBER).append(", '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
-			Query query = em.createNativeQuery(queryBuilder.toString()).setParameter(1, epidNumberPrefix + "%");
+			queryBuilder.append("SELECT ").append(Case.EPID_NUMBER).append(" FROM ").append(Case.TABLE_NAME)
+					.append(" WHERE ").append(Case.TABLE_NAME).append(".").append(Case.DISEASE).append(" = ?1 AND ")
+					.append(Case.TABLE_NAME).append(".").append(Case.EPID_NUMBER)
+					.append(" LIKE ?2 ORDER BY CAST(NULLIF(regexp_replace(").append(Case.TABLE_NAME).append(".")
+					.append(Case.EPID_NUMBER).append(", '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
+			Query query = em.createNativeQuery(queryBuilder.toString()).setParameter(1, disease.getName())
+					.setParameter(2, epidNumberPrefix + "%");
 			return (String) query.getSingleResult();
 		} catch (NoResultException e) {
 			return null;

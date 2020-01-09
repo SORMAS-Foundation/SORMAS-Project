@@ -1476,7 +1476,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// Generate a suffix number
-		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber);
+		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caze.getDisease());
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
 			// If there is not yet a case with a suffix for this epid number in the
 			// database, use 01
