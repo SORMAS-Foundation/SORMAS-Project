@@ -66,14 +66,11 @@ public class SyncLogDialog extends AbstractDialog {
         logs = DatabaseHelper.getSyncLogDao().queryForAll(AbstractDomainObject.CREATION_DATE, false);
         buildAndDisplayDialogContent();
 
-        setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                if (logs.size() > lastDisplayCount) {
-                    buildAndDisplayDialogContent();
-                } else {
-                    NotificationHelper.showDialogNotification(SyncLogDialog.this, NotificationType.INFO,  R.string.message_no_more_entries);
-                }
+        setPositiveCallback(() -> {
+            if (logs.size() > lastDisplayCount) {
+                buildAndDisplayDialogContent();
+            } else {
+                NotificationHelper.showDialogNotification(SyncLogDialog.this, NotificationType.INFO,  R.string.message_no_more_entries);
             }
         });
     }

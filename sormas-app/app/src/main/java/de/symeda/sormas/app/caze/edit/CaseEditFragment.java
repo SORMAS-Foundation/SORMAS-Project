@@ -150,7 +150,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 referCaseFromPoeDialog.setPositiveCallback(() -> {
                     record = caseClone;
                     requestLayoutRebind();
-                    referCaseFromPoeDialog.dismiss();
                 });
                 referCaseFromPoeDialog.show();
             });

@@ -183,12 +183,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     }
 
     public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
-        contentBinding.personAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddressPopup(record, contentBinding);
-            }
-        });
+        contentBinding.personAddress.setOnClickListener(v -> openAddressPopup(record, contentBinding));
     }
 
     public static Date calculateBirthDateValue(FragmentPersonEditLayoutBinding contentBinding) {
@@ -236,13 +231,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
         locationDialog.show();
 
-        locationDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                contentBinding.personAddress.setValue(locationClone);
-                record.setAddress(locationClone);
-                locationDialog.dismiss();
-            }
+        locationDialog.setPositiveCallback(() -> {
+            contentBinding.personAddress.setValue(locationClone);
+            record.setAddress(locationClone);
         });
     }
 
@@ -253,18 +244,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
      */
     public static void initializeCauseOfDeathDetailsFieldVisibility(final ControlPropertyField causeOfDeathField, final ControlPropertyField causeOfDeathDiseaseField, final ControlPropertyField causeOfDeathDetailsField) {
         setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
-        causeOfDeathField.addValueChangedListener(new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
-            }
-        });
-        causeOfDeathDiseaseField.addValueChangedListener(new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
-            }
-        });
+        causeOfDeathField.addValueChangedListener(field -> setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField));
+        causeOfDeathDiseaseField.addValueChangedListener(field -> setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField));
     }
 
     private static void setCauseOfDeathDetailsFieldVisibility(final ControlPropertyField causeOfDeathField, final ControlPropertyField causeOfDeathDiseaseField, final ControlPropertyField causeOfDeathDetailsField) {

@@ -74,24 +74,21 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 
         personDialog.setPositiveCallback(() -> {
             if (personDialog.getSelectedPerson() != null && !personDialog.getSelectedPerson().getUuid().equals(person.getUuid())) {
-                personDialog.dismiss();
                 resultConsumer.accept(personDialog.getSelectedPerson());
             } else {
+                personDialog.suppressNextDismiss();
                 NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.info_select_create_person);
             }
         });
 
-        personDialog.createCallback = new Callback() {
-            @Override
-            public void call() {
-                if (personDialog.contentBinding.personFirstName.getValue().isEmpty() || personDialog.contentBinding.personLastName.getValue().isEmpty()) {
-                    NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.message_enter_person_name);
-                } else {
-                    person.setFirstName(personDialog.contentBinding.personFirstName.getValue());
-                    person.setLastName(personDialog.contentBinding.personLastName.getValue());
-                    personDialog.dismiss();
-                    resultConsumer.accept(person);
-                }
+        personDialog.createCallback = () -> {
+            if (personDialog.contentBinding.personFirstName.getValue().isEmpty() || personDialog.contentBinding.personLastName.getValue().isEmpty()) {
+                NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.message_enter_person_name);
+            } else {
+                person.setFirstName(personDialog.contentBinding.personFirstName.getValue());
+                person.setLastName(personDialog.contentBinding.personLastName.getValue());
+                personDialog.dismiss();
+                resultConsumer.accept(person);
             }
         };
 
@@ -135,47 +132,41 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     }
 
     private void setupControlListeners() {
-        contentBinding.updateSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                person.setFirstName(contentBinding.personFirstName.getValue());
-                person.setLastName(contentBinding.personLastName.getValue());
+        contentBinding.updateSearch.setOnClickListener(v -> {
+            person.setFirstName(contentBinding.personFirstName.getValue());
+            person.setLastName(contentBinding.personLastName.getValue());
 
-                updateSimilarPersons();
-                contentBinding.setAvailablePersons(makeObservable(similarPersons)); // why observable?
-                setSelectedPerson(null);
-            }
+            updateSimilarPersons();
+            contentBinding.setAvailablePersons(makeObservable(similarPersons)); // why observable?
+            setSelectedPerson(null);
         });
 
-        availablePersonItemClickCallback = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                if (item == null) {
-                    return;
-                }
+        availablePersonItemClickCallback = (v, item) -> {
+            if (item == null) {
+                return;
+            }
 
-                Person personItem = (Person)item;
-                String tag = getActivity().getResources().getString(R.string.tag_row_item_select_or_create_person);
-                ArrayList<View> views = ViewHelper.getViewsByTag(contentBinding.existingPersonsList, tag);
-                setSelectedPerson(null);
+            Person personItem = (Person)item;
+            String tag = getActivity().getResources().getString(R.string.tag_row_item_select_or_create_person);
+            ArrayList<View> views = ViewHelper.getViewsByTag(contentBinding.existingPersonsList, tag);
+            setSelectedPerson(null);
 
-                for (View itemView : views) {
-                    try {
-                        int itemViewId = itemView.getId();
-                        int vId = v.getId();
+            for (View itemView : views) {
+                try {
+                    int itemViewId = itemView.getId();
+                    int vId = v.getId();
 
-                        if (itemViewId == vId && v.isSelected()) {
-                            itemView.setSelected(false);
-                        } else if (itemViewId == vId && !v.isSelected()) {
-                            itemView.setSelected(true);
-                            setSelectedPerson(personItem);
-                        } else {
-                            itemView.setSelected(false);
-                        }
-                    } catch (NumberFormatException ex) {
-                        NotificationHelper.showDialogNotification(SelectOrCreatePersonDialog.this,
-                                NotificationType.ERROR, R.string.error_internal_error);
+                    if (itemViewId == vId && v.isSelected()) {
+                        itemView.setSelected(false);
+                    } else if (itemViewId == vId && !v.isSelected()) {
+                        itemView.setSelected(true);
+                        setSelectedPerson(personItem);
+                    } else {
+                        itemView.setSelected(false);
                     }
+                } catch (NumberFormatException ex) {
+                    NotificationHelper.showDialogNotification(SelectOrCreatePersonDialog.this,
+                            NotificationType.ERROR, R.string.error_internal_error);
                 }
             }
         };

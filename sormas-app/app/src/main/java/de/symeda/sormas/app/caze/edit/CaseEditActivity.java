@@ -204,7 +204,6 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         if (!existingCase.getHealthFacility().getUuid().equals(getStoredRootEntity().getHealthFacility().getUuid())) {
             ConfirmationDialog transferCaseDialog = new ConfirmationDialog(this, R.string.heading_case_infrastructure_data_changed, R.string.message_case_infrastructure_data_changed, R.string.action_transfer_case, R.string.action_edit_data);
             transferCaseDialog.setPositiveCallback(() -> {
-                transferCaseDialog.dismiss();
                 DatabaseHelper.getCaseDao().createPreviousHospitalizationAndUpdateHospitalization(getStoredRootEntity(), existingCase);
                 saveData(parameter -> goToNextPage());
             });

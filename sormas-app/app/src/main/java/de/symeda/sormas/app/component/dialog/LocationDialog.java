@@ -81,32 +81,24 @@ public class LocationDialog extends AbstractDialog {
         contentBinding.locationAreaType.initializeSpinner(DataUtils.getEnumItems(AreaType.class));
 
         // "Pick GPS Coordinates" confirmation dialog
-        this.contentBinding.pickGpsCoordinates.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
-                        R.string.heading_confirmation_dialog,
-                        R.string.confirmation_pick_gps,
-                        R.string.yes,
-                        R.string.no);
+        this.contentBinding.pickGpsCoordinates.setOnClickListener(v -> {
+            final ConfirmationDialog confirmationDialog = new ConfirmationDialog(getActivity(),
+                    R.string.heading_confirmation_dialog,
+                    R.string.confirmation_pick_gps,
+                    R.string.yes,
+                    R.string.no);
 
-                confirmationDialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        confirmationDialog.dismiss();
-
-                        android.location.Location phoneLocation = LocationService.instance().getLocation(getActivity());
-                        if (phoneLocation != null) {
-                            contentBinding.locationLatitude.setDoubleValue(phoneLocation.getLatitude());
-                            contentBinding.locationLongitude.setDoubleValue(phoneLocation.getLongitude());
-                            contentBinding.locationLatLonAccuracy.setFloatValue(phoneLocation.getAccuracy());
-                        } else {
-                            NotificationHelper.showDialogNotification(LocationDialog.this, NotificationType.WARNING, R.string.message_gps_problem);
-                        }
-                    }
-                });
-                confirmationDialog.show();
-            }
+            confirmationDialog.setPositiveCallback(() -> {
+                android.location.Location phoneLocation = LocationService.instance().getLocation(getActivity());
+                if (phoneLocation != null) {
+                    contentBinding.locationLatitude.setDoubleValue(phoneLocation.getLatitude());
+                    contentBinding.locationLongitude.setDoubleValue(phoneLocation.getLongitude());
+                    contentBinding.locationLatLonAccuracy.setFloatValue(phoneLocation.getAccuracy());
+                } else {
+                    NotificationHelper.showDialogNotification(LocationDialog.this, NotificationType.WARNING, R.string.message_gps_problem);
+                }
+            });
+            confirmationDialog.show();
         });
     }
 

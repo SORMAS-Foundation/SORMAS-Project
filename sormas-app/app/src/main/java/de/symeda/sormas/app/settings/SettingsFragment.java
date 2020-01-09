@@ -137,10 +137,7 @@ public class SettingsFragment extends BaseLandingFragment {
                     R.string.heading_unsynchronized_changes,
                     R.string.message_unsynchronized_changes_confirmation, wordToType);
 
-            unsynchronizedChangesDialog.setPositiveCallback(() -> {
-                unsynchronizedChangesDialog.dismiss();
-                confirmedCallback.call();
-            });
+            unsynchronizedChangesDialog.setPositiveCallback(confirmedCallback::call);
 
             unsynchronizedChangesDialog.show();
         } else {
@@ -154,8 +151,6 @@ public class SettingsFragment extends BaseLandingFragment {
                 R.string.info_resync_duration);
 
         confirmationDialog.setPositiveCallback(() -> {
-            confirmationDialog.dismiss();
-
             // Collect unsynchronized changes
             final List<Case> modifiedCases = DatabaseHelper.getCaseDao().getModifiedEntities();
             final List<Contact> modifiedContacts = DatabaseHelper.getContactDao().getModifiedEntities();
