@@ -454,6 +454,22 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 
 		assertEquals("COU-REG-DIS-" + year + "-002", secondCaze.getEpidNumber());
+		
+		secondCaze.setEpidNumber("COU-REG-DIS-" + year + "-0004");
+		getCaseFacade().saveCase(secondCaze);
+		
+		CaseDataDto thirdCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+
+		assertEquals("COU-REG-DIS-" + year + "-005", thirdCaze.getEpidNumber());
+
+		thirdCaze.setEpidNumber("COU-REG-DIS-" + year + "-3");
+		getCaseFacade().saveCase(thirdCaze);
+
+		CaseDataDto fourthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+
+		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
+
+
 	}
 
 	@Test

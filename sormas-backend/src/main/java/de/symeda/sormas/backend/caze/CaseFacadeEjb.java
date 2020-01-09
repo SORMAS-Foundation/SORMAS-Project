@@ -46,6 +46,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -1476,7 +1477,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// Generate a suffix number
-		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caze.getDisease());
+		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caze.getUuid(), caze.getDisease());
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
 			// If there is not yet a case with a suffix for this epid number in the
 			// database, use 01
@@ -1492,14 +1493,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				// suffix containing numbers
 				newEpidNumber = newEpidNumber + "001";
 			} else {
-				int suffix = Integer.valueOf(suffixString);
-				if (suffix < 9) {
-					newEpidNumber = newEpidNumber + "00" + (++suffix);
-				} else if (suffix < 99) {
-					newEpidNumber = newEpidNumber + "0" + (++suffix);
-				} else {
-					newEpidNumber = newEpidNumber + (++suffix);
-				}
+				int suffix = Integer.valueOf(suffixString) + 1;
+				newEpidNumber += String.format("%03d", suffix);
 			}
 		}
 
@@ -1921,18 +1916,38 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Case> from = cq.from(Case.class);
+		
+		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
+		String prefixString = epidNumber.substring(0, suffixSeperatorIndex+1);
+		String suffixString = epidNumber.substring(suffixSeperatorIndex+1);
+		suffixString = suffixString.replaceAll("[^\\d]", "");
+		int suffixNumber = Integer.parseInt(suffixString);
 
-		Predicate filter = cb.equal(from.get(Case.EPID_NUMBER), epidNumber);
-		filter = cb.and(filter, cb.equal(from.get(Case.DISEASE), caseDisease));
-		if (caseUuid != null) {
-			filter = cb.and(filter, cb.notEqual(from.get(Case.UUID), caseUuid));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
+		
+		Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
+		if (!DataHelper.isNullOrEmpty(caseUuid)) {
+			filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
 		}
+		filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
+
+		// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
+		ParameterExpression<String> regexParam2 = cb.parameter(String.class);
+		ParameterExpression<String> regexParam3 = cb.parameter(String.class);
+		ParameterExpression<String> regexParam4 = cb.parameter(String.class);
+		Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, cb.substring(caze.get(Case.EPID_NUMBER), suffixSeperatorIndex+2), regexParam2, regexParam3, regexParam4);
+		filter = cb.and(filter, cb.equal(epidNumberSuffixClean.as(Integer.class), suffixNumber));
 		cq.where(filter);
-		cq.select(cb.count(from));
-		return em.createQuery(cq).getSingleResult() > 0;
+
+		cq.select(caze.get(Case.EPID_NUMBER));
+		TypedQuery<String> query = em.createQuery(cq);
+		query.setParameter(regexParam2, "\\D");
+		query.setParameter(regexParam3, "");
+		query.setParameter(regexParam4, "g");
+		query.setMaxResults(1);
+		return !query.getResultList().isEmpty();
 	}
 
 	@Override
