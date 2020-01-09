@@ -57,7 +57,7 @@
       &.error-color-primary {
 	  	&.v-select-optiongroup-error {
 	  	  .v-radiobutton {
-	  	  	border-color: $v-selection-color !important;
+	  	  	border-color: $v-error-indicator-color !important;
 	  	  }
 	  	}
       }

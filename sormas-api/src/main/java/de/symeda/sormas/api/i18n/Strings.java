@@ -355,6 +355,7 @@ public interface Strings {
 	public static String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	public static String messageEntryCreated = "messageEntryCreated";
 	public static String messageEpiDataHint = "messageEpiDataHint";
+	public static String messageEpidNumberWarning = "messageEpidNumberWarning";
 	public static String messageErrorReportNotAvailable = "messageErrorReportNotAvailable";
 	public static String messageEventArchived = "messageEventArchived";
 	public static String messageEventCreated = "messageEventCreated";
