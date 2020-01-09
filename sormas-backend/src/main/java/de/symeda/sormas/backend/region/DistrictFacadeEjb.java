@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -48,6 +49,8 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -113,7 +116,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(District.class);
 		Root<District> district = cq.from(District.class);
@@ -150,8 +153,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		
 		cq.select(district);
 
-		List<District> districts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return districts.stream().map(d -> toIndexDto(d)).collect(Collectors.toList());
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
+		} else {
+			return em.createQuery(cq).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
+		}
 	}
 	
 	@Override
@@ -246,6 +252,34 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		cq.select(root.get(District.NAME));
 		return em.createQuery(cq).getResultList();
 	}
+	
+	@Override
+	public void archive(String districtUuid) {
+		District district = districtService.getByUuid(districtUuid);
+		district.setArchived(true);
+		districtService.ensurePersisted(district);
+	}
+	
+	@Override
+	public void dearchive(String districtUuid) {
+		District district = districtService.getByUuid(districtUuid);
+		district.setArchived(false);
+		districtService.ensurePersisted(district);
+	}
+	
+	@Override
+	public boolean isUsedInOtherInfrastructureData(String districtUuid) {
+		return districtService.isUsedInInfrastructureData(districtUuid, Community.DISTRICT, Community.class) ||
+				districtService.isUsedInInfrastructureData(districtUuid, Facility.DISTRICT, Facility.class) ||
+				districtService.isUsedInInfrastructureData(districtUuid, PointOfEntry.DISTRICT, PointOfEntry.class);
+	}
+	
+	@Override
+	public boolean isUsedInOtherInfrastructureData(Set<String> districtUuids) {
+		return districtService.isUsedInInfrastructureData(districtUuids, Community.DISTRICT, Community.class) ||
+				districtService.isUsedInInfrastructureData(districtUuids, Facility.DISTRICT, Facility.class) ||
+				districtService.isUsedInInfrastructureData(districtUuids, PointOfEntry.DISTRICT, PointOfEntry.class);
+	}	
 
 	public static DistrictReferenceDto toReferenceDto(District entity) {
 		if (entity == null) {
@@ -266,6 +300,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		dto.setArchived(entity.isArchived());
 
 		return dto;
 	}	
@@ -298,6 +333,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setArchived(source.isArchived());
 		
 		return target;
 	}

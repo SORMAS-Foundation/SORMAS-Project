@@ -167,7 +167,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, int first, int max,
+	public List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(PointOfEntry.class);
@@ -223,8 +223,11 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 		cq.select(pointOfEntry);
 
-		List<PointOfEntry> pointsOfEntry = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return pointsOfEntry.stream().map(p -> toDto(p)).collect(Collectors.toList());
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		} else {
+			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -252,6 +255,20 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
+	
+	@Override
+	public void archive(String pointOfEntryUuid) {
+		PointOfEntry pointOfEntry = service.getByUuid(pointOfEntryUuid);
+		pointOfEntry.setArchived(true);
+		service.ensurePersisted(pointOfEntry);
+	}
+	
+	@Override
+	public void dearchive(String pointOfEntryUuid) {
+		PointOfEntry pointOfEntry = service.getByUuid(pointOfEntryUuid);
+		pointOfEntry.setArchived(false);
+		service.ensurePersisted(pointOfEntry);
+	}
 
 	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target) {
 		if (target == null) {
@@ -268,6 +285,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		target.setActive(source.isActive());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setArchived(source.isArchived());
 
 		return target;
 	}
@@ -286,6 +304,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		dto.setLongitude(entity.getLongitude());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
+		dto.setArchived(entity.isArchived());
 	
 		return dto;
 	}

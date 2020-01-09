@@ -35,6 +35,7 @@ public class PointOfEntryDto extends EntityDto {
 	private Double latitude;
 	private Double longitude;
 	private boolean active;
+	private boolean archived;
 
 	public PointOfEntryDto(Date creationDate, Date changeDate, String uuid, PointOfEntryType pointOfEntryType,
 			String name, String regionUuid, String regionName, String districtUuid, String districtName,
@@ -118,6 +119,12 @@ public class PointOfEntryDto extends EntityDto {
 	}
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	public boolean isArchived() {
+		return archived;
+	}
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 	
 	@Override

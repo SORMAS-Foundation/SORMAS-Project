@@ -33,7 +33,7 @@ public interface FacilityFacade {
 
 	List<FacilityReferenceDto> getAll();
 	
-	List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(FacilityCriteria criteria);
 	
@@ -58,4 +58,9 @@ public interface FacilityFacade {
 	List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef);
 	
 	List<FacilityReferenceDto> getLaboratoriesByName(String name);
+	
+	void archive(String facilityUuid);
+	
+	void dearchive(String facilityUuid);
+	
 }

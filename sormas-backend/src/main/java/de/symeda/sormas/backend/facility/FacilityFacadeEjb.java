@@ -221,6 +221,20 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		return facilityService.getLaboratoriesByName(name).stream().map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public void archive(String facilityUuid) {
+		Facility facility = facilityService.getByUuid(facilityUuid);
+		facility.setArchived(true);
+		facilityService.ensurePersisted(facility);
+	}
+	
+	@Override
+	public void dearchive(String facilityUuid) {
+		Facility facility = facilityService.getByUuid(facilityUuid);
+		facility.setArchived(false);
+		facilityService.ensurePersisted(facility);
+	}
 
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {
 		if (entity == null) {
@@ -246,6 +260,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setCity(entity.getCity());
 		dto.setLatitude(entity.getLatitude());
 		dto.setLongitude(entity.getLongitude());
+		dto.setArchived(entity.isArchived());
 
 		return dto;
 	}
@@ -256,7 +271,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, int first, int max,
+	public List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(Facility.class);
@@ -312,8 +327,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		cq.select(facility);
 
-		List<Facility> facilities = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return facilities.stream().map(f -> toDto(f)).collect(Collectors.toList());
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		} else {
+			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -379,6 +397,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setLongitude(source.getLongitude());
 
 		target.setType(source.getType());
+		target.setArchived(source.isArchived());
 
 		return target;
 	}

@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -37,17 +37,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.region.RegionIndexDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -102,7 +99,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public List<RegionIndexDto> getIndexList(RegionCriteria criteria, int first, int max,
+	public List<RegionIndexDto> getIndexList(RegionCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
@@ -136,8 +133,11 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		cq.select(region);
 
-		List<Region> regions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return regions.stream().map(r -> toIndexDto(r)).collect(Collectors.toList());
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
+		} else {
+			return em.createQuery(cq).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -205,6 +205,34 @@ public class RegionFacadeEjb implements RegionFacade {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	@Override
+	public void archive(String regionUuid) {
+		Region region = regionService.getByUuid(regionUuid);
+		region.setArchived(true);
+		regionService.ensurePersisted(region);
+	}
+	
+	@Override
+	public void dearchive(String regionUuid) {
+		Region region = regionService.getByUuid(regionUuid);
+		region.setArchived(false);
+		regionService.ensurePersisted(region);
+	}
+	
+	@Override
+	public boolean isUsedInOtherInfrastructureData(String regionUuid) {
+		return regionService.isUsedInInfrastructureData(regionUuid, District.REGION, District.class) ||
+				regionService.isUsedInInfrastructureData(regionUuid, Facility.REGION, Facility.class) ||
+				regionService.isUsedInInfrastructureData(regionUuid, PointOfEntry.REGION, PointOfEntry.class);
+	}
+	
+	@Override
+	public boolean isUsedInOtherInfrastructureData(Set<String> regionUuids) {
+		return regionService.isUsedInInfrastructureData(regionUuids, District.REGION, District.class) ||
+				regionService.isUsedInInfrastructureData(regionUuids, Facility.REGION, Facility.class) ||
+				regionService.isUsedInInfrastructureData(regionUuids, PointOfEntry.REGION, PointOfEntry.class);
+	}
+	
 	public static RegionReferenceDto toReferenceDto(Region entity) {
 		if (entity == null) {
 			return null;
@@ -223,6 +251,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setGrowthRate(entity.getGrowthRate());
+		dto.setArchived(entity.isArchived());
 
 		return dto;
 	}
@@ -265,6 +294,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
+		target.setArchived(source.isArchived());
 
 		return target;
 	}

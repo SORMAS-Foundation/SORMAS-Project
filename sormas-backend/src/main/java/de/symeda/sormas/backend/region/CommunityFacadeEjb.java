@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -45,10 +45,10 @@ import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -92,6 +92,20 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	@Override
+	public void archive(String communityUuid) {
+		Community community = communityService.getByUuid(communityUuid);
+		community.setArchived(true);
+		communityService.ensurePersisted(community);
+	}
+	
+	@Override
+	public void dearchive(String communityUuid) {
+		Community community = communityService.getByUuid(communityUuid);
+		community.setArchived(false);
+		communityService.ensurePersisted(community);
+	}
 
 	private void selectDtoFields(CriteriaQuery<CommunityDto> cq, Root<Community> root) {
 
@@ -104,7 +118,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public List<CommunityDto> getIndexList(CommunityCriteria criteria, int first, int max,
+	public List<CommunityDto> getIndexList(CommunityCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Community> cq = cb.createQuery(Community.class);
@@ -149,9 +163,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 //				community.get(Community.UUID), community.get(Community.NAME),
 //				region.get(Region.UUID), region.get(Region.NAME),
 //				district.get(District.UUID), district.get(District.NAME));
-
-		List<Community> communities = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return communities.stream().map(c -> toDto(c)).collect(Collectors.toList());
+		
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		} else {
+			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -214,6 +231,16 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		return communityService.getByName(name, districtService.getByReferenceDto(districtRef)).stream()
 				.map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
+	
+	@Override
+	public boolean isUsedInOtherInfrastructureData(String communityUuid) {
+		return communityService.isUsedInInfrastructureData(communityUuid, Facility.COMMUNITY, Facility.class);
+	}
+	
+	@Override
+	public boolean isUsedInOtherInfrastructureData(Set<String> communityUuids) {
+		return communityService.isUsedInInfrastructureData(communityUuids, Facility.COMMUNITY, Facility.class);
+	}
 
 	public static CommunityReferenceDto toReferenceDto(Community entity) {
 		if (entity == null) {
@@ -233,6 +260,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		dto.setName(entity.getName());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
+		dto.setArchived(entity.isArchived());
 
 		return dto;
 	}
@@ -247,6 +275,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		target.setName(source.getName());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setArchived(source.isArchived());
 
 		return target;
 	}

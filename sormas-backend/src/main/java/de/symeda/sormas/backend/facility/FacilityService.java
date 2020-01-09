@@ -32,12 +32,13 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -48,7 +49,7 @@ import de.symeda.sormas.backend.util.InfrastructureDataImporter.FacilityConsumer
 
 @Stateless
 @LocalBean
-public class FacilityService extends AbstractAdoService<Facility> {
+public class FacilityService extends AbstractInfrastructureAdoService<Facility> {
 
 	@EJB
 	private RegionService regionService;
@@ -456,6 +457,15 @@ public class FacilityService extends AbstractAdoService<Facility> {
 			filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
 		} else {
 			filter = and(cb, filter, cb.isNull(from.get(Facility.TYPE)));
+		}
+		if (facilityCriteria.getRelevanceStatus() != null) {
+			if (facilityCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+						cb.equal(from.get(Facility.ARCHIVED), false),
+						cb.isNull(from.get(Facility.ARCHIVED))));
+			} else if (facilityCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(from.get(Facility.ARCHIVED), true));
+			}
 		}
 		return filter;
 	}

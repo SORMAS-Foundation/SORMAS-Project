@@ -22,10 +22,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 
 @Entity
-public class Community extends AbstractDomainObject {
+public class Community extends InfrastructureAdo {
 
 	private static final long serialVersionUID = 1971053920357795693L;
 

@@ -3841,3 +3841,12 @@ ALTER TABLE diseaseconfiguration ADD COLUMN casebased boolean;
 ALTER TABLE diseaseconfiguration_history ADD COLUMN casebased boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (176, 'Add caseBased column to diseaseconfiguration #1277');
+
+-- 2019-01-08 Add archived to infrastructure data #1412
+ALTER TABLE region ADD COLUMN archived boolean DEFAULT false;
+ALTER TABLE district ADD COLUMN archived boolean DEFAULT false;
+ALTER TABLE community ADD COLUMN archived boolean DEFAULT false;
+ALTER TABLE facility ADD COLUMN archived boolean DEFAULT false;
+ALTER TABLE pointofentry ADD COLUMN archived boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (177, 'Add archived to infrastructure data #1412');

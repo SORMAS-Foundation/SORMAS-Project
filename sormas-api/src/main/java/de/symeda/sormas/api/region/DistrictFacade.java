@@ -19,6 +19,7 @@ package de.symeda.sormas.api.region;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -34,7 +35,7 @@ public interface DistrictFacade {
 
 	List<DistrictDto> getAllAfter(Date date);
 	
-	List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	long count(DistrictCriteria criteria);
 	
@@ -59,4 +60,13 @@ public interface DistrictFacade {
 	List<String> getNamesByIds(List<Long> districtIds);
 
 	String getFullEpidCodeForDistrict(String districtUuid);
+	
+	void archive(String districtUuid);
+	
+	void dearchive(String districtUuid);
+	
+	boolean isUsedInOtherInfrastructureData(String districtUuid);
+	
+	boolean isUsedInOtherInfrastructureData(Set<String> districtUuids);
+	
 }

@@ -22,7 +22,7 @@ public interface PointOfEntryFacade {
 	
 	void save(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
 	
-	List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	long count(PointOfEntryCriteria criteria);
 
@@ -35,5 +35,9 @@ public interface PointOfEntryFacade {
 	List<PointOfEntryDto> getByUuids(List<String> uuids);
 	
 	List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district);
+	
+	void archive(String pointOfEntryUuid);
+	
+	void dearchive(String pointOfEntryUuid);
 	
 }

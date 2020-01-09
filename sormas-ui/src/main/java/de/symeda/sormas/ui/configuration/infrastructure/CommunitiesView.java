@@ -23,18 +23,24 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -49,6 +55,7 @@ import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CommunitiesView extends AbstractConfigurationView {
 
@@ -57,25 +64,33 @@ public class CommunitiesView extends AbstractConfigurationView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/communities";
 
 	private CommunityCriteria criteria;
+	private ViewConfiguration viewConfiguration;
 
 	// Filter
 	private TextField searchField;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
+	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
 
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private CommunitiesGrid grid;
 	protected Button createButton;
+	private MenuBar bulkOperationsDropdown;
+	private MenuItem archiveItem;
+	private MenuItem dearchiveItem;
 
 	public CommunitiesView() {
 		super(VIEW_NAME);
 
-		criteria = ViewModelProviders.of(CommunitiesView.class).get(CommunityCriteria.class);		
+		viewConfiguration = ViewModelProviders.of(CommunitiesView.class).get(ViewConfiguration.class);
+		criteria = ViewModelProviders.of(CommunitiesView.class).get(CommunityCriteria.class);	
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		}	
 
-		grid = new CommunitiesGrid();
-		grid.setCriteria(criteria);
+		grid = new CommunitiesGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
@@ -105,6 +120,39 @@ public class CommunitiesView extends AbstractConfigurationView {
 			addHeaderComponent(createButton);
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+			btnEnterBulkEditMode.setId("enterBulkEditMode");
+			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
+			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				viewConfiguration.setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				searchField.setEnabled(false);
+				grid.setEagerDataProvider();
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				viewConfiguration.setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				searchField.setEnabled(true);
+				navigateTo(criteria);
+			});
+		}
+
 		addComponent(gridLayout);
 	}
 
@@ -112,7 +160,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
-		filterLayout.setSizeUndefined();
+		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
@@ -157,6 +205,58 @@ public class CommunitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(resetButton);
 
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Show active/archived/all dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
+				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.communityActiveCommunities));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.communityArchivedCommunities));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.communityAllCommunities));
+				relevanceStatusFilter.addValueChangeListener(e -> {
+					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				actionButtonsLayout.addComponent(relevanceStatusFilter);
+
+				// Bulk operation dropdown
+				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+					bulkOperationsDropdown = new MenuBar();	
+					MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
+
+					Command archiveCommand = selectedItem -> {
+						ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(true, grid.asMultiSelect().getSelectedItems(), InfrastructureType.COMMUNITY, null, new Runnable() {
+							public void run() {
+								navigateTo(criteria);
+							}
+						});
+					};
+					archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, archiveCommand);
+					archiveItem.setVisible(EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus()));
+
+					Command dearchiveCommand = selectedItem -> {
+						ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(false, grid.asMultiSelect().getSelectedItems(), InfrastructureType.COMMUNITY, null, new Runnable() {
+							public void run() {
+								navigateTo(criteria);
+							}
+						});
+					};
+					dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, dearchiveCommand);
+					dearchiveItem.setVisible(EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus()));
+
+					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					actionButtonsLayout.addComponent(bulkOperationsDropdown);
+				}
+			}
+		}
+		filterLayout.addComponent(actionButtonsLayout);
+		filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.BOTTOM_RIGHT);
+		filterLayout.setExpandRatio(actionButtonsLayout, 1);
+
 		return filterLayout;
 	}
 
@@ -178,6 +278,9 @@ public class CommunitiesView extends AbstractConfigurationView {
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
 
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
 		searchField.setValue(criteria.getNameLike());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());

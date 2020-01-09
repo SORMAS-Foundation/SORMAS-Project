@@ -25,13 +25,13 @@ import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
 @Entity
-public class Facility extends AbstractDomainObject {
+public class Facility extends InfrastructureAdo {
 	
 	private static final long serialVersionUID = 8572137127616417072L;
 

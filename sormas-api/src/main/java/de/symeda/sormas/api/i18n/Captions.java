@@ -242,6 +242,9 @@ public interface Captions {
 	public static String columnDiseaseShort = "columnDiseaseShort";
 	public static String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
 	public static String community = "community";
+	public static String communityActiveCommunities = "communityActiveCommunities";
+	public static String communityAllCommunities = "communityAllCommunities";
+	public static String communityArchivedCommunities = "communityArchivedCommunities";
 	public static String communityName = "communityName";
 	public static String Configuration_HealthFacilities = "Configuration.HealthFacilities";
 	public static String Configuration_Laboratories = "Configuration.Laboratories";
@@ -430,6 +433,9 @@ public interface Captions {
 	public static String District_epidCode = "District.epidCode";
 	public static String District_growthRate = "District.growthRate";
 	public static String District_population = "District.population";
+	public static String districtActiveDistricts = "districtActiveDistricts";
+	public static String districtAllDistricts = "districtAllDistricts";
+	public static String districtArchivedDistricts = "districtArchivedDistricts";
 	public static String districtName = "districtName";
 	public static String EpiData = "EpiData";
 	public static String EpiData_animalCondition = "EpiData.animalCondition";
@@ -569,6 +575,12 @@ public interface Captions {
 	public static String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	public static String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
 	public static String Facility_OTHER_LABORATORY = "Facility.OTHER_LABORATORY";
+	public static String facilityActiveFacilities = "facilityActiveFacilities";
+	public static String facilityActiveLaboratories = "facilityActiveLaboratories";
+	public static String facilityAllFacilities = "facilityAllFacilities";
+	public static String facilityAllLaboratories = "facilityAllLaboratories";
+	public static String facilityArchivedFacilities = "facilityArchivedFacilities";
+	public static String facilityArchivedLaboratories = "facilityArchivedLaboratories";
 	public static String FeatureConfiguration_active = "FeatureConfiguration.active";
 	public static String FeatureConfiguration_districtName = "FeatureConfiguration.districtName";
 	public static String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
@@ -753,6 +765,9 @@ public interface Captions {
 	public static String PointOfEntry_OTHER_POE = "PointOfEntry.OTHER_POE";
 	public static String PointOfEntry_OTHER_SEAPORT = "PointOfEntry.OTHER_SEAPORT";
 	public static String PointOfEntry_pointOfEntryType = "PointOfEntry.pointOfEntryType";
+	public static String pointOfEntryActivePointsOfEntry = "pointOfEntryActivePointsOfEntry";
+	public static String pointOfEntryAllPointsOfEntry = "pointOfEntryAllPointsOfEntry";
+	public static String pointOfEntryArchivedPointsOfEntry = "pointOfEntryArchivedPointsOfEntry";
 	public static String populationDataFemaleTotal = "populationDataFemaleTotal";
 	public static String populationDataMaleTotal = "populationDataMaleTotal";
 	public static String PortHealthInfo = "PortHealthInfo";
@@ -798,6 +813,9 @@ public interface Captions {
 	public static String Region_epidCode = "Region.epidCode";
 	public static String Region_growthRate = "Region.growthRate";
 	public static String Region_population = "Region.population";
+	public static String regionActiveRegions = "regionActiveRegions";
+	public static String regionAllRegions = "regionAllRegions";
+	public static String regionArchivedRegions = "regionArchivedRegions";
 	public static String regionName = "regionName";
 	public static String Sample = "Sample";
 	public static String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
