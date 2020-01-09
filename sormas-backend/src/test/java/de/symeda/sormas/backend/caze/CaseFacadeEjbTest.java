@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.caze;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -438,7 +439,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testEpidNumberGeneration() {
+	public void testGenerateEpidNumber() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -448,11 +449,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Calendar calendar = Calendar.getInstance();
 		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
 
-		assertEquals("COU-REG-DIS-" + year + "-01", caze.getEpidNumber());
+		assertEquals("COU-REG-DIS-" + year + "-001", caze.getEpidNumber());
 
 		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 
-		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
+		assertEquals("COU-REG-DIS-" + year + "-002", secondCaze.getEpidNumber());
 	}
 
 	@Test
@@ -563,6 +564,31 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		visitUuids.add(visit.getUuid());
 		assertEquals(leadCase.getClinicalCourse().getUuid(),
 				getClinicalVisitFacade().getByUuids(visitUuids).get(0).getClinicalCourse().getUuid());
+	}
+
+	@Test
+	public void testDoesEpidNumberExist() {
+		
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto cazePerson = creator.createPerson("Horst", "Meyer").toReference();
+		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.CHOLERA, CaseClassification.NOT_CLASSIFIED,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		// 1. Same case
+		assertFalse(getCaseFacade().doesEpidNumberExist(caze.getEpidNumber(), caze.getUuid(), caze.getDisease()));
+
+		// 2. Same disease and epid number
+		assertTrue(getCaseFacade().doesEpidNumberExist(caze.getEpidNumber(), "abc", caze.getDisease()));
+		
+		// 3. Same disease, different epid number
+		assertFalse(getCaseFacade().doesEpidNumberExist("123", "abc", caze.getDisease()));
+		
+		// 4. Different disease and same epid number
+		assertFalse(getCaseFacade().doesEpidNumberExist(caze.getEpidNumber(), "abc", Disease.ANTHRAX));
+
+		// 5. Different disease and different epid number
+		assertFalse(getCaseFacade().doesEpidNumberExist("123", "abc", Disease.ANTHRAX));
 	}
 
 //	@Test
