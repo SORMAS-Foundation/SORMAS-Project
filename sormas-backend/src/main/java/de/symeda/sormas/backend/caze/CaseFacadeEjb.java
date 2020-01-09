@@ -1480,7 +1480,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
 			// If there is not yet a case with a suffix for this epid number in the
 			// database, use 01
-			newEpidNumber = newEpidNumber + "01";
+			newEpidNumber = newEpidNumber + "001";
 		} else {
 			// Otherwise, extract the suffix from the highest existing epid number and
 			// increase it by 1
@@ -1490,10 +1490,12 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (suffixString.isEmpty()) {
 				// If the suffix is empty now, that means there is not yet an epid number with a
 				// suffix containing numbers
-				newEpidNumber = newEpidNumber + "01";
+				newEpidNumber = newEpidNumber + "001";
 			} else {
 				int suffix = Integer.valueOf(suffixString);
 				if (suffix < 9) {
+					newEpidNumber = newEpidNumber + "00" + (++suffix);
+				} else if (suffix < 99) {
 					newEpidNumber = newEpidNumber + "0" + (++suffix);
 				} else {
 					newEpidNumber = newEpidNumber + (++suffix);
