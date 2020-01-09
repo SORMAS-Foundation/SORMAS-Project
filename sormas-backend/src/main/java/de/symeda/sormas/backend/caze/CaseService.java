@@ -26,12 +26,14 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -263,14 +265,33 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return result;
 	}
 
-	public String getHighestEpidNumber(String epidNumberPrefix) {
+	public String getHighestEpidNumber(String epidNumberPrefix, String caseUuid, Disease caseDisease) {
 		try {
-			StringBuilder queryBuilder = new StringBuilder();
-			queryBuilder.append("SELECT ").append(Case.EPID_NUMBER).append(" FROM ").append(Case.TABLE_NAME).append(" WHERE ").append(Case.TABLE_NAME)
-			.append(".").append(Case.EPID_NUMBER).append(" LIKE ?1 ORDER BY CAST(NULLIF(regexp_replace(")
-			.append(Case.TABLE_NAME).append(".").append(Case.EPID_NUMBER).append(", '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
-			Query query = em.createNativeQuery(queryBuilder.toString()).setParameter(1, epidNumberPrefix + "%");
-			return (String) query.getSingleResult();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<Case> caze = cq.from(Case.class);
+			
+			Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
+			if (!DataHelper.isNullOrEmpty(caseUuid)) {
+				filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
+			}
+			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), epidNumberPrefix + "%"));
+			cq.where(filter);
+
+			ParameterExpression<String> regexParam2 = cb.parameter(String.class);
+			ParameterExpression<String> regexParam3 = cb.parameter(String.class);
+			ParameterExpression<String> regexParam4 = cb.parameter(String.class);
+			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length()+1), regexParam2, regexParam3, regexParam4);
+			cq.orderBy(cb.desc(epidNumberSuffixClean.as(Integer.class)));
+			
+			cq.select(caze.get(Case.EPID_NUMBER));
+			TypedQuery<String> query = em.createQuery(cq);
+			query.setParameter(regexParam2, "\\D");
+			query.setParameter(regexParam3, "");
+			query.setParameter(regexParam4, "g");
+			query.setMaxResults(1);
+			return query.getSingleResult();
+			
 		} catch (NoResultException e) {
 			return null;
 		}
