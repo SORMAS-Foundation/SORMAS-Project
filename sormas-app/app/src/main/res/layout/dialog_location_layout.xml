@@ -97,11 +97,13 @@
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/location_latitude"
                     style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:inputType="numberDecimal"
                     app:value="@={data.latitude}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/location_longitude"
                     style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:inputType="numberDecimal"
                     app:value="@={data.longitude}" />
 
             </LinearLayout>
@@ -109,6 +111,7 @@
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/location_latLonAccuracy"
                 style="@style/ControlSingleColumnStyle"
+                app:inputType="numberDecimal"
                 app:value="@={data.latLonAccuracy}" />
 
         </LinearLayout>
