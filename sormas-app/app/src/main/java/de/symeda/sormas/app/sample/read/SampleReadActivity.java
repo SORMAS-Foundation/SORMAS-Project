@@ -23,6 +23,7 @@ import android.view.Menu;
 
 import java.util.List;
 
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -53,7 +54,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
     @Override
     public ShipmentStatus getPageStatus() {
         Sample sample = getStoredRootEntity();
-        if (sample != null) {
+        if (sample != null && SamplePurpose.INTERNAL != sample.getSamplePurpose()) {
             ShipmentStatus shipmentStatus = sample.getReferredToUuid() != null ?
                     ShipmentStatus.REFERRED_OTHER_LAB : sample.isReceived() ?
                     ShipmentStatus.RECEIVED : sample.isShipped() ? ShipmentStatus.SHIPPED :
