@@ -261,9 +261,9 @@ public class StatisticsHelper {
 			case EPI_WEEK_OF_YEAR:
 				return StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
 			case REGION:
-				return (List<StatisticsGroupingKey>)(List<? extends StatisticsGroupingKey>)FacadeProvider.getRegionFacade().getAllAsReference();
+				return (List<StatisticsGroupingKey>)(List<? extends StatisticsGroupingKey>)FacadeProvider.getRegionFacade().getAllActiveAsReference();
 			case DISTRICT:
-				return (List<StatisticsGroupingKey>)(List<? extends StatisticsGroupingKey>)FacadeProvider.getDistrictFacade().getAllAsReference();
+				return (List<StatisticsGroupingKey>)(List<? extends StatisticsGroupingKey>)FacadeProvider.getDistrictFacade().getAllActiveAsReference();
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());
 			}

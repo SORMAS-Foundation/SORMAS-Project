@@ -152,10 +152,10 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
 				return createTokens(dateValues);
 			case REGION:
-				return createTokens(FacadeProvider.getRegionFacade().getAllAsReference());
+				return createTokens(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			case DISTRICT:
 				if (regionDistrictElement == null) {
-					return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference());
+					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 				}
 				
 				List<TokenizableValue> selectedRegionTokenizables = regionDistrictElement.getSelectedRegions();
@@ -163,11 +163,11 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 					List<DistrictReferenceDto> districts = new ArrayList<>();
 					for (TokenizableValue selectedRegionTokenizable : selectedRegionTokenizables) {
 						RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
-						districts.addAll(FacadeProvider.getDistrictFacade().getAllByRegion(selectedRegion.getUuid()));
+						districts.addAll(FacadeProvider.getDistrictFacade().getAllActiveByRegion(selectedRegion.getUuid()));
 					}
 					return createTokens(districts);
 				} else {
-					return createTokens(FacadeProvider.getDistrictFacade().getAllAsReference());
+					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 				}
 			default:
 				throw new IllegalArgumentException(this.toString());

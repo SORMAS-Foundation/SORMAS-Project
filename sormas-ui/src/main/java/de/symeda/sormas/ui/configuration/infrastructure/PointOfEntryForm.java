@@ -55,9 +55,9 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbDistrict,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
-		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		
 		setRequired(true, PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE);
 		if (!create) {

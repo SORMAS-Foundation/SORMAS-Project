@@ -74,17 +74,18 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	protected PopulationDataFacadeEjbLocal populationDataFacade;
 
 	@Override
-	public List<DistrictReferenceDto> getAllAsReference() {
-		return districtService.getAll(District.NAME, true).stream()
+	public List<DistrictReferenceDto> getAllActiveAsReference() {
+		return districtService.getAllActive(District.NAME, true).stream()
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<DistrictReferenceDto> getAllByRegion(String regionUuid) {
+	public List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid) {
 		Region region = regionService.getByUuid(regionUuid);
 
 		return region.getDistricts().stream()
+				.filter(d -> !d.isArchived())
 				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
@@ -97,9 +98,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		selectDtoFields(cq, district);
 
-		cq.where(cb.and(
-				districtService.createBasicFilter(),
-				districtService.createChangeDateFilter(cb, district, date)));
+		Predicate filter = districtService.createChangeDateFilter(cb, district, date);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -181,11 +184,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		}
 
 		return districtService.getAllUuids(user);
-	}
-
-	@Override
-	public List<Integer> getAllIds() {
-		return districtService.getAllIds(null);
 	}
 
 	@Override	

@@ -69,16 +69,17 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	private DistrictService districtService;
 
 	@Override
-	public List<CommunityReferenceDto> getAllByDistrict(String districtUuid) {
-
+	public List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid) {
 		District district = districtService.getByUuid(districtUuid);
 
-		return district.getCommunities().stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return district.getCommunities().stream()
+				.filter(c -> !c.isArchived())
+				.map(f -> toReferenceDto(f))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<CommunityDto> getAllAfter(Date date) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CommunityDto> cq = cb.createQuery(CommunityDto.class);
 		Root<Community> community = cq.from(Community.class);
@@ -109,7 +110,6 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	private void selectDtoFields(CriteriaQuery<CommunityDto> cq, Root<Community> root) {
-
 		Join<Community, District> district = root.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
@@ -190,7 +190,6 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
-
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {

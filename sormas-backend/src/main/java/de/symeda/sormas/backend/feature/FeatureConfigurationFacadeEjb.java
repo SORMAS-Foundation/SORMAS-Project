@@ -112,7 +112,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				List<District> districts = null;
 				if (criteria.getRegion() != null) {
 					Region region = regionService.getByUuid(criteria.getRegion().getUuid());
-					districts = districtService.getAllByRegion(region);
+					districts = districtService.getAllActiveByRegion(region);
 				} else {
 					districts = districtService.getAll();
 				}

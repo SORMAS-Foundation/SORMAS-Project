@@ -122,13 +122,13 @@ public class AggregateReportsView extends AbstractView {
 			if (user.getRegion() == null) {
 				cbRegionFilter.setWidth(200, Unit.PIXELS);
 				cbRegionFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-				cbRegionFilter.setItems(FacadeProvider.getRegionFacade().getAllAsReference());
+				cbRegionFilter.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				binder.bind(cbRegionFilter, AggregateReportCriteria.REGION);
 				cbRegionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = e.getValue();
 					cbDistrictFilter.clear();
 					if (region != null) {
-						cbDistrictFilter.setItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
+						cbDistrictFilter.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 						cbDistrictFilter.setEnabled(true);
 					} else {
 						cbDistrictFilter.setEnabled(false);
@@ -151,11 +151,11 @@ public class AggregateReportsView extends AbstractView {
 				}
 				if (district != null) {
 					if (cbFacilityFilter != null) {
-						cbFacilityFilter.setItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(district, false));
+						cbFacilityFilter.setItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(district, false));
 						cbFacilityFilter.setEnabled(true);
 					}
 					if (cbPoeFilter != null) {
-						cbPoeFilter.setItems(FacadeProvider.getPointOfEntryFacade().getAllByDistrict(district.getUuid(), false));
+						cbPoeFilter.setItems(FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(district.getUuid(), false));
 						cbPoeFilter.setEnabled(true);
 					}
 				} else {

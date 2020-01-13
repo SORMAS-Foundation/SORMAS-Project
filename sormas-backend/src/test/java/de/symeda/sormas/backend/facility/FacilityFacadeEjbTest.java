@@ -9,8 +9,13 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 
 public class FacilityFacadeEjbTest extends AbstractBeanTest {
 
@@ -65,4 +70,45 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, results.size());
 		assertEquals(facilityName, results.get(0).getName());
 	}
+
+	@Test
+	public void testGetActiveHealthFacilitiesByCommunity() throws Exception {
+		Region r = creator.createRegion("r");
+		District d = creator.createDistrict("d", r);
+		Community c = creator.createCommunity("c", d);
+		creator.createFacility("f1", r, d, c);
+		Facility f2 = creator.createFacility("f2", r, d, c);
+		getFacilityFacade().archive(f2.getUuid());
+		
+		assertEquals(1, getFacilityFacade().getActiveHealthFacilitiesByCommunity(new CommunityReferenceDto(c.getUuid()), false).size());
+	}
+
+	@Test
+	public void testGetActiveHealthFacilitiesByDistrict() throws Exception {
+		Region r = creator.createRegion("r");
+		District d = creator.createDistrict("d", r);
+		Community c = creator.createCommunity("c", d);
+		creator.createFacility("f1", r, d, c);
+		Facility f2 = creator.createFacility("f2", r, d, c);
+		getFacilityFacade().archive(f2.getUuid());
+		
+		assertEquals(1, getFacilityFacade().getActiveHealthFacilitiesByDistrict(new DistrictReferenceDto(d.getUuid()), false).size());
+	}
+
+	@Test
+	public void testGetAllActiveLaboratories() throws Exception {
+		RDCF rdcf = creator.createRDCF("r", "d", "c", "f");
+		FacilityDto f1 = getFacilityFacade().getByUuid(rdcf.facility.getUuid());
+		getFacilityFacade().archive(f1.getUuid());
+		f1 = getFacilityFacade().getByUuid(f1.getUuid());
+		f1.setType(FacilityType.LABORATORY);
+		getFacilityFacade().saveFacility(f1);
+		FacilityDto f2 = creator.createFacility("f2", rdcf.region, rdcf.district, rdcf.community);
+		f2 = getFacilityFacade().getByUuid(f2.getUuid());
+		f2.setType(FacilityType.LABORATORY);
+		getFacilityFacade().saveFacility(f2);
+		
+		assertEquals(1, getFacilityFacade().getAllActiveLaboratories(false).size());
+	}
+	
 }

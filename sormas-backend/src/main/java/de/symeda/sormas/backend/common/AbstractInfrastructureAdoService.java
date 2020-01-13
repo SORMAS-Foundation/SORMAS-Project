@@ -22,19 +22,15 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		em.flush();
 	}
 	
-	public Predicate createBasicFilter() {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
-		Root<ADO> from = cq.from(getElementClass());
-		
-		return cb.isFalse(from.get(InfrastructureAdo.ARCHIVED));
+	public Predicate createBasicFilter(CriteriaBuilder cb, Root<ADO> root) {		
+		return cb.isFalse(root.get(InfrastructureAdo.ARCHIVED));
 	}
 
 	public List<ADO> getAllActive() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
-		cq.where(createBasicFilter());
+		cq.where(createBasicFilter(cb, from));
 		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
@@ -44,7 +40,7 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
-		cq.where(createBasicFilter());
+		cq.where(createBasicFilter(cb, from));
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
 
 		return em.createQuery(cq).getResultList();

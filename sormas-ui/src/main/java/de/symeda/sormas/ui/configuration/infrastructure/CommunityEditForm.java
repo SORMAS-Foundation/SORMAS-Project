@@ -71,7 +71,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(district,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		
 		district.addValueChangeListener(e -> {
@@ -81,7 +81,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 			}
 		});
 
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		
 		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
 		if (!create) {

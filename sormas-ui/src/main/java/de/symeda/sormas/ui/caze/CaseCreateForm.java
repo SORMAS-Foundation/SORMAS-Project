@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.Arrays;
 
-import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
@@ -96,7 +95,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-			FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+			FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
 			if (community.getValue() == null) {
@@ -104,18 +103,18 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			}
 			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
-			FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
-			FieldHelper.updateItems(cbPointOfEntry, districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllByDistrict(districtDto.getUuid(), true) : null);
+			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
+			FieldHelper.updateItems(cbPointOfEntry, districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true) : null);
 		});
 		community.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-			FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
-				district.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
+			FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true) :
+				district.getValue() != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
 					null);
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		OptionGroup ogCaseOrigin = addField(CaseDataDto.CASE_ORIGIN, OptionGroup.class);
 		ogCaseOrigin.setRequired(true);

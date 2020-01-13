@@ -150,7 +150,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 		affectedDistrictsComponent.setExpandRatio(middleColumn, 1);
 		affectedDistrictsComponent.setExpandRatio(rightColumn, 1);		
 
-		List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid());
+		List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid());
 		int index = 1;
 		for (DistrictReferenceDto district : districts) {
 			OptionGroup outbreakToggle = createOutbreakToggle(district);

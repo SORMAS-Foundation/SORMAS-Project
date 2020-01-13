@@ -168,7 +168,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		container.removeAllItems();
 
 		// Initially set all columns to their default value
-		for (RegionReferenceDto region : FacadeProvider.getRegionFacade().getAllAsReference()) {
+		for (RegionReferenceDto region : FacadeProvider.getRegionFacade().getAllActiveAsReference()) {
 			addItem(region);
 		}
 

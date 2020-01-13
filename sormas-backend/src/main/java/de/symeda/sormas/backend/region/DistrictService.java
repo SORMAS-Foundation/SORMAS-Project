@@ -35,7 +35,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
@@ -46,38 +45,38 @@ import de.symeda.sormas.backend.util.InfrastructureDataImporter.DistrictConsumer
 @Stateless
 @LocalBean
 public class DistrictService extends AbstractInfrastructureAdoService<District> {
-	
+
 	public DistrictService() {
 		super(District.class);
 	}
-	
-	public List<District> getAllWithoutEpidCode() {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
-		Root<District> from = cq.from(getElementClass());
-		cq.where(cb.isNull(from.get(District.EPID_CODE)));
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
-		return em.createQuery(cq).getResultList();
-	}
-	
-	public List<District> getAllByRegion(Region region) {
+	public List<District> getAllActiveByRegion(Region region) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
-		cq.where(cb.equal(from.get(District.REGION), region));
+		cq.where(
+				cb.and(
+						createBasicFilter(cb, from),
+						cb.equal(from.get(District.REGION), region)
+						)
+				);
 		cq.orderBy(cb.asc(from.get(District.NAME)));
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public int getCountByRegion(Region region) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<District> from = cq.from(getElementClass());
 		cq.select(cb.count(from));
-		cq.where(cb.equal(from.get(District.REGION), region));
-		
+		cq.where(
+				cb.and(
+						createBasicFilter(cb, from),
+						cb.equal(from.get(District.REGION), region)
+						)
+				);
+
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
 
@@ -85,27 +84,27 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
-	
+
 		Predicate filter = cb.equal(cb.upper(from.get(District.NAME)), name.toUpperCase());
 		if (region != null) {
 			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));
 		}
 
 		cq.where(filter);
-		
+
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<Long> getIdsByReferenceDtos(List<DistrictReferenceDto> references) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<District> from = cq.from(getElementClass());
-		
+
 		cq.where(from.get(District.UUID).in(references.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList())));
 		cq.select(from.get(District.ID));
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from, User user) {
@@ -115,9 +114,9 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 
 	public void importDistricts(String countryName, List<Region> regions) {
 		InfrastructureDataImporter.importDistricts(countryName, new DistrictConsumer() {
-			
+
 			private Region cachedRegion = null;
-			
+
 			@Override
 			public void consume(String regionName, String districtName, String epidCode, Float growthRate) {
 				if (cachedRegion == null || !cachedRegion.getName().equals(regionName)) {
@@ -131,7 +130,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 						logger.warn("Could not find region '" + regionName + "' for district '" + districtName + "'");
 						return;
 					}
-					
+
 					if (cachedRegion.getDistricts() == null) {
 						cachedRegion.setDistricts(new ArrayList<District>());
 					}
@@ -139,7 +138,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 				Optional<District> districtResult = cachedRegion.getDistricts().stream()
 						.filter(r -> r.getName().equals(districtName))
 						.findFirst();
-				
+
 				District district;
 				if (districtResult.isPresent()) {
 					district = districtResult.get();
@@ -149,7 +148,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 					district.setName(districtName);
 					district.setRegion(cachedRegion);
 				}
-				
+
 				district.setEpidCode(epidCode);
 				district.setGrowthRate(growthRate);
 
@@ -157,7 +156,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 			}
 		});
 	}
-	
+
 	public Predicate buildCriteriaFilter(DistrictCriteria criteria, CriteriaBuilder cb, Root<District> from) {
 		Predicate filter = null;
 		if (criteria.getRegion() != null) {

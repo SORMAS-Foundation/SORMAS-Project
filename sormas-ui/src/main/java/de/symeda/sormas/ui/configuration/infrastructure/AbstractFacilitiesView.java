@@ -179,13 +179,13 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.REGION));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			criteria.region(region);
 			navigateTo(criteria);
 			FieldHelper.updateItems(districtFilter,
-					region != null ? FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()) : null);
+					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 
 		});
 		filterLayout.addComponent(regionFilter);
@@ -198,7 +198,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 			criteria.district(district);
 			navigateTo(criteria);
 			FieldHelper.updateItems(communityFilter,
-					district != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(district.getUuid()) : null);
+					district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()) : null);
 		});
 		filterLayout.addComponent(districtFilter);
 

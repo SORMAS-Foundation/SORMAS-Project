@@ -59,7 +59,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 		setRequired(true, DistrictDto.NAME, DistrictDto.EPID_CODE, DistrictDto.REGION);
 		
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());		
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());		
 		
 		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
 		if (!create) {

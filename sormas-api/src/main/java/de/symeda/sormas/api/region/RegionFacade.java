@@ -28,7 +28,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface RegionFacade {
 
-    List<RegionReferenceDto> getAllAsReference();
+    List<RegionReferenceDto> getAllActiveAsReference();
 
 	List<RegionDto> getAllAfter(Date date);
 	
@@ -43,8 +43,6 @@ public interface RegionFacade {
 	RegionReferenceDto getRegionReferenceById(int id);
 	
 	List<String> getAllUuids(String userUuid);
-	
-	List<Integer> getAllIds();
 	
 	List<RegionDto> getByUuids(List<String> uuids);
 	

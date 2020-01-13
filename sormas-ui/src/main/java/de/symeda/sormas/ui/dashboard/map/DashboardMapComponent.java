@@ -732,7 +732,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		clearRegionShapes();
 		map.setTileLayerOpacity(0.5f);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
 		List<LeafletPolygon> regionPolygons = new ArrayList<LeafletPolygon>();
 
 		// draw outlines of all regions

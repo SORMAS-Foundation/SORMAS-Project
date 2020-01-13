@@ -82,14 +82,14 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(district,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 
 		district.addValueChangeListener(e -> {
 			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(community,
-					districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid())
+					districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid())
 							: null);
 		});
 
@@ -97,7 +97,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 			@SuppressWarnings("unused")
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		if (!create) {
 			if (!laboratory) {

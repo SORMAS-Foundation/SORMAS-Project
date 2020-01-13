@@ -16,7 +16,6 @@ public class DistrictFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllAfter() throws InterruptedException {
-		
 		Region region = creator.createRegion("region");
 		creator.createDistrict("district1", region);
 		getDistrictService().doFlush();
@@ -40,10 +39,29 @@ public class DistrictFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetFullEpidCodeForDistrict() {
-
 		District district = creator.createDistrict("abcdef", creator.createRegion("ghijkl"));
 		String epidNumberPrefix = getDistrictFacade().getFullEpidCodeForDistrict(district.getUuid()) + "-34-";
 		assertTrue(CaseLogic.isEpidNumberPrefix(epidNumberPrefix));
+	}
+
+	@Test
+	public void testGetAllActiveAsReference() throws Exception {
+		Region r = creator.createRegion("r");
+		creator.createDistrict("d1", r);
+		District d2 = creator.createDistrict("d2", r);
+		getDistrictFacade().archive(d2.getUuid());
+		
+		assertEquals(1, getDistrictFacade().getAllActiveAsReference().size());
+	}
+
+	@Test
+	public void testGetAllActiveByRegion() throws Exception {
+		Region r = creator.createRegion("r");
+		creator.createDistrict("d1", r);
+		District d2 = creator.createDistrict("d2", r);
+		getDistrictFacade().archive(d2.getUuid());
+		
+		assertEquals(1, getDistrictFacade().getAllActiveByRegion(r.getUuid()).size());
 	}
 
 }

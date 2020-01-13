@@ -65,7 +65,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
        	});
 		district.addValueChangeListener(e -> {
 			if (community.getValue() == null) {
@@ -73,8 +73,8 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
     		}
     		FieldHelper.removeItems(community);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
-    		FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
+    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
 			
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(officer, assignableSurveillanceOfficers);
@@ -87,8 +87,8 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		community.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
-    			district.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
+    		FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true) :
+    			district.getValue() != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
     				null);
     	});
 		facility.addValueChangeListener(e -> {
@@ -115,7 +115,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 				facilityDetails.clear();
 			}
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		
 		FieldHelper.addSoftRequiredStyle(community, facilityDetails, officer);
 		setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);

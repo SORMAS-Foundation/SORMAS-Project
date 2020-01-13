@@ -179,13 +179,13 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.REGION));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			criteria.region(region);
 			navigateTo(criteria);
 			FieldHelper.updateItems(districtFilter,
-					region != null ? FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()) : null);
+					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 		});
 		filterLayout.addComponent(regionFilter);
 

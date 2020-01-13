@@ -115,7 +115,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
-		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
+		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
 		labDetails.setVisible(false);
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);

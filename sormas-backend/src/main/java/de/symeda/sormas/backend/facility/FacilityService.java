@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.facility;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,14 +57,13 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		super(Facility.class);
 	}
 
-	public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeStaticFacilities) {
-
+	public List<Facility> getActiveHealthFacilitiesByCommunity(Community community, boolean includeStaticFacilities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY),
-				cb.isNull(from.get(Facility.TYPE)));
+		Predicate filter = createBasicFilter(cb, from);
+		filter = cb.and(filter, cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE))));
 		filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
 		cq.where(filter);
 		cq.distinct(true);
@@ -81,14 +79,13 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return facilities;
 	}
 
-	public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeStaticFacilities) {
-
+	public List<Facility> getActiveHealthFacilitiesByDistrict(District district, boolean includeStaticFacilities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY),
-				cb.isNull(from.get(Facility.TYPE)));
+		Predicate filter = createBasicFilter(cb, from);
+		filter = cb.and(filter, cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE))));
 		filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), district));
 		cq.where(filter);
 		cq.distinct(true);
@@ -104,81 +101,18 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return facilities;
 	}
 
-	public List<Facility> getHealthFacilitiesByRegion(Region region, boolean includeStaticFacilities) {
-
+	public List<Facility> getAllActiveLaboratories(boolean includeOtherLaboratory) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY),
-				cb.isNull(from.get(Facility.TYPE)));
-		filter = cb.and(filter, cb.equal(from.get(Facility.REGION), region));
-		cq.where(filter);
-		cq.distinct(true);
-		cq.orderBy(cb.asc(from.get(Facility.NAME)));
-
-		List<Facility> facilities = em.createQuery(cq).getResultList();
-
-		if (includeStaticFacilities) {
-			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
-			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
-		}
-
-		return facilities;
-	}
-
-	public List<Facility> getAllByRegionAfter(Region region, Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
-		Root<Facility> from = cq.from(getElementClass());
-
-		Predicate filter = null;
-		if (region != null) {
-			filter = cb.equal(from.get(Facility.REGION), region);
-		}
-		if (date != null) {
-			if (filter != null) {
-				filter = cb.and(filter, createChangeDateFilter(cb, from, date));
-			} else {
-				filter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
-			}
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		// order by district, community so the app can do caching while reading the data
-		cq.orderBy(cb.asc(from.get(Facility.DISTRICT)), cb.asc(from.get(Facility.COMMUNITY)),
-				cb.asc(from.get(Facility.NAME)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Facility> getAllWithoutRegionAfter(Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
-		Root<Facility> from = cq.from(getElementClass());
-
-		Predicate filter = cb.isNull(from.get(Facility.REGION));
-		if (date != null) {
-			filter = cb.and(filter, createChangeDateFilter(cb, from, date));
-		}
-		cq.where(filter);
-		cq.orderBy(cb.asc(from.get(Facility.NAME)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Facility> getAllLaboratories(boolean includeOtherLaboratory) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
-		Root<Facility> from = cq.from(getElementClass());
-
-		cq.where(cb.and(cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
-				cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)));
+		cq.where(
+				cb.and(
+						createBasicFilter(cb, from),
+						cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
+						cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)
+						)
+				);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
@@ -214,7 +148,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<Facility> getLaboratoriesByName(String name) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
@@ -222,9 +156,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 		Predicate filter = cb.equal(cb.upper(from.get(Facility.NAME)), name.toUpperCase());
 		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
-		
+
 		cq.where(filter);
-		
+
 		return em.createQuery(cq).getResultList();
 	}
 

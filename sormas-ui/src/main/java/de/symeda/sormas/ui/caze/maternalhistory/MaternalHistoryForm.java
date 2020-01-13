@@ -82,14 +82,14 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 		
 		cbRashExposureRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(cbRashExposureDistrict, region != null ? FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()) : null);
+			FieldHelper.updateItems(cbRashExposureDistrict, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 		});
 		cbRashExposureDistrict.addValueChangeListener(e -> {
 			FieldHelper.removeItems(cbRashExposureCommunity);
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(cbRashExposureCommunity, district != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(district.getUuid()) : null);
+			FieldHelper.updateItems(cbRashExposureCommunity, district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()) : null);
 		});
-		cbRashExposureRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		cbRashExposureRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.CONJUNCTIVITIS_ONSET, MaternalHistoryDto.CONJUNCTIVITIS_MONTH), MaternalHistoryDto.CONJUNCTIVITIS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET, MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH), MaternalHistoryDto.MACULOPAPULAR_RASH, Arrays.asList(YesNoUnknown.YES), true);

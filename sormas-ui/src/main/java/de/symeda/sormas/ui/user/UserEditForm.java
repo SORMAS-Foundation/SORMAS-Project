@@ -105,7 +105,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	region.addValueChangeListener(e -> {
     		FieldHelper.removeItems(community);
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
        	});
 
     	
@@ -119,16 +119,16 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     		FieldHelper.removeItems(associatedOfficer);
     		FieldHelper.removeItems(cbPointOfEntry);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
-    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false) : null);
+    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, false) : null);
     		FieldHelper.updateItems(associatedOfficer, districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
-    		FieldHelper.updateItems(cbPointOfEntry, districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllByDistrict(districtDto.getUuid(), false) : null);
+    		FieldHelper.updateItems(cbPointOfEntry, districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
     	});
 
     	ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
-    	laboratory.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(false));
+    	laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
     	
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
     	addValidators(UserDto.USER_NAME, new UserNameValidator());

@@ -67,16 +67,16 @@ public class RegionFacadeEjb implements RegionFacade {
 	protected CommunityService communityService;
 	@EJB
 	protected PopulationDataFacadeEjbLocal populationDataFacade;
-
+	
 	@Override
-	public List<RegionReferenceDto> getAllAsReference() {
-		return regionService.getAll(Region.NAME, true).stream().map(f -> toReferenceDto(f))
+	public List<RegionReferenceDto> getAllActiveAsReference() {
+		return regionService.getAllActive(Region.NAME, true).stream()
+				.map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<RegionDto> getAllAfter(Date date) {
-		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<RegionDto> cq = cb.createQuery(RegionDto.class);
 		Root<Region> region = cq.from(Region.class);
@@ -93,7 +93,6 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	private void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
-
 		cq.multiselect(root.get(Region.CREATION_DATE), root.get(Region.CHANGE_DATE), root.get(Region.UUID),
 				root.get(Region.NAME), root.get(Region.EPID_CODE), root.get(Region.GROWTH_RATE));
 	}
@@ -158,7 +157,6 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
-
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
@@ -166,11 +164,6 @@ public class RegionFacadeEjb implements RegionFacade {
 		}
 
 		return regionService.getAllUuids(user);
-	}
-
-	@Override
-	public List<Integer> getAllIds() {
-		return regionService.getAllIds(null);
 	}
 
 	@Override

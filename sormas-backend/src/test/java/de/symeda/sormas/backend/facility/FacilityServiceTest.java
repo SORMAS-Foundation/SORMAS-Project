@@ -74,7 +74,7 @@ public class FacilityServiceTest {
 		FacilityService facilityService = getBean(FacilityService.class);
 		DistrictService districtService = getBean(DistrictService.class);
 
-		List<Facility> healthFacilitiesByDistrict = facilityService.getHealthFacilitiesByDistrict(districtService.getAll().get(0), false);
+		List<Facility> healthFacilitiesByDistrict = facilityService.getActiveHealthFacilitiesByDistrict(districtService.getAll().get(0), false);
 		// List should have some entries
 		assertThat(healthFacilitiesByDistrict.size(), greaterThan(1));
 	}
@@ -92,7 +92,7 @@ public class FacilityServiceTest {
 	public void testImportLaboratories() {
 		FacilityService facilityService = getBean(FacilityService.class);
 
-		List<Facility> allLaboratories = facilityService.getAllLaboratories(true);
+		List<Facility> allLaboratories = facilityService.getAllActiveLaboratories(true);
 		// List should have some entries
 		assertThat(allLaboratories.size(), greaterThan(1));
 	}

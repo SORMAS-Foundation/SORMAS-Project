@@ -75,9 +75,11 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public List<PointOfEntryReferenceDto> getAllByDistrict(String districtUuid, boolean includeOthers) {
+	public List<PointOfEntryReferenceDto> getAllActiveByDistrict(String districtUuid, boolean includeOthers) {
 		District district = districtService.getByUuid(districtUuid);
-		return service.getAllByDistrict(district, includeOthers).stream().map(p -> toReferenceDto(p))
+		return service.getAllByDistrict(district, includeOthers).stream()
+				.filter(p -> !p.isArchived())
+				.map(p -> toReferenceDto(p))
 				.collect(Collectors.toList());
 	}
 
@@ -88,7 +90,6 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<PointOfEntryDto> getAllAfter(Date date) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntryDto> cq = cb.createQuery(PointOfEntryDto.class);
 		Root<PointOfEntry> pointOfEntry = cq.from(PointOfEntry.class);
@@ -105,7 +106,6 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	private void selectDtoFields(CriteriaQuery<PointOfEntryDto> cq, Root<PointOfEntry> root) {
-
 		Join<PointOfEntry, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<PointOfEntry, Region> region = root.join(Facility.REGION, JoinType.LEFT);
 

@@ -29,7 +29,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface CommunityFacade {
 	
-    List<CommunityReferenceDto> getAllByDistrict(String districtUuid);
+    List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid);
 
 	List<CommunityDto> getAllAfter(Date date);
 	

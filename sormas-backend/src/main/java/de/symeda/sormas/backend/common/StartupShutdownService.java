@@ -205,7 +205,7 @@ public class StartupShutdownService {
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
-			List<Facility> healthFacilities = facilityService.getHealthFacilitiesByCommunity(community, false);
+			List<Facility> healthFacilities = facilityService.getActiveHealthFacilitiesByCommunity(community, false);
 			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
 	
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");

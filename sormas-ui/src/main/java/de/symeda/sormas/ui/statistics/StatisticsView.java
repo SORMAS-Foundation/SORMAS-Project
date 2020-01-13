@@ -751,7 +751,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			LeafletMapUtil.addOtherCountriesOverlay(map);
 		}
 		
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
 
 		List<LeafletPolygon> outlinePolygones = new ArrayList<LeafletPolygon>();
 
