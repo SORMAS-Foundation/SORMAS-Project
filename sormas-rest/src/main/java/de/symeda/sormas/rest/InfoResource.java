@@ -71,7 +71,6 @@ public class InfoResource {
 	@GET
 	@Path("/checkcompatibility")
 	public CompatibilityCheckResponse isCompatibleToApi(@QueryParam("appVersion") String appVersion) {
-		return CompatibilityCheckResponse.TOO_OLD;
-		//return InfoProvider.get().isCompatibleToApi(appVersion);
+		return InfoProvider.get().isCompatibleToApi(appVersion);
 	}
 }
