@@ -531,7 +531,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		Calendar calendar = Calendar.getInstance();
 		Date now = new Date();
 		calendar.setTime(now);
-		calendar.add(Calendar.MINUTE, CronService.REPEATEDLY_PER_HOUR_INTERVAL * -1);
+		calendar.add(Calendar.MINUTE, CronService.TASK_UPDATE_INTERVAL * -1);
 		Date before = calendar.getTime();
 
 		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now));

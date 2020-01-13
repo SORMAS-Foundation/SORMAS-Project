@@ -55,24 +55,31 @@ public class CronService {
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
-	public static final int REPEATEDLY_PER_HOUR_INTERVAL = 10;
-	
+	public static final int TASK_UPDATE_INTERVAL = 10;
+
 	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
 	
-	@Schedule(hour = "4", minute = "0", second = "0", persistent=false)
-    public void runEveryNight() {
-		contactFacade.generateContactFollowUpTasks();		
-		weeklyReportFacade.generateSubmitWeeklyReportTasks();
-    }
-	
-	@Schedule(hour = "*", minute = "*/" + REPEATEDLY_PER_HOUR_INTERVAL, second = "0", persistent = false)
-	public void runRepeatedlyPerHour() {
+	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
+	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();
 	}
 	
-	@Schedule(hour = "0", minute = "0", second = "0", persistent = false)
-	public void runAtMidnight() {
-		// Remove all files with the sormas prefix from the export folder that are older than two hours
+	@Schedule(hour = "1", minute = "0", second = "0", persistent = false)
+	public void deleteAllExpiredFeatureConfigurations() {
+		// Remove all feature configurations whose end dates have been reached
+		featureConfigurationFacade.deleteAllExpiredFeatureConfigurations(new Date());
+		
+		logger.info("Deleted expired feature configurations");
+	}
+
+	@Schedule(hour = "1", minute = "5", second = "0", persistent = false)
+	public void generateAutomaticTasks() {
+		contactFacade.generateContactFollowUpTasks();
+		weeklyReportFacade.generateSubmitWeeklyReportTasks();
+	}
+
+	@Schedule(hour = "1", minute = "10", second = "0", persistent = false)
+	public void cleanUpTemporaryFiles() {
 		Date now = new Date();
 		File exportFolder = new File(configFacade.getTempFilesPath());
 		int numberOfDeletedFiles = 0;
@@ -94,11 +101,6 @@ public class CronService {
 		}
 		
 		logger.info("Deleted " + numberOfDeletedFiles + " export files");
-		
-		// Remove all feature configurations whose end dates have been reached
-		featureConfigurationFacade.deleteAllExpiredFeatureConfigurations(now);
-		
-		logger.info("Deleted expired feature configurations");
 	}
-	
 }
+
