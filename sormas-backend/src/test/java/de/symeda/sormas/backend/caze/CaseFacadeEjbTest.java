@@ -469,6 +469,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
 
+		fourthCaze.setEpidNumber("COU-REG-DIS-" + year + "-AAA");
+		getCaseFacade().saveCase(fourthCaze);
+		fourthCaze = getCaseFacade().getCaseDataByUuid(fourthCaze.getUuid());
+
+		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
 
 	}
 
@@ -604,7 +609,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getCaseFacade().doesEpidNumberExist(caze.getEpidNumber(), "abc", Disease.ANTHRAX));
 
 		// 5. Different disease and different epid number
-		assertFalse(getCaseFacade().doesEpidNumberExist("123", "abc", Disease.ANTHRAX));
+		assertFalse(getCaseFacade().doesEpidNumberExist("def", "abc", Disease.ANTHRAX));
 	}
 
 //	@Test

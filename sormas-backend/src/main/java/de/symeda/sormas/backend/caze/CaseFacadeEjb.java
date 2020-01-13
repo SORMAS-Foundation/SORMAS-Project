@@ -1918,10 +1918,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
 		
 		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
+		if (suffixSeperatorIndex == -1) {
+			// no suffix - use the whole string as prefix
+			suffixSeperatorIndex = epidNumber.length() - 1;
+		}
 		String prefixString = epidNumber.substring(0, suffixSeperatorIndex+1);
 		String suffixString = epidNumber.substring(suffixSeperatorIndex+1);
 		suffixString = suffixString.replaceAll("[^\\d]", "");
-		int suffixNumber = Integer.parseInt(suffixString);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -1931,21 +1934,33 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!DataHelper.isNullOrEmpty(caseUuid)) {
 			filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
 		}
-		filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
 
-		// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
-		ParameterExpression<String> regexParam2 = cb.parameter(String.class);
-		ParameterExpression<String> regexParam3 = cb.parameter(String.class);
-		ParameterExpression<String> regexParam4 = cb.parameter(String.class);
-		Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, cb.substring(caze.get(Case.EPID_NUMBER), suffixSeperatorIndex+2), regexParam2, regexParam3, regexParam4);
-		filter = cb.and(filter, cb.equal(epidNumberSuffixClean.as(Integer.class), suffixNumber));
+		ParameterExpression<String> regexParam2 = null, regexParam3 = null, regexParam4 = null;
+		if (suffixString.length() > 0) {
+			// has to start with prefix
+			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
+			
+			// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
+			int suffixNumber = Integer.parseInt(suffixString);
+			regexParam2 = cb.parameter(String.class);
+			regexParam3 = cb.parameter(String.class);
+			regexParam4 = cb.parameter(String.class);
+			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class,
+					cb.substring(caze.get(Case.EPID_NUMBER), suffixSeperatorIndex+2), regexParam2, regexParam3, regexParam4);
+			filter = cb.and(filter, cb.equal(cb.concat("0", epidNumberSuffixClean).as(Integer.class), suffixNumber));
+		}
+		else {
+			filter = cb.and(filter, cb.equal(caze.get(Case.EPID_NUMBER), prefixString));
+		}
 		cq.where(filter);
 
 		cq.select(caze.get(Case.EPID_NUMBER));
 		TypedQuery<String> query = em.createQuery(cq);
-		query.setParameter(regexParam2, "\\D");
-		query.setParameter(regexParam3, "");
-		query.setParameter(regexParam4, "g");
+		if (regexParam2 != null) {
+			query.setParameter(regexParam2, "\\D");
+			query.setParameter(regexParam3, "");
+			query.setParameter(regexParam4, "g");
+		}
 		query.setMaxResults(1);
 		return !query.getResultList().isEmpty();
 	}

@@ -281,9 +281,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			ParameterExpression<String> regexParam2 = cb.parameter(String.class);
 			ParameterExpression<String> regexParam3 = cb.parameter(String.class);
 			ParameterExpression<String> regexParam4 = cb.parameter(String.class);
-			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length()+1), regexParam2, regexParam3, regexParam4);
-			cq.orderBy(cb.desc(epidNumberSuffixClean.as(Integer.class)));
-			
+			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, 
+					cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length()+1), regexParam2, regexParam3, regexParam4);
+			cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
 			cq.select(caze.get(Case.EPID_NUMBER));
 			TypedQuery<String> query = em.createQuery(cq);
 			query.setParameter(regexParam2, "\\D");
