@@ -178,6 +178,7 @@ public interface Strings {
 	public static String headingDataImport = "headingDataImport";
 	public static String headingDearchiveCase = "headingDearchiveCase";
 	public static String headingDearchiveEvent = "headingDearchiveEvent";
+	public static String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	public static String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	public static String headingDisableLineListing = "headingDisableLineListing";
 	public static String headingDownloadErrorReport = "headingDownloadErrorReport";
@@ -373,9 +374,11 @@ public interface Strings {
 	public static String messageCommunitiesArchived = "messageCommunitiesArchived";
 	public static String messageCommunitiesArchivingNotPossible = "messageCommunitiesArchivingNotPossible";
 	public static String messageCommunitiesDearchived = "messageCommunitiesDearchived";
+	public static String messageCommunitiesDearchivingNotPossible = "messageCommunitiesDearchivingNotPossible";
 	public static String messageCommunityArchived = "messageCommunityArchived";
 	public static String messageCommunityArchivingNotPossible = "messageCommunityArchivingNotPossible";
 	public static String messageCommunityDearchived = "messageCommunityDearchived";
+	public static String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	public static String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	public static String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
 	public static String messageContactCreated = "messageContactCreated";
@@ -388,9 +391,11 @@ public interface Strings {
 	public static String messageDistrictArchived = "messageDistrictArchived";
 	public static String messageDistrictArchivingNotPossible = "messageDistrictArchivingNotPossible";
 	public static String messageDistrictDearchived = "messageDistrictDearchived";
+	public static String messageDistrictDearchivingNotPossible = "messageDistrictDearchivingNotPossible";
 	public static String messageDistrictsArchived = "messageDistrictsArchived";
 	public static String messageDistrictsArchivingNotPossible = "messageDistrictsArchivingNotPossible";
 	public static String messageDistrictsDearchived = "messageDistrictsDearchived";
+	public static String messageDistrictsDearchivingNotPossible = "messageDistrictsDearchivingNotPossible";
 	public static String messageEntryCreated = "messageEntryCreated";
 	public static String messageEpiDataHint = "messageEpiDataHint";
 	public static String messageEpidNumberWarning = "messageEpidNumberWarning";
@@ -411,8 +416,10 @@ public interface Strings {
 	public static String messageExportFailed = "messageExportFailed";
 	public static String messageFacilitiesArchived = "messageFacilitiesArchived";
 	public static String messageFacilitiesDearchived = "messageFacilitiesDearchived";
+	public static String messageFacilitiesDearchivingNotPossible = "messageFacilitiesDearchivingNotPossible";
 	public static String messageFacilityArchived = "messageFacilityArchived";
 	public static String messageFacilityDearchived = "messageFacilityDearchived";
+	public static String messageFacilityDearchivingNotPossible = "messageFacilityDearchivingNotPossible";
 	public static String messageFollowUpCanceled = "messageFollowUpCanceled";
 	public static String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
 	public static String messageHealthFacilityChanged = "messageHealthFacilityChanged";
@@ -428,8 +435,10 @@ public interface Strings {
 	public static String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	public static String messageLaboratoriesArchived = "messageLaboratoriesArchived";
 	public static String messageLaboratoriesDearchived = "messageLaboratoriesDearchived";
+	public static String messageLaboratoriesDearchivingNotPossible = "messageLaboratoriesDearchivingNotPossible";
 	public static String messageLaboratoryArchived = "messageLaboratoryArchived";
 	public static String messageLaboratoryDearchived = "messageLaboratoryDearchived";
+	public static String messageLaboratoryDearchivingNotPossible = "messageLaboratoryDearchivingNotPossible";
 	public static String messageLineListingDisabled = "messageLineListingDisabled";
 	public static String messageLineListingSaved = "messageLineListingSaved";
 	public static String messageLoginFailed = "messageLoginFailed";
@@ -458,8 +467,10 @@ public interface Strings {
 	public static String messagePlagueTypeChange = "messagePlagueTypeChange";
 	public static String messagePointOfEntryArchived = "messagePointOfEntryArchived";
 	public static String messagePointOfEntryDearchived = "messagePointOfEntryDearchived";
+	public static String messagePointOfEntryDearchivingNotPossible = "messagePointOfEntryDearchivingNotPossible";
 	public static String messagePointsOfEntryArchived = "messagePointsOfEntryArchived";
 	public static String messagePointsOfEntryDearchived = "messagePointsOfEntryDearchived";
+	public static String messagePointsOfEntryDearchivingNotPossible = "messagePointsOfEntryDearchivingNotPossible";
 	public static String messagePrescriptionCreated = "messagePrescriptionCreated";
 	public static String messagePrescriptionSaved = "messagePrescriptionSaved";
 	public static String messagePrescriptionsDeleted = "messagePrescriptionsDeleted";

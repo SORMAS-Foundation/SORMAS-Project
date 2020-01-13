@@ -69,4 +69,8 @@ public interface DistrictFacade {
 	
 	boolean isUsedInOtherInfrastructureData(Set<String> districtUuids);
 	
+	boolean hasArchivedParentInfrastructure(String districtUuid);
+	
+	boolean hasArchivedParentInfrastructure(Set<String> districtUuids);
+	
 }

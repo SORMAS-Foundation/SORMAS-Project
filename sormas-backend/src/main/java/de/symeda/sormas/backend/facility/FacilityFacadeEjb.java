@@ -20,7 +20,9 @@ package de.symeda.sormas.backend.facility;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -221,19 +223,51 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		return facilityService.getLaboratoriesByName(name).stream().map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public void archive(String facilityUuid) {
 		Facility facility = facilityService.getByUuid(facilityUuid);
 		facility.setArchived(true);
 		facilityService.ensurePersisted(facility);
 	}
-	
+
 	@Override
 	public void dearchive(String facilityUuid) {
-		Facility facility = facilityService.getByUuid(facilityUuid);
+		Facility facility = facilityService.getByUuid(facilityUuid);		
 		facility.setArchived(false);
 		facilityService.ensurePersisted(facility);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(String facilityUuid) {
+		Set<String> uuidSet = new HashSet<>();
+		uuidSet.add(facilityUuid);
+		return hasArchivedParentInfrastructure(uuidSet);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(Set<String> facilityUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Facility> root = cq.from(Facility.class);
+		Join<Facility, Community> communityJoin = root.join(Facility.COMMUNITY);
+		Join<Facility, District> districtJoin = root.join(Facility.DISTRICT);
+		Join<Facility, Region> regionJoin = root.join(Facility.REGION);
+
+		cq.where(
+				cb.and(
+						cb.or(
+								cb.isTrue(communityJoin.get(Community.ARCHIVED)),
+								cb.isTrue(districtJoin.get(District.ARCHIVED)),
+								cb.isTrue(regionJoin.get(Region.ARCHIVED))
+								),
+						root.get(Facility.UUID).in(facilityUuids)
+						)
+				);
+
+		cq.select(root.get(Facility.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {

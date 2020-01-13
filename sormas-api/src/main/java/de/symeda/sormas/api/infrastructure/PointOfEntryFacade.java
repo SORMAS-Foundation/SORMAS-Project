@@ -2,6 +2,7 @@ package de.symeda.sormas.api.infrastructure;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -39,5 +40,9 @@ public interface PointOfEntryFacade {
 	void archive(String pointOfEntryUuid);
 	
 	void dearchive(String pointOfEntryUuid);
+	
+	boolean hasArchivedParentInfrastructure(String pointOfEntryUuid);
+	
+	boolean hasArchivedParentInfrastructure(Set<String> pointOfEntryUuids);
 	
 }

@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.region;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,7 +82,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public List<DistrictReferenceDto> getAllByRegion(String regionUuid) {
-
 		Region region = regionService.getByUuid(regionUuid);
 
 		return region.getDistricts().stream()
@@ -91,26 +91,22 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public List<DistrictDto> getAllAfter(Date date) {
-		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DistrictDto> cq = cb.createQuery(DistrictDto.class);
 		Root<District> district = cq.from(District.class);
 
 		selectDtoFields(cq, district);
 
-		Predicate filter = districtService.createChangeDateFilter(cb, district, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
+		cq.where(cb.and(
+				districtService.createBasicFilter(),
+				districtService.createChangeDateFilter(cb, district, date)));
 
 		return em.createQuery(cq).getResultList();
 	}
 
 	private void selectDtoFields(CriteriaQuery<DistrictDto> cq, Root<District> root) {
-		
 		Join<District, Region> region = root.join(District.REGION, JoinType.LEFT);
-		
+
 		cq.multiselect(root.get(District.CREATION_DATE), root.get(District.CHANGE_DATE), root.get(District.UUID),
 				root.get(District.NAME), root.get(District.EPID_CODE), root.get(District.GROWTH_RATE), region.get(Region.UUID), region.get(Region.NAME));
 	}
@@ -123,11 +119,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
 		Predicate filter = districtService.buildCriteriaFilter(criteria, cb, district);
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
@@ -150,7 +146,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		} else {
 			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)));
 		}
-		
+
 		cq.select(district);
 
 		if (first != null && max != null) {
@@ -159,26 +155,25 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			return em.createQuery(cq).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
 		}
 	}
-	
+
 	@Override
 	public long count(DistrictCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<District> root = cq.from(District.class);
-		
+
 		Predicate filter = districtService.buildCriteriaFilter(criteria, cb, root);
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
 	public List<String> getAllUuids(String userUuid) {
-
 		User user = userService.getByUuid(userUuid);
 
 		if (user == null) {
@@ -223,11 +218,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	public DistrictReferenceDto getDistrictReferenceById(long id) {
 		return toReferenceDto(districtService.getById(id));
 	}
-	
+
 	@Override
 	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
 		District district = districtService.getByUuid(dto.getUuid());
-		
+
 		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
@@ -240,46 +235,72 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef) {
 		return districtService.getByName(name, regionService.getByReferenceDto(regionRef)).stream().map(d -> toReferenceDto(d)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<String> getNamesByIds(List<Long> districtIds) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<District> root = cq.from(District.class);
-		
+
 		Predicate filter = root.get(District.ID).in(districtIds);
 		cq.where(filter);
 		cq.select(root.get(District.NAME));
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	@Override
 	public void archive(String districtUuid) {
 		District district = districtService.getByUuid(districtUuid);
 		district.setArchived(true);
 		districtService.ensurePersisted(district);
 	}
-	
+
 	@Override
 	public void dearchive(String districtUuid) {
 		District district = districtService.getByUuid(districtUuid);
 		district.setArchived(false);
 		districtService.ensurePersisted(district);
 	}
-	
+
 	@Override
 	public boolean isUsedInOtherInfrastructureData(String districtUuid) {
 		return districtService.isUsedInInfrastructureData(districtUuid, Community.DISTRICT, Community.class) ||
 				districtService.isUsedInInfrastructureData(districtUuid, Facility.DISTRICT, Facility.class) ||
 				districtService.isUsedInInfrastructureData(districtUuid, PointOfEntry.DISTRICT, PointOfEntry.class);
 	}
-	
+
 	@Override
 	public boolean isUsedInOtherInfrastructureData(Set<String> districtUuids) {
 		return districtService.isUsedInInfrastructureData(districtUuids, Community.DISTRICT, Community.class) ||
 				districtService.isUsedInInfrastructureData(districtUuids, Facility.DISTRICT, Facility.class) ||
 				districtService.isUsedInInfrastructureData(districtUuids, PointOfEntry.DISTRICT, PointOfEntry.class);
 	}	
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(String districtUuid) {
+		Set<String> uuidSet = new HashSet<>();
+		uuidSet.add(districtUuid);
+		return hasArchivedParentInfrastructure(uuidSet);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(Set<String> districtUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<District> root = cq.from(District.class);
+		Join<District, Region> regionJoin = root.join(District.REGION);
+
+		cq.where(
+				cb.and(
+						cb.isTrue(regionJoin.get(Region.ARCHIVED)),
+						root.get(District.UUID).in(districtUuids)
+						)
+				);
+
+		cq.select(root.get(District.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+	}
 
 	public static DistrictReferenceDto toReferenceDto(District entity) {
 		if (entity == null) {
@@ -320,21 +341,21 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		return dto;
 	}	
-	
+
 	private District fillOrBuildEntity(@NotNull DistrictDto source, District target) {
 		if (target == null) {
 			target = new District();
 			target.setUuid(source.getUuid());
 		}
-		
+
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setArchived(source.isArchived());
-		
+
 		return target;
 	}
 

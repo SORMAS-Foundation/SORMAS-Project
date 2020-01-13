@@ -57,4 +57,8 @@ public interface CommunityFacade {
 	
 	boolean isUsedInOtherInfrastructureData(Set<String> communityUuids);
 	
+	boolean hasArchivedParentInfrastructure(String communityUuid);
+	
+	boolean hasArchivedParentInfrastructure(Set<String> communityUuids);
+	
 }

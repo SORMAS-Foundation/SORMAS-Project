@@ -256,15 +256,25 @@ public class InfrastructureController {
 				archiveButton.setCaption(I18nProperties.getCaption(Captions.actionArchive));
 			}
 			archiveButton.addClickListener(e -> {
-				if (!(InfrastructureType.REGION.equals(infrastructureType) && FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(uuid) ||
-						InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(uuid) ||
-						InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(uuid))) {
-					component.commit();
-					archiveOrDearchiveInfrastructure(!isArchived, uuid, infrastructureType, facilityType);
+				if (!isArchived) {
+					if (InfrastructureType.REGION.equals(infrastructureType) && FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(uuid) ||
+							InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(uuid) ||
+							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(uuid)) {
+						showArchivingNotPossibleWindow(infrastructureType, false);
+						return;
+					}
 				} else {
-					showArchivingNotPossibleWindow(infrastructureType, false);
-					return;
+					if (InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(uuid) ||
+							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(uuid) ||
+							InfrastructureType.FACILITY.equals(infrastructureType) && FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(uuid) ||
+							InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType) && FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(uuid)) {
+						showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
+						return;
+					}
 				}
+				
+				component.commit();
+				archiveOrDearchiveInfrastructure(!isArchived, uuid, infrastructureType, facilityType);
 			});
 
 			component.getButtonsPanel().addComponentAsFirst(archiveButton);
@@ -289,6 +299,32 @@ public class InfrastructureController {
 			throw new IllegalArgumentException(infrastructureType.name());
 		}
 		VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(Strings.headingArchivingNotPossible), contentText);
+	}
+
+	private void showDearchivingNotPossibleWindow(InfrastructureType infrastructureType, FacilityType facilityType, boolean bulkArchiving) {
+		String contentText;
+
+		switch (infrastructureType) {
+		case DISTRICT:
+			contentText = I18nProperties.getString(bulkArchiving ? Strings.messageDistrictsDearchivingNotPossible : Strings.messageDistrictDearchivingNotPossible);
+			break;
+		case COMMUNITY:
+			contentText = I18nProperties.getString(bulkArchiving ? Strings.messageCommunitiesDearchivingNotPossible : Strings.messageCommunityDearchivingNotPossible);
+			break;
+		case FACILITY:
+			if (FacilityType.LABORATORY.equals(facilityType)) {
+				contentText = I18nProperties.getString(bulkArchiving ? Strings.messageLaboratoriesDearchivingNotPossible : Strings.messageLaboratoryDearchivingNotPossible);
+			} else {
+				contentText = I18nProperties.getString(bulkArchiving ? Strings.messageFacilitiesDearchivingNotPossible : Strings.messageFacilityDearchivingNotPossible);
+			}
+			break;
+		case POINT_OF_ENTRY:
+			contentText = I18nProperties.getString(bulkArchiving ? Strings.messagePointsOfEntryDearchivingNotPossible : Strings.messagePointOfEntryDearchivingNotPossible);
+			break;
+		default:
+			throw new IllegalArgumentException(infrastructureType.name());
+		}
+		VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(Strings.headingDearchivingNotPossible), contentText);
 	}
 
 	private void archiveOrDearchiveInfrastructure(boolean archive, String entityUuid, InfrastructureType infrastructureType, FacilityType facilityType) {
@@ -391,6 +427,17 @@ public class InfrastructureController {
 				InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(
 						selectedRows.stream().map(row -> ((CommunityDto) row).getUuid()).collect(Collectors.toSet()))) {
 			showArchivingNotPossibleWindow(infrastructureType, true);
+			return;
+		}
+		if (InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(
+				selectedRows.stream().map(row -> ((DistrictIndexDto) row).getUuid()).collect(Collectors.toSet())) ||
+				InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(
+						selectedRows.stream().map(row -> ((CommunityDto) row).getUuid()).collect(Collectors.toSet())) ||
+				InfrastructureType.FACILITY.equals(infrastructureType) && FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(
+						selectedRows.stream().map(row -> ((FacilityDto) row).getUuid()).collect(Collectors.toSet())) ||
+				InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType) && FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(
+						selectedRows.stream().map(row -> ((PointOfEntryDto) row).getUuid()).collect(Collectors.toSet()))) {
+			showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
 			return;
 		}
 

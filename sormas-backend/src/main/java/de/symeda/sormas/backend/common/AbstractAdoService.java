@@ -159,7 +159,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 	
 	public List<String> getAllUuids(User user) {
-		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(getElementClass());

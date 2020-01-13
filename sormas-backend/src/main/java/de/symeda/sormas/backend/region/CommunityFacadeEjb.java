@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.region;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -92,14 +93,14 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	@Override
 	public void archive(String communityUuid) {
 		Community community = communityService.getByUuid(communityUuid);
 		community.setArchived(true);
 		communityService.ensurePersisted(community);
 	}
-	
+
 	@Override
 	public void dearchive(String communityUuid) {
 		Community community = communityService.getByUuid(communityUuid);
@@ -159,11 +160,11 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		cq.select(community);
 
-//		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
-//				community.get(Community.UUID), community.get(Community.NAME),
-//				region.get(Region.UUID), region.get(Region.NAME),
-//				district.get(District.UUID), district.get(District.NAME));
-		
+		//		cq.multiselect(community.get(Community.CREATION_DATE), community.get(Community.CHANGE_DATE),
+		//				community.get(Community.UUID), community.get(Community.NAME),
+		//				region.get(Region.UUID), region.get(Region.NAME),
+		//				district.get(District.UUID), district.get(District.NAME));
+
 		if (first != null && max != null) {
 			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
 		} else {
@@ -231,15 +232,45 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		return communityService.getByName(name, districtService.getByReferenceDto(districtRef)).stream()
 				.map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public boolean isUsedInOtherInfrastructureData(String communityUuid) {
 		return communityService.isUsedInInfrastructureData(communityUuid, Facility.COMMUNITY, Facility.class);
 	}
-	
+
 	@Override
 	public boolean isUsedInOtherInfrastructureData(Set<String> communityUuids) {
 		return communityService.isUsedInInfrastructureData(communityUuids, Facility.COMMUNITY, Facility.class);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(String communityUuid) {
+		Set<String> uuidSet = new HashSet<>();
+		uuidSet.add(communityUuid);
+		return hasArchivedParentInfrastructure(uuidSet);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(Set<String> communityUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Community> root = cq.from(Community.class);
+		Join<Community, District> districtJoin = root.join(Community.DISTRICT);
+		Join<District, Region> regionJoin = districtJoin.join(District.REGION);
+
+		cq.where(
+				cb.and(
+						cb.or(
+								cb.isTrue(districtJoin.get(District.ARCHIVED)),
+								cb.isTrue(regionJoin.get(Region.ARCHIVED))
+								),
+						root.get(Community.UUID).in(communityUuids)
+						)
+				);
+
+		cq.select(root.get(Community.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
 	public static CommunityReferenceDto toReferenceDto(Community entity) {

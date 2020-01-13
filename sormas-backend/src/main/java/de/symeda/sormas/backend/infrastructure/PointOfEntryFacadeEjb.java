@@ -3,7 +3,9 @@ package de.symeda.sormas.backend.infrastructure;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -255,19 +257,49 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
-	
+
 	@Override
 	public void archive(String pointOfEntryUuid) {
 		PointOfEntry pointOfEntry = service.getByUuid(pointOfEntryUuid);
 		pointOfEntry.setArchived(true);
 		service.ensurePersisted(pointOfEntry);
 	}
-	
+
 	@Override
 	public void dearchive(String pointOfEntryUuid) {
 		PointOfEntry pointOfEntry = service.getByUuid(pointOfEntryUuid);
 		pointOfEntry.setArchived(false);
 		service.ensurePersisted(pointOfEntry);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(String pointOfEntryUuid) {
+		Set<String> uuidSet = new HashSet<>();
+		uuidSet.add(pointOfEntryUuid);
+		return hasArchivedParentInfrastructure(uuidSet);
+	}
+
+	@Override
+	public boolean hasArchivedParentInfrastructure(Set<String> pointOfEntryUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<PointOfEntry> root = cq.from(PointOfEntry.class);
+		Join<PointOfEntry, District> districtJoin = root.join(PointOfEntry.DISTRICT);
+		Join<PointOfEntry, Region> regionJoin = root.join(PointOfEntry.REGION);
+
+		cq.where(
+				cb.and(
+						cb.or(
+								cb.isTrue(districtJoin.get(District.ARCHIVED)),
+								cb.isTrue(regionJoin.get(Region.ARCHIVED))
+								),
+						root.get(PointOfEntry.UUID).in(pointOfEntryUuids)
+						)
+				);
+
+		cq.select(root.get(PointOfEntry.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
 	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target) {
@@ -296,7 +328,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		}
 		PointOfEntryDto dto = new PointOfEntryDto();
 		DtoHelper.fillDto(dto, entity);
-	
+
 		dto.setName(entity.getName());
 		dto.setPointOfEntryType(entity.getPointOfEntryType());
 		dto.setActive(entity.isActive());
@@ -305,7 +337,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setArchived(entity.isArchived());
-	
+
 		return dto;
 	}
 
