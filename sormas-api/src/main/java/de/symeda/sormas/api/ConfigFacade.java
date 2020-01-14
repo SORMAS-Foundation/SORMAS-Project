@@ -61,5 +61,7 @@ public interface ConfigFacade {
 	int getInfrastructureSyncThreshold();
 
 	int getDaysAfterCaseGetsArchived();
+
+	int getDaysAferEventGetsArchived();
 	
 }

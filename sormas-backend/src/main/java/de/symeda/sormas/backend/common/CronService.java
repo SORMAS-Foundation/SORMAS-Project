@@ -37,6 +37,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -57,6 +58,8 @@ public class CronService {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private EventFacadeEjbLocal eventFacade;
 
 	public static final int TASK_UPDATE_INTERVAL = 10;
 
@@ -112,6 +115,15 @@ public class CronService {
 		int daysAfterCaseGetsArchived = configFacade.getDaysAfterCaseGetsArchived();
 		if (daysAfterCaseGetsArchived < 1) {
 			caseFacade.archiveAllArchivableCases(daysAfterCaseGetsArchived);
+		}
+	}
+
+	@Schedule(hour = "1", minute = "20", second = "0", persistent = false)
+	public void archiveEvents() {
+
+		int daysAfterEventsGetsArchived = configFacade.getDaysAferEventGetsArchived();
+		if (daysAfterEventsGetsArchived < 1) {
+			eventFacade.archiveAllArchivableEvents(daysAfterEventsGetsArchived);
 		}
 	}
 }

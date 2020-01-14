@@ -67,6 +67,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 	
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
+	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
@@ -215,6 +216,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public int getDaysAfterCaseGetsArchived() {
 		return getInt(DAYS_AFTER_CASE_GETS_ARCHIVED, 70);
+	}
+
+	@Override
+	public int getDaysAferEventGetsArchived() {
+		return getInt(DAYS_AFTER_EVENT_GETS_ARCHIVED, 70);
 	}
 
 	@Override

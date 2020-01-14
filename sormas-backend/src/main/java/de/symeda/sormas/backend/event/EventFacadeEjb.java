@@ -32,6 +32,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -415,6 +417,34 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
+	}
+
+	/**
+	 * Archives all events that have not been changed for a defined amount of days
+	 * 
+	 * @param daysAfterEventsGetsArchived defines the amount of days
+	 */
+	@Override
+	public void archiveAllArchivableEvents(int daysAfterEventsGetsArchived) {
+
+		Date now = new Date();
+		Date notChangedSince = DateHelper.subtractDays(now, daysAfterEventsGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Event> cu = cb.createCriteriaUpdate(Event.class);
+		Root<Event> root = cu.from(Event.class);
+
+		cu.set(root.get(Event.ARCHIVED), true);
+
+		Predicate filter = cb.notEqual(root.get(Event.ARCHIVED), false);
+		if (notChangedSince != null) {
+			filter = cb.and(filter,
+					cb.lessThanOrEqualTo(root.get(Event.CHANGE_DATE), DateHelper.toTimestampUpper(notChangedSince)));
+		}
+
+		cu.where(filter);
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 	@LocalBean
