@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -54,6 +55,8 @@ public class CronService {
 	private TaskFacadeEjbLocal taskFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 
 	public static final int TASK_UPDATE_INTERVAL = 10;
 
@@ -101,6 +104,15 @@ public class CronService {
 		}
 		
 		logger.info("Deleted " + numberOfDeletedFiles + " export files");
+	}
+
+	@Schedule(hour = "1", minute = "15", second = "0", persistent = false)
+	public void archiveCases() {
+
+		int daysAfterCaseGetsArchived = configFacade.getDaysAfterCaseGetsArchived();
+		if (daysAfterCaseGetsArchived < 1) {
+			caseFacade.archiveAllArchivableCases(daysAfterCaseGetsArchived);
+		}
 	}
 }
 

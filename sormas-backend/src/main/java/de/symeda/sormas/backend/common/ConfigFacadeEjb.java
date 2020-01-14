@@ -66,6 +66,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 	
+	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
+
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
 
@@ -210,6 +212,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return seperatorString.charAt(0);
 	}
 	
+	@Override
+	public int getDaysAfterCaseGetsArchived() {
+		return getInt(DAYS_AFTER_CASE_GETS_ARCHIVED, 70);
+	}
+
 	@Override
 	public void validateAppUrls() {
 		String appUrl = getAppUrl();

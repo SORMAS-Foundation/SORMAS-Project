@@ -42,6 +42,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -2227,6 +2228,34 @@ public class CaseFacadeEjb implements CaseFacade {
 		mergeCase(newCase, existingCaseDto, true);
 
 		return getCaseDataByUuid(newCase.getUuid());
+	}
+
+	/**
+	 * Archives all cases that have not been changed for a defined amount of days
+	 * 
+	 * @param daysAfterCaseGetsArchived defines the amount of days
+	 */
+	@Override
+	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived) {
+		
+		Date now = new Date();
+		Date notChangedSince = DateHelper.subtractDays(now, daysAfterCaseGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+
+		cu.set(root.get(Case.ARCHIVED), true);
+
+		Predicate filter = cb.notEqual(root.get(Case.ARCHIVED), false);
+		if (notChangedSince != null) {
+			filter = cb.and(filter,
+					cb.lessThanOrEqualTo(root.get(Case.CHANGE_DATE), DateHelper.toTimestampUpper(notChangedSince)));
+		}
+
+		cu.where(filter);
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 	@LocalBean

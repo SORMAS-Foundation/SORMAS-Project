@@ -106,4 +106,5 @@ public interface CaseFacade {
 
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
+	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
 }
