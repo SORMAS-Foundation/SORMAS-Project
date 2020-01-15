@@ -30,6 +30,8 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -354,6 +356,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	@RolesAllowed(UserRole._SYSTEM)
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void generateSubmitWeeklyReportTasks() {
 		List<User> informants = userService.getAllByRegionAndUserRoles(null, UserRole.HOSPITAL_INFORMANT);
 		EpiWeek prevEpiWeek = DateHelper.getPreviousEpiWeek(new Date());

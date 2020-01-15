@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -527,6 +529,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 		Calendar calendar = Calendar.getInstance();
 		Date now = new Date();

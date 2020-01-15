@@ -31,6 +31,8 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -570,6 +572,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@RolesAllowed(UserRole._SYSTEM)
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void generateContactFollowUpTasks() {
 		// get all contacts that are followed up
 		LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();

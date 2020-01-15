@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -2236,6 +2238,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * @param daysAfterCaseGetsArchived defines the amount of days
 	 */
 	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived) {
 		
 		Date now = new Date();

@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -425,6 +427,7 @@ public class EventFacadeEjb implements EventFacade {
 	 * @param daysAfterEventsGetsArchived defines the amount of days
 	 */
 	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void archiveAllArchivableEvents(int daysAfterEventsGetsArchived) {
 
 		Date now = new Date();
