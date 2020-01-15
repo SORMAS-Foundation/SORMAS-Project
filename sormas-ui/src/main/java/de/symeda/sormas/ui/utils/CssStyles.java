@@ -109,6 +109,7 @@ public final class CssStyles {
 	public static final String LABEL_ROUNDED_CORNERS = "rounded-corners";
 	public static final String LABEL_ROUNDED_CORNERS_SLIM = "rounded-corners-slim";
 	public static final String LABEL_BACKGROUND_FOCUS_LIGHT = "background-focus-light";
+	public static final String LABEL_VERTICAL_ALIGN_SUPER = "vertical-align-super";
 	
 	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";

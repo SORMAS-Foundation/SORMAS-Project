@@ -290,6 +290,8 @@ public interface Strings {
 	public static String inactive = "inactive";
 	public static String inColumn = "inColumn";
 	public static String infoAddTestsToSample = "infoAddTestsToSample";
+	public static String infoArchivedCases = "infoArchivedCases";
+	public static String infoArchivedEvents = "infoArchivedEvents";
 	public static String infoBasicExport = "infoBasicExport";
 	public static String infoCanceledBy = "infoCanceledBy";
 	public static String infoCaseCompleteness = "infoCaseCompleteness";

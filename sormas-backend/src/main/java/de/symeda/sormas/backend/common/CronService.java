@@ -121,7 +121,7 @@ public class CronService {
 	@Schedule(hour = "1", minute = "20", second = "0", persistent = false)
 	public void archiveEvents() {
 
-		int daysAfterEventsGetsArchived = configFacade.getDaysAferEventGetsArchived();
+		int daysAfterEventsGetsArchived = configFacade.getDaysAfterEventGetsArchived();
 		if (daysAfterEventsGetsArchived < 1) {
 			eventFacade.archiveAllArchivableEvents(daysAfterEventsGetsArchived);
 		}

@@ -24,10 +24,11 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -74,6 +75,7 @@ public class EventsView extends AbstractView {
 	private ComboBox diseaseFilter;
 	private ComboBox reportedByFilter;
 	private Button resetButton;
+	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
 	private VerticalLayout gridLayout;
@@ -235,6 +237,17 @@ public class EventsView extends AbstractView {
 		{
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+				int daysAfterEventGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterEventGetsArchived();
+				if (daysAfterEventGetsArchived > 0) {
+					relevanceStatusInfoLabel = new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(
+									I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
+							ContentMode.HTML);
+					relevanceStatusInfoLabel.setVisible(false);
+					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+				}
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
@@ -243,6 +256,11 @@ public class EventsView extends AbstractView {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.eventArchivedEvents));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.eventAllEvents));
 				relevanceStatusFilter.addValueChangeListener(e -> {
+					if (EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue())) {
+						relevanceStatusInfoLabel.setVisible(true);
+					} else {
+						relevanceStatusInfoLabel.setVisible(false);
+					}
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});

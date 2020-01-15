@@ -219,7 +219,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public int getDaysAferEventGetsArchived() {
+	public int getDaysAfterEventGetsArchived() {
 		return getInt(DAYS_AFTER_EVENT_GETS_ARCHIVED, 70);
 	}
 

@@ -62,6 +62,6 @@ public interface ConfigFacade {
 
 	int getDaysAfterCaseGetsArchived();
 
-	int getDaysAferEventGetsArchived();
+	int getDaysAfterEventGetsArchived();
 	
 }

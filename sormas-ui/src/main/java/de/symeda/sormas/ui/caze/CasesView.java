@@ -150,6 +150,7 @@ public class CasesView extends AbstractView {
 	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private CheckBox casesWithCaseManagementData;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
+	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
 	// Bulk operations
@@ -763,6 +764,17 @@ public class CasesView extends AbstractView {
 		{
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
+				if (daysAfterCaseGetsArchived > 0) {
+					relevanceStatusInfoLabel = new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(
+									I18nProperties.getString(Strings.infoArchivedCases), daysAfterCaseGetsArchived),
+							ContentMode.HTML);
+					relevanceStatusInfoLabel.setVisible(false);
+					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+				}
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
@@ -771,6 +783,11 @@ public class CasesView extends AbstractView {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.caseAllCases));
 				relevanceStatusFilter.addValueChangeListener(e -> {
+					if (EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue())) {
+						relevanceStatusInfoLabel.setVisible(true);
+					} else {
+						relevanceStatusInfoLabel.setVisible(false);
+					}
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});

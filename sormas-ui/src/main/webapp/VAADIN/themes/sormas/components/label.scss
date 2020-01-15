@@ -76,6 +76,11 @@
 		background: $v-focus-light-color;
 	}
 
+	// Label with centered value
+	&.v-label-vertical-align-super, .vertical-align-super {
+		vertical-align: super;
+	}
+
 	// Font sizes
 	&.v-label-small, .small {
     	font-size: 0.75em;
