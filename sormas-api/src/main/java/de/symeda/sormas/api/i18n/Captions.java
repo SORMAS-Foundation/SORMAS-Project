@@ -336,6 +336,7 @@ public interface Captions {
 	public static String dashboardGt1SuspectCases = "dashboardGt1SuspectCases";
 	public static String dashboardGtThreeDays = "dashboardGtThreeDays";
 	public static String dashboardHealthFacilities = "dashboardHealthFacilities";
+	public static String dashboardHideOtherCountries = "dashboardHideOtherCountries";
 	public static String dashboardHideOverview = "dashboardHideOverview";
 	public static String dashboardHigh = "dashboardHigh";
 	public static String dashboardIndeterminate = "dashboardIndeterminate";

@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.dashboard.map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -96,6 +97,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private static final String EVENTS_GROUP_ID = "events";
 	private static final String REGIONS_GROUP_ID = "regions";
 	private static final String DISTRICTS_GROUP_ID = "districts";
+	private static final String OTHER_COUNTRIES_OVERLAY_GROUP_ID = "countryNegative";
 
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;
@@ -109,6 +111,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private boolean showUnconfirmedContacts;
 	private boolean showEvents;
 	private boolean showRegions;
+	private boolean hideOtherCountries;
 
 	// Entities
 	private final HashMap<FacilityReferenceDto, List<MapCaseDto>> casesByFacility = new HashMap<>();
@@ -179,6 +182,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			showConfirmedContacts = true;
 			showUnconfirmedContacts = true;
 		}
+		hideOtherCountries = false;
 
 		this.setMargin(true);
 
@@ -194,6 +198,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		clearCaseMarkers();
 		clearContactMarkers();
 		clearEventMarkers();
+		clearOtherCountriesOverlay();
 
 		Date fromDate = dashboardDataProvider.getFromDate();
 		Date toDate = dashboardDataProvider.getToDate();
@@ -220,6 +225,9 @@ public class DashboardMapComponent extends VerticalLayout {
 		}
 		if (showEvents) {
 			showEventMarkers(dashboardDataProvider.getEvents());
+		}
+		if (hideOtherCountries) {
+			addOtherCountriesOverlay();
 		}
 
 		// Re-create the map key layout to only show the keys for the selected layers
@@ -433,6 +441,15 @@ public class DashboardMapComponent extends VerticalLayout {
 					layersLayout.addComponent(regionMapVisualizationSelect);
 					regionMapVisualizationSelect.setEnabled(showRegions);
 				}
+
+				CheckBox hideOtherCountriesCheckBox = new CheckBox();
+				hideOtherCountriesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardHideOtherCountries));
+				hideOtherCountriesCheckBox.setValue(hideOtherCountries);
+				hideOtherCountriesCheckBox.addValueChangeListener(e -> {
+					hideOtherCountries = (boolean) e.getProperty().getValue();
+					refreshMap();
+				});
+				layersLayout.addComponent(hideOtherCountriesCheckBox);
 			}
 		}
 		mapFooterLayout.addComponent(layersDropdown);
@@ -1054,6 +1071,27 @@ public class DashboardMapComponent extends VerticalLayout {
 		}
 
 		map.addMarkerGroup(EVENTS_GROUP_ID, eventMarkers);
+	}
+	
+	private void clearOtherCountriesOverlay() {
+		map.removeGroup(OTHER_COUNTRIES_OVERLAY_GROUP_ID);
+	}
+	
+	private void addOtherCountriesOverlay() {
+
+		LeafletPolygon negativeShape = new LeafletPolygon();
+		negativeShape.setLatLons(new double[][] {
+			new double[] { -90, -180},
+			new double[] {  90, -180},
+			new double[] {  90,  180},
+			new double[] { -90,  180},
+		});
+
+		GeoLatLon[][] countryShape = FacadeProvider.getGeoShapeProvider().getCountryShape();
+		negativeShape.setHoleLatLons(countryShape);
+		
+		negativeShape.setOptions("{\"stroke\": false, \"color\": '#FEFEFE', \"fillOpacity\": 1}");
+		map.addPolygonGroup(OTHER_COUNTRIES_OVERLAY_GROUP_ID, Arrays.asList(negativeShape));
 	}
 
 	private void onMarkerClicked(String groupId, int markerIndex) {

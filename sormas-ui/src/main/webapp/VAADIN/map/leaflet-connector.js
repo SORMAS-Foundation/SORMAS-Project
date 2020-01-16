@@ -158,7 +158,9 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		
 			var polygon = L.polygon(polygons[i].latLons, polygons[i].options)
 				.addTo(polygonGroup);
-			polygon.bindTooltip(polygons[i].caption);
+			if (polygons[i].caption != null) {
+				polygon.bindTooltip(polygons[i].caption);
+			}
 			polygon.id = i;
 		}
 	}
