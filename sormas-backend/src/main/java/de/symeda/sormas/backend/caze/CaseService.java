@@ -583,46 +583,58 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Case,Case> casePath, Timestamp date) {
-		Predicate dateFilter = cb.greaterThan(casePath.get(Case.CHANGE_DATE), date);
+		Predicate dateFilter = greaterThanAndNotNull(cb, casePath.get(Case.CHANGE_DATE), date);
 
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, Hospitalization> hospitalization = casePath.join(Case.HOSPITALIZATION, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Hospitalization, PreviousHospitalization> previousHospitalization 
 		= hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, EpiData> epiData = casePath.join(Case.EPI_DATA, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb,
+				epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
 
 		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb,
+				epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE),
+				date));
 
 		Join<Case, Therapy> therapy = casePath.join(Case.THERAPY, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(therapy.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, therapy.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, ClinicalCourse> clinicalCourse = casePath.join(Case.CLINICAL_COURSE, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(clinicalCourse.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, clinicalCourse.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<ClinicalCourse, HealthConditions> healthConditions = clinicalCourse.join(ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(healthConditions.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, healthConditions.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, MaternalHistory> maternalHistory = casePath.join(Case.MATERNAL_HISTORY, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(maternalHistory.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, maternalHistory.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, PortHealthInfo> portHealthInfo = casePath.join(Case.PORT_HEALTH_INFO, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(portHealthInfo.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, portHealthInfo.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		return dateFilter;
 	}

@@ -84,6 +84,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -610,6 +611,35 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 5. Different disease and different epid number
 		assertFalse(getCaseFacade().doesEpidNumberExist("def", "abc", Disease.ANTHRAX));
+	}
+
+	@Test
+	public void testArchiveAllArchivableCases() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		// One archived case
+		CaseDataDto case1 = creator.createCase(user, person, rdcf);
+		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+		cut.archiveOrDearchiveCase(case1.getUuid(), true);
+
+		// One other case
+		CaseDataDto case2 = creator.createCase(user, person, rdcf);
+		
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		// Case of "today" shouldn't be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		// Case of "yesterday" should be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertTrue(cut.isArchived(case2.getUuid()));
 	}
 
 //	@Test

@@ -21,6 +21,7 @@ import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -2240,25 +2241,35 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived) {
-		
-		Date now = new Date();
-		Date notChangedSince = DateHelper.subtractDays(now, daysAfterCaseGetsArchived);
+
+		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
+	}
+
+	void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
+
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterCaseGetsArchived);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
-		Root<Case> root = cu.from(Case.class);
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> from = cq.from(Case.class);
 
-		cu.set(root.get(Case.ARCHIVED), true);
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(cb.equal(from.get(Case.ARCHIVED), false),
+				cb.not(caseService.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Case.UUID));
+		List<String> uuids = em.createQuery(cq).getResultList();
 
-		Predicate filter = cb.notEqual(root.get(Case.ARCHIVED), false);
-		if (notChangedSince != null) {
-			filter = cb.and(filter,
-					cb.lessThanOrEqualTo(root.get(Case.CHANGE_DATE), DateHelper.toTimestampUpper(notChangedSince)));
+		if (!uuids.isEmpty()) {
+
+			CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+			Root<Case> root = cu.from(Case.class);
+
+			cu.set(root.get(Case.ARCHIVED), true);
+
+			cu.where(root.get(Case.UUID).in(uuids));
+
+			em.createQuery(cu).executeUpdate();
 		}
-
-		cu.where(filter);
-
-		em.createQuery(cu).executeUpdate();
 	}
 
 	@LocalBean
