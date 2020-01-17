@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -53,7 +54,6 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -428,31 +428,40 @@ public class EventFacadeEjb implements EventFacade {
 	 */
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void archiveAllArchivableEvents(int daysAfterEventsGetsArchived) {
+	public void archiveAllArchivableEvents(int daysAfterEventGetsArchived) {
 
-		Date now = new Date();
-		Date notChangedSince = DateHelper.subtractDays(now, daysAfterEventsGetsArchived);
+		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
+	}
+
+	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, LocalDate referenceDate) {
+
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<Event> cu = cb.createCriteriaUpdate(Event.class);
-		Root<Event> root = cu.from(Event.class);
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Event> from = cq.from(Event.class);
 
-		cu.set(root.get(Event.ARCHIVED), true);
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(cb.equal(from.get(Event.ARCHIVED), false),
+				cb.not(eventService.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Event.UUID));
+		List<String> uuids = em.createQuery(cq).getResultList();
 
-		Predicate filter = cb.notEqual(root.get(Event.ARCHIVED), false);
-		if (notChangedSince != null) {
-			filter = cb.and(filter,
-					cb.lessThanOrEqualTo(root.get(Event.CHANGE_DATE), DateHelper.toTimestampUpper(notChangedSince)));
+		if (!uuids.isEmpty()) {
+
+			CriteriaUpdate<Event> cu = cb.createCriteriaUpdate(Event.class);
+			Root<Event> root = cu.from(Event.class);
+
+			cu.set(root.get(Event.ARCHIVED), true);
+
+			cu.where(root.get(Event.UUID).in(uuids));
+
+			em.createQuery(cu).executeUpdate();
 		}
-
-		cu.where(filter);
-
-		em.createQuery(cu).executeUpdate();
 	}
 
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
 	}	
-	
 }
