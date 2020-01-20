@@ -83,15 +83,33 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 	
 	protected boolean getBoolean(String name, boolean defaultValue) {
-		return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
+		try {
+			return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return defaultValue;
+		}
 	}
 	
 	protected double getDouble(String name, double defaultValue) {
-		return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
+		try {
+			return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return defaultValue;
+		}
 	}
 	
 	protected int getInt(String name, int defaultValue) {
-		return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
+		try {
+			return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return defaultValue;
+		}
 	}
 
 	@Override
