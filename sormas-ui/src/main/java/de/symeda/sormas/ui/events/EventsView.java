@@ -256,11 +256,8 @@ public class EventsView extends AbstractView {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.eventArchivedEvents));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.eventAllEvents));
 				relevanceStatusFilter.addValueChangeListener(e -> {
-					if (EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue())) {
-						relevanceStatusInfoLabel.setVisible(true);
-					} else {
-						relevanceStatusInfoLabel.setVisible(false);
-					}
+					relevanceStatusInfoLabel
+							.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});

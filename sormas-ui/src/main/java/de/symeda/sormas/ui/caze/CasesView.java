@@ -783,11 +783,8 @@ public class CasesView extends AbstractView {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.caseAllCases));
 				relevanceStatusFilter.addValueChangeListener(e -> {
-					if (EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue())) {
-						relevanceStatusInfoLabel.setVisible(true);
-					} else {
-						relevanceStatusInfoLabel.setVisible(false);
-					}
+					relevanceStatusInfoLabel
+							.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});

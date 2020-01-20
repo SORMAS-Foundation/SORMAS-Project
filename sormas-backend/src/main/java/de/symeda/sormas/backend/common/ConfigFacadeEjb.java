@@ -23,8 +23,6 @@ import java.util.Properties;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +150,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public String getTempFilesPath() {
 		return getProperty(TEMP_FILES_PATH, "/opt/sormas/temp/");
 	}

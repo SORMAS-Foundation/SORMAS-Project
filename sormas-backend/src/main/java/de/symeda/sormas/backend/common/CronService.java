@@ -113,7 +113,7 @@ public class CronService {
 	public void archiveCases() {
 
 		int daysAfterCaseGetsArchived = configFacade.getDaysAfterCaseGetsArchived();
-		if (daysAfterCaseGetsArchived < 1) {
+		if (daysAfterCaseGetsArchived >= 1) {
 			caseFacade.archiveAllArchivableCases(daysAfterCaseGetsArchived);
 		}
 	}
@@ -122,7 +122,7 @@ public class CronService {
 	public void archiveEvents() {
 
 		int daysAfterEventsGetsArchived = configFacade.getDaysAfterEventGetsArchived();
-		if (daysAfterEventsGetsArchived < 1) {
+		if (daysAfterEventsGetsArchived >= 1) {
 			eventFacade.archiveAllArchivableEvents(daysAfterEventsGetsArchived);
 		}
 	}
