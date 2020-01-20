@@ -29,12 +29,13 @@ import javax.persistence.Enumerated;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
 @Entity(name=PointOfEntry.TABLE_NAME)
 @DatabaseTable(tableName = PointOfEntry.TABLE_NAME)
-public class PointOfEntry extends AbstractDomainObject {
+public class PointOfEntry extends InfrastructureAdo {
 
     private static final long serialVersionUID = -6684018483640792433L;
 

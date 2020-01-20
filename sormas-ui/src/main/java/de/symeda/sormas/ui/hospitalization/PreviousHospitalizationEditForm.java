@@ -67,11 +67,11 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
 
-		ComboBox facilityRegion = addField(PreviousHospitalizationDto.REGION, ComboBox.class);
-		ComboBox facilityDistrict = addField(PreviousHospitalizationDto.DISTRICT, ComboBox.class);
-		ComboBox facilityCommunity = addField(PreviousHospitalizationDto.COMMUNITY, ComboBox.class);
+		ComboBox facilityRegion = addInfrastructureField(PreviousHospitalizationDto.REGION);
+		ComboBox facilityDistrict = addInfrastructureField(PreviousHospitalizationDto.DISTRICT);
+		ComboBox facilityCommunity = addInfrastructureField(PreviousHospitalizationDto.COMMUNITY);
 		facilityCommunity.setNullSelectionAllowed(true);
-		ComboBox healthFacility = addField(PreviousHospitalizationDto.HEALTH_FACILITY, ComboBox.class);
+		ComboBox healthFacility = addInfrastructureField(PreviousHospitalizationDto.HEALTH_FACILITY);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
 		

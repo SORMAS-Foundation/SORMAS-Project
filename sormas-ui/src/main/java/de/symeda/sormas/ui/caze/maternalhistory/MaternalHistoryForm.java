@@ -74,9 +74,9 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 		addField(MaternalHistoryDto.RUBELLA, OptionGroup.class);
 		addField(MaternalHistoryDto.RASH_EXPOSURE, OptionGroup.class);
 		
-		ComboBox cbRashExposureRegion = addField(MaternalHistoryDto.RASH_EXPOSURE_REGION, ComboBox.class);
-		ComboBox cbRashExposureDistrict = addField(MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, ComboBox.class);
-		ComboBox cbRashExposureCommunity = addField(MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY, ComboBox.class);
+		ComboBox cbRashExposureRegion = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_REGION);
+		ComboBox cbRashExposureDistrict = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_DISTRICT);
+		ComboBox cbRashExposureCommunity = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
 
 		initializeVisibilitiesAndAllowedVisibilities(null, viewMode);
 		

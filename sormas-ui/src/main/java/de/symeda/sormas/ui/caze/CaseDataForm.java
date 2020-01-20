@@ -175,12 +175,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 		
-		ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
-		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
-		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
+		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
+		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.addStyleName(CssStyles.SOFT_REQUIRED);
-		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
@@ -212,7 +212,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
-		addField(CaseDataDto.POINT_OF_ENTRY, ComboBox.class);
+		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addFields(CaseDataDto.PREGNANT,

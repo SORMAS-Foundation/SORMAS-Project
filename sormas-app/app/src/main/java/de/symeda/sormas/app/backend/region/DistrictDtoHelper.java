@@ -29,9 +29,6 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-/**
- * Created by Martin Wahnschaffe on 27.07.2016.
- */
 public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
 
     @Override
@@ -64,6 +61,7 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
         ado.setName(dto.getName());
         ado.setEpidCode(dto.getEpidCode());
         ado.setRegion(DatabaseHelper.getRegionDao().queryUuid(dto.getRegion().getUuid()));
+        ado.setArchived(dto.isArchived());
     }
 
     @Override

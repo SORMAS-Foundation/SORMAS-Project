@@ -37,10 +37,11 @@ public class PointOfEntryDto extends EntityDto {
 	private boolean active;
 	private boolean archived;
 
-	public PointOfEntryDto(Date creationDate, Date changeDate, String uuid, PointOfEntryType pointOfEntryType,
+	public PointOfEntryDto(Date creationDate, Date changeDate, String uuid, boolean archived, PointOfEntryType pointOfEntryType,
 			String name, String regionUuid, String regionName, String districtUuid, String districtName,
 			Double latitude, Double longitude, boolean active) {
 		super(creationDate, changeDate, uuid);
+		this.archived = archived;
 		this.pointOfEntryType = pointOfEntryType;
 		this.name = name;
 		if (regionUuid != null) {

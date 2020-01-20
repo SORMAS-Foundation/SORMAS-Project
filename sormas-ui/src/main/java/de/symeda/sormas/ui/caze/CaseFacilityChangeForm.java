@@ -55,11 +55,11 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 	
 	@Override
 	protected void addFields() {
-		ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
-		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
-		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
+		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
+		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		ComboBox officer = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		

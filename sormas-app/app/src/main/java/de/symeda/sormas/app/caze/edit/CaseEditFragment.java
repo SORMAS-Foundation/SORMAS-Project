@@ -220,10 +220,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility,
                 contentBinding.caseDataHealthFacilityDetails);
 
-        InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
-                contentBinding.caseDataDistrict, initialDistricts,
-                contentBinding.caseDataCommunity, initialCommunities,
-                contentBinding.caseDataHealthFacility, initialFacilities);
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.caseDataRegion, initialRegions, record.getRegion(),
+                contentBinding.caseDataDistrict, initialDistricts, record.getDistrict(),
+                contentBinding.caseDataCommunity, initialCommunities, record.getCommunity(),
+                contentBinding.caseDataHealthFacility, initialFacilities, record.getHealthFacility());
 
         if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
             contentBinding.caseDataHealthFacility.setRequired(false);

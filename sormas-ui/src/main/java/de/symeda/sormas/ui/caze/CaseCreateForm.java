@@ -80,15 +80,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addCustomField(FIRST_NAME, String.class, TextField.class);
 		addCustomField(LAST_NAME, String.class, TextField.class);
 
-		ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
-		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
-		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
+		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
+		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
-		ComboBox cbPointOfEntry = addField(CaseDataDto.POINT_OF_ENTRY, ComboBox.class);
+		ComboBox cbPointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		cbPointOfEntry.setImmediate(true);
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);

@@ -93,7 +93,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	private void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
-		cq.multiselect(root.get(Region.CREATION_DATE), root.get(Region.CHANGE_DATE), root.get(Region.UUID),
+		cq.multiselect(root.get(Region.CREATION_DATE), root.get(Region.CHANGE_DATE), root.get(Region.UUID), root.get(Region.ARCHIVED),
 				root.get(Region.NAME), root.get(Region.EPID_CODE), root.get(Region.GROWTH_RATE));
 	}
 

@@ -114,14 +114,14 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		healthFacilityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkHealthFacility));
 		getContent().addComponent(healthFacilityCheckbox, HEALTH_FACILITY_CHECKBOX);
 		
-		ComboBox region = addField(CaseBulkEditData.REGION, ComboBox.class);
+		ComboBox region = addInfrastructureField(CaseBulkEditData.REGION);
 		region.setEnabled(false);
-		ComboBox district = addField(CaseBulkEditData.DISTRICT, ComboBox.class);
+		ComboBox district = addInfrastructureField(CaseBulkEditData.DISTRICT);
 		district.setEnabled(false);
-		ComboBox community = addField(CaseBulkEditData.COMMUNITY, ComboBox.class);
+		ComboBox community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.setEnabled(false);
-		ComboBox healthFacility = addField(CaseBulkEditData.HEALTH_FACILITY, ComboBox.class);
+		ComboBox healthFacility = addInfrastructureField(CaseBulkEditData.HEALTH_FACILITY);
 		healthFacility.setImmediate(true);
 		healthFacility.setEnabled(false);
 		

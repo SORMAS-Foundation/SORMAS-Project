@@ -36,8 +36,9 @@ public class RegionDto extends EntityDto {
 	private Float growthRate;
 	private boolean archived;
 	
-	public RegionDto(Date creationDate, Date changeDate, String uuid, String name, String epidCode, Float growthRate) {
+	public RegionDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name, String epidCode, Float growthRate) {
 		super(creationDate, changeDate, uuid);
+		this.archived = archived;
 		this.name = name;
 		this.epidCode = epidCode;
 		this.growthRate = growthRate;

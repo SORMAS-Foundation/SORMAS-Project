@@ -21,12 +21,13 @@ package de.symeda.sormas.app.caze.edit;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.Date;
-import java.util.List;
-
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
+
+import java.util.Date;
+import java.util.List;
+
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -82,10 +83,11 @@ public class ReferCaseFromPoeDialog extends AbstractDialog {
         List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
         List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
         List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity());
-        InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
-                contentBinding.caseDataDistrict, initialDistricts,
-                contentBinding.caseDataCommunity, initialCommunities,
-                contentBinding.caseDataHealthFacility, initialFacilities);
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.caseDataRegion, initialRegions, data.getRegion(),
+                contentBinding.caseDataDistrict, initialDistricts, data.getDistrict(),
+                contentBinding.caseDataCommunity, initialCommunities, data.getCommunity(),
+                contentBinding.caseDataHealthFacility, initialFacilities, data.getHealthFacility());
     }
 
     @Override

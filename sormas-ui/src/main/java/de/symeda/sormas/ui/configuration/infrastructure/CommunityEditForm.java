@@ -40,7 +40,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(CommunityDto.NAME)
-			+ LayoutUtil.fluidRowLocs(REGION_LOC, CommunityDto.DISTRICT);
+			+ LayoutUtil.fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT);
 
 	private boolean create;
 	
@@ -59,14 +59,10 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	@Override
 	protected void addFields() {		
 		addField(CommunityDto.NAME, TextField.class);
-		ComboBox region = new ComboBox();
-		region.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, REGION_LOC));
-		region.setWidth(100, Unit.PERCENTAGE);
-		getContent().addComponent(region, REGION_LOC);
-		ComboBox district = addField(CommunityDto.DISTRICT, ComboBox.class);
+		ComboBox region = addInfrastructureField(CommunityDto.REGION);
+		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
 		
-		setRequired(true, CommunityDto.NAME, CommunityDto.DISTRICT);
-		region.setRequired(true);
+		setRequired(true, CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT);
 		
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();

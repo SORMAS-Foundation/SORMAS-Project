@@ -206,25 +206,25 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS,
 				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
-		ComboBox cbPlaceOfBirthRegion = addField(PersonDto.PLACE_OF_BIRTH_REGION, ComboBox.class);
-		ComboBox cbPlaceOfBirthDistrict = addField(PersonDto.PLACE_OF_BIRTH_DISTRICT, ComboBox.class);
-		ComboBox cbPlaceOfBirthCommunity = addField(PersonDto.PLACE_OF_BIRTH_COMMUNITY, ComboBox.class);
-		ComboBox cbPlaceOfBirthFacility = addField(PersonDto.PLACE_OF_BIRTH_FACILITY, ComboBox.class);
+		ComboBox cbPlaceOfBirthRegion = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_REGION);
+		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);
+		ComboBox cbPlaceOfBirthCommunity = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_COMMUNITY);
+		ComboBox cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
 		TextField tfPlaceOfBirthFacilityDetails = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS, TextField.class);
 
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
 		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
-		ComboBox facilityRegion = addField(PersonDto.OCCUPATION_REGION, ComboBox.class);
+		ComboBox facilityRegion = addInfrastructureField(PersonDto.OCCUPATION_REGION);
 		facilityRegion.setImmediate(true);
 		facilityRegion.setNullSelectionAllowed(true);
-		ComboBox facilityDistrict = addField(PersonDto.OCCUPATION_DISTRICT, ComboBox.class);
+		ComboBox facilityDistrict = addInfrastructureField(PersonDto.OCCUPATION_DISTRICT);
 		facilityDistrict.setImmediate(true);
 		facilityDistrict.setNullSelectionAllowed(true);
-		ComboBox facilityCommunity = addField(PersonDto.OCCUPATION_COMMUNITY, ComboBox.class);
+		ComboBox facilityCommunity = addInfrastructureField(PersonDto.OCCUPATION_COMMUNITY);
 		facilityCommunity.setImmediate(true);
 		facilityCommunity.setNullSelectionAllowed(true);
-		occupationFacility = addField(PersonDto.OCCUPATION_FACILITY, ComboBox.class);
+		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
 		occupationFacility.setImmediate(true);
 		occupationFacility.setNullSelectionAllowed(true);
 		occupationFacilityDetails = addField(PersonDto.OCCUPATION_FACILITY_DETAILS, TextField.class);

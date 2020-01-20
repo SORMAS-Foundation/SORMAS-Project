@@ -21,9 +21,9 @@ package de.symeda.sormas.app.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -39,6 +39,7 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.util.DataUtils.toItem;
 import static de.symeda.sormas.app.util.DataUtils.toItems;
 
 public final class InfrastructureHelper {
@@ -48,7 +49,7 @@ public final class InfrastructureHelper {
     }
 
     public static List<Item> loadDistricts(Region region) {
-        return DataUtils.toItems(region != null
+        return toItems(region != null
                 ? DatabaseHelper.getDistrictDao().getByRegion(region)
                 : new ArrayList<>(), true);
     }
@@ -61,65 +62,115 @@ public final class InfrastructureHelper {
 
     public static List<Item> loadFacilities(District district, Community community) {
         return toItems(community != null
-                ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByCommunity(community, true, true)
+                ? DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByCommunity(community, true, true)
                 : district != null
-                ? DatabaseHelper.getFacilityDao().getHealthFacilitiesByDistrict(district, true, true)
+                ? DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrict(district, true, true)
                 : new ArrayList<>(), true);
     }
 
     public static List<Item> loadPointsOfEntry(District district) {
         return toItems(district != null
-                ? DatabaseHelper.getPointOfEntryDao().getByDistrict(district, true)
+                ? DatabaseHelper.getPointOfEntryDao().getActiveByDistrict(district, true)
                 : new ArrayList<>(), true);
     }
 
-    public static void initializeRegionFields(final ControlSpinnerField regionField, List<Item> initialRegions,
-                                              final ControlSpinnerField districtField, List<Item> initialDistricts,
-                                              final ControlSpinnerField communityField, List<Item> initialCommunities) {
-        regionField.initializeSpinner(initialRegions, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                Region selectedRegion = (Region) field.getValue();
-                if (selectedRegion != null) {
-                    districtField.setSpinnerData(toItems(DatabaseHelper.getDistrictDao().getByRegion(selectedRegion)), districtField.getValue());
-                } else {
-                    districtField.setSpinnerData(null);
+    public static void initializeRegionFields(final ControlSpinnerField regionField, List<Item> initialRegions, Region initialRegion,
+                                              final ControlSpinnerField districtField, List<Item> initialDistricts, District initialDistrict,
+                                              final ControlSpinnerField communityField, List<Item> initialCommunities, Community initialCommunity) {
+
+        Item regionItem = initialRegion != null ? DataUtils.toItem(initialRegion) : null;
+        Item districtItem = initialDistrict != null ? DataUtils.toItem(initialDistrict) : null;
+        Item communityItem = initialCommunity != null ? DataUtils.toItem(initialCommunity) : null;
+
+        if (regionItem != null && !initialRegions.contains(regionItem)) {
+            initialRegions.add(regionItem);
+        }
+        if (districtItem != null && !initialDistricts.contains(districtItem)) {
+            initialDistricts.add(districtItem);
+        }
+        if (communityItem != null && !initialCommunities.contains(communityItem)) {
+            initialCommunities.add(communityItem);
+        }
+
+        regionField.initializeSpinner(initialRegions, field -> {
+            Region selectedRegion = (Region) field.getValue();
+            if (selectedRegion != null) {
+                List<Item> newDistricts = loadDistricts(selectedRegion);
+                if (initialDistrict != null && selectedRegion.equals(initialDistrict.getRegion())
+                        && !newDistricts.contains(districtItem)) {
+                    newDistricts.add(districtItem);
                 }
+                districtField.setSpinnerData(newDistricts, districtField.getValue());
+            } else {
+                districtField.setSpinnerData(null);
             }
         });
 
-        districtField.initializeSpinner(initialDistricts, new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                District selectedDistrict = (District) field.getValue();
-                if (selectedDistrict != null) {
-                    communityField.setSpinnerData(toItems(DatabaseHelper.getCommunityDao().getByDistrict(selectedDistrict)), communityField.getValue());
-                } else {
-                    communityField.setSpinnerData(null);
+        districtField.initializeSpinner(initialDistricts, field -> {
+            District selectedDistrict = (District) field.getValue();
+            if (selectedDistrict != null) {
+                List<Item> newCommunities = loadCommunities(selectedDistrict);
+                if (initialCommunity != null && selectedDistrict.equals(initialCommunity.getDistrict())
+                        && !newCommunities.contains(communityItem)) {
+                    newCommunities.add(communityItem);
                 }
+                communityField.setSpinnerData(newCommunities, communityField.getValue());
+            } else {
+                communityField.setSpinnerData(null);
             }
         });
 
         communityField.initializeSpinner(initialCommunities);
     }
 
-    public static void initializeFacilityFields(final ControlSpinnerField regionField, List<Item> regions,
-                                                final ControlSpinnerField districtField, List<Item> districts,
-                                                final ControlSpinnerField communityField, List<Item> communities,
-                                                final ControlSpinnerField facilityField, List<Item> facilities) {
-        initializeFacilityFields(regionField, regions, districtField, districts, communityField, communities, facilityField, facilities, null, null);
+    public static void initializeFacilityFields(final ControlSpinnerField regionField, List<Item> regions, Region initialRegion,
+                                                final ControlSpinnerField districtField, List<Item> districts, District initialDistrict,
+                                                final ControlSpinnerField communityField, List<Item> communities, Community initialCommunity,
+                                                final ControlSpinnerField facilityField, List<Item> facilities, Facility initialFacility) {
+        initializeFacilityFields(regionField, regions, initialRegion,
+                districtField, districts, initialDistrict,
+                communityField, communities, initialCommunity,
+                facilityField, facilities, initialFacility,
+                null, null, null);
     }
 
-    public static void initializeFacilityFields(final ControlSpinnerField regionField, List<Item> regions,
-                                                final ControlSpinnerField districtField, List<Item> districts,
-                                                final ControlSpinnerField communityField, List<Item> communities,
-                                                final ControlSpinnerField facilityField, List<Item> facilities,
-                                                final ControlSpinnerField pointOfEntryField, List<Item> pointsOfEntry) {
+    public static void initializeFacilityFields(final ControlSpinnerField regionField, List<Item> regions, Region initialRegion,
+                                                final ControlSpinnerField districtField, List<Item> districts, District initialDistrict,
+                                                final ControlSpinnerField communityField, List<Item> communities, Community initialCommunity,
+                                                final ControlSpinnerField facilityField, List<Item> facilities, Facility initialFacility,
+                                                final ControlSpinnerField pointOfEntryField, List<Item> pointsOfEntry, PointOfEntry initialPointOfEntry) {
+
+        Item regionItem = initialRegion != null ? DataUtils.toItem(initialRegion) : null;
+        Item districtItem = initialDistrict != null ? DataUtils.toItem(initialDistrict) : null;
+        Item communityItem = initialCommunity != null ? DataUtils.toItem(initialCommunity) : null;
+        Item facilityItem = initialFacility != null ? DataUtils.toItem(initialFacility) : null;
+        Item pointOfEntryItem = initialPointOfEntry != null ? DataUtils.toItem(initialPointOfEntry) : null;
+
+        if (regionItem != null && !regions.contains(regionItem)) {
+            regions.add(regionItem);
+        }
+        if (districtItem != null && !districts.contains(districtItem)) {
+            districts.add(districtItem);
+        }
+        if (communityItem != null && !communities.contains(communityItem)) {
+            communities.add(communityItem);
+        }
+        if (facilityItem != null && !facilities.contains(facilityItem)) {
+            facilities.add(facilityItem);
+        }
+        if (pointOfEntryItem != null && !pointsOfEntry.contains(pointOfEntryItem)) {
+            pointsOfEntry.add(pointOfEntryItem);
+        }
 
         regionField.initializeSpinner(regions, field -> {
             Region selectedRegion = (Region) field.getValue();
             if (selectedRegion != null) {
-                districtField.setSpinnerData(loadDistricts(selectedRegion), districtField.getValue());
+                List<Item> newDistricts = loadDistricts(selectedRegion);
+                if (initialDistrict != null && selectedRegion.equals(initialDistrict.getRegion())
+                        && !newDistricts.contains(districtItem)) {
+                    newDistricts.add(districtItem);
+                }
+                districtField.setSpinnerData(newDistricts, districtField.getValue());
             } else {
                 districtField.setSpinnerData(null);
             }
@@ -128,10 +179,25 @@ public final class InfrastructureHelper {
         districtField.initializeSpinner(districts, field -> {
             District selectedDistrict = (District) field.getValue();
             if (selectedDistrict != null) {
-                communityField.setSpinnerData(loadCommunities(selectedDistrict), communityField.getValue());
-                facilityField.setSpinnerData(loadFacilities(selectedDistrict, null), facilityField.getValue());
+                List<Item> newCommunities = loadCommunities(selectedDistrict);
+                List<Item> newFacilities = loadFacilities(selectedDistrict, null);
+                if (initialCommunity != null && selectedDistrict.equals(initialCommunity.getDistrict())
+                        && !newCommunities.contains(communityItem)) {
+                    newCommunities.add(communityItem);
+                }
+                if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict())
+                        && !newFacilities.contains(facilityItem)) {
+                    newFacilities.add(facilityItem);
+                }
+                communityField.setSpinnerData(newCommunities, communityField.getValue());
+                facilityField.setSpinnerData(newFacilities, facilityField.getValue());
                 if (pointOfEntryField != null) {
-                    pointOfEntryField.setSpinnerData(loadPointsOfEntry(selectedDistrict), pointOfEntryField.getValue());
+                    List<Item> newPointsOfEntry = loadPointsOfEntry(selectedDistrict);
+                    if (initialPointOfEntry != null && selectedDistrict.equals(initialPointOfEntry.getDistrict())
+                            && !newPointsOfEntry.contains(pointOfEntryItem)) {
+                        newPointsOfEntry.add(pointOfEntryItem);
+                    }
+                    pointOfEntryField.setSpinnerData(newPointsOfEntry, pointOfEntryField.getValue());
                 }
             } else {
                 communityField.setSpinnerData(null);
@@ -145,9 +211,19 @@ public final class InfrastructureHelper {
         communityField.initializeSpinner(communities, field -> {
             Community selectedCommunity = (Community) field.getValue();
             if (selectedCommunity != null) {
-                facilityField.setSpinnerData(loadFacilities(null, selectedCommunity));
+                List<Item> newFacilities = loadFacilities(null, selectedCommunity);
+                if (initialFacility != null && selectedCommunity.equals(initialFacility.getCommunity())
+                        && !newFacilities.contains(facilityItem)) {
+                    newFacilities.add(facilityItem);
+                }
+                facilityField.setSpinnerData(newFacilities);
             } else if (districtField.getValue() != null) {
-                facilityField.setSpinnerData(loadFacilities((District) districtField.getValue(), null));
+                List<Item> newFacilities = loadFacilities((District) districtField.getValue(), null);
+                if (initialFacility != null && districtField.getValue().equals(initialFacility.getDistrict())
+                        && !newFacilities.contains(facilityItem)) {
+                    newFacilities.add(facilityItem);
+                }
+                facilityField.setSpinnerData(newFacilities);
             } else {
                 facilityField.setSpinnerData(null);
             }

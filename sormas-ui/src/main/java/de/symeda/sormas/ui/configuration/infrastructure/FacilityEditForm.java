@@ -61,9 +61,9 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	@Override
 	protected void addFields() {
 		TextField name = addField(FacilityDto.NAME, TextField.class);
-		ComboBox region = addField(FacilityDto.REGION, ComboBox.class);
-		ComboBox district = addField(FacilityDto.DISTRICT, ComboBox.class);
-		ComboBox community = addField(FacilityDto.COMMUNITY, ComboBox.class);
+		ComboBox region = addInfrastructureField(FacilityDto.REGION);
+		ComboBox district = addInfrastructureField(FacilityDto.DISTRICT);
+		ComboBox community = addInfrastructureField(FacilityDto.COMMUNITY);
 		addField(FacilityDto.CITY, TextField.class);
 		TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
 		latitude.setConverter(new StringToAngularLocationConverter());

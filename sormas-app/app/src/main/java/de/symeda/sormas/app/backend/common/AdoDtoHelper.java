@@ -41,9 +41,6 @@ import de.symeda.sormas.app.util.DataUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 
-/**
- * Created by Martin Wahnschaffe on 27.07.2016.
- */
 public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends EntityDto> {
 
     private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);

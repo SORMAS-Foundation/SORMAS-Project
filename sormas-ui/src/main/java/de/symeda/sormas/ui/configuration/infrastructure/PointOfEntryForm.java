@@ -44,8 +44,8 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		addField(PointOfEntryDto.ACTIVE, CheckBox.class);
 		TextField tfLatitude = addField(PointOfEntryDto.LATITUDE, TextField.class);
 		TextField tfLongitude = addField(PointOfEntryDto.LONGITUDE, TextField.class);
-		ComboBox cbRegion = addField(PointOfEntryDto.REGION, ComboBox.class);
-		ComboBox cbDistrict = addField(PointOfEntryDto.DISTRICT, ComboBox.class);
+		ComboBox cbRegion = addInfrastructureField(PointOfEntryDto.REGION);
+		ComboBox cbDistrict = addInfrastructureField(PointOfEntryDto.DISTRICT);
 
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
 		tfLatitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLatitude.getCaption()));

@@ -118,14 +118,16 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
         initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
-        InfrastructureHelper.initializeFacilityFields(contentBinding.personOccupationRegion, initialOccupationRegions,
-                contentBinding.personOccupationDistrict, initialOccupationDistricts,
-                contentBinding.personOccupationCommunity, initialOccupationCommunities,
-                contentBinding.personOccupationFacility, initialOccupationFacilities);
-        InfrastructureHelper.initializeFacilityFields(contentBinding.personPlaceOfBirthRegion, initialPlaceOfBirthRegions,
-                contentBinding.personPlaceOfBirthDistrict, initialPlaceOfBirthDistricts,
-                contentBinding.personPlaceOfBirthCommunity, initialPlaceOfBirthCommunities,
-                contentBinding.personPlaceOfBirthFacility, initialPlaceOfBirthFacilities);
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.personOccupationRegion, initialOccupationRegions, record.getOccupationRegion(),
+                contentBinding.personOccupationDistrict, initialOccupationDistricts, record.getOccupationDistrict(),
+                contentBinding.personOccupationCommunity, initialOccupationCommunities, record.getOccupationCommunity(),
+                contentBinding.personOccupationFacility, initialOccupationFacilities, record.getOccupationFacility());
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.personPlaceOfBirthRegion, initialPlaceOfBirthRegions, record.getPlaceOfBirthRegion(),
+                contentBinding.personPlaceOfBirthDistrict, initialPlaceOfBirthDistricts, record.getPlaceOfBirthDistrict(),
+                contentBinding.personPlaceOfBirthCommunity, initialPlaceOfBirthCommunities, record.getPlaceOfBirthCommunity(),
+                contentBinding.personPlaceOfBirthFacility, initialPlaceOfBirthFacilities, record.getPlaceOfBirthFacility());
 
         // Initialize ControlSpinnerFields
         contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));

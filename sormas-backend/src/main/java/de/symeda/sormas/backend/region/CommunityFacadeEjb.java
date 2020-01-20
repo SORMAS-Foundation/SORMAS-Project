@@ -113,7 +113,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		Join<Community, District> district = root.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
-		cq.multiselect(root.get(Community.CREATION_DATE), root.get(Community.CHANGE_DATE), root.get(Community.UUID),
+		cq.multiselect(root.get(Community.CREATION_DATE), root.get(Community.CHANGE_DATE), root.get(Community.UUID), root.get(Community.ARCHIVED),
 				root.get(Community.NAME), region.get(Region.UUID), region.get(Region.NAME), district.get(District.UUID),
 				district.get(District.NAME));
 	}

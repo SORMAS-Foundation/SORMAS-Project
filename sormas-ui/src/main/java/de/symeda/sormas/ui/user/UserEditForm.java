@@ -19,10 +19,10 @@ package de.symeda.sormas.ui.user;
 
 import java.util.Set;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
@@ -98,10 +98,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	userRoles.setMultiSelect(true);
     	userRoles.addItems(UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles()));
     	
-    	ComboBox region = addField(UserDto.REGION, ComboBox.class);
-    	ComboBox community = addField(UserDto.COMMUNITY, ComboBox.class);
+    	ComboBox region = addInfrastructureField(UserDto.REGION);
+    	ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
 
-    	ComboBox district = addField(UserDto.DISTRICT, ComboBox.class);
+    	ComboBox district = addInfrastructureField(UserDto.DISTRICT);
     	region.addValueChangeListener(e -> {
     		FieldHelper.removeItems(community);
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
@@ -112,8 +112,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	// for informant
     	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
 
-    	ComboBox healthFacility = addField(UserDto.HEALTH_FACILITY, ComboBox.class);
-    	ComboBox cbPointOfEntry = addField(UserDto.POINT_OF_ENTRY, ComboBox.class);
+    	ComboBox healthFacility = addInfrastructureField(UserDto.HEALTH_FACILITY);
+    	ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY);
     	district.addValueChangeListener(e -> {
     		FieldHelper.removeItems(healthFacility);
     		FieldHelper.removeItems(associatedOfficer);

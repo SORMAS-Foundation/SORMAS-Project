@@ -34,14 +34,16 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
-public class FacilityDao extends AbstractAdoDao<Facility> {
+public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 
-    public FacilityDao(Dao<Facility,Long> innerDao) throws SQLException {
+    public FacilityDao(Dao<Facility,Long> innerDao) {
         super(innerDao);
     }
 
@@ -82,13 +84,14 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
         }
     }
 
-    public List<Facility> getHealthFacilitiesByDistrict(District district, boolean includeOtherFacility, boolean includeOtherPlace) {
+    public List<Facility> getActiveHealthFacilitiesByDistrict(District district, boolean includeOtherFacility, boolean includeOtherPlace) {
 
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(Facility.DISTRICT, district),
+                    where.eq(InfrastructureAdo.ARCHIVED, false),
                     where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.or(where.ne(Facility.TYPE, FacilityType.LABORATORY), where.isNull(Facility.TYPE)));
             List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
@@ -103,18 +106,19 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
             return facilities;
 
         } catch (SQLException | IllegalArgumentException e) {
-            Log.e(getTableName(), "Could not perform getHealthFacilitiesByDistrict");
+            Log.e(getTableName(), "Could not perform getActiveHealthFacilitiesByDistrict");
             throw new RuntimeException(e);
         }
     }
 
-    public List<Facility> getHealthFacilitiesByCommunity(Community community, boolean includeOtherFacility, boolean includeOtherPlace) {
+    public List<Facility> getActiveHealthFacilitiesByCommunity(Community community, boolean includeOtherFacility, boolean includeOtherPlace) {
 
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(Facility.COMMUNITY, community),
+                    where.eq(InfrastructureAdo.ARCHIVED, false),
                     where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.or(where.ne(Facility.TYPE, FacilityType.LABORATORY), where.isNull(Facility.TYPE)));
             List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
@@ -129,16 +133,17 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
             return facilities;
 
         } catch (SQLException | IllegalArgumentException e) {
-            Log.e(getTableName(), "Could not perform getHealthFacilitiesByCommunity");
+            Log.e(getTableName(), "Could not perform getActiveHealthFacilitiesByCommunity");
             throw new RuntimeException(e);
         }
     }
 
-    public List<Facility> getLaboratories(boolean includeOtherLaboratory) {
+    public List<Facility> getActiveLaboratories(boolean includeOtherLaboratory) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.eq(Facility.TYPE, FacilityType.LABORATORY);
+            where.and().eq(InfrastructureAdo.ARCHIVED, false);
             where.and().eq(AbstractDomainObject.SNAPSHOT, false);
             where.and().ne(Facility.UUID, FacilityDto.OTHER_LABORATORY_UUID).query();
             List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
@@ -156,12 +161,12 @@ public class FacilityDao extends AbstractAdoDao<Facility> {
     }
 
     @Override
-    public Facility saveAndSnapshot(Facility facility) throws DaoException {
+    public Facility saveAndSnapshot(Facility facility) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Facility mergeOrCreate(Facility source) throws DaoException {
+    public Facility mergeOrCreate(Facility source) {
         throw new UnsupportedOperationException();
     }
 }

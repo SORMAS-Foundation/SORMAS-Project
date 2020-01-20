@@ -286,6 +286,19 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		});
 		return field;
 	}
+	
+	protected ComboBox addInfrastructureField(String fieldId) {
+		ComboBox field = addField(fieldId, ComboBox.class);
+		// Make sure that the ComboBox still contains a pre-selected inactive infrastructure entity
+		field.addValueChangeListener(e -> {
+			Object value = e.getProperty().getValue();
+			if (value != null && !field.containsId(value)) {
+				Item newItem = field.addItem(value);
+//				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(value.toString());
+			}
+		});
+		return field;
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T extends Field> T addField(String propertyId) {

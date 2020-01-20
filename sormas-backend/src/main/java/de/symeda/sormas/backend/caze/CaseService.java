@@ -388,6 +388,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<Case, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
+		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
@@ -495,7 +496,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
 							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
 							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
-							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter));
+							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
+							cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
+							cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

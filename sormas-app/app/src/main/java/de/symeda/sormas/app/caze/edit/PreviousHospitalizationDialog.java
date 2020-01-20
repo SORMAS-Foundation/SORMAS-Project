@@ -82,10 +82,11 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
 
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
                 contentBinding.casePreviousHospitalizationHealthFacility, contentBinding.casePreviousHospitalizationHealthFacilityDetails);
-        InfrastructureHelper.initializeFacilityFields(contentBinding.casePreviousHospitalizationRegion, initialRegions,
-                contentBinding.casePreviousHospitalizationDistrict, initialDistricts,
-                contentBinding.casePreviousHospitalizationCommunity, initialCommunities,
-                contentBinding.casePreviousHospitalizationHealthFacility, initialFacilities);
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.casePreviousHospitalizationRegion, initialRegions, data.getRegion(),
+                contentBinding.casePreviousHospitalizationDistrict, initialDistricts, data.getDistrict(),
+                contentBinding.casePreviousHospitalizationCommunity, initialCommunities, data.getCommunity(),
+                contentBinding.casePreviousHospitalizationHealthFacility, initialFacilities, data.getHealthFacility());
 
         CaseValidator.initializePreviousHospitalizationValidation(contentBinding);
     }

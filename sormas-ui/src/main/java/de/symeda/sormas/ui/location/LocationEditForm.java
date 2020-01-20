@@ -68,9 +68,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     	addField(LocationDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
     	addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
 
-    	ComboBox region = addField(LocationDto.REGION, ComboBox.class);
-    	ComboBox district = addField(LocationDto.DISTRICT, ComboBox.class);
-    	ComboBox community = addField(LocationDto.COMMUNITY, ComboBox.class);
+    	ComboBox region = addInfrastructureField(LocationDto.REGION);
+    	ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
+    	ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
     	
     	region.addValueChangeListener(e -> {
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();

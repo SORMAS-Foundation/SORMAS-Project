@@ -74,9 +74,10 @@ public class LocationDialog extends AbstractDialog {
         List<Item> initialRegions = InfrastructureHelper.loadRegions();
         List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
         List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-        InfrastructureHelper.initializeRegionFields(this.contentBinding.locationRegion, initialRegions,
-                this.contentBinding.locationDistrict, initialDistricts,
-                this.contentBinding.locationCommunity, initialCommunities);
+        InfrastructureHelper.initializeRegionFields(
+                this.contentBinding.locationRegion, initialRegions, data.getRegion(),
+                this.contentBinding.locationDistrict, initialDistricts, data.getDistrict(),
+                this.contentBinding.locationCommunity, initialCommunities, data.getCommunity());
 
         contentBinding.locationAreaType.initializeSpinner(DataUtils.getEnumItems(AreaType.class));
 

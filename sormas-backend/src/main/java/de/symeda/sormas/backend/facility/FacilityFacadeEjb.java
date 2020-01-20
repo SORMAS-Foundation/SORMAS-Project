@@ -164,7 +164,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Join<Facility, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<Facility, Region> region = root.join(Facility.REGION, JoinType.LEFT);
 
-		cq.multiselect(root.get(Facility.CREATION_DATE), root.get(Facility.CHANGE_DATE), root.get(Facility.UUID),
+		cq.multiselect(root.get(Facility.CREATION_DATE), root.get(Facility.CHANGE_DATE), root.get(Facility.UUID), root.get(Facility.ARCHIVED),
 				root.get(Facility.NAME), region.get(Region.UUID), region.get(Region.NAME), district.get(District.UUID),
 				district.get(District.NAME), community.get(Community.UUID), community.get(Community.NAME),
 				root.get(Facility.CITY), root.get(Facility.LATITUDE), root.get(Facility.LONGITUDE),
