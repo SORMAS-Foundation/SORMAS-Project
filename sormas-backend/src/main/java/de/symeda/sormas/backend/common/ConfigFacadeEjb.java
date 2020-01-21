@@ -89,7 +89,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error(e.getMessage());
 			return defaultValue;
 		}
@@ -99,7 +98,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error(e.getMessage());
 			return defaultValue;
 		}
@@ -109,7 +107,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error(e.getMessage());
 			return defaultValue;
 		}
