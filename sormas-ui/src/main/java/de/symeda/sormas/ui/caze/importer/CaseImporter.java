@@ -185,12 +185,6 @@ public class CaseImporter extends DataImporter {
 				caseHasImportError = true;
 				writeImportError(values, e.getMessage());
 			}
-
-			if (newCase.getEpidNumber() != null && FacadeProvider.getCaseFacade()
-					.doesEpidNumberExist(newCase.getEpidNumber(), "", newCase.getDisease())) {
-				caseHasImportError = true;
-				writeImportError(values, I18nProperties.getString(Strings.messageEpidNumberWarning));
-			}
 		}
 
 		if (!caseHasImportError) {
@@ -262,6 +256,12 @@ public class CaseImporter extends DataImporter {
 							}
 						}
 					}
+				}
+
+				if (!caseHasImportError && newCase.getEpidNumber() != null && FacadeProvider.getCaseFacade()
+						.doesEpidNumberExist(newCase.getEpidNumber(), "", newCase.getDisease())) {
+					caseHasImportError = true;
+					writeImportError(values, I18nProperties.getString(Strings.messageEpidNumberWarning));
 				}
 
 				if (caseHasImportError) {
