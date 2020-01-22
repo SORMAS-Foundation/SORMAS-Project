@@ -424,6 +424,7 @@ public interface Strings {
 	public static String messageFacilityDearchivingNotPossible = "messageFacilityDearchivingNotPossible";
 	public static String messageFollowUpCanceled = "messageFollowUpCanceled";
 	public static String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
+	public static String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
 	public static String messageHealthFacilityChanged = "messageHealthFacilityChanged";
 	public static String messageHealthFacilityMulitChanged = "messageHealthFacilityMulitChanged";
 	public static String messageImportCanceled = "messageImportCanceled";

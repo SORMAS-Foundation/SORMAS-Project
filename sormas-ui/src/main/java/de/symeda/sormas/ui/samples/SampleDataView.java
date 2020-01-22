@@ -18,18 +18,19 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -77,7 +78,7 @@ public class SampleDataView extends AbstractSampleView {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(getSampleRef().getUuid());
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sampleDto.getAssociatedCase().getUuid());
 		Disease caseDisease = caseDto.getDisease();
-		
+
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent = ControllerProvider.getSampleController()
 				.getSampleEditComponent(getSampleRef().getUuid());
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
@@ -100,7 +101,7 @@ public class SampleDataView extends AbstractSampleView {
 				} else {
 					callback.run();
 				}
-				
+
 				editComponent.getWrappedComponent().makePathogenTestResultRequired();
 			}
 		};
@@ -110,15 +111,24 @@ public class SampleDataView extends AbstractSampleView {
 		layout.addComponent(caseInfoLayout, CASE_LOC);
 
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
-			PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest);
-			pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
-			
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
-				AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
-				additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-				layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
+		Supplier<Boolean> createOrEditAllowedCallback = () -> {
+			for (Field<?> field : editComponent.getWrappedComponent().getFieldGroup().getFields()) {
+				if (!field.isValid()) {
+					return false;
+				}
 			}
+			
+			return true;
+		};
+		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest, createOrEditAllowedCallback);
+		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
+			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
+		}
 		//}
 	}
 }

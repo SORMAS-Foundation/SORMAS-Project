@@ -19,10 +19,13 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -39,19 +42,22 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	private SampleReferenceDto sampleRef;
 	private int caseSampleCount;
 	private BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest;
+	private Supplier<Boolean> createOrEditAllowedCallback;
 
-	public PathogenTestList(SampleReferenceDto sampleRef, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
+	public PathogenTestList(SampleReferenceDto sampleRef, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
+			Supplier<Boolean> createOrEditAllowedCallback) {
 		super(5);
 
 		this.sampleRef = sampleRef;
 		this.onSavedPathogenTest = onSavedPathogenTest;
+		this.createOrEditAllowedCallback = createOrEditAllowedCallback;
 	}
 
 	@Override
 	public void reload() {
 		List<PathogenTestDto> pathogenTests = ControllerProvider.getPathogenTestController()
 				.getPathogenTestsBySample(sampleRef);
-		
+
 
 		setEntries(pathogenTests);
 		if (!pathogenTests.isEmpty()) {
@@ -62,7 +68,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 			listLayout.addComponent(noPathogenTestsLabel);
 		}
 	}
-	
+
 	@Override
 	protected void drawDisplayedEntries() {
 		for (PathogenTestDto pathogenTest : getDisplayedEntries()) {
@@ -71,8 +77,12 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 				listEntry.addEditListener(new ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
-						ControllerProvider.getPathogenTestController().edit(pathogenTest, caseSampleCount,
-								PathogenTestList.this::reload, onSavedPathogenTest);
+						if (createOrEditAllowedCallback.get()) {
+							ControllerProvider.getPathogenTestController().edit(pathogenTest, caseSampleCount,
+									PathogenTestList.this::reload, onSavedPathogenTest);
+						} else {
+							Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
+						}
 					}
 				});
 			}
