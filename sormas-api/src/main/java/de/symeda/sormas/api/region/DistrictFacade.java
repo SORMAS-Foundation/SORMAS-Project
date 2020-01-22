@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -63,12 +63,9 @@ public interface DistrictFacade {
 	
 	void dearchive(String districtUuid);
 	
-	boolean isUsedInOtherInfrastructureData(String districtUuid);
 	
-	boolean isUsedInOtherInfrastructureData(Set<String> districtUuids);
+	boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids);
 	
-	boolean hasArchivedParentInfrastructure(String districtUuid);
-	
-	boolean hasArchivedParentInfrastructure(Set<String> districtUuids);
+	boolean hasArchivedParentInfrastructure(Collection<String> districtUuids);
 	
 }

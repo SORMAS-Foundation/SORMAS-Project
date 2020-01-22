@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -53,12 +53,8 @@ public interface CommunityFacade {
 	
 	void dearchive(String communityUuid);
 	
-	boolean isUsedInOtherInfrastructureData(String communityUuid);
+	boolean isUsedInOtherInfrastructureData(Collection<String> communityUuids);
 	
-	boolean isUsedInOtherInfrastructureData(Set<String> communityUuids);
-	
-	boolean hasArchivedParentInfrastructure(String communityUuid);
-	
-	boolean hasArchivedParentInfrastructure(Set<String> communityUuids);
+	boolean hasArchivedParentInfrastructure(Collection<String> communityUuids);
 	
 }

@@ -294,7 +294,6 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			Object value = e.getProperty().getValue();
 			if (value != null && !field.containsId(value)) {
 				Item newItem = field.addItem(value);
-//				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(value.toString());
 			}
 		});
 		return field;

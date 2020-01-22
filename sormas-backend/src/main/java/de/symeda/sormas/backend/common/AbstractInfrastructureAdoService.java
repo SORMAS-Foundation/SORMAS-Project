@@ -1,8 +1,8 @@
 package de.symeda.sormas.backend.common;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -47,12 +47,12 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 	}
 
 	public <T extends InfrastructureAdo> boolean isUsedInInfrastructureData(String uuid, String adoAttribute, Class<T> targetElementClass) {
-		Set<String> uuidSet = new HashSet<>();
-		uuidSet.add(uuid);
-		return isUsedInInfrastructureData(uuidSet, adoAttribute, targetElementClass);
+		List<String> uuidList = new ArrayList<>();
+		uuidList.add(uuid);
+		return isUsedInInfrastructureData(uuidList, adoAttribute, targetElementClass);
 	}
 
-	public <T extends InfrastructureAdo> boolean isUsedInInfrastructureData(Set<String> uuids, String adoAttribute, Class<T> targetElementClass) {
+	public <T extends InfrastructureAdo> boolean isUsedInInfrastructureData(Collection<String> uuids, String adoAttribute, Class<T> targetElementClass) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(targetElementClass);
 		Root<T> root = cq.from(targetElementClass);

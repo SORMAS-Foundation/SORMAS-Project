@@ -18,11 +18,10 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -261,28 +260,14 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public boolean isUsedInOtherInfrastructureData(String districtUuid) {
-		return districtService.isUsedInInfrastructureData(districtUuid, Community.DISTRICT, Community.class) ||
-				districtService.isUsedInInfrastructureData(districtUuid, Facility.DISTRICT, Facility.class) ||
-				districtService.isUsedInInfrastructureData(districtUuid, PointOfEntry.DISTRICT, PointOfEntry.class);
-	}
-
-	@Override
-	public boolean isUsedInOtherInfrastructureData(Set<String> districtUuids) {
+	public boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids) {
 		return districtService.isUsedInInfrastructureData(districtUuids, Community.DISTRICT, Community.class) ||
 				districtService.isUsedInInfrastructureData(districtUuids, Facility.DISTRICT, Facility.class) ||
 				districtService.isUsedInInfrastructureData(districtUuids, PointOfEntry.DISTRICT, PointOfEntry.class);
 	}	
 
 	@Override
-	public boolean hasArchivedParentInfrastructure(String districtUuid) {
-		Set<String> uuidSet = new HashSet<>();
-		uuidSet.add(districtUuid);
-		return hasArchivedParentInfrastructure(uuidSet);
-	}
-
-	@Override
-	public boolean hasArchivedParentInfrastructure(Set<String> districtUuids) {
+	public boolean hasArchivedParentInfrastructure(Collection<String> districtUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<District> root = cq.from(District.class);

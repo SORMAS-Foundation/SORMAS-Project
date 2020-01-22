@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -56,8 +56,6 @@ public interface RegionFacade {
 	
 	void dearchive(String regionUuid);
 	
-	boolean isUsedInOtherInfrastructureData(String regionUuid);
-	
-	boolean isUsedInOtherInfrastructureData(Set<String> regionUuids);
+	boolean isUsedInOtherInfrastructureData(Collection<String> regionUuids);
 
 }

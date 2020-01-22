@@ -15,8 +15,7 @@ public abstract class AbstractInfrastructureAdoDao<ADO extends InfrastructureAdo
         super(innerDao);
     }
 
-    @Override
-    public List<ADO> queryForAll(String orderBy, boolean ascending) {
+    public List<ADO> queryActiveForAll(String orderBy, boolean ascending) {
         try {
             QueryBuilder<ADO, Long> builder = queryBuilder();
             Where<ADO, Long> where = builder.where();
@@ -31,8 +30,7 @@ public abstract class AbstractInfrastructureAdoDao<ADO extends InfrastructureAdo
         }
     }
 
-    @Override
-    public List<ADO> queryForAll() {
+    public List<ADO> queryActiveForAll() {
         try {
             QueryBuilder<ADO, Long> builder = queryBuilder();
             Where<ADO, Long> where = builder.where();

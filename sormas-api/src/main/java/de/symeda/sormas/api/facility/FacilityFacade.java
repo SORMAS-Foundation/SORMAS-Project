@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Remote;
 
@@ -60,8 +60,6 @@ public interface FacilityFacade {
 	
 	void dearchive(String facilityUuid);
 	
-	boolean hasArchivedParentInfrastructure(String facilityUuid);
-	
-	boolean hasArchivedParentInfrastructure(Set<String> facilityUuids);
+	boolean hasArchivedParentInfrastructure(Collection<String> facilityUuids);
 	
 }

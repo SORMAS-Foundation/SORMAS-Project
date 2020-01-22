@@ -1,11 +1,10 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -271,16 +270,9 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		pointOfEntry.setArchived(false);
 		service.ensurePersisted(pointOfEntry);
 	}
-
+	
 	@Override
-	public boolean hasArchivedParentInfrastructure(String pointOfEntryUuid) {
-		Set<String> uuidSet = new HashSet<>();
-		uuidSet.add(pointOfEntryUuid);
-		return hasArchivedParentInfrastructure(uuidSet);
-	}
-
-	@Override
-	public boolean hasArchivedParentInfrastructure(Set<String> pointOfEntryUuids) {
+	public boolean hasArchivedParentInfrastructure(Collection<String> pointOfEntryUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<PointOfEntry> root = cq.from(PointOfEntry.class);

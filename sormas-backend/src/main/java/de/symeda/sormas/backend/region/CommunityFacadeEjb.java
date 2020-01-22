@@ -18,11 +18,10 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -233,24 +232,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public boolean isUsedInOtherInfrastructureData(String communityUuid) {
-		return communityService.isUsedInInfrastructureData(communityUuid, Facility.COMMUNITY, Facility.class);
-	}
-
-	@Override
-	public boolean isUsedInOtherInfrastructureData(Set<String> communityUuids) {
+	public boolean isUsedInOtherInfrastructureData(Collection<String> communityUuids) {
 		return communityService.isUsedInInfrastructureData(communityUuids, Facility.COMMUNITY, Facility.class);
 	}
 
 	@Override
-	public boolean hasArchivedParentInfrastructure(String communityUuid) {
-		Set<String> uuidSet = new HashSet<>();
-		uuidSet.add(communityUuid);
-		return hasArchivedParentInfrastructure(uuidSet);
-	}
-
-	@Override
-	public boolean hasArchivedParentInfrastructure(Set<String> communityUuids) {
+	public boolean hasArchivedParentInfrastructure(Collection<String> communityUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Community> root = cq.from(Community.class);

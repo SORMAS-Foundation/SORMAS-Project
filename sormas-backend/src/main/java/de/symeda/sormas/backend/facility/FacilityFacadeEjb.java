@@ -18,11 +18,10 @@
 package de.symeda.sormas.backend.facility;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -216,14 +215,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public boolean hasArchivedParentInfrastructure(String facilityUuid) {
-		Set<String> uuidSet = new HashSet<>();
-		uuidSet.add(facilityUuid);
-		return hasArchivedParentInfrastructure(uuidSet);
-	}
-
-	@Override
-	public boolean hasArchivedParentInfrastructure(Set<String> facilityUuids) {
+	public boolean hasArchivedParentInfrastructure(Collection<String> facilityUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Facility> root = cq.from(Facility.class);

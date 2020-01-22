@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -257,17 +258,17 @@ public class InfrastructureController {
 			}
 			archiveButton.addClickListener(e -> {
 				if (!isArchived) {
-					if (InfrastructureType.REGION.equals(infrastructureType) && FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(uuid) ||
-							InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(uuid) ||
-							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(uuid)) {
+					if (InfrastructureType.REGION.equals(infrastructureType) && FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
+							InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
+							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))) {
 						showArchivingNotPossibleWindow(infrastructureType, false);
 						return;
 					}
 				} else {
-					if (InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(uuid) ||
-							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(uuid) ||
-							InfrastructureType.FACILITY.equals(infrastructureType) && FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(uuid) ||
-							InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType) && FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(uuid)) {
+					if (InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+							InfrastructureType.FACILITY.equals(infrastructureType) && FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+							InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType) && FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))) {
 						showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
 						return;
 					}

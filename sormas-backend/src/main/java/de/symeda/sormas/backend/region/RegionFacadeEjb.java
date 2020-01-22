@@ -18,10 +18,10 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -213,14 +213,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 	
 	@Override
-	public boolean isUsedInOtherInfrastructureData(String regionUuid) {
-		return regionService.isUsedInInfrastructureData(regionUuid, District.REGION, District.class) ||
-				regionService.isUsedInInfrastructureData(regionUuid, Facility.REGION, Facility.class) ||
-				regionService.isUsedInInfrastructureData(regionUuid, PointOfEntry.REGION, PointOfEntry.class);
-	}
-	
-	@Override
-	public boolean isUsedInOtherInfrastructureData(Set<String> regionUuids) {
+	public boolean isUsedInOtherInfrastructureData(Collection<String> regionUuids) {
 		return regionService.isUsedInInfrastructureData(regionUuids, District.REGION, District.class) ||
 				regionService.isUsedInInfrastructureData(regionUuids, Facility.REGION, Facility.class) ||
 				regionService.isUsedInInfrastructureData(regionUuids, PointOfEntry.REGION, PointOfEntry.class);
