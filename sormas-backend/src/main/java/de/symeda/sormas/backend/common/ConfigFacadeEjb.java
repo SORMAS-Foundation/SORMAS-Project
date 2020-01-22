@@ -212,12 +212,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	@Override
 	public int getDaysAfterCaseGetsArchived() {
-		return getInt(DAYS_AFTER_CASE_GETS_ARCHIVED, 70);
+		return getInt(DAYS_AFTER_CASE_GETS_ARCHIVED, 90);
 	}
 
 	@Override
 	public int getDaysAfterEventGetsArchived() {
-		return getInt(DAYS_AFTER_EVENT_GETS_ARCHIVED, 70);
+		return getInt(DAYS_AFTER_EVENT_GETS_ARCHIVED, 90);
 	}
 
 	@Override
