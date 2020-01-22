@@ -45,6 +45,7 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
@@ -53,7 +54,9 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -125,12 +128,23 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private static final Logger logger = LoggerFactory.getLogger(ImportFacadeEjb.class);
 
-	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
+	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_case_template.csv";
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
 			+ "_import_line_listing_template.csv";
-	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
-	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
-	
+	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_point_of_entry_template.csv";
+	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_population_data_template.csv";
+	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_region_template.csv";
+	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_district_template.csv";
+	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_community_template.csv";
+	private static final String FACILITY_LABORATORY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_facility_laboratory_template.csv";
+
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				
 		// Create the export directory if it doesn't exist
@@ -197,22 +211,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@Override
 	public void generatePointOfEntryImportTemplateFile() throws IOException {
-		// Create the export directory if it doesn't exist
-		try {	
-			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
-		} catch (IOException e) {
-			logger.error("Generated files directory doesn't exist and creation failed.");
-			throw e;
-		}
-		
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, PointOfEntryDto.class, "");
-		Path filePath = Paths.get(getPointOfEntryImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
-			writer.flush();
-		}
+		generateImportTemplateFile(PointOfEntryDto.class, Paths.get(getPointOfEntryImportTemplateFilePath()));
 	}
 	
 	@Override
@@ -245,6 +244,45 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public void generateRegionImportTemplateFile() throws IOException {
+		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()));
+	}
+
+	@Override
+	public void generateDistrictImportTemplateFile() throws IOException {
+		generateImportTemplateFile(DistrictDto.class, Paths.get(getDistrictImportTemplateFilePath()));
+	}
+
+	@Override
+	public void generateCommunityImportTemplateFile() throws IOException {
+		generateImportTemplateFile(CommunityDto.class, Paths.get(getCommunityImportTemplateFilePath()));
+	}
+
+	@Override
+	public void generateFacilityLaboratoryImportTemplateFile() throws IOException {
+		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityLaboratoryImportTemplateFilePath()));
+	}
+
+	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath) throws IOException {
+		// Create the export directory if it doesn't exist
+		try {
+			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
+		} catch (IOException e) {
+			logger.error("Generated files directory doesn't exist and creation failed.");
+			throw e;
+		}
+
+		List<String> columnNames = new ArrayList<>();
+		List<String> entityNames = new ArrayList<>();
+		appendListOfFields(columnNames, entityNames, clazz, "");
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()),
+				configFacade.getCsvSeparator())) {
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.flush();
+		}
+	}
+
+	@Override
 	public String getCaseImportTemplateFilePath() {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
@@ -269,6 +307,34 @@ public class ImportFacadeEjb implements ImportFacade {
 	public String getPopulationDataImportTemplateFilePath() {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getRegionImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(REGION_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getDistrictImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(DISTRICT_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getCommunityImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(COMMUNITY_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getFacilityLaboratoryImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(FACILITY_LABORATORY_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
@@ -332,5 +398,4 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Stateless
 	public static class ImportFacadeEjbLocal extends ImportFacadeEjb {
 	}
-
 }

@@ -26,6 +26,7 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -50,6 +51,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
@@ -71,19 +73,22 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	protected FacilitiesGrid grid;
+	protected Button importButton;
 	protected Button createButton;
 	protected Button exportButton;
 	private MenuBar bulkOperationsDropdown;
 	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
 
-	protected AbstractFacilitiesView(String viewName, boolean showLaboratories) {
+	protected AbstractFacilitiesView(String viewName, FacilityType type) {
 		super(viewName);
-		Class<? extends AbstractFacilitiesView> viewClass = showLaboratories ? LaboratoriesView.class : HealthFacilitiesView.class;
+		Class<? extends AbstractFacilitiesView> viewClass = FacilityType.LABORATORY.equals(type)
+				? LaboratoriesView.class
+				: HealthFacilitiesView.class;
 		
 		viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(viewClass).get(FacilityCriteria.class);
-		criteria.type(showLaboratories ? FacilityType.LABORATORY : null);
+		criteria.type(type);
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
@@ -98,6 +103,25 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
+			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			importButton.setIcon(VaadinIcons.UPLOAD);
+			importButton.addClickListener(e -> {
+				Window window = VaadinUiUtil
+						.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.FACILITY));
+				if (FacilityType.LABORATORY.equals(type)) {
+					window.setCaption(I18nProperties.getString(Strings.headingImportLaboratories));
+				} else {
+					window.setCaption(I18nProperties.getString(Strings.headingImportHealthFacilities));
+				}
+				window.addCloseListener(c -> {
+					grid.reload();
+				});
+			});
+			addHeaderComponent(importButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			exportButton = new Button(I18nProperties.getCaption(Captions.export));

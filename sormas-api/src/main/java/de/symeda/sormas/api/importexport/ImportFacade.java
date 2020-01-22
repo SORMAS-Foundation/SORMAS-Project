@@ -37,6 +37,14 @@ public interface ImportFacade {
 	
 	void generatePopulationDataImportTemplateFile() throws IOException;
 	
+	void generateRegionImportTemplateFile() throws IOException;
+
+	void generateDistrictImportTemplateFile() throws IOException;
+
+	void generateCommunityImportTemplateFile() throws IOException;
+
+	void generateFacilityLaboratoryImportTemplateFile() throws IOException;
+
 	String getCaseImportTemplateFilePath();
 	
 	String getPointOfEntryImportTemplateFilePath();
@@ -44,4 +52,12 @@ public interface ImportFacade {
 	String getPopulationDataImportTemplateFilePath();
 
 	String getCaseLineListingImportTemplateFilePath();
+
+	String getRegionImportTemplateFilePath();
+
+	String getDistrictImportTemplateFilePath();
+
+	String getCommunityImportTemplateFilePath();
+
+	String getFacilityLaboratoryImportTemplateFilePath();
 }

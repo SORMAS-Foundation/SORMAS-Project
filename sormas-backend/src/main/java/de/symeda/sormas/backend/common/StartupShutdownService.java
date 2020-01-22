@@ -353,6 +353,27 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create population data import template .csv file.");
 		}
+
+		try {
+			importFacade.generateRegionImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create region import template .csv file.");
+		}
+		try {
+			importFacade.generateDistrictImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create district import template .csv file.");
+		}
+		try {
+			importFacade.generateCommunityImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create community import template .csv file.");
+		}
+		try {
+			importFacade.generateFacilityLaboratoryImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create facility/laboratory import template .csv file.");
+		}
 	}
 	
 	private void createMissingDiseaseConfigurations() {

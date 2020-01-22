@@ -30,6 +30,7 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -55,6 +56,7 @@ import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CommunitiesView extends AbstractConfigurationView {
@@ -76,6 +78,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private CommunitiesGrid grid;
+	protected Button importButton;
 	protected Button createButton;
 	private MenuBar bulkOperationsDropdown;
 	private MenuItem archiveItem;
@@ -99,6 +102,21 @@ public class CommunitiesView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
+			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			importButton.setIcon(VaadinIcons.UPLOAD);
+			importButton.addClickListener(e -> {
+				Window window = VaadinUiUtil
+						.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.COMMUNITY));
+				window.setCaption(I18nProperties.getString(Strings.headingImportCommunities));
+				window.addCloseListener(c -> {
+					grid.reload();
+				});
+			});
+			addHeaderComponent(importButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
