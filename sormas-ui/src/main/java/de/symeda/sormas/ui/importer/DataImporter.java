@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -176,7 +178,9 @@ public abstract class DataImporter {
 		
 		CSVReader csvReader = null;
 		try {
-			csvReader = CSVUtils.createCSVReader(new FileReader(inputFile.getPath()), FacadeProvider.getConfigFacade().getCsvSeparator());
+			csvReader = CSVUtils.createCSVReader(
+					new FileReader(URLDecoder.decode(inputFile.getPath(), StandardCharsets.UTF_8.name())),
+					FacadeProvider.getConfigFacade().getCsvSeparator());
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
 		
 			// Build dictionary of entity headers
