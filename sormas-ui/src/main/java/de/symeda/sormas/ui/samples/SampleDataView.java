@@ -24,7 +24,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -112,13 +111,7 @@ public class SampleDataView extends AbstractSampleView {
 
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
 		Supplier<Boolean> createOrEditAllowedCallback = () -> {
-			for (Field<?> field : editComponent.getWrappedComponent().getFieldGroup().getFields()) {
-				if (!field.isValid()) {
-					return false;
-				}
-			}
-			
-			return true;
+			return editComponent.getWrappedComponent().getFieldGroup().isValid();
 		};
 		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest, createOrEditAllowedCallback);
 		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
