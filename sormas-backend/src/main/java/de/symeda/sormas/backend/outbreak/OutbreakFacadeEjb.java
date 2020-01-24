@@ -79,10 +79,8 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
-	public List<OutbreakDto> getActive() {
-
-		List<Outbreak> result = outbreakService.queryByCriteria(new OutbreakCriteria().active(true), null,
-				Outbreak.DISEASE, true);
+	public List<OutbreakDto> getActive(OutbreakCriteria criteria) {
+		List<Outbreak> result = outbreakService.queryByCriteria(criteria, null, Outbreak.DISEASE, true);
 
 		return result.stream().map(OutbreakFacadeEjb::toDto).collect(Collectors.toList());
 	}

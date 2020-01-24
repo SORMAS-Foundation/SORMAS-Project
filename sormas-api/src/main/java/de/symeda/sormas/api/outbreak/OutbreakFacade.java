@@ -36,7 +36,7 @@ public interface OutbreakFacade {
 
 	List<OutbreakDto> getActiveAfter(Date date);
 	
-	List<OutbreakDto> getActive();
+	List<OutbreakDto> getActive(OutbreakCriteria criteria);
 	
 	List<OutbreakDto> getActiveByRegionAndDisease(RegionReferenceDto region, Disease disease);
 	

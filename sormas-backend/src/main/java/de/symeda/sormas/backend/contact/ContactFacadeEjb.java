@@ -368,8 +368,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		Predicate filter = null;		
 		// Only use user filter if no restricting case is specified
-		if (userUuid != null 
-				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
+		if (userUuid != null && (contactCriteria == null || contactCriteria.getCaze() == null)) {
 			User user = userService.getByUuid(userUuid);
 			filter = contactService.createUserFilter(cb, cq, contact, user);
 		}
