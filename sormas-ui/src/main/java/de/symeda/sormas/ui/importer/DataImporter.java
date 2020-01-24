@@ -360,7 +360,7 @@ public abstract class DataImporter {
 
 		for (int i = 0; i < values.length; i++) {
 			String value = values[i];
-			if (value == null || value.isEmpty()) {
+			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}
 
@@ -370,7 +370,7 @@ public abstract class DataImporter {
 				continue;
 			}
 
-			if (!(ignoreEmptyEntries && (StringUtils.isEmpty(value)))) {
+			if (!(ignoreEmptyEntries && StringUtils.isEmpty(value))) {
 				Exception exception = insertCallback.apply(
 						new ImportCellData(value, hasEntityClassRow ? entityClasses[i] : null, entityPropertyPath));
 				if (exception != null) {

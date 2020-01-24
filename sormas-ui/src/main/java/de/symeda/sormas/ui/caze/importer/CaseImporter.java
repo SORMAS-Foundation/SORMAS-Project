@@ -92,15 +92,16 @@ public class CaseImporter extends DataImporter {
 
 	private String firstSampleColumnName;
 	private String firstPathogenTestColumnName;
-	private boolean currentEntityHasEntries;
-	
+	private boolean currentSampleHasEntries = false;
+	private boolean currentPathogenTestHasEntries = false;
+
 	// needed to let the user handle similarities
 	private UI currentUI;
 
 	public CaseImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
 		super(inputFile, hasEntityClassRow, currentUser);
 	}
-	
+
 	@Override
 	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI) throws IOException {
 		this.currentUI = currentUI;
@@ -121,53 +122,63 @@ public class CaseImporter extends DataImporter {
 
 		final List<SampleDto> samples = new ArrayList<>();
 		final List<PathogenTestDto> pathogenTests = new ArrayList<>();
-
-		boolean caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, new Function<ImportCellData, Exception>() {
-			@Override
-			public Exception apply(ImportCellData cellData) {
-				try {
-					if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))) {
-						if (firstSampleColumnName == null) {
-							firstSampleColumnName = String.join(".", cellData.getEntityPropertyPath());
-						}
-						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstSampleColumnName)) {
-							if (samples.size() > 0 && !currentEntityHasEntries) {
-								samples.remove(samples.size() - 1);
-							}
-							currentEntityHasEntries = false;
-							samples.add(SampleDto.build(currentUser, new CaseReferenceDto(newCaseTmp.getUuid())));
-						}
-						if (!StringUtils.isEmpty(cellData.getValue())) {
-							currentEntityHasEntries = true;
-							insertColumnEntryIntoSampleData(samples.get(samples.size() - 1), null, cellData.getValue(), cellData.getEntityPropertyPath());
-						}
-					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
-						if (firstPathogenTestColumnName == null) {
-							firstPathogenTestColumnName = String.join(".", cellData.getEntityPropertyPath());
-						}
-						SampleDto referenceSample = samples.get(samples.size() - 1);
-						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
-							if (pathogenTests.size() > 0 && !currentEntityHasEntries) {
-								pathogenTests.remove(pathogenTests.size() - 1);
-							}
-							currentEntityHasEntries = false;
-							pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUser));
-						}
-						if (!StringUtils.isEmpty(cellData.getValue())) {
-							currentEntityHasEntries = true;					
-							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
-						}
-					} else {
-						insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
+		
+		boolean caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
+			try {
+				if (String.join(".", cellData.getEntityPropertyPath()).equals(firstSampleColumnName) ||
+						String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
+					if (samples.size() > 0 && !currentSampleHasEntries) {
+						samples.remove(samples.size() - 1);
+						currentSampleHasEntries = true;
 					}
-				} catch (ImportErrorException | InvalidColumnException e) {
-					return e;
+					if (pathogenTests.size() > 0 && !currentPathogenTestHasEntries) {
+						pathogenTests.remove(pathogenTests.size() - 1);
+						currentPathogenTestHasEntries = true;
+					}
 				}
-
-				return null;
+				
+				if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))) {
+					if (firstSampleColumnName == null) {
+						firstSampleColumnName = String.join(".", cellData.getEntityPropertyPath());
+					}
+					if (String.join(".", cellData.getEntityPropertyPath()).equals(firstSampleColumnName)) {
+						currentSampleHasEntries = false;
+						samples.add(SampleDto.build(currentUser, new CaseReferenceDto(newCaseTmp.getUuid())));
+					}
+					if (!StringUtils.isEmpty(cellData.getValue())) {
+						currentSampleHasEntries = true;
+						insertColumnEntryIntoSampleData(samples.get(samples.size() - 1), null, cellData.getValue(), cellData.getEntityPropertyPath());
+					}
+				} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
+					if (firstPathogenTestColumnName == null) {
+						firstPathogenTestColumnName = String.join(".", cellData.getEntityPropertyPath());
+					}
+					SampleDto referenceSample = samples.get(samples.size() - 1);
+					if (String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
+						currentPathogenTestHasEntries = false;
+						pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUser));
+					}
+					if (!StringUtils.isEmpty(cellData.getValue())) {
+						currentPathogenTestHasEntries = true;					
+						insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
+					}
+				} else if (!StringUtils.isEmpty(cellData.getValue())){
+					insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
+				}
+			} catch (ImportErrorException | InvalidColumnException e) {
+				return e;
 			}
+
+			return null;
 		});
 
+		if (samples.size() > 0 && !currentSampleHasEntries) {
+			samples.remove(samples.size() - 1);
+		}
+		if (pathogenTests.size() > 0 && !currentPathogenTestHasEntries) {
+			pathogenTests.remove(pathogenTests.size() - 1);
+		}
+		
 		CaseDataDto newCase = newCaseTmp;
 		PersonDto newPerson = newPersonTmp;
 
@@ -237,9 +248,9 @@ public class CaseImporter extends DataImporter {
 													|| DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
 												return null;
 											}
-											
+
 											insertColumnEntryIntoData(matchingCaseTmp, matchingCasePersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
-											
+
 											for (SampleDto sample : samples) {
 												sample.setAssociatedCase(new CaseReferenceDto(matchingCaseTmp.getUuid()));
 											}
@@ -258,8 +269,8 @@ public class CaseImporter extends DataImporter {
 					}
 				}
 
-				if (!caseHasImportError && newCase.getEpidNumber() != null && FacadeProvider.getCaseFacade()
-						.doesEpidNumberExist(newCase.getEpidNumber(), "", newCase.getDisease())) {
+				if (!caseHasImportError && !ImportSimilarityResultOption.OVERRIDE.equals(resultOption) && newCase.getEpidNumber() != null && 
+						FacadeProvider.getCaseFacade().doesEpidNumberExist(newCase.getEpidNumber(), "", newCase.getDisease())) {
 					caseHasImportError = true;
 					writeImportError(values, I18nProperties.getString(Strings.messageEpidNumberWarning));
 				}
