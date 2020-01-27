@@ -209,7 +209,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             if (pickedCase.getUuid().equals(caze.getUuid())) {
                 saveDataInner(caze);
             } else {
-                if (lineListingDiseases.contains(caze.getDisease())) {
+                if (lineListingDiseases.contains(caze.getDisease()) && Boolean.TRUE.equals(fragment.getContentBinding().rapidCaseEntryCheckBox.getValue())) {
                     fragment.clearFieldsForRapidCaseEntry();
                 } else{
                     finish();

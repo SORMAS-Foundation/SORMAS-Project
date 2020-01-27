@@ -189,7 +189,7 @@
     <string name="caption_prescribed_by">Prescribed by</string>
     <string name="caption_present_condition">Present Condition</string>
     <string name="caption_probable_case">Probable Case</string>
-    <string name="caption_rapid_case_entry">Rapid Case Entry</string>
+    <string name="caption_rapid_case_entry">Use Rapid Case Entry</string>
     <string name="caption_report_date">Report Date: %1$s</string>
     <string name="caption_reported_case_count">Number of cases you have reported</string>
     <string name="caption_reported_informant_case_count">Number of cases informants have reported</string>
@@ -392,7 +392,6 @@
     <string name="hint_select_year">Select Year</string>
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
-    <string name="hint_rapid_case_entry_enabled">Rapid case entry is enabled for this disease!</string>
     <string name="hint_case_numbers_not_submitted">Case numbers not submitted yet</string>
 
     <string name="indicator_error">ERROR</string>

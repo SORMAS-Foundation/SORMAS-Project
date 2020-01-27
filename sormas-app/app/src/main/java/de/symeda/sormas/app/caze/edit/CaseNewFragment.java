@@ -138,7 +138,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
         contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataDisease.addValueChangedListener(e -> {
-            contentBinding.rapidCaseEntryInfo.setVisibility(
+            contentBinding.rapidCaseEntryCheckBox.setVisibility(
                     e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
         });
 

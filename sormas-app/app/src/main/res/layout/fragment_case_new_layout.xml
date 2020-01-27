@@ -65,32 +65,11 @@
                 app:required="true"
                 app:value="@={data.disease}" />
 
-            <LinearLayout
-                android:id="@+id/rapid_case_entry_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/imgSyncIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxHeight="14dp"
-                    android:tint="@color/blue"
-                    android:paddingEnd="5dp"
-                    android:src="@drawable/ic_info_outline_black_24dp" />
-
-                <TextView
-                    android:text="@string/hint_rapid_case_entry_enabled"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SubHeadingDescriptionStyle"
-                    android:textColor="@color/blue"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
+            <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                android:id="@+id/rapid_case_entry_checkBox"
+                android:visibility="gone"
+                app:caption="@string/caption_rapid_case_entry"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/caseData_diseaseDetails"
