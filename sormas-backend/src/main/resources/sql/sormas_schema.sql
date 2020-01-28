@@ -1,4 +1,4 @@
--- If a DB update was performed, insert a new line with a comment to the table SCHEMA_VERSION.
+#-- If a DB update was performed, insert a new line with a comment to the table SCHEMA_VERSION.
 -- Example: INSERT INTO schema_version (version_number, comment) VALUES (1, 'Init database');
 
 -- #1
@@ -3850,3 +3850,35 @@ ALTER TABLE facility ADD COLUMN archived boolean DEFAULT false;
 ALTER TABLE pointofentry ADD COLUMN archived boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (177, 'Add archived to infrastructure data #1412');
+
+-- 2019-01-28 Add fields for Coronavirus #1476
+ALTER TABLE symptoms ADD COLUMN fluidinlungcavityauscultation varchar(255);
+ALTER TABLE symptoms ADD COLUMN fluidinlungcavityxray varchar(255);
+ALTER TABLE symptoms ADD COLUMN abnormallungxrayfindings varchar(255);
+ALTER TABLE symptoms ADD COLUMN conjunctivalinjection varchar(255);
+ALTER TABLE symptoms ADD COLUMN acuterespiratorydistresssyndrome varchar(255);
+ALTER TABLE symptoms ADD COLUMN pneumoniaclinicalorradiologic varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fluidinlungcavityauscultation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fluidinlungcavityxray varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN abnormallungxrayfindings varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN conjunctivalinjection varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN acuterespiratorydistresssyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN pneumoniaclinicalorradiologic varchar(255);
+
+ALTER TABLE epidata ADD COLUMN visitedhealthfacility varchar(255);
+ALTER TABLE epidata ADD COLUMN contactwithsourcerespiratorycase varchar(255);
+ALTER TABLE epidata ADD COLUMN visitedanimalmarket varchar(255);
+ALTER TABLE epidata ADD COLUMN camels varchar(255);
+ALTER TABLE epidata ADD COLUMN snakes varchar(255);
+ALTER TABLE epidata_history ADD COLUMN visitedhealthfacility varchar(255);
+ALTER TABLE epidata_history ADD COLUMN contactwithsourcerespiratorycase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN visitedanimalmarket varchar(255);
+ALTER TABLE epidata_history ADD COLUMN camels varchar(255);
+ALTER TABLE epidata_history ADD COLUMN snakes varchar(255);
+
+ALTER TABLE healthconditions ADD COLUMN immunodeficiencyotherthanhiv varchar(255);
+ALTER TABLE healthconditions ADD COLUMN cardiovasculardiseaseincludinghypertension varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN immunodeficiencyotherthanhiv varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN cardiovasculardiseaseincludinghypertension varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (178, 'Add fields for Coronavirus #1476');

@@ -120,6 +120,20 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_abnormalLungXrayFindings"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.abnormalLungXrayFindings}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_acuteRespiratoryDistressSyndrome"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.acuteRespiratoryDistressSyndrome}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_hearingloss"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -232,6 +246,13 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_conjunctivalInjection"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.conjunctivalInjection}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_cough"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -320,6 +341,20 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.fluidInLungCavity}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_fluidInLungCavityAuscultation"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.fluidInLungCavityAuscultation}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_fluidInLungCavityXray"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.fluidInLungCavityXray}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -496,6 +531,13 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.pigmentaryRetinopathy}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_pneumoniaClinicalOrRadiologic"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.pneumoniaClinicalOrRadiologic}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField

@@ -31,11 +31,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -83,7 +81,6 @@ public class EpiData extends AbstractDomainObject {
 	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
 	public static final String PROPHYLAXIS_STATUS = "prophylaxisStatus";
 	public static final String DATE_OF_PROPHYLAXIS = "dateOfProphylaxis";
-	
 	
 	private YesNoUnknown burialAttended;
 	private YesNoUnknown gatheringAttended;
@@ -142,7 +139,12 @@ public class EpiData extends AbstractDomainObject {
 	private AnimalCondition animalCondition;
 	private Vaccination animalVaccinationStatus;
 	private YesNoUnknown prophylaxisStatus;
-	private Date dateOfProphylaxis;
+	private Date dateOfProphylaxis;	
+	private YesNoUnknown visitedHealthFacility;
+	private YesNoUnknown contactWithSourceRespiratoryCase;
+	private YesNoUnknown visitedAnimalMarket;
+	private YesNoUnknown camels;
+	private YesNoUnknown snakes;	
 
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getBurialAttended() {
@@ -551,6 +553,41 @@ public class EpiData extends AbstractDomainObject {
 	}
 	public void setEatingRawAnimalsDetails(String eatingRawAnimalsDetails) {
 		this.eatingRawAnimalsDetails = eatingRawAnimalsDetails;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getVisitedHealthFacility() {
+		return visitedHealthFacility;
+	}
+	public void setVisitedHealthFacility(YesNoUnknown visitedHealthFacility) {
+		this.visitedHealthFacility = visitedHealthFacility;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getContactWithSourceRespiratoryCase() {
+		return contactWithSourceRespiratoryCase;
+	}
+	public void setContactWithSourceRespiratoryCase(YesNoUnknown contactWithSourceRespiratoryCase) {
+		this.contactWithSourceRespiratoryCase = contactWithSourceRespiratoryCase;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getVisitedAnimalMarket() {
+		return visitedAnimalMarket;
+	}
+	public void setVisitedAnimalMarket(YesNoUnknown visitedAnimalMarket) {
+		this.visitedAnimalMarket = visitedAnimalMarket;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCamels() {
+		return camels;
+	}
+	public void setCamels(YesNoUnknown camels) {
+		this.camels = camels;
+	}
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getSnakes() {
+		return snakes;
+	}
+	public void setSnakes(YesNoUnknown snakes) {
+		this.snakes = snakes;
 	}
 	
 }

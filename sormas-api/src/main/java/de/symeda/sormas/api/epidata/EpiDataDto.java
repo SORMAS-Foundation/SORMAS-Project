@@ -87,6 +87,11 @@ public class EpiDataDto extends EntityDto {
 	public static final String EATING_RAW_ANIMALS_IN_INFECTED_AREA = "eatingRawAnimalsInInfectedArea";
 	public static final String EATING_RAW_ANIMALS = "eatingRawAnimals";
 	public static final String EATING_RAW_ANIMALS_DETAILS = "eatingRawAnimalsDetails";
+	public static final String VISITED_HEALTH_FACILIY = "visitedHealthFacility";
+	public static final String CONTACT_WITH_SOURCE_RESPIRATORY_CASE = "contactWithSourceRespiratoryCase";
+	public static final String VISITED_ANIMAL_MARKET = "visitedAnimalMarket";
+	public static final String CAMELS = "camels";
+	public static final String SNAKES = "snakes";
 	
 	public static final String[] ANIMAL_EXPOSURE_PROPERTIES = new String[] {
 		SICK_DEAD_ANIMALS, RODENTS, BATS, PRIMATES, SWINE, BIRDS, RABBITS, CATTLE, DOGS, CATS, CANIDAE, OTHER_ANIMALS
@@ -107,12 +112,12 @@ public class EpiDataDto extends EntityDto {
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown burialAttended;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.POLIO,
-			Disease.CSM, Disease.CHOLERA, Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE,
+			Disease.CSM, Disease.CHOLERA, Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.CORONAVIRUS, 
 			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown gatheringAttended;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.POLIO,
 			Disease.CSM, Disease.CHOLERA, Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE,
-			Disease.UNSPECIFIED_VHF, Disease.MONKEYPOX, Disease.PLAGUE, Disease.RABIES, Disease.UNDEFINED,
+			Disease.UNSPECIFIED_VHF, Disease.MONKEYPOX, Disease.PLAGUE, Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED,
 			Disease.OTHER })
 	private YesNoUnknown traveled;
 	
@@ -123,56 +128,56 @@ public class EpiDataDto extends EntityDto {
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.CSM,
 			Disease.MEASLES, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown directContactConfirmedCase;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown directContactProbableCase;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.UNDEFINED,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNDEFINED,
 			Disease.OTHER })
 	private YesNoUnknown closeContactProbableCase;
 	@Diseases({ Disease.AFP, Disease.DENGUE, Disease.EVD, Disease.GUINEA_WORM, Disease.PLAGUE, Disease.POLIO,
-			Disease.YELLOW_FEVER, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
+			Disease.YELLOW_FEVER, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown areaConfirmedCases;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown processingConfirmedCaseFluidUnsafe;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown percutaneousCaseBlood;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNSPECIFIED_VHF,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown directContactDeadUnsafe;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown processingSuspectedCaseSampleUnsafe;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown areaInfectedAnimals;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.RABIES, Disease.ANTHRAX,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown sickDeadAnimals;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.RABIES, Disease.ANTHRAX,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private String sickDeadAnimalsDetails;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.RABIES, Disease.ANTHRAX,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.POLIO, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private Date sickDeadAnimalsDate;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private String sickDeadAnimalsLocation;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown eatingRawAnimalsInInfectedArea;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown eatingRawAnimals;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.ANTHRAX, Disease.POLIO, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private String eatingRawAnimalsDetails;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.MONKEYPOX, Disease.PLAGUE,
 			Disease.ANTHRAX, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown rodents;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNSPECIFIED_VHF,
-			Disease.RABIES, Disease.UNDEFINED, Disease.OTHER })
+			Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown bats;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.MONKEYPOX, Disease.POLIO,
 			Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER })
@@ -195,10 +200,10 @@ public class EpiDataDto extends EntityDto {
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.POLIO, Disease.RABIES, Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown canidae;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.MONKEYPOX, Disease.POLIO,
-			Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER })
+			Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown otherAnimals;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.MONKEYPOX, Disease.POLIO,
-			Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.UNDEFINED, Disease.OTHER })
+			Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	private String otherAnimalsDetails;
 	@Diseases({ Disease.AFP, Disease.CHOLERA, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNDEFINED, Disease.OTHER })
 	private WaterSource waterSource;
@@ -225,13 +230,13 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown kindOfExposureOther;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.RABIES, Disease.POLIO, Disease.UNDEFINED, Disease.OTHER })
 	private String kindOfExposureDetails;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MONKEYPOX, Disease.POLIO, Disease.RABIES, Disease.UNDEFINED,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MONKEYPOX, Disease.POLIO, Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED,
 			Disease.OTHER })
 	private Date dateOfLastExposure;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MONKEYPOX, Disease.POLIO, Disease.RABIES, Disease.UNDEFINED,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MONKEYPOX, Disease.POLIO, Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED,
 			Disease.OTHER })
 	private String placeOfLastExposure;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MONKEYPOX, Disease.POLIO, Disease.RABIES, Disease.UNDEFINED,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MONKEYPOX, Disease.POLIO, Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED,
 			Disease.OTHER })
 	private AnimalCondition animalCondition;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.POLIO, Disease.RABIES, Disease.UNDEFINED, Disease.OTHER })
@@ -240,6 +245,16 @@ public class EpiDataDto extends EntityDto {
 	private YesNoUnknown prophylaxisStatus;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.POLIO, Disease.RABIES, Disease.UNDEFINED, Disease.OTHER })
 	private Date dateOfProphylaxis;
+	@Diseases({Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown visitedHealthFacility;
+	@Diseases({Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown contactWithSourceRespiratoryCase;
+	@Diseases({Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown visitedAnimalMarket;
+	@Diseases({Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown camels;
+	@Diseases({Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER})
+	private YesNoUnknown snakes;	
 
 	@ImportIgnore
 	public YesNoUnknown getBurialAttended() {
@@ -588,7 +603,37 @@ public class EpiDataDto extends EntityDto {
 	public void setAreaConfirmedCases(YesNoUnknown areaConfirmedCases) {
 		this.areaConfirmedCases = areaConfirmedCases;
 	}
-
+	public YesNoUnknown getVisitedHealthFacility() {
+		return visitedHealthFacility;
+	}
+	public void setVisitedHealthFacility(YesNoUnknown visitedHealthFacility) {
+		this.visitedHealthFacility = visitedHealthFacility;
+	}
+	public YesNoUnknown getContactWithSourceRespiratoryCase() {
+		return contactWithSourceRespiratoryCase;
+	}
+	public void setContactWithSourceRespiratoryCase(YesNoUnknown contactWithSourceRespiratoryCase) {
+		this.contactWithSourceRespiratoryCase = contactWithSourceRespiratoryCase;
+	}
+	public YesNoUnknown getVisitedAnimalMarket() {
+		return visitedAnimalMarket;
+	}
+	public void setVisitedAnimalMarket(YesNoUnknown visitedAnimalMarket) {
+		this.visitedAnimalMarket = visitedAnimalMarket;
+	}
+	public YesNoUnknown getCamels() {
+		return camels;
+	}
+	public void setCamels(YesNoUnknown camels) {
+		this.camels = camels;
+	}
+	public YesNoUnknown getSnakes() {
+		return snakes;
+	}
+	public void setSnakes(YesNoUnknown snakes) {
+		this.snakes = snakes;
+	}
+	
 	public static EpiDataDto build() {
 		EpiDataDto epiData = new EpiDataDto();
 		epiData.setUuid(DataHelper.createUuid());

@@ -333,6 +333,8 @@ public final class CssStyles {
 			return "background-disease-undefined";
 		case RABIES:
 			return "background-disease-rabies";
+		case CORONAVIRUS:
+			return "background-disease-coronavirus";
 		default:
 			throw new IllegalArgumentException(disease.toString());
 		}

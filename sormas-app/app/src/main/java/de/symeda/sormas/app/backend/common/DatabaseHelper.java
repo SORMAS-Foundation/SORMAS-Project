@@ -127,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 176;
+	public static final int DATABASE_VERSION = 177;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1377,6 +1377,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Community.class).executeRaw("ALTER TABLE community ADD COLUMN archived SMALLINT DEFAULT 0;");
 					getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN archived SMALLINT DEFAULT 0;");
 					getDao(PointOfEntry.class).executeRaw("ALTER TABLE pointOfEntry ADD COLUMN archived SMALLINT DEFAULT 0;");
+				case 176:
+					currentVersion = 176;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN fluidInLungCavityAuscultation varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN fluidInLungCavityXray varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN abnormalLungXrayFindings varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN conjunctivalInjection varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN acuteRespiratoryDistressSyndrome varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN pneumoniaClinicalOrRadiologic varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN visitedHealthFacility varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN contactWithSourceRespiratoryCase varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN visitedAnimalMarket varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN camels varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN snakes varchar(255);");
+					getDao(HealthConditions.class).executeRaw("ALTER TABLE healthConditions ADD COLUMN immunodeficiencyOtherThanHiv varchar(255);");
+					getDao(HealthConditions.class).executeRaw("ALTER TABLE healthConditions ADD COLUMN cardiovascularDiseaseIncludingHypertension varchar(255);");
 
 					// ATTENTION: break should only be done after last version
 					break;

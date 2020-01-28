@@ -405,8 +405,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private void setDateFilter(Date from, Date to) {
-		dashboardDataProvider.setFromDate(from);
-		dashboardDataProvider.setToDate(to);
+		dashboardDataProvider.setFromDate(DateHelper.getStartOfDay(from));
+		dashboardDataProvider.setToDate(DateHelper.getEndOfDay(to));
 		updateComparisonDates();
 		if (dateFilterChangeCallback != null) {
 			dateFilterChangeCallback.run();
