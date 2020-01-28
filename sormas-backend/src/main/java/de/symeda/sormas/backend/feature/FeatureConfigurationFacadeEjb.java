@@ -116,7 +116,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 					Region region = regionService.getByUuid(criteria.getRegion().getUuid());
 					districts = districtService.getAllActiveByRegion(region);
 				} else {
-					districts = districtService.getAll();
+					districts = districtService.getAllActive();
 				}
 				
 				List<String> activeUuids = resultList.stream().map(config -> config.getDistrictUuid()).collect(Collectors.toList());
