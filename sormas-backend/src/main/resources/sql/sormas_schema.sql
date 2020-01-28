@@ -3882,3 +3882,11 @@ ALTER TABLE healthconditions_history ADD COLUMN immunodeficiencyotherthanhiv var
 ALTER TABLE healthconditions_history ADD COLUMN cardiovasculardiseaseincludinghypertension varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (178, 'Add fields for Coronavirus #1476');
+
+-- 2019-01-28 Set missing point of entry type for default entries #1484
+UPDATE pointofentry SET pointofentrytype='AIRPORT', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-AIRPORTX';
+UPDATE pointofentry SET pointofentrytype='SEAPORT', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-SEAPORTX';
+UPDATE pointofentry SET pointofentrytype='GROUND_CROSSING', changedate=now() WHERE uuid='SORMAS-CONSTIG-OTHERS-GROUNDCR';
+UPDATE pointofentry SET pointofentrytype='OTHER', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-OTHERPOE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (179, 'Set missing point of entry type for default entries #1484');
