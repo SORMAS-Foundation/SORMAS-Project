@@ -199,12 +199,12 @@ public class SymptomsDto extends EntityDto {
 		return symptoms;
 	}
 
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CHOLERA, Disease.YELLOW_FEVER,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CHOLERA, Disease.YELLOW_FEVER,
 			Disease.DENGUE, Disease.PLAGUE, Disease.POLIO, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED,
 			Disease.OTHER })
 	private SymptomState abdominalPain;
 	// complications
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState alteredConsciousness;
@@ -243,7 +243,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({ Disease.AFP, Disease.CSM, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState bulgingFontanelle;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.PLAGUE,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.PLAGUE,
 			Disease.POLIO, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState chestPain;
@@ -251,15 +251,15 @@ public class SymptomsDto extends EntityDto {
 			Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState chillsSweats;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.PLAGUE, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED,
 			Disease.OTHER })
 	@Outbreaks
 	private SymptomState confusedDisoriented;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.MEASLES, Disease.MONKEYPOX,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.MEASLES, Disease.MONKEYPOX,
 			Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private SymptomState conjunctivitis;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.MEASLES, Disease.MONKEYPOX,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.MEASLES, Disease.MONKEYPOX,
 			Disease.PLAGUE, Disease.POLIO, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState cough;
@@ -274,19 +274,19 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.CHOLERA, Disease.POLIO,
 			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private SymptomState dehydration;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.PLAGUE, Disease.POLIO, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED,
 			Disease.OTHER })
 	@Outbreaks
 	private SymptomState diarrhea;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.MEASLES, Disease.PLAGUE,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.MEASLES, Disease.PLAGUE,
 			Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	private SymptomState difficultyBreathing;
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNSPECIFIED_VHF,
 			Disease.UNDEFINED, Disease.OTHER })
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState digestedBloodVomit;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.MEASLES,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.MEASLES,
 			Disease.DENGUE, Disease.MONKEYPOX, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED,
 			Disease.OTHER })
 	@Outbreaks
@@ -295,12 +295,12 @@ public class SymptomsDto extends EntityDto {
 			Disease.UNDEFINED, Disease.OTHER })
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState eyesBleeding;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.POLIO,
 			Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState fatigueWeakness;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.POLIO,
 			Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
@@ -313,7 +313,7 @@ public class SymptomsDto extends EntityDto {
 			Disease.DENGUE, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState gumsBleeding;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.YELLOW_FEVER,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.YELLOW_FEVER,
 			Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.RABIES,
 			Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
@@ -347,7 +347,7 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState jaundice;
 	@Diseases({Disease.CONGENITAL_RUBELLA})
 	private YesNoUnknown jaundiceWithin24HoursOfBirth;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.NEW_INFLUENCA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.NEW_INFLUENZA,
 			Disease.CSM, Disease.MEASLES, Disease.DENGUE, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState jointPain;
@@ -427,12 +427,12 @@ public class SymptomsDto extends EntityDto {
 	@Outbreaks
 	private SymptomState meningealSigns;
 	private Integer midUpperArmCircumference;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.POLIO, Disease.CORONAVIRUS,
 			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState musclePain;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.YELLOW_FEVER, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.UNSPECIFIED_VHF,
 			Disease.POLIO, Disease.RABIES, Disease.ANTHRAX, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
@@ -463,18 +463,18 @@ public class SymptomsDto extends EntityDto {
 			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	@DependantOn(OTHER_HEMORRHAGIC_SYMPTOMS)
 	private String otherHemorrhagicSymptomsText;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.UNSPECIFIED_VHF,
 			Disease.CONGENITAL_RUBELLA, Disease.POLIO, Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState otherNonHemorrhagicSymptoms;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.POLIO, Disease.UNSPECIFIED_VHF,
 			Disease.CONGENITAL_RUBELLA, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
 	private String otherNonHemorrhagicSymptomsText;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.MEASLES, Disease.POLIO,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENZA, Disease.MEASLES, Disease.POLIO,
 			Disease.UNDEFINED, Disease.OTHER })
 	private SymptomState otitisMedia;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.PLAGUE, Disease.POLIO, Disease.UNDEFINED, Disease.OTHER })
@@ -505,18 +505,18 @@ public class SymptomsDto extends EntityDto {
 			Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.UNDEFINED, Disease.OTHER })
 	private SymptomState refusalFeedorDrink;
 	private Integer respiratoryRate;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENCA, Disease.MEASLES, Disease.POLIO, Disease.CORONAVIRUS,
+	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.NEW_INFLUENZA, Disease.MEASLES, Disease.POLIO, Disease.CORONAVIRUS,
 			Disease.UNDEFINED, Disease.OTHER })
 	private SymptomState runnyNose;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState seizures;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	private SymptomState sepsis;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.PLAGUE, Disease.ANTHRAX, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED,
 			Disease.OTHER })
 	@Outbreaks
@@ -528,12 +528,12 @@ public class SymptomsDto extends EntityDto {
 			Disease.UNDEFINED, Disease.OTHER })
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState skinBruising;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.MEASLES,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.MEASLES,
 			Disease.DENGUE, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
 	/** Maculopapular rash */
 	private SymptomState skinRash;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.MEASLES, Disease.MONKEYPOX,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.MEASLES, Disease.MONKEYPOX,
 			Disease.ANTHRAX, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
 	private SymptomState soreThroat;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.POLIO, Disease.YELLOW_FEVER, Disease.UNSPECIFIED_VHF,
@@ -547,17 +547,17 @@ public class SymptomsDto extends EntityDto {
 			Disease.UNDEFINED, Disease.OTHER })
 	private SymptomState swollenGlands;
 	private Boolean symptomatic;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.POLIO, Disease.UNSPECIFIED_VHF,
 			Disease.CONGENITAL_RUBELLA, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	private String symptomsComments;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE,
 			Disease.UNSPECIFIED_VHF, Disease.CONGENITAL_RUBELLA, Disease.POLIO, Disease.RABIES, Disease.CORONAVIRUS, Disease.UNDEFINED,
 			Disease.OTHER })
 	@Outbreaks
 	private Float temperature;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE,
 			Disease.UNSPECIFIED_VHF, Disease.CONGENITAL_RUBELLA, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER })
 	@Outbreaks
@@ -597,7 +597,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.PLAGUE,
 			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.POLIO, Disease.OTHER })
 	private SymptomState unexplainedBleeding;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENCA, Disease.CSM, Disease.CHOLERA,
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM, Disease.CHOLERA,
 			Disease.MEASLES, Disease.YELLOW_FEVER, Disease.DENGUE, Disease.MONKEYPOX, Disease.PLAGUE, Disease.ANTHRAX,
 			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.POLIO, Disease.CORONAVIRUS, Disease.OTHER })
 	@Outbreaks

@@ -3890,3 +3890,28 @@ UPDATE pointofentry SET pointofentrytype='GROUND_CROSSING', changedate=now() WHE
 UPDATE pointofentry SET pointofentrytype='OTHER', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-OTHERPOE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (179, 'Set missing point of entry type for default entries #1484');
+
+-- 2019-01-28 Rename "New influenca" to "New influenza" #1458
+UPDATE cases SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE cases_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE events SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE events_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE outbreak SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE outbreak_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE person SET causeofdeathdisease = 'NEW_INFLUENZA' where causeofdeathdisease = 'NEW_INFLUENCA';
+UPDATE person_history SET causeofdeathdisease = 'NEW_INFLUENZA' where causeofdeathdisease = 'NEW_INFLUENCA';
+UPDATE visit SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE visit_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE weeklyreportentry SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE clinicalvisit SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE clinicalvisit_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE diseaseconfiguration SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE diseaseconfiguration_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE featureconfiguration SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE featureconfiguration_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE pathogentest SET testeddisease = 'NEW_INFLUENZA' where testeddisease = 'NEW_INFLUENCA';
+UPDATE pathogentest_history SET testeddisease = 'NEW_INFLUENZA' where testeddisease = 'NEW_INFLUENCA';
+UPDATE users SET limiteddisease = 'NEW_INFLUENZA' where limiteddisease = 'NEW_INFLUENCA';
+UPDATE users_history SET limiteddisease = 'NEW_INFLUENZA' where limiteddisease = 'NEW_INFLUENCA';
+
+INSERT INTO schema_version (version_number, comment) VALUES (180, 'Rename "New influenca" to "New influenza" #1458');

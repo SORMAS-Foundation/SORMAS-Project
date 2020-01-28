@@ -32,7 +32,7 @@ public enum Disease implements StatisticsGroupingKey {
 	LASSA(true, true, true, true, 21),
 	MEASLES(true, true, true, false, 21),
 	MONKEYPOX(true, true, true, true, 21),
-	NEW_INFLUENCA(true, true, true, true, 17),
+	NEW_INFLUENZA(true, true, true, true, 17),
 	PLAGUE(true, true, true, true, 7),
 	POLIO(true, true, true, false, 0),
 	UNSPECIFIED_VHF(true, true, true, true, 21),

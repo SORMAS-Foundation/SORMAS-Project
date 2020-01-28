@@ -173,7 +173,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			FieldHelper.setRequiredWhen(getFieldGroup(), received, Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
 			FieldHelper.setEnabledWhen(getFieldGroup(), received, Arrays.asList(true), Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON), true);
 
-			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
+			if (caze.getDisease() != Disease.NEW_INFLUENZA) {
 				sampleSource.setVisible(false);
 			}
 

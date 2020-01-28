@@ -585,61 +585,61 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	@Test
 	public void testAutomaticClassificationForNewFlu() {
 		// Suspect
-		CaseDataDto caze = buildSuspectCaseBasis(Disease.NEW_INFLUENCA);
+		CaseDataDto caze = buildSuspectCaseBasis(Disease.NEW_INFLUENZA);
 		caze.getEpiData().setCloseContactProbableCase(YesNoUnknown.YES);
 		caze.getSymptoms().setCough(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
-		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENCA);
+		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENZA);
 		caze.getEpiData().setCloseContactProbableCase(YesNoUnknown.YES);
 		caze.getSymptoms().setDifficultyBreathing(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
-		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENCA);
+		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENZA);
 		caze.getSymptoms().setCough(SymptomState.YES);
 		caze.getEpiData().setDirectContactConfirmedCase(YesNoUnknown.YES);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
-		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENCA);
+		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENZA);
 		caze.getSymptoms().setCough(SymptomState.YES);
 		caze.getEpiData().setAreaInfectedAnimals(YesNoUnknown.YES);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
-		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENCA);
+		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENZA);
 		caze.getSymptoms().setCough(SymptomState.YES);
 		caze.getEpiData().setEatingRawAnimalsInInfectedArea(YesNoUnknown.YES);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
-		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENCA);
+		caze = buildSuspectCaseBasis(Disease.NEW_INFLUENZA);
 		caze.getSymptoms().setCough(SymptomState.YES);
 		caze.getEpiData().setProcessingSuspectedCaseSampleUnsafe(YesNoUnknown.YES);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
 		// Probable
-		caze = buildProbableCaseBasis(Disease.NEW_INFLUENCA);
+		caze = buildProbableCaseBasis(Disease.NEW_INFLUENZA);
 		caze.getEpiData().setDirectContactConfirmedCase(YesNoUnknown.YES);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
 
 		// Confirmed
-		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENCA));
-		creator.createPathogenTest(caze, Disease.NEW_INFLUENCA, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENZA));
+		creator.createPathogenTest(caze, Disease.NEW_INFLUENZA, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
-		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENCA));
-		creator.createPathogenTest(caze, Disease.NEW_INFLUENCA, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENZA));
+		creator.createPathogenTest(caze, Disease.NEW_INFLUENZA, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 
-		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENCA));
-		PathogenTestDto sampleTest = creator.createPathogenTest(caze, Disease.NEW_INFLUENCA, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().saveCase(buildSuspectCase(Disease.NEW_INFLUENZA));
+		PathogenTestDto sampleTest = creator.createPathogenTest(caze, Disease.NEW_INFLUENZA, PathogenTestType.IGG_SERUM_ANTIBODY, PathogenTestResultType.POSITIVE);
 		sampleTest.setFourFoldIncreaseAntibodyTiter(true);
 		getSampleTestFacade().savePathogenTest(sampleTest);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -649,7 +649,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	@Test
 	public void ruleOutFalsePositivesForNewFlu() {
 		// Suspect
-		CaseDataDto caze = creator.createUnclassifiedCase(Disease.NEW_INFLUENCA);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.NEW_INFLUENZA);
 		fillSymptoms(caze.getSymptoms());
 		fillEpiData(caze.getEpiData());
 		caze.getSymptoms().setFever(SymptomState.NO);
@@ -670,7 +670,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
 
 		// Probable
-		caze = buildSuspectCase(Disease.NEW_INFLUENCA);
+		caze = buildSuspectCase(Disease.NEW_INFLUENZA);
 		caze.setOutcome(CaseOutcome.DECEASED);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
@@ -681,9 +681,9 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 
 		// Confirmed
-		caze = buildSuspectCase(Disease.NEW_INFLUENCA);
+		caze = buildSuspectCase(Disease.NEW_INFLUENZA);
 		caze = getCaseFacade().saveCase(caze);
-		createSampleTestsForAllTestTypesExcept(caze, Disease.NEW_INFLUENCA, PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR, PathogenTestType.NEUTRALIZING_ANTIBODIES);
+		createSampleTestsForAllTestTypesExcept(caze, Disease.NEW_INFLUENZA, PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR, PathogenTestType.NEUTRALIZING_ANTIBODIES);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());		
 	}
@@ -997,7 +997,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		case CSM:
 		case YELLOW_FEVER:
 		case DENGUE:
-		case NEW_INFLUENCA:
+		case NEW_INFLUENZA:
 		case MONKEYPOX:
 			caze.getSymptoms().setFever(SymptomState.YES);
 			break;
@@ -1049,7 +1049,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			caze.getSymptoms().setHeadache(SymptomState.YES);
 			caze.getSymptoms().setNausea(SymptomState.YES);
 			break;
-		case NEW_INFLUENCA:
+		case NEW_INFLUENZA:
 			caze.getSymptoms().setCough(SymptomState.YES);
 			caze.getEpiData().setCloseContactProbableCase(YesNoUnknown.YES);
 			break;
@@ -1082,7 +1082,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		CaseDataDto caze = buildSuspectCase(disease); 
 		switch (disease) {
 		case EVD:
-		case NEW_INFLUENCA:
+		case NEW_INFLUENZA:
 			caze.setOutcome(CaseOutcome.DECEASED);
 			break;
 		default:

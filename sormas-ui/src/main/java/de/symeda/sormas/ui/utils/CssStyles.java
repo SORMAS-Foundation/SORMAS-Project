@@ -311,7 +311,7 @@ public final class CssStyles {
 			return "background-disease-measles";
 		case MONKEYPOX:
 			return "background-disease-monkeypox";
-		case NEW_INFLUENCA:
+		case NEW_INFLUENZA:
 			return "background-disease-new-flu";
 		case OTHER:
 			return "background-disease-other";
