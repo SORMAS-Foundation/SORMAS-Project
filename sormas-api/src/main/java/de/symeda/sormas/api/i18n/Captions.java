@@ -446,10 +446,12 @@ public interface Captions {
 	public static String EpiData_birds = "EpiData.birds";
 	public static String EpiData_burialAttended = "EpiData.burialAttended";
 	public static String EpiData_burials = "EpiData.burials";
+	public static String EpiData_camels = "EpiData.camels";
 	public static String EpiData_canidae = "EpiData.canidae";
 	public static String EpiData_cats = "EpiData.cats";
 	public static String EpiData_cattle = "EpiData.cattle";
 	public static String EpiData_closeContactProbableCase = "EpiData.closeContactProbableCase";
+	public static String EpiData_contactWithSourceRespiratoryCase = "EpiData.contactWithSourceRespiratoryCase";
 	public static String EpiData_dateOfLastExposure = "EpiData.dateOfLastExposure";
 	public static String EpiData_dateOfProphylaxis = "EpiData.dateOfProphylaxis";
 	public static String EpiData_directContactConfirmedCase = "EpiData.directContactConfirmedCase";
@@ -483,10 +485,13 @@ public interface Captions {
 	public static String EpiData_sickDeadAnimalsDate = "EpiData.sickDeadAnimalsDate";
 	public static String EpiData_sickDeadAnimalsDetails = "EpiData.sickDeadAnimalsDetails";
 	public static String EpiData_sickDeadAnimalsLocation = "EpiData.sickDeadAnimalsLocation";
+	public static String EpiData_snakes = "EpiData.snakes";
 	public static String EpiData_swine = "EpiData.swine";
 	public static String EpiData_tickBite = "EpiData.tickBite";
 	public static String EpiData_traveled = "EpiData.traveled";
 	public static String EpiData_travels = "EpiData.travels";
+	public static String EpiData_visitedAnimalMarket = "EpiData.visitedAnimalMarket";
+	public static String EpiData_visitedHealthFacility = "EpiData.visitedHealthFacility";
 	public static String EpiData_waterBody = "EpiData.waterBody";
 	public static String EpiData_waterBodyDetails = "EpiData.waterBodyDetails";
 	public static String EpiData_waterSource = "EpiData.waterSource";
@@ -591,6 +596,7 @@ public interface Captions {
 	public static String from = "from";
 	public static String HealthConditions = "HealthConditions";
 	public static String HealthConditions_asplenia = "HealthConditions.asplenia";
+	public static String HealthConditions_cardiovascularDiseaseIncludingHypertension = "HealthConditions.cardiovascularDiseaseIncludingHypertension";
 	public static String HealthConditions_chronicHeartFailure = "HealthConditions.chronicHeartFailure";
 	public static String HealthConditions_chronicKidneyDisease = "HealthConditions.chronicKidneyDisease";
 	public static String HealthConditions_chronicLiverDisease = "HealthConditions.chronicLiverDisease";
@@ -602,6 +608,7 @@ public interface Captions {
 	public static String HealthConditions_hepatitis = "HealthConditions.hepatitis";
 	public static String HealthConditions_hiv = "HealthConditions.hiv";
 	public static String HealthConditions_hivArt = "HealthConditions.hivArt";
+	public static String HealthConditions_immunodeficiencyOtherThanHiv = "HealthConditions.immunodeficiencyOtherThanHiv";
 	public static String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	public static String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	public static String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
@@ -963,6 +970,8 @@ public interface Captions {
 	public static String statisticsVisualizationType = "statisticsVisualizationType";
 	public static String Symptoms = "Symptoms";
 	public static String Symptoms_abdominalPain = "Symptoms.abdominalPain";
+	public static String Symptoms_abnormalLungXrayFindings = "Symptoms.abnormalLungXrayFindings";
+	public static String Symptoms_acuteRespiratoryDistressSyndrome = "Symptoms.acuteRespiratoryDistressSyndrome";
 	public static String Symptoms_aerophobia = "Symptoms.aerophobia";
 	public static String Symptoms_agitation = "Symptoms.agitation";
 	public static String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
@@ -989,6 +998,7 @@ public interface Captions {
 	public static String Symptoms_congenitalHeartDisease = "Symptoms.congenitalHeartDisease";
 	public static String Symptoms_congenitalHeartDiseaseDetails = "Symptoms.congenitalHeartDiseaseDetails";
 	public static String Symptoms_congenitalHeartDiseaseType = "Symptoms.congenitalHeartDiseaseType";
+	public static String Symptoms_conjunctivalInjection = "Symptoms.conjunctivalInjection";
 	public static String Symptoms_conjunctivitis = "Symptoms.conjunctivitis";
 	public static String Symptoms_convulsion = "Symptoms.convulsion";
 	public static String Symptoms_cough = "Symptoms.cough";
@@ -1010,6 +1020,8 @@ public interface Captions {
 	public static String Symptoms_fever = "Symptoms.fever";
 	public static String Symptoms_firstSymptom = "Symptoms.firstSymptom";
 	public static String Symptoms_fluidInLungCavity = "Symptoms.fluidInLungCavity";
+	public static String Symptoms_fluidInLungCavityAuscultation = "Symptoms.fluidInLungCavityAuscultation";
+	public static String Symptoms_fluidInLungCavityXray = "Symptoms.fluidInLungCavityXray";
 	public static String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
 	public static String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
 	public static String Symptoms_headache = "Symptoms.headache";
@@ -1081,6 +1093,7 @@ public interface Captions {
 	public static String Symptoms_pharyngealErythema = "Symptoms.pharyngealErythema";
 	public static String Symptoms_pharyngealExudate = "Symptoms.pharyngealExudate";
 	public static String Symptoms_pigmentaryRetinopathy = "Symptoms.pigmentaryRetinopathy";
+	public static String Symptoms_pneumoniaClinicalOrRadiologic = "Symptoms.pneumoniaClinicalOrRadiologic";
 	public static String Symptoms_purpuricRash = "Symptoms.purpuricRash";
 	public static String Symptoms_radiolucentBoneDisease = "Symptoms.radiolucentBoneDisease";
 	public static String Symptoms_rapidBreathing = "Symptoms.rapidBreathing";
