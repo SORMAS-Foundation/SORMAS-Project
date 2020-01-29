@@ -117,7 +117,7 @@
                     app:value="@={data.sampleSource}"
                     app:softRequired="true"
                     app:dependencyParentField="@{caseDataDisease}"
-                    app:dependencyParentValue="@{Disease.NEW_INFLUENCA}"
+                    app:dependencyParentValue="@{Disease.NEW_INFLUENZA}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
