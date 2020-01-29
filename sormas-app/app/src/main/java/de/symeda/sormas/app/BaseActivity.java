@@ -571,7 +571,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Notifica
     public void synchronizeData(final SynchronizeDataAsync.SyncMode syncMode, final boolean showUpgradePrompt, final boolean showProgressDialog, final SwipeRefreshLayout swipeRefreshLayout, final Callback resultCallback, final Callback beforeSyncCallback) {
         if (!checkActiveUser()) return;
 
-        if (RetroProvider.isConnected()) {
+        if (RetroProvider.isConnectedOrConnecting()) {
             NotificationHelper.showNotification(BaseActivity.this, NotificationType.WARNING, "Background synchronization already in progress.");
 
             if (swipeRefreshLayout != null) {
