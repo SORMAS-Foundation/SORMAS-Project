@@ -109,7 +109,7 @@ public class CaseImporter extends DataImporter {
 	}
 
 	@Override
-	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
+	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths, boolean firstLine) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
@@ -123,7 +123,7 @@ public class CaseImporter extends DataImporter {
 		final List<SampleDto> samples = new ArrayList<>();
 		final List<PathogenTestDto> pathogenTests = new ArrayList<>();
 		
-		boolean caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
+		boolean caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, !firstLine, (cellData) -> {
 			try {
 				if (String.join(".", cellData.getEntityPropertyPath()).equals(firstSampleColumnName) ||
 						String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {

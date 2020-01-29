@@ -23,7 +23,7 @@ public class PointOfEntryImporter extends DataImporter {
 	}
 
 	@Override
-	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
+	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths, boolean firstLine) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));

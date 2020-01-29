@@ -210,7 +210,7 @@ public abstract class DataImporter {
 			String[] nextLine = csvReader.readNext();
 			int lineCounter = 0;
 			while (nextLine != null) {
-				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths);
+				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0);
 				logger.debug("runImport - line " + lineCounter);
 				if (importedLineCallback != null) {
 					importedLineCallback.accept(lineResult);
@@ -289,7 +289,7 @@ public abstract class DataImporter {
 	}
 
 	protected abstract ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties,
-			String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException;
+			String[][] entityPropertyPaths, boolean firstLine) throws IOException, InvalidColumnException, InterruptedException;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry,
