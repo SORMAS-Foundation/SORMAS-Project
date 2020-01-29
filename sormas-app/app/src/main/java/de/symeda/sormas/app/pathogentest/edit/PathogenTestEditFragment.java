@@ -18,33 +18,26 @@
 
 package de.symeda.sormas.app.pathogentest.edit;
 
-import android.util.Log;
 import android.view.View;
 
 import java.util.List;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.caze.edit.CaseNewActivity;
-import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentPathogenTestEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-
-import static android.view.View.GONE;
 
 public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenTestEditLayoutBinding, PathogenTest, PathogenTest> {
 
@@ -81,9 +74,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
         record = getActivityRootData();
         sample = record.getSample();
         testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
-        diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, false, true));
+        diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, true));
         testResultList = DataUtils.getEnumItems(PathogenTestResultType.class, true);
-        labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
+        labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
     }
 
     @Override

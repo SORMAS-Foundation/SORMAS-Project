@@ -61,9 +61,9 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	@Override
 	protected void addFields() {
 		TextField name = addField(FacilityDto.NAME, TextField.class);
-		ComboBox region = addField(FacilityDto.REGION, ComboBox.class);
-		ComboBox district = addField(FacilityDto.DISTRICT, ComboBox.class);
-		ComboBox community = addField(FacilityDto.COMMUNITY, ComboBox.class);
+		ComboBox region = addInfrastructureField(FacilityDto.REGION);
+		ComboBox district = addInfrastructureField(FacilityDto.DISTRICT);
+		ComboBox community = addInfrastructureField(FacilityDto.COMMUNITY);
 		addField(FacilityDto.CITY, TextField.class);
 		TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
 		latitude.setConverter(new StringToAngularLocationConverter());
@@ -82,14 +82,14 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(district,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 
 		district.addValueChangeListener(e -> {
 			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(community,
-					districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid())
+					districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid())
 							: null);
 		});
 
@@ -97,7 +97,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 			@SuppressWarnings("unused")
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		if (!create) {
 			if (!laboratory) {

@@ -62,6 +62,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
         sample.setAssociatedCase(associatedCase);
         sample.setReportDateTime(new Date());
         sample.setReportingUser(ConfigProvider.getUser());
+        sample.setPathogenTestResult(PathogenTestResultType.PENDING);
         return sample;
     }
 

@@ -5,7 +5,8 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.function.Function;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -20,9 +21,9 @@ public class PointOfEntryImporter extends DataImporter {
 	public PointOfEntryImporter(File inputFile, UserReferenceDto currentUser) {
 		super(inputFile, false, currentUser);
 	}
-	
+
 	@Override
-	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException {
+	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties, String[][] entityPropertyPaths, boolean firstLine) throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
@@ -31,17 +32,16 @@ public class PointOfEntryImporter extends DataImporter {
 
 		PointOfEntryDto newPointOfEntry = PointOfEntryDto.build();
 
-		boolean poeHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, new Function<ImportCellData, Exception>() {
-			@Override
-			public Exception apply(ImportCellData importColumnInformation) {
-				try {
+		boolean poeHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (importColumnInformation) -> {
+			try {
+				if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
 					insertColumnEntryIntoData(newPointOfEntry, importColumnInformation.getValue(), importColumnInformation.getEntityPropertyPath());
-				} catch (ImportErrorException | InvalidColumnException e) {
-					return e;
 				}
-
-				return null;
+			} catch (ImportErrorException | InvalidColumnException e) {
+				return e;
 			}
+
+			return null;
 		});
 
 		if (!poeHasImportError) {

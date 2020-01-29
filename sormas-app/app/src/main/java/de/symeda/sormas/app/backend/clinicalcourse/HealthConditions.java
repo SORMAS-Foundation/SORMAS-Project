@@ -69,6 +69,10 @@ public class HealthConditions extends AbstractDomainObject {
     private YesNoUnknown congenitalSyphilis;
     @Column(length = 512)
     private String otherConditions;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown immunodeficiencyOtherThanHiv;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 
     public YesNoUnknown getTuberculosis() {
         return tuberculosis;
@@ -188,6 +192,22 @@ public class HealthConditions extends AbstractDomainObject {
 
     public void setOtherConditions(String otherConditions) {
         this.otherConditions = otherConditions;
+    }
+
+    public YesNoUnknown getImmunodeficiencyOtherThanHiv() {
+        return immunodeficiencyOtherThanHiv;
+    }
+
+    public void setImmunodeficiencyOtherThanHiv(YesNoUnknown immunodeficiencyOtherThanHiv) {
+        this.immunodeficiencyOtherThanHiv = immunodeficiencyOtherThanHiv;
+    }
+
+    public YesNoUnknown getCardiovascularDiseaseIncludingHypertension() {
+        return cardiovascularDiseaseIncludingHypertension;
+    }
+
+    public void setCardiovascularDiseaseIncludingHypertension(YesNoUnknown cardiovascularDiseaseIncludingHypertension) {
+        this.cardiovascularDiseaseIncludingHypertension = cardiovascularDiseaseIncludingHypertension;
     }
 
     @Override

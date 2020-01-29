@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.region;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -34,16 +35,16 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentFeatureCollection;
 import org.geotools.data.store.ContentFeatureSource;
+import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.simple.SimpleFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -74,12 +75,19 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	private Map<DistrictReferenceDto, MultiPolygon> districtMultiPolygons = new HashMap<>();
 	private Map<DistrictReferenceDto, GeoLatLon[][]> districtShapes = new HashMap<>();
+	
+	private GeoLatLon[][] countryShape;
 
 	@Override
 	public GeoLatLon[][] getRegionShape(RegionReferenceDto region) {
 		return regionShapes.get(region);
 	}
-
+	
+	@Override
+	public GeoLatLon[][] getCountryShape() {
+		return countryShape;
+	}
+	
 	@Override
 	public RegionReferenceDto getRegionByCoord(GeoLatLon latLon) {
 		for (Entry<RegionReferenceDto, MultiPolygon> regionMultiPolygon : regionMultiPolygons.entrySet()) {
@@ -167,6 +175,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 		loadRegionData();
 		loadDistrictData();
+		buildCountryShape();
 	}
 
 	private void loadRegionData() {
@@ -187,7 +196,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			ContentFeatureSource featureSource = dataStore.getFeatureSource();
 			ContentFeatureCollection featureCollection = featureSource.getFeatures();
 
-			List<RegionReferenceDto> regions = regionFacade.getAllAsReference();
+			List<RegionReferenceDto> regions = regionFacade.getAllActiveAsReference();
 
 			SimpleFeatureIterator iterator = featureCollection.features();
 			while (iterator.hasNext()) {
@@ -271,7 +280,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			ContentFeatureSource featureSource = dataStore.getFeatureSource();
 			ContentFeatureCollection featureCollection = featureSource.getFeatures();
 
-			List<DistrictReferenceDto> districts = districtFacade.getAllAsReference();
+			List<DistrictReferenceDto> districts = districtFacade.getAllActiveAsReference();
 
 			SimpleFeatureIterator iterator = featureCollection.features();
 			while (iterator.hasNext()) {
@@ -340,6 +349,56 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void buildCountryShape() {
+		
+		GeometryFactory factory = JTSFactoryFinder.getGeometryFactory();
+
+		// combine all regions that touch into new polygons
+		List<Polygon> polygons = new ArrayList<Polygon>();
+		for (GeoLatLon[][] regionShape : regionShapes.values()) {
+			
+			for (GeoLatLon[] regionPolygon : regionShape) {
+				
+				// convert region to polygon
+				Polygon polygon = factory.createPolygon(Arrays.stream(regionPolygon)
+						.map(regionPoint -> new Coordinate(regionPoint.getLon(), regionPoint.getLat()))
+						.toArray(Coordinate[]::new));
+				
+				boolean added = false;
+				for (int i=0; i<polygons.size(); i++) {
+					if (polygons.get(i).touches(polygon)) { // touch?
+						polygons.set(i, (Polygon)polygons.get(i).union(polygon)); // union
+						added = true;
+						break;
+					}
+				}
+			
+				if (!added) {
+					polygons.add(polygon);
+				}
+			}
+		}
+	
+		// go through the polygons again
+		for (int i=0; i<polygons.size(); i++) {
+			for (int j=0; j<polygons.size(); j++) {
+				if (i==j)
+					continue;
+				if (polygons.get(i).touches(polygons.get(j))) { // touch
+					polygons.set(i, (Polygon)polygons.get(i).union(polygons.get(j))); // union
+					polygons.remove(j);
+					j--;
+				}
+			}
+		}
+		
+		countryShape = polygons.stream()
+				.map(polygon -> Arrays.stream(polygon.getCoordinates())
+						.map(coordinate -> new GeoLatLon(coordinate.y, coordinate.x))
+						.toArray(GeoLatLon[]::new))
+				.toArray(GeoLatLon[][]::new);
 	}
 
 	/**

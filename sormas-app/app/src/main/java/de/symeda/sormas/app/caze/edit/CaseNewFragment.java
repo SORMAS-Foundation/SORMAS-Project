@@ -129,15 +129,16 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
 
-        InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
-                contentBinding.caseDataDistrict, initialDistricts,
-                contentBinding.caseDataCommunity, initialCommunities,
-                contentBinding.caseDataHealthFacility, initialFacilities,
-                contentBinding.caseDataPointOfEntry, initialPointsOfEntry);
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.caseDataRegion, initialRegions, record.getRegion(),
+                contentBinding.caseDataDistrict, initialDistricts, record.getDistrict(),
+                contentBinding.caseDataCommunity, initialCommunities, record.getCommunity(),
+                contentBinding.caseDataHealthFacility, initialFacilities, record.getHealthFacility(),
+                contentBinding.caseDataPointOfEntry, initialPointsOfEntry, record.getPointOfEntry());
 
         contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataDisease.addValueChangedListener(e -> {
-            contentBinding.rapidCaseEntryInfo.setVisibility(
+            contentBinding.rapidCaseEntryCheckBox.setVisibility(
                     e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
         });
 
@@ -213,7 +214,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
             contentBinding.caseDataHealthFacility.setRequired(false);
             contentBinding.caseDataHealthFacilityDetails.setRequired(false);
-        } else if (DatabaseHelper.getPointOfEntryDao().hasEntriesInDistrict()) {
+        } else if (DatabaseHelper.getPointOfEntryDao().hasActiveEntriesInDistrict()) {
             if (record.getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
                 contentBinding.caseDataPointOfEntry.setRequired(false);
                 contentBinding.caseDataPointOfEntry.setVisibility(GONE);

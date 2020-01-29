@@ -18,12 +18,15 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -43,14 +46,15 @@ public class PathogenTestListComponent extends VerticalLayout {
 	private PathogenTestList list;
 	private Button createButton;
 
-	public PathogenTestListComponent(SampleReferenceDto sampleRef, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
+	public PathogenTestListComponent(SampleReferenceDto sampleRef, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
+			Supplier<Boolean> createOrEditAllowedCallback) {
 		setWidth(100, Unit.PERCENTAGE);
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		list = new PathogenTestList(sampleRef, onSavedPathogenTest);
+		list = new PathogenTestList(sampleRef, onSavedPathogenTest, createOrEditAllowedCallback);
 		addComponent(list);
 		list.reload();
 
@@ -62,8 +66,13 @@ public class PathogenTestListComponent extends VerticalLayout {
 			createButton = new Button(I18nProperties.getCaption(Captions.pathogenTestNewTest));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(
-					e -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, onSavedPathogenTest));
+			createButton.addClickListener(e -> {
+				if (createOrEditAllowedCallback.get()) {
+					ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, onSavedPathogenTest);
+				} else {
+					Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
+				}
+			});
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
@@ -72,5 +81,5 @@ public class PathogenTestListComponent extends VerticalLayout {
 	public void reload() {
 		list.reload();
 	}
-	
+
 }

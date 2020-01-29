@@ -170,7 +170,7 @@ public class SampleGridComponent extends VerticalLayout {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
 				criteria.region(region);
@@ -189,14 +189,14 @@ public class SampleGridComponent extends VerticalLayout {
 		});
 
 		if (user.getRegion() != null) {
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
 		} else {
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
 				districtFilter.removeAllItems();
 				if (region != null) {
-					districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
+					districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 					districtFilter.setEnabled(true);
 				} else {
 					districtFilter.setEnabled(false);
@@ -209,7 +209,7 @@ public class SampleGridComponent extends VerticalLayout {
 		labFilter = new ComboBox();
 		labFilter.setWidth(140, Unit.PIXELS);
 		labFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
-		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
+		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		labFilter.addValueChangeListener(e -> {
 			criteria.laboratory(((FacilityReferenceDto)e.getProperty().getValue()));
 			samplesView.navigateTo(criteria);

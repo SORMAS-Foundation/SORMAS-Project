@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.user;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -28,7 +27,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -136,7 +134,7 @@ public class UsersView extends AbstractView {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 				
@@ -198,10 +196,10 @@ public class UsersView extends AbstractView {
 		regionFilter.setValue(criteria.getRegion());
 
 		if (user.getRegion() != null && user.getDistrict() == null) {
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
 		} else if (criteria.getRegion() != null) {
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(criteria.getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(criteria.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
 		} else {
 			districtFilter.setEnabled(false);

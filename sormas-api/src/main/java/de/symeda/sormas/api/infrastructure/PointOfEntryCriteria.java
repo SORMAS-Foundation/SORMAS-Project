@@ -3,8 +3,10 @@ package de.symeda.sormas.api.infrastructure;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class PointOfEntryCriteria extends BaseCriteria implements Serializable, Cloneable {
 
@@ -15,6 +17,7 @@ public class PointOfEntryCriteria extends BaseCriteria implements Serializable, 
 	private String nameLike;
 	private PointOfEntryType type;
 	private Boolean active;
+	private EntityRelevanceStatus relevanceStatus;
 	
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -53,6 +56,16 @@ public class PointOfEntryCriteria extends BaseCriteria implements Serializable, 
 	}
 	public void active(Boolean active) {
 		this.active = active;
+	}	
+	
+	public PointOfEntryCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
+		return this;
+	}
+	
+	@IgnoreForUrl
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
 	}
 	
 }

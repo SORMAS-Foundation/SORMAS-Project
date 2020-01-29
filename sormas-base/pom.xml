@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.31.0</version>
+	<version>1.32.0</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -64,7 +64,7 @@
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>5.4.3.Final</version>
-				<scope>test</scope>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
@@ -268,7 +268,7 @@
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-shapefile</artifactId>
-				<version>17.2</version>
+				<version>21.4</version>
 			</dependency>
 
 			<!-- Nexmo SMS API -->
@@ -508,18 +508,18 @@
 		<repository>
 			<id>central</id>
 			<name>bintray</name>
-			<url>http://jcenter.bintray.com</url>
+			<url>https://jcenter.bintray.com</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 		<repository>
 			<id>vaadin-addons</id>
-			<url>http://maven.vaadin.com/vaadin-addons</url>
+			<url>https://maven.vaadin.com/vaadin-addons</url>
 		</repository>
 		<repository>
 			<id>vaadin-snapshots</id>
-			<url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+			<url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -527,7 +527,7 @@
 		<repository>
 			<id>Novatec</id>
 			<name>Novatec Repository</name>
-			<url>http://repository.novatec-gmbh.de/content/repositories/novatec</url>
+			<url>https://repository.novatec-gmbh.de/content/repositories/novatec</url>
 		</repository>
 		<repository>
 			<id>osgeo</id>
@@ -547,13 +547,13 @@
 			<repositories>
 				<repository>
 					<id>vaadin-prereleases</id>
-					<url>http://maven.vaadin.com/vaadin-prereleases</url>
+					<url>https://maven.vaadin.com/vaadin-prereleases</url>
 				</repository>
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
 					<id>vaadin-prereleases</id>
-					<url>http://maven.vaadin.com/vaadin-prereleases</url>
+					<url>https://maven.vaadin.com/vaadin-prereleases</url>
 				</pluginRepository>
 			</pluginRepositories>
 		</profile>

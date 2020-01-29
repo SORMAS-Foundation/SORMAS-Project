@@ -31,6 +31,8 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown chronicNeurologicCondition;
 	private YesNoUnknown downSyndrome;
 	private YesNoUnknown congenitalSyphilis;
+	private YesNoUnknown immunodeficiencyOtherThanHiv;
+	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	private String otherConditions;
 
 	@Enumerated(EnumType.STRING)
@@ -151,6 +153,22 @@ public class HealthConditions extends AbstractDomainObject {
 	}
 	public void setOtherConditions(String otherConditions) {
 		this.otherConditions = otherConditions;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getImmunodeficiencyOtherThanHiv() {
+		return immunodeficiencyOtherThanHiv;
+	}
+	public void setImmunodeficiencyOtherThanHiv(YesNoUnknown immunodeficiencyOtherThanHiv) {
+		this.immunodeficiencyOtherThanHiv = immunodeficiencyOtherThanHiv;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCardiovascularDiseaseIncludingHypertension() {
+		return cardiovascularDiseaseIncludingHypertension;
+	}
+	public void setCardiovascularDiseaseIncludingHypertension(YesNoUnknown cardiovascularDiseaseIncludingHypertension) {
+		this.cardiovascularDiseaseIncludingHypertension = cardiovascularDiseaseIncludingHypertension;
 	}
 
 }

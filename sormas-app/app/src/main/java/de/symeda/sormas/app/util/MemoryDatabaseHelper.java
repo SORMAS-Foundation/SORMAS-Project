@@ -2305,7 +2305,7 @@ abstract class BaseDataGenerator {
         List<Disease> list = new ArrayList<Disease>() {{
             add(Disease.EVD);
             add(Disease.LASSA);
-            add(Disease.NEW_INFLUENCA);
+            add(Disease.NEW_INFLUENZA);
             add(Disease.CSM);
             add(Disease.CHOLERA);
             add(Disease.MEASLES);

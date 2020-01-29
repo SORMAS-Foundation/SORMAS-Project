@@ -52,14 +52,14 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	protected void addFields() {
 		addField(DistrictDto.NAME, TextField.class);
 		addField(DistrictDto.EPID_CODE, TextField.class);
-		ComboBox region = addField(DistrictDto.REGION, ComboBox.class);
+		ComboBox region = addInfrastructureField(DistrictDto.REGION);
 //		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 
 		setRequired(true, DistrictDto.NAME, DistrictDto.EPID_CODE, DistrictDto.REGION);
 		
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());		
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());		
 		
 		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
 		if (!create) {

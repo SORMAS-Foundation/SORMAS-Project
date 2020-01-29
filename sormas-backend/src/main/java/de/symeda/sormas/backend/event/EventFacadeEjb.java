@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,10 +29,13 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -417,9 +421,47 @@ public class EventFacadeEjb implements EventFacade {
 		return target;
 	}
 
+	/**
+	 * Archives all events that have not been changed for a defined amount of days
+	 * 
+	 * @param daysAfterEventsGetsArchived defines the amount of days
+	 */
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void archiveAllArchivableEvents(int daysAfterEventGetsArchived) {
+
+		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
+	}
+
+	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, LocalDate referenceDate) {
+
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Event> from = cq.from(Event.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(cb.equal(from.get(Event.ARCHIVED), false),
+				cb.not(eventService.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Event.UUID));
+		List<String> uuids = em.createQuery(cq).getResultList();
+
+		if (!uuids.isEmpty()) {
+
+			CriteriaUpdate<Event> cu = cb.createCriteriaUpdate(Event.class);
+			Root<Event> root = cu.from(Event.class);
+
+			cu.set(root.get(Event.ARCHIVED), true);
+
+			cu.where(root.get(Event.UUID).in(uuids));
+
+			em.createQuery(cu).executeUpdate();
+		}
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
 	}	
-	
 }

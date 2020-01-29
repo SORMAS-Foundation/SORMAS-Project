@@ -75,6 +75,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
             lastDistrict = DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict());
         }
         target.setDistrict(lastDistrict);
+        target.setArchived(source.isArchived());
     }
 
     @Override

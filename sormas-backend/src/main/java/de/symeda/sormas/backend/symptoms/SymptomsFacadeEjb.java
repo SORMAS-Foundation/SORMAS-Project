@@ -197,6 +197,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setErraticBehaviour(source.getErraticBehaviour());
 		target.setComa(source.getComa());
 		target.setConvulsion(source.getConvulsion());
+		target.setFluidInLungCavityAuscultation(source.getFluidInLungCavityAuscultation());
+		target.setFluidInLungCavityXray(source.getFluidInLungCavityXray());
+		target.setAbnormalLungXrayFindings(source.getAbnormalLungXrayFindings());
+		target.setConjunctivalInjection(source.getConjunctivalInjection());
+		target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
+		target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
 		
 		return symptoms;
 	}
@@ -360,6 +366,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setErraticBehaviour(source.getErraticBehaviour());
 		target.setComa(source.getComa());
 		target.setConvulsion(source.getConvulsion());
+		target.setFluidInLungCavityAuscultation(source.getFluidInLungCavityAuscultation());
+		target.setFluidInLungCavityXray(source.getFluidInLungCavityXray());
+		target.setAbnormalLungXrayFindings(source.getAbnormalLungXrayFindings());
+		target.setConjunctivalInjection(source.getConjunctivalInjection());
+		target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
+		target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
 
 		return target;
 	}

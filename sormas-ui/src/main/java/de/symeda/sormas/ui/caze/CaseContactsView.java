@@ -282,7 +282,7 @@ public class CaseContactsView extends AbstractCaseView {
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
 		districtFilter.removeAllItems();
-		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(caseDto.getRegion().getUuid()));
+		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(caseDto.getRegion().getUuid()));
 		districtFilter.setValue(criteria.getCaseDistrict());
 
 		officerFilter.removeAllItems();

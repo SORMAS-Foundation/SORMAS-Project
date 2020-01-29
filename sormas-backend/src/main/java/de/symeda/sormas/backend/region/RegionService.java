@@ -29,16 +29,17 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 
 @Stateless
 @LocalBean
-public class RegionService extends AbstractAdoService<Region> {
+public class RegionService extends AbstractInfrastructureAdoService<Region> {
 
 	public RegionService() {
 		super(Region.class);
@@ -84,6 +85,15 @@ public class RegionService extends AbstractAdoService<Region> {
 							cb.like(cb.lower(from.get(Region.EPID_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
+			}
+		}
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+						cb.equal(from.get(Region.ARCHIVED), false),
+						cb.isNull(from.get(Region.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(from.get(Region.ARCHIVED), true));
 			}
 		}
 		return filter;

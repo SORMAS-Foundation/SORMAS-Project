@@ -421,7 +421,6 @@ public class TestDataCreator {
 	}
 	
 	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district) {
-
 		PointOfEntry pointOfEntry = new PointOfEntry();
 		pointOfEntry.setUuid(DataHelper.createUuid());
 		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);

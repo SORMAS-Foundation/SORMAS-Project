@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -112,9 +114,9 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				List<District> districts = null;
 				if (criteria.getRegion() != null) {
 					Region region = regionService.getByUuid(criteria.getRegion().getUuid());
-					districts = districtService.getAllByRegion(region);
+					districts = districtService.getAllActiveByRegion(region);
 				} else {
-					districts = districtService.getAll();
+					districts = districtService.getAllActive();
 				}
 				
 				List<String> activeUuids = resultList.stream().map(config -> config.getDistrictUuid()).collect(Collectors.toList());
@@ -196,6 +198,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 	
 	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void deleteAllExpiredFeatureConfigurations(Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);

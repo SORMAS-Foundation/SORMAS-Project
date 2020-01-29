@@ -24,12 +24,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 
-/**
- * Created by Martin Wahnschaffe on 22.07.2016.
- */
-public class DistrictDao extends AbstractAdoDao<District> {
+public class DistrictDao extends AbstractInfrastructureAdoDao<District> {
 
     public DistrictDao(Dao<District,Long> innerDao) throws SQLException {
         super(innerDao);
@@ -46,7 +44,7 @@ public class DistrictDao extends AbstractAdoDao<District> {
     }
 
     public List<District> getByRegion(Region region) {
-        return queryForEq(District.REGION+"_id", region, District.NAME, true);
+        return queryActiveForEq(District.REGION+"_id", region, District.NAME, true);
     }
 
     @Override

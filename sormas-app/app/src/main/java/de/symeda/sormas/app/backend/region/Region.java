@@ -29,10 +29,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 
 @Entity(name=Region.TABLE_NAME)
 @DatabaseTable(tableName = Region.TABLE_NAME)
-public class Region extends AbstractDomainObject {
+public class Region extends InfrastructureAdo {
 	
 	private static final long serialVersionUID = -2958216667876104358L;
 
@@ -71,4 +72,5 @@ public class Region extends AbstractDomainObject {
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
 	}
+
 }

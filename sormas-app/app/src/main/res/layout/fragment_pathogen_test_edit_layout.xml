@@ -136,6 +136,7 @@
                         android:id="@+id/pathogenTest_cqValue"
                         app:dependencyParentField="@{pathogenTestTestType}"
                         app:dependencyParentValue="@{PathogenTestType.CQ_VALUE_DETECTION}"
+                        app:inputType="numberDecimal"
                         app:value="@={data.cqValue}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 

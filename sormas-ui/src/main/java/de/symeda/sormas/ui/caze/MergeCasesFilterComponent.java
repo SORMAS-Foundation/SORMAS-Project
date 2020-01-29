@@ -147,13 +147,13 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbRegion.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbRegion, CssStyles.FORCE_CAPTION);
 		cbRegion.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-		cbRegion.setItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		cbRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		binder.bind(cbRegion, CaseCriteria.REGION);
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
 			cbDistrict.clear();
 			if (region != null) {
-				cbDistrict.setItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
+				cbDistrict.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 				cbDistrict.setEnabled(true);
 			} else {
 				cbDistrict.setEnabled(false);

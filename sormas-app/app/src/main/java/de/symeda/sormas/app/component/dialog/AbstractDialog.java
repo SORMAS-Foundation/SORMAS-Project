@@ -63,6 +63,7 @@ public abstract class AbstractDialog implements NotificationContext {
     private boolean liveValidationDisabled;
 
     // Button callbacks
+    private boolean suppressNextDismiss;
     private Callback positiveCallback;
     private Callback negativeCallback;
     private Callback deleteCallback;
@@ -185,10 +186,19 @@ public abstract class AbstractDialog implements NotificationContext {
             });
         }
 
+        suppressNextDismiss = false;
         dialog = builder.show();
     }
 
+    public void suppressNextDismiss() {
+        suppressNextDismiss = true;
+    }
+
     public void dismiss() {
+        if (suppressNextDismiss) {
+            suppressNextDismiss = false;
+            return;
+        }
         if (dialog != null) {
             dialog.dismiss();
         }
@@ -206,6 +216,8 @@ public abstract class AbstractDialog implements NotificationContext {
         if (positiveCallback != null) {
             positiveCallback.call();
         }
+
+        dismiss();
     }
 
     private void onNegativeClick() {
@@ -223,13 +235,7 @@ public abstract class AbstractDialog implements NotificationContext {
                     R.string.confirmation_delete,
                     R.string.yes,
                     R.string.no);
-            confirmationDialog.setPositiveCallback(new Callback() {
-                @Override
-                public void call() {
-                    deleteCallback.call();
-                    confirmationDialog.dismiss();
-                }
-            });
+            confirmationDialog.setPositiveCallback(deleteCallback);
 
             confirmationDialog.show();
         }
@@ -287,10 +293,16 @@ public abstract class AbstractDialog implements NotificationContext {
         return false;
     }
 
+    /**
+     * Note: You can call {@link #suppressNextDismiss} from within the callback if you don't want the dialog to be closed
+     */
     public void setPositiveCallback(Callback positiveCallback) {
         this.positiveCallback = positiveCallback;
     }
 
+    /**
+     * Note: You can call {@link #suppressNextDismiss} from within the callback if you don't want the dialog to be closed
+     */
     public void setNegativeCallback(Callback negativeCallback) {
         this.negativeCallback = negativeCallback;
     }

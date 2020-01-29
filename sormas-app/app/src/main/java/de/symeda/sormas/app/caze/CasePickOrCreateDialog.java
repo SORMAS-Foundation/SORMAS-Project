@@ -67,7 +67,6 @@ public class CasePickOrCreateDialog extends AbstractDialog {
         }
 
         dialog.setPositiveCallback(() -> {
-            dialog.dismiss();
             pickedCaseCallback.accept(dialog.getSelectedCase() != null ? dialog.getSelectedCase() : newCase);
         });
 

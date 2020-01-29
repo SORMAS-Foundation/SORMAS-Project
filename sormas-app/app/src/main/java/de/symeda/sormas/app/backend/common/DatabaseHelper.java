@@ -127,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 175;
+	public static final int DATABASE_VERSION = 178;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1370,6 +1370,41 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 174:
 					currentVersion = 174;
 					getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseConfiguration ADD COLUMN caseBased boolean;");
+				case 175:
+					currentVersion = 175;
+					getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN archived SMALLINT DEFAULT 0;");
+					getDao(District.class).executeRaw("ALTER TABLE district ADD COLUMN archived SMALLINT DEFAULT 0;");
+					getDao(Community.class).executeRaw("ALTER TABLE community ADD COLUMN archived SMALLINT DEFAULT 0;");
+					getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN archived SMALLINT DEFAULT 0;");
+					getDao(PointOfEntry.class).executeRaw("ALTER TABLE pointOfEntry ADD COLUMN archived SMALLINT DEFAULT 0;");
+				case 176:
+					currentVersion = 176;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN fluidInLungCavityAuscultation varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN fluidInLungCavityXray varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN abnormalLungXrayFindings varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN conjunctivalInjection varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN acuteRespiratoryDistressSyndrome varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN pneumoniaClinicalOrRadiologic varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN visitedHealthFacility varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN contactWithSourceRespiratoryCase varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN visitedAnimalMarket varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN camels varchar(255);");
+					getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN snakes varchar(255);");
+					getDao(HealthConditions.class).executeRaw("ALTER TABLE healthConditions ADD COLUMN immunodeficiencyOtherThanHiv varchar(255);");
+					getDao(HealthConditions.class).executeRaw("ALTER TABLE healthConditions ADD COLUMN cardiovascularDiseaseIncludingHypertension varchar(255);");
+				case 177:
+					currentVersion = 177;
+					getDao(Case.class).executeRaw("UPDATE cases SET disease = 'NEW_INFLUENZA' WHERE disease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE events SET disease = 'NEW_INFLUENZA' WHERE disease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE outbreak SET disease = 'NEW_INFLUENZA' WHERE disease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE person SET causeOfDeathDisease = 'NEW_INFLUENZA' WHERE causeOfDeathDisease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE visits SET disease = 'NEW_INFLUENZA' WHERE disease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE weeklyreportentry SET disease = 'NEW_INFLUENZA' WHERE disease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE clinicalVisit SET disease = 'NEW_INFLUENZA' WHERE disease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE diseaseConfiguration SET disease = 'NEW_INFLUENZA' WHERE disease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE featureConfiguration SET disease = 'NEW_INFLUENZA' WHERE disease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE pathogenTest SET testedDisease = 'NEW_INFLUENZA' WHERE testedDisease = 'NEW_INFLUENCA';");
+					getDao(Case.class).executeRaw("UPDATE users SET limitedDisease = 'NEW_INFLUENZA' WHERE limitedDisease = 'NEW_INFLUENCA';");
 
 					// ATTENTION: break should only be done after last version
 					break;

@@ -12,10 +12,11 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
@@ -23,7 +24,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class PointOfEntryService extends AbstractAdoService<PointOfEntry> {
+public class PointOfEntryService extends AbstractInfrastructureAdoService<PointOfEntry> {
 
 	@EJB
 	private RegionService regionService;
@@ -93,6 +94,15 @@ public class PointOfEntryService extends AbstractAdoService<PointOfEntry> {
 					Predicate likeFilters = cb.like(cb.lower(pointOfEntry.get(PointOfEntry.NAME)), textFilter);
 					filter = and(cb, filter, likeFilters);
 				}
+			}
+		}
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+						cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), false),
+						cb.isNull(pointOfEntry.get(PointOfEntry.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), true));
 			}
 		}
 		

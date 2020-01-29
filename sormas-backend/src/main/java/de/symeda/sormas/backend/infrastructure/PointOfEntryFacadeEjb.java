@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -73,9 +74,11 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public List<PointOfEntryReferenceDto> getAllByDistrict(String districtUuid, boolean includeOthers) {
+	public List<PointOfEntryReferenceDto> getAllActiveByDistrict(String districtUuid, boolean includeOthers) {
 		District district = districtService.getByUuid(districtUuid);
-		return service.getAllByDistrict(district, includeOthers).stream().map(p -> toReferenceDto(p))
+		return service.getAllByDistrict(district, includeOthers).stream()
+				.filter(p -> !p.isArchived())
+				.map(p -> toReferenceDto(p))
 				.collect(Collectors.toList());
 	}
 
@@ -86,7 +89,6 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<PointOfEntryDto> getAllAfter(Date date) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntryDto> cq = cb.createQuery(PointOfEntryDto.class);
 		Root<PointOfEntry> pointOfEntry = cq.from(PointOfEntry.class);
@@ -103,12 +105,11 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	private void selectDtoFields(CriteriaQuery<PointOfEntryDto> cq, Root<PointOfEntry> root) {
-
 		Join<PointOfEntry, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<PointOfEntry, Region> region = root.join(Facility.REGION, JoinType.LEFT);
 
-		cq.multiselect(root.get(PointOfEntry.CREATION_DATE), root.get(PointOfEntry.CHANGE_DATE),
-				root.get(PointOfEntry.UUID), root.get(PointOfEntry.POINT_OF_ENTRY_TYPE), root.get(PointOfEntry.NAME),
+		cq.multiselect(root.get(PointOfEntry.CREATION_DATE), root.get(PointOfEntry.CHANGE_DATE), root.get(PointOfEntry.UUID), 
+				root.get(PointOfEntry.ARCHIVED), root.get(PointOfEntry.POINT_OF_ENTRY_TYPE), root.get(PointOfEntry.NAME),
 				region.get(Region.UUID), region.get(Region.NAME), district.get(District.UUID),
 				district.get(District.NAME), root.get(PointOfEntry.LATITUDE), root.get(PointOfEntry.LONGITUDE),
 				root.get(PointOfEntry.ACTIVE));
@@ -167,7 +168,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, int first, int max,
+	public List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(PointOfEntry.class);
@@ -223,8 +224,11 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 		cq.select(pointOfEntry);
 
-		List<PointOfEntry> pointsOfEntry = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		return pointsOfEntry.stream().map(p -> toDto(p)).collect(Collectors.toList());
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		} else {
+			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+		}
 	}
 
 	@Override
@@ -253,6 +257,43 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	@Override
+	public void archive(String pointOfEntryUuid) {
+		PointOfEntry pointOfEntry = service.getByUuid(pointOfEntryUuid);
+		pointOfEntry.setArchived(true);
+		service.ensurePersisted(pointOfEntry);
+	}
+
+	@Override
+	public void dearchive(String pointOfEntryUuid) {
+		PointOfEntry pointOfEntry = service.getByUuid(pointOfEntryUuid);
+		pointOfEntry.setArchived(false);
+		service.ensurePersisted(pointOfEntry);
+	}
+	
+	@Override
+	public boolean hasArchivedParentInfrastructure(Collection<String> pointOfEntryUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<PointOfEntry> root = cq.from(PointOfEntry.class);
+		Join<PointOfEntry, District> districtJoin = root.join(PointOfEntry.DISTRICT);
+		Join<PointOfEntry, Region> regionJoin = root.join(PointOfEntry.REGION);
+
+		cq.where(
+				cb.and(
+						cb.or(
+								cb.isTrue(districtJoin.get(District.ARCHIVED)),
+								cb.isTrue(regionJoin.get(Region.ARCHIVED))
+								),
+						root.get(PointOfEntry.UUID).in(pointOfEntryUuids)
+						)
+				);
+
+		cq.select(root.get(PointOfEntry.ID));
+
+		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+	}
+
 	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target) {
 		if (target == null) {
 			target = new PointOfEntry();
@@ -268,6 +309,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		target.setActive(source.isActive());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+		target.setArchived(source.isArchived());
 
 		return target;
 	}
@@ -278,7 +320,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		}
 		PointOfEntryDto dto = new PointOfEntryDto();
 		DtoHelper.fillDto(dto, entity);
-	
+
 		dto.setName(entity.getName());
 		dto.setPointOfEntryType(entity.getPointOfEntryType());
 		dto.setActive(entity.isActive());
@@ -286,7 +328,8 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		dto.setLongitude(entity.getLongitude());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
-	
+		dto.setArchived(entity.isArchived());
+
 		return dto;
 	}
 

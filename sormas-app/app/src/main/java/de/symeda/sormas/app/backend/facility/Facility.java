@@ -35,13 +35,14 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
 @Entity(name=Facility.TABLE_NAME)
 @DatabaseTable(tableName = Facility.TABLE_NAME)
-public class Facility extends AbstractDomainObject {
+public class Facility extends InfrastructureAdo {
 	
 	private static final long serialVersionUID = 8572137127616417072L;
 

@@ -118,6 +118,11 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setAnimalVaccinationStatus(source.getAnimalVaccinationStatus());
 		target.setProphylaxisStatus(source.getProphylaxisStatus());
 		target.setDateOfProphylaxis(source.getDateOfProphylaxis());
+		target.setVisitedHealthFacility(source.getVisitedHealthFacility());
+		target.setContactWithSourceRespiratoryCase(source.getContactWithSourceRespiratoryCase());
+		target.setVisitedAnimalMarket(source.getVisitedAnimalMarket());
+		target.setCamels(source.getCamels());
+		target.setSnakes(source.getSnakes());
 		
 		List<EpiDataBurial> burials = new ArrayList<>();
 		for (EpiDataBurialDto burialDto : source.getBurials()) {
@@ -303,6 +308,11 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setAnimalVaccinationStatus(source.getAnimalVaccinationStatus());
 		target.setProphylaxisStatus(source.getProphylaxisStatus());
 		target.setDateOfProphylaxis(source.getDateOfProphylaxis());
+		target.setVisitedHealthFacility(source.getVisitedHealthFacility());
+		target.setContactWithSourceRespiratoryCase(source.getContactWithSourceRespiratoryCase());
+		target.setVisitedAnimalMarket(source.getVisitedAnimalMarket());
+		target.setCamels(source.getCamels());
+		target.setSnakes(source.getSnakes());
 		
 		List<EpiDataBurialDto> burialDtos = new ArrayList<>();
 		for (EpiDataBurial burial : source.getBurials()) {

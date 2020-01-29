@@ -181,4 +181,13 @@
 		filled: #3b7fed;
 	}
   }
+  .background-disease-coronavirus {
+  	background-color: #bf8678;
+  	fill: #bf8678;
+  	
+  	&.background-darker {
+  		background-color: #b0796b;
+  		filled: #b0796b;
+  	}
+  }
 }

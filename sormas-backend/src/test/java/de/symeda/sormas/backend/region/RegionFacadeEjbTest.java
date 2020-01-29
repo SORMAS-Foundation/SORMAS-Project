@@ -14,7 +14,6 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllAfter() throws InterruptedException {
-
 		creator.createRegion("region1");
 		getRegionService().doFlush();
 		Date date = new Date();
@@ -32,6 +31,15 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, results.size());
 
 		assertEquals(regionName, results.get(0).getName());
+	}
+
+	@Test
+	public void testGetAllActiveAsReference() throws Exception {
+		creator.createRegion("r1");
+		Region r2 = creator.createRegion("r2");
+		getRegionFacade().archive(r2.getUuid());
+		
+		assertEquals(1, getRegionFacade().getAllActiveAsReference().size());
 	}
 
 }

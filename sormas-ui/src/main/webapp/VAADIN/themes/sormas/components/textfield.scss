@@ -22,7 +22,7 @@ $v-textfield-background-color--readonly: $v-app-background-color !default;
 
 	&.error-color-primary {
 	  &.v-textfield-error {
-	  	border-color: $v-selection-color !important;
+	  	border-color: $v-error-indicator-color !important;
 	  }
     }
   }

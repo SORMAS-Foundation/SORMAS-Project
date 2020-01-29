@@ -29,6 +29,7 @@ public class LeafletPolygon {
 
 	private String caption;
 	private double[][] latLons;
+	private double[][][] holeLatLons;
 	private String options;
 
 
@@ -54,6 +55,24 @@ public class LeafletPolygon {
 				.toArray(size -> new double[size][]);
 		setLatLons(latLons);
 	}
+	
+	public double[][][] getHoleLatLons() {
+		return holeLatLons;
+	}
+
+	public void setHoleLatLons(double[][][] holeLatLons) {
+		this.holeLatLons = holeLatLons;
+	}
+
+	public void setHoleLatLons(GeoLatLon[][] geoHoleLatLons) {
+		double[][][] holeLatLons = Arrays.stream(geoHoleLatLons)
+				.map(latLons -> { return Arrays.stream(latLons)
+						.map(latLon -> new double[] { latLon.getLat(), latLon.getLon() })
+						.toArray(size -> new double[size][]); })
+				.toArray(size -> new double[size][][]);
+		setHoleLatLons(holeLatLons);
+	}
+	
 
 	public String getOptions() {
 		return options;
@@ -68,17 +87,48 @@ public class LeafletPolygon {
 	 */
 	public JsonObject toJson() {
 		JsonObject polygon = Json.createObject();
-		polygon.put("caption", caption);
-		polygon.put("options", (JsonObject)JsonUtil.parse(options));
-		JsonArray latLonsJson = Json.createArray();
-		for (double[] latLon : latLons) {
-			JsonArray latLonJson = Json.createArray();
-			latLonJson.set(0, (int) (latLon[0] * 10000.0) / 10000.0);
-			latLonJson.set(1, (int) (latLon[1] * 10000.0) / 10000.0);
-			
-			latLonsJson.set(latLonsJson.length(), latLonJson);
+		if (caption != null) {
+			polygon.put("caption", caption);
 		}
-		polygon.put("latLons", latLonsJson);
+		if (options != null) {
+			polygon.put("options", (JsonObject)JsonUtil.parse(options));
+		}
+		if (latLons != null) {
+			JsonArray latLonsJson = Json.createArray();
+			for (double[] latLon : latLons) {
+				JsonArray latLonJson = Json.createArray();
+				latLonJson.set(0, (int) (latLon[0] * 10000.0) / 10000.0);
+				latLonJson.set(1, (int) (latLon[1] * 10000.0) / 10000.0);
+				
+				latLonsJson.set(latLonsJson.length(), latLonJson);
+			}
+			
+			if (holeLatLons != null) {
+				JsonArray latLonsOuterJson = Json.createArray();
+				// first is outer
+				latLonsOuterJson.set(latLonsOuterJson.length(), latLonsJson);
+				
+				// additional are holes
+				for (double[][] latLons : holeLatLons) {
+					latLonsJson = Json.createArray();
+					for (double[] latLon : latLons) {
+						JsonArray latLonJson = Json.createArray();
+						latLonJson.set(0, (int) (latLon[0] * 10000.0) / 10000.0);
+						latLonJson.set(1, (int) (latLon[1] * 10000.0) / 10000.0);
+						
+						latLonsJson.set(latLonsJson.length(), latLonJson);
+					}					
+					latLonsOuterJson.set(latLonsOuterJson.length(), latLonsJson);
+				}
+				
+				polygon.put("latLons", latLonsOuterJson);
+			}
+			else {
+
+				polygon.put("latLons", latLonsJson);
+			}
+			
+		}
 		return polygon;
 	}
 

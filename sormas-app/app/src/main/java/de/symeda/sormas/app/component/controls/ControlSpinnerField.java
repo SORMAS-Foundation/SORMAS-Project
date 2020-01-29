@@ -332,6 +332,10 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
         }
     }
 
+    public void registerListener(ValueChangeListener listener) {
+        spinnerFieldListeners.registerListener(listener, this);
+    }
+
     // Data binding, getters & setters
 
     @BindingAdapter("value")

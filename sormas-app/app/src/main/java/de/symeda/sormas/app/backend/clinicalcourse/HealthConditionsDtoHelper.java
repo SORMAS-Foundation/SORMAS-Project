@@ -70,6 +70,8 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
         target.setOtherConditions(source.getOtherConditions());
         target.setDownSyndrome(source.getDownSyndrome());
         target.setCongenitalSyphilis(source.getCongenitalSyphilis());
+        target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
+        target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
     }
 
     @Override
@@ -89,6 +91,8 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
         target.setOtherConditions(source.getOtherConditions());
         target.setDownSyndrome(source.getDownSyndrome());
         target.setCongenitalSyphilis(source.getCongenitalSyphilis());
+        target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
+        target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
     }
 
 }

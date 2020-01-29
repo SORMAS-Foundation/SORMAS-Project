@@ -101,7 +101,7 @@
                         android:id="@+id/sample_sampleSource"
                         app:value="@{data.sampleSource}"
                         app:dependencyParentField="@{caseDataDisease}"
-                        app:dependencyParentValue="@{Disease.NEW_INFLUENCA}"
+                        app:dependencyParentValue="@{Disease.NEW_INFLUENZA}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.infrastructure;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -16,13 +17,13 @@ public interface PointOfEntryFacade {
 	 * @param includeOthers Whether to include generic points of entry that can be used when a specific
 	 * point of entry is not in the database.
 	 */
-	List<PointOfEntryReferenceDto> getAllByDistrict(String districtUuid, boolean includeOthers);
+	List<PointOfEntryReferenceDto> getAllActiveByDistrict(String districtUuid, boolean includeOthers);
 	
 	PointOfEntryDto getByUuid(String uuid);
 	
 	void save(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
 	
-	List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	long count(PointOfEntryCriteria criteria);
 
@@ -35,5 +36,11 @@ public interface PointOfEntryFacade {
 	List<PointOfEntryDto> getByUuids(List<String> uuids);
 	
 	List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district);
+	
+	void archive(String pointOfEntryUuid);
+	
+	void dearchive(String pointOfEntryUuid);
+	
+	boolean hasArchivedParentInfrastructure(Collection<String> pointOfEntryUuids);
 	
 }

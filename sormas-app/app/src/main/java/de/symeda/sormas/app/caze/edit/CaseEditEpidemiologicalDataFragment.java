@@ -75,166 +75,82 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     // Instance methods
 
     private void setUpControlListeners(final FragmentCaseEditEpidLayoutBinding contentBinding) {
-        onGatheringItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataGathering gathering = (EpiDataGathering) item;
-                final EpiDataGathering gatheringClone = (EpiDataGathering) gathering.clone();
-                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gatheringClone);
+        onGatheringItemClickListener = (v, item) -> {
+            final EpiDataGathering gathering = (EpiDataGathering) item;
+            final EpiDataGathering gatheringClone = (EpiDataGathering) gathering.clone();
+            final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gatheringClone);
 
-                dialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        record.getGatherings().set(record.getGatherings().indexOf(gathering), gatheringClone);
-                        updateGatherings();
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setPositiveCallback(() -> {
+                record.getGatherings().set(record.getGatherings().indexOf(gathering), gatheringClone);
+                updateGatherings();
+            });
 
-                dialog.setDeleteCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        removeGathering(gathering);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setDeleteCallback(() -> removeGathering(gathering));
 
-                dialog.show();
-            }
+            dialog.show();
         };
 
-        onTravelItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataTravel travel = (EpiDataTravel) item;
-                final EpiDataTravel travelClone = (EpiDataTravel) travel.clone();
-                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travelClone);
+        onTravelItemClickListener = (v, item) -> {
+            final EpiDataTravel travel = (EpiDataTravel) item;
+            final EpiDataTravel travelClone = (EpiDataTravel) travel.clone();
+            final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travelClone);
 
-                dialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        record.getTravels().set(record.getTravels().indexOf(travel), travelClone);
-                        updateTravels();
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setPositiveCallback(() -> {
+                record.getTravels().set(record.getTravels().indexOf(travel), travelClone);
+                updateTravels();
+            });
 
-                dialog.setDeleteCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        removeTravel(travel);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setDeleteCallback(() -> removeTravel(travel));
 
-                dialog.show();
-            }
+            dialog.show();
         };
 
-        onBurialItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final EpiDataBurial burial = (EpiDataBurial) item;
-                final EpiDataBurial burialClone = (EpiDataBurial) burial.clone();
-                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burialClone);
+        onBurialItemClickListener = (v, item) -> {
+            final EpiDataBurial burial = (EpiDataBurial) item;
+            final EpiDataBurial burialClone = (EpiDataBurial) burial.clone();
+            final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burialClone);
 
-                dialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        record.getBurials().set(record.getBurials().indexOf(burial), burialClone);
-                        updateBurials();
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setPositiveCallback(() -> {
+                record.getBurials().set(record.getBurials().indexOf(burial), burialClone);
+                updateBurials();
+            });
 
-                dialog.setDeleteCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        removeBurial(burial);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setDeleteCallback(() -> removeBurial(burial));
 
-                dialog.show();
-            }
+            dialog.show();
         };
 
-        contentBinding.btnAddGathering.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
-                final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
+        contentBinding.btnAddGathering.setOnClickListener(v -> {
+            final EpiDataGathering gathering = DatabaseHelper.getEpiDataGatheringDao().build();
+            final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gathering);
 
-                dialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        addGathering(gathering);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setPositiveCallback(() -> addGathering(gathering));
 
-                dialog.setDeleteCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        removeGathering(gathering);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setDeleteCallback(() -> removeGathering(gathering));
 
-                dialog.show();
-            }
+            dialog.show();
         });
 
-        contentBinding.btnAddTravel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
-                final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
+        contentBinding.btnAddTravel.setOnClickListener(v -> {
+            final EpiDataTravel travel = DatabaseHelper.getEpiDataTravelDao().build();
+            final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travel);
 
-                dialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        addTravel(travel);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setPositiveCallback(() -> addTravel(travel));
 
-                dialog.setDeleteCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        removeTravel(travel);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setDeleteCallback(() -> removeTravel(travel));
 
-                dialog.show();
-            }
+            dialog.show();
         });
 
-        contentBinding.btnAddBurial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
-                final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
+        contentBinding.btnAddBurial.setOnClickListener(v -> {
+            final EpiDataBurial burial = DatabaseHelper.getEpiDataBurialDao().build();
+            final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burial);
 
-                dialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        addBurial(burial);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setPositiveCallback(() -> addBurial(burial));
 
-                dialog.setDeleteCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        removeBurial(burial);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setDeleteCallback(() -> removeBurial(burial));
 
-                dialog.show();
-            }
+            dialog.show();
         });
     }
 

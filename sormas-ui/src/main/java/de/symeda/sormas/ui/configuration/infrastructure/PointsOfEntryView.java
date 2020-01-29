@@ -6,7 +6,11 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -14,6 +18,7 @@ import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.TextField;
 import com.vaadin.v7.ui.VerticalLayout;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -36,12 +41,14 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class PointsOfEntryView extends AbstractConfigurationView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/pointsofentry";
 
 	private PointOfEntryCriteria criteria;
+	private ViewConfiguration viewConfiguration;
 
 	// Filters
 	private TextField searchField;
@@ -49,6 +56,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private ComboBox districtFilter;
 	private ComboBox typeFilter;
 	private ComboBox activeFilter;
+	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
 
 	private HorizontalLayout filterLayout;
@@ -57,14 +65,20 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	protected Button createButton;
 	protected Button importButton;
 	protected Button exportButton;
+	private MenuBar bulkOperationsDropdown;
+	private MenuItem archiveItem;
+	private MenuItem dearchiveItem;
 
 	public PointsOfEntryView() {
 		super(VIEW_NAME);
 
+		viewConfiguration = ViewModelProviders.of(PointsOfEntryView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(PointsOfEntryView.class).get(PointOfEntryCriteria.class);
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		}	
 
-		grid = new PointsOfEntryGrid();
-		grid.setCriteria(criteria);
+		grid = new PointsOfEntryGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
@@ -109,6 +123,39 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			addHeaderComponent(createButton);
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+			btnEnterBulkEditMode.setId("enterBulkEditMode");
+			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
+			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			addHeaderComponent(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				viewConfiguration.setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				searchField.setEnabled(false);
+				grid.setEagerDataProvider();
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				viewConfiguration.setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				searchField.setEnabled(true);
+				navigateTo(criteria);
+			});
+		}
+
 		addComponent(gridLayout);
 	}
 
@@ -116,7 +163,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
-		filterLayout.setSizeUndefined();
+		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		searchField = new TextField();
 		searchField.setWidth(200, Unit.PIXELS);
@@ -132,13 +179,13 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		regionFilter = new ComboBox();
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.REGION));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		regionFilter.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			criteria.region(region);
 			navigateTo(criteria);
 			FieldHelper.updateItems(districtFilter,
-					region != null ? FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()) : null);
+					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 		});
 		filterLayout.addComponent(regionFilter);
 
@@ -183,6 +230,58 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(resetButton);
 
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Show active/archived/all dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
+				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.pointOfEntryActivePointsOfEntry));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryArchivedPointsOfEntry));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.pointOfEntryAllPointsOfEntry));
+				relevanceStatusFilter.addValueChangeListener(e -> {
+					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				actionButtonsLayout.addComponent(relevanceStatusFilter);
+
+				// Bulk operation dropdown
+				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+					bulkOperationsDropdown = new MenuBar();	
+					MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
+
+					Command archiveCommand = selectedItem -> {
+						ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(true, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
+							public void run() {
+								navigateTo(criteria);
+							}
+						});
+					};
+					archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, archiveCommand);
+					archiveItem.setVisible(EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus()));
+
+					Command dearchiveCommand = selectedItem -> {
+						ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(false, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
+							public void run() {
+								navigateTo(criteria);
+							}
+						});
+					};
+					dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, dearchiveCommand);
+					dearchiveItem.setVisible(EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus()));
+
+					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					actionButtonsLayout.addComponent(bulkOperationsDropdown);
+				}
+			}
+		}
+		filterLayout.addComponent(actionButtonsLayout);
+		filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.BOTTOM_RIGHT);
+		filterLayout.setExpandRatio(actionButtonsLayout, 1);
+
 		return filterLayout;
 	}	
 
@@ -204,6 +303,9 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 
 		resetButton.setVisible(criteria.hasAnyFilterActive());
 
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
 		searchField.setValue(criteria.getNameLike());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());

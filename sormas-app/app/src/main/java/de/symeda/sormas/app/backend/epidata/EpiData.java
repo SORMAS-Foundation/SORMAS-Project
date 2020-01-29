@@ -162,6 +162,16 @@ public class EpiData extends AbstractDomainObject {
     private YesNoUnknown kindOfExposureOther;
     @Column(length=512)
     private String kindOfExposureDetails;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown visitedHealthFacility;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown contactWithSourceRespiratoryCase;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown visitedAnimalMarket;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown camels;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown snakes;
 
     @DatabaseField(dataType = DataType.DATE_LONG, columnName = "wildbirdsDate")
     private Date unusedDate;
@@ -585,6 +595,46 @@ public class EpiData extends AbstractDomainObject {
 
     public void setEatingRawAnimalsDetails(String eatingRawAnimalsDetails) {
         this.eatingRawAnimalsDetails = eatingRawAnimalsDetails;
+    }
+
+    public YesNoUnknown getVisitedHealthFacility() {
+        return visitedHealthFacility;
+    }
+
+    public void setVisitedHealthFacility(YesNoUnknown visitedHealthFacility) {
+        this.visitedHealthFacility = visitedHealthFacility;
+    }
+
+    public YesNoUnknown getContactWithSourceRespiratoryCase() {
+        return contactWithSourceRespiratoryCase;
+    }
+
+    public void setContactWithSourceRespiratoryCase(YesNoUnknown contactWithSourceRespiratoryCase) {
+        this.contactWithSourceRespiratoryCase = contactWithSourceRespiratoryCase;
+    }
+
+    public YesNoUnknown getVisitedAnimalMarket() {
+        return visitedAnimalMarket;
+    }
+
+    public void setVisitedAnimalMarket(YesNoUnknown visitedAnimalMarket) {
+        this.visitedAnimalMarket = visitedAnimalMarket;
+    }
+
+    public YesNoUnknown getCamels() {
+        return camels;
+    }
+
+    public void setCamels(YesNoUnknown camels) {
+        this.camels = camels;
+    }
+
+    public YesNoUnknown getSnakes() {
+        return snakes;
+    }
+
+    public void setSnakes(YesNoUnknown snakes) {
+        this.snakes = snakes;
     }
 
     @Override

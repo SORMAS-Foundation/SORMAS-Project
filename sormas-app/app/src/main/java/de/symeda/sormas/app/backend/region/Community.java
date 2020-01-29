@@ -28,10 +28,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 
 @Entity(name=Community.TABLE_NAME)
 @DatabaseTable(tableName = Community.TABLE_NAME)
-public class Community extends AbstractDomainObject {
+public class Community extends InfrastructureAdo {
 
 	private static final long serialVersionUID = 1971053920357795693L;
 

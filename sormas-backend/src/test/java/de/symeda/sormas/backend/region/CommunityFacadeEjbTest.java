@@ -40,4 +40,15 @@ public class CommunityFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(region.getUuid(), results.get(0).getRegion().getUuid());
 	}
 
+	@Test
+	public void testGetAllActiveByDistrict() throws Exception {
+		Region r = creator.createRegion("r");
+		District d = creator.createDistrict("d", r);
+		creator.createCommunity("c1", d);
+		Community c2 = creator.createCommunity("c2", d);
+		getCommunityFacade().archive(c2.getUuid());
+		
+		assertEquals(1, getCommunityFacade().getAllActiveByDistrict(d.getUuid()).size());
+	}
+
 }

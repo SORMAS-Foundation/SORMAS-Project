@@ -204,6 +204,12 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setErraticBehaviour(source.getErraticBehaviour());
         target.setComa(source.getComa());
         target.setConvulsion(source.getConvulsion());
+        target.setFluidInLungCavityAuscultation(source.getFluidInLungCavityAuscultation());
+        target.setFluidInLungCavityXray(source.getFluidInLungCavityXray());
+        target.setAbnormalLungXrayFindings(source.getAbnormalLungXrayFindings());
+        target.setConjunctivalInjection(source.getConjunctivalInjection());
+        target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
+        target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
     }
 
     @Override
@@ -354,5 +360,11 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setErraticBehaviour(source.getErraticBehaviour());
         target.setComa(source.getComa());
         target.setConvulsion(source.getConvulsion());
+        target.setFluidInLungCavityAuscultation(source.getFluidInLungCavityAuscultation());
+        target.setFluidInLungCavityXray(source.getFluidInLungCavityXray());
+        target.setAbnormalLungXrayFindings(source.getAbnormalLungXrayFindings());
+        target.setConjunctivalInjection(source.getConjunctivalInjection());
+        target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
+        target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
     }
 }

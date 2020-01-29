@@ -87,6 +87,12 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_contactWithSourceRespiratoryCase"
+                    app:slim="true"
+                    app:value="@{data.contactWithSourceRespiratoryCase}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_percutaneousCaseBlood"
                     app:slim="true"
                     app:value="@{data.percutaneousCaseBlood}"
@@ -102,6 +108,18 @@
                     android:id="@+id/epiData_processingSuspectedCaseSampleUnsafe"
                     app:slim="true"
                     app:value="@{data.processingSuspectedCaseSampleUnsafe}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_visitedHealthFacility"
+                    app:slim="true"
+                    app:value="@{data.visitedHealthFacility}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_visitedAnimalMarket"
+                    app:slim="true"
+                    app:value="@{data.visitedAnimalMarket}"
                     style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>
@@ -229,6 +247,12 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_camels"
+                    app:slim="true"
+                    app:value="@{data.camels}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/epiData_canidae"
                     app:slim="true"
                     app:value="@{data.canidae}"
@@ -256,6 +280,12 @@
                     android:id="@+id/epiData_primates"
                     app:slim="true"
                     app:value="@{data.primates}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/epiData_snakes"
+                    app:slim="true"
+                    app:value="@{data.snakes}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

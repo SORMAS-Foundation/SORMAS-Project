@@ -24,10 +24,10 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 
 @Entity
-public class Region extends AbstractDomainObject {
+public class Region extends InfrastructureAdo {
 	
 	private static final long serialVersionUID = -2958216667876104358L;
 

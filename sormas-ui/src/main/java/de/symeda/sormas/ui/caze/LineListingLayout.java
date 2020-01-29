@@ -133,7 +133,7 @@ public class LineListingLayout extends VerticalLayout {
 			region.setVisible(false);
 			updateDistricts(userRegion);
 		} else {
-			region.setItems(FacadeProvider.getRegionFacade().getAllAsReference());
+			region.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		}
 
 		HorizontalLayout actionBar = new HorizontalLayout();
@@ -196,7 +196,7 @@ public class LineListingLayout extends VerticalLayout {
 
 	private void updateDistricts(RegionReferenceDto regionDto) {
 		FieldHelper.updateItems(district,
-				regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+				regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 	}
 
 	private void setEpidNumberPrefixes() {
@@ -292,11 +292,11 @@ public class LineListingLayout extends VerticalLayout {
 
 	private void updateCommunityAndFacility(DistrictReferenceDto districtDto, CaseLineLayout line) {
 		FieldHelper.updateItems(line.getCommunity(),
-				districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid())
+				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid())
 						: null);
 		FieldHelper.updateItems(line.getFacility(),
 				districtDto != null
-						? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true)
+						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true)
 						: null);
 	}
 
@@ -375,13 +375,14 @@ public class LineListingLayout extends VerticalLayout {
 			epidNumber.setWidth(160, Unit.PIXELS);
 			binder.forField(epidNumber).bind(CaseLineDto.EPID_NUMBER);
 			community = new ComboBox<>();
+			community.addStyleName(CssStyles.SOFT_REQUIRED);
 			community.addValueChangeListener(e -> {
 				FieldHelper.removeItems(facility);
 				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getValue();
 				FieldHelper.updateItems(facility, communityDto != null
-						? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true)
+						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true)
 						: district.getValue() != null ? FacadeProvider.getFacilityFacade()
-								.getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
+								.getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
 								: null);
 			});
 			binder.forField(community).bind(CaseLineDto.COMMUNITY);

@@ -39,6 +39,7 @@ public enum PathogenTestType {
 	GRAM_STAIN,
 	LATEX_AGGLUTINATION,
 	CQ_VALUE_DETECTION,
+	SEQUENCING,
 	OTHER;
 	
 	public String toString() {

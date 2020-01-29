@@ -42,24 +42,8 @@ public class ConfirmationInputDialog extends AbstractDialog {
                 R.layout.dialog_root_two_button_panel_layout, headingResId, subHeadingResId);
 
         this.wordToType = wordToType;
+        getConfig().setSubHeading(String.format(getConfig().getSubHeading(), wordToType));
         getConfig().setHideHeadlineSeparator(true);
-    }
-
-    public ConfirmationInputDialog(final FragmentActivity activity, int headingResId, int subHeadingResId,
-                                   int positiveButtonTextResId, int negativeButtonTextResId, String wordToType) {
-        this(activity, headingResId, subHeadingResId, wordToType);
-
-        Resources resources = getContext().getResources();
-        if (positiveButtonTextResId >= 0) {
-            getConfig().setPositiveButtonText(resources.getString(positiveButtonTextResId));
-        } else {
-            getConfig().setPositiveButtonText(resources.getString(R.string.action_confirm));
-        }
-        if (negativeButtonTextResId >= 0) {
-            getConfig().setNegativeButtonText(resources.getString(negativeButtonTextResId));
-        } else {
-            getConfig().setNegativeButtonText(resources.getString(R.string.action_dismiss));
-        }
     }
 
     // Overrides

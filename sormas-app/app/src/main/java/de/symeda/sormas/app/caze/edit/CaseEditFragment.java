@@ -150,7 +150,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 referCaseFromPoeDialog.setPositiveCallback(() -> {
                     record = caseClone;
                     requestLayoutRebind();
-                    referCaseFromPoeDialog.dismiss();
                 });
                 referCaseFromPoeDialog.show();
             });
@@ -221,10 +220,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility,
                 contentBinding.caseDataHealthFacilityDetails);
 
-        InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
-                contentBinding.caseDataDistrict, initialDistricts,
-                contentBinding.caseDataCommunity, initialCommunities,
-                contentBinding.caseDataHealthFacility, initialFacilities);
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.caseDataRegion, initialRegions, record.getRegion(),
+                contentBinding.caseDataDistrict, initialDistricts, record.getDistrict(),
+                contentBinding.caseDataCommunity, initialCommunities, record.getCommunity(),
+                contentBinding.caseDataHealthFacility, initialFacilities, record.getHealthFacility());
 
         if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
             contentBinding.caseDataHealthFacility.setRequired(false);
@@ -234,6 +234,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     @Override
     public void onAfterLayoutBinding(final FragmentCaseEditLayoutBinding contentBinding) {
         setUpFieldVisibilities(contentBinding);
+        if (ConfigProvider.getUser().getHealthFacility() != null || ConfigProvider.getUser().getCommunity() != null){
+            contentBinding.caseDataDistrictLevelDate.setEnabled(false);
+        }
 
         // Initialize ControlSpinnerFields
         contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);

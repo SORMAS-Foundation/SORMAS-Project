@@ -174,7 +174,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                             checkLoginAndDoUpdateAndInitialSync();
                         } else {
                             // if we could not connect to the server, the user can't sign in - no matter the reason
-                            ConfigProvider.clearUsernameAndPassword();
+                            ConfigProvider.clearUserLogin();
                         }
                     }
             );

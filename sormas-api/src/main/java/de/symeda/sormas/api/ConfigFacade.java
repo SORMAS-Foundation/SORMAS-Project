@@ -59,5 +59,9 @@ public interface ConfigFacade {
 	double getNameSimilarityThreshold();
 	
 	int getInfrastructureSyncThreshold();
+
+	int getDaysAfterCaseGetsArchived();
+
+	int getDaysAfterEventGetsArchived();
 	
 }

@@ -18,10 +18,12 @@
 package de.symeda.sormas.backend.event;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -37,10 +39,13 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 
 public class EventFacadeEjbTest extends AbstractBeanTest {
 
@@ -134,6 +139,37 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		// getArchivedUuidsSince should return length 0
 		assertEquals(0, getEventFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
+	}
+
+	@Test
+	public void testArchiveAllArchivableEvents() {
+		
+		RDCFEntities rdcfEntities = creator.createRDCFEntities();
+		RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcfEntities).toReference();
+
+		// One archived event
+		EventDto event1 = creator.createEvent(EventStatus.CONFIRMED, "", "", "", "", TypeOfPlace.MEANS_OF_TRANSPORT,
+				new Date(), new Date(), user, user, Disease.ANTHRAX, rdcf.district);
+		EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
+		cut.archiveOrDearchiveEvent(event1.getUuid(), true);
+
+		// One other event
+		EventDto event2 = creator.createEvent(EventStatus.POSSIBLE, "", "", "", "", TypeOfPlace.HOSPITAL, new Date(),
+				new Date(), user, user, Disease.DENGUE, rdcf.district);
+		
+		assertTrue(cut.isArchived(event1.getUuid()));
+		assertFalse(cut.isArchived(event2.getUuid()));
+
+		// Event of "today" shouldn't be archived
+		cut.archiveAllArchivableEvents(70, LocalDate.now().plusDays(69));
+		assertTrue(cut.isArchived(event1.getUuid()));
+		assertFalse(cut.isArchived(event2.getUuid()));
+
+		// Event of "yesterday" should be archived
+		cut.archiveAllArchivableEvents(70, LocalDate.now().plusDays(71));
+		assertTrue(cut.isArchived(event1.getUuid()));
+		assertTrue(cut.isArchived(event2.getUuid()));
 	}
 
 }

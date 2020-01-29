@@ -19,10 +19,10 @@ package de.symeda.sormas.ui.user;
 
 import java.util.Set;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
@@ -98,37 +98,37 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	userRoles.setMultiSelect(true);
     	userRoles.addItems(UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles()));
     	
-    	ComboBox region = addField(UserDto.REGION, ComboBox.class);
-    	ComboBox community = addField(UserDto.COMMUNITY, ComboBox.class);
+    	ComboBox region = addInfrastructureField(UserDto.REGION);
+    	ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
 
-    	ComboBox district = addField(UserDto.DISTRICT, ComboBox.class);
+    	ComboBox district = addInfrastructureField(UserDto.DISTRICT);
     	region.addValueChangeListener(e -> {
     		FieldHelper.removeItems(community);
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
        	});
 
     	
     	// for informant
     	ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
 
-    	ComboBox healthFacility = addField(UserDto.HEALTH_FACILITY, ComboBox.class);
-    	ComboBox cbPointOfEntry = addField(UserDto.POINT_OF_ENTRY, ComboBox.class);
+    	ComboBox healthFacility = addInfrastructureField(UserDto.HEALTH_FACILITY);
+    	ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY);
     	district.addValueChangeListener(e -> {
     		FieldHelper.removeItems(healthFacility);
     		FieldHelper.removeItems(associatedOfficer);
     		FieldHelper.removeItems(cbPointOfEntry);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
-    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, false) : null);
+    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, false) : null);
     		FieldHelper.updateItems(associatedOfficer, districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
-    		FieldHelper.updateItems(cbPointOfEntry, districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllByDistrict(districtDto.getUuid(), false) : null);
+    		FieldHelper.updateItems(cbPointOfEntry, districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
     	});
 
     	ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
-    	laboratory.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(false));
+    	laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
     	
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
     	setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
     	addValidators(UserDto.USER_NAME, new UserNameValidator());

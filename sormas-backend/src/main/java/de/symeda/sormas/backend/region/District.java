@@ -27,10 +27,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 
 @Entity
-public class District extends AbstractDomainObject {
+public class District extends InfrastructureAdo {
 	
 	private static final long serialVersionUID = -6057113756091470463L;
 

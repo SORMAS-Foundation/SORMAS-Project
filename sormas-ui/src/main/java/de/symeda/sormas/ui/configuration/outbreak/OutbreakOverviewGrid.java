@@ -31,10 +31,10 @@ import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -168,12 +168,14 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		container.removeAllItems();
 
 		// Initially set all columns to their default value
-		for (RegionReferenceDto region : FacadeProvider.getRegionFacade().getAllAsReference()) {
+		for (RegionReferenceDto region : FacadeProvider.getRegionFacade().getAllActiveAsReference()) {
 			addItem(region);
 		}
 
 		// Alter cells with regions and diseases that actually have an outbreak
-		List<OutbreakDto> activeOutbreaks = FacadeProvider.getOutbreakFacade().getActive();
+		OutbreakCriteria criteria = new OutbreakCriteria().active(true);
+		criteria.disease(UserProvider.getCurrent().getUser().getLimitedDisease());
+		List<OutbreakDto> activeOutbreaks = FacadeProvider.getOutbreakFacade().getActive(criteria);
 
 		for (OutbreakDto outbreak : activeOutbreaks) {			
 			DistrictReferenceDto outbreakDistrict = outbreak.getDistrict();

@@ -128,12 +128,10 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
                             } catch (DaoException e) {
                                 NotificationHelper.showNotification(getActiveActivity().getRootView(), ERROR, String.format(getActiveActivity().getResources().getString(R.string.message_save_error), pathogenTestToSave.getEntityName()));
                             } finally {
-                                confirmationDialog.dismiss();
                                 finish();
                             }
                         });
                         confirmationDialog.setNegativeCallback(() -> {
-                            confirmationDialog.dismiss();
                             finish();
                         });
 

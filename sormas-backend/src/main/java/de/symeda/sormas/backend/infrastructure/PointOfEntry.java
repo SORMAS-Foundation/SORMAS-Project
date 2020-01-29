@@ -8,12 +8,12 @@ import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
 @Entity
-public class PointOfEntry extends AbstractDomainObject {
+public class PointOfEntry extends InfrastructureAdo {
 
 	private static final long serialVersionUID = -6684018483640792433L;
 

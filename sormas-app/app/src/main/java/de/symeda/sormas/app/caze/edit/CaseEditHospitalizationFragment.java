@@ -62,58 +62,30 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
     // Instance methods
 
     private void setUpControlListeners() {
-        onPrevHosItemClickListener = new IEntryItemOnClickListener() {
-            @Override
-            public void onClick(View v, Object item) {
-                final PreviousHospitalization previousHospitalization = (PreviousHospitalization) item;
-                final PreviousHospitalization previousHospitalizationClone = (PreviousHospitalization) previousHospitalization.clone();
-                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalizationClone);
+        onPrevHosItemClickListener = (v, item) -> {
+            final PreviousHospitalization previousHospitalization = (PreviousHospitalization) item;
+            final PreviousHospitalization previousHospitalizationClone = (PreviousHospitalization) previousHospitalization.clone();
+            final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalizationClone);
 
-                dialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        record.getPreviousHospitalizations().set(record.getPreviousHospitalizations().indexOf(previousHospitalization), previousHospitalizationClone);
-                        updatePreviousHospitalizations();
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setPositiveCallback(() -> {
+                record.getPreviousHospitalizations().set(record.getPreviousHospitalizations().indexOf(previousHospitalization), previousHospitalizationClone);
+                updatePreviousHospitalizations();
+            });
 
-                dialog.setDeleteCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        removePreviousHospitalization(previousHospitalization);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setDeleteCallback(() -> removePreviousHospitalization(previousHospitalization));
 
-                dialog.show();
-            }
+            dialog.show();
         };
 
-        getContentBinding().btnAddPrevHosp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final PreviousHospitalization previousHospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
-                final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalization);
+        getContentBinding().btnAddPrevHosp.setOnClickListener(v -> {
+            final PreviousHospitalization previousHospitalization = DatabaseHelper.getPreviousHospitalizationDao().build();
+            final PreviousHospitalizationDialog dialog = new PreviousHospitalizationDialog(CaseEditActivity.getActiveActivity(), previousHospitalization);
 
-                dialog.setPositiveCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        addPreviousHospitalization(previousHospitalization);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setPositiveCallback(() -> addPreviousHospitalization(previousHospitalization));
 
-                dialog.setDeleteCallback(new Callback() {
-                    @Override
-                    public void call() {
-                        removePreviousHospitalization(previousHospitalization);
-                        dialog.dismiss();
-                    }
-                });
+            dialog.setDeleteCallback(() -> removePreviousHospitalization(previousHospitalization));
 
-                dialog.show();
-            }
+            dialog.show();
         });
     }
 

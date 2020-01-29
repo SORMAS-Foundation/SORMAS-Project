@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -28,13 +29,13 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface DistrictFacade {
 
-    List<DistrictReferenceDto> getAllByRegion(String regionUuid);
+    List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid);
 	
 	int getCountByRegion(String regionUuid);
 
 	List<DistrictDto> getAllAfter(Date date);
 	
-	List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	long count(DistrictCriteria criteria);
 	
@@ -44,11 +45,9 @@ public interface DistrictFacade {
 	
 	DistrictReferenceDto getDistrictReferenceById(long id);
 
-	List<DistrictReferenceDto> getAllAsReference();
+	List<DistrictReferenceDto> getAllActiveAsReference();
 
 	List<String> getAllUuids(String userUuid);
-	
-	List<Integer> getAllIds();
 	
 	List<DistrictDto> getByUuids(List<String> uuids);
 	
@@ -59,4 +58,14 @@ public interface DistrictFacade {
 	List<String> getNamesByIds(List<Long> districtIds);
 
 	String getFullEpidCodeForDistrict(String districtUuid);
+	
+	void archive(String districtUuid);
+	
+	void dearchive(String districtUuid);
+	
+	
+	boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids);
+	
+	boolean hasArchivedParentInfrastructure(Collection<String> districtUuids);
+	
 }

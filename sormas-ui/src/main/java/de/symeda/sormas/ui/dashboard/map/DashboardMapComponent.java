@@ -80,6 +80,7 @@ import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMap.MarkerClickEvent;
 import de.symeda.sormas.ui.map.LeafletMap.MarkerClickListener;
+import de.symeda.sormas.ui.map.LeafletMapUtil;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.map.MarkerIcon;
@@ -109,6 +110,7 @@ public class DashboardMapComponent extends VerticalLayout {
 	private boolean showUnconfirmedContacts;
 	private boolean showEvents;
 	private boolean showRegions;
+	private boolean hideOtherCountries;
 
 	// Entities
 	private final HashMap<FacilityReferenceDto, List<MapCaseDto>> casesByFacility = new HashMap<>();
@@ -179,6 +181,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			showConfirmedContacts = true;
 			showUnconfirmedContacts = true;
 		}
+		hideOtherCountries = false;
 
 		this.setMargin(true);
 
@@ -194,7 +197,12 @@ public class DashboardMapComponent extends VerticalLayout {
 		clearCaseMarkers();
 		clearContactMarkers();
 		clearEventMarkers();
+		LeafletMapUtil.clearOtherCountriesOverlay(map);
 
+		if (hideOtherCountries) {
+			LeafletMapUtil.addOtherCountriesOverlay(map);
+		}
+		
 		Date fromDate = dashboardDataProvider.getFromDate();
 		Date toDate = dashboardDataProvider.getToDate();
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
@@ -433,6 +441,15 @@ public class DashboardMapComponent extends VerticalLayout {
 					layersLayout.addComponent(regionMapVisualizationSelect);
 					regionMapVisualizationSelect.setEnabled(showRegions);
 				}
+
+				CheckBox hideOtherCountriesCheckBox = new CheckBox();
+				hideOtherCountriesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardHideOtherCountries));
+				hideOtherCountriesCheckBox.setValue(hideOtherCountries);
+				hideOtherCountriesCheckBox.addValueChangeListener(e -> {
+					hideOtherCountries = (boolean) e.getProperty().getValue();
+					refreshMap();
+				});
+				layersLayout.addComponent(hideOtherCountriesCheckBox);
 			}
 		}
 		mapFooterLayout.addComponent(layersDropdown);
@@ -715,7 +732,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		clearRegionShapes();
 		map.setTileLayerOpacity(0.5f);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
 		List<LeafletPolygon> regionPolygons = new ArrayList<LeafletPolygon>();
 
 		// draw outlines of all regions

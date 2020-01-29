@@ -1,4 +1,4 @@
--- If a DB update was performed, insert a new line with a comment to the table SCHEMA_VERSION.
+#-- If a DB update was performed, insert a new line with a comment to the table SCHEMA_VERSION.
 -- Example: INSERT INTO schema_version (version_number, comment) VALUES (1, 'Init database');
 
 -- #1
@@ -3841,3 +3841,77 @@ ALTER TABLE diseaseconfiguration ADD COLUMN casebased boolean;
 ALTER TABLE diseaseconfiguration_history ADD COLUMN casebased boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (176, 'Add caseBased column to diseaseconfiguration #1277');
+
+-- 2019-01-08 Add archived to infrastructure data #1412
+ALTER TABLE region ADD COLUMN archived boolean DEFAULT false;
+ALTER TABLE district ADD COLUMN archived boolean DEFAULT false;
+ALTER TABLE community ADD COLUMN archived boolean DEFAULT false;
+ALTER TABLE facility ADD COLUMN archived boolean DEFAULT false;
+ALTER TABLE pointofentry ADD COLUMN archived boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (177, 'Add archived to infrastructure data #1412');
+
+-- 2019-01-28 Add fields for Coronavirus #1476
+ALTER TABLE symptoms ADD COLUMN fluidinlungcavityauscultation varchar(255);
+ALTER TABLE symptoms ADD COLUMN fluidinlungcavityxray varchar(255);
+ALTER TABLE symptoms ADD COLUMN abnormallungxrayfindings varchar(255);
+ALTER TABLE symptoms ADD COLUMN conjunctivalinjection varchar(255);
+ALTER TABLE symptoms ADD COLUMN acuterespiratorydistresssyndrome varchar(255);
+ALTER TABLE symptoms ADD COLUMN pneumoniaclinicalorradiologic varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fluidinlungcavityauscultation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fluidinlungcavityxray varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN abnormallungxrayfindings varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN conjunctivalinjection varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN acuterespiratorydistresssyndrome varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN pneumoniaclinicalorradiologic varchar(255);
+
+ALTER TABLE epidata ADD COLUMN visitedhealthfacility varchar(255);
+ALTER TABLE epidata ADD COLUMN contactwithsourcerespiratorycase varchar(255);
+ALTER TABLE epidata ADD COLUMN visitedanimalmarket varchar(255);
+ALTER TABLE epidata ADD COLUMN camels varchar(255);
+ALTER TABLE epidata ADD COLUMN snakes varchar(255);
+ALTER TABLE epidata_history ADD COLUMN visitedhealthfacility varchar(255);
+ALTER TABLE epidata_history ADD COLUMN contactwithsourcerespiratorycase varchar(255);
+ALTER TABLE epidata_history ADD COLUMN visitedanimalmarket varchar(255);
+ALTER TABLE epidata_history ADD COLUMN camels varchar(255);
+ALTER TABLE epidata_history ADD COLUMN snakes varchar(255);
+
+ALTER TABLE healthconditions ADD COLUMN immunodeficiencyotherthanhiv varchar(255);
+ALTER TABLE healthconditions ADD COLUMN cardiovasculardiseaseincludinghypertension varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN immunodeficiencyotherthanhiv varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN cardiovasculardiseaseincludinghypertension varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (178, 'Add fields for Coronavirus #1476');
+
+-- 2019-01-28 Set missing point of entry type for default entries #1484
+UPDATE pointofentry SET pointofentrytype='AIRPORT', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-AIRPORTX';
+UPDATE pointofentry SET pointofentrytype='SEAPORT', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-SEAPORTX';
+UPDATE pointofentry SET pointofentrytype='GROUND_CROSSING', changedate=now() WHERE uuid='SORMAS-CONSTIG-OTHERS-GROUNDCR';
+UPDATE pointofentry SET pointofentrytype='OTHER', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-OTHERPOE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (179, 'Set missing point of entry type for default entries #1484');
+
+-- 2019-01-28 Rename "New influenca" to "New influenza" #1458
+UPDATE cases SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE cases_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE events SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE events_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE outbreak SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE outbreak_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE person SET causeofdeathdisease = 'NEW_INFLUENZA' where causeofdeathdisease = 'NEW_INFLUENCA';
+UPDATE person_history SET causeofdeathdisease = 'NEW_INFLUENZA' where causeofdeathdisease = 'NEW_INFLUENCA';
+UPDATE visit SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE visit_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE weeklyreportentry SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE clinicalvisit SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE clinicalvisit_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE diseaseconfiguration SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE diseaseconfiguration_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE featureconfiguration SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE featureconfiguration_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
+UPDATE pathogentest SET testeddisease = 'NEW_INFLUENZA' where testeddisease = 'NEW_INFLUENCA';
+UPDATE pathogentest_history SET testeddisease = 'NEW_INFLUENZA' where testeddisease = 'NEW_INFLUENCA';
+UPDATE users SET limiteddisease = 'NEW_INFLUENZA' where limiteddisease = 'NEW_INFLUENCA';
+UPDATE users_history SET limiteddisease = 'NEW_INFLUENZA' where limiteddisease = 'NEW_INFLUENCA';
+
+INSERT INTO schema_version (version_number, comment) VALUES (180, 'Rename "New influenca" to "New influenza" #1458');

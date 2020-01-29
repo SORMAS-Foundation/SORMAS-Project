@@ -38,4 +38,6 @@ public interface GeoShapeProvider {
 	DistrictReferenceDto getDistrictByCoord(GeoLatLon latLon);
 	
 	GeoLatLon getCenterOfDistrict(DistrictReferenceDto district);
+
+	GeoLatLon[][] getCountryShape();
 }

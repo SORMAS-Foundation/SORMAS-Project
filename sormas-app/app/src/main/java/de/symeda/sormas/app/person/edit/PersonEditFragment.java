@@ -118,14 +118,16 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
         initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
-        InfrastructureHelper.initializeFacilityFields(contentBinding.personOccupationRegion, initialOccupationRegions,
-                contentBinding.personOccupationDistrict, initialOccupationDistricts,
-                contentBinding.personOccupationCommunity, initialOccupationCommunities,
-                contentBinding.personOccupationFacility, initialOccupationFacilities);
-        InfrastructureHelper.initializeFacilityFields(contentBinding.personPlaceOfBirthRegion, initialPlaceOfBirthRegions,
-                contentBinding.personPlaceOfBirthDistrict, initialPlaceOfBirthDistricts,
-                contentBinding.personPlaceOfBirthCommunity, initialPlaceOfBirthCommunities,
-                contentBinding.personPlaceOfBirthFacility, initialPlaceOfBirthFacilities);
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.personOccupationRegion, initialOccupationRegions, record.getOccupationRegion(),
+                contentBinding.personOccupationDistrict, initialOccupationDistricts, record.getOccupationDistrict(),
+                contentBinding.personOccupationCommunity, initialOccupationCommunities, record.getOccupationCommunity(),
+                contentBinding.personOccupationFacility, initialOccupationFacilities, record.getOccupationFacility());
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.personPlaceOfBirthRegion, initialPlaceOfBirthRegions, record.getPlaceOfBirthRegion(),
+                contentBinding.personPlaceOfBirthDistrict, initialPlaceOfBirthDistricts, record.getPlaceOfBirthDistrict(),
+                contentBinding.personPlaceOfBirthCommunity, initialPlaceOfBirthCommunities, record.getPlaceOfBirthCommunity(),
+                contentBinding.personPlaceOfBirthFacility, initialPlaceOfBirthFacilities, record.getPlaceOfBirthFacility());
 
         // Initialize ControlSpinnerFields
         contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
@@ -183,12 +185,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     }
 
     public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
-        contentBinding.personAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddressPopup(record, contentBinding);
-            }
-        });
+        contentBinding.personAddress.setOnClickListener(v -> openAddressPopup(record, contentBinding));
     }
 
     public static Date calculateBirthDateValue(FragmentPersonEditLayoutBinding contentBinding) {
@@ -236,13 +233,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
         locationDialog.show();
 
-        locationDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                contentBinding.personAddress.setValue(locationClone);
-                record.setAddress(locationClone);
-                locationDialog.dismiss();
-            }
+        locationDialog.setPositiveCallback(() -> {
+            contentBinding.personAddress.setValue(locationClone);
+            record.setAddress(locationClone);
         });
     }
 
@@ -253,18 +246,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
      */
     public static void initializeCauseOfDeathDetailsFieldVisibility(final ControlPropertyField causeOfDeathField, final ControlPropertyField causeOfDeathDiseaseField, final ControlPropertyField causeOfDeathDetailsField) {
         setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
-        causeOfDeathField.addValueChangedListener(new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
-            }
-        });
-        causeOfDeathDiseaseField.addValueChangedListener(new ValueChangeListener() {
-            @Override
-            public void onChange(ControlPropertyField field) {
-                setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField);
-            }
-        });
+        causeOfDeathField.addValueChangedListener(field -> setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField));
+        causeOfDeathDiseaseField.addValueChangedListener(field -> setCauseOfDeathDetailsFieldVisibility(causeOfDeathField, causeOfDeathDiseaseField, causeOfDeathDetailsField));
     }
 
     private static void setCauseOfDeathDetailsFieldVisibility(final ControlPropertyField causeOfDeathField, final ControlPropertyField causeOfDeathDiseaseField, final ControlPropertyField causeOfDeathDetailsField) {

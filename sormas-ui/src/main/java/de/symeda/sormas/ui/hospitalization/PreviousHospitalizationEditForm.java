@@ -67,11 +67,11 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		addField(PreviousHospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(2);
 
-		ComboBox facilityRegion = addField(PreviousHospitalizationDto.REGION, ComboBox.class);
-		ComboBox facilityDistrict = addField(PreviousHospitalizationDto.DISTRICT, ComboBox.class);
-		ComboBox facilityCommunity = addField(PreviousHospitalizationDto.COMMUNITY, ComboBox.class);
+		ComboBox facilityRegion = addInfrastructureField(PreviousHospitalizationDto.REGION);
+		ComboBox facilityDistrict = addInfrastructureField(PreviousHospitalizationDto.DISTRICT);
+		ComboBox facilityCommunity = addInfrastructureField(PreviousHospitalizationDto.COMMUNITY);
 		facilityCommunity.setNullSelectionAllowed(true);
-		ComboBox healthFacility = addField(PreviousHospitalizationDto.HEALTH_FACILITY, ComboBox.class);
+		ComboBox healthFacility = addInfrastructureField(PreviousHospitalizationDto.HEALTH_FACILITY);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
 		
@@ -79,7 +79,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 		facilityRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(facilityDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+    		FieldHelper.updateItems(facilityDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
        	});
 		facilityDistrict.addValueChangeListener(e -> {
 			if (facilityCommunity.getValue() == null) {
@@ -87,17 +87,17 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
     		}
     		FieldHelper.removeItems(facilityCommunity);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(facilityCommunity, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
-    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
+    		FieldHelper.updateItems(facilityCommunity, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
     	});
 		facilityCommunity.addValueChangeListener(e -> {
 			FieldHelper.removeItems(healthFacility);
     		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(healthFacility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
-    			facilityDistrict.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true) :
+    		FieldHelper.updateItems(healthFacility, communityDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true) :
+    			facilityDistrict.getValue() != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true) :
     				null);
     	});
-		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		
 		healthFacility.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
