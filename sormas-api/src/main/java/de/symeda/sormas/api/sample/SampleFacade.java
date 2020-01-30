@@ -55,8 +55,6 @@ public interface SampleFacade {
 
 	List<SampleDto> getByUuids(List<String> uuids);
 	
-	List<DashboardSampleDto> getNewSamplesForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
-	
 	void deleteSample(SampleReferenceDto sampleRef, String userUuid);
 	
 	void validate(SampleDto sample) throws ValidationRuntimeException;

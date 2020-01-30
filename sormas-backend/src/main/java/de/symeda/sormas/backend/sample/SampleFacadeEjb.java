@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -53,7 +52,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -140,6 +138,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private LocationService locationService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 
 	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
@@ -519,15 +519,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<DashboardSampleDto> getNewSamplesForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-
-		return sampleService.getNewSamplesForDashboard(region, district, disease, from, to, user);
-	}
-
-	@Override
 	public SampleReferenceDto getReferredFrom(String sampleUuid) {
 		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
 	}
@@ -654,7 +645,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
 		// Change pathogenTestResultChangeDate if the pathogen test result has changed
 		if (existingSample != null && existingSample.getPathogenTestResult() != null && existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
-			Date latestPathogenTestDate = FacadeProvider.getPathogenTestFacade().getLatestPathogenTestDate(newSample.getUuid());
+			Date latestPathogenTestDate = pathogenTestFacade.getLatestPathogenTestDate(newSample.getUuid());
 			if (latestPathogenTestDate != null) {
 				newSample.setPathogenTestResultChangeDate(latestPathogenTestDate);
 			}
