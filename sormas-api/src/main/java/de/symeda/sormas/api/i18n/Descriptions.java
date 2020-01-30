@@ -6,6 +6,7 @@ public interface Descriptions {
 	public static String descDashboardConvertedToCase = "descDashboardConvertedToCase";
 	public static String descDashboardFatalityRateInfo = "descDashboardFatalityRateInfo";
 	public static String descDashboardFollowUpInfo = "descDashboardFollowUpInfo";
+	public static String descDashboardNewTestResults = "descDashboardNewTestResults";
 	public static String descDetailedExportButton = "descDetailedExportButton";
 	public static String descDistrictFilter = "descDistrictFilter";
 	public static String descExportButton = "descExportButton";
