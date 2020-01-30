@@ -87,9 +87,6 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
         report.setYear(epiWeek.getYear());
         report.setEpiWeek(epiWeek.getWeek());
         report.setDisease(disease);
-        report.setNewCases(0);
-        report.setLabConfirmations(0);
-        report.setDeaths(0);
 
         return report;
     }

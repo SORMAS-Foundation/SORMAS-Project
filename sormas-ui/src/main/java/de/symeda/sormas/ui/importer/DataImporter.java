@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -176,7 +178,9 @@ public abstract class DataImporter {
 		
 		CSVReader csvReader = null;
 		try {
-			csvReader = CSVUtils.createCSVReader(new FileReader(inputFile.getPath()), FacadeProvider.getConfigFacade().getCsvSeparator());
+			csvReader = CSVUtils.createCSVReader(
+					new FileReader(URLDecoder.decode(inputFile.getPath(), StandardCharsets.UTF_8.name())),
+					FacadeProvider.getConfigFacade().getCsvSeparator());
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
 		
 			// Build dictionary of entity headers
@@ -206,7 +210,7 @@ public abstract class DataImporter {
 			String[] nextLine = csvReader.readNext();
 			int lineCounter = 0;
 			while (nextLine != null) {
-				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths);
+				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0);
 				logger.debug("runImport - line " + lineCounter);
 				if (importedLineCallback != null) {
 					importedLineCallback.accept(lineResult);
@@ -285,7 +289,7 @@ public abstract class DataImporter {
 	}
 
 	protected abstract ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties,
-			String[][] entityPropertyPaths) throws IOException, InvalidColumnException, InterruptedException;
+			String[][] entityPropertyPaths, boolean firstLine) throws IOException, InvalidColumnException, InterruptedException;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry,
@@ -356,7 +360,7 @@ public abstract class DataImporter {
 
 		for (int i = 0; i < values.length; i++) {
 			String value = values[i];
-			if (value == null || value.isEmpty()) {
+			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}
 
@@ -366,7 +370,7 @@ public abstract class DataImporter {
 				continue;
 			}
 
-			if (!(ignoreEmptyEntries && (StringUtils.isEmpty(value)))) {
+			if (!(ignoreEmptyEntries && StringUtils.isEmpty(value))) {
 				Exception exception = insertCallback.apply(
 						new ImportCellData(value, hasEntityClassRow ? entityClasses[i] : null, entityPropertyPath));
 				if (exception != null) {

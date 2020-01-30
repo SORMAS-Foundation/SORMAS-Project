@@ -55,9 +55,23 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
 		
 		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, null, null, null, null, false, false, null);
-
 		// List should have one entry
 		assertEquals(1, results.size());
+		
+		// try all groupings
+		for (StatisticsCaseAttribute groupingAttribute : StatisticsCaseAttribute.values()) {
+			StatisticsCaseSubAttribute[] subAttributes = groupingAttribute.getSubAttributes();
+			if (subAttributes.length == 0) {
+				 getCaseStatisticsFacade().queryCaseCount(criteria, groupingAttribute, null, null, null, false, false, null);
+			} else {
+				for (StatisticsCaseSubAttribute subGroupingAttribute : groupingAttribute.getSubAttributes()) {
+					if (subGroupingAttribute.isUsedForGrouping()) {
+						getCaseStatisticsFacade().queryCaseCount(criteria, groupingAttribute, subGroupingAttribute, null, null, false, false, null);
+					}
+				}
+			}
+		}
+		
 	}
 	
 	@Test
@@ -116,7 +130,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 
 		results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, LocalDate.now().getYear() + 2);
 		// List should have one entry
-		assertEquals(Integer.valueOf(12100), results.get(0).getPopulation());
+		assertEquals(Integer.valueOf(12214), results.get(0).getPopulation());
 
 	}
 }

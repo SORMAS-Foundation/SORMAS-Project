@@ -2,6 +2,7 @@ package de.symeda.sormas.backend;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.util.DateHelper8;
 
 public class H2Function {
@@ -18,4 +19,13 @@ public class H2Function {
 			throw new IllegalArgumentException(part);
 		}
 	}
+	
+	public static int epi_week(Date date) {
+		return DateHelper.getEpiWeek(date).getWeek().intValue();
+	}
+	
+	public static int epi_year(Date date) {
+		return DateHelper.getEpiWeek(date).getYear().intValue();
+	}
+
 }

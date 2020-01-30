@@ -130,6 +130,11 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
 
         target.setProphylaxisStatus(source.getProphylaxisStatus());
         target.setDateOfProphylaxis(source.getDateOfProphylaxis());
+        target.setVisitedHealthFacility(source.getVisitedHealthFacility());
+        target.setContactWithSourceRespiratoryCase(source.getContactWithSourceRespiratoryCase());
+        target.setVisitedAnimalMarket(source.getVisitedAnimalMarket());
+        target.setCamels(source.getCamels());
+        target.setSnakes(source.getSnakes());
 
         // just recreate all of this and throw the old stuff away
         List<EpiDataBurial> burials = new ArrayList<>();
@@ -225,6 +230,11 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
 
         target.setProphylaxisStatus(source.getProphylaxisStatus());
         target.setDateOfProphylaxis(source.getDateOfProphylaxis());
+        target.setVisitedHealthFacility(source.getVisitedHealthFacility());
+        target.setContactWithSourceRespiratoryCase(source.getContactWithSourceRespiratoryCase());
+        target.setVisitedAnimalMarket(source.getVisitedAnimalMarket());
+        target.setCamels(source.getCamels());
+        target.setSnakes(source.getSnakes());
 
         List<EpiDataBurialDto> burialDtos = new ArrayList<>();
         if (!source.getBurials().isEmpty()) {

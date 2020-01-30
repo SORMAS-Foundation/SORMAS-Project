@@ -56,7 +56,7 @@ public class TestHelper {
         RenamingDelegatingContext context = new RenamingDelegatingContext(InstrumentationRegistry.getTargetContext(), "test_");
         // Make sure that no database/user is still set from the last run
         context.deleteDatabase(DatabaseHelper.DATABASE_NAME);
-        ConfigProvider.clearUsernameAndPassword();
+        ConfigProvider.clearUserLogin();
         // Initialize the testing database
         DatabaseHelper.init(context);
         ConfigProvider.init(context);

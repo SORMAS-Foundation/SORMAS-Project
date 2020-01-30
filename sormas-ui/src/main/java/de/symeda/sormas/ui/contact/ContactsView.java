@@ -315,7 +315,7 @@ public class ContactsView extends AbstractView {
 			if (user.getRegion() == null) {
 				regionFilter.setWidth(140, Unit.PIXELS);
 				regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_REGION_UUID));
-				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 					criteria.caseRegion(region);
@@ -335,14 +335,14 @@ public class ContactsView extends AbstractView {
 			});
 
 			if (user.getRegion() != null && user.getDistrict() == null) {	
-				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 				districtFilter.setEnabled(true);
 			} else {
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
 					districtFilter.removeAllItems();
 					if (region != null) {
-						districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
+						districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 						districtFilter.setEnabled(true);
 					} else {
 						districtFilter.setEnabled(false);
@@ -368,7 +368,7 @@ public class ContactsView extends AbstractView {
 				facilityFilter.removeAllItems();
 				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
 				if (district != null) {
-					facilityFilter.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(district, true));
+					facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(district, true));
 					facilityFilter.setEnabled(true);
 				} else {
 					facilityFilter.setEnabled(false);

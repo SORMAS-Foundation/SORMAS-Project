@@ -69,48 +69,40 @@ public class UserReportDialog extends AbstractDialog {
 
     @Override
     protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-        setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
-                    @Override
-                    public void doInBackground(TaskResultHolder resultHolder) {
-                        try {
-                            String description = contentBinding.userReportMessage.getValue();
+        setPositiveCallback(() -> {
+            DefaultAsyncTask executor = new DefaultAsyncTask(getContext()) {
+                @Override
+                public void doInBackground(TaskResultHolder resultHolder) {
+                    try {
+                        String description = contentBinding.userReportMessage.getValue();
 
-                            Bundle eventBundle = new Bundle();
-                            eventBundle.putString(FirebaseAnalytics.Param.CONTENT, description);
-                            ((SormasApplication) getActivity().getApplication()).getFirebaseAnalytics().logEvent(FirebaseEvent.USER_ERROR_REPORT, eventBundle);
+                        Bundle eventBundle = new Bundle();
+                        eventBundle.putString(FirebaseAnalytics.Param.CONTENT, description);
+                        ((SormasApplication) getActivity().getApplication()).getFirebaseAnalytics().logEvent(FirebaseEvent.USER_ERROR_REPORT, eventBundle);
 
-                            resultHolder.setResultStatus(new BoolResult(true,  getActivity().getResources().getString(R.string.message_report_sent)));
-                        } catch (Exception ex) {
-                            resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.message_report_not_sent)));
-                        }
+                        resultHolder.setResultStatus(new BoolResult(true,  getActivity().getResources().getString(R.string.message_report_sent)));
+                    } catch (Exception ex) {
+                        resultHolder.setResultStatus(new BoolResult(true, getActivity().getResources().getString(R.string.message_report_not_sent)));
                     }
-
-                    @Override
-                    public void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                        BoolResult resultStatus = taskResult.getResultStatus();
-                        if (taskResult.getResultStatus().isSuccess()) {
-                            NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.SUCCESS, resultStatus.getMessage());
-                        } else {
-                            NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.ERROR, resultStatus.getMessage());
-                        }
-                    }
-                };
-
-                dialogTask = executor.executeOnThreadPool();
-            }
-        });
-
-        setNegativeCallback(new Callback() {
-            @Override
-            public void call() {
-                if (dialogTask != null && !dialogTask.isCancelled()) {
-                    dialogTask.cancel(true);
                 }
 
-                dismiss();
+                @Override
+                public void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                    BoolResult resultStatus = taskResult.getResultStatus();
+                    if (taskResult.getResultStatus().isSuccess()) {
+                        NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.SUCCESS, resultStatus.getMessage());
+                    } else {
+                        NotificationHelper.showDialogNotification(UserReportDialog.this, NotificationType.ERROR, resultStatus.getMessage());
+                    }
+                }
+            };
+
+            dialogTask = executor.executeOnThreadPool();
+        });
+
+        setNegativeCallback(() -> {
+            if (dialogTask != null && !dialogTask.isCancelled()) {
+                dialogTask.cancel(true);
             }
         });
     }

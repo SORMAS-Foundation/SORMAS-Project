@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.Arrays;
-import java.util.Date;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
@@ -106,17 +105,17 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 	@Override
 	protected void addFields() {
-		TextField labSampleId = addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
+		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
 		sampleDateField.setInvalidCommitted(false);
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		DateField shipmentDate = addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
-		TextField shipmentDetails = addField(SampleDto.SHIPMENT_DETAILS, TextField.class);		
+		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
 		ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
-		lab.addItems(FacadeProvider.getFacilityFacade().getAllLaboratories(true));
+		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
 		labDetails.setVisible(false);
 		addField(SampleDto.SPECIMEN_CONDITION, ComboBox.class);
@@ -174,7 +173,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			FieldHelper.setRequiredWhen(getFieldGroup(), received, Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
 			FieldHelper.setEnabledWhen(getFieldGroup(), received, Arrays.asList(true), Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON), true);
 
-			if (caze.getDisease() != Disease.NEW_INFLUENCA) {
+			if (caze.getDisease() != Disease.NEW_INFLUENZA) {
 				sampleSource.setVisible(false);
 			}
 
@@ -193,22 +192,6 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				getField(SampleDto.SHIPMENT_DETAILS).setEnabled(false);
 				getField(SampleDto.SAMPLE_SOURCE).setEnabled(false);
 			}
-
-			shipped.addValueChangeListener(event -> {
-				if ((boolean) event.getProperty().getValue() == true) {
-					if (shipmentDate.getValue() == null) {
-						shipmentDate.setValue(new Date());
-					}
-				}
-			});
-
-			received.addValueChangeListener(event -> {
-				if ((boolean) event.getProperty().getValue() == true) {
-					if (receivedDate.getValue() == null) {
-						receivedDate.setValue(new Date());
-					}
-				}
-			});
 
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();

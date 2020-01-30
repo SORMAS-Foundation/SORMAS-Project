@@ -365,11 +365,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                 R.string.action_submit_report,
                 R.string.action_cancel);
 
-        confirmationDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                confirmationDialog.dismiss();
-
+        confirmationDialog.setPositiveCallback(() -> {
                 confirmReportTask = new DefaultAsyncTask(getContext()) {
 
                     @Override
@@ -398,8 +394,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                         NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.message_weekly_report_submitted);
                     }
                 }.executeOnThreadPool();
-            }
-        });
+            });
 
         confirmationDialog.show();
     }

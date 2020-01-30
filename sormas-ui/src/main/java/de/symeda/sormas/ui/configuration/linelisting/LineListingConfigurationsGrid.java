@@ -67,7 +67,7 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 	
 	public boolean validateDates() {
 		for (FeatureConfigurationIndexDto config : configurations) {
-			if (dateFieldMap.get(config).getErrorMessage() != null) {
+			if (dateFieldMap.get(config) != null && dateFieldMap.get(config).getErrorMessage() != null) {
 				return false;
 			}
 		}

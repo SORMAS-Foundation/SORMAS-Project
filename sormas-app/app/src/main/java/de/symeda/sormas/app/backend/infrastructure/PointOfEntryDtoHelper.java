@@ -67,6 +67,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
         target.setLatitude(source.getLatitude());
         target.setLongitude(source.getLongitude());
         target.setActive(source.isActive());
+        target.setArchived(source.isArchived());
 
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -79,6 +80,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
         target.setLatitude(source.getLatitude());
         target.setLongitude(source.getLongitude());
         target.setActive(source.isActive());
+        target.setArchived(source.isArchived());
 
         if (source.getRegion() != null) {
             Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());

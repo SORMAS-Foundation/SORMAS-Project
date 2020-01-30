@@ -66,6 +66,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 	
+	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
+	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
+
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
 
@@ -83,15 +86,30 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 	
 	protected boolean getBoolean(String name, boolean defaultValue) {
-		return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
+		try {
+			return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return defaultValue;
+		}
 	}
 	
 	protected double getDouble(String name, double defaultValue) {
-		return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
+		try {
+			return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return defaultValue;
+		}
 	}
 	
 	protected int getInt(String name, int defaultValue) {
-		return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
+		try {
+			return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return defaultValue;
+		}
 	}
 
 	@Override
@@ -192,6 +210,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return seperatorString.charAt(0);
 	}
 	
+	@Override
+	public int getDaysAfterCaseGetsArchived() {
+		return getInt(DAYS_AFTER_CASE_GETS_ARCHIVED, 90);
+	}
+
+	@Override
+	public int getDaysAfterEventGetsArchived() {
+		return getInt(DAYS_AFTER_EVENT_GETS_ARCHIVED, 90);
+	}
+
 	@Override
 	public void validateAppUrls() {
 		String appUrl = getAppUrl();

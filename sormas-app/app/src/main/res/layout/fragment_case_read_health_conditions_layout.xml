@@ -75,6 +75,11 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/healthConditions_immunodeficiencyOtherThanHiv"
+                app:value="@{data.immunodeficiencyOtherThanHiv}"
+                style="@style/ControlSingleColumnStyle" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -161,6 +166,11 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/healthConditions_cardiovascularDiseaseIncludingHypertension"
+                app:value="@{data.cardiovascularDiseaseIncludingHypertension}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/healthConditions_otherConditions"

@@ -23,14 +23,12 @@ import com.j256.ormlite.dao.Dao;
 import java.sql.SQLException;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 
-/**
- * Created by Martin Wahnschaffe on 22.07.2016.
- */
-public class RegionDao extends AbstractAdoDao<Region> {
+public class RegionDao extends AbstractInfrastructureAdoDao<Region> {
 
-    public RegionDao(Dao<Region,Long> innerDao) throws SQLException {
+    public RegionDao(Dao<Region,Long> innerDao) {
         super(innerDao);
     }
 
@@ -45,7 +43,7 @@ public class RegionDao extends AbstractAdoDao<Region> {
     }
 
     @Override
-    public Region saveAndSnapshot(Region source) throws DaoException {
+    public Region saveAndSnapshot(Region source) {
         throw new UnsupportedOperationException();
     }
 }

@@ -71,8 +71,8 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
@@ -85,6 +85,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.map.LeafletMap;
+import de.symeda.sormas.ui.map.LeafletMapUtil;
 import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
@@ -100,6 +101,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	private VerticalLayout filtersLayout;
 	private VerticalLayout resultsLayout;
 	private CheckBox cbShowZeroValues;
+	private CheckBox cbHideOtherCountries;
 	private RadioButtonGroup<CaseCountOrIncidence> ogCaseCountOrIncidence;
 	private TextField tfIncidenceDivisor;
 	private Button exportButton;
@@ -141,6 +143,9 @@ public class StatisticsView extends AbstractStatisticsView {
 		visualizationComponent = new StatisticsVisualizationComponent();
 		CssStyles.style(visualizationComponent, CssStyles.STATISTICS_TITLE_BOX);
 		statisticsLayout.addComponent(visualizationComponent);
+		visualizationComponent.addVisualizationTypeChangedListener(visualizationType -> {
+			cbHideOtherCountries.setVisible(StatisticsVisualizationType.MAP.equals(visualizationType));
+		});
 
 		// Options layout
 		addOptionsLayout(statisticsLayout);
@@ -279,7 +284,16 @@ public class StatisticsView extends AbstractStatisticsView {
 			cbShowZeroValues.setValue(false);
 			CssStyles.style(cbShowZeroValues, CssStyles.FORCE_CAPTION_CHECKBOX);
 			optionsLayout.addComponent(cbShowZeroValues);
-			optionsLayout.setExpandRatio(cbShowZeroValues, 1);
+
+			cbHideOtherCountries = new CheckBox(I18nProperties.getCaption(Captions.dashboardHideOtherCountries));
+			cbHideOtherCountries.setValue(false);
+			CssStyles.style(cbHideOtherCountries, CssStyles.FORCE_CAPTION_CHECKBOX);
+			optionsLayout.addComponent(cbHideOtherCountries);
+			cbHideOtherCountries.setVisible(StatisticsVisualizationType.MAP.equals(visualizationComponent.getVisualizationType()));
+
+			Label expandedDummy = new Label();
+			optionsLayout.addComponent(expandedDummy);
+			optionsLayout.setExpandRatio(expandedDummy, 1);
 		}
 		statisticsLayout.addComponent(optionsLayout);
 	}
@@ -733,7 +747,11 @@ public class StatisticsView extends AbstractStatisticsView {
 		GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 		map.setCenter(mapCenter.getLon(), mapCenter.getLat());
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
+		if (cbHideOtherCountries.getValue()) {
+			LeafletMapUtil.addOtherCountriesOverlay(map);
+		}
+		
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
 
 		List<LeafletPolygon> outlinePolygones = new ArrayList<LeafletPolygon>();
 

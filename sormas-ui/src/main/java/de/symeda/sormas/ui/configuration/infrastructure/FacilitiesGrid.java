@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -32,7 +33,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> {
 
@@ -40,20 +43,20 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 
 	public static final String EDIT_BTN_ID = "edit";
 
-	public FacilitiesGrid() {
+	public FacilitiesGrid(FacilityCriteria criteria, Class<? extends AbstractFacilitiesView> viewClass) {
 		super(FacilityDto.class);
 		setSizeFull();
-		setSelectionMode(SelectionMode.NONE);
 
-		DataProvider<FacilityDto, FacilityCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getFacilityFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getFacilityFacade().count(query.getFilter().orElse(null));
-				});
-		setDataProvider(dataProvider);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode());
+		
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setCriteria(criteria);
+			setEagerDataProvider();
+		} else {
+			setLazyDataProvider();
+			setCriteria(criteria);
+		}
 
 		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY, FacilityDto.CITY,
 				FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
@@ -78,6 +81,26 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 
 	public void reload() {
 		getDataProvider().refreshAll();
+	}
+	
+	public void setLazyDataProvider() {
+		DataProvider<FacilityDto, FacilityCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getFacilityFacade().getIndexList(
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+							.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int) FacadeProvider.getFacilityFacade().count(
+						query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.NONE);
+	}
+	
+	public void setEagerDataProvider() {
+		ListDataProvider<FacilityDto> dataProvider = DataProvider.fromStream(FacadeProvider.getFacilityFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
 	}
 
 }

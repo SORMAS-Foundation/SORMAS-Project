@@ -29,6 +29,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.StrictMode;
 
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
@@ -169,22 +170,11 @@ public class AppUpdateController {
 
         final ConfirmationDialog downloadAppDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
         downloadAppDialog.setCancelable(false);
-        downloadAppDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                downloadAppDialog.dismiss();
-                downloadNewAppVersion();
-            }
-        });
+        downloadAppDialog.setPositiveCallback(() -> downloadNewAppVersion());
         if (allowDismiss) {
             downloadAppDialog.setNegativeCallback(dismissCallback);
         } else {
-            downloadAppDialog.setNegativeCallback(new Callback() {
-                @Override
-                public void call() {
-                    ((SormasApplication) activity.getApplication()).closeApp(activity);
-                }
-            });
+            downloadAppDialog.setNegativeCallback(() -> ((SormasApplication) activity.getApplication()).closeApp(activity));
         }
 
         return downloadAppDialog;
@@ -200,22 +190,11 @@ public class AppUpdateController {
 
         final ConfirmationDialog downloadFailedDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
         downloadFailedDialog.setCancelable(false);
-        downloadFailedDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                downloadFailedDialog.dismiss();
-                downloadNewAppVersion();
-            }
-        });
+        downloadFailedDialog.setPositiveCallback(() -> downloadNewAppVersion());
         if (allowDismiss) {
             downloadFailedDialog.setNegativeCallback(dismissCallback);
         } else {
-            downloadFailedDialog.setNegativeCallback(new Callback() {
-                @Override
-                public void call() {
-                    ((SormasApplication) activity.getApplication()).closeApp(activity);
-                }
-            });
+            downloadFailedDialog.setNegativeCallback(() -> ((SormasApplication) activity.getApplication()).closeApp(activity));
         }
 
         return downloadFailedDialog;
@@ -231,22 +210,11 @@ public class AppUpdateController {
 
         final ConfirmationDialog installAppDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
         installAppDialog.setCancelable(false);
-        installAppDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                installAppDialog.dismiss();
-                installApp();
-            }
-        });
+        installAppDialog.setPositiveCallback(() -> installApp());
         if (allowDismiss) {
             installAppDialog.setNegativeCallback(dismissCallback);
         } else {
-            installAppDialog.setNegativeCallback(new Callback() {
-                @Override
-                public void call() {
-                    ((SormasApplication) activity.getApplication()).closeApp(activity);
-                }
-            });
+            installAppDialog.setNegativeCallback(() -> ((SormasApplication) activity.getApplication()).closeApp(activity));
         }
 
         return installAppDialog;
@@ -262,22 +230,11 @@ public class AppUpdateController {
 
         final ConfirmationDialog installFailedDialog = new ConfirmationDialog(activity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
         installFailedDialog.setCancelable(false);
-        installFailedDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                installFailedDialog.dismiss();
-                downloadNewAppVersion();
-            }
-        });
+        installFailedDialog.setPositiveCallback(() -> downloadNewAppVersion());
         if (allowDismiss) {
             installFailedDialog.setNegativeCallback(dismissCallback);
         } else {
-            installFailedDialog.setNegativeCallback(new Callback() {
-                @Override
-                public void call() {
-                    ((SormasApplication) activity.getApplication()).closeApp(activity);
-                }
-            });
+            installFailedDialog.setNegativeCallback(() -> ((SormasApplication) activity.getApplication()).closeApp(activity));
         }
 
         return installFailedDialog;
@@ -296,12 +253,7 @@ public class AppUpdateController {
         if (allowDismiss) {
             installNotPossibleDialog.setPositiveCallback(dismissCallback);
         } else {
-            installNotPossibleDialog.setPositiveCallback(new Callback() {
-                @Override
-                public void call() {
-                    ((SormasApplication) activity.getApplication()).closeApp(activity);
-                }
-            });
+            installNotPossibleDialog.setPositiveCallback(() -> ((SormasApplication) activity.getApplication()).closeApp(activity));
         }
         return installNotPossibleDialog;
     }
@@ -388,7 +340,16 @@ public class AppUpdateController {
         installIntent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
         installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         installIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        installIntent.setDataAndType(FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", file), "application/vnd.android.package-archive");
+
+        Uri fileUri;
+        try {
+            fileUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", file);
+        } catch (IllegalArgumentException e) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+            fileUri = Uri.fromFile(file);
+        }
+        installIntent.setDataAndType(fileUri, "application/vnd.android.package-archive");
         activity.startActivityForResult(installIntent, AppUpdateController.INSTALL_RESULT);
     }
 

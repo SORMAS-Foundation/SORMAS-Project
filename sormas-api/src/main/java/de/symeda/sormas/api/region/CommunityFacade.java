@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -28,11 +29,11 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface CommunityFacade {
 	
-    List<CommunityReferenceDto> getAllByDistrict(String districtUuid);
+    List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid);
 
 	List<CommunityDto> getAllAfter(Date date);
 	
-	List<CommunityDto> getIndexList(CommunityCriteria criteria, int first, int max, List<SortProperty> sortProperties);
+	List<CommunityDto> getIndexList(CommunityCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(CommunityCriteria criteria);
 	
@@ -47,4 +48,13 @@ public interface CommunityFacade {
 	void saveCommunity(CommunityDto dto) throws ValidationRuntimeException;
 	
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef);
+	
+	void archive(String communityUuid);
+	
+	void dearchive(String communityUuid);
+	
+	boolean isUsedInOtherInfrastructureData(Collection<String> communityUuids);
+	
+	boolean hasArchivedParentInfrastructure(Collection<String> communityUuids);
+	
 }

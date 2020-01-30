@@ -59,6 +59,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
     public void fillInnerFromDto(Region ado, RegionDto dto) {
         ado.setName(dto.getName());
         ado.setEpidCode(dto.getEpidCode());
+        ado.setArchived(dto.isArchived());
     }
 
     @Override

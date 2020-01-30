@@ -77,7 +77,6 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
     protected void onAfterLayoutBinding(FragmentReportsAggregateLayoutBinding contentBinding) {
         super.onAfterLayoutBinding(contentBinding);
         contentBinding.reportSelector.setValue(EpiWeekFilterOption.THIS_WEEK);
-        showReportData();
     }
 
     private void setupControls() {
@@ -194,11 +193,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
                 R.string.action_submit_case_numbers,
                 R.string.action_cancel);
 
-        confirmationDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                confirmationDialog.dismiss();
-
+        confirmationDialog.setPositiveCallback(() -> {
                 confirmCaseNumbersTask = new DefaultAsyncTask(getContext()) {
 
                     @Override
@@ -246,8 +241,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
                         NotificationHelper.showNotification((NotificationContext) getActivity(), NotificationType.SUCCESS, R.string.message_case_numbers_submitted);
                     }
                 }.executeOnThreadPool();
-            }
-        });
+            });
 
         confirmationDialog.show();
     }

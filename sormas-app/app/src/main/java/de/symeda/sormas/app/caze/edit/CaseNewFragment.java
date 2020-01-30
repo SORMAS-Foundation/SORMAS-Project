@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -60,6 +61,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     private List<Item> yearList;
     private List<Item> monthList;
     private List<Item> sexList;
+    private List<Item> presentConditionList;
     private List<Item> diseaseList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
@@ -109,6 +111,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         monthList = DataUtils.getMonthItems(true);
 
         sexList = DataUtils.getEnumItems(Sex.class, true);
+        presentConditionList = DataUtils.getEnumItems(PresentCondition.class, true);
 
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
@@ -126,15 +129,16 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
 
-        InfrastructureHelper.initializeFacilityFields(contentBinding.caseDataRegion, initialRegions,
-                contentBinding.caseDataDistrict, initialDistricts,
-                contentBinding.caseDataCommunity, initialCommunities,
-                contentBinding.caseDataHealthFacility, initialFacilities,
-                contentBinding.caseDataPointOfEntry, initialPointsOfEntry);
+        InfrastructureHelper.initializeFacilityFields(
+                contentBinding.caseDataRegion, initialRegions, record.getRegion(),
+                contentBinding.caseDataDistrict, initialDistricts, record.getDistrict(),
+                contentBinding.caseDataCommunity, initialCommunities, record.getCommunity(),
+                contentBinding.caseDataHealthFacility, initialFacilities, record.getHealthFacility(),
+                contentBinding.caseDataPointOfEntry, initialPointsOfEntry, record.getPointOfEntry());
 
         contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataDisease.addValueChangedListener(e -> {
-            contentBinding.rapidCaseEntryInfo.setVisibility(
+            contentBinding.rapidCaseEntryCheckBox.setVisibility(
                     e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
         });
 
@@ -156,6 +160,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.personBirthdateYYYY.setSelectionOnOpen(year-35);
 
         contentBinding.personSex.initializeSpinner(sexList);
+
+        contentBinding.personPresentCondition.initializeSpinner(presentConditionList);
     }
 
     @Override
@@ -208,7 +214,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
             contentBinding.caseDataHealthFacility.setRequired(false);
             contentBinding.caseDataHealthFacilityDetails.setRequired(false);
-        } else if (DatabaseHelper.getPointOfEntryDao().hasEntriesInDistrict()) {
+        } else if (DatabaseHelper.getPointOfEntryDao().hasActiveEntriesInDistrict()) {
             if (record.getCaseOrigin() == CaseOrigin.IN_COUNTRY) {
                 contentBinding.caseDataPointOfEntry.setRequired(false);
                 contentBinding.caseDataPointOfEntry.setVisibility(GONE);

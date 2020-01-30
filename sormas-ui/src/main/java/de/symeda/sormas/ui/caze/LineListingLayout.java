@@ -36,6 +36,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -51,6 +52,7 @@ public class LineListingLayout extends VerticalLayout {
 	private static final long serialVersionUID = -5565485322654993085L;
 
 	public static final float DEFAULT_WIDTH = 1696;
+	public static final float WITDH_WITHOUT_EPID_NUMBER = 1536;
 
 	private ComboBox<Disease> disease;
 	private TextField diseaseDetails;
@@ -85,24 +87,18 @@ public class LineListingLayout extends VerticalLayout {
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE_DETAILS));
 		diseaseDetails.setVisible(false);
 		sharedInformationBar.addComponent(diseaseDetails);
-		disease.addValueChangeListener(event -> diseaseDetails.setVisible(disease.getValue().equals(Disease.OTHER)));
+		disease.addValueChangeListener(event -> diseaseDetails.setVisible(Disease.OTHER.equals(disease.getValue())));
 
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
-		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
-			region.setValue(UserProvider.getCurrent().getUser().getRegion());
-			region.setVisible(false);
-		} else {
-			region.setItems(FacadeProvider.getRegionFacade().getAllAsReference());
-		}
 		sharedInformationBar.addComponent(region);
 
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
+		district.addValueChangeListener(e -> setEpidNumberPrefixes());
 		sharedInformationBar.addComponent(district);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = e.getValue();
-			FieldHelper.updateItems(district,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+			updateDistricts(regionDto);
 		});
 		district.addValueChangeListener(e -> {
 			removeFacilitiesIfCommunityIsNotPresent();
@@ -131,14 +127,23 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
 
+		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
+			RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
+			region.setValue(userRegion);
+			region.setVisible(false);
+			updateDistricts(userRegion);
+		} else {
+			region.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		}
+
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = new Button(I18nProperties.getCaption(Captions.lineListingAddLine));
 		addLine.setIcon(VaadinIcons.PLUS);
 		addLine.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		addLine.addClickListener(e -> {
 			CaseLineLayout newLine = new CaseLineLayout(false, lineComponent);
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) district.getValue();
-			updateCommunityAndFacility(districtDto, newLine);
+			DistrictReferenceDto districtReferenceDto = (DistrictReferenceDto) district.getValue();
+			updateCommunityAndFacility(districtReferenceDto, newLine);
 			CaseLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
 			CaseLineDto newLineDto = new CaseLineDto();
 			newLineDto.setDisease(lastLineDto.getDisease());
@@ -152,6 +157,8 @@ public class LineListingLayout extends VerticalLayout {
 			newLine.setBean(newLineDto);
 			caseLines.add(newLine);
 			lineComponent.addComponent(newLine);
+
+			setEpidNumberPrefix(newLine, lastLineDto.getDateOfReport());
 
 			if (caseLines.size() > 1) {
 				caseLines.get(0).getDelete().setEnabled(true);
@@ -184,6 +191,40 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
+
+	}
+
+	private void updateDistricts(RegionReferenceDto regionDto) {
+		FieldHelper.updateItems(district,
+				regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+	}
+
+	private void setEpidNumberPrefixes() {
+		for (CaseLineLayout layout : caseLines) {
+			LocalDate dateOfReport = layout.dateOfReport.getValue();
+			setEpidNumberPrefix(layout, dateOfReport);
+		}
+	}
+
+	private void setEpidNumberPrefix(CaseLineLayout layout, LocalDate date) {
+		if (district.getValue() != null) {
+			if (date == null) {
+				layout.epidNumber.setValue(getEpidNumberPrefix(null));
+			} else {
+				String year = String.valueOf(date.getYear()).substring(2);
+				layout.epidNumber.setValue(getEpidNumberPrefix(year));
+			}
+		}
+	}
+
+	private String getEpidNumberPrefix(String year) {
+		
+		String fullEpidCode = FacadeProvider.getDistrictFacade().getFullEpidCodeForDistrict(district.getValue().getUuid());
+		if (year == null) {
+			return fullEpidCode + "-";
+		}else {
+			return fullEpidCode + "-" + year + "-";
+		}
 	}
 
 	private void closeWindow() {
@@ -251,11 +292,11 @@ public class LineListingLayout extends VerticalLayout {
 
 	private void updateCommunityAndFacility(DistrictReferenceDto districtDto, CaseLineLayout line) {
 		FieldHelper.updateItems(line.getCommunity(),
-				districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid())
+				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid())
 						: null);
 		FieldHelper.updateItems(line.getFacility(),
 				districtDto != null
-						? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true)
+						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true)
 						: null);
 	}
 
@@ -329,17 +370,19 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfReport = new DateField();
 			dateOfReport.setWidth(100, Unit.PIXELS);
 			binder.forField(dateOfReport).asRequired().bind(CaseLineDto.DATE_OF_REPORT);
+			dateOfReport.addValueChangeListener(e -> setEpidNumberPrefix(this, dateOfReport.getValue()));
 			epidNumber = new TextField();
 			epidNumber.setWidth(160, Unit.PIXELS);
 			binder.forField(epidNumber).bind(CaseLineDto.EPID_NUMBER);
 			community = new ComboBox<>();
+			community.addStyleName(CssStyles.SOFT_REQUIRED);
 			community.addValueChangeListener(e -> {
 				FieldHelper.removeItems(facility);
 				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getValue();
 				FieldHelper.updateItems(facility, communityDto != null
-						? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true)
+						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true)
 						: district.getValue() != null ? FacadeProvider.getFacilityFacade()
-								.getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
+								.getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
 								: null);
 			});
 			binder.forField(community).bind(CaseLineDto.COMMUNITY);
@@ -405,8 +448,12 @@ public class LineListingLayout extends VerticalLayout {
 				}
 			});
 
-			addComponents(dateOfReport, epidNumber, community, facility, facilityDetails, firstname, lastname,
-					dateOfBirthYear, dateOfBirthMonth, dateOfBirthDay, sex, dateOfOnset, delete);
+			addComponent(dateOfReport);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
+				addComponent(epidNumber);
+			}
+			addComponents(community, facility, facilityDetails, firstname, lastname, dateOfBirthYear, dateOfBirthMonth,
+					dateOfBirthDay, sex, dateOfOnset, delete);
 
 			if (firstLine) {
 				formatAsFirstLine();

@@ -40,26 +40,26 @@ public class EpiDataBurialDto extends EntityDto {
 	public static final String BURIAL_ILL = "burialIll";
 	public static final String BURIAL_TOUCHING = "burialTouching";
 
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNDEFINED,
-			Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.UNSPECIFIED_VHF, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO,
+			Disease.UNDEFINED, Disease.OTHER })
 	private String burialPersonName;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNDEFINED,
-			Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.UNSPECIFIED_VHF, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO,
+			Disease.UNDEFINED, Disease.OTHER })
 	private String burialRelation;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNDEFINED,
-			Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.UNSPECIFIED_VHF, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO,
+			Disease.UNDEFINED, Disease.OTHER })
 	private Date burialDateFrom;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNDEFINED,
-			Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.UNSPECIFIED_VHF, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO,
+			Disease.UNDEFINED, Disease.OTHER })
 	private Date burialDateTo;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNDEFINED,
-			Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.UNSPECIFIED_VHF, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO,
+			Disease.UNDEFINED, Disease.OTHER })
 	private LocationDto burialAddress;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNDEFINED,
-			Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.UNSPECIFIED_VHF, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO,
+			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown burialIll;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.UNDEFINED,
-			Disease.OTHER })
+	@Diseases({ Disease.AFP, Disease.EVD, Disease.UNSPECIFIED_VHF, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO,
+			Disease.UNDEFINED, Disease.OTHER })
 	private YesNoUnknown burialTouching;
 
 	public String getBurialPersonName() {

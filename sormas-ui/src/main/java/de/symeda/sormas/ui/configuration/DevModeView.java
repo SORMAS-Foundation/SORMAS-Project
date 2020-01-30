@@ -107,7 +107,7 @@ public class DevModeView extends AbstractConfigurationView {
 		caseGeneratorConfigBinder.bind(diseaseField, CaseGenerationConfig::getDisease, CaseGenerationConfig::setDisease);
 		caseGeneratorLayout.addComponent(diseaseField);
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
 		ComboBox<RegionReferenceDto> regionField = new ComboBox<RegionReferenceDto>(null, regions);
 		regionField.setCaption(I18nProperties.getCaption(Captions.devModeRegion));
 		caseGeneratorConfigBinder.bind(regionField, CaseGenerationConfig::getRegion, CaseGenerationConfig::setRegion);
@@ -121,7 +121,7 @@ public class DevModeView extends AbstractConfigurationView {
 		regionField.addValueChangeListener(event -> {
 			RegionReferenceDto region = event.getValue();
 			if (region != null) {
-				districtField.setItems(FacadeProvider.getDistrictFacade().getAllByRegion(region.getUuid()));
+				districtField.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 			} else {
 				districtField.setItems(new ArrayList<DistrictReferenceDto>());
 			}

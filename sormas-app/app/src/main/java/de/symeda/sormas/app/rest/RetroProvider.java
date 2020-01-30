@@ -85,6 +85,7 @@ public final class RetroProvider {
 
     private static int lastConnectionId = 0;
     private static RetroProvider instance = null;
+    private static boolean connecting = false;
 
     private final Context context;
     private final Retrofit retrofit;
@@ -143,23 +144,18 @@ public final class RetroProvider {
                 .registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-                    public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                        if (json.isJsonNull()) {
-                            return null;
-                        }
-                        long milliseconds = json.getAsLong();
-                        return new Date(milliseconds);
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
+                    if (json.isJsonNull()) {
+                        return null;
                     }
+                    long milliseconds = json.getAsLong();
+                    return new Date(milliseconds);
                 })
-                .registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
-                    @Override
-                    public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-                        if (src == null) {
-                            return JsonNull.INSTANCE;
-                        }
-                        return new JsonPrimitive(src.getTime());
+                .registerTypeAdapter(Date.class, (JsonSerializer<Date>) (src, typeOfSrc, context12) -> {
+                    if (src == null) {
+                        return JsonNull.INSTANCE;
                     }
+                    return new JsonPrimitive(src.getTime());
                 })
                 .registerTypeAdapterFactory(classificationCriteriaFactory)
                 .create();
@@ -265,10 +261,17 @@ public final class RetroProvider {
         return instance != null && isConnectedToNetwork(instance.context);
     }
 
+    public static boolean isConnectedOrConnecting() {
+        return isConnected() || connecting;
+    }
+
     public static void connect(Context context) throws ApiVersionException, ServerConnectionException, ServerCommunicationException {
 
         if (RetroProvider.isConnected()) {
             throw new IllegalStateException("Connection already established.");
+        }
+        if (connecting) {
+            throw new IllegalStateException("Already connecting.");
         }
 
         if (!isConnectedToNetwork(context)) {
@@ -276,10 +279,13 @@ public final class RetroProvider {
         }
 
         try {
+            connecting = true;
             instance = new RetroProvider(context);
         } catch (Exception e) {
             instance = null;
             throw e;
+        } finally {
+            connecting = false;
         }
     }
 
@@ -302,12 +308,7 @@ public final class RetroProvider {
                             && activityReference.get() != null) {
                         boolean canWorkOffline = ConfigProvider.getUser() != null;
                         AppUpdateController.getInstance().updateApp(activityReference.get(), e.getAppUrl(), e.getVersion(), versionCompatible || canWorkOffline,
-                                new Callback() {
-                                    @Override
-                                    public void call() {
-                                        callback.accept(false);
-                                    }
-                                });
+                                () -> callback.accept(false));
                     } else {
                         if (activityReference.get() != null) {
                             NotificationHelper.showNotification((NotificationContext) activityReference.get(), NotificationType.ERROR, e.getMessage());
@@ -319,7 +320,7 @@ public final class RetroProvider {
 
                     if (exception.getCustomHtmlErrorCode() == 401 || exception.getCustomHtmlErrorCode() == 403) {
                         // could not authenticate or user does not have access to the app
-                        ConfigProvider.clearUsernameAndPassword();
+                        ConfigProvider.clearUserLogin();
                     }
 
                     if (activityReference.get() != null) {

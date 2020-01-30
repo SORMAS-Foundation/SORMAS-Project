@@ -269,11 +269,14 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// Count layout
 		CssLayout countLayout = eventComponent.createCountLayout(true);
-		eventStatusConfirmed = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.CRITICAL);
+		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.CONFIRMED.toString(),
+				CountElementStyle.CRITICAL);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusConfirmed);
-		eventStatusPossible = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPossible), CountElementStyle.IMPORTANT);
+		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.POSSIBLE.toString(),
+				CountElementStyle.IMPORTANT);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusPossible);
-		eventStatusNotAnEvent = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotAnEvent), CountElementStyle.POSITIVE);
+		eventStatusNotAnEvent = new DashboardStatisticsCountElement(EventStatus.NO_EVENT.toString(),
+				CountElementStyle.POSITIVE);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
 		eventComponent.addComponent(countLayout);
 		

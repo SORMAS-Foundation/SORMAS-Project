@@ -31,6 +31,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
@@ -159,7 +160,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 	
 	public List<String> getAllUuids(User user) {
-		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(getElementClass());
@@ -316,6 +316,11 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return cb.or(existing, additional);
 	}
 	
+	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path,
+			Timestamp date) {
+		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
+	}
+
 	/**
 	 * @return {@code true}, if the system itself is the executing user.
 	 */

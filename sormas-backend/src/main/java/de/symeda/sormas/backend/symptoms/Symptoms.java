@@ -27,14 +27,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -203,7 +201,13 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState meningealSigns;
 	private SymptomState seizures;
 	private SymptomState sepsis;
-	private SymptomState shock;
+	private SymptomState shock;	
+	private SymptomState fluidInLungCavityAuscultation;
+	private SymptomState fluidInLungCavityXray;
+	private SymptomState abnormalLungXrayFindings;
+	private SymptomState conjunctivalInjection;
+	private SymptomState acuteRespiratoryDistressSyndrome;
+	private SymptomState pneumoniaClinicalOrRadiologic;
 
 	// when adding new fields make sure to extend toHumanString
 
@@ -1466,6 +1470,60 @@ public class Symptoms extends AbstractDomainObject {
 		this.coma = coma;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFluidInLungCavityAuscultation() {
+		return fluidInLungCavityAuscultation;
+	}
+
+	public void setFluidInLungCavityAuscultation(SymptomState fluidInLungCavityAuscultation) {
+		this.fluidInLungCavityAuscultation = fluidInLungCavityAuscultation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFluidInLungCavityXray() {
+		return fluidInLungCavityXray;
+	}
+
+	public void setFluidInLungCavityXray(SymptomState fluidInLungCavityXray) {
+		this.fluidInLungCavityXray = fluidInLungCavityXray;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAbnormalLungXrayFindings() {
+		return abnormalLungXrayFindings;
+	}
+
+	public void setAbnormalLungXrayFindings(SymptomState abnormalLungXrayFindings) {
+		this.abnormalLungXrayFindings = abnormalLungXrayFindings;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getConjunctivalInjection() {
+		return conjunctivalInjection;
+	}
+
+	public void setConjunctivalInjection(SymptomState conjunctivalInjection) {
+		this.conjunctivalInjection = conjunctivalInjection;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getAcuteRespiratoryDistressSyndrome() {
+		return acuteRespiratoryDistressSyndrome;
+	}
+
+	public void setAcuteRespiratoryDistressSyndrome(SymptomState acuteRespiratoryDistressSyndrome) {
+		this.acuteRespiratoryDistressSyndrome = acuteRespiratoryDistressSyndrome;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPneumoniaClinicalOrRadiologic() {
+		return pneumoniaClinicalOrRadiologic;
+	}
+
+	public void setPneumoniaClinicalOrRadiologic(SymptomState pneumoniaClinicalOrRadiologic) {
+		this.pneumoniaClinicalOrRadiologic = pneumoniaClinicalOrRadiologic;
+	}
+
 	@Column(length = 255)
 	public String getSymptomsComments() {
 		return symptomsComments;
@@ -1605,6 +1663,12 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, meningoencephalitis, SymptomsDto.MENINGOENCEPHALITIS);
 		appendYesSymptom(string, radiolucentBoneDisease, SymptomsDto.RADIOLUCENT_BONE_DISEASE);
 		appendYesSymptom(string, congenitalHeartDisease, SymptomsDto.CONGENITAL_HEART_DISEASE);
+		appendYesSymptom(string, fluidInLungCavityAuscultation, SymptomsDto.FLUID_IN_LUNG_CAVITY_AUSCULTATION);
+		appendYesSymptom(string, fluidInLungCavityXray, SymptomsDto.FLUID_IN_LUNG_CAVITY_XRAY);
+		appendYesSymptom(string, abnormalLungXrayFindings, SymptomsDto.ABNORMAL_LUNG_XRAY_FINDINGS);
+		appendYesSymptom(string, conjunctivalInjection, SymptomsDto.CONJUNCTIVAL_INJECTION);
+		appendYesSymptom(string, acuteRespiratoryDistressSyndrome, SymptomsDto.ACUTE_RESPIRATORY_DISTRESS_SYNDROME);
+		appendYesSymptom(string, pneumoniaClinicalOrRadiologic, SymptomsDto.PNEUMONIA_CLINICAL_OR_RADIOLOGIC);
 		appendNotNullValue(string, congenitalHeartDiseaseType, SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE);
 		appendNotNullValue(string, congenitalHeartDiseaseDetails, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS);
 		// symptomsComments;

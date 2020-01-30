@@ -357,7 +357,18 @@ public class Symptoms extends AbstractDomainObject {
     private CongenitalHeartDiseaseType congenitalHeartDiseaseType;
     @Column(length = 512)
     private String congenitalHeartDiseaseDetails;
-
+    @Enumerated(EnumType.STRING)
+    private SymptomState fluidInLungCavityAuscultation;
+    @Enumerated(EnumType.STRING)
+    private SymptomState fluidInLungCavityXray;
+    @Enumerated(EnumType.STRING)
+    private SymptomState abnormalLungXrayFindings;
+    @Enumerated(EnumType.STRING)
+    private SymptomState conjunctivalInjection;
+    @Enumerated(EnumType.STRING)
+    private SymptomState acuteRespiratoryDistressSyndrome;
+    @Enumerated(EnumType.STRING)
+    private SymptomState pneumoniaClinicalOrRadiologic;
 
     @Override
     public String getI18nPrefix() {
@@ -1530,5 +1541,53 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setCongenitalHeartDiseaseDetails(String congenitalHeartDiseaseDetails) {
         this.congenitalHeartDiseaseDetails = congenitalHeartDiseaseDetails;
+    }
+
+    public SymptomState getFluidInLungCavityAuscultation() {
+        return fluidInLungCavityAuscultation;
+    }
+
+    public void setFluidInLungCavityAuscultation(SymptomState fluidInLungCavityAuscultation) {
+        this.fluidInLungCavityAuscultation = fluidInLungCavityAuscultation;
+    }
+
+    public SymptomState getFluidInLungCavityXray() {
+        return fluidInLungCavityXray;
+    }
+
+    public void setFluidInLungCavityXray(SymptomState fluidInLungCavityXray) {
+        this.fluidInLungCavityXray = fluidInLungCavityXray;
+    }
+
+    public SymptomState getAbnormalLungXrayFindings() {
+        return abnormalLungXrayFindings;
+    }
+
+    public void setAbnormalLungXrayFindings(SymptomState abnormalLungXrayFindings) {
+        this.abnormalLungXrayFindings = abnormalLungXrayFindings;
+    }
+
+    public SymptomState getConjunctivalInjection() {
+        return conjunctivalInjection;
+    }
+
+    public void setConjunctivalInjection(SymptomState conjunctivalInjection) {
+        this.conjunctivalInjection = conjunctivalInjection;
+    }
+
+    public SymptomState getAcuteRespiratoryDistressSyndrome() {
+        return acuteRespiratoryDistressSyndrome;
+    }
+
+    public void setAcuteRespiratoryDistressSyndrome(SymptomState acuteRespiratoryDistressSyndrome) {
+        this.acuteRespiratoryDistressSyndrome = acuteRespiratoryDistressSyndrome;
+    }
+
+    public SymptomState getPneumoniaClinicalOrRadiologic() {
+        return pneumoniaClinicalOrRadiologic;
+    }
+
+    public void setPneumoniaClinicalOrRadiologic(SymptomState pneumoniaClinicalOrRadiologic) {
+        this.pneumoniaClinicalOrRadiologic = pneumoniaClinicalOrRadiologic;
     }
 }

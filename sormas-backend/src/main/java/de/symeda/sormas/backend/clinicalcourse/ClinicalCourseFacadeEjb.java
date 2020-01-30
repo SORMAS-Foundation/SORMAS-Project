@@ -111,6 +111,8 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setDownSyndrome(source.getDownSyndrome());
 		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
 		target.setOtherConditions(source.getOtherConditions());
+		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
+		target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
 
 		return target;
 	}
@@ -143,6 +145,8 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setDownSyndrome(source.getDownSyndrome());
 		target.setCongenitalSyphilis(source.getCongenitalSyphilis());
 		target.setOtherConditions(source.getOtherConditions());
+		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
+		target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
 
 		return target;
 	}

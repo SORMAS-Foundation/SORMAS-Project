@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
@@ -51,6 +54,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 	private StatisticsVisualizationElement rowsElement;
 	private StatisticsVisualizationElement columnsElement;
 	private Button switchRowsAndColumnsButton;
+	private final List<Consumer<StatisticsVisualizationType>> visualizationTypeChangedListeners = new ArrayList<Consumer<StatisticsVisualizationType>>();
 
 	public StatisticsVisualizationComponent() {
 		setSpacing(true);
@@ -67,6 +71,10 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 				}
 				if (columnsElement != null) {
 					columnsElement.setType(columnsElement.getType(), visualizationType);
+				}
+				
+				for (Consumer<StatisticsVisualizationType> visualizationTypeChangedListener : visualizationTypeChangedListeners) {
+					visualizationTypeChangedListener.accept(visualizationType);
 				}
 			}
 		});
@@ -308,5 +316,12 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 			visualizationChartSelect.setValue(StatisticsVisualizationChartType.COLUMN);
 		}
 	}
+	
+	public void addVisualizationTypeChangedListener(Consumer<StatisticsVisualizationType> visualizationTypeChangedListener) {
+		visualizationTypeChangedListeners.add(visualizationTypeChangedListener);
+	}
 
+	public void removeVisualizationTypeChangedListener(Consumer<StatisticsVisualizationType> visualizationTypeChangedListener) {
+		visualizationTypeChangedListeners.remove(visualizationTypeChangedListener);
+	}
 }

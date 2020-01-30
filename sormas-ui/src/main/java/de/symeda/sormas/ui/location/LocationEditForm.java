@@ -22,6 +22,7 @@ import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -60,26 +61,27 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);
     	addField(LocationDto.DETAILS, TextField.class);
     	addField(LocationDto.CITY, TextField.class);
-    	addField(LocationDto.AREA_TYPE, ComboBox.class);
+		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
+		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
     	
     	addField(LocationDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
     	addField(LocationDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
     	addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
 
-    	ComboBox region = addField(LocationDto.REGION, ComboBox.class);
-    	ComboBox district = addField(LocationDto.DISTRICT, ComboBox.class);
-    	ComboBox community = addField(LocationDto.COMMUNITY, ComboBox.class);
+    	ComboBox region = addInfrastructureField(LocationDto.REGION);
+    	ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
+    	ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
     	
     	region.addValueChangeListener(e -> {
     		RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
        	});
     	district.addValueChangeListener(e -> {
     		FieldHelper.removeItems(community);
     		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
+    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
     	});
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
     }
 
 	@Override

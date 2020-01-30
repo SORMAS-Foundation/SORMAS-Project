@@ -92,7 +92,7 @@ public interface CaseFacade {
 	
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
 	
-	boolean doesEpidNumberExist(String epidNumber, String caseUuid);
+	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 	
 	String generateEpidNumber(CaseReferenceDto caze);
 
@@ -106,4 +106,5 @@ public interface CaseFacade {
 
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
+	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
 }

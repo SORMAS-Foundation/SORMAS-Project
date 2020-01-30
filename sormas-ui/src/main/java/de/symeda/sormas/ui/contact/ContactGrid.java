@@ -55,9 +55,9 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
-		setInEagerMode(viewConfiguration.isInEagerMode());
+		setInEagerMode(viewConfiguration.isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
 		
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode()) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -129,7 +129,7 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 	}
 	
 	public void setLazyDataProvider() {
-		DataProvider<ContactIndexDto,ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<ContactIndexDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getContactFacade().getIndexList(
 						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))

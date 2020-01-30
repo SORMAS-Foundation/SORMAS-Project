@@ -53,11 +53,13 @@ public class FacilityDto extends EntityDto {
 	private Double longitude;
 	private FacilityType type;
 	private boolean publicOwnership;
+	private boolean archived;
 
-	public FacilityDto(Date creationDate, Date changeDate, String uuid, String name, String regionUuid, String regionName, String districtUuid, String districtName,
+	public FacilityDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name, String regionUuid, String regionName, String districtUuid, String districtName,
 			String communityUuid, String communityName, String city, Double latitude, Double longitude, FacilityType type,
 			boolean publicOwnership) {
 		super(creationDate, changeDate, uuid);
+		this.archived = archived;
 		this.name = name;
 		if (regionUuid != null) {
 			this.region = new RegionReferenceDto(regionUuid, regionName);
@@ -149,6 +151,14 @@ public class FacilityDto extends EntityDto {
 
 	public void setPublicOwnership(boolean publicOwnership) {
 		this.publicOwnership = publicOwnership;
+	}
+	
+	public boolean isArchived() {
+		return archived;
+	}
+	
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 
 	public FacilityReferenceDto toReference() {

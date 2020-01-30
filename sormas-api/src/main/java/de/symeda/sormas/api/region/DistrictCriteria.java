@@ -20,6 +20,7 @@ package de.symeda.sormas.api.region;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class DistrictCriteria extends BaseCriteria implements Serializable, Cloneable {
@@ -28,6 +29,7 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 	
 	private RegionReferenceDto region;
 	private String nameEpidLike;
+	private EntityRelevanceStatus relevanceStatus;
 	
 	public DistrictCriteria region(RegionReferenceDto region) {
 		this.region = region;
@@ -47,4 +49,15 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 		this.nameEpidLike = nameEpidLike;
 		return this;
 	}
+	
+	public DistrictCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
+		return this;
+	}
+	
+	@IgnoreForUrl
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
+	}
+	
 }

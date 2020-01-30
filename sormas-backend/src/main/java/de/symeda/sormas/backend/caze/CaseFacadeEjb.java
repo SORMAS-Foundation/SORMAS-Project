@@ -21,6 +21,7 @@ import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -36,16 +37,20 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -1472,17 +1477,15 @@ public class CaseFacadeEjb implements CaseFacade {
 			// doesn't match the pattern
 			Calendar calendar = Calendar.getInstance();
 			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-			newEpidNumber = (caze.getRegion().getEpidCode() != null ? caze.getRegion().getEpidCode() : "") + "-"
-					+ (caze.getDistrict().getEpidCode() != null ? caze.getDistrict().getEpidCode() : "") + "-" + year
-					+ "-";
+			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(caze.getDistrict().getUuid()) + "-" + year + "-";
 		}
 
 		// Generate a suffix number
-		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber);
+		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caze.getUuid(), caze.getDisease());
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
 			// If there is not yet a case with a suffix for this epid number in the
 			// database, use 01
-			newEpidNumber = newEpidNumber + "01";
+			newEpidNumber = newEpidNumber + "001";
 		} else {
 			// Otherwise, extract the suffix from the highest existing epid number and
 			// increase it by 1
@@ -1492,14 +1495,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (suffixString.isEmpty()) {
 				// If the suffix is empty now, that means there is not yet an epid number with a
 				// suffix containing numbers
-				newEpidNumber = newEpidNumber + "01";
+				newEpidNumber = newEpidNumber + "001";
 			} else {
-				int suffix = Integer.valueOf(suffixString);
-				if (suffix < 9) {
-					newEpidNumber = newEpidNumber + "0" + (++suffix);
-				} else {
-					newEpidNumber = newEpidNumber + (++suffix);
-				}
+				int suffix = Integer.valueOf(suffixString) + 1;
+				newEpidNumber += String.format("%03d", suffix);
 			}
 		}
 
@@ -1920,18 +1919,54 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public boolean doesEpidNumberExist(String epidNumber, String caseUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Case> from = cq.from(Case.class);
+	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
+		
+		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
+		if (suffixSeperatorIndex == -1) {
+			// no suffix - use the whole string as prefix
+			suffixSeperatorIndex = epidNumber.length() - 1;
+		}
+		String prefixString = epidNumber.substring(0, suffixSeperatorIndex+1);
+		String suffixString = epidNumber.substring(suffixSeperatorIndex+1);
+		suffixString = suffixString.replaceAll("[^\\d]", "");
 
-		Predicate filter = cb.equal(from.get(Case.EPID_NUMBER), epidNumber);
-		if (caseUuid != null) {
-			filter = cb.and(filter, cb.notEqual(from.get(Case.UUID), caseUuid));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
+		
+		Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
+		if (!DataHelper.isNullOrEmpty(caseUuid)) {
+			filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
+		}
+
+		ParameterExpression<String> regexParam2 = null, regexParam3 = null, regexParam4 = null;
+		if (suffixString.length() > 0) {
+			// has to start with prefix
+			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
+			
+			// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
+			int suffixNumber = Integer.parseInt(suffixString);
+			regexParam2 = cb.parameter(String.class);
+			regexParam3 = cb.parameter(String.class);
+			regexParam4 = cb.parameter(String.class);
+			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class,
+					cb.substring(caze.get(Case.EPID_NUMBER), suffixSeperatorIndex+2), regexParam2, regexParam3, regexParam4);
+			filter = cb.and(filter, cb.equal(cb.concat("0", epidNumberSuffixClean).as(Integer.class), suffixNumber));
+		}
+		else {
+			filter = cb.and(filter, cb.equal(caze.get(Case.EPID_NUMBER), prefixString));
 		}
 		cq.where(filter);
-		cq.select(cb.count(from));
-		return em.createQuery(cq).getSingleResult() > 0;
+
+		cq.select(caze.get(Case.EPID_NUMBER));
+		TypedQuery<String> query = em.createQuery(cq);
+		if (regexParam2 != null) {
+			query.setParameter(regexParam2, "\\D");
+			query.setParameter(regexParam3, "");
+			query.setParameter(regexParam4, "g");
+		}
+		query.setMaxResults(1);
+		return !query.getResultList().isEmpty();
 	}
 
 	@Override
@@ -2196,6 +2231,45 @@ public class CaseFacadeEjb implements CaseFacade {
 		mergeCase(newCase, existingCaseDto, true);
 
 		return getCaseDataByUuid(newCase.getUuid());
+	}
+
+	/**
+	 * Archives all cases that have not been changed for a defined amount of days
+	 * 
+	 * @param daysAfterCaseGetsArchived defines the amount of days
+	 */
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived) {
+
+		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
+	}
+
+	void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
+
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterCaseGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> from = cq.from(Case.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(cb.equal(from.get(Case.ARCHIVED), false),
+				cb.not(caseService.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Case.UUID));
+		List<String> uuids = em.createQuery(cq).getResultList();
+
+		if (!uuids.isEmpty()) {
+
+			CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+			Root<Case> root = cu.from(Case.class);
+
+			cu.set(root.get(Case.ARCHIVED), true);
+
+			cu.where(root.get(Case.UUID).in(uuids));
+
+			em.createQuery(cu).executeUpdate();
+		}
 	}
 
 	@LocalBean

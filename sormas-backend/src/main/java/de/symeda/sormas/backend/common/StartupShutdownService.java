@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -174,6 +175,7 @@ public class StartupShutdownService {
 			otherAirport.setName("OTHER_AIRPORT");
 			otherAirport.setUuid(PointOfEntryDto.OTHER_AIRPORT_UUID);
 			otherAirport.setActive(true);
+			otherAirport.setPointOfEntryType(PointOfEntryType.AIRPORT);
 			pointOfEntryService.persist(otherAirport);
 		}
 		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_SEAPORT_UUID) == null) {
@@ -181,6 +183,7 @@ public class StartupShutdownService {
 			otherSeaport.setName("OTHER_SEAPORT");
 			otherSeaport.setUuid(PointOfEntryDto.OTHER_SEAPORT_UUID);
 			otherSeaport.setActive(true);
+			otherSeaport.setPointOfEntryType(PointOfEntryType.SEAPORT);
 			pointOfEntryService.persist(otherSeaport);
 		}
 		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID) == null) {
@@ -188,6 +191,7 @@ public class StartupShutdownService {
 			otherGC.setName("OTHER_GROUND_CROSSING");
 			otherGC.setUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID);
 			otherGC.setActive(true);
+			otherGC.setPointOfEntryType(PointOfEntryType.GROUND_CROSSING);
 			pointOfEntryService.persist(otherGC);
 		}
 		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_POE_UUID) == null) {
@@ -195,6 +199,7 @@ public class StartupShutdownService {
 			otherPoe.setName("OTHER_POE");
 			otherPoe.setUuid(PointOfEntryDto.OTHER_POE_UUID);
 			otherPoe.setActive(true);
+			otherPoe.setPointOfEntryType(PointOfEntryType.OTHER);
 			pointOfEntryService.persist(otherPoe);
 		}
 	}
@@ -205,7 +210,7 @@ public class StartupShutdownService {
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
-			List<Facility> healthFacilities = facilityService.getHealthFacilitiesByCommunity(community, false);
+			List<Facility> healthFacilities = facilityService.getActiveHealthFacilitiesByCommunity(community, false);
 			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
 	
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");

@@ -31,16 +31,17 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 import de.symeda.sormas.backend.util.InfrastructureDataImporter.CommunityConsumer;
 
 @Stateless
 @LocalBean
-public class CommunityService extends AbstractAdoService<Community> {
+public class CommunityService extends AbstractInfrastructureAdoService<Community> {
 	
 	public CommunityService() {
 		super(Community.class);
@@ -147,6 +148,15 @@ public class CommunityService extends AbstractAdoService<Community> {
 							cb.like(cb.lower(from.get(District.NAME)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
+			}
+		}
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = and(cb, filter, cb.or(
+						cb.equal(from.get(Community.ARCHIVED), false),
+						cb.isNull(from.get(Community.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = and(cb, filter, cb.equal(from.get(Community.ARCHIVED), true));
 			}
 		}
 		return filter;

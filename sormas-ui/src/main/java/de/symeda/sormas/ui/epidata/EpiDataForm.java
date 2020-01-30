@@ -54,7 +54,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			LayoutUtil.fluidRowLocs(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE, EpiDataDto.CLOSE_CONTACT_PROBABLE_CASE) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE, EpiDataDto.AREA_CONFIRMED_CASES) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.PROCESSING_CONFIRMED_CASE_FLUID_UNSAFE, EpiDataDto.DIRECT_CONTACT_DEAD_UNSAFE) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.PERCUTANEOUS_CASE_BLOOD, EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE) +
+			LayoutUtil.fluidRowLocs(EpiDataDto.CONTACT_WITH_SOURCE_RESPIRATORY_CASE, EpiDataDto.PERCUTANEOUS_CASE_BLOOD) +
+			LayoutUtil.fluidRowLocs(EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE, "") +
+			LayoutUtil.fluidRowLocs(EpiDataDto.VISITED_HEALTH_FACILIY, EpiDataDto.VISITED_ANIMAL_MARKET) +
 			LayoutUtil.fluidRowLoc(6, EpiDataDto.BURIAL_ATTENDED) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.BURIALS) +
 			LayoutUtil.fluidRowLoc(6, EpiDataDto.GATHERING_ATTENDED) +
@@ -65,7 +67,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.BATS,  EpiDataDto.BIRDS, EpiDataDto.CANIDAE, EpiDataDto.CATS, EpiDataDto.CATTLE,  
+									EpiDataDto.BATS,  EpiDataDto.BIRDS, EpiDataDto.CAMELS, EpiDataDto.CANIDAE, EpiDataDto.CATS, EpiDataDto.CATTLE,  
 									EpiDataDto.AREA_INFECTED_ANIMALS,
 									EpiDataDto.SICK_DEAD_ANIMALS, EpiDataDto.SICK_DEAD_ANIMALS_DETAILS,
 									EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION
@@ -73,7 +75,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 					),
 					LayoutUtil.fluidColumn(6, 0,
 							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.DOGS, EpiDataDto.PRIMATES, EpiDataDto.SWINE,EpiDataDto.RABBITS, EpiDataDto.RODENTS, 
+									EpiDataDto.DOGS, EpiDataDto.PRIMATES, EpiDataDto.SNAKES, EpiDataDto.SWINE,EpiDataDto.RABBITS, EpiDataDto.RODENTS, 
 									EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
 									EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, EpiDataDto.EATING_RAW_ANIMALS, 
 									EpiDataDto.EATING_RAW_ANIMALS_DETAILS
@@ -137,7 +139,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addFields(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE, EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE, 
 				EpiDataDto.CLOSE_CONTACT_PROBABLE_CASE, EpiDataDto.AREA_CONFIRMED_CASES,
 				EpiDataDto.PROCESSING_CONFIRMED_CASE_FLUID_UNSAFE, EpiDataDto.PERCUTANEOUS_CASE_BLOOD,
-				EpiDataDto.DIRECT_CONTACT_DEAD_UNSAFE, EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE);
+				EpiDataDto.DIRECT_CONTACT_DEAD_UNSAFE, EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE,
+				EpiDataDto.CONTACT_WITH_SOURCE_RESPIRATORY_CASE, EpiDataDto.VISITED_ANIMAL_MARKET,
+				EpiDataDto.VISITED_HEALTH_FACILIY);
 		
 		OptionGroup burialAttendedField = addField(EpiDataDto.BURIAL_ATTENDED, OptionGroup.class);
 		CssStyles.style(burialAttendedField, CssStyles.ERROR_COLOR_PRIMARY);
@@ -154,7 +158,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, 
 				EpiDataDto.EATING_RAW_ANIMALS,EpiDataDto.EATING_RAW_ANIMALS_DETAILS,
 				EpiDataDto.RODENTS, EpiDataDto.BATS, EpiDataDto.BIRDS, EpiDataDto.RABBITS, EpiDataDto.PRIMATES, EpiDataDto.SWINE, EpiDataDto.CATTLE, 
-				EpiDataDto.DOGS, EpiDataDto.CATS, EpiDataDto.CANIDAE,
+				EpiDataDto.DOGS, EpiDataDto.CATS, EpiDataDto.CANIDAE, EpiDataDto.SNAKES, EpiDataDto.CAMELS,
 				EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
 				EpiDataDto.ANIMAL_CONDITION, EpiDataDto.DATE_OF_LAST_EXPOSURE, EpiDataDto.PLACE_OF_LAST_EXPOSURE);
 		

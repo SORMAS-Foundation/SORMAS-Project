@@ -30,21 +30,24 @@ import java.util.List;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.region.District;
 
-public class PointOfEntryDao extends AbstractAdoDao<PointOfEntry> {
+public class PointOfEntryDao extends AbstractInfrastructureAdoDao<PointOfEntry> {
 
-    public PointOfEntryDao(Dao<PointOfEntry,Long> innerDao) throws SQLException {
+    public PointOfEntryDao(Dao<PointOfEntry,Long> innerDao) {
         super(innerDao);
     }
 
-    public List<PointOfEntry> getByDistrict(District district, boolean includeOthers) {
+    public List<PointOfEntry> getActiveByDistrict(District district, boolean includeOthers) {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(PointOfEntry.DISTRICT + "_id", district.getId()),
+                    where.eq(InfrastructureAdo.ARCHIVED, false),
                     where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.ne(PointOfEntry.ACTIVE, false));
             List<PointOfEntry> pointsOfEntry = builder.orderBy(PointOfEntry.NAME, true).query();
@@ -58,7 +61,7 @@ public class PointOfEntryDao extends AbstractAdoDao<PointOfEntry> {
 
             return pointsOfEntry;
         } catch (SQLException | IllegalArgumentException e) {
-            Log.e(getTableName(), "Could not perform getByDistrict");
+            Log.e(getTableName(), "Could not perform getActiveByDistrict");
             throw new RuntimeException(e);
         }
     }
@@ -66,17 +69,18 @@ public class PointOfEntryDao extends AbstractAdoDao<PointOfEntry> {
     /**
      * Checks whether the database contains at least one active point of entry within the user's district.
      */
-    public boolean hasEntriesInDistrict() {
+    public boolean hasActiveEntriesInDistrict() {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
             where.and(
                     where.eq(PointOfEntry.DISTRICT + "_id", ConfigProvider.getUser().getDistrict().getId()),
+                    where.eq(InfrastructureAdo.ARCHIVED, false),
                     where.eq(AbstractDomainObject.SNAPSHOT, false),
                     where.ne(PointOfEntry.ACTIVE, false));
             return builder.queryForFirst() != null;
         } catch (SQLException | IllegalArgumentException e) {
-            Log.e(getTableName(), "Could not perform hasEntriesInDistrict");
+            Log.e(getTableName(), "Could not perform hasActiveEntriesInDistrict");
             throw new RuntimeException(e);
         }
     }

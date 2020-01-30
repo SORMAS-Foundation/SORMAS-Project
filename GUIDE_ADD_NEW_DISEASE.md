@@ -9,7 +9,7 @@ The best way to do this is to follow these steps:
 
 1. Download the latest data dictionary https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_Data_Dictionary.xlsx
 2. Go through all the fields of person, case, contact and their sub entities symptoms, epidemiological data, etc.
-   For each field mark whether this field should be used for the disease.
+   The [SOP for adding new diseases to SORMAS](SOP_DISEASES.md) explains this in detail.
 3. If any field that is needed for your disease is missing, please have a look at the guide [How to add a new field?](GUIDE_ADD_NEW_FIELD.md).
    
 ## I. Adding the new disease

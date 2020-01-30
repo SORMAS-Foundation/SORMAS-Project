@@ -37,9 +37,11 @@ public class DistrictDto extends EntityDto {
 	private String epidCode;
 	private Float growthRate;
 	private RegionReferenceDto region;
+	private boolean archived;
 	
-	public DistrictDto(Date creationDate, Date changeDate, String uuid, String name, String epidCode, Float growthRate, String regionUuid, String regionName) {
+	public DistrictDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name, String epidCode, Float growthRate, String regionUuid, String regionName) {
 		super(creationDate, changeDate, uuid);
+		this.archived = archived;
 		this.name = name;
 		this.epidCode = epidCode;
 		this.growthRate = growthRate;
@@ -81,6 +83,13 @@ public class DistrictDto extends EntityDto {
 	}
 	public void setGrowthRate(Float growthRate) {
 		this.growthRate = growthRate;
+	}
+	
+	public boolean isArchived() {
+		return archived;
+	}
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 	
 	public DistrictReferenceDto toReference() {

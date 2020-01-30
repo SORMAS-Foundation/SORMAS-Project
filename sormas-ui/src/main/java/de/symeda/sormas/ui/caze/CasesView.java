@@ -150,6 +150,7 @@ public class CasesView extends AbstractView {
 	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private CheckBox casesWithCaseManagementData;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
+	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
 	// Bulk operations
@@ -544,7 +545,7 @@ public class CasesView extends AbstractView {
 			if (user.getRegion() == null) {
 				regionFilter.setWidth(140, Unit.PIXELS);
 				regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
 					
@@ -763,6 +764,17 @@ public class CasesView extends AbstractView {
 		{
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
+				if (daysAfterCaseGetsArchived > 0) {
+					relevanceStatusInfoLabel = new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(
+									I18nProperties.getString(Strings.infoArchivedCases), daysAfterCaseGetsArchived),
+							ContentMode.HTML);
+					relevanceStatusInfoLabel.setVisible(false);
+					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+				}
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
@@ -771,6 +783,8 @@ public class CasesView extends AbstractView {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.caseAllCases));
 				relevanceStatusFilter.addValueChangeListener(e -> {
+					relevanceStatusInfoLabel
+							.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
@@ -888,10 +902,10 @@ public class CasesView extends AbstractView {
 		regionFilter.setValue(criteria.getRegion());
 		
 		if (user.getRegion() != null && user.getDistrict() == null) {
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(user.getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
 		} else if (criteria.getRegion() != null) {
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(criteria.getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(criteria.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
 		} else {
 			districtFilter.setEnabled(false);
@@ -900,7 +914,7 @@ public class CasesView extends AbstractView {
 		
 		if (facilityFilter != null) {
 			if (criteria.getDistrict() != null) {
-				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(criteria.getDistrict(), true));
+				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(criteria.getDistrict(), true));
 				facilityFilter.setEnabled(true);
 			} else {
 				facilityFilter.setEnabled(false);
@@ -910,7 +924,7 @@ public class CasesView extends AbstractView {
 		}
 		if (pointOfEntryFilter != null) {
 			if (criteria.getDistrict() != null) {
-				pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllByDistrict(criteria.getDistrict().getUuid(), true));
+				pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid(), true));
 				pointOfEntryFilter.setEnabled(caseOriginFilter == null || caseOriginFilter.getValue() != CaseOrigin.IN_COUNTRY);
 			} else {
 				pointOfEntryFilter.setEnabled(false);

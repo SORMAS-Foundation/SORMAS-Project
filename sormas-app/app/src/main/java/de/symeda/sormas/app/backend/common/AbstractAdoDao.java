@@ -47,6 +47,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.region.Region;
 
 /**
  * Some methods are copied from {@link com.j256.ormlite.dao.RuntimeExceptionDao}.

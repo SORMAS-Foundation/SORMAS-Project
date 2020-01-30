@@ -25,6 +25,8 @@ import android.view.Menu;
 
 import androidx.annotation.NonNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -207,7 +209,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
             if (pickedCase.getUuid().equals(caze.getUuid())) {
                 saveDataInner(caze);
             } else {
-                if (lineListingDiseases.contains(caze.getDisease())) {
+                if (lineListingDiseases.contains(caze.getDisease()) && Boolean.TRUE.equals(fragment.getContentBinding().rapidCaseEntryCheckBox.getValue())) {
                     fragment.clearFieldsForRapidCaseEntry();
                 } else{
                     finish();
@@ -235,11 +237,13 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 DatabaseHelper.getPersonDao().saveAndSnapshot(caseToSave.getPerson());
 
                 // epid number
-                Calendar calendar = Calendar.getInstance();
-                String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-                caseToSave.setEpidNumber(caseToSave.getRegion().getEpidCode() != null ? caseToSave.getRegion().getEpidCode() : ""
-                        + "-" + caseToSave.getDistrict().getEpidCode() != null ? caseToSave.getDistrict().getEpidCode() : ""
-                        + "-" + year + "-");
+                if (StringUtils.isBlank(caseToSave.getEpidNumber())) {
+                    Calendar calendar = Calendar.getInstance();
+                    String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
+                    caseToSave.setEpidNumber(caseToSave.getRegion().getEpidCode() != null ? caseToSave.getRegion().getEpidCode() : ""
+                            + "-" + caseToSave.getDistrict().getEpidCode() != null ? caseToSave.getDistrict().getEpidCode() : ""
+                            + "-" + year + "-");
+                }
 
                 DatabaseHelper.getCaseDao().saveAndSnapshot(caseToSave);
 

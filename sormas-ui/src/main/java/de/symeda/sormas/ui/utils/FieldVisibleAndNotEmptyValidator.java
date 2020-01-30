@@ -5,7 +5,7 @@ import java.util.Objects;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.validator.AbstractValidator;
-import com.vaadin.ui.Component;;
+import com.vaadin.ui.Component;
 
 public class FieldVisibleAndNotEmptyValidator<T> extends AbstractValidator<T> {
 

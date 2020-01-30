@@ -80,9 +80,10 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
         List<Item> initialRegions = InfrastructureHelper.loadRegions();
         List<Item> initialDistricts = InfrastructureHelper.loadDistricts(record.getRashExposureRegion());
         List<Item> initialCommunities = InfrastructureHelper.loadCommunities(record.getRashExposureDistrict());
-        InfrastructureHelper.initializeRegionFields(contentBinding.maternalHistoryRashExposureRegion, initialRegions,
-                contentBinding.maternalHistoryRashExposureDistrict, initialDistricts,
-                contentBinding.maternalHistoryRashExposureCommunity, initialCommunities);
+        InfrastructureHelper.initializeRegionFields(
+                contentBinding.maternalHistoryRashExposureRegion, initialRegions, record.getRashExposureRegion(),
+                contentBinding.maternalHistoryRashExposureDistrict, initialDistricts, record.getRashExposureDistrict(),
+                contentBinding.maternalHistoryRashExposureCommunity, initialCommunities, record.getRashExposureCommunity());
     }
 
     @Override

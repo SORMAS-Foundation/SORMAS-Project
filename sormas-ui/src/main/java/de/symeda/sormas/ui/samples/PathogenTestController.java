@@ -130,7 +130,7 @@ public class PathogenTestController {
 
 		Runnable confirmCaseCallback = () -> {
 			if (dto.getTestedDisease() == postSaveCaseDto.getDisease()
-					&& dto.getTestResult() == PathogenTestResultType.POSITIVE
+					&& PathogenTestResultType.POSITIVE.equals(dto.getTestResult())
 					&& dto.getTestResultVerified().booleanValue() == true
 					&& postSaveCaseDto.getCaseClassification() != CaseClassification.CONFIRMED
 					&& postSaveCaseDto.getCaseClassification() != CaseClassification.NO_CASE) {

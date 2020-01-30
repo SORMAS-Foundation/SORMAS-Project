@@ -35,9 +35,11 @@ public class CommunityDto extends EntityDto {
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private boolean archived;
 	
-	public CommunityDto(Date creationDate, Date changeDate, String uuid, String name, String regionUuid, String regionName, String districtUuid, String districtName) {
+	public CommunityDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name, String regionUuid, String regionName, String districtUuid, String districtName) {
 		super(creationDate, changeDate, uuid);
+		this.archived = archived;
 		this.name = name;
 		this.region = new RegionReferenceDto(regionUuid, regionName);
 		this.district = new DistrictReferenceDto(districtUuid, districtName);
@@ -67,6 +69,13 @@ public class CommunityDto extends EntityDto {
 	}
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+	
+	public boolean isArchived() {
+		return archived;
+	}
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 	
 	public CommunityReferenceDto toReference() {

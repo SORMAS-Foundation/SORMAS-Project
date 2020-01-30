@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -32,7 +33,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteria> {
 
@@ -40,20 +43,20 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 
 	public static final String EDIT_BTN_ID = "edit";
 	
-	public CommunitiesGrid() {
+	public CommunitiesGrid(CommunityCriteria criteria) {
 		super(CommunityDto.class);
 		setSizeFull();
-		setSelectionMode(SelectionMode.NONE);
 
-		DataProvider<CommunityDto, CommunityCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getCommunityFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getCommunityFacade().count(query.getFilter().orElse(null));
-				});
-		setDataProvider(dataProvider);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(CommunitiesView.class).get(ViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode());
+		
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			setCriteria(criteria);
+			setEagerDataProvider();
+		} else {
+			setLazyDataProvider();
+			setCriteria(criteria);
+		}
 		
 		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT);
 
@@ -77,6 +80,26 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 	
 	public void reload() {
 		getDataProvider().refreshAll();
+	}
+	
+	public void setLazyDataProvider() {
+		DataProvider<CommunityDto, CommunityCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+				query -> FacadeProvider.getCommunityFacade().getIndexList(
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+							.collect(Collectors.toList())).stream(),
+				query -> {
+					return (int) FacadeProvider.getCommunityFacade().count(
+						query.getFilter().orElse(null));
+				});
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.NONE);
+	}
+	
+	public void setEagerDataProvider() {
+		ListDataProvider<CommunityDto> dataProvider = DataProvider.fromStream(FacadeProvider.getCommunityFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
 	}
 	
 }

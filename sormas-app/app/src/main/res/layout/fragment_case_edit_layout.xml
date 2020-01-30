@@ -247,6 +247,7 @@
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_community"
                         app:value="@={data.community}"
+                        app:softRequired="true"
                         app:userEditRight="@{UserRight.CASE_TRANSFER}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 

@@ -59,12 +59,7 @@ public class EpiDataBurialDialog extends AbstractDialog {
     // Instance methods
 
     private void setUpControlListeners() {
-        contentBinding.epiDataBurialBurialAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddressPopup();
-            }
-        });
+        contentBinding.epiDataBurialBurialAddress.setOnClickListener(v -> openAddressPopup());
     }
 
     private void openAddressPopup() {
@@ -73,13 +68,9 @@ public class EpiDataBurialDialog extends AbstractDialog {
         final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
         locationDialog.show();
 
-        locationDialog.setPositiveCallback(new de.symeda.sormas.app.util.Callback() {
-            @Override
-            public void call() {
-                contentBinding.epiDataBurialBurialAddress.setValue(locationClone);
-                data.setBurialAddress(locationClone);
-                locationDialog.dismiss();
-            }
+        locationDialog.setPositiveCallback(() -> {
+            contentBinding.epiDataBurialBurialAddress.setValue(locationClone);
+            data.setBurialAddress(locationClone);
         });
     }
 

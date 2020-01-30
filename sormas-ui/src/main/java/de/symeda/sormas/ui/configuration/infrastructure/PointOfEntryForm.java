@@ -44,8 +44,8 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		addField(PointOfEntryDto.ACTIVE, CheckBox.class);
 		TextField tfLatitude = addField(PointOfEntryDto.LATITUDE, TextField.class);
 		TextField tfLongitude = addField(PointOfEntryDto.LONGITUDE, TextField.class);
-		ComboBox cbRegion = addField(PointOfEntryDto.REGION, ComboBox.class);
-		ComboBox cbDistrict = addField(PointOfEntryDto.DISTRICT, ComboBox.class);
+		ComboBox cbRegion = addInfrastructureField(PointOfEntryDto.REGION);
+		ComboBox cbDistrict = addInfrastructureField(PointOfEntryDto.DISTRICT);
 
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
 		tfLatitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLatitude.getCaption()));
@@ -55,9 +55,9 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbDistrict,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
-		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		
 		setRequired(true, PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE);
 		if (!create) {

@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.app.sample.edit;
 
-import android.util.Log;
 import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -44,8 +42,6 @@ import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.util.DataUtils;
@@ -145,7 +141,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
         sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
         sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
-        labList = DatabaseHelper.getFacilityDao().getLaboratories(true);
+        labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
         samplePurposeList = DataUtils.getEnumItems(SamplePurpose.class, true);
 
         for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {

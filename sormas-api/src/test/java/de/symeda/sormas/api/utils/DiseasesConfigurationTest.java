@@ -46,20 +46,20 @@ public class DiseasesConfigurationTest {
 	@Test
 	public void testIsMissing() throws Exception {
 
-		assertTrue(DiseasesConfiguration.isMissing(TestClass.class, "testNone", Disease.NEW_INFLUENCA));
-		assertFalse(DiseasesConfiguration.isMissing(TestClass.class, "testEmpty", Disease.NEW_INFLUENCA));
-		assertFalse(DiseasesConfiguration.isMissing(TestClass.class, "testOne", Disease.NEW_INFLUENCA));
-		assertFalse(DiseasesConfiguration.isMissing(TestClass.class, "testMultiple", Disease.NEW_INFLUENCA));
+		assertTrue(DiseasesConfiguration.isMissing(TestClass.class, "testNone", Disease.NEW_INFLUENZA));
+		assertFalse(DiseasesConfiguration.isMissing(TestClass.class, "testEmpty", Disease.NEW_INFLUENZA));
+		assertFalse(DiseasesConfiguration.isMissing(TestClass.class, "testOne", Disease.NEW_INFLUENZA));
+		assertFalse(DiseasesConfiguration.isMissing(TestClass.class, "testMultiple", Disease.NEW_INFLUENZA));
 	}
 
 	@Test
 	public void testIsDefined() throws Exception {
 
-		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testNone", Disease.NEW_INFLUENCA));
-		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testEmpty", Disease.NEW_INFLUENCA));
-		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testOne", Disease.NEW_INFLUENCA));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testNone", Disease.NEW_INFLUENZA));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testEmpty", Disease.NEW_INFLUENZA));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testOne", Disease.NEW_INFLUENZA));
 		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testOne", Disease.EVD));
-		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.NEW_INFLUENCA));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.NEW_INFLUENZA));
 		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.CHOLERA));
 		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.CSM));
 	}

@@ -80,6 +80,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String CLASSIFICATION_RULES_LOC = "classificationRulesLoc";
 	private static final String CLASSIFIED_BY_SYSTEM_LOC = "classifiedBySystemLoc";
 	private static final String ASSIGN_NEW_EPID_NUMBER_LOC = "assignNewEpidNumberLoc";
+	private static final String EPID_NUMBER_WARNING_LOC = "epidNumberWarningLoc";
 
 	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 
@@ -92,6 +93,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CLASSIFIED_BY_SYSTEM_LOC))
 			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE)
 			+ LayoutUtil.fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, ASSIGN_NEW_EPID_NUMBER_LOC, 3, null)
+			+ LayoutUtil.loc(EPID_NUMBER_WARNING_LOC)
 			+ LayoutUtil.fluidRow(
 					new FluidColumn(null, 6, 0, CaseDataDto.DISEASE, null),
 					new FluidColumn(null, 6, 0, null,
@@ -144,7 +146,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		// Button to automatically assign a new epid number
 		Button assignNewEpidNumberButton = new Button(I18nProperties.getCaption(Captions.actionAssignNewEpidNumber));
-		CssStyles.style(assignNewEpidNumberButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+		CssStyles.style(assignNewEpidNumberButton, ValoTheme.BUTTON_DANGER, CssStyles.FORCE_CAPTION);
 		getContent().addComponent(assignNewEpidNumberButton, ASSIGN_NEW_EPID_NUMBER_LOC);
 		assignNewEpidNumberButton.setVisible(false);
 		
@@ -155,6 +157,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		assignNewEpidNumberButton.addClickListener(e -> {
 			epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue().toReference()));
 		});
+
+		Label epidNumberWarningLabel = new Label(I18nProperties.getString(Strings.messageEpidNumberWarning));
+		epidNumberWarningLabel.addStyleName(CssStyles.VSPACE_3);
 
 		addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
@@ -170,18 +175,19 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 		
-		ComboBox region = addField(CaseDataDto.REGION, ComboBox.class);
-		ComboBox district = addField(CaseDataDto.DISTRICT, ComboBox.class);
-		ComboBox community = addField(CaseDataDto.COMMUNITY, ComboBox.class);
+		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
+		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
+		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		ComboBox facility = addField(CaseDataDto.HEALTH_FACILITY, ComboBox.class);
+		community.addStyleName(CssStyles.SOFT_REQUIRED);
+		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-			FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllByRegion(regionDto.getUuid()) : null);
+			FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
 			if (community.getValue() == null) {
@@ -189,24 +195,24 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllByDistrict(districtDto.getUuid()) : null);
-			FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict(districtDto, true) : null);
+			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
 		});
 		community.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-			FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByCommunity(communityDto, true) :
-				district.getValue() != null ? FacadeProvider.getFacilityFacade().getHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
+			FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true) :
+				district.getValue() != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
 					null);
 		});
-		region.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		facility.addValueChangeListener(e -> {
 			updateFacilityFields(facility, facilityDetails);
 		});
 		
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
-		addField(CaseDataDto.POINT_OF_ENTRY, ComboBox.class);
+		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addFields(CaseDataDto.PREGNANT,
@@ -344,10 +350,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getContent().addComponent(classifiedBySystemLabel, CLASSIFIED_BY_SYSTEM_LOC);
 			}
 	
-			setEpidNumberError(epidField, assignNewEpidNumberButton, getValue().getEpidNumber());
+			setEpidNumberError(epidField, assignNewEpidNumberButton, epidNumberWarningLabel,
+					getValue().getEpidNumber());
 			
 			epidField.addValueChangeListener(f -> {
-				setEpidNumberError(epidField, assignNewEpidNumberButton, (String) f.getProperty().getValue());
+				setEpidNumberError(epidField, assignNewEpidNumberButton, epidNumberWarningLabel,
+						(String) f.getProperty().getValue());
 			});
 			
 			// Set health facility details visibility and caption
@@ -425,14 +433,19 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		return HTML_LAYOUT;
 	}
 	
-	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, String fieldValue) {
-		if (FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid())) {
+	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel,
+			String fieldValue) {
+		if (FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(),
+				getValue().getDisease())) {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);
+			getContent().addComponent(epidNumberWarningLabel, EPID_NUMBER_WARNING_LOC);
+
 		} else {
 			epidField.setComponentError(null);
-			assignNewEpidNumberButton.setVisible(!CaseLogic.isEpidNumberPrefix(fieldValue) 
-					&& !CaseLogic.isCompleteEpidNumber(fieldValue));
+			getContent().removeComponent(epidNumberWarningLabel);
+			assignNewEpidNumberButton.setVisible(
+					!CaseLogic.isEpidNumberPrefix(fieldValue) && !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}
 	}
 

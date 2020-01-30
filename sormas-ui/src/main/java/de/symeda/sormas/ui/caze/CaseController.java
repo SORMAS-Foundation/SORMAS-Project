@@ -1009,13 +1009,16 @@ public class CaseController {
 		
 		LineListingLayout lineListingForm = new LineListingLayout(window);
 		
-		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
-
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
+			lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+		} else {
+			lineListingForm.setWidth(LineListingLayout.WITDH_WITHOUT_EPID_NUMBER, Unit.PIXELS);
+		}
 		window.setContent(lineListingForm);
 		
 		window.setModal(true);
 		window.setPositionX(
-				(int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - LineListingLayout.DEFAULT_WIDTH)) / 2);
+				(int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
 		window.setPositionY(70);
 		
 		window.setResizable(false);

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.utils.Outbreaks;
 
 /**
- * All inheriting classes of EntityDto must include a buildt() method that sets
+ * All inheriting classes of EntityDto must include a build() method that sets
  * the necessary default values. This method should then be used instead of the
  * constructor.
  * 

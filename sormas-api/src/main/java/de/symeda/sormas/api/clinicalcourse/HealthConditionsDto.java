@@ -26,6 +26,8 @@ public class HealthConditionsDto extends EntityDto {
 	public static final String DOWN_SYNDROME = "downSyndrome";
 	public static final String CONGENITAL_SYPHILIS = "congenitalSyphilis";
 	public static final String OTHER_CONDITIONS = "otherConditions";
+	public static final String IMMUNODEFICIENCY_OTHER_THAN_HIV = "immunodeficiencyOtherThanHiv";
+	public static final String CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION = "cardiovascularDiseaseIncludingHypertension";
 	
 	private YesNoUnknown tuberculosis;
 	private YesNoUnknown asplenia;
@@ -41,6 +43,8 @@ public class HealthConditionsDto extends EntityDto {
 	private YesNoUnknown chronicNeurologicCondition;
 	private YesNoUnknown downSyndrome;
 	private YesNoUnknown congenitalSyphilis;
+	private YesNoUnknown immunodeficiencyOtherThanHiv;
+	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	private String otherConditions;
 	
 	public static HealthConditionsDto build() {
@@ -76,6 +80,13 @@ public class HealthConditionsDto extends EntityDto {
 	}
 	public void setDiabetes(YesNoUnknown diabetes) {
 		this.diabetes = diabetes;
+	}
+	@Order(5)
+	public YesNoUnknown getImmunodeficiencyOtherThanHiv() {
+		return immunodeficiencyOtherThanHiv;
+	}
+	public void setImmunodeficiencyOtherThanHiv(YesNoUnknown immunodeficiencyOtherThanHiv) {
+		this.immunodeficiencyOtherThanHiv = immunodeficiencyOtherThanHiv;
 	}
 	@Order(10)
 	public YesNoUnknown getHiv() {
@@ -134,20 +145,27 @@ public class HealthConditionsDto extends EntityDto {
 		this.chronicNeurologicCondition = chronicNeurologicCondition;
 	}
 	@Order(23)
+	public YesNoUnknown getCardiovascularDiseaseIncludingHypertension() {
+		return cardiovascularDiseaseIncludingHypertension;
+	}
+	public void setCardiovascularDiseaseIncludingHypertension(YesNoUnknown cardiovascularDiseaseIncludingHypertension) {
+		this.cardiovascularDiseaseIncludingHypertension = cardiovascularDiseaseIncludingHypertension;
+	}
+	@Order(24)
 	public YesNoUnknown getDownSyndrome() {
 		return downSyndrome;
 	}
 	public void setDownSyndrome(YesNoUnknown downSyndrome) {
 		this.downSyndrome = downSyndrome;
 	}
-	@Order(24)
+	@Order(25)
 	public YesNoUnknown getCongenitalSyphilis() {
 		return congenitalSyphilis;
 	}
 	public void setCongenitalSyphilis(YesNoUnknown congenitalSyphilis) {
 		this.congenitalSyphilis = congenitalSyphilis;
 	}
-	@Order(25)
+	@Order(26)
 	public String getOtherConditions() {
 		return otherConditions;
 	}

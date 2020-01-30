@@ -335,7 +335,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ConfigProvider.clearUsernameAndPassword();
+                        ConfigProvider.clearUserLogin();
                         ConfigProvider.clearPin();
                         Intent intent = new Intent(view.getContext(), LoginActivity.class);
                         startActivity(intent);

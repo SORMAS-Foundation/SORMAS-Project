@@ -106,7 +106,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		if (UserProvider.getCurrent().getUser().getRegion() == null) {
 			regionFilter.setWidth(200, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptRegion));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllAsReference());
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
 				dashboardView.refreshDashboard();
@@ -121,7 +121,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		if (UserProvider.getCurrent().getUser().getRegion() != null && UserProvider.getCurrent().getUser().getDistrict() == null) {
 			districtFilter.setWidth(200, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptDistrict));
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllByRegion(UserProvider.getCurrent().getUser().getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(UserProvider.getCurrent().getUser().getRegion().getUuid()));
 			districtFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 				dashboardView.refreshDashboard();
@@ -405,8 +405,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private void setDateFilter(Date from, Date to) {
-		dashboardDataProvider.setFromDate(from);
-		dashboardDataProvider.setToDate(to);
+		dashboardDataProvider.setFromDate(DateHelper.getStartOfDay(from));
+		dashboardDataProvider.setToDate(DateHelper.getEndOfDay(to));
 		updateComparisonDates();
 		if (dateFilterChangeCallback != null) {
 			dateFilterChangeCallback.run();

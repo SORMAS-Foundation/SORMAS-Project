@@ -26,12 +26,14 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -263,14 +265,33 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return result;
 	}
 
-	public String getHighestEpidNumber(String epidNumberPrefix) {
+	public String getHighestEpidNumber(String epidNumberPrefix, String caseUuid, Disease caseDisease) {
 		try {
-			StringBuilder queryBuilder = new StringBuilder();
-			queryBuilder.append("SELECT ").append(Case.EPID_NUMBER).append(" FROM ").append(Case.TABLE_NAME).append(" WHERE ").append(Case.TABLE_NAME)
-			.append(".").append(Case.EPID_NUMBER).append(" LIKE ?1 ORDER BY CAST(NULLIF(regexp_replace(")
-			.append(Case.TABLE_NAME).append(".").append(Case.EPID_NUMBER).append(", '\\D', '', 'g'), '') AS integer) DESC LIMIT 1");
-			Query query = em.createNativeQuery(queryBuilder.toString()).setParameter(1, epidNumberPrefix + "%");
-			return (String) query.getSingleResult();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<Case> caze = cq.from(Case.class);
+			
+			Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
+			if (!DataHelper.isNullOrEmpty(caseUuid)) {
+				filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
+			}
+			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), epidNumberPrefix + "%"));
+			cq.where(filter);
+
+			ParameterExpression<String> regexParam2 = cb.parameter(String.class);
+			ParameterExpression<String> regexParam3 = cb.parameter(String.class);
+			ParameterExpression<String> regexParam4 = cb.parameter(String.class);
+			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, 
+					cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length()+1), regexParam2, regexParam3, regexParam4);
+			cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
+			cq.select(caze.get(Case.EPID_NUMBER));
+			TypedQuery<String> query = em.createQuery(cq);
+			query.setParameter(regexParam2, "\\D");
+			query.setParameter(regexParam3, "");
+			query.setParameter(regexParam4, "g");
+			query.setMaxResults(1);
+			return query.getSingleResult();
+			
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -367,6 +388,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<Case, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
+		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
@@ -407,7 +429,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
-			filter = and(cb, filter, createNewCaseFilter(cb, from, caseCriteria.getNewCaseDateFrom(), caseCriteria.getNewCaseDateTo(), caseCriteria.getNewCaseDateType()));
+			filter = and(cb, filter, createNewCaseFilter(cb, from, DateHelper.getStartOfDay(caseCriteria.getNewCaseDateFrom()), 
+					DateHelper.getEndOfDay(caseCriteria.getNewCaseDateTo()), caseCriteria.getNewCaseDateType()));
 		}
 		if (caseCriteria.getCreationDateFrom() != null) {
 			filter = and(cb, filter, cb.greaterThan(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(caseCriteria.getCreationDateFrom())));
@@ -474,7 +497,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
 							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
 							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
-							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter));
+							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
+							cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
+							cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
@@ -559,46 +584,58 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Case,Case> casePath, Timestamp date) {
-		Predicate dateFilter = cb.greaterThan(casePath.get(Case.CHANGE_DATE), date);
+		Predicate dateFilter = greaterThanAndNotNull(cb, casePath.get(Case.CHANGE_DATE), date);
 
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, Hospitalization> hospitalization = casePath.join(Case.HOSPITALIZATION, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Hospitalization, PreviousHospitalization> previousHospitalization 
 		= hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, EpiData> epiData = casePath.join(Case.EPI_DATA, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiData.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb,
+				epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
 
 		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(dateFilter, cb.greaterThan(epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb,
+				epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE),
+				date));
 
 		Join<Case, Therapy> therapy = casePath.join(Case.THERAPY, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(therapy.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, therapy.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, ClinicalCourse> clinicalCourse = casePath.join(Case.CLINICAL_COURSE, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(clinicalCourse.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, clinicalCourse.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<ClinicalCourse, HealthConditions> healthConditions = clinicalCourse.join(ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(healthConditions.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, healthConditions.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, MaternalHistory> maternalHistory = casePath.join(Case.MATERNAL_HISTORY, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(maternalHistory.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, maternalHistory.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		Join<Case, PortHealthInfo> portHealthInfo = casePath.join(Case.PORT_HEALTH_INFO, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, cb.greaterThan(portHealthInfo.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(dateFilter,
+				greaterThanAndNotNull(cb, portHealthInfo.get(AbstractDomainObject.CHANGE_DATE), date));
 
 		return dateFilter;
 	}

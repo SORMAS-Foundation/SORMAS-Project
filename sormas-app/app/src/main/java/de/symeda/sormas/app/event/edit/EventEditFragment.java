@@ -65,13 +65,9 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
         final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
         locationDialog.show();
 
-        locationDialog.setPositiveCallback(new Callback() {
-            @Override
-            public void call() {
-                contentBinding.eventEventLocation.setValue(locationClone);
-                record.setEventLocation(locationClone);
-                locationDialog.dismiss();
-            }
+        locationDialog.setPositiveCallback(() -> {
+            contentBinding.eventEventLocation.setValue(locationClone);
+            record.setEventLocation(locationClone);
         });
     }
 

@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.caze;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -83,6 +84,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -438,7 +440,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testEpidNumberGeneration() {
+	public void testGenerateEpidNumber() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -448,11 +450,32 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Calendar calendar = Calendar.getInstance();
 		String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
 
-		assertEquals("COU-REG-DIS-" + year + "-01", caze.getEpidNumber());
+		assertEquals("COU-REG-DIS-" + year + "-001", caze.getEpidNumber());
 
 		CaseDataDto secondCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 
-		assertEquals("COU-REG-DIS-" + year + "-02", secondCaze.getEpidNumber());
+		assertEquals("COU-REG-DIS-" + year + "-002", secondCaze.getEpidNumber());
+		
+		secondCaze.setEpidNumber("COU-REG-DIS-" + year + "-0004");
+		getCaseFacade().saveCase(secondCaze);
+		
+		CaseDataDto thirdCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+
+		assertEquals("COU-REG-DIS-" + year + "-005", thirdCaze.getEpidNumber());
+
+		thirdCaze.setEpidNumber("COU-REG-DIS-" + year + "-3");
+		getCaseFacade().saveCase(thirdCaze);
+
+		CaseDataDto fourthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+
+		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
+
+		fourthCaze.setEpidNumber("COU-REG-DIS-" + year + "-AAA");
+		getCaseFacade().saveCase(fourthCaze);
+		fourthCaze = getCaseFacade().getCaseDataByUuid(fourthCaze.getUuid());
+
+		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
+
 	}
 
 	@Test
@@ -563,6 +586,60 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		visitUuids.add(visit.getUuid());
 		assertEquals(leadCase.getClinicalCourse().getUuid(),
 				getClinicalVisitFacade().getByUuids(visitUuids).get(0).getClinicalCourse().getUuid());
+	}
+
+	@Test
+	public void testDoesEpidNumberExist() {
+		
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto cazePerson = creator.createPerson("Horst", "Meyer").toReference();
+		CaseDataDto caze = creator.createCase(user, cazePerson, Disease.CHOLERA, CaseClassification.NOT_CLASSIFIED,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		// 1. Same case
+		assertFalse(getCaseFacade().doesEpidNumberExist(caze.getEpidNumber(), caze.getUuid(), caze.getDisease()));
+
+		// 2. Same disease and epid number
+		assertTrue(getCaseFacade().doesEpidNumberExist(caze.getEpidNumber(), "abc", caze.getDisease()));
+		
+		// 3. Same disease, different epid number
+		assertFalse(getCaseFacade().doesEpidNumberExist("123", "abc", caze.getDisease()));
+		
+		// 4. Different disease and same epid number
+		assertFalse(getCaseFacade().doesEpidNumberExist(caze.getEpidNumber(), "abc", Disease.ANTHRAX));
+
+		// 5. Different disease and different epid number
+		assertFalse(getCaseFacade().doesEpidNumberExist("def", "abc", Disease.ANTHRAX));
+	}
+
+	@Test
+	public void testArchiveAllArchivableCases() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+		// One archived case
+		CaseDataDto case1 = creator.createCase(user, person, rdcf);
+		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+		cut.archiveOrDearchiveCase(case1.getUuid(), true);
+
+		// One other case
+		CaseDataDto case2 = creator.createCase(user, person, rdcf);
+		
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		// Case of "today" shouldn't be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertFalse(cut.isArchived(case2.getUuid()));
+
+		// Case of "yesterday" should be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertTrue(cut.isArchived(case2.getUuid()));
 	}
 
 //	@Test

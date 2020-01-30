@@ -31,7 +31,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -157,7 +156,8 @@ public final class ConfigProvider {
         synchronized (ConfigProvider.class) {
             if (instance.user == null) {
                 String username = getUsername();
-                if (username != null) {
+                String password = getPassword(); // needed to not automatically "login" again on logout with missing server connection
+                if (username != null && password != null) {
                     instance.user = DatabaseHelper.getUserDao().getByUsername(username);
                 }
             }
@@ -231,7 +231,7 @@ public final class ConfigProvider {
         return instance.decodeCredential(instance.pin, "PIN");
     }
 
-    public static void clearUsernameAndPassword() {
+    public static void clearUserLogin() {
         // synchronized to make sure this does not interfere with setUserNameAndPassword or getUsername/getPassword
         synchronized (ConfigProvider.class) {
 
@@ -239,12 +239,14 @@ public final class ConfigProvider {
             if (configDao.queryForId(KEY_PASSWORD) != null) {
                 configDao.delete(new Config(KEY_PASSWORD, ""));
             }
-            if (configDao.queryForId(KEY_USERNAME) != null) {
-                configDao.delete(new Config(KEY_USERNAME, ""));
-            }
-
-            instance.username = null;
             instance.password = null;
+
+            // remember the username - needed to decide whether non-infrastructure data has to be cleared
+//            if (configDao.queryForId(KEY_USERNAME) != null) {
+//                configDao.delete(new Config(KEY_USERNAME, ""));
+//            }
+//            instance.username = null;
+
             instance.user = null;
             instance.userRights = null;
             instance.accessGranted = null;
@@ -278,8 +280,13 @@ public final class ConfigProvider {
 
             password = instance.encodeCredential(password, "Password");
 
-            if (username.equals(instance.username) && password.equals(instance.password))
+            if (username.equals(instance.username) && password.equals(instance.password)) {
                 return;
+            }
+
+            if (!username.equals(instance.username)) {
+                DatabaseHelper.clearTables(false);
+            }
 
             instance.user = null;
             instance.username = username;
@@ -450,7 +457,7 @@ public final class ConfigProvider {
 
         if (!wasNull) {
             // clear everything
-            clearUsernameAndPassword();
+            clearUserLogin();
             DatabaseHelper.clearTables(true);
         }
     }

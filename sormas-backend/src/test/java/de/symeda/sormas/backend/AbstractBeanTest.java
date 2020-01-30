@@ -133,6 +133,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
 		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_week FOR \"de.symeda.sormas.backend.H2Function.epi_week\"");
+		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_year FOR \"de.symeda.sormas.backend.H2Function.epi_year\"");
+		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
 	

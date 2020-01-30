@@ -63,5 +63,7 @@ public interface EventFacade {
 	List<String> getArchivedUuidsSince(String userUuid, Date since);
 	
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
+
+	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 	
 }
