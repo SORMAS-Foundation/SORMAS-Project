@@ -280,7 +280,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        input = (EditText) this.findViewById(R.id.input);
+        input = (EditText) this.findViewById(R.id.date_input);
         input.setInputType(InputType.TYPE_NULL);
         input.setTextAlignment(getTextAlignment());
         if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {

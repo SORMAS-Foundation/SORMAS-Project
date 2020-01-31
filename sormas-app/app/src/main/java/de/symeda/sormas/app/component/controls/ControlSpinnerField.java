@@ -227,7 +227,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        input = (Spinner) this.findViewById(R.id.input);
+        input = (Spinner) this.findViewById(R.id.spinner_input);
 
         spinnerFieldListeners.registerListener(new ValueChangeListener() {
             @Override

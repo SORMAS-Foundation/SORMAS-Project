@@ -27,7 +27,7 @@
         <include layout="@layout/control_label_layout" />
 
         <EditText
-            android:id="@+id/input"
+            android:id="@+id/date_input"
             android:layout_width="match_parent"
             android:focusable="false"
             android:inputType="date"

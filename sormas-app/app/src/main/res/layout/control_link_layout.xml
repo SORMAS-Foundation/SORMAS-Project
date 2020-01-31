@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/label"
-            android:labelFor="@+id/input"
+            android:labelFor="@+id/text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"

@@ -282,7 +282,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        input = (RadioGroup) this.findViewById(R.id.input);
+        input = (RadioGroup) this.findViewById(R.id.radiogroup_input);
         input.setTextAlignment(getTextAlignment());
         if(getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
             input.setGravity(getGravity());

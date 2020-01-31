@@ -191,7 +191,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        input = (TextView) this.findViewById(R.id.input);
+        input = (TextView) this.findViewById(R.id.popup_input);
         input.setImeOptions(getImeOptions());
         input.setTextAlignment(getTextAlignment());
         if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {

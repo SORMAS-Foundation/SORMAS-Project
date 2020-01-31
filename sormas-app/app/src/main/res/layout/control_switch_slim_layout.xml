@@ -31,7 +31,7 @@
         <include layout="@layout/control_label_row_layout"/>
 
         <RadioGroup
-            android:id="@+id/input"
+            android:id="@+id/switch_input"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"

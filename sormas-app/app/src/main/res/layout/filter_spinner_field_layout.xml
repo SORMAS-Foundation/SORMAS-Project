@@ -36,13 +36,13 @@
                 style="@style/ControlLabelFilterStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:labelFor="@+id/input"/>
+                android:labelFor="@+id/spinner_input"/>
             <!-- 60dp margin makes sure indicators are always visible -->
 
         </LinearLayout>
 
         <Spinner
-            android:id="@+id/input"
+            android:id="@+id/spinner_input"
             style="@style/FilterSpinnerFieldStyle" />
 
     </LinearLayout>
