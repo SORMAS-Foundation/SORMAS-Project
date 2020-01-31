@@ -100,7 +100,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
-			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
+			importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			importButton.setIcon(VaadinIcons.UPLOAD);
 			importButton.addClickListener(e -> {

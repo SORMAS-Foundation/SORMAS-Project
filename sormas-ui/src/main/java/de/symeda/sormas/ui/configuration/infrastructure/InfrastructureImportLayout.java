@@ -43,33 +43,32 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 		String fileNameAddition = null;
 		switch (infrastructureType) {
 		case COMMUNITY:
-			templateFilePath = FacadeProvider.getImportFacade().getCommunityImportTemplateFilePath().toString();
+			templateFilePath = FacadeProvider.getImportFacade().getCommunityImportTemplateFilePath();
 			templateFileName = "sormas_import_community_template.csv";
 			fileNameAddition = "_community_import_";
 			break;
 		case DISTRICT:
-			templateFilePath = FacadeProvider.getImportFacade().getDistrictImportTemplateFilePath().toString();
+			templateFilePath = FacadeProvider.getImportFacade().getDistrictImportTemplateFilePath();
 			templateFileName = "sormas_import_district_template.csv";
 			fileNameAddition = "_district_import_";
 			break;
 		case FACILITY:
-			templateFilePath = FacadeProvider.getImportFacade().getFacilityLaboratoryImportTemplateFilePath()
-					.toString();
+			templateFilePath = FacadeProvider.getImportFacade().getFacilityLaboratoryImportTemplateFilePath();
 			templateFileName = "sormas_import_facility_laboratory_template.csv";
 			fileNameAddition = "_facility_laboratory_import_";
 			break;
 		case POINT_OF_ENTRY:
-			templateFilePath = FacadeProvider.getImportFacade().getPointOfEntryImportTemplateFilePath().toString();
+			templateFilePath = FacadeProvider.getImportFacade().getPointOfEntryImportTemplateFilePath();
 			templateFileName = "sormas_import_point_of_entry_template.csv";
 			fileNameAddition = "_point_of_entry_import_";
 			break;
 		case POPULATION_DATA:
-			templateFilePath = FacadeProvider.getImportFacade().getPopulationDataImportTemplateFilePath().toString();
+			templateFilePath = FacadeProvider.getImportFacade().getPopulationDataImportTemplateFilePath();
 			templateFileName = "sormas_import_population_data_template.csv";
 			fileNameAddition = "_population_data_import_";
 			break;
 		case REGION:
-			templateFilePath = FacadeProvider.getImportFacade().getRegionImportTemplateFilePath().toString();
+			templateFilePath = FacadeProvider.getImportFacade().getRegionImportTemplateFilePath();
 			templateFileName = "sormas_import_region_template.csv";
 			fileNameAddition = "_region_import_";
 			break;
