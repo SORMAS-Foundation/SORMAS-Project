@@ -647,6 +647,10 @@ public interface Captions {
 	public static String Location_latLon = "Location.latLon";
 	public static String Location_latLonAccuracy = "Location.latLonAccuracy";
 	public static String Location_longitude = "Location.longitude";
+	public static String Login_doLogIn = "Login.doLogIn";
+	public static String Login_login = "Login.login";
+	public static String Login_password = "Login.password";
+	public static String Login_username = "Login.username";
 	public static String mainMenuAbout = "mainMenuAbout";
 	public static String mainMenuAggregateReports = "mainMenuAggregateReports";
 	public static String mainMenuCases = "mainMenuCases";

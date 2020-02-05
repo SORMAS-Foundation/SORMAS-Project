@@ -280,10 +280,11 @@ if [ ${DEV_SYSTEM} = true ] && [ ${LINUX} != true ]; then
 	cp cacerts.txt ${DOMAIN_DIR}/config/cacerts.jks
 fi
 cp loginsidebar.html ${CUSTOM_DIR}
+cp logindetails.html ${CUSTOM_DIR}
 if [ ${DEMO_SYSTEM} = true ]; then
-	cp demologindetails.html ${CUSTOM_DIR}/logindetails.html
+	cp demologinmain.html ${CUSTOM_DIR}/loginmain.html
 else
-	cp logindetails.html ${CUSTOM_DIR}
+	cp loginmain.html ${CUSTOM_DIR}
 fi
 
 
