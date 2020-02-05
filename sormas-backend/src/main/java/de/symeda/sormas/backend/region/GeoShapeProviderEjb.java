@@ -389,7 +389,12 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 				if (polygons.get(i).touches(polygons.get(j))) { // touch
 					polygons.set(i, (Polygon)polygons.get(i).union(polygons.get(j))); // union
 					polygons.remove(j);
-					j--;
+					if (i >= j) {
+						i--;
+						break;
+					} else {
+						j--;
+					}
 				}
 			}
 		}

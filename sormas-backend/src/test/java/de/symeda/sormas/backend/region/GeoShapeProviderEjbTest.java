@@ -67,6 +67,8 @@ public class GeoShapeProviderEjbTest {
     protected static <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {
         return bm.getBean(beanClass, qualifiers);
     }
+    
+
 	
 	@Test
 	public void testGetRegionShape() throws Exception {
@@ -109,5 +111,13 @@ public class GeoShapeProviderEjbTest {
 		GeoShapeProvider geoShapeProvider = getBean(GeoShapeProviderEjbLocal.class);
 		DistrictReferenceDto district = geoShapeProvider.getDistrictByCoord(new GeoLatLon(9.076344, 7.276929));
 		assertEquals("Abuja Municipal", district.getCaption());
+	}
+
+	@Test
+	public void testBuildCountryShape() throws Exception {
+		GeoShapeProvider geoShapeProvider = getBean(GeoShapeProviderEjbLocal.class);
+
+		GeoLatLon[][] countryShape = geoShapeProvider.getCountryShape();
+		assertEquals(4, countryShape.length);
 	}
 }
