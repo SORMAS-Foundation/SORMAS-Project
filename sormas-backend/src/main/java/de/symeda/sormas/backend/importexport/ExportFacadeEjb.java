@@ -229,7 +229,7 @@ public class ExportFacadeEjb implements ExportFacade {
 				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Outbreak.TABLE_NAME).execute();
 				break;
 			case CASE_SYMPTOMS:
-				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Case.TABLE_NAME, "id", "symptoms_id").execute();
+				generateCsvExportQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME).execute();
 				break;
 			case VISIT_SYMPTOMS:
 				generateCsvExportJoinQuery(databaseTable.getFileName(), date, randomNumber, Symptoms.TABLE_NAME, Visit.TABLE_NAME, "id", "symptoms_id").execute();
