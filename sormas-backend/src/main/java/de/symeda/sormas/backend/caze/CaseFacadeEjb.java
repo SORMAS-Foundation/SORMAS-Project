@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -1288,6 +1289,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
+		if (newCase.getSurveillanceOfficer() == null) {
+			setResponsibleSurveillanceOfficer(newCase);
+		}
+
 		updateInvestigationByStatus(existingCase, newCase);
 
 		updatePersonAndCaseByOutcome(existingCase, newCase);
@@ -1323,8 +1328,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				} else {
 					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
 							UserRole.SURVEILLANCE_SUPERVISOR);
-					if (supervisors.size() >= 1) {
-						task.setAssigneeUser(supervisors.get(0));
+					if (!supervisors.isEmpty()) {
+						Random rand = new Random();
+						task.setAssigneeUser(supervisors.get(rand.nextInt(supervisors.size())));
 					} else {
 						task.setAssigneeUser(null);
 					}
@@ -1426,6 +1432,21 @@ public class CaseFacadeEjb implements CaseFacade {
 									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
 									recipient.getUuid()));
 				}
+			}
+		}
+	}
+
+	private void setResponsibleSurveillanceOfficer(Case caze) {
+		
+		List<User> informants = userService.getInformantsOfFacility(caze.getHealthFacility());
+		Random rand = new Random();
+		if (!informants.isEmpty()) {
+			caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
+		} else {
+			List<User> survOffs = userService.getAllByDistrict(caze.getDistrict(), false,
+					UserRole.SURVEILLANCE_OFFICER);
+			if (!survOffs.isEmpty()) {
+				caze.setSurveillanceOfficer(survOffs.get(rand.nextInt(survOffs.size())));
 			}
 		}
 	}
