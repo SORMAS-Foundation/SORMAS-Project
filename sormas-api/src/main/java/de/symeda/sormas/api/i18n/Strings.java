@@ -440,6 +440,7 @@ public interface Strings {
 	public static String messageImportInvalidColumn = "messageImportInvalidColumn";
 	public static String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	public static String messageImportSuccessful = "messageImportSuccessful";
+	public static String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	public static String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	public static String messageLaboratoriesArchived = "messageLaboratoriesArchived";
 	public static String messageLaboratoriesDearchived = "messageLaboratoriesDearchived";
