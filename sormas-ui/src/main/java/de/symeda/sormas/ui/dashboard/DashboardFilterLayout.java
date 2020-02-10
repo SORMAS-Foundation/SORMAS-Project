@@ -195,9 +195,6 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		// Date filters
 		btnShowCustomPeriod = new Button("Custom");
 		initializeDateFilterButton(btnShowCustomPeriod, dateFilterButtons);
-		btnShowCustomPeriod.addClickListener(e -> {
-			btnCurrentPeriod.setCaption(btnShowCustomPeriod.getCaption());
-		});
 
 		btnToday = new Button(String.format(I18nProperties.getCaption(Captions.dashboardToday), DateHelper.formatLocalDate(new Date())));
 		initializeDateFilterButton(btnToday, dateFilterButtons);
