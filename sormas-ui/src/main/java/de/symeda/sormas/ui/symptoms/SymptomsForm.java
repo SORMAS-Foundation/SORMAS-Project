@@ -82,7 +82,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LayoutUtil.fluidRowLocs(SymptomsDto.BLOOD_PRESSURE_SYSTOLIC, SymptomsDto.BLOOD_PRESSURE_DIASTOLIC, SymptomsDto.HEART_RATE, SymptomsDto.RESPIRATORY_RATE) +
 			LayoutUtil.fluidRowLocs(SymptomsDto.GLASGOW_COMA_SCALE, SymptomsDto.WEIGHT, SymptomsDto.HEIGHT, SymptomsDto.MID_UPPER_ARM_CIRCUMFERENCE) +
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingSignsAndSymptoms)) +
-			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.ONSET_DATE, SymptomsDto.ONSET_SYMPTOM) +
 			LayoutUtil.fluidRowCss(CssStyles.VSPACE_3,
 					LayoutUtil.fluidColumn(8, 0,
 							LayoutUtil.loc(SYMPTOMS_HINT_LOC)),
@@ -123,6 +122,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							+ LayoutUtil.locsCss(CssStyles.VSPACE_3,
 									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS))
 					) +
+					LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.ONSET_SYMPTOM, SymptomsDto.ONSET_DATE)
+					+
 			LayoutUtil.loc(COMPLICATIONS_HEADING) +
 			LayoutUtil.fluidRow(
 					LayoutUtil.fluidColumn(6, 0,
