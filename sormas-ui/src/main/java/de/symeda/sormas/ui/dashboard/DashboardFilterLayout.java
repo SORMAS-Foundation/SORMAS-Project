@@ -374,6 +374,11 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				CssStyles.removeStyles(b, CssStyles.BUTTON_FILTER_DARK);
 			}
 		});
+		
+		if (activeFilterButton == btnShowCustomPeriod)
+			customDateFilterLayout.setVisible(true);
+		else
+			customDateFilterLayout.setVisible(false);
 	}
 
 	private void updateComparisonButtons(DateFilterType dateFilterType, Date from, Date to, boolean skipChangeButtonCaptions) {
