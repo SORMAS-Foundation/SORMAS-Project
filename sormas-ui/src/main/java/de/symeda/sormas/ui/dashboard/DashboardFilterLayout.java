@@ -193,7 +193,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		layout.setSpacing(true);
 
 		// Date filters
-		btnShowCustomPeriod = new Button("Custom");
+		btnShowCustomPeriod = new Button(I18nProperties.getCaption(Captions.dashboardCustom));
 		initializeDateFilterButton(btnShowCustomPeriod, dateFilterButtons);
 
 		btnToday = new Button(String.format(I18nProperties.getCaption(Captions.dashboardToday), DateHelper.formatLocalDate(new Date())));
