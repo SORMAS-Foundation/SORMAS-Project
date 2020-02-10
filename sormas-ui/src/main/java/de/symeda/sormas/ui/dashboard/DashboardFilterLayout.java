@@ -70,6 +70,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private Set<Button> dateComparisonButtons;
 
 	// Buttons
+	private Button btnShowCustomPeriod;
 	private Button btnToday;
 	private Button btnYesterday;
 	private Button btnThisWeek;
@@ -190,6 +191,11 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		layout.setSpacing(true);
 
 		// Date filters
+		btnShowCustomPeriod = new Button("Custom");
+		initializeDateFilterButton(btnShowCustomPeriod, dateFilterButtons);
+		btnShowCustomPeriod.addClickListener(e -> {
+			btnCurrentPeriod.setCaption(btnShowCustomPeriod.getCaption());
+		});
 		btnToday = new Button(String.format(I18nProperties.getCaption(Captions.dashboardToday), DateHelper.formatLocalDate(new Date())));
 		initializeDateFilterButton(btnToday, dateFilterButtons);
 		btnToday.addClickListener(e -> {
@@ -250,7 +256,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		layout.addComponents(btnToday, btnYesterday, btnThisWeek, btnLastWeek, btnThisYear);
+		layout.addComponents(btnShowCustomPeriod, btnToday, btnYesterday, btnThisWeek, btnLastWeek, btnThisYear);
 
 		return layout;
 	}
