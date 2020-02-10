@@ -80,6 +80,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private Button btnPeriodLastYear;
 	private Button activeComparisonButton;
 	
+	private HorizontalLayout customDateFilterLayout;
+	
 	private Runnable dateFilterChangeCallback;
 
 	public DashboardFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
@@ -263,7 +265,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private HorizontalLayout createCustomDateFilterLayout() {
 		// Custom filter
-		HorizontalLayout customDateFilterLayout = new HorizontalLayout();
+		customDateFilterLayout = new HorizontalLayout();
 		customDateFilterLayout.setSpacing(true);
 
 		// 'Apply custom filter' button
