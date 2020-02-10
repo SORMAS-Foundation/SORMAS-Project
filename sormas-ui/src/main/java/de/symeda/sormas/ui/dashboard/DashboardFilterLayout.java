@@ -278,6 +278,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 		// Apply button listener
 		applyButton.addClickListener(e -> {
+			applyButton.setEnabled(false);
+			applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 			DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 			Date fromDate = null;
 			Date toDate = null;
