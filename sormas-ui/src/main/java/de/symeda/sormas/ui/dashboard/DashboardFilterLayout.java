@@ -296,7 +296,6 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			}
 
 			if ((fromDate != null && toDate != null) || (fromWeek != null && toWeek != null)) {
-				changeDateFilterButtonsStyles(null, dateFilterButtons);
 				if (dateFilterOption == DateFilterOption.DATE) {
 					btnCurrentPeriod.setCaption(DateHelper.buildPeriodString(fromDate, toDate));
 					int activePeriodLength = DateHelper.getDaysBetween(fromDate, toDate);
