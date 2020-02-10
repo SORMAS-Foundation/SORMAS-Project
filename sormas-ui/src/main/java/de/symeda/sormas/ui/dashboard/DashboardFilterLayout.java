@@ -265,10 +265,12 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		// Custom filter
 		customDateFilterLayout = new HorizontalLayout();
 		customDateFilterLayout.setSpacing(true);
+		customDateFilterLayout.setVisible(false);
 
 		// 'Apply custom filter' button
 		Button applyButton = new Button(I18nProperties.getCaption(Captions.dashboardApplyCustomFilter));
-		CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+		CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, CssStyles.BUTTON_FILTER_LIGHT);
+		applyButton.setEnabled(false);
 
 		// Date & Epi Week filter
 		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, true, true, I18nProperties.getString(Strings.infoCaseDate));
