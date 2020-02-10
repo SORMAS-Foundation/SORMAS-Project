@@ -178,14 +178,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
 
 		// Set initial date filter
-		CssStyles.style(btnThisWeek, CssStyles.BUTTON_FILTER_DARK);
-		CssStyles.removeStyles(btnThisWeek, CssStyles.BUTTON_FILTER_LIGHT);
-		CssStyles.style(btnPeriodBefore, CssStyles.BUTTON_FILTER_DARK);
-		CssStyles.removeStyles(btnPeriodBefore, CssStyles.BUTTON_FILTER_LIGHT);
 		activeComparisonButton = btnPeriodBefore;
-		setDateFilter(DateHelper.getStartOfWeek(new Date()), new Date());
-		updateComparisonButtons(DateFilterType.THIS_WEEK, DateHelper.getStartOfWeek(new Date()), new Date(), false);
-		btnCurrentPeriod.setCaption(btnThisWeek.getCaption());
+		btnThisWeek.click();
 	}
 
 	private HorizontalLayout createDateFilterButtonsLayout() {
@@ -198,6 +192,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		btnShowCustomPeriod.addClickListener(e -> {
 			btnCurrentPeriod.setCaption(btnShowCustomPeriod.getCaption());
 		});
+
 		btnToday = new Button(String.format(I18nProperties.getCaption(Captions.dashboardToday), DateHelper.formatLocalDate(new Date())));
 		initializeDateFilterButton(btnToday, dateFilterButtons);
 		btnToday.addClickListener(e -> {
