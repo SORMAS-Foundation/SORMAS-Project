@@ -135,11 +135,10 @@
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_disease"
-                    app:value="@{data.disease}"
-                    app:appendValue="@{data.diseaseDetails}"
-                    app:valueFormat="@string/two_strings_with_hyphen_format"
+                    app:value="@={data.disease}"
+                    app:required="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
