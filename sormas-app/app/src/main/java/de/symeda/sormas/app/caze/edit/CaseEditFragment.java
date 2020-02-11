@@ -226,8 +226,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         }
 
         FragmentActivity thisActivity = this.getActivity();
-        final Disease currentDisease = record.getDisease();
         contentBinding.caseDataDisease.addValueChangedListener(new ValueChangeListener() {
+            Disease currentDisease = record.getDisease();
             @Override
             public void onChange(ControlPropertyField field) {
                 if (contentBinding.caseDataDisease.getValue() != currentDisease) {
