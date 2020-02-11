@@ -361,6 +361,7 @@
     <string name="heading_unsynchronized_changes">Unsynchronized Changes</string>
     <string name="heading_user_report">Report a problem</string>
     <string name="heading_change_laboratory_result">Change Laboratory Result</string>
+    <string name="heading_change_case_disease">Change case disease</string>
 
     <string name="hint_add_to_empty_list">Add a new entry by pressing the "+" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
@@ -472,6 +473,8 @@
     <string name="message_weekly_report_submitted">Thank you for submitting your weekly report.</string>
     <string name="message_case_numbers_submitted">Thank you for submitting your collected case numbers.</string>
     <string name="message_change_final_laboratory_result">The result of this pathogen test differs from the current final laboratory result of the sample. Do you want to update the final laboratory result?</string>
+    <string name="message_change_case_disease">Really change case disease?</string>
+    <string name="action_change_case_disease">Yes, change disease</string>
 
     <string name="notification_channel_tasks_name">New or Updated Tasks</string>
     <string name="notification_channel_tasks_description">Receive a notification when a new task is assigned to you or a task assigned to you has been edited</string>
