@@ -24,6 +24,7 @@ import android.webkit.WebView;
 
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -53,6 +54,7 @@ import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
@@ -69,6 +71,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> caseClassificationList;
     private List<Item> caseOutcomeList;
     private List<Item> vaccinationInfoSourceList;
+    private List<Item> diseaseList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
     private List<Item> humanRabiesTypeList;
@@ -179,6 +182,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
+        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
+        diseaseList = DataUtils.toItems(diseases);
+        if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
+            diseaseList.add(DataUtils.toItem(record.getDisease()));
+        }
         caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
         caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
         vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
@@ -239,6 +247,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         }
 
         // Initialize ControlSpinnerFields
+        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
         contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
