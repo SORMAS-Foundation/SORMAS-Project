@@ -227,10 +227,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
         FragmentActivity thisActivity = this.getActivity();
         contentBinding.caseDataDisease.addValueChangedListener(new ValueChangeListener() {
+
             Disease currentDisease = record.getDisease();
+
             @Override
             public void onChange(ControlPropertyField field) {
-                if (contentBinding.caseDataDisease.getValue() != currentDisease) {
+                if (this.currentDisease != null && contentBinding.caseDataDisease.getValue() != currentDisease) {
 
                     int headingResId = R.string.heading_change_case_disease;
                     int subHeadingResId = R.string.message_change_case_disease;
@@ -240,7 +242,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                     ConfirmationDialog dlg = new ConfirmationDialog(thisActivity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
                     dlg.setCancelable(false);
                     dlg.setNegativeCallback(() -> contentBinding.caseDataDisease.setValue(currentDisease));
-                    //dlg.setPositiveCallback(() -> contentBinding.caseDataDisease.removeCallbacks(this));
+                    dlg.setPositiveCallback(() -> this.currentDisease = null);
                     dlg.show();
                 }
             }
