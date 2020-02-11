@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 
+import androidx.fragment.app.FragmentActivity;
+
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -50,6 +52,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
@@ -187,6 +190,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
             diseaseList.add(DataUtils.toItem(record.getDisease()));
         }
+
         caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
         caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
         vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
@@ -220,6 +224,27 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
                 }
             });
         }
+
+        FragmentActivity thisActivity = this.getActivity();
+        final Disease currentDisease = record.getDisease();
+        contentBinding.caseDataDisease.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                if (contentBinding.caseDataDisease.getValue() != currentDisease) {
+
+                    int headingResId = R.string.heading_change_case_disease;
+                    int subHeadingResId = R.string.message_change_case_disease;
+                    int positiveButtonTextResId = R.string.action_change_case_disease;
+                    int negativeButtonTextResId = R.string.action_cancel;
+
+                    ConfirmationDialog dlg = new ConfirmationDialog(thisActivity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+                    dlg.setCancelable(false);
+                    dlg.setNegativeCallback(() -> contentBinding.caseDataDisease.setValue(currentDisease));
+                    //dlg.setPositiveCallback(() -> contentBinding.caseDataDisease.removeCallbacks(this));
+                    dlg.show();
+                }
+            }
+        });
 
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
