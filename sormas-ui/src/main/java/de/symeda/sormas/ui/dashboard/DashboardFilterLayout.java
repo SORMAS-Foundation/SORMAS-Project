@@ -357,13 +357,13 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void initializeDateFilterButton(Button button, Set<Button> buttonSet) {
 		button.addClickListener(e -> {
-			changeDateFilterButtonsStyles(button, buttonSet);
+			changeCustomDateFilterPanelStyle(button, buttonSet);
 		});
 		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		buttonSet.add(button);
 	}
 
-	private void changeDateFilterButtonsStyles(Button activeFilterButton, Set<Button> buttonSet) {
+	private void changeCustomDateFilterPanelStyle(Button activeFilterButton, Set<Button> buttonSet) {
 		if (activeFilterButton != null) {
 			CssStyles.style(activeFilterButton, CssStyles.BUTTON_FILTER_DARK);
 			CssStyles.removeStyles(activeFilterButton, CssStyles.BUTTON_FILTER_LIGHT);
@@ -410,7 +410,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		if (dateFilterType == DateFilterType.THIS_YEAR) {
 			btnPeriodBefore.setVisible(false);
 			activeComparisonButton = btnPeriodLastYear;
-			changeDateFilterButtonsStyles(btnPeriodLastYear, dateComparisonButtons);
+			changeCustomDateFilterPanelStyle(btnPeriodLastYear, dateComparisonButtons);
 		} else {
 			btnPeriodBefore.setVisible(true);
 		}
