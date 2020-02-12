@@ -259,7 +259,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		@SuppressWarnings("unchecked")
 		List<Object[]> results = em.createNativeQuery(queryBuilder.toString()).getResultList();
 		
-		return results.stream().collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]),
+		return results.stream().filter(e -> e[0] != null).collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]),
 				e -> ((BigInteger) e[1]).longValue()));
 	}
 
