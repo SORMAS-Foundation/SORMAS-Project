@@ -187,6 +187,12 @@ public class CasesView extends AbstractView {
 
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
+		Button openGuideButton = new Button(I18nProperties.getCaption(Captions.caseOpenCasesGuide));
+		openGuideButton.setId("openCasesGuide");
+		openGuideButton.setIcon(VaadinIcons.QUESTION);
+		openGuideButton.addClickListener(e -> buildAndOpenCasesInstructions());
+		addHeaderComponent(openGuideButton);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 
 			PopupButton importButton = new PopupButton(I18nProperties.getCaption(Captions.actionImport));
@@ -426,6 +432,12 @@ public class CasesView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private void buildAndOpenCasesInstructions() {
+		Window window = VaadinUiUtil.showPopupWindow(new CasesGuideLayout());
+		window.setWidth(1024, Unit.PIXELS);
+		window.setCaption(I18nProperties.getString(Strings.headingCasesGuide));
 	}
 
 	private void enterBulkEditMode() {

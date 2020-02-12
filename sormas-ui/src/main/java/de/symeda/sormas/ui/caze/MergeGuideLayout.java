@@ -9,10 +9,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-@SuppressWarnings("serial")
-public class MergeInstructionsLayout extends VerticalLayout {
+public class MergeGuideLayout extends VerticalLayout {
 
-	public MergeInstructionsLayout() {
+	private static final long serialVersionUID = -4739282529871338153L;
+
+	public MergeGuideLayout() {
 		setMargin(true);
 		setSpacing(false);
 		
@@ -63,7 +64,9 @@ public class MergeInstructionsLayout extends VerticalLayout {
 		Label lblHeadingCompleteness = new Label(I18nProperties.getString(Strings.headingCompleteness));
 		CssStyles.style(lblHeadingCompleteness, CssStyles.H3, CssStyles.VSPACE_TOP_5);
 		addComponent(lblHeadingCompleteness);
-		Label lblCompletenessDescription = new Label(I18nProperties.getString(Strings.infoCaseCompleteness));
+		Label lblCompletenessDescription = new Label(I18nProperties.getString(Strings.infoCaseCompleteness)
+				+ I18nProperties.getString(Strings.infoCompletenessMerge) + "</br></br>"
+				+ I18nProperties.getString(Strings.infoCalculateCompleteness));
 		lblCompletenessDescription.setContentMode(ContentMode.HTML);
 		lblCompletenessDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblCompletenessDescription);

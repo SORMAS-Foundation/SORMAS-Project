@@ -213,6 +213,7 @@ public interface Captions {
 	public static String caseNewCase = "caseNewCase";
 	public static String caseNewCaseDate = "caseNewCaseDate";
 	public static String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
+	public static String caseOpenCasesGuide = "caseOpenCasesGuide";
 	public static String caseOpenMergeGuide = "caseOpenMergeGuide";
 	public static String casePickCase = "casePickCase";
 	public static String CasePreviousHospitalization = "CasePreviousHospitalization";

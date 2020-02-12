@@ -139,6 +139,7 @@ public interface Strings {
 	public static String headingCasesArchived = "headingCasesArchived";
 	public static String headingCasesDearchived = "headingCasesDearchived";
 	public static String headingCasesDeleted = "headingCasesDeleted";
+	public static String headingCasesGuide = "headingCasesGuide";
 	public static String headingCaseStatusMap = "headingCaseStatusMap";
 	public static String headingChangeCaseDisease = "headingChangeCaseDisease";
 	public static String headingChangePathogenTestResult = "headingChangePathogenTestResult";
@@ -299,6 +300,7 @@ public interface Strings {
 	public static String infoArchivedEvents = "infoArchivedEvents";
 	public static String infoBasicExport = "infoBasicExport";
 	public static String infoCanceledBy = "infoCanceledBy";
+	public static String infoCalculateCompleteness = "infoCalculateCompleteness";
 	public static String infoCaseCompleteness = "infoCaseCompleteness";
 	public static String infoCaseDate = "infoCaseDate";
 	public static String infoCaseIncidence = "infoCaseIncidence";
@@ -306,6 +308,7 @@ public interface Strings {
 	public static String infoCaseIncidenceNotPossible = "infoCaseIncidenceNotPossible";
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
+	public static String infoCompletenessMerge = "infoCompletenessMerge";
 	public static String infoContactDashboard = "infoContactDashboard";
 	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
