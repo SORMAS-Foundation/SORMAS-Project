@@ -198,7 +198,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
         return null;
     }
 
-    protected void setActivityRootData(TActivityRootData activityRootData) {
+    public void setActivityRootData(TActivityRootData activityRootData) {
         this.activityRootData = activityRootData;
     }
 
