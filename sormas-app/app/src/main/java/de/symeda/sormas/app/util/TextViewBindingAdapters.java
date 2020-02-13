@@ -140,7 +140,11 @@ public class TextViewBindingAdapters {
 
     @BindingAdapter(value={"facilityValue", "facilityDetailsValue", "valueCaption", "defaultValue"})
     public static void setFacilityValueWithCaption(TextView view, Facility facility, String facilityDetailsValue, String valueCaption, String defaultValue) {
-        setValueWithCaption(view, FacilityHelper.buildFacilityString(facility.getUuid(), facility.getName(), facilityDetailsValue), valueCaption, defaultValue);
+        if (facility != null) {
+            setValueWithCaption(view, FacilityHelper.buildFacilityString(facility.getUuid(), facility.getName(), facilityDetailsValue), valueCaption, defaultValue);
+        } else {
+            setValueWithCaption(view, null, valueCaption, defaultValue);
+        }
     }
 
     @BindingAdapter(value={"enumValue", "valueCaption", "defaultValue"})
