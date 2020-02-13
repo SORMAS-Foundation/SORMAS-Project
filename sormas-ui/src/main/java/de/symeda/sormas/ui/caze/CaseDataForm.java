@@ -279,7 +279,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 		if (isVisibleAllowed(CaseDataDto.OUTCOME_DATE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.OUTCOME_DATE, CaseDataDto.OUTCOME,
-					Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN), true);
+					Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED), true);
 		}
 		if (isVisibleAllowed(CaseDataDto.SEQUELAE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SEQUELAE,

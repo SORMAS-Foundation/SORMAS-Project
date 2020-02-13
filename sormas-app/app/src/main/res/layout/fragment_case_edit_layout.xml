@@ -94,9 +94,9 @@
                         app:value="@={data.outcomeDate}"
                         app:softRequired="true"
                         app:dependencyParentField="@{caseDataOutcome}"
-                        app:dependencyParentValue="@{null}"
-                        app:dependencyParentValue2="@{CaseOutcome.NO_OUTCOME}"
-                        app:dependencyParentVisibility="@{false}"
+                        app:dependencyParentValue="@{CaseOutcome.DECEASED}"
+                        app:dependencyParentValue2="@{CaseOutcome.RECOVERED}"
+                        app:dependencyParentVisibility="@{true}"
                         app:userEditRight="@{UserRight.CASE_CLASSIFY}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
