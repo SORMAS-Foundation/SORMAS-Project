@@ -106,6 +106,22 @@ public class CaseListActivity extends PagedBaseListActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        getIntent().putExtra("refreshOnResume", true);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getIntent().getBooleanExtra("refreshOnResume", false)) {
+            showPreloader();
+            model.getCases().getValue().getDataSource().invalidate();
+        }
+    }
+
+    @Override
     public List<PageMenuItem> getPageMenuData() {
         return PageMenuItem.fromEnum(statusFilters, getContext());
     }
