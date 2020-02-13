@@ -57,6 +57,7 @@ import de.symeda.sormas.ui.utils.UserRightsException;
 @SuppressWarnings("serial")
 public class LoginScreen extends CssLayout {
 
+	private static final String UTF_8 = "UTF-8";
 	private LoginListener loginListener;
 
 	public LoginScreen(LoginListener loginListener) {
@@ -85,7 +86,7 @@ public class LoginScreen extends CssLayout {
 		String html;
 		try {
 			byte[] encoded = Files.readAllBytes(filePath);
-			html = new String(encoded, "UTF-8");
+			html = new String(encoded, UTF_8);
 		} catch (IOException e) {
 			html = "";
 		}
@@ -204,7 +205,7 @@ public class LoginScreen extends CssLayout {
 
 		try {
 			byte[] encoded = Files.readAllBytes(filePath);
-			htmlLabel.setValue(new String(encoded, "UTF-8"));
+			htmlLabel.setValue(new String(encoded, UTF_8));
 		} catch (IOException e) {
 			htmlLabel.setValue("");
 		}
@@ -250,7 +251,7 @@ public class LoginScreen extends CssLayout {
 		
 		try {
 			byte[] encoded = Files.readAllBytes(filePath);
-			htmlLabel.setValue(new String(encoded, "UTF-8"));
+			htmlLabel.setValue(new String(encoded, UTF_8));
 		} catch (IOException e) {
 			htmlLabel.setValue("");
 		}
