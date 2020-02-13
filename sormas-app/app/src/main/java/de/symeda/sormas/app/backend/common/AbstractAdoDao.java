@@ -47,6 +47,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.region.Region;
 
 /**
@@ -571,7 +572,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
             for (PropertyDescriptor property : AdoPropertyHelper.getPropertyDescriptors(source.getClass())) {
                 // ignore some types and specific properties
                 if (!AdoPropertyHelper.isModifiableProperty(property)
-                        || parentProperty.equals(property.getName()))
+                        || parentProperty.equals(property.getName())
+                        || Case.COMPLETENESS.equals(property.getName()))
                     continue;
 
                 // we now have to write the value from source into target and base

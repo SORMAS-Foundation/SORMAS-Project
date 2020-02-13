@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.caze.Case;
 
 /**
  * Contains methods that help to iterate through properties of ADO.
