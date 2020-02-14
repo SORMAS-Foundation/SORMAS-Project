@@ -43,6 +43,7 @@ gradlew    text eol=lf
 *.scm      text
 *.scss     text
 *.sh       text eol=lf
+server-update.conf text eol=lf
 *.sql      text
 *.styl     text
 *.tag      text
