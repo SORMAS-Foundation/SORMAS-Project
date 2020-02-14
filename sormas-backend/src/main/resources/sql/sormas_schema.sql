@@ -1,4 +1,4 @@
-#-- If a DB update was performed, insert a new line with a comment to the table SCHEMA_VERSION.
+-- If a DB update was performed, insert a new line with a comment to the table SCHEMA_VERSION.
 -- Example: INSERT INTO schema_version (version_number, comment) VALUES (1, 'Init database');
 
 -- #1
