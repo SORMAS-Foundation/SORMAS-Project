@@ -211,7 +211,7 @@ public class SampleDao extends AbstractAdoDao<Sample> {
         try {
             return (int) queryBuilder().where().eq(Sample.ASSOCIATED_CASE + "_id", caseId).countOf();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform getSampleCountByCaseUuid on Sample");
+            Log.e(getTableName(), "Could not perform getSampleCountByCaseUuid on Sample");
             throw new RuntimeException(e);
         }
     }

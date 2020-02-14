@@ -199,7 +199,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         try {
             return (int) queryBuilder().where().eq(Contact.CASE_UUID, caseUuid).countOf();
         } catch (SQLException e) {
-            android.util.Log.e(getTableName(), "Could not perform getContactCountByCaseUuid on Contact");
+            Log.e(getTableName(), "Could not perform getContactCountByCaseUuid on Contact");
             throw new RuntimeException(e);
         }
     }
