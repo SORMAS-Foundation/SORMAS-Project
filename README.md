@@ -32,13 +32,13 @@ Please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/i
 ## Project Structure
 The project consists of the following modules:
 
-- sormas-api: general business logic and definitions for data exchange between app and server
-- sormas-app: the Android app
-- sormas-backend: server entity services, facades, etc.
-- sormas-base: base project that also contains build scripts
-- sormas-ear: the ear needed to build the application
-- sormas-rest: the REST interface
-- sormas-ui: the web application
+- **sormas-api:** General business logic and definitions for data exchange between app and server
+- **sormas-app:** The Android app
+- **sormas-backend:** Server entity services, facades, etc.
+- **sormas-base:** Base project that also contains build scripts
+- **sormas-ear:** The ear needed to build the application
+- **sormas-rest:** The REST interface
+- **sormas-ui:** The web application
 
 ## Server Management
 
