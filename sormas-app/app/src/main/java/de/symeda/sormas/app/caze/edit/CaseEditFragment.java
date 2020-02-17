@@ -22,8 +22,11 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 
+import androidx.fragment.app.FragmentActivity;
+
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -49,10 +52,12 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
@@ -69,6 +74,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> caseClassificationList;
     private List<Item> caseOutcomeList;
     private List<Item> vaccinationInfoSourceList;
+    private List<Item> diseaseList;
     private List<Item> plagueTypeList;
     private List<Item> dengueFeverTypeList;
     private List<Item> humanRabiesTypeList;
@@ -179,6 +185,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     protected void prepareFragmentData() {
         record = getActivityRootData();
 
+        List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
+        diseaseList = DataUtils.toItems(diseases);
+        if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
+            diseaseList.add(DataUtils.toItem(record.getDisease()));
+        }
+
         caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
         caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
         vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
@@ -213,6 +225,29 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
             });
         }
 
+        FragmentActivity thisActivity = this.getActivity();
+        contentBinding.caseDataDisease.addValueChangedListener(new ValueChangeListener() {
+
+            Disease currentDisease = record.getDisease();
+
+            @Override
+            public void onChange(ControlPropertyField field) {
+                if (this.currentDisease != null && contentBinding.caseDataDisease.getValue() != currentDisease) {
+
+                    int headingResId = R.string.heading_change_case_disease;
+                    int subHeadingResId = R.string.message_change_case_disease;
+                    int positiveButtonTextResId = R.string.action_change_case_disease;
+                    int negativeButtonTextResId = R.string.action_cancel;
+
+                    ConfirmationDialog dlg = new ConfirmationDialog(thisActivity, headingResId, subHeadingResId, positiveButtonTextResId, negativeButtonTextResId);
+                    dlg.setCancelable(false);
+                    dlg.setNegativeCallback(() -> contentBinding.caseDataDisease.setValue(currentDisease));
+                    dlg.setPositiveCallback(() -> this.currentDisease = null);
+                    dlg.show();
+                }
+            }
+        });
+
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
         contentBinding.setVaccinationClass(Vaccination.class);
@@ -239,6 +274,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         }
 
         // Initialize ControlSpinnerFields
+        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
         contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
