@@ -22,7 +22,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -143,8 +142,7 @@ public class Location extends AbstractDomainObject {
 		this.latLonAccuracy = latLonAccuracy;
 	}
 	
-	@Transient
-	public String getGpsCoordinates() {
+	public String buildGpsCoordinatesCaption() {
 		if (latitude == null && longitude == null) {
 			return "";
 		} else if (latitude == null || longitude == null) {

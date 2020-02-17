@@ -160,7 +160,7 @@ public interface Captions {
 	public static String CaseData_vaccine = "CaseData.vaccine";
 	public static String caseEditData = "caseEditData";
 	public static String CaseExport_address = "CaseExport.address";
-	public static String CaseExport_adressGpsCoordinates = "CaseExport.adressGpsCoordinates";
+	public static String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
 	public static String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";
 	public static String CaseExport_associatedWithOutbreak = "CaseExport.associatedWithOutbreak";

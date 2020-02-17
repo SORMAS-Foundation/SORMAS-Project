@@ -70,7 +70,7 @@ public class CaseExportDto implements Serializable {
 	public static final String MAX_SOURCE_CASE_CLASSIFICATION = "maxSourceCaseClassification";
 	public static final String ASSOCIATED_WITH_OUTBREAK = "associatedWithOutbreak";
 	public static final String BURIAL_INFO = "burialInfo";
-	public static final String ADRESS_GPS_COORDINATES = "adressGpsCoordinates";
+	public static final String ADDRESS_GPS_COORDINATES = "addressGpsCoordinates";
 	public static final String TRAVEL_HISTORY = "travelHistory";
 	public static final String NUMBER_OF_PRESCRIPTIONS = "numberOfPrescriptions";
 	public static final String NUMBER_OF_TREATMENTS = "numberOfTreatments";
@@ -116,7 +116,7 @@ public class CaseExportDto implements Serializable {
 	private Date deathDate;
 	private String burialInfo;
 	private String address;
-	private String adressGpsCoordinates;
+	private String addressGpsCoordinates;
 	private String phone;
 	private String occupationType;
 	private String educationType;
@@ -514,10 +514,10 @@ public class CaseExportDto implements Serializable {
 
 	@Order(61)
 	@ExportTarget(exportTypes = { CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(ADRESS_GPS_COORDINATES)
+	@ExportProperty(ADDRESS_GPS_COORDINATES)
 	@ExportGroup(ExportGroupType.SENSITIVE)
-	public String getAdressGpsCoordinates() {
-		return adressGpsCoordinates;
+	public String getAddressGpsCoordinates() {
+		return addressGpsCoordinates;
 	}
 
 	@Order(62)
@@ -886,8 +886,8 @@ public class CaseExportDto implements Serializable {
 		this.address = address;
 	}
 
-	public void setAdressGpsCoordinates(String adressGpsCoordinates) {
-		this.adressGpsCoordinates = adressGpsCoordinates;
+	public void setAddressGpsCoordinates(String addressGpsCoordinates) {
+		this.addressGpsCoordinates = addressGpsCoordinates;
 	}
 
 	public void setPhone(String phone) {

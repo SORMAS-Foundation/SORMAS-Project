@@ -489,7 +489,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			Map<Long, Location> personAddresses = null;
 			if (exportConfiguration == null || exportConfiguration.getProperties().contains(PersonDto.ADDRESS)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.ADRESS_GPS_COORDINATES)) {
+					|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
 				List<Location> personAddressesList = null;
 				CriteriaQuery<Location> personAddressesCq = cb.createQuery(Location.class);
 				Root<Location> personAddressesRoot = personAddressesCq.from(Location.class);
@@ -584,9 +584,9 @@ public class CaseFacadeEjb implements CaseFacade {
 							.ifPresent(personAddress -> exportDto.setAddress(personAddress.toString()));
 				}
 				if (personAddresses != null
-						|| exportConfiguration.getProperties().contains(CaseExportDto.ADRESS_GPS_COORDINATES)) {
+						|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
 					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId())).ifPresent(
-							personAddress -> exportDto.setAdressGpsCoordinates(personAddress.getGpsCoordinates()));
+							personAddress -> exportDto.setAddressGpsCoordinates(personAddress.buildGpsCoordinatesCaption()));
 				}
 				if (prescriptionCounts != null) {
 					Optional.ofNullable(prescriptionCounts.get(exportDto.getId())).ifPresent(prescriptionCount -> exportDto.setNumberOfPrescriptions(prescriptionCount));
