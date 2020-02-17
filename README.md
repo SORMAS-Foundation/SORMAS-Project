@@ -17,7 +17,7 @@
 You can give SORMAS a try on our play server at https://sormas.helmholtz-hzi.de!
 
 #### How Can I Get Involved?
-Have a look at our [Contributing Readme](CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de to learn how you can help to drive the development of SORMAS forward. SORMAS is a community-driven project, and we'd love to have you on board!
+Have a look at our [*Contributing Readme*](CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de to learn how you can help to drive the development of SORMAS forward. SORMAS is a community-driven project, and we'd love to have you on board!
 
 #### How Can I Report a Bug or Request a Feature?
 Please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) and read the [*Submitting an Issue*](CONTRIBUTING.md#submitting-an-issue) guide for more detailed instructions. We appreciate your help!
