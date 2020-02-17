@@ -24,11 +24,6 @@ Please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/i
 
 <p align="center"><img src="https://user-images.githubusercontent.com/23701005/74659600-ebb8fc00-5194-11ea-836b-a7ca9d682301.png"/></p>
 
-## Table of Contents
-
-* [Project Structure](#project-structure)
-* [Server Management](#server-management)
-
 ## Project Structure
 The project consists of the following modules:
 
