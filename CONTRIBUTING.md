@@ -3,9 +3,8 @@
 ## Table of Contents
 
 * [Submitting an Issue](#submitting-an-issue)
-* [Getting Involved](#getting-involved)
-* [SORMAS Development](#sormas-development)
-* [SORMAS Sprint Board](#sormas-sprint-board)
+* [Contributing to the Project](#contributing-to-the-project)
+* [Contributing to the Code](#contributing-to-the-code)
 
 ## Submitting an Issue
 
@@ -47,22 +46,28 @@ When submitting a change request or a feature request, describing the feature yo
 * **Possible Alternatives:** If possible, provide alternative solutions in case your proposed feature can not be implemented in the way you outlined it for any reason.
 * **Additional Information:** If there is anything else you want to add to your request, you can put it here.
 
-## Getting Involved
+## Contributing to the Project
+
+Even as a non-developer, there are a lot of things that you can help us with. If there is something you would like to do that you don't find instructions about here, make sure to contact us at sormas@helmholtz-hzi.de and let us know how we can assist you!
 
 * [Translating SORMAS](I18N.md)
 * [Defining new diseases](SOP_DISEASES.md)
 
-## SORMAS Development
+## Contributing to the Code
+
+If you're interested in participating in the development of SORMAS, you can use the following guides to get started. If you have problems setting up your development environment or don't know what you can work on, don't hesitate to contact us at sormas@helmholtz-hzi.de!
 
 * [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
 * [Performing load tests on a SORMAS server](LOAD_TESTING.md)
+
+### Development Contributing Guidelines 
 
 1. Use the eclipse code formatter (Ctrl+Shift+F) and the Android Studio code formatter for the **sormas-app** project.
 2. Each commit should be related to a single issue on Github and have a reference to this issue as well as a short description on what has been done in this commit:
    > #61 - added model to define classification, apply automatic case classification whenever a field value changes
 3. Each pull request should be related to a single issue (if possible). 
 
-## SORMAS Sprint Board
+### SORMAS Sprint Board
 
 The SORMAS sprint board is segmented into the following categories:
 
