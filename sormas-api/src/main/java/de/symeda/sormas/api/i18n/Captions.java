@@ -692,6 +692,7 @@ public interface Captions {
 	public static String MaternalHistory_swollenLymphsMonth = "MaternalHistory.swollenLymphsMonth";
 	public static String MaternalHistory_swollenLymphsOnset = "MaternalHistory.swollenLymphsOnset";
 	public static String menu = "menu";
+	public static String moreActions = "moreActions";
 	public static String name = "name";
 	public static String notAvailableShort = "notAvailableShort";
 	public static String options = "options";
