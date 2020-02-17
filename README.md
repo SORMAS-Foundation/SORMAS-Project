@@ -13,7 +13,11 @@
 
 **SORMAS** (Surveillance Outbreak Response Management and Analysis System) is an open source eHealth system - consisting of separate web and mobile apps - that is geared towards optimizing the processes used in monitoring the spread of infectious diseases and responding to outbreak situations.
 
+#### How Does it Work?
 You can give SORMAS a try on our play server at https://sormas.helmholtz-hzi.de!
+
+#### How Can I Get Involved?
+Have a look at our [Contributing Readme](CONTRIBUTING.md) and contact us at sormas@helmholtz-hzi.de to learn how you can help to drive the development of SORMAS forward. SORMAS is a community-driven project, and we'd love to have you on board!
 
 <p align="center"><img src="https://user-images.githubusercontent.com/23701005/74659600-ebb8fc00-5194-11ea-836b-a7ca9d682301.png"/></p>
 
@@ -21,7 +25,6 @@ You can give SORMAS a try on our play server at https://sormas.helmholtz-hzi.de!
 
 * [Project Structure](#project-structure)
 * [Server Management](#server-management)
-* [Contributing](#contributing)
 * [Implementation Guides](#implementation-guides)
 
 ## Project Structure
@@ -39,11 +42,6 @@ The project consists of the following modules:
 
 * [Setting up a SORMAS server](SERVER_SETUP.md)
 * [Updating a SORMAS server](SERVER_UPDATE.md)
-
-## Contributing
-SORMAS is a community-driven project that is constantly evolving based on the needs of our users. If you want to get involved in contributing, there are a lot of ways for you to do so - no matter if you are a developer yourself, a user, involved in professional health care or just interested in the project. Please get in touch with us!
-
-You can read more about possibilities to contribute to SORMAS in our [Contributing Readme](CONTRIBUTING.md).
 
 ## Implementation Guides
 
