@@ -28,7 +28,6 @@ Please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/i
 
 * [Project Structure](#project-structure)
 * [Server Management](#server-management)
-* [Implementation Guides](#implementation-guides)
 
 ## Project Structure
 The project consists of the following modules:
@@ -45,9 +44,3 @@ The project consists of the following modules:
 
 * [Setting up a SORMAS server](SERVER_SETUP.md)
 * [Updating a SORMAS server](SERVER_UPDATE.md)
-
-## Implementation Guides
-
-* [Adding license headers](ADDING_LICENSE.md)
-* [How to add a new disease?](GUIDE_ADD_NEW_DISEASE.md)
-* [How to add a new field?](GUIDE_ADD_NEW_FIELD.md)
