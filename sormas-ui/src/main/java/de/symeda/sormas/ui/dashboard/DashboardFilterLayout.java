@@ -70,6 +70,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private Set<Button> dateComparisonButtons;
 
 	// Buttons
+	private Button btnShowCustomPeriod;
 	private Button btnToday;
 	private Button btnYesterday;
 	private Button btnThisWeek;
@@ -78,6 +79,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private Button btnPeriodBefore;
 	private Button btnPeriodLastYear;
 	private Button activeComparisonButton;
+	
+	private HorizontalLayout customDateFilterLayout;
 	
 	private Runnable dateFilterChangeCallback;
 
@@ -190,6 +193,9 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		layout.setSpacing(true);
 
 		// Date filters
+		btnShowCustomPeriod = new Button(I18nProperties.getCaption(Captions.dashboardCustom));
+		initializeDateFilterButton(btnShowCustomPeriod, dateFilterButtons);
+
 		btnToday = new Button(String.format(I18nProperties.getCaption(Captions.dashboardToday), DateHelper.formatLocalDate(new Date())));
 		initializeDateFilterButton(btnToday, dateFilterButtons);
 		btnToday.addClickListener(e -> {
@@ -250,19 +256,21 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		layout.addComponents(btnToday, btnYesterday, btnThisWeek, btnLastWeek, btnThisYear);
+		layout.addComponents(btnShowCustomPeriod, btnToday, btnYesterday, btnThisWeek, btnLastWeek, btnThisYear);
 
 		return layout;
 	}
 
 	private HorizontalLayout createCustomDateFilterLayout() {
 		// Custom filter
-		HorizontalLayout customDateFilterLayout = new HorizontalLayout();
+		customDateFilterLayout = new HorizontalLayout();
 		customDateFilterLayout.setSpacing(true);
+		customDateFilterLayout.setVisible(false);
 
 		// 'Apply custom filter' button
 		Button applyButton = new Button(I18nProperties.getCaption(Captions.dashboardApplyCustomFilter));
-		CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+		CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, CssStyles.BUTTON_FILTER_LIGHT);
+		applyButton.setEnabled(false);
 
 		// Date & Epi Week filter
 		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, true, true, I18nProperties.getString(Strings.infoCaseDate));
@@ -270,6 +278,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 		// Apply button listener
 		applyButton.addClickListener(e -> {
+			applyButton.setEnabled(false);
+			applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 			DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 			Date fromDate = null;
 			Date toDate = null;
@@ -286,7 +296,6 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			}
 
 			if ((fromDate != null && toDate != null) || (fromWeek != null && toWeek != null)) {
-				changeDateFilterButtonsStyles(null, dateFilterButtons);
 				if (dateFilterOption == DateFilterOption.DATE) {
 					btnCurrentPeriod.setCaption(DateHelper.buildPeriodString(fromDate, toDate));
 					int activePeriodLength = DateHelper.getDaysBetween(fromDate, toDate);
@@ -348,13 +357,13 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void initializeDateFilterButton(Button button, Set<Button> buttonSet) {
 		button.addClickListener(e -> {
-			changeDateFilterButtonsStyles(button, buttonSet);
+			changeCustomDateFilterPanelStyle(button, buttonSet);
 		});
 		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		buttonSet.add(button);
 	}
 
-	private void changeDateFilterButtonsStyles(Button activeFilterButton, Set<Button> buttonSet) {
+	private void changeCustomDateFilterPanelStyle(Button activeFilterButton, Set<Button> buttonSet) {
 		if (activeFilterButton != null) {
 			CssStyles.style(activeFilterButton, CssStyles.BUTTON_FILTER_DARK);
 			CssStyles.removeStyles(activeFilterButton, CssStyles.BUTTON_FILTER_LIGHT);
@@ -366,6 +375,11 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				CssStyles.removeStyles(b, CssStyles.BUTTON_FILTER_DARK);
 			}
 		});
+		
+		if (activeFilterButton == btnShowCustomPeriod)
+			customDateFilterLayout.setVisible(true);
+		else
+			customDateFilterLayout.setVisible(false);
 	}
 
 	private void updateComparisonButtons(DateFilterType dateFilterType, Date from, Date to, boolean skipChangeButtonCaptions) {
@@ -396,7 +410,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		if (dateFilterType == DateFilterType.THIS_YEAR) {
 			btnPeriodBefore.setVisible(false);
 			activeComparisonButton = btnPeriodLastYear;
-			changeDateFilterButtonsStyles(btnPeriodLastYear, dateComparisonButtons);
+			changeCustomDateFilterPanelStyle(btnPeriodLastYear, dateComparisonButtons);
 		} else {
 			btnPeriodBefore.setVisible(true);
 		}

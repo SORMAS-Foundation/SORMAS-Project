@@ -148,6 +148,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		if (applyButton != null) {
 			weekFromFilter.addValueChangeListener(e -> {
 				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				applyButton.setEnabled(true);
 			});
 		}
 		addComponent(weekFromFilter);
@@ -166,6 +167,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		if (applyButton != null) {
 			weekToFilter.addValueChangeListener(e -> {
 				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				applyButton.setEnabled(true);
 			});
 		}
 		addComponent(weekToFilter);
@@ -178,6 +180,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		if (applyButton != null) {
 			dateFromFilter.addValueChangeListener(e -> {
 				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				applyButton.setEnabled(true);
 			});
 		}
 
@@ -188,10 +191,11 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		if (applyButton != null) {
 			dateToFilter.addValueChangeListener(e -> {
 				applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				applyButton.setEnabled(true);
 			});
 		}
-	}
-
+	}	
+	
 	public ComboBox getDateFilterOptionFilter() {
 		return dateFilterOptionFilter;
 	}
