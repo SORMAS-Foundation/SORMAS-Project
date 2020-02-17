@@ -1,5 +1,12 @@
 # Contributing
 
+## Table of Contents
+
+* [Submitting an Issue](#submitting-an-issue)
+* [Getting Involved](#getting-involved)
+* [SORMAS Development](#sormas-development)
+* [SORMAS Sprint Board](#sormas-sprint-board)
+
 ## Submitting an Issue
 
 Please read adhere to the following guidelines when submitting new issues. This allows us to process your request as quickly as possible.
