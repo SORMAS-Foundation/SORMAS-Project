@@ -129,7 +129,6 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
             return true;
         });
 
-        // iterate through all epi data environmental fields and add listener
         List<String> environmentalExposureProperties = Arrays.asList(EpiDataDto.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
         int environmentalExposureHeadingVisibiliy = View.GONE;
         for (String property : environmentalExposureProperties){
@@ -138,7 +137,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
                 break;
             }
         }
-        contentBinding.fullHorizontalDivider.setVisibility(environmentalExposureHeadingVisibiliy);
+        contentBinding.environmentalExposureDivider.setVisibility(environmentalExposureHeadingVisibiliy);
         contentBinding.headingEnvironmentalExposure.setVisibility(environmentalExposureHeadingVisibiliy);
     }
 

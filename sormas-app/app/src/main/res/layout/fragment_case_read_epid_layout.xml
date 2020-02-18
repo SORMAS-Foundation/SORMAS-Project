@@ -451,7 +451,7 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/full_horizontal_divider"
+                    android:id="@+id/environmental_exposure_divider"
                     style="@style/FullHorizontalDividerStyle"/>
 
                 <TextView

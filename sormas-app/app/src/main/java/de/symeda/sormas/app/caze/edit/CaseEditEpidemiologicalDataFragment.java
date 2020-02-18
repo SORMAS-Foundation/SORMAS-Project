@@ -352,7 +352,6 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             return true;
         });
 
-        // iterate through all epi data environmental fields and add listener
         List<String> environmentalExposureProperties = Arrays.asList(EpiDataDto.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
         int environmentalExposureHeadingVisibiliy = View.GONE;
         for (String property : environmentalExposureProperties){
