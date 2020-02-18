@@ -601,6 +601,7 @@
                 android:paddingEnd="@dimen/parentLayoutHorizontalPadding">
 
                 <TextView
+                    android:id="@+id/heading_environmental_exposure"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/heading_environmental_exposure"

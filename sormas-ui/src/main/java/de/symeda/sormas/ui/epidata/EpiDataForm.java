@@ -46,7 +46,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	private static final String EPI_DATA_CAPTION_LOC = "epiDataCaptionLoc";
 	private static final String ANIMAL_CAPTION_LOC = "animalCaptionLoc";
-	private static final String ENVIRONMENTAL_LOC = "environmentalLoc";
+	private static final String ENVIRONMENTAL_CAPTION_LOC = "environmentalLoc";
 	private static final String KIND_OF_EXPOSURE_LOC = "kindOfExposureLoc";
 	
 	private static final String HTML_LAYOUT = 
@@ -114,7 +114,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 							)
 					)
 			) +
-			LayoutUtil.loc(ENVIRONMENTAL_LOC) +
+					LayoutUtil.loc(ENVIRONMENTAL_CAPTION_LOC) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_BODY_DETAILS) +
 			LayoutUtil.fluidRowLocs(EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE)			
@@ -203,27 +203,26 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			}
 		}
 		
-		String animalCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingAnimalContacts)) + LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.messageAnimalContactsHint));
+		String animalCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingAnimalContacts))
+				+ LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.messageAnimalContactsHint));
 		Label animalCaptionLabel = new Label(animalCaptionLayout);
 		animalCaptionLabel.setContentMode(ContentMode.HTML);
 		getContent().addComponent(animalCaptionLabel, ANIMAL_CAPTION_LOC);
 
-		List<String> environmentalExposures = Arrays.asList(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY, EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE);
-		
-		for (String environmentalExp : environmentalExposures) {
-			if (getFieldGroup().getField(environmentalExp).isVisible()) {
-				String environmentalCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingEnvironmentalExposure));
-				Label environmentalCaptionLabel = new Label(environmentalCaptionLayout);
-				environmentalCaptionLabel.setContentMode(ContentMode.HTML);
-				getContent().addComponent(environmentalCaptionLabel, ENVIRONMENTAL_LOC);
-				break;
-			}
-		}
-		
 		for (String propertyId : EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES) {
 			getField(propertyId).addValueChangeListener(e -> updateAnimalExposureFields());
 		}
 		updateAnimalExposureFields();
+
+		Label environmentalCaptionLabel = new Label(
+				LayoutUtil.h3(I18nProperties.getString(Strings.headingEnvironmentalExposure)));
+		environmentalCaptionLabel.setContentMode(ContentMode.HTML);
+		getContent().addComponent(environmentalCaptionLabel, ENVIRONMENTAL_CAPTION_LOC);
+
+		for (String propertyId : EpiDataDto.ENVIRONMENTAL_EXPOSURE_PROPERTIES) {
+			getField(propertyId).addValueChangeListener(e -> updateEnvironmentalExposureFields());
+		}
+		updateEnvironmentalExposureFields();
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.KIND_OF_EXPOSURE_DETAILS, EpiDataDto.KIND_OF_EXPOSURE_OTHER, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), EpiDataDto.DATE_OF_PROPHYLAXIS, EpiDataDto.PROPHYLAXIS_STATUS, Arrays.asList(YesNoUnknown.YES), true);
@@ -251,6 +250,13 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		});
 	}
 	
+	private void updateEnvironmentalExposureFields() {
+		boolean environmentalVisible = Arrays.stream(EpiDataDto.ENVIRONMENTAL_EXPOSURE_PROPERTIES)
+				.anyMatch(property -> getField(property).isVisible());
+		getContent().getComponent(ENVIRONMENTAL_CAPTION_LOC).setVisible(environmentalVisible);
+
+	}
+
 	private void updateAnimalExposureFields() {
 		boolean animalsVisible = Arrays.stream(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES)
 				.anyMatch(property -> getField(property).isVisible());

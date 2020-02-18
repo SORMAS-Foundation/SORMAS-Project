@@ -19,6 +19,8 @@
 package de.symeda.sormas.app.caze.read;
 
 import androidx.databinding.ObservableArrayList;
+
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
@@ -119,20 +122,32 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
         // iterate through all epi data animal fields and add listener
         ValueChangeListener updateHadAnimalExposureListener = field -> updateHadAnimalExposure();
         List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
-        FieldHelper.iteratePropertyFields((ViewGroup)contentBinding.getRoot(), field -> {
+        FieldHelper.iteratePropertyFields((ViewGroup) contentBinding.getRoot(), field -> {
             if (animalExposureProperties.contains(field.getSubPropertyId())) {
                 field.addValueChangedListener(updateHadAnimalExposureListener);
             }
             return true;
         });
+
+        // iterate through all epi data environmental fields and add listener
+        List<String> environmentalExposureProperties = Arrays.asList(EpiDataDto.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
+        int environmentalExposureHeadingVisibiliy = View.GONE;
+        for (String property : environmentalExposureProperties){
+            if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, property, getActivityRootData().getDisease())){
+                environmentalExposureHeadingVisibiliy = View.VISIBLE;
+                break;
+            }
+        }
+        contentBinding.fullHorizontalDivider.setVisibility(environmentalExposureHeadingVisibiliy);
+        contentBinding.headingEnvironmentalExposure.setVisibility(environmentalExposureHeadingVisibiliy);
     }
 
     private void updateHadAnimalExposure() {
         // iterate through all epi data animal fields to get value
         List<String> animalExposureProperties = Arrays.asList(EpiDataDto.ANIMAL_EXPOSURE_PROPERTIES);
-        boolean iterationCancelled = !FieldHelper.iteratePropertyFields((ViewGroup)getContentBinding().getRoot(), field -> {
+        boolean iterationCancelled = !FieldHelper.iteratePropertyFields((ViewGroup) getContentBinding().getRoot(), field -> {
             if (animalExposureProperties.contains(field.getSubPropertyId())) {
-                YesNoUnknown value = (YesNoUnknown)field.getValue();
+                YesNoUnknown value = (YesNoUnknown) field.getValue();
                 if (YesNoUnknown.YES.equals(value)) {
                     return false;
                 }
