@@ -129,7 +129,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
             return true;
         });
 
-        List<String> environmentalExposureProperties = Arrays.asList(EpiDataDto.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
+        List<String> environmentalExposureProperties = Arrays.asList(EpiData.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
         int environmentalExposureHeadingVisibiliy = View.GONE;
         for (String property : environmentalExposureProperties){
             if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, property, getActivityRootData().getDisease())){
