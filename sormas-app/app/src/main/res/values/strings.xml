@@ -31,7 +31,7 @@
     <string name="system">System</string>
     <string name="yes">Yes</string>
     <string name="all">All</string>
-    <string name="complete">complete</string>
+    <string name="completed">completed</string>
 
     <string name="action_add_missing_case">Add Missing Case</string>
     <string name="action_allow_gps_access">Allow GPS Access</string>

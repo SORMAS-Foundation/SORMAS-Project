@@ -80,7 +80,7 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
         if (item.getCompleteness() != null) {
             Resources resources = txtCompleteness.getContext().getResources();
             int completeness = Math.round(item.getCompleteness());
-            txtCompleteness.setText(completeness + "% " + resources.getString(R.string.complete));
+            txtCompleteness.setText(completeness + "% " + resources.getString(R.string.completed));
             if (completeness < 25) {
                 txtCompleteness.setTextColor(resources.getColor(R.color.red));
             } else if (completeness < 50) {
