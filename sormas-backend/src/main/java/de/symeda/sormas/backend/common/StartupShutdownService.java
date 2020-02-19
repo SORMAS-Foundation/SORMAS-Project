@@ -20,7 +20,6 @@ package de.symeda.sormas.backend.common;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -43,12 +42,13 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
@@ -131,13 +131,9 @@ public class StartupShutdownService {
 		
 		updateDatabase(emAudit, "/sql/sormas_audit_schema.sql");
 		
-		String countryName = configFacade.getCountryName();
-		
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 		
-		importAdministrativeDivisions(countryName);
-		
-		facilityService.importFacilities(countryName);
+		buildDummyInfrastructureData();
 		
 		importConstantPointsOfEntry();
 
@@ -152,22 +148,56 @@ public class StartupShutdownService {
 		configFacade.validateAppUrls();
 	}
 	
-	public void importAdministrativeDivisions(String countryName) {
-		Timestamp latestRegionChangeDate = regionService.getLatestChangeDate();
-		if (latestRegionChangeDate != null
-				// last change made to district data for nigeria
-				// TODO replace with solution that reads the change date from the file or something else
-				&& latestRegionChangeDate.after(DateHelper.getDateZero(2017, 11, 22))) {
-			return;
-		}		
+	private void buildDummyInfrastructureData() {
 
-		List<Region> regions = regionService.getAll();
-		
-		regionService.importRegions(countryName, regions);
-		
-		districtService.importDistricts(countryName, regions);
+		// Region
+		Region region = new Region();
+		region.setUuid(DataHelper.createUuid());
+		region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
+		region.setEpidCode("DEF-REG");
+		regionService.ensurePersisted(region);
 
-		communityService.importCommunities(countryName, regions);		
+		// District
+		District district = new District();
+		district.setUuid(DataHelper.createUuid());
+		district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
+		district.setRegion(region);
+		district.setEpidCode("DIS");
+		districtService.ensurePersisted(district);
+		
+		// Community
+		Community community = new Community();
+		community.setUuid(DataHelper.createUuid());
+		community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
+		community.setDistrict(district);
+		communityService.ensurePersisted(community);
+		
+		// Health Facility
+		Facility facility = new Facility();
+		facility.setUuid(DataHelper.createUuid());
+		facility.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
+		facility.setCommunity(community);
+		facility.setDistrict(district);
+		facility.setRegion(region);
+		facilityService.ensurePersisted(facility);
+		
+		// Laboratory
+		Facility laboratory = new Facility();
+		laboratory.setUuid(DataHelper.createUuid());
+		laboratory.setName(I18nProperties.getCaption(Captions.defaultLaboratory, "Default Laboratory"));
+		laboratory.setCommunity(community);
+		laboratory.setDistrict(district);
+		laboratory.setRegion(region);
+		laboratory.setType(FacilityType.LABORATORY);
+		
+		// Point of Entry
+		PointOfEntry pointOfEntry = new PointOfEntry();
+		pointOfEntry.setUuid(DataHelper.createUuid());
+		pointOfEntry.setName(I18nProperties.getCaption(Captions.defaultPointOfEntry, "Default Point Of Entry"));
+		pointOfEntry.setDistrict(district);
+		pointOfEntry.setRegion(region);
+		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
+		pointOfEntryService.ensurePersisted(pointOfEntry);
 	}
 
 	private void importConstantPointsOfEntry() {
@@ -215,6 +245,7 @@ public class StartupShutdownService {
 			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
 			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
 			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
+			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 	
 			// Generate Admin
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
@@ -289,6 +320,14 @@ public class StartupShutdownService {
 			hospitalInformant.setHealthFacility(facility);
 			hospitalInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(hospitalInformant);
+
+			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
+			poeInformant.setUserName("PoeInf");
+			poeInformant.setRegion(region);
+			poeInformant.setDistrict(district);
+			poeInformant.setPointOfEntry(pointOfEntry);
+			poeInformant.setAssociatedOfficer(surveillanceOfficer);
+			userService.persist(poeInformant);
 		}
 	}
 	

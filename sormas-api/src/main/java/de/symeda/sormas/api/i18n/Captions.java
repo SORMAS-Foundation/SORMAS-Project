@@ -424,6 +424,12 @@ public interface Captions {
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
 	public static String dashboardWeekBefore = "dashboardWeekBefore";
 	public static String dashboardYesterday = "dashboardYesterday";
+	public static String defaultCommunity = "defaultCommunity";
+	public static String defaultDistrict = "defaultDistrict";
+	public static String defaultHealthFacility = "defaultHealthFacility";
+	public static String defaultLaboratory = "defaultLaboratory";
+	public static String defaultPointOfEntry = "defaultPointOfEntry";
+	public static String defaultRegion = "defaultRegion";
 	public static String devModeCaseCount = "devModeCaseCount";
 	public static String devModeDisease = "devModeDisease";
 	public static String devModeDistrict = "devModeDistrict";
