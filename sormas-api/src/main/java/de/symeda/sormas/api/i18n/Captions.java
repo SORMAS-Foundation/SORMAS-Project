@@ -653,6 +653,10 @@ public interface Captions {
 	public static String Login_login = "Login.login";
 	public static String Login_password = "Login.password";
 	public static String Login_username = "Login.username";
+	public static String LoginSidebar_diseaseDetection = "LoginSidebar.diseaseDetection";
+	public static String LoginSidebar_diseasePrevention = "LoginSidebar.diseasePrevention";
+	public static String LoginSidebar_outbreakResponse = "LoginSidebar.outbreakResponse";
+	public static String LoginSidebar_poweredBy = "LoginSidebar.poweredBy";
 	public static String mainMenuAbout = "mainMenuAbout";
 	public static String mainMenuAggregateReports = "mainMenuAggregateReports";
 	public static String mainMenuCases = "mainMenuCases";

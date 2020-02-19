@@ -78,14 +78,14 @@ $login-background-image: null !default;
         display: block;
       }
       
-      .headline-container {
+      .headline-label {
       	background-color: rgba(0, 90, 156, 0.7);
-      	margin-bottom: 30px;
-      	
-      	h2 {
-      	  color: #FFF;
-      	  padding: 10px;
-      	}
+      	color: #FFF;
+     	padding: 10px;
+      }
+     
+      .logo-container {
+      	padding: 0px;
       }
       
       .content-container {
