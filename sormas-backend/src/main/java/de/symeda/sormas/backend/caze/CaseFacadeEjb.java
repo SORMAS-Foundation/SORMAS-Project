@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -428,27 +429,32 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Facility> facilityJoin = caseRoot.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Case, PointOfEntry> pointOfEntryJoin = caseRoot.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 
-		cq.multiselect(caseRoot.get(Case.ID), personJoin.get(Person.ID), personAddressJoin.get(Location.ID), epiDataJoin.get(EpiData.ID), symptomsJoin.get(Symptoms.ID),
-				hospitalizationJoin.get(Hospitalization.ID), districtJoin.get(District.ID), healthConditionsJoin.get(HealthConditions.ID), 
-				caseRoot.get(Case.UUID), caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_DETAILS),
+		cq.multiselect(caseRoot.get(Case.ID), personJoin.get(Person.ID), personAddressJoin.get(Location.ID),
+				epiDataJoin.get(EpiData.ID), symptomsJoin.get(Symptoms.ID), hospitalizationJoin.get(Hospitalization.ID),
+				districtJoin.get(District.ID), healthConditionsJoin.get(HealthConditions.ID), caseRoot.get(Case.UUID),
+				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_DETAILS),
 				personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME), personJoin.get(Person.SEX),
-				personJoin.get(Person.APPROXIMATE_AGE), personJoin.get(Person.APPROXIMATE_AGE_TYPE),
-				personJoin.get(Person.BIRTHDATE_DD), personJoin.get(Person.BIRTHDATE_MM), personJoin.get(Person.BIRTHDATE_YYYY),
+				caseRoot.get(Case.PREGNANT), personJoin.get(Person.APPROXIMATE_AGE),
+				personJoin.get(Person.APPROXIMATE_AGE_TYPE), personJoin.get(Person.BIRTHDATE_DD),
+				personJoin.get(Person.BIRTHDATE_MM), personJoin.get(Person.BIRTHDATE_YYYY),
 				caseRoot.get(Case.REPORT_DATE), regionJoin.get(Region.NAME), districtJoin.get(District.NAME),
 				communityJoin.get(Community.NAME), facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.UUID),
-				caseRoot.get(Case.HEALTH_FACILITY_DETAILS), pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.UUID),
-				caseRoot.get(Case.POINT_OF_ENTRY_DETAILS), caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), 
+				caseRoot.get(Case.HEALTH_FACILITY_DETAILS), pointOfEntryJoin.get(PointOfEntry.NAME),
+				pointOfEntryJoin.get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
+				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS),
 				caseRoot.get(Case.OUTCOME), hospitalizationJoin.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
-				hospitalizationJoin.get(Hospitalization.ADMISSION_DATE), hospitalizationJoin.get(Hospitalization.DISCHARGE_DATE),
+				hospitalizationJoin.get(Hospitalization.ADMISSION_DATE),
+				hospitalizationJoin.get(Hospitalization.DISCHARGE_DATE),
 				hospitalizationJoin.get(Hospitalization.LEFT_AGAINST_ADVICE), personJoin.get(Person.PRESENT_CONDITION),
-				personJoin.get(Person.DEATH_DATE), personJoin.get(Person.BURIAL_DATE), personJoin.get(Person.BURIAL_CONDUCTOR),
-				personJoin.get(Person.BURIAL_PLACE_DESCRIPTION), personJoin.get(Person.PHONE), personJoin.get(Person.PHONE_OWNER),
-				personJoin.get(Person.EDUCATION_TYPE), personJoin.get(Person.EDUCATION_DETAILS),
-				personJoin.get(Person.OCCUPATION_TYPE), personJoin.get(Person.OCCUPATION_DETAILS),
-				occupationFacilityJoin.get(Facility.NAME), occupationFacilityJoin.get(Facility.UUID),
-				personJoin.get(Person.OCCUPATION_FACILITY_DETAILS), epiDataJoin.get(EpiData.TRAVELED),
-				epiDataJoin.get(EpiData.BURIAL_ATTENDED), epiDataJoin.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
-				epiDataJoin.get(EpiData.RODENTS), caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), 
+				personJoin.get(Person.DEATH_DATE), personJoin.get(Person.BURIAL_DATE),
+				personJoin.get(Person.BURIAL_CONDUCTOR), personJoin.get(Person.BURIAL_PLACE_DESCRIPTION),
+				personJoin.get(Person.PHONE), personJoin.get(Person.PHONE_OWNER), personJoin.get(Person.EDUCATION_TYPE),
+				personJoin.get(Person.EDUCATION_DETAILS), personJoin.get(Person.OCCUPATION_TYPE),
+				personJoin.get(Person.OCCUPATION_DETAILS), occupationFacilityJoin.get(Facility.NAME),
+				occupationFacilityJoin.get(Facility.UUID), personJoin.get(Person.OCCUPATION_FACILITY_DETAILS),
+				epiDataJoin.get(EpiData.TRAVELED), epiDataJoin.get(EpiData.BURIAL_ATTENDED),
+				epiDataJoin.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE), epiDataJoin.get(EpiData.RODENTS),
+				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES),
 				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE));
 
 		User user = userService.getByUuid(userUuid);
@@ -482,7 +488,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			Map<Long, Location> personAddresses = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(PersonDto.ADDRESS)) {
+			if (exportConfiguration == null || exportConfiguration.getProperties().contains(PersonDto.ADDRESS)
+					|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
 				List<Location> personAddressesList = null;
 				CriteriaQuery<Location> personAddressesCq = cb.createQuery(Location.class);
 				Root<Location> personAddressesRoot = personAddressesCq.from(Location.class);
@@ -572,8 +579,14 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (symptoms != null) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId())).ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
 				}
-				if (personAddresses != null) {
-					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId())).ifPresent(personAddress -> exportDto.setAddress(personAddress.toString()));
+				if (personAddresses != null || exportConfiguration.getProperties().contains(PersonDto.ADDRESS)) {
+					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
+							.ifPresent(personAddress -> exportDto.setAddress(personAddress.toString()));
+				}
+				if (personAddresses != null
+						|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
+					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId())).ifPresent(
+							personAddress -> exportDto.setAddressGpsCoordinates(personAddress.buildGpsCoordinatesCaption()));
 				}
 				if (prescriptionCounts != null) {
 					Optional.ofNullable(prescriptionCounts.get(exportDto.getId())).ifPresent(prescriptionCount -> exportDto.setNumberOfPrescriptions(prescriptionCount));
@@ -1288,6 +1301,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
+		if (newCase.getSurveillanceOfficer() == null) {
+			setResponsibleSurveillanceOfficer(newCase);
+		}
+
 		updateInvestigationByStatus(existingCase, newCase);
 
 		updatePersonAndCaseByOutcome(existingCase, newCase);
@@ -1323,8 +1340,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				} else {
 					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
 							UserRole.SURVEILLANCE_SUPERVISOR);
-					if (supervisors.size() >= 1) {
-						task.setAssigneeUser(supervisors.get(0));
+					if (!supervisors.isEmpty()) {
+						Random rand = new Random();
+						task.setAssigneeUser(supervisors.get(rand.nextInt(supervisors.size())));
 					} else {
 						task.setAssigneeUser(null);
 					}
@@ -1425,6 +1443,25 @@ public class CaseFacadeEjb implements CaseFacade {
 							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease. "
 									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
 									recipient.getUuid()));
+				}
+			}
+		}
+	}
+
+	private void setResponsibleSurveillanceOfficer(Case caze) {
+		
+		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
+			caze.setSurveillanceOfficer(caze.getReportingUser());
+		} else {
+			List<User> informants = userService.getInformantsOfFacility(caze.getHealthFacility());
+			Random rand = new Random();
+			if (!informants.isEmpty()) {
+				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
+			} else {
+				List<User> survOffs = userService.getAllByDistrict(caze.getDistrict(), false,
+						UserRole.SURVEILLANCE_OFFICER);
+				if (!survOffs.isEmpty()) {
+					caze.setSurveillanceOfficer(survOffs.get(rand.nextInt(survOffs.size())));
 				}
 			}
 		}

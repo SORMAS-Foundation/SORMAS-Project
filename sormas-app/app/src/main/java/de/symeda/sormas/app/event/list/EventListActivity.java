@@ -88,6 +88,22 @@ public class EventListActivity extends PagedBaseListActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        getIntent().putExtra("refreshOnResume", true);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getIntent().getBooleanExtra("refreshOnResume", false)) {
+            showPreloader();
+            model.getEvents().getValue().getDataSource().invalidate();
+        }
+    }
+
+    @Override
     public List<PageMenuItem> getPageMenuData() {
         return PageMenuItem.fromEnum(statusFilters, getContext());
     }

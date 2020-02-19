@@ -256,7 +256,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        input = (EditText) this.findViewById(R.id.input);
+        input = (EditText) this.findViewById(R.id.text_input);
         if (getImeOptions() == EditorInfo.IME_NULL) {
             setImeOptions(EditorInfo.IME_ACTION_DONE);
         }

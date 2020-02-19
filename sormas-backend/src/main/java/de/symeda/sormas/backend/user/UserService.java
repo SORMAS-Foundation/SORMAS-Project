@@ -112,6 +112,24 @@ public class UserService extends AbstractAdoService<User> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	public List<User> getInformantsOfFacility(Facility facility) {
+
+		if (facility == null || facility.getType() == FacilityType.LABORATORY) {
+			throw new IllegalArgumentException("Facility is null or a laboratory");
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+		Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+
+		Predicate filter = cb.and(cb.equal(from.get(User.HEALTH_FACILITY), facility),
+				joinRoles.in(Arrays.asList(new UserRole[] { UserRole.HOSPITAL_INFORMANT })));
+
+		cq.where(filter).distinct(true);
+		return em.createQuery(cq).getResultList();
+	}
+
 	public List<User> getLabUsersOfLab(Facility facility) {
 		if (facility == null || facility.getType() != FacilityType.LABORATORY) {
 			throw new IllegalArgumentException("Facility needs to be a laboratory");

@@ -23,6 +23,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -52,6 +53,9 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
 
             indicateCaseClassification(pagedHolder.binding.imgCaseStatusIcon, item);
 
+
+            addCompletenessText(pagedHolder.binding.txtCompleteness, item);
+            
             // #1123 Temporary code to get more information
             if (item.getPerson() == null) {
                 throw new NullPointerException("getPerson() is null; Case: " + item.getUuid() + "; Position in list: " + position
@@ -69,6 +73,23 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
 
             // TODO #704
             //updateUnreadIndicator(holder, record);
+        }
+    }
+
+    private void addCompletenessText(TextView txtCompleteness, Case item) {
+        if (item.getCompleteness() != null) {
+            Resources resources = txtCompleteness.getContext().getResources();
+            int completeness = Math.round(item.getCompleteness());
+            txtCompleteness.setText(completeness + "% " + resources.getString(R.string.completed));
+            if (completeness < 25) {
+                txtCompleteness.setTextColor(resources.getColor(R.color.red));
+            } else if (completeness < 50) {
+                txtCompleteness.setTextColor(resources.getColor(R.color.orange));
+            } else if (completeness < 75) {
+                txtCompleteness.setTextColor(resources.getColor(R.color.brightYellow));
+            } else {
+                txtCompleteness.setTextColor(resources.getColor(R.color.green));
+            }
         }
     }
 

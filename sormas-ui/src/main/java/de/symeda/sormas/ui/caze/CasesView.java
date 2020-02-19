@@ -123,6 +123,8 @@ public class CasesView extends AbstractView {
 	private Button lineListingButton;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
+	private PopupButton moreButton;
+	private VerticalLayout moreLayout;
 
 	private VerticalLayout gridLayout;
 	private HorizontalLayout firstFilterRowLayout;
@@ -186,6 +188,30 @@ public class CasesView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) || UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
+			moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
+			moreButton.setId("more");
+			moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
+			moreLayout = new VerticalLayout();
+			moreLayout.setSpacing(true);
+			moreLayout.setMargin(true);
+			moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			moreLayout.setWidth(250, Unit.PIXELS);
+			moreButton.setContent(moreLayout);
+		}
+
+		Button openGuideButton = new Button(I18nProperties.getCaption(Captions.caseOpenCasesGuide));
+		openGuideButton.setId("openCasesGuide");
+		openGuideButton.setIcon(VaadinIcons.QUESTION);
+		openGuideButton.addClickListener(e -> buildAndOpenCasesInstructions());
+		if (moreLayout != null) {
+			openGuideButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			openGuideButton.setWidth(100, Unit.PERCENTAGE);
+			moreLayout.addComponent(openGuideButton);
+		} else {
+			addHeaderComponent(openGuideButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 
@@ -369,7 +395,13 @@ public class CasesView extends AbstractView {
 			btnEnterBulkEditMode.setId("enterBulkEditMode");
 			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-			addHeaderComponent(btnEnterBulkEditMode);
+			if (moreLayout != null) {
+				btnEnterBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+				moreLayout.addComponent(btnEnterBulkEditMode);
+			} else {
+				addHeaderComponent(btnEnterBulkEditMode);
+			}
 
 			btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
 			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
@@ -406,7 +438,13 @@ public class CasesView extends AbstractView {
 			mergeDuplicatesButton.setId("mergeDuplicates");
 			mergeDuplicatesButton.setIcon(VaadinIcons.COMPRESS_SQUARE);
 			mergeDuplicatesButton.addClickListener(e -> ControllerProvider.getCaseController().navigateToMergeCasesView());
-			addHeaderComponent(mergeDuplicatesButton);
+			if (moreLayout != null) {
+				mergeDuplicatesButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
+				moreLayout.addComponent(mergeDuplicatesButton);
+			} else {
+				addHeaderComponent(mergeDuplicatesButton);
+			}
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
@@ -425,7 +463,16 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(createButton);
 		}
 
+		if (moreButton != null) {
+			addHeaderComponent(moreButton);
+		}
 		addComponent(gridLayout);
+	}
+
+	private void buildAndOpenCasesInstructions() {
+		Window window = VaadinUiUtil.showPopupWindow(new CasesGuideLayout());
+		window.setWidth(1024, Unit.PIXELS);
+		window.setCaption(I18nProperties.getString(Strings.headingCasesGuide));
 	}
 
 	private void enterBulkEditMode() {

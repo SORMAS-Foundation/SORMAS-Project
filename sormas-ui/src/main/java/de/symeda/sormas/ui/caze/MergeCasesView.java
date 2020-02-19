@@ -93,7 +93,7 @@ public class MergeCasesView extends AbstractView {
 	}
 
 	private void buildAndOpenMergeInstructions() {
-		Window window = VaadinUiUtil.showPopupWindow(new MergeInstructionsLayout());
+		Window window = VaadinUiUtil.showPopupWindow(new MergeGuideLayout());
 		window.setWidth(1024, Unit.PIXELS);
 		window.setCaption(I18nProperties.getString(Strings.headingMergeGuide));
 	}

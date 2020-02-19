@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.util.Collections;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +37,11 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.sample.DashboardSampleDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -171,64 +170,6 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 	}
 
-	public List<DashboardSampleDto> getNewSamplesForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardSampleDto> cq = cb.createQuery(DashboardSampleDto.class);
-		Root<Sample> sample = cq.from(getElementClass());
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-
-		Predicate filter = createDefaultFilter(cb, sample);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, sample, user));
-		Predicate dateFilter = cb.between(sample.get(Sample.REPORT_DATE_TIME), from, to);
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
-		}
-
-		if (region != null) {
-			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
-
-		if (district != null) {
-			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
-
-		List<DashboardSampleDto> result;
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-					sample.get(Sample.SHIPPED),
-					sample.get(Sample.RECEIVED)
-					);
-
-			result = em.createQuery(cq).getResultList();
-		} else {
-			result = Collections.emptyList();
-		}
-
-		return result;
-	}
-
 	public List<String> getDeletedUuidsSince(User user, Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -258,39 +199,68 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 	
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(Region region, District district, Disease disease, Date from, Date to, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Sample> sampleRoot = cq.from(Sample.class);
-		Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		
-		cq.multiselect(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), cb.count(sampleRoot));
-		cq.groupBy(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT));
+		StringBuilder queryBuilder = new StringBuilder();
+		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (" + Sample.ASSOCIATED_CASE + "_id) "
+				+ Sample.ASSOCIATED_CASE + "_id, " + Sample.PATHOGEN_TEST_RESULT + ", " + Sample.SAMPLE_DATE_TIME
+				+ " FROM " + Sample.TABLE_NAME + " WHERE (" + Sample.SPECIMEN_CONDITION + " IS NULL OR "
+				+ Sample.SPECIMEN_CONDITION + " = '" + SpecimenCondition.ADEQUATE.name() + "') AND " + Sample.TABLE_NAME
+				+ "." + Sample.DELETED + " = false ORDER BY " + Sample.ASSOCIATED_CASE + "_id, "
+				+ Sample.SAMPLE_DATE_TIME + " desc) SELECT sortedsamples." + Sample.PATHOGEN_TEST_RESULT + ", COUNT("
+				+ Sample.ASSOCIATED_CASE + "_id) FROM sortedsamples JOIN " + Case.TABLE_NAME + " ON sortedsamples."
+				+ Sample.ASSOCIATED_CASE + "_id = " + Case.TABLE_NAME + ".id");
 		
-		Predicate filter = createDefaultFilter(cb, sampleRoot);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, sampleRoot, user));
-		
-		if (from != null || to != null) {
-			filter = and(cb, filter, cb.between(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT_CHANGE_DATE), from, to));
+		StringBuilder filterBuilder = new StringBuilder();
+
+		if (from != null && to != null) {
+			filterBuilder.append(" WHERE " + Case.TABLE_NAME + "." + Case.REPORT_DATE + " BETWEEN '"
+					+ from.toString() + "' AND '" + to.toString() + "'");
+		} else if (from != null) {
+			filterBuilder.append(
+					" WHERE " + Case.TABLE_NAME + "." + Case.REPORT_DATE + " >= '" + from.toString() + "'");
+		} else if (to != null) {
+			filterBuilder.append(
+					" WHERE " + Case.TABLE_NAME + "." + Case.REPORT_DATE + " <= '" + to.toString() + "'");
 		}
-		
+
 		if (region != null) {
-			filter = and(cb, filter, cb.equal(caseJoin.get(Case.REGION), region));
+			if (filterBuilder.length() > 0) {
+				filterBuilder.append(" AND ");
+			} else {
+				filterBuilder.append(" WHERE ");
+			}
+			filterBuilder.append(Case.TABLE_NAME + "." + Case.REGION + "_id = '" + region.getId() + "'");
 		}
 
 		if (district != null) {
-			filter = and(cb, filter, cb.equal(caseJoin.get(Case.DISTRICT), district));
+			if (filterBuilder.length() > 0) {
+				filterBuilder.append(" AND ");
+			} else {
+				filterBuilder.append(" WHERE ");
+			}
+			filterBuilder.append(Case.TABLE_NAME + "." + Case.DISTRICT + "_id = '" + district.getId() + "'");
 		}
 
 		if (disease != null) {
-			filter = and(cb, filter, cb.equal(caseJoin.get(Case.DISEASE), disease));
+			if (filterBuilder.length() > 0) {
+				filterBuilder.append(" AND ");
+			} else {
+				filterBuilder.append(" WHERE ");
+			}
+			filterBuilder.append(Case.TABLE_NAME + "." + Case.DISEASE + " = '" + disease.name() + "'");
 		}
-		
-		if (filter != null) {
-			cq.where(filter);
+
+		if (filterBuilder.length() > 0) {
+			queryBuilder.append(filterBuilder.toString());
 		}
+
+		queryBuilder.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
+
+		@SuppressWarnings("unchecked")
+		List<Object[]> results = em.createNativeQuery(queryBuilder.toString()).getResultList();
 		
-		List<Object[]> results = em.createQuery(cq).getResultList();
-		return results.stream().collect(Collectors.toMap(e -> (PathogenTestResultType) e[0], e -> (Long) e[1]));
+		return results.stream().filter(e -> e[0] != null).collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]),
+				e -> ((BigInteger) e[1]).longValue()));
 	}
 
 	@Override

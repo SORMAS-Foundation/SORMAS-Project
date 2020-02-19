@@ -156,9 +156,9 @@
                         android:id="@+id/caseData_outcomeDate"
                         app:value="@{data.outcomeDate}"
                         app:dependencyParentField="@{caseDataOutcome}"
-                        app:dependencyParentValue="@{null}"
-                        app:dependencyParentValue2="@{CaseOutcome.NO_OUTCOME}"
-                        app:dependencyParentVisibility="@{false}"
+                        app:dependencyParentValue="@{CaseOutcome.DECEASED}"
+                        app:dependencyParentValue2="@{CaseOutcome.RECOVERED}"
+                        app:dependencyParentVisibility="@{true}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

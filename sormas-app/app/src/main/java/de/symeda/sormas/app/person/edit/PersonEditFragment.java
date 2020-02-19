@@ -100,6 +100,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         List<Item> sexList = DataUtils.getEnumItems(Sex.class, true);
         List<Item> causeOfDeathList = DataUtils.getEnumItems(CauseOfDeath.class, true);
         List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+        if (record.getCauseOfDeathDisease() != null && !diseaseList.contains(record.getCauseOfDeathDisease())) {
+            diseaseList.add(DataUtils.toItem(record.getCauseOfDeathDisease()));
+        }
         List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
         List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 

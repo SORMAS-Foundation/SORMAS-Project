@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -382,6 +383,8 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     private void onCaseChanged(Case existingCase, Case changedCase) {
+
+        changedCase.setCompleteness(calculateCompleteness(changedCase));
         if (existingCase == null) {
             // If a new case is created, use the last available location to update its report latitude and longitude
             Location location = LocationService.instance().getLocation();
@@ -434,6 +437,51 @@ public class CaseDao extends AbstractAdoDao<Case> {
                 }
             }
         }
+    }
+
+    private Float calculateCompleteness(Case caze) {
+
+        Set<UserRight> rights = ConfigProvider.getUserRights();
+        int points = 0;
+
+        if (InvestigationStatus.DONE.equals(caze.getInvestigationStatus())) {
+            points += 20;
+        }
+        if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
+            points += 20;
+        }
+        if (caze.getId() != null && rights.contains(UserRight.SAMPLE_VIEW) && DatabaseHelper.getSampleDao().getSampleCountByCaseId(caze.getId()) > 0) {
+            points += 15;
+        }
+        if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
+            points += 15;
+        }
+        if (rights.contains(UserRight.CONTACT_VIEW) && DatabaseHelper.getContactDao().getContactCountByCaseUuid(caze.getUuid()) > 0) {
+            points += 10;
+        }
+        if (!CaseOutcome.NO_OUTCOME.equals(caze.getOutcome())) {
+            points += 5;
+        }
+        if (caze.getPerson().getBirthdateYYYY() != null || caze.getPerson().getApproximateAge() != null) {
+            points += 5;
+        }
+        if (caze.getPerson().getSex() != null) {
+            points += 5;
+        }
+        if (caze.getSymptoms().getOnsetDate() != null) {
+            points += 5;
+        }
+
+        float goal = 100;
+
+        if (!rights.contains(UserRight.SAMPLE_VIEW)){
+            goal -= 15;
+        }
+        if (!rights.contains(UserRight.CONTACT_VIEW)){
+            goal -= 10;
+        }
+
+        return points / goal * 100;
     }
 
     public void deleteCaseAndAllDependingEntities(String caseUuid) throws SQLException {

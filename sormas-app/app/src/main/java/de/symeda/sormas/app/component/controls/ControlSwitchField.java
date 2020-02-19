@@ -103,7 +103,6 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
         button.setClickable(input.isEnabled());
     }
 
-    @SuppressWarnings("unchecked")
     public void setEnumClass(Class<? extends Enum> c) {
         if (!DataHelper.equal(c, enumClass)) {
             suppressListeners = true;
@@ -274,7 +273,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        input = (RadioGroup) this.findViewById(R.id.input);
+        input = (RadioGroup) this.findViewById(R.id.switch_input);
         input.setOrientation(HORIZONTAL);
         background = getResources().getDrawable(R.drawable.control_switch_background_border);
         textColor = getResources().getColorStateList(R.color.control_switch_color_selector);

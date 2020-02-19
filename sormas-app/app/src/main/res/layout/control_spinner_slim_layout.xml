@@ -27,7 +27,7 @@
         <include layout="@layout/control_label_layout" />
 
         <Spinner
-            android:id="@+id/input"
+            android:id="@+id/spinner_input"
             style="@style/ControlSpinnerSlimStyle" />
 
     </LinearLayout>

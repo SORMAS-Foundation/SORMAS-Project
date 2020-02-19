@@ -31,7 +31,6 @@
             style="@style/ControlLabelRowStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:labelFor="@+id/input"
             android:textAllCaps="false"/>
 
         <LinearLayout

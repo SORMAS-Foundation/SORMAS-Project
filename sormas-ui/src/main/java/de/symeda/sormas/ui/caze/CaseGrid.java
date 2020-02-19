@@ -17,12 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
@@ -39,6 +41,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -47,6 +50,7 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+	public static final String COLUMN_COMPLETENESS = "completenessValue";
 
 	@SuppressWarnings("unchecked")
 	public CaseGrid(CaseCriteria criteria) {
@@ -69,12 +73,33 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(CaseIndexDto.DISEASE);
 
+		addComponentColumn(indexDto -> {
+			Label label = new Label(indexDto.getCompleteness() != null
+					? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %"
+					: "-");
+			if (indexDto.getCompleteness() != null) {
+				if (indexDto.getCompleteness() < 0.25f) {
+					CssStyles.style(label, CssStyles.LABEL_CRITICAL);
+				} else if (indexDto.getCompleteness() < 0.5f) {
+					CssStyles.style(label, CssStyles.LABEL_IMPORTANT);
+				} else if (indexDto.getCompleteness() < 0.75f) {
+					CssStyles.style(label, CssStyles.LABEL_RELEVANT);
+				} else {
+					CssStyles.style(label, CssStyles.LABEL_POSITIVE);
+				}
+			}
+			return label;
+		}).setId(COLUMN_COMPLETENESS);
+
 		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
 				CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
 				CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
-				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE);
+				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS);
 
+		getColumn(COLUMN_COMPLETENESS)
+				.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
+		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));

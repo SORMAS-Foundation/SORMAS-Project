@@ -18,7 +18,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportReceiver;
-import de.symeda.sormas.ui.importer.PointOfEntryImporter;
+import de.symeda.sormas.ui.importer.InfrastructureImporter;
 import de.symeda.sormas.ui.importer.PopulationDataImporter;
 
 @SuppressWarnings("serial")
@@ -42,15 +42,35 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 		String templateFileName = null;
 		String fileNameAddition = null;
 		switch (infrastructureType) {
+		case COMMUNITY:
+			templateFilePath = FacadeProvider.getImportFacade().getCommunityImportTemplateFilePath();
+			templateFileName = "sormas_import_community_template.csv";
+			fileNameAddition = "_community_import_";
+			break;
+		case DISTRICT:
+			templateFilePath = FacadeProvider.getImportFacade().getDistrictImportTemplateFilePath();
+			templateFileName = "sormas_import_district_template.csv";
+			fileNameAddition = "_district_import_";
+			break;
+		case FACILITY:
+			templateFilePath = FacadeProvider.getImportFacade().getFacilityLaboratoryImportTemplateFilePath();
+			templateFileName = "sormas_import_facility_laboratory_template.csv";
+			fileNameAddition = "_facility_laboratory_import_";
+			break;
 		case POINT_OF_ENTRY:
-			templateFilePath = FacadeProvider.getImportFacade().getPointOfEntryImportTemplateFilePath().toString();
+			templateFilePath = FacadeProvider.getImportFacade().getPointOfEntryImportTemplateFilePath();
 			templateFileName = "sormas_import_point_of_entry_template.csv";
 			fileNameAddition = "_point_of_entry_import_";
 			break;
 		case POPULATION_DATA:
-			templateFilePath = FacadeProvider.getImportFacade().getPopulationDataImportTemplateFilePath().toString();
+			templateFilePath = FacadeProvider.getImportFacade().getPopulationDataImportTemplateFilePath();
 			templateFileName = "sormas_import_population_data_template.csv";
 			fileNameAddition = "_population_data_import_";
+			break;
+		case REGION:
+			templateFilePath = FacadeProvider.getImportFacade().getRegionImportTemplateFilePath();
+			templateFileName = "sormas_import_region_template.csv";
+			fileNameAddition = "_region_import_";
 			break;
 		default:
 			throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());
@@ -65,11 +85,23 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 				try {
 					DataImporter importer;
 					switch (infrastructureType) {
+					case COMMUNITY:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COMMUNITY);
+						break;
+					case DISTRICT:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.DISTRICT);
+						break;
+					case FACILITY:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.FACILITY);
+						break;
 					case POINT_OF_ENTRY:
-						importer = new PointOfEntryImporter(file, currentUser);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.POINT_OF_ENTRY);
 						break;
 					case POPULATION_DATA:
 						importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue());
+						break;
+					case REGION:
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION);
 						break;
 					default:
 						throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());

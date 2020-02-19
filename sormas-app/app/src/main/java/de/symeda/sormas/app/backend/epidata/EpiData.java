@@ -181,6 +181,10 @@ public class EpiData extends AbstractDomainObject {
     private List<EpiDataGathering> gatherings = new ArrayList<>();
     private List<EpiDataTravel> travels = new ArrayList<>();
 
+    // @TODO Replace this with EpiDataDto call once API version has been increased
+    public static final String[] ENVIRONMENTAL_EXPOSURE_PROPERTIES = new String[] { "waterSource", "waterBody", "tickBite",
+            "fleaBite" };
+
     public YesNoUnknown getBurialAttended() {
         return burialAttended;
     }

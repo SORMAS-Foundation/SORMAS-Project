@@ -177,6 +177,10 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
         return storedRootEntity;
     }
 
+    protected void setStoredRootEntity(ActivityRootEntity entity) {
+        this.storedRootEntity = entity;
+    }
+
     protected String getRootUuid() {
         if (storedRootEntity != null) {
             return storedRootEntity.getUuid();

@@ -194,4 +194,13 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         deleteCascade(contact);
     }
 
+    public int getContactCountByCaseUuid(String caseUuid) {
+
+        try {
+            return (int) queryBuilder().where().eq(Contact.CASE_UUID, caseUuid).countOf();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform getContactCountByCaseUuid on Contact");
+            throw new RuntimeException(e);
+        }
+    }
 }

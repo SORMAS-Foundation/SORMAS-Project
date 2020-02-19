@@ -24,6 +24,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -140,6 +142,18 @@ public class Location extends AbstractDomainObject {
 		this.latLonAccuracy = latLonAccuracy;
 	}
 	
+	public String buildGpsCoordinatesCaption() {
+		if (latitude == null && longitude == null) {
+			return "";
+		} else if (latitude == null || longitude == null) {
+			return I18nProperties.getString(Strings.messageIncompleteGpsCoordinates);
+		} else if (latLonAccuracy == null) {
+			return latitude + ", " + longitude;
+		} else {
+			return latitude + ", " + longitude + " +-" + Math.round(latLonAccuracy) + "m";
+		}
+	}
+
 	@Override
 	public String toString() {
 		return LocationReferenceDto.buildCaption(

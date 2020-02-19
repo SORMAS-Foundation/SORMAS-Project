@@ -30,6 +30,7 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -49,6 +50,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class RegionsView extends AbstractConfigurationView {
@@ -69,6 +71,7 @@ public class RegionsView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 	private RegionsGrid grid;	
 	protected Button createButton;
+	protected Button importButton;
 	private MenuBar bulkOperationsDropdown;
 	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
@@ -91,6 +94,20 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+			importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
+			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			importButton.setIcon(VaadinIcons.UPLOAD);
+			importButton.addClickListener(e -> {
+				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.REGION));
+				window.setCaption(I18nProperties.getString(Strings.headingImportRegions));
+				window.addCloseListener(c -> {
+					grid.reload();
+				});
+			});
+			addHeaderComponent(importButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));

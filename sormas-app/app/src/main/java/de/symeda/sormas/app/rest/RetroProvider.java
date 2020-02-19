@@ -85,6 +85,7 @@ public final class RetroProvider {
 
     private static int lastConnectionId = 0;
     private static RetroProvider instance = null;
+    private static boolean connecting = false;
 
     private final Context context;
     private final Retrofit retrofit;
@@ -260,10 +261,17 @@ public final class RetroProvider {
         return instance != null && isConnectedToNetwork(instance.context);
     }
 
+    public static boolean isConnectedOrConnecting() {
+        return isConnected() || connecting;
+    }
+
     public static void connect(Context context) throws ApiVersionException, ServerConnectionException, ServerCommunicationException {
 
         if (RetroProvider.isConnected()) {
             throw new IllegalStateException("Connection already established.");
+        }
+        if (connecting) {
+            throw new IllegalStateException("Already connecting.");
         }
 
         if (!isConnectedToNetwork(context)) {
@@ -271,10 +279,13 @@ public final class RetroProvider {
         }
 
         try {
+            connecting = true;
             instance = new RetroProvider(context);
         } catch (Exception e) {
             instance = null;
             throw e;
+        } finally {
+            connecting = false;
         }
     }
 

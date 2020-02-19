@@ -27,21 +27,17 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
@@ -244,16 +240,23 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         return R.layout.fragment_case_new_layout;
     }
 
-    void clearFieldsForRapidCaseEntry() {
+    void updateForRapidCaseEntry(Case lastCase) {
         setLiveValidationDisabled(true);
 
-        getContentBinding().symptomsOnsetDate.setValue(null);
-        getContentBinding().caseDataFirstName.setValue(null);
-        getContentBinding().caseDataLastName.setValue(null);
-        getContentBinding().personBirthdateYYYY.setValue(null);
-        getContentBinding().personBirthdateMM.setValue(null);
-        getContentBinding().personBirthdateDD.setValue(null);
-        getContentBinding().personSex.setValue(null);
+        record = getActivityRootData();
+        record.setRegion(lastCase.getRegion());
+        record.setDistrict(lastCase.getDistrict());
+        record.setCommunity(lastCase.getCommunity());
+        record.setHealthFacility(lastCase.getHealthFacility());
+        record.setHealthFacilityDetails(lastCase.getHealthFacilityDetails());
+        record.setPointOfEntry(lastCase.getPointOfEntry());
+        record.setPointOfEntryDetails(lastCase.getPointOfEntryDetails());
+        record.setReportDate(lastCase.getReportDate());
+        record.setDisease(lastCase.getDisease());
+        record.setDiseaseDetails(lastCase.getDiseaseDetails());
+        record.setCaseOrigin(lastCase.getCaseOrigin());
+
+        getContentBinding().setData(record);
     }
 
     private static void updateListOfDays(FragmentCaseNewLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
@@ -265,17 +268,4 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         }
     }
 
-    void updateLastCaseInfo(Person person) {
-        StringBuilder lastCaseText = new StringBuilder();
-        lastCaseText.append(getResources().getString(R.string.caption_last_case)).append(": ").append(person.getFirstName()).append(" ").append(person.getLastName());
-        String dobText = PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
-        if (!DataHelper.isNullOrEmpty(dobText)){
-            lastCaseText.append(" | ").append(dobText);
-        }
-        if (person.getSex() != null){
-            lastCaseText.append(" | ").append(person.getSex());
-        }
-
-        ((IUpdateSubHeadingTitle) getActivity()).updateSubHeadingTitle(lastCaseText.toString());
-    }
 }

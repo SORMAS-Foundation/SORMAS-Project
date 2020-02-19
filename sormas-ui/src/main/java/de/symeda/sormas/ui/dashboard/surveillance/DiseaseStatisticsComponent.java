@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -292,6 +293,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		headerLayout.setSpacing(false);
 		// count
 		testResultCountLabel = new Label();
+		testResultCountLabel.setDescription(I18nProperties.getDescription(Descriptions.descDashboardNewTestResults));
 		CssStyles.style(testResultCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
 				CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 		headerLayout.addComponent(testResultCountLabel);

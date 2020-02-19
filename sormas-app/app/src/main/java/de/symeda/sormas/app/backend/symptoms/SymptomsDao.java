@@ -57,12 +57,8 @@ public class SymptomsDao extends AbstractAdoDao<Symptoms> {
 
     @Override
     public Symptoms saveAndSnapshot(Symptoms symptoms) throws DaoException {
-        // If new symptoms are created, updateIsSymptomatic has to be called after the initial save
-        if (symptoms.getId() == null) {
-            super.saveAndSnapshot(symptoms);
-            updateIsSymptomatic(symptoms);
-        }
 
+        updateIsSymptomatic(symptoms);
         return super.saveAndSnapshot(symptoms);
     }
 

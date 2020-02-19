@@ -22,6 +22,7 @@ import java.util.Date;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -37,7 +38,7 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/laboratories";
 
 	public LaboratoriesView() {
-		super(VIEW_NAME, true);
+		super(VIEW_NAME, FacilityType.LABORATORY);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_laboratories", "sormas_laboratories_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);

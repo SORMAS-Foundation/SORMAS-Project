@@ -40,6 +40,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.DependantOn;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -151,6 +152,20 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     @Override
     public void onAfterLayoutBinding(FragmentSymptomsEditLayoutBinding contentBinding) {
+
+        if (SymptomsContext.VISIT.equals(symptomsContext)) {
+            Visit visit = (Visit) getActivityRootData();
+            boolean enabled = VisitStatus.COOPERATIVE.equals(visit.getVisitStatus());
+            for (int i = 0; i < contentBinding.mainContent.getChildCount(); i++) {
+                View child = contentBinding.mainContent.getChildAt(i);
+                child.setEnabled(enabled);
+            }
+            contentBinding.symptomsTemperature.setEnabled(enabled);
+            contentBinding.symptomsTemperatureSource.setEnabled(enabled);
+            contentBinding.btnClearAll.setEnabled(enabled);
+            contentBinding.btnClearedToNo.setEnabled(enabled);
+        }
+
         setVisibilityByDisease(SymptomsDto.class, disease, contentBinding.mainContent);
 
         if (contentBinding.symptomsBulgingFontanelle.getVisibility() == VISIBLE

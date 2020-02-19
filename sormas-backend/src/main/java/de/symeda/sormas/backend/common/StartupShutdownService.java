@@ -212,29 +212,82 @@ public class StartupShutdownService {
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveHealthFacilitiesByCommunity(community, false);
 			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
+			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
+			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
 	
+			// Generate Admin
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
+			admin.setUserName("admin");
 			userService.persist(admin);
 	
-			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Sunkanmi",
-					"Sesay", "Sunkanmi");
-			surveillanceSupervisor.getUserRoles().add(UserRole.CONTACT_SUPERVISOR);
-			surveillanceSupervisor.getUserRoles().add(UserRole.CASE_SUPERVISOR);
+			// Generate Surveillance Supervisor
+			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance",
+					"Supervisor", "SurvSup");
+			surveillanceSupervisor.setUserName("SurvSup");
 			surveillanceSupervisor.setRegion(region);
 			userService.persist(surveillanceSupervisor);
+
+			// Generate Case Supervisor
+			User caseSupervisor = MockDataGenerator.createUser(UserRole.CASE_SUPERVISOR, "Case", "Supervisor",
+					"CaseSup");
+			caseSupervisor.setUserName("CaseSup");
+			caseSupervisor.setRegion(region);
+			userService.persist(caseSupervisor);
+
+			// Generate Contact Supervisor
+			User contactSupervisor = MockDataGenerator.createUser(UserRole.CONTACT_SUPERVISOR, "Contact", "Supervisor",
+					"ContSup");
+			contactSupervisor.setUserName("ContSup");
+			contactSupervisor.setRegion(region);
+			userService.persist(contactSupervisor);
+
+			// Generate Point of Entry Supervisor
+			User poeSupervisor = MockDataGenerator.createUser(UserRole.POE_SUPERVISOR, "Point of Entry", "Supervisor",
+					"PoeSup");
+			poeSupervisor.setUserName("PoeSup");
+			poeSupervisor.setRegion(region);
+			userService.persist(poeSupervisor);
+
+			// Generate Laboratory Officer
+			User laboratoryOfficer = MockDataGenerator.createUser(UserRole.LAB_USER, "Laboratory", "Officer", "LabOff");
+			laboratoryOfficer.setUserName("LabOff");
+			laboratoryOfficer.setLaboratory(laboratory);
+			userService.persist(laboratoryOfficer);
+
+			// Generate Event Officer
+			User eventOfficer = MockDataGenerator.createUser(UserRole.EVENT_OFFICER, "Event", "Officer", "EveOff");
+			eventOfficer.setUserName("EveOff");
+			eventOfficer.setRegion(region);
+			userService.persist(eventOfficer);
+
+			// Generate National User
+			User nationalUser = MockDataGenerator.createUser(UserRole.NATIONAL_USER, "National", "User", "NatUser");
+			nationalUser.setUserName("NatUser");
+			userService.persist(nationalUser);
+
+			// Generate National Clinician
+			User nationalClinician = MockDataGenerator.createUser(UserRole.NATIONAL_CLINICIAN, "National", "Clinician",
+					"NatClin");
+			nationalClinician.setUserName("NatClin");
+			userService.persist(nationalClinician);
 	
-			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Sanaa", "Obasanjo",
-					"Sanaa");
+			// Generate Surveillance Officer
+			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance",
+					"Officer", "SurvOff");
+			surveillanceOfficer.setUserName("SurvOff");
 			surveillanceOfficer.setRegion(region);
 			surveillanceOfficer.setDistrict(district);
 			userService.persist(surveillanceOfficer);
-	
-			User informant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Sangodele", "Ibori", "Sango");
-			informant.setRegion(region);
-			informant.setDistrict(district);
-			informant.setHealthFacility(facility);
-			informant.setAssociatedOfficer(surveillanceOfficer);
-			userService.persist(informant);
+
+			// Generate Hospital Informant
+			User hospitalInformant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Hospital", "Informant",
+					"HospInf");
+			hospitalInformant.setUserName("HospInf");
+			hospitalInformant.setRegion(region);
+			hospitalInformant.setDistrict(district);
+			hospitalInformant.setHealthFacility(facility);
+			hospitalInformant.setAssociatedOfficer(surveillanceOfficer);
+			userService.persist(hospitalInformant);
 		}
 	}
 	
@@ -352,6 +405,27 @@ public class StartupShutdownService {
 			importFacade.generatePopulationDataImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create population data import template .csv file.");
+		}
+
+		try {
+			importFacade.generateRegionImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create region import template .csv file.");
+		}
+		try {
+			importFacade.generateDistrictImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create district import template .csv file.");
+		}
+		try {
+			importFacade.generateCommunityImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create community import template .csv file.");
+		}
+		try {
+			importFacade.generateFacilityLaboratoryImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
 	}
 	

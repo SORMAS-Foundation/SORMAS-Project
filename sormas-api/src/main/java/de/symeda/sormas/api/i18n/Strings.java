@@ -139,6 +139,7 @@ public interface Strings {
 	public static String headingCasesArchived = "headingCasesArchived";
 	public static String headingCasesDearchived = "headingCasesDearchived";
 	public static String headingCasesDeleted = "headingCasesDeleted";
+	public static String headingCasesGuide = "headingCasesGuide";
 	public static String headingCaseStatusMap = "headingCaseStatusMap";
 	public static String headingChangeCaseDisease = "headingChangeCaseDisease";
 	public static String headingChangePathogenTestResult = "headingChangePathogenTestResult";
@@ -216,13 +217,18 @@ public interface Strings {
 	public static String headingHospitalization = "headingHospitalization";
 	public static String headingHowToMergeCases = "headingHowToMergeCases";
 	public static String headingImportCases = "headingImportCases";
+	public static String headingImportCommunities = "headingImportCommunities";
 	public static String headingImportCsvFile = "headingImportCsvFile";
+	public static String headingImportDistricts = "headingImportDistricts";
 	public static String headingImportedCaseInfo = "headingImportedCaseInfo";
 	public static String headingImportedPersonInfo = "headingImportedPersonInfo";
 	public static String headingImportError = "headingImportError";
 	public static String headingImportFailed = "headingImportFailed";
+	public static String headingImportHealthFacilities = "headingImportHealthFacilities";
+	public static String headingImportLaboratories = "headingImportLaboratories";
 	public static String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	public static String headingImportPopulationData = "headingImportPopulationData";
+	public static String headingImportRegions = "headingImportRegions";
 	public static String headingInformationSource = "headingInformationSource";
 	public static String headingIntroduction = "headingIntroduction";
 	public static String headingInvalidDateEntered = "headingInvalidDateEntered";
@@ -293,6 +299,7 @@ public interface Strings {
 	public static String infoArchivedCases = "infoArchivedCases";
 	public static String infoArchivedEvents = "infoArchivedEvents";
 	public static String infoBasicExport = "infoBasicExport";
+	public static String infoCalculateCompleteness = "infoCalculateCompleteness";
 	public static String infoCanceledBy = "infoCanceledBy";
 	public static String infoCaseCompleteness = "infoCaseCompleteness";
 	public static String infoCaseDate = "infoCaseDate";
@@ -301,6 +308,7 @@ public interface Strings {
 	public static String infoCaseIncidenceNotPossible = "infoCaseIncidenceNotPossible";
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
+	public static String infoCompletenessMerge = "infoCompletenessMerge";
 	public static String infoContactDashboard = "infoContactDashboard";
 	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
@@ -435,6 +443,7 @@ public interface Strings {
 	public static String messageImportInvalidColumn = "messageImportInvalidColumn";
 	public static String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	public static String messageImportSuccessful = "messageImportSuccessful";
+	public static String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	public static String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	public static String messageLaboratoriesArchived = "messageLaboratoriesArchived";
 	public static String messageLaboratoriesDearchived = "messageLaboratoriesDearchived";

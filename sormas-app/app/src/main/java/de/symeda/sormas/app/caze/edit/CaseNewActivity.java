@@ -32,6 +32,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -47,6 +48,7 @@ import de.symeda.sormas.app.caze.CasePickOrCreateDialog;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
@@ -65,6 +67,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     private boolean emptyReportDate;
     private String contactUuid;
     private String eventParticipantUuid;
+    private String newSubHeading;
 
     private List<Disease> lineListingDiseases;
 
@@ -210,7 +213,9 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 saveDataInner(caze);
             } else {
                 if (lineListingDiseases.contains(caze.getDisease()) && Boolean.TRUE.equals(fragment.getContentBinding().rapidCaseEntryCheckBox.getValue())) {
-                    fragment.clearFieldsForRapidCaseEntry();
+                    setStoredRootEntity(buildRootEntity());
+                    fragment.setActivityRootData(getStoredRootEntity());
+                    fragment.updateForRapidCaseEntry(caze);
                 } else{
                     finish();
                     CaseEditActivity.startActivity(getContext(), pickedCase.getUuid(), CaseSection.CASE_INFO);
@@ -248,14 +253,14 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 DatabaseHelper.getCaseDao().saveAndSnapshot(caseToSave);
 
                 if (!DataHelper.isNullOrEmpty(contactUuid)) {
-                    Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-                    sourceContact.setResultingCaseUuid(caseToSave.getUuid());
-                    sourceContact.setResultingCaseUser(ConfigProvider.getUser());
-                    DatabaseHelper.getContactDao().saveAndSnapshot(sourceContact);
-                }
+                        Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+                        sourceContact.setResultingCaseUuid(caseToSave.getUuid());
+                        sourceContact.setResultingCaseUser(ConfigProvider.getUser());
+                        DatabaseHelper.getContactDao().saveAndSnapshot(sourceContact);
+                    }
 
-                if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
-                    EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+                    if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
+                        EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
                     eventParticipant.setResultingCaseUuid(caseToSave.getUuid());
                     DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipant);
                 }
@@ -267,9 +272,11 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                 if (taskResult.getResultStatus().isSuccess()) {
 
                     CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
-                    if (lineListingDiseases.contains(caseToSave.getDisease())) {
-                        fragment.updateLastCaseInfo(caseToSave.getPerson());
-                        fragment.clearFieldsForRapidCaseEntry();
+                    if (lineListingDiseases.contains(caseToSave.getDisease()) && Boolean.TRUE.equals(fragment.getContentBinding().rapidCaseEntryCheckBox.getValue())) {
+                        setStoredRootEntity(buildRootEntity());
+                        fragment.setActivityRootData(getStoredRootEntity());
+                        fragment.updateForRapidCaseEntry(caseToSave);
+                        setNewSubHeading(caseToSave.getPerson());
                     } else {
                         finish();
                         CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO);
@@ -294,6 +301,30 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
     public List<Disease> getLineListingDiseases() {
         return lineListingDiseases;
+    }
+
+    @Override
+    public void updateSubHeadingTitle(String title) {
+        if (newSubHeading != null) {
+            setSubHeadingTitle(newSubHeading);
+            newSubHeading = null;
+        } else {
+            setSubHeadingTitle(title);
+        }
+    }
+
+    void setNewSubHeading(Person person) {
+        StringBuilder lastCaseText = new StringBuilder();
+        lastCaseText.append(getResources().getString(R.string.caption_last_case)).append(": ").append(person.getFirstName()).append(" ").append(person.getLastName());
+        String dobText = PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+        if (!DataHelper.isNullOrEmpty(dobText)){
+            lastCaseText.append(" | ").append(dobText);
+        }
+        if (person.getSex() != null){
+            lastCaseText.append(" | ").append(person.getSex());
+        }
+
+        newSubHeading = lastCaseText.toString();
     }
 
 }

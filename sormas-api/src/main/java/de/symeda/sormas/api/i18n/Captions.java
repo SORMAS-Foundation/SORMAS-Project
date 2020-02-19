@@ -160,6 +160,7 @@ public interface Captions {
 	public static String CaseData_vaccine = "CaseData.vaccine";
 	public static String caseEditData = "caseEditData";
 	public static String CaseExport_address = "CaseExport.address";
+	public static String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
 	public static String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";
 	public static String CaseExport_associatedWithOutbreak = "CaseExport.associatedWithOutbreak";
@@ -212,6 +213,7 @@ public interface Captions {
 	public static String caseNewCase = "caseNewCase";
 	public static String caseNewCaseDate = "caseNewCaseDate";
 	public static String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
+	public static String caseOpenCasesGuide = "caseOpenCasesGuide";
 	public static String caseOpenMergeGuide = "caseOpenMergeGuide";
 	public static String casePickCase = "casePickCase";
 	public static String CasePreviousHospitalization = "CasePreviousHospitalization";
@@ -647,6 +649,10 @@ public interface Captions {
 	public static String Location_latLon = "Location.latLon";
 	public static String Location_latLonAccuracy = "Location.latLonAccuracy";
 	public static String Location_longitude = "Location.longitude";
+	public static String Login_doLogIn = "Login.doLogIn";
+	public static String Login_login = "Login.login";
+	public static String Login_password = "Login.password";
+	public static String Login_username = "Login.username";
 	public static String mainMenuAbout = "mainMenuAbout";
 	public static String mainMenuAggregateReports = "mainMenuAggregateReports";
 	public static String mainMenuCases = "mainMenuCases";
@@ -686,6 +692,7 @@ public interface Captions {
 	public static String MaternalHistory_swollenLymphsMonth = "MaternalHistory.swollenLymphsMonth";
 	public static String MaternalHistory_swollenLymphsOnset = "MaternalHistory.swollenLymphsOnset";
 	public static String menu = "menu";
+	public static String moreActions = "moreActions";
 	public static String name = "name";
 	public static String notAvailableShort = "notAvailableShort";
 	public static String options = "options";

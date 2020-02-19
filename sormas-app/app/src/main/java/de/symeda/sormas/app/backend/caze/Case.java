@@ -80,6 +80,7 @@ public class Case extends AbstractDomainObject {
     public static final String EPID_NUMBER = "epidNumber";
     public static final String CASE_ORIGIN = "caseOrigin";
     public static final String REGION = "region";
+    public static final String COMPLETENESS = "completeness";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;
@@ -240,6 +241,9 @@ public class Case extends AbstractDomainObject {
     @Column(length = 32)
     @DatabaseField(columnName = "versionCreated")
     private String creationVersion;
+
+    @DatabaseField
+    private Float completeness;
 
     public boolean isUnreferredPortHealthCase() {
         return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -707,4 +711,11 @@ public class Case extends AbstractDomainObject {
         this.creationVersion = creationVersion;
     }
 
+    public Float getCompleteness() {
+        return completeness;
+    }
+
+    public void setCompleteness(Float completeness) {
+        this.completeness = completeness;
+    }
 }

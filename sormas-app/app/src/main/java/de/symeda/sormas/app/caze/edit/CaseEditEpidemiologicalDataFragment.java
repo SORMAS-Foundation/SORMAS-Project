@@ -34,6 +34,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -350,6 +351,16 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
             }
             return true;
         });
+
+        List<String> environmentalExposureProperties = Arrays.asList(EpiData.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
+        int environmentalExposureHeadingVisibiliy = View.GONE;
+        for (String property : environmentalExposureProperties){
+            if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, property, disease)){
+                environmentalExposureHeadingVisibiliy = View.VISIBLE;
+                break;
+            }
+        }
+        contentBinding.headingEnvironmentalExposure.setVisibility(environmentalExposureHeadingVisibiliy);
     }
 
     private void updateHadAnimalExposure() {

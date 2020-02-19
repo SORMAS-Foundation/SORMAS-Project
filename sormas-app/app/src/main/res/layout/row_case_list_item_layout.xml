@@ -22,6 +22,7 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
+        <import type="de.symeda.sormas.api.user.UserRight" />
     </data>
 
 
@@ -180,6 +181,19 @@
                     android:layout_height="match_parent"
                     android:paddingLeft="24dp"
                     >
+
+                    <TextView
+                        android:id="@+id/txtCompleteness"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="viewEnd"
+                        android:textSize="12sp"
+                        app:goneIfEmpty="@{data.completeness}"
+                        app:userViewRight="@{UserRight.CASE_EDIT}"/>
 
                     <ImageView
                         android:id="@+id/imgSyncIcon"

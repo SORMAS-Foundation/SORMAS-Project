@@ -84,7 +84,7 @@ public class TaskNotificationService extends Service {
         BaseActivity activeActivity = BaseActivity.getActiveActivity();
         if (activeActivity == null || !activeActivity.isEditing()) {
             // only when we do have a user and there is currently no other connection
-            if (ConfigProvider.getUser() != null && !RetroProvider.isConnected()) {
+            if (ConfigProvider.getUser() != null && !RetroProvider.isConnectedOrConnecting()) {
 
                 RetroProvider.connectAsync(getApplicationContext(), false,
                         (result, versionCompatible) -> {
