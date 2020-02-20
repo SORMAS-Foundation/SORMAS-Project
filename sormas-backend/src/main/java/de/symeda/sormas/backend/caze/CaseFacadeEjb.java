@@ -1275,15 +1275,22 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * after a case has been created/saved
 	 */
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
-		// If the case is new and the geo coordinates of the case's health facility are
-		// null, set its coordinates to the case's report coordinates, if available
+		// If its a new case and the case is new and the geo coordinates of the case's
+		// health facility are null, set its coordinates to the case's report
+		// coordinates, if available. Else if case report coordinates are null set them
+		// to the facility's coordinates
 		Facility facility = newCase.getHealthFacility();
-		if (existingCase == null && facility != null && !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())
-				&& (facility.getLatitude() == null || facility.getLongitude() == null)) {
-			if (newCase.getReportLat() != null && newCase.getReportLon() != null) {
+		if (existingCase == null && facility != null
+				&& !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {
+			if ((facility.getLatitude() == null || facility.getLongitude() == null) && newCase.getReportLat() != null
+					&& newCase.getReportLon() != null) {
 				facility.setLatitude(newCase.getReportLat());
 				facility.setLongitude(newCase.getReportLon());
 				facilityService.ensurePersisted(facility);
+			} else if (newCase.getReportLat() == null && newCase.getReportLon() == null
+					&& newCase.getReportLatLonAccuracy() == null) {
+				newCase.setReportLat(facility.getLatitude());
+				newCase.setReportLon(facility.getLongitude());
 			}
 		}
 

@@ -98,6 +98,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String OUTCOME = "outcome";
 	public static final String OUTCOME_DATE = "outcomeDate";
 	public static final String SEQUELAE = "sequelae";
