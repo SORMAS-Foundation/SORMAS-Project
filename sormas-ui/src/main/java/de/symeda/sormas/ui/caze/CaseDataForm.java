@@ -266,6 +266,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.PLAGUE_TYPE), CaseDataDto.DISEASE,
 					Arrays.asList(Disease.PLAGUE), true);
 		}
+		if (isVisibleAllowed(CaseDataDto.DENGUE_FEVER_TYPE)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE),
+					CaseDataDto.DISEASE, Arrays.asList(Disease.DENGUE), true);
+		}
 		if (isVisibleAllowed(CaseDataDto.RABIES_TYPE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE,
 					Arrays.asList(Disease.RABIES), true);
