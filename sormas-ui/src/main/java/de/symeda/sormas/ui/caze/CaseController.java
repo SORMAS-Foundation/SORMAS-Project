@@ -527,6 +527,7 @@ public class CaseController {
 			public void onCommit() {
 				CaseBulkEditData updatedBulkEditData = form.getValue();
 
+				boolean diseaseChange = form.getDiseaseCheckBox().getValue();
 				boolean classificationChange = form.getClassificationCheckBox().getValue();
 				boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
 				boolean outcomeChange = form.getOutcomeCheckBox().getValue();
@@ -540,7 +541,7 @@ public class CaseController {
 							new Label(I18nProperties.getString(Strings.messageHealthFacilityMulitChanged)),
 							I18nProperties.getCaption(Captions.caseTransferCases),
 							I18nProperties.getCaption(Captions.caseEditData), 500, e -> {
-								bulkEditWithHealthFacilities(selectedCases, updatedBulkEditData,
+								bulkEditWithHealthFacilities(selectedCases, updatedBulkEditData, diseaseChange,
 										classificationChange, investigationStatusChange, outcomeChange,
 										surveillanceOfficerChange, e.booleanValue());
 
@@ -552,7 +553,8 @@ public class CaseController {
 
 				} else {
 					CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-					bulkEdit(selectedCases, updatedBulkEditData, classificationChange, investigationStatusChange,
+					bulkEdit(selectedCases, updatedBulkEditData, diseaseChange, classificationChange,
+							investigationStatusChange,
 							outcomeChange, surveillanceOfficerChange, caseFacade);
 
 					popupWindow.close();
@@ -571,25 +573,26 @@ public class CaseController {
 	}
 
 	private void bulkEdit(Collection<CaseIndexDto> selectedCases, CaseBulkEditData updatedCaseBulkEditData,
-			boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
-			boolean surveillanceOfficerChange, CaseFacade caseFacade) {
+			boolean diseaseChange, boolean classificationChange, boolean investigationStatusChange,
+			boolean outcomeChange, boolean surveillanceOfficerChange, CaseFacade caseFacade) {
 		for (CaseIndexDto indexDto : selectedCases) {
 			CaseDataDto caseDto = changeCaseDto(updatedCaseBulkEditData,
-					caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange, investigationStatusChange,
-					outcomeChange, surveillanceOfficerChange);
+					caseFacade.getCaseDataByUuid(indexDto.getUuid()), diseaseChange, classificationChange,
+					investigationStatusChange, outcomeChange, surveillanceOfficerChange);
 
 			caseFacade.saveCase(caseDto);
 		}
 	}
 
 	private void bulkEditWithHealthFacilities(Collection<CaseIndexDto> selectedCases,
-			CaseBulkEditData updatedCaseBulkEditData, boolean classificationChange, boolean investigationStatusChange,
-			boolean outcomeChange, boolean surveillanceOfficerChange, Boolean doTransfer) {
+			CaseBulkEditData updatedCaseBulkEditData, boolean diseaseChange, boolean classificationChange,
+			boolean investigationStatusChange, boolean outcomeChange, boolean surveillanceOfficerChange,
+			Boolean doTransfer) {
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 		for (CaseIndexDto indexDto : selectedCases) {
 			CaseDataDto updatedCase = changeCaseDto(updatedCaseBulkEditData,
-					caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange, investigationStatusChange,
-					outcomeChange, surveillanceOfficerChange);
+					caseFacade.getCaseDataByUuid(indexDto.getUuid()), diseaseChange, classificationChange,
+					investigationStatusChange, outcomeChange, surveillanceOfficerChange);
 			updatedCase.setRegion(updatedCaseBulkEditData.getRegion());
 			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
 			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
@@ -603,9 +606,16 @@ public class CaseController {
 	}
 
 	private CaseDataDto changeCaseDto(CaseBulkEditData updatedCaseBulkEditData, CaseDataDto caseDto,
-			boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
-			boolean surveillanceOfficerChange) {
+			boolean diseaseChange, boolean classificationChange, boolean investigationStatusChange,
+			boolean outcomeChange, boolean surveillanceOfficerChange) {
 
+		if (diseaseChange) {
+			caseDto.setDisease(updatedCaseBulkEditData.getDisease());
+			caseDto.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
+			caseDto.setPlagueType(updatedCaseBulkEditData.getPlagueType());
+			caseDto.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());
+			caseDto.setRabiesType(updatedCaseBulkEditData.getRabiesType());
+		}
 		if (classificationChange) {
 			caseDto.setCaseClassification(updatedCaseBulkEditData.getCaseClassification());
 		}

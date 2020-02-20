@@ -82,6 +82,7 @@ public interface Captions {
 	public static String bulkContactClassification = "bulkContactClassification";
 	public static String bulkContactOfficer = "bulkContactOfficer";
 	public static String bulkDelete = "bulkDelete";
+	public static String bulkDisease = "bulkDisease";
 	public static String bulkEdit = "bulkEdit";
 	public static String bulkEventStatus = "bulkEventStatus";
 	public static String bulkEventType = "bulkEventType";
