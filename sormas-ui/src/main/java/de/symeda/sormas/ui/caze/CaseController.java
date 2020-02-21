@@ -66,6 +66,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -270,15 +271,19 @@ public class CaseController {
 
 		CaseDataDto caze;
 		PersonDto person;
+		SymptomsDto symptoms;
 		if (convertedContact != null) {
 			VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByContact(convertedContact.toReference());
+			symptoms = lastVisit.getSymptoms();
 			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
 			caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
 		} else if (convertedEventParticipant != null) {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid());
+			symptoms = null;
 			person = convertedEventParticipant.getPerson();
 			caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, event.getDisease());
 		} else {
+			symptoms = null;
 			person = null;
 			caze = CaseDataDto.build(null, null);
 		}
@@ -307,6 +312,7 @@ public class CaseController {
 
 		createForm.setValue(caze);
 		createForm.setPerson(person);
+		createForm.setSymptoms(symptoms);
 
 		if (convertedContact != null || convertedEventParticipant != null) {
 			createForm.setNameReadOnly(true);
@@ -332,8 +338,16 @@ public class CaseController {
 								PersonDto person = PersonDto.build();
 								person.setFirstName(createForm.getPersonFirstName());
 								person.setLastName(createForm.getPersonLastName());
+								person.setBirthdateDD(createForm.getBirthdateDD());
+								person.setBirthdateMM(createForm.getBirthdateMM());
+								person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+								person.setSex(createForm.getSex());
+								person.setPresentCondition(createForm.getPresentCondition());
 								person = FacadeProvider.getPersonFacade().savePerson(person);
 								dto.setPerson(person.toReference());
+								SymptomsDto symptoms = SymptomsDto.build();
+								symptoms.setOnsetDate(createForm.getOnsetDate());
+								dto.setSymptoms(symptoms);
 								saveCase(dto);
 								Notification.show(I18nProperties.getString(Strings.messageCaseCreated),
 										Type.ASSISTIVE_NOTIFICATION);
