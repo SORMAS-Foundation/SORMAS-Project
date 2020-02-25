@@ -22,64 +22,77 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ResourceBundle;
 
 public class I18nProperties {
 
-	private static I18nProperties instance = null;
-	
+	private static Map<Language, I18nProperties> instances = new HashMap<>();
+	private static ThreadLocal<Language> userLanguage = new ThreadLocal<>();
+
+	private static Language defaultLanguage;
+
 	private final ResourceBundle captionProperties;
 	private final ResourceBundle descriptionProperties;
 	private final ResourceBundle enumProperties;
 	private final ResourceBundle validationProperties;
 	private final ResourceBundle stringProperties;
-	
-	private static Locale locale;
 
-	private static I18nProperties getInstance() {
-		if (instance == null)
-			instance = new I18nProperties();
+	private static I18nProperties getInstance(Language language) {
+		if (language == null) {
+			if (defaultLanguage != null) {
+				language = defaultLanguage;
+			} else {
+				language = Language.EN;
+			}
+		}
+
+		I18nProperties instance = instances.get(language);
+		if (instance == null) {
+			instances.put(language, new I18nProperties(language));
+			instance = instances.get(language);
+		}
+
 		return instance;
 	}
-	
-	private static Locale getLocale () {
-		if (locale == null) {
-			locale = Locale.getDefault();
+
+	public static Language setUserLanguage(Language language) {
+		if (language == null) {
+			language = defaultLanguage;
 		}
+		userLanguage.set(language);
 		
-		return locale;
+		return language;
+	}
+
+	public static void removeUserLanguage() {
+		userLanguage.remove();
 	}
 	
-	public static void setLocale (Locale _locale) {
-		if (_locale == null) return;
-		if (_locale != locale) {
-			locale = _locale;
-			instance = null;
+	public static void setDefaultLanguage(Language language) {
+		if (language != null) {
+			defaultLanguage = language;
 		}
 	}
-	
-	public static void setLocale (String _locale) {
-		if (_locale == null) return;
-		
-		setLocale(new Locale(_locale));
-	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static String getEnumCaption(Enum value) {
-		String caption = getInstance().enumProperties.getString(value.getClass().getSimpleName() + "." + value.name());
+		String caption = getInstance(userLanguage.get()).enumProperties.getString(value.getClass().getSimpleName() + "." + value.name());
 		if (caption != null) {
 			return caption;
 		} else {
 			return value.name();
 		}
 	}
-	
+
 	/**
 	 * Retrieves the property by adding an additional string in between the class name and the property name,
 	 * e.g. Disease.Short.EVD or FollowUpStatus.Desc.NO_FOLLOW_UP
@@ -87,22 +100,22 @@ public class I18nProperties {
 	 * Does fallback to enum caption without addition.
 	 */
 	public static String getEnumCaption(Enum<?> value, String addition) {
-		String caption = getInstance().enumProperties.getString(value.getClass().getSimpleName() + "." + addition + "." + value.name());
+		String caption = getInstance(userLanguage.get()).enumProperties.getString(value.getClass().getSimpleName() + "." + addition + "." + value.name());
 		if (caption != null) {
 			return caption;
 		} else {
 			return getEnumCaption(value);
 		}
 	}
-	
+
 	public static String getEnumCaptionShort(Enum<?> value) {
 		return getEnumCaption(value, "Short");
 	}
-	
+
 	public static String getEnumDescription(Enum<?> value) {
 		return getEnumCaption(value, "Desc");
 	}
-	
+
 	/**
 	 * Uses <param>key</param> as default value
 	 */
@@ -111,7 +124,7 @@ public class I18nProperties {
 	}
 
 	public static String getCaption(String key, String defaultValue) {
-		return getInstance().captionProperties.getString(key, defaultValue);
+		return getInstance(userLanguage.get()).captionProperties.getString(key, defaultValue);
 	}
 
 	/**
@@ -120,24 +133,24 @@ public class I18nProperties {
 	public static String getPrefixCaption(String prefix, String key) {
 		return getPrefixCaption(prefix, key, key);
 	}
-	
+
 	public static String getPrefixCaption(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance().captionProperties.getString(prefix+"."+key);
+			result = getInstance(userLanguage.get()).captionProperties.getString(prefix+"."+key);
 		}
 		if (result == null) {
 			result = getCaption(key, defaultValue);
 		}
 		return result;
 	}
-	
+
 	public static String getDescription(String key) {
-		return getInstance().descriptionProperties.getString(key);
+		return getInstance(userLanguage.get()).descriptionProperties.getString(key);
 	}
 
 	public static String getDescription(String key, String defaultValue) {
-		return getInstance().descriptionProperties.getString(key, defaultValue);
+		return getInstance(userLanguage.get()).descriptionProperties.getString(key, defaultValue);
 	}
 
 	/**
@@ -157,16 +170,16 @@ public class I18nProperties {
 		}
 		return result;
 	}
-	
+
 	public static String getRequiredError(String fieldCaption) {
 		return getValidationError(Validations.required, fieldCaption);
 	}
-	
+
 	/**
 	 * Uses <param>key</param> as default value
 	 */
 	public static String getValidationError(String key, Object ...formatArgs) {
-		String result = getInstance().validationProperties.getString(key, null);
+		String result = getInstance(userLanguage.get()).validationProperties.getString(key, null);
 		if (result != null) {
 			return String.format(result, formatArgs);
 		} else if (formatArgs.length > 0 && formatArgs[0] != null) {
@@ -179,68 +192,73 @@ public class I18nProperties {
 	public static String getPrefixValidationError(String prefix, String key, Object ...formatArgs) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance().validationProperties.getString(prefix+"."+key);
+			result = getInstance(userLanguage.get()).validationProperties.getString(prefix+"."+key);
 			if (result != null) {
 				return String.format(result, result);
 			}
 		}
-		
+
 		return getValidationError(key, formatArgs);
 	}
-	
+
 	public static String getString(String property) {
-		return getInstance().stringProperties.getString(property);
+		return getInstance(userLanguage.get()).stringProperties.getString(property);
 	}
 
 	public static String getString(String property, String defaultValue) {
-		String result = getInstance().stringProperties.getString(property);
+		String result = getInstance(userLanguage.get()).stringProperties.getString(property);
 		return StringUtils.isEmpty(result) ? defaultValue : result;
 	}
 
 
 	private I18nProperties() {
-		captionProperties = loadProperties("captions");
-		descriptionProperties = loadProperties("descriptions");
-		enumProperties = loadProperties("enum");
-		validationProperties = loadProperties("validations");
-		stringProperties = loadProperties("strings");
+		this(Language.EN);
 	}
-	
-	public static ResourceBundle loadProperties(String propertiesGroup) {
-		return new ResourceBundle(java.util.ResourceBundle.getBundle(propertiesGroup, getLocale(), new UTF8Control()));
+
+	private I18nProperties(Language language) {
+		this.captionProperties = loadProperties("captions", language.getLocale());
+		this.descriptionProperties = loadProperties("descriptions", language.getLocale());
+		this.enumProperties = loadProperties("enum", language.getLocale());
+		this.validationProperties = loadProperties("validations", language.getLocale());
+		this.stringProperties = loadProperties("strings", language.getLocale());
 	}
-	
+
+	public static ResourceBundle loadProperties(String propertiesGroup, Locale locale) {
+		return new ResourceBundle(java.util.ResourceBundle.getBundle(propertiesGroup, locale, new UTF8Control()));
+	}
+
 	public static class UTF8Control extends Control {
-	    public java.util.ResourceBundle newBundle
-	        (String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-	            throws IllegalAccessException, InstantiationException, IOException
-	    {
-	        // The below is a copy of the default implementation.
-	        String bundleName = toBundleName(baseName, locale);
-	        String resourceName = toResourceName(bundleName, "properties");
-	        java.util.ResourceBundle bundle = null;
-	        InputStream stream = null;
-	        if (reload) {
-	            URL url = loader.getResource(resourceName);
-	            if (url != null) {
-	                URLConnection connection = url.openConnection();
-	                if (connection != null) {
-	                    connection.setUseCaches(false);
-	                    stream = connection.getInputStream();
-	                }
-	            }
-	        } else {
-	            stream = loader.getResourceAsStream(resourceName);
-	        }
-	        if (stream != null) {
-	            try {
-	                // Only this line is changed to make it to read properties files as UTF-8.
-	                bundle = new PropertyResourceBundle(new InputStreamReader(stream, "UTF-8"));
-	            } finally {
-	                stream.close();
-	            }
-	        }
-	        return bundle;
-	    }
+		public java.util.ResourceBundle newBundle
+		(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
+				throws IllegalAccessException, InstantiationException, IOException
+		{
+			// The below is a copy of the default implementation.
+			String bundleName = toBundleName(baseName, locale);
+			String resourceName = toResourceName(bundleName, "properties");
+			java.util.ResourceBundle bundle = null;
+			InputStream stream = null;
+			if (reload) {
+				URL url = loader.getResource(resourceName);
+				if (url != null) {
+					URLConnection connection = url.openConnection();
+					if (connection != null) {
+						connection.setUseCaches(false);
+						stream = connection.getInputStream();
+					}
+				}
+			} else {
+				stream = loader.getResourceAsStream(resourceName);
+			}
+			if (stream != null) {
+				try {
+					// Only this line is changed to make it to read properties files as UTF-8.
+					bundle = new PropertyResourceBundle(new InputStreamReader(stream, "UTF-8"));
+				} finally {
+					stream.close();
+				}
+			}
+			return bundle;
+		}
 	}
+	
 }

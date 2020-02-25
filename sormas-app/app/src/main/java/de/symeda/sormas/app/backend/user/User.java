@@ -35,6 +35,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -66,6 +67,7 @@ public class User extends AbstractDomainObject {
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String USER_ROLES_JSON = "userRole";
+	public static final String LANGUAGE = "language";
 
     @Column(nullable = false)
     private String userName;
@@ -95,6 +97,9 @@ public class User extends AbstractDomainObject {
 
     @ManyToOne(cascade = {})
     private User associatedOfficer;
+
+    @Enumerated(EnumType.STRING)
+    private Language language;
 
     @Enumerated(EnumType.STRING)
     private Disease limitedDisease;
@@ -215,6 +220,14 @@ public class User extends AbstractDomainObject {
 
     public void setLimitedDisease(Disease limitedDisease) {
         this.limitedDisease = limitedDisease;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 
     public String getUserRolesJson() {

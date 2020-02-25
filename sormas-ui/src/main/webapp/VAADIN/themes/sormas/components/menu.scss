@@ -95,9 +95,14 @@ $valo-menu-background-color: $s-default-color !default;
     }
   }
     
-  // Move logout button to the bottom of the menu on large screens
+  // Move logout and settings buttons to the bottom of the menu on large screens
   .v-ui[width-range~="801px-"] .valo-menu-part {
-    .user-menu {
+  	.settings-menu {
+  	  position: fixed;
+  	  bottom: 0;
+  	  margin-bottom: 35px;
+  	}
+    .logout-menu {
       position: fixed;
       bottom: 0;
       margin-bottom: 0;

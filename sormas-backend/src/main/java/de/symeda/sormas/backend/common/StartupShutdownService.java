@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
@@ -132,7 +133,7 @@ public class StartupShutdownService {
 		
 		String countryName = configFacade.getCountryName();
 		
-		I18nProperties.setLocale(configFacade.getCountryLocale());
+		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 		
 		importAdministrativeDivisions(countryName);
 		

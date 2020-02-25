@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 @Singleton(name = "StartupShutdownService")
@@ -40,12 +41,12 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-
-		I18nProperties.setLocale(FacadeProvider.getConfigFacade().getCountryLocale());
+		I18nProperties.setDefaultLanguage(Language.fromLocaleString(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	@PreDestroy
 	public void shutdown() {
 
 	}
+	
 }

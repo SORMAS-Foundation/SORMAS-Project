@@ -203,6 +203,7 @@ public final class CssStyles {
 	
 	// Combo Box styles
 	public static final String COMBO_BOX_SUBTLE = "subtle";
+	public static final String COMBO_BOX_WITH_FLAG_ICON = "with-flag-icon";
 	
 	// Layout components
 	public static final String ROOT_COMPONENT = "root-component";

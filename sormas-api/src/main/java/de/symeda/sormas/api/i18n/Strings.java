@@ -288,6 +288,7 @@ public interface Strings {
 	public static String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	public static String headingUpdatePassword = "headingUpdatePassword";
 	public static String headingUserData = "headingUserData";
+	public static String headingUserSettings = "headingUserSettings";
 	public static String headingViewNotFound = "headingViewNotFound";
 	public static String headingVisits = "headingVisits";
 	public static String headingVisitsDeleted = "headingVisitsDeleted";

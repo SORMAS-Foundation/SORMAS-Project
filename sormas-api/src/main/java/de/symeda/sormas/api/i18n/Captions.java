@@ -41,6 +41,7 @@ public interface Captions {
 	public static String actionSave = "actionSave";
 	public static String actionSaveChanges = "actionSaveChanges";
 	public static String actionSelectAll = "actionSelectAll";
+	public static String actionSettings = "actionSettings";
 	public static String actionShowLessFilters = "actionShowLessFilters";
 	public static String actionShowMoreFilters = "actionShowMoreFilters";
 	public static String actionSkip = "actionSkip";

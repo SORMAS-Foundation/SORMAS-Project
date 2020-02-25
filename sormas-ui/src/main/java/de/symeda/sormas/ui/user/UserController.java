@@ -24,6 +24,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -31,8 +32,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -92,7 +95,6 @@ public class UserController {
 	}
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
-
 		UserEditForm userEditForm = new UserEditForm(false, UserRight.USER_EDIT);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
@@ -108,6 +110,7 @@ public class UserController {
 				if (!userEditForm.getFieldGroup().isModified()) {
 					UserDto dto = userEditForm.getValue();
 					FacadeProvider.getUserFacade().saveUser(dto);
+					I18nProperties.setUserLanguage(dto.getLanguage());
 					refreshView();
 				}
 			}
@@ -223,6 +226,34 @@ public class UserController {
 		resetPasswordConfirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 		resetPasswordConfirmationComponent.setMargin(true);
 		return resetPasswordConfirmationComponent;
+	}
+
+	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(final String userUuid, Runnable commitOrDiscardCallback) {
+		UserSettingsForm form = new UserSettingsForm();
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(userUuid);
+		form.setValue(user);
+		
+		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<UserSettingsForm>(form, form.getFieldGroup());
+		component.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				UserDto changedUser = form.getValue();
+				FacadeProvider.getUserFacade().saveUser(changedUser);
+				I18nProperties.setUserLanguage(changedUser.getLanguage());
+				Page.getCurrent().reload();
+				commitOrDiscardCallback.run();
+			}
+		});
+		component.addDiscardListener(() -> {
+			commitOrDiscardCallback.run();
+		});
+
+		return component;
+	}
+	
+	public void setFlagIcons(ComboBox cbLanguage) {
+		for (Language language : Language.values()) {
+			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
+		}
 	}
 
 }

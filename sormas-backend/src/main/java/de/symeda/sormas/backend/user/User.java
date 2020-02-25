@@ -36,6 +36,7 @@ import javax.validation.constraints.Size;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -71,6 +72,7 @@ public class User extends AbstractDomainObject {
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
+	public static final String LANGUAGE = "language";
 
 	private String userName;
 	private String password;
@@ -100,6 +102,8 @@ public class User extends AbstractDomainObject {
 	private User associatedOfficer;
 	
 	private Disease limitedDisease;
+	
+	private Language language;
 	
 	@Column(nullable = false)
 	public String getUserName() {
@@ -273,6 +277,14 @@ public class User extends AbstractDomainObject {
 	}
 	public void setLimitedDisease(Disease limitedDisease) {
 		this.limitedDisease = limitedDisease;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public Language getLanguage() {
+		return language;
+	}
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 	
 }

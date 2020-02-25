@@ -21,6 +21,7 @@ import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -55,6 +56,7 @@ public class UserDto extends EntityDto {
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String LIMITED_DISEASE = "limitedDisease";
+	public static final String LANGUAGE = "language";
 
 	private boolean active = true;
 	
@@ -82,6 +84,8 @@ public class UserDto extends EntityDto {
 	private UserReferenceDto associatedOfficer;
 	
 	private Disease limitedDisease;
+	
+	private Language language;
 	
 	public static UserDto build() {
 		UserDto user = new UserDto();
@@ -230,6 +234,14 @@ public class UserDto extends EntityDto {
 
 	public void setLimitedDisease(Disease limitedDisease) {
 		this.limitedDisease = limitedDisease;
+	}
+
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 	
 }

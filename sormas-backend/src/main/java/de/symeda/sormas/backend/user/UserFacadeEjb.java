@@ -286,6 +286,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
 		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
+		target.setLanguage(source.getLanguage());
 
 		source.getUserRoles().size();
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
@@ -329,7 +330,8 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLaboratory(facilityService.getByReferenceDto(source.getLaboratory()));
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
-
+		target.setLanguage(source.getLanguage());
+		
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
 
 		return target;
