@@ -7,14 +7,14 @@ ext.keystoreProperties = loadKeystoreProperties()
 android {
     // https://medium.com/google-developers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
-    compileSdkVersion 28
+    compileSdkVersion 29
     // always use the latest
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "de.symeda.sormas.app"
-        minSdkVersion 21
-        targetSdkVersion 26
+        minSdkVersion 24
+        targetSdkVersion 29
         versionCode buildVersionCode()
         versionName "$sormasVersion"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -73,22 +73,22 @@ repositories {
 }
 
 dependencies {
-    def lifecycle_version = "2.1.0"
-    def paging_version = "2.1.0"
+    def lifecycle_version = "2.2.0"
+    def paging_version = "2.1.1"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.2.0-alpha01'
+    implementation 'com.google.android.material:material:1.2.0-alpha04'
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.j256.ormlite:ormlite-core:5.1'
     implementation 'com.j256.ormlite:ormlite-android:5.1'
     implementation 'javax.persistence:persistence-api:1.0.2'
-    implementation 'com.google.firebase:firebase-core:17.2.1'
-    implementation 'com.google.firebase:firebase-perf:19.0.1'
-    implementation 'com.google.firebase:firebase-config:19.0.3'
-    implementation 'com.google.firebase:firebase-analytics:17.2.1'
+    implementation 'com.google.firebase:firebase-core:17.2.2'
+    implementation 'com.google.firebase:firebase-perf:19.0.5'
+    implementation 'com.google.firebase:firebase-config:19.1.1'
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation "de.symeda.sormas:sormas-api:$sormasVersion"
     implementation 'com.googlecode:openbeans:1.0'
