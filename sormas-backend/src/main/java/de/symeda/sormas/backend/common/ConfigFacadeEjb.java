@@ -56,6 +56,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String GENERATED_FILES_PATH = "generated.path";
 	public static final String CUSTOM_FILES_PATH = "custom.path";
 	public static final String CSV_SEPARATOR = "csv.separator";
+	public static final String R_EXECUTABLE = "r.executable";
 	
 	public static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
 	public static final String EMAIL_SENDER_NAME = "email.sender.name";
@@ -69,7 +70,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
 
 	@Resource(lookup="sormas/Properties")
@@ -159,6 +159,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCustomFilesPath() {
 		return getProperty(CUSTOM_FILES_PATH, "/opt/sormas/custom/");
+	}
+
+	@Override
+	public String getRExecutable() {
+		return getProperty(R_EXECUTABLE, "R");
 	}
 	
 	@Override

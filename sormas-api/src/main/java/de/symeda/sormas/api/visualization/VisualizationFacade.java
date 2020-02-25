@@ -15,55 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api;
+package de.symeda.sormas.api.visualization;
 
 import javax.ejb.Remote;
 
 @Remote
-public interface ConfigFacade {
-	
-	String getCountryName();
-	
-	String getCountryLocale();
-	
-	String getEpidPrefix();
-	
-	String getAppUrl();
-	
-	boolean isFeatureAutomaticCaseClassification();
-	
-	String getEmailSenderAddress();
-	
-	String getEmailSenderName();
-	
-	String getSmsSenderName();
-	
-	String getSmsAuthKey();
-	
-	String getSmsAuthSecret();
-	
-	String getTempFilesPath();
-	
-	String getGeneratedFilesPath();
-	
-	String getCustomFilesPath();
+public interface VisualizationFacade {
 
-	String getRExecutable();
+	String buildTransmissionChainJson();
 
-	char getCsvSeparator();
-
-	String getAppLegacyUrl();
-
-	void validateAppUrls();
-
-	boolean isDevMode();
-	
-	double getNameSimilarityThreshold();
-	
-	int getInfrastructureSyncThreshold();
-
-	int getDaysAfterCaseGetsArchived();
-
-	int getDaysAfterEventGetsArchived();
 	
 }
