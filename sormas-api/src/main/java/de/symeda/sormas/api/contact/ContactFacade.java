@@ -70,4 +70,7 @@ public interface ContactFacade {
 	List<String> getDeletedUuidsSince(String userUuid, Date since);
 	
 	boolean isDeleted(String contactUuid);
+	
+	List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max,
+			List<SortProperty> sortProperties);
 }

@@ -55,6 +55,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -69,8 +70,10 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -87,6 +90,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -344,6 +348,131 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
+	}
+	
+	@Override
+	public List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		Date end = DateHelper.getEndOfDay(new Date());
+		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, 7));
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContactFollowUpDto> cq = cb.createQuery(ContactFollowUpDto.class);
+		Root<Contact> contact = cq.from(Contact.class);
+		Join<Contact, Person> contactPerson = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Contact, User> contactOfficer = contact.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
+		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
+		
+		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
+				contactOfficer.get(User.UUID), contactOfficer.get(User.FIRST_NAME), contactOfficer.get(User.LAST_NAME), contact.get(Contact.LAST_CONTACT_DATE),
+				contact.get(Contact.FOLLOW_UP_UNTIL), contactCase.get(Case.DISEASE));
+		
+		Predicate filter = null;		
+		// Only use user filter if no restricting case is specified
+		if (userUuid != null && (contactCriteria == null || contactCriteria.getCaze() == null)) {
+			User user = userService.getByUuid(userUuid);
+			filter = contactService.createUserFilter(cb, cq, contact, user);
+		}
+		
+		if (contactCriteria != null) {
+			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, cb, contact);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case ContactFollowUpDto.UUID:
+				case ContactFollowUpDto.LAST_CONTACT_DATE:
+				case ContactFollowUpDto.FOLLOW_UP_UNTIL:
+					expression = contact.get(sortProperty.propertyName);
+					break;
+				case ContactFollowUpDto.PERSON:
+					expression = contactPerson.get(Person.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = contactPerson.get(Person.LAST_NAME);
+					break;
+				case ContactFollowUpDto.CONTACT_OFFICER:
+					expression = contactOfficer.get(User.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = contactOfficer.get(User.LAST_NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
+		}
+		
+		List<ContactFollowUpDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		
+		// TODO: Refactor this to two individual queries (not one query per DTO) after general contact refactoring
+		for (ContactFollowUpDto followUpDto : resultList) {
+			List<Object[]> followUpInfoList = null;
+			CriteriaQuery<Object[]> followUpInfoCq = cb.createQuery(Object[].class);
+			Root<Visit> visitRoot = followUpInfoCq.from(Visit.class);
+			Join<Visit, Symptoms> symptomsJoin = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
+			
+			followUpInfoCq.multiselect(visitRoot.get(Visit.VISIT_DATE_TIME), visitRoot.get(Visit.VISIT_STATUS), 
+					symptomsJoin.get(Symptoms.SYMPTOMATIC));
+			
+			followUpInfoCq.where(
+					cb.and(
+							cb.equal(visitRoot.get(Visit.PERSON).get(Person.UUID), followUpDto.getPerson().getUuid()),
+							cb.equal(visitRoot.get(Visit.DISEASE), followUpDto.getDisease()),
+							cb.between(visitRoot.get(Visit.VISIT_DATE_TIME), start, end)
+							)
+					);
+			
+			followUpInfoList = em.createQuery(followUpInfoCq).getResultList();
+			
+			for (Object[] followUpInfo : followUpInfoList) {
+				int day = DateHelper.getDaysBetween(start, (Date) followUpInfo[0]);
+				VisitResult result = getVisitResult((VisitStatus) followUpInfo[1], (boolean) followUpInfo[2]);
+				
+				switch (day) {
+				case 1:
+					followUpDto.setDay1Result(result); break;
+				case 2:
+					followUpDto.setDay2Result(result); break;
+				case 3:
+					followUpDto.setDay3Result(result); break;
+				case 4:
+					followUpDto.setDay4Result(result); break;
+				case 5:
+					followUpDto.setDay5Result(result); break;
+				case 6:
+					followUpDto.setDay6Result(result); break;
+				case 7:
+					followUpDto.setDay7Result(result); break;
+				case 8:
+					followUpDto.setDay8Result(result); break;
+				}
+			}
+		}
+		
+		return resultList;
+	}
+	
+	private VisitResult getVisitResult(VisitStatus status, boolean symptomatic) {
+		if (VisitStatus.UNCOOPERATIVE.equals(status)) {
+			return VisitResult.UNCOOPERATIVE;
+		}
+		if (VisitStatus.UNAVAILABLE.equals(status)) {
+			return VisitResult.UNAVAILABLE;
+		}
+		if (symptomatic) {
+			return VisitResult.SYMPTOMATIC;
+		}
+		return VisitResult.NOT_SYMPTOMATIC;
 	}
 	
 	@Override

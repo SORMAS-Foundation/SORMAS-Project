@@ -147,6 +147,9 @@ public interface Captions {
 	public static String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	public static String CaseData_reportDate = "CaseData.reportDate";
 	public static String CaseData_reportingUser = "CaseData.reportingUser";
+	public static String CaseData_reportLat = "CaseData.reportLat";
+	public static String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
+	public static String CaseData_reportLon = "CaseData.reportLon";
 	public static String CaseData_sequelae = "CaseData.sequelae";
 	public static String CaseData_sequelaeDetails = "CaseData.sequelaeDetails";
 	public static String CaseData_smallpoxVaccinationReceived = "CaseData.smallpoxVaccinationReceived";
@@ -296,11 +299,13 @@ public interface Captions {
 	public static String contactCancelFollowUp = "contactCancelFollowUp";
 	public static String contactCaseContacts = "contactCaseContacts";
 	public static String contactContactsList = "contactContactsList";
+	public static String contactContactsOverview = "contactContactsOverview";
 	public static String contactCreateContactCase = "contactCreateContactCase";
 	public static String ContactExport_lastCooperativeVisitDate = "ContactExport.lastCooperativeVisitDate";
 	public static String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	public static String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	public static String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
+	public static String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	public static String contactLostToFollowUp = "contactLostToFollowUp";
 	public static String contactNewContact = "contactNewContact";
 	public static String contactOpenContactCase = "contactOpenContactCase";

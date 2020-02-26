@@ -69,6 +69,31 @@ $v-grid-cell-focused-border: none !default;
         &.odd {
           background-color: #eee;
         }
+       
+        &.follow-up-symptomatic > .component-wrap {
+          background-color: $s-critical-color;
+          line-height: 2;
+        }
+       
+        &.follow-up-not-symptomatic > .component-wrap {
+          background-color: $s-positive-color;
+          line-height: 2;
+        }
+       
+        &.follow-up-unavailable > .component-wrap {
+          background-color: #6277cc;
+          line-height: 2;
+        }
+       
+        &.follow-up-uncooperative > .component-wrap {
+          background-color: #9400D3;
+          line-height: 2;
+        }
+       
+        &.follow-up-not-performed > .component-wrap {
+          background-color: $s-minor-color;
+          line-height: 2;
+        }
       }
     	
       &.status-discarded .v-grid-cell {

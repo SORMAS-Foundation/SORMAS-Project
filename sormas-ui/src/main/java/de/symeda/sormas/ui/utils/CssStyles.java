@@ -110,6 +110,11 @@ public final class CssStyles {
 	public static final String LABEL_ROUNDED_CORNERS_SLIM = "rounded-corners-slim";
 	public static final String LABEL_BACKGROUND_FOCUS_LIGHT = "background-focus-light";
 	public static final String LABEL_VERTICAL_ALIGN_SUPER = "vertical-align-super";
+	public static final String LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC = "bg-follow-up-symptomatic";
+	public static final String LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC = "bg-follow-up-not-symptomatic";
+	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE = "bg-follow-up-unavailable";
+	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNCOOPERATIVE = "bg-follow-up-uncooperative";
+	public static final String LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED = "bg-follow-up-not-performed";
 	
 	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";
@@ -184,6 +189,11 @@ public final class CssStyles {
 	public static final String GRID_CELL_PRIORITY_NORMAL = "priority-normal";
 	public static final String GRID_CELL_PRIORITY_LOW = "priority-low";
 	public static final String GRID_CELL_WARNING = "warning";
+	public static final String GRID_CELL_SYMPTOMATIC = "follow-up-symptomatic";
+	public static final String GRID_CELL_NOT_SYMPTOMATIC = "follow-up-not-symptomatic";
+	public static final String GRID_CELL_UNAVAILABLE = "follow-up-unavailable";
+	public static final String GRID_CELL_UNCOOPERATIVE = "follow-up-uncooperative";
+	public static final String GRID_CELL_NOT_PERFORMED = "follow-up-not-performed";
 
 	public static final String GRID_CELL_ODD = "odd";
 
