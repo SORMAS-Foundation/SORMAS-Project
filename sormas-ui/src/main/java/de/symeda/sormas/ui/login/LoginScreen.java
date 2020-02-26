@@ -58,6 +58,7 @@ import de.symeda.sormas.ui.utils.UserRightsException;
 public class LoginScreen extends CssLayout {
 
 	private static final String UTF_8 = "UTF-8";
+	private static final int LOGO_WIDTH = 250;
 	private LoginListener loginListener;
 
 	public LoginScreen(LoginListener loginListener) {
@@ -236,10 +237,10 @@ public class LoginScreen extends CssLayout {
 		innerLayout.setComponentAlignment(fullNameText, Alignment.TOP_CENTER);
 		
 		Label missionText = new Label(
-				"\u2022 " + I18nProperties.getCaption(Captions.LoginSidebar_diseasePrevention, "Disease Prevention")
-						+ "<br>\u2022 "
+				"• " + I18nProperties.getCaption(Captions.LoginSidebar_diseasePrevention, "Disease Prevention")
+						+ "<br>• "
 						+ I18nProperties.getCaption(Captions.LoginSidebar_diseaseDetection, "Disease Detection")
-						+ "<br>\u2022 "
+						+ "<br>• "
 						+ I18nProperties.getCaption(Captions.LoginSidebar_outbreakResponse, "Outbreak Response"),
 				ContentMode.HTML);
 		missionText.setWidth(320, Unit.PIXELS);
@@ -260,15 +261,15 @@ public class LoginScreen extends CssLayout {
 		poweredByLayout.setSpacing(false);
 
 		Image imgHzi = new Image(null, new ThemeResource("img/hzi-logo.png"));
-		imgHzi.setWidth(250, Unit.PIXELS);
+		imgHzi.setWidth(LOGO_WIDTH, Unit.PIXELS);
 		poweredByLayout.addComponent(imgHzi);
 
 		Image imgSymeda = new Image(null, new ThemeResource("img/symeda-logo.png"));
-		imgSymeda.setWidth(250, Unit.PIXELS);
+		imgSymeda.setWidth(LOGO_WIDTH, Unit.PIXELS);
 		poweredByLayout.addComponent(imgSymeda);
 
 		Image imgGiz = new Image(null, new ThemeResource("img/giz-logo.png"));
-		imgGiz.setWidth(250, Unit.PIXELS);
+		imgGiz.setWidth(LOGO_WIDTH, Unit.PIXELS);
 		poweredByLayout.addComponent(imgGiz);
 
 		loginSidebarLayout.addComponent(poweredByLayout);
