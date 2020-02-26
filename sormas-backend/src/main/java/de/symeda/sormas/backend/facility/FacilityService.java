@@ -204,4 +204,26 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		}
 		return filter;
 	}
+
+	public void createConstantFacilities() {
+		if (getByUuid(FacilityDto.OTHER_FACILITY_UUID) == null) {
+			Facility otherFacility = new Facility();
+			otherFacility.setName(FacilityDto.OTHER_FACILITY);
+			otherFacility.setUuid(FacilityDto.OTHER_FACILITY_UUID);
+			persist(otherFacility);
+		}
+		if (getByUuid(FacilityDto.NONE_FACILITY_UUID) == null) {
+			Facility noneFacility = new Facility();
+			noneFacility.setName(FacilityDto.NO_FACILITY);
+			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
+			persist(noneFacility);
+		}
+		if (getByUuid(FacilityDto.OTHER_LABORATORY_UUID) == null) {
+			Facility otherLaboratory = new Facility();
+			otherLaboratory.setName(FacilityDto.OTHER_LABORATORY);
+			otherLaboratory.setType(FacilityType.LABORATORY);
+			otherLaboratory.setUuid(FacilityDto.OTHER_LABORATORY_UUID);
+			persist(otherLaboratory);
+		}
+	}
 }

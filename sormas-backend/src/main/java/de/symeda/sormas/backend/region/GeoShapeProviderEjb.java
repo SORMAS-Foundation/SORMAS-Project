@@ -173,18 +173,22 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@PostConstruct
 	private void loadData() {
 
-		loadRegionData();
-		loadDistrictData();
-		buildCountryShape();
+		String countryName = configFacade.getCountryName();
+		if (countryName.isEmpty()) {
+			logger.warn("Shape files couldn't be loaded, because no country name is defined in sormas.properties.");
+		} else {
+			loadRegionData(countryName);
+			loadDistrictData(countryName);
+		}
+			buildCountryShape();
 	}
 
-	private void loadRegionData() {
+	private void loadRegionData(String countryName) {
 
 		regionShapes.clear();
 		regionMultiPolygons.clear();
 
 		// load shapefile
-		String countryName = configFacade.getCountryName();
 		String filepath = "shapefiles/" + countryName + "/regions.shp";
 		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {
@@ -262,13 +266,12 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		updateCenterOfAllRegions();
 	}
 
-	private void loadDistrictData() {
+	private void loadDistrictData(String countryName) {
 
 		districtShapes.clear();
 		districtMultiPolygons.clear();
 
 		// load shapefile
-		String countryName = configFacade.getCountryName();
 		String filepath = "shapefiles/" + countryName + "/districts.shp";
 		URL filepathUrl = getClass().getClassLoader().getResource(filepath);
 		if (filepathUrl == null || !filepath.endsWith(".shp")) {

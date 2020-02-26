@@ -114,7 +114,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public String getCountryName() {
-		return getProperty(COUNTRY_NAME, "nigeria");
+		String countryName = getProperty(COUNTRY_NAME, "");
+		if (countryName.isEmpty()) {
+			logger.warn("No country name is specified in sormas.properties.");
+		}
+		return countryName;
 	}
 
 	@Override
@@ -124,7 +128,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	@Override
 	public String getEpidPrefix() {
-		return getProperty(COUNTRY_EPID_PREFIX, "NIE");
+		return getProperty(COUNTRY_EPID_PREFIX, "");
 	}
 	
 	@Override

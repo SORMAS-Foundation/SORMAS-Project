@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.common;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -41,7 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -133,11 +136,13 @@ public class StartupShutdownService {
 		
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 		
-		buildDummyInfrastructureData();
+		createDefaultInfrastructureData();
 		
-		importConstantPointsOfEntry();
+		facilityService.createConstantFacilities();
 
-		initDefaultUsers();
+		createConstantPointsOfEntry();
+
+		createDefaultUsers();
 		
 		upgrade();
 		
@@ -148,59 +153,116 @@ public class StartupShutdownService {
 		configFacade.validateAppUrls();
 	}
 	
-	private void buildDummyInfrastructureData() {
+	private void createDefaultInfrastructureData() {
 
 		// Region
-		Region region = new Region();
-		region.setUuid(DataHelper.createUuid());
-		region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
-		region.setEpidCode("DEF-REG");
-		regionService.ensurePersisted(region);
+		Region region = null;
+		if (regionService.count() == 0) {
+			region = new Region();
+			region.setUuid(DataHelper.createUuid());
+			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
+			region.setEpidCode("DEF-REG");
+			region.setDistricts(new ArrayList<District>());
+			regionService.ensurePersisted(region);
+		}
 
 		// District
-		District district = new District();
-		district.setUuid(DataHelper.createUuid());
-		district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
-		district.setRegion(region);
-		district.setEpidCode("DIS");
-		districtService.ensurePersisted(district);
+		District district = null;
+		if (districtService.count() == 0) {
+			district = new District();
+			district.setUuid(DataHelper.createUuid());
+			district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
+			if (region == null) {
+				region = regionService.getAll().get(0);
+			}
+			district.setRegion(region);
+			district.setEpidCode("DIS");
+			district.setCommunities(new ArrayList<Community>());
+			districtService.ensurePersisted(district);
+			region.getDistricts().add(district);
+		}
 		
 		// Community
-		Community community = new Community();
-		community.setUuid(DataHelper.createUuid());
-		community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
-		community.setDistrict(district);
-		communityService.ensurePersisted(community);
+		Community community = null;
+		if (communityService.count() == 0) {
+			community = new Community();
+			community.setUuid(DataHelper.createUuid());
+			community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
+			if (district == null) {
+				district = districtService.getAll().get(0);
+			}
+			community.setDistrict(district);
+			communityService.ensurePersisted(community);
+			district.getCommunities().add(community);
+		}
 		
 		// Health Facility
-		Facility facility = new Facility();
-		facility.setUuid(DataHelper.createUuid());
-		facility.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
-		facility.setCommunity(community);
-		facility.setDistrict(district);
-		facility.setRegion(region);
-		facilityService.ensurePersisted(facility);
+		Facility healthFacility;
+		FacilityCriteria facilityCriteria = new FacilityCriteria();
+		facilityCriteria.type(null);
+		if (FacadeProvider.getFacilityFacade().count(facilityCriteria) == 0) {
+			healthFacility = new Facility();
+			healthFacility.setUuid(DataHelper.createUuid());
+			healthFacility
+					.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
+			if (community == null) {
+				community = communityService.getAll().get(0);
+			}
+			healthFacility.setCommunity(community);
+			if (district == null) {
+				district = districtService.getAll().get(0);
+			}
+			healthFacility.setDistrict(district);
+			if (region == null) {
+				region = regionService.getAll().get(0);
+			}
+			healthFacility.setRegion(region);
+			facilityService.ensurePersisted(healthFacility);
+		}
 		
 		// Laboratory
-		Facility laboratory = new Facility();
-		laboratory.setUuid(DataHelper.createUuid());
-		laboratory.setName(I18nProperties.getCaption(Captions.defaultLaboratory, "Default Laboratory"));
-		laboratory.setCommunity(community);
-		laboratory.setDistrict(district);
-		laboratory.setRegion(region);
-		laboratory.setType(FacilityType.LABORATORY);
+		Facility laboratory;
+		facilityCriteria.type(FacilityType.LABORATORY);
+		if (FacadeProvider.getFacilityFacade().count(facilityCriteria) == 0) {
+			laboratory = new Facility();
+			laboratory.setUuid(DataHelper.createUuid());
+			laboratory.setName(I18nProperties.getCaption(Captions.defaultLaboratory, "Default Laboratory"));
+			if (community == null) {
+				community = communityService.getAll().get(0);
+			}
+			laboratory.setCommunity(community);
+			if (district == null) {
+				district = districtService.getAll().get(0);
+			}
+			laboratory.setDistrict(district);
+			if (region == null) {
+				region = regionService.getAll().get(0);
+			}
+			laboratory.setRegion(region);
+			laboratory.setType(FacilityType.LABORATORY);
+			facilityService.ensurePersisted(laboratory);
+		}
 		
 		// Point of Entry
-		PointOfEntry pointOfEntry = new PointOfEntry();
-		pointOfEntry.setUuid(DataHelper.createUuid());
-		pointOfEntry.setName(I18nProperties.getCaption(Captions.defaultPointOfEntry, "Default Point Of Entry"));
-		pointOfEntry.setDistrict(district);
-		pointOfEntry.setRegion(region);
-		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
-		pointOfEntryService.ensurePersisted(pointOfEntry);
+		PointOfEntry pointOfEntry;
+		if (pointOfEntryService.count() == 0) {
+			pointOfEntry = new PointOfEntry();
+			pointOfEntry.setUuid(DataHelper.createUuid());
+			pointOfEntry.setName(I18nProperties.getCaption(Captions.defaultPointOfEntry, "Default Point Of Entry"));
+			if (district == null) {
+				district = districtService.getAll().get(0);
+			}
+			pointOfEntry.setDistrict(district);
+			if (region == null) {
+				region = regionService.getAll().get(0);
+			}
+			pointOfEntry.setRegion(region);
+			pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
+			pointOfEntryService.ensurePersisted(pointOfEntry);
+		}
 	}
 
-	private void importConstantPointsOfEntry() {
+	private void createConstantPointsOfEntry() {
 		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_AIRPORT_UUID) == null) {
 			PointOfEntry otherAirport = new PointOfEntry();
 			otherAirport.setName("OTHER_AIRPORT");
@@ -235,8 +297,8 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void initDefaultUsers() {
-		if (userService.getAll().isEmpty()) {
+	private void createDefaultUsers() {
+		if (userService.count() == 0) {
 	
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
@@ -247,63 +309,63 @@ public class StartupShutdownService {
 			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 	
-			// Generate Admin
+			// Create Admin
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
 			admin.setUserName("admin");
 			userService.persist(admin);
 	
-			// Generate Surveillance Supervisor
+			// Create Surveillance Supervisor
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance",
 					"Supervisor", "SurvSup");
 			surveillanceSupervisor.setUserName("SurvSup");
 			surveillanceSupervisor.setRegion(region);
 			userService.persist(surveillanceSupervisor);
 
-			// Generate Case Supervisor
+			// Create Case Supervisor
 			User caseSupervisor = MockDataGenerator.createUser(UserRole.CASE_SUPERVISOR, "Case", "Supervisor",
 					"CaseSup");
 			caseSupervisor.setUserName("CaseSup");
 			caseSupervisor.setRegion(region);
 			userService.persist(caseSupervisor);
 
-			// Generate Contact Supervisor
+			// Create Contact Supervisor
 			User contactSupervisor = MockDataGenerator.createUser(UserRole.CONTACT_SUPERVISOR, "Contact", "Supervisor",
 					"ContSup");
 			contactSupervisor.setUserName("ContSup");
 			contactSupervisor.setRegion(region);
 			userService.persist(contactSupervisor);
 
-			// Generate Point of Entry Supervisor
+			// Create Point of Entry Supervisor
 			User poeSupervisor = MockDataGenerator.createUser(UserRole.POE_SUPERVISOR, "Point of Entry", "Supervisor",
 					"PoeSup");
 			poeSupervisor.setUserName("PoeSup");
 			poeSupervisor.setRegion(region);
 			userService.persist(poeSupervisor);
 
-			// Generate Laboratory Officer
+			// Create Laboratory Officer
 			User laboratoryOfficer = MockDataGenerator.createUser(UserRole.LAB_USER, "Laboratory", "Officer", "LabOff");
 			laboratoryOfficer.setUserName("LabOff");
 			laboratoryOfficer.setLaboratory(laboratory);
 			userService.persist(laboratoryOfficer);
 
-			// Generate Event Officer
+			// Create Event Officer
 			User eventOfficer = MockDataGenerator.createUser(UserRole.EVENT_OFFICER, "Event", "Officer", "EveOff");
 			eventOfficer.setUserName("EveOff");
 			eventOfficer.setRegion(region);
 			userService.persist(eventOfficer);
 
-			// Generate National User
+			// Create National User
 			User nationalUser = MockDataGenerator.createUser(UserRole.NATIONAL_USER, "National", "User", "NatUser");
 			nationalUser.setUserName("NatUser");
 			userService.persist(nationalUser);
 
-			// Generate National Clinician
+			// Create National Clinician
 			User nationalClinician = MockDataGenerator.createUser(UserRole.NATIONAL_CLINICIAN, "National", "Clinician",
 					"NatClin");
 			nationalClinician.setUserName("NatClin");
 			userService.persist(nationalClinician);
 	
-			// Generate Surveillance Officer
+			// Create Surveillance Officer
 			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance",
 					"Officer", "SurvOff");
 			surveillanceOfficer.setUserName("SurvOff");
@@ -311,7 +373,7 @@ public class StartupShutdownService {
 			surveillanceOfficer.setDistrict(district);
 			userService.persist(surveillanceOfficer);
 
-			// Generate Hospital Informant
+			// Create Hospital Informant
 			User hospitalInformant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Hospital", "Informant",
 					"HospInf");
 			hospitalInformant.setUserName("HospInf");

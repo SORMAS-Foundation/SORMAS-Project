@@ -19,6 +19,8 @@ package de.symeda.sormas.backend.region;
 
 public class GeoShapeProviderEjbTest {
 	
+//TODO: Re-implement relevant unit tests once shape files can be imported from the ui
+
 //    private static BeanProviderHelper bm;
 //    
 //    @BeforeClass
