@@ -101,12 +101,15 @@ public class SettingsFragment extends BaseLandingFragment {
         binding.setData(ConfigProvider.getUser());
         binding.userLanguage.initializeSpinner(DataUtils.getEnumItems(Language.class, true));
         binding.userLanguage.addValueChangedListener(e -> {
-            if (!e.getValue().equals(LocaleManager.getLanguagePref(getContext()))) {
-                try {
-                    DatabaseHelper.getUserDao().saveAndSnapshot(binding.getData());
-                    ((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), (Language) e.getValue());
-                } catch (DaoException ex) {
-                    NotificationHelper.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
+            if (!(e.getValue() == null && Language.fromLocaleString(ConfigProvider.getLocale()).equals(LocaleManager.getLanguagePref(getContext())))) {
+                if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
+                    try {
+                        Language newLanguage = e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getLocale());
+                        DatabaseHelper.getUserDao().saveAndSnapshot(binding.getData());
+                        ((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
+                    } catch (DaoException ex) {
+                        NotificationHelper.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
+                    }
                 }
             }
         });
