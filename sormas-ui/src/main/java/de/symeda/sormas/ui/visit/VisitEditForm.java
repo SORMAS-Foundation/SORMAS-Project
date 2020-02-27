@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.visit;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import com.vaadin.v7.data.Validator;
@@ -32,9 +33,11 @@ import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
 @SuppressWarnings("serial")
@@ -112,6 +115,9 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     	}   	
     	
     	symptomsForm.initializeSymptomRequirementsForVisit((OptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
+    	
+    	FieldHelper.setEnabledWhen(getFieldGroup(), visitStatus, Arrays.asList(VisitStatus.COOPERATIVE),
+				Arrays.asList(VisitDto.SYMPTOMS), true);    	
     }
 	
 	@Override
