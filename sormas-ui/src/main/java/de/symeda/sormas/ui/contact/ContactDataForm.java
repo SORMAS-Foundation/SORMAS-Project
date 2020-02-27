@@ -41,6 +41,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.i18n.Captions;
@@ -79,6 +80,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, ContactDto.CONTACT_OFFICER)
 		    ;
+    
+	private OptionGroup contactProximity;
 
     public ContactDataForm(UserRight editOrCreateUserRight) {
         super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -92,7 +95,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.REPORTING_USER, ComboBox.class);
     	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	addField(ContactDto.REPORT_DATE_TIME, DateField.class);
-    	OptionGroup contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
+    	contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
     	contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
     	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
@@ -232,6 +235,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(ContactDto.class, (String)propertyId, disease);
 			getFieldGroup().getField(propertyId).setVisible(visible);
 		}
+		
+		ContactProximity value = (ContactProximity)contactProximity.getValue();
+		FieldHelper.updateEnumData(contactProximity, Arrays.asList(ContactProximity.getValues(disease)));
+		contactProximity.setValue(value);
 	}
 
 	@Override
