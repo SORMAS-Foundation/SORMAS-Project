@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -151,7 +152,18 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	}
 
 	protected void populateWithDiseaseData(ComboBox diseaseField) {
+
+		diseaseField.removeAllItems();
+        for (Object p : diseaseField.getContainerPropertyIds()) {
+        	diseaseField.removeContainerProperty(p);
+        }
+        diseaseField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
+        diseaseField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
+        @SuppressWarnings("unchecked")
 		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-		FieldHelper.updateEnumData(diseaseField, diseases);
+        for (Object r : diseases) {
+            Item newItem = diseaseField.addItem(r);
+            newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
+        }
 	}
 }
