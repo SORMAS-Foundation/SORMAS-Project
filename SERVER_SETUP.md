@@ -12,6 +12,7 @@
   * [Apache Web Server](#apache-web-server)
   * [Firewall](#firewall)
   * [Postfix Mail Server](#postfix-mail-server)
+  * [Security](#security)
 * [Troubleshooting](#troubleshooting)
 
 ## Related
@@ -208,6 +209,11 @@ Here are some things that you should do to configure the Apache server as a prox
 		-> add "root: enter-your@support-email-here.com"
 		nano /opt/domains/sormas/config/logback.xml
 		-> make sure "EMAIL_ERROR" appender is active and sends out to your email address
+
+### Testing the Server Setup
+
+Use SSL Labs to test your server security config: https://www.ssllabs.com/ssltest
+
 
 ## Troubleshooting
 
