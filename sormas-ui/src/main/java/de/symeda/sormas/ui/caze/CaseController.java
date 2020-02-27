@@ -274,7 +274,11 @@ public class CaseController {
 		SymptomsDto symptoms;
 		if (convertedContact != null) {
 			VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByContact(convertedContact.toReference());
-			symptoms = lastVisit.getSymptoms();
+			if (lastVisit != null) {
+				symptoms = lastVisit.getSymptoms();
+			} else {
+				symptoms = null;
+			}
 			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
 			caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
 		} else if (convertedEventParticipant != null) {
