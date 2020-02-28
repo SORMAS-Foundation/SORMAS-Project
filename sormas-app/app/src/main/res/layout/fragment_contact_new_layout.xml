@@ -25,7 +25,6 @@
     <data>
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
-        <variable name="contactProximityClass" type="Class" />
     </data>
 
     <ScrollView
@@ -63,7 +62,6 @@
 
             <de.symeda.sormas.app.component.controls.ControlRadioGroupField
                 android:id="@+id/contact_contactProximity"
-                app:enumClass="@{contactProximityClass}"
                 app:value="@={data.contactProximity}"
                 app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
