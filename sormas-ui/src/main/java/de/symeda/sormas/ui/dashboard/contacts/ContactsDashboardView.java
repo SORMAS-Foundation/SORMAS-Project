@@ -53,6 +53,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	protected Optional<DashboardNetworkComponent> networkDiagramComponent;
 	protected HorizontalLayout epiCurveAndMapLayout;
 	protected HorizontalLayout networkDiagramRowLayout;
+	protected HorizontalLayout caseStatisticsLayout;
 	private VerticalLayout epiCurveLayout;
 	private Optional<VerticalLayout> mapLayout;
 	private Optional<VerticalLayout> networkDiagramLayout;
@@ -71,6 +72,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
 		
 		rowsLayout = new VerticalLayout();
+		rowsLayout.setMargin(false);
+		rowsLayout.setSpacing(false);
 		dashboardLayout.addComponent(rowsLayout);
 		dashboardLayout.setExpandRatio(rowsLayout, 1);
 
@@ -79,9 +82,9 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		rowsLayout.addComponent(statisticsComponent);
 		rowsLayout.setExpandRatio(statisticsComponent, 0);
 		
-		HorizontalLayout caseStatisticsLayout = createCaseStatisticsLayout();
-		dashboardLayout.addComponent(caseStatisticsLayout);
-		dashboardLayout.setExpandRatio(caseStatisticsLayout, 0);
+		caseStatisticsLayout = createCaseStatisticsLayout();
+		rowsLayout.addComponent(caseStatisticsLayout);
+		rowsLayout.setExpandRatio(caseStatisticsLayout, 0);
 
 		epiCurveComponent = new ContactsEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
@@ -236,13 +239,14 @@ public class ContactsDashboardView extends AbstractDashboardView {
 				epiCurveLayout.setSizeFull();
 				rowsLayout.setSizeFull();
 			} else {
-				rowsLayout.addComponent(statisticsComponent, 1);
+				rowsLayout.addComponent(statisticsComponent, 0);
 				mapLayout.ifPresent(l -> epiCurveAndMapLayout.addComponent(l, 1));
 				epiCurveLayout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 				ContactsDashboardView.this.setHeightUndefined();
 				epiCurveAndMapLayout.setHeightUndefined();
 				rowsLayout.setHeightUndefined();
 			}
+			caseStatisticsLayout.setVisible(!expanded);
 			networkDiagramRowLayout.setVisible(!expanded);
 		});
 
@@ -274,13 +278,14 @@ public class ContactsDashboardView extends AbstractDashboardView {
 				layout.setSizeFull();
 				rowsLayout.setSizeFull();
 			} else {
-				rowsLayout.addComponent(statisticsComponent, 1);
+				rowsLayout.addComponent(statisticsComponent, 0);
 				epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
 				layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 				ContactsDashboardView.this.setHeightUndefined();
 				epiCurveAndMapLayout.setHeightUndefined();
 				rowsLayout.setHeightUndefined();
 			}
+			caseStatisticsLayout.setVisible(!expanded);
 			networkDiagramRowLayout.setVisible(!expanded);
 		});
 
@@ -309,12 +314,13 @@ public class ContactsDashboardView extends AbstractDashboardView {
 					networkDiagramRowLayout.setHeight(100, Unit.PERCENTAGE);
 					rowsLayout.setSizeFull();
 				} else {
-					rowsLayout.addComponent(statisticsComponent, 1);
+					rowsLayout.addComponent(statisticsComponent, 0);
 					ContactsDashboardView.this.setHeightUndefined();
 					layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 					networkDiagramRowLayout.setHeightUndefined();
 					rowsLayout.setHeightUndefined();
 				}
+				caseStatisticsLayout.setVisible(!expanded);
 				epiCurveAndMapLayout.setVisible(!expanded);
 			});
 			return layout;
