@@ -60,6 +60,12 @@
 			<artifactId>vaadin-themes</artifactId>
 			<scope>provided</scope>
 		</dependency>
+			
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 </project>

@@ -15,61 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api;
+package de.symeda.sormas.api.visualization;
+
+import java.time.LocalDate;
+import java.util.Collection;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.Disease;
 
 @Remote
-public interface ConfigFacade {
-	
-	String getCountryName();
-	
-	String getCountryLocale();
-	
-	String getEpidPrefix();
-	
-	String getAppUrl();
-	
-	boolean isFeatureAutomaticCaseClassification();
-	
-	String getEmailSenderAddress();
-	
-	String getEmailSenderName();
-	
-	String getSmsSenderName();
-	
-	String getSmsAuthKey();
-	
-	String getSmsAuthSecret();
-	
-	String getTempFilesPath();
-	
-	String getGeneratedFilesPath();
-	
-	String getCustomFilesPath();
+public interface VisualizationFacade {
 
-	String getRScriptExecutable();
-
-	char getCsvSeparator();
-
-	String getAppLegacyUrl();
-
-	void validateAppUrls();
-
-	boolean isDevMode();
-	
-	double getNameSimilarityThreshold();
-	
-	int getInfrastructureSyncThreshold();
-
-	int getDaysAfterCaseGetsArchived();
-
-	int getDaysAfterEventGetsArchived();
-
-	GeoLatLon getCountryCenter();
-
-	int getMapZoom();
+	String buildTransmissionChainJson(LocalDate fromDate, LocalDate toDate, Collection<Disease> diseases);
 	
 }
