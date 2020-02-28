@@ -743,9 +743,14 @@ public class StatisticsView extends AbstractStatisticsView {
 		map.setTileLayerOpacity(0.5f);
 		map.setWidth(100, Unit.PERCENTAGE);
 		map.setHeight(580, Unit.PIXELS);
-		map.setZoom(6);
+		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
 		GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
-		map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+		if (mapCenter != null) {
+			map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+		} else {
+			GeoLatLon countryCenter = FacadeProvider.getConfigFacade().getCountryCenter();
+			map.setCenter(countryCenter.getLon(), countryCenter.getLat());
+		}
 
 		if (cbHideOtherCountries.getValue()) {
 			LeafletMapUtil.addOtherCountriesOverlay(map);

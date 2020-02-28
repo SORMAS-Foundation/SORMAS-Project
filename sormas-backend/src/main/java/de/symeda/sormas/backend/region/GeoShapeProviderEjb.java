@@ -66,8 +66,6 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
-	private static final GeoLatLon defaultCenter = new GeoLatLon(13.5, 2);
-	
 	private Map<RegionReferenceDto, MultiPolygon> regionMultiPolygons = new HashMap<>();
 	private Map<RegionReferenceDto, GeoLatLon[][]> regionShapes = new HashMap<>();
 	
@@ -101,9 +99,6 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 	@Override
 	public GeoLatLon getCenterOfAllRegions() {
-		if (regionsCenter == null) {
-			return defaultCenter;
-		}
 		return regionsCenter;
 	}
 
