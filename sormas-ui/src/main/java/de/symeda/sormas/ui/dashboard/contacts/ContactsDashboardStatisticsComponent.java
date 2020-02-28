@@ -29,7 +29,6 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -71,13 +70,6 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 	private DashboardStatisticsPercentageElement symptomaticContactsLarge;
 
 	// "Follow-up Status" elements
-	private DashboardStatisticsPercentageElement underFollowUp;
-	private DashboardStatisticsPercentageElement followUpCompleted;
-	private DashboardStatisticsPercentageElement followUpCanceled;
-	private DashboardStatisticsPercentageElement lostToFollowUp;
-	private DashboardStatisticsPercentageElement contactStatusConverted;
-
-	// "Follow-up Situation" elements
 	private DashboardStatisticsCountElement cooperativeContacts;
 	private DashboardStatisticsCountElement uncooperativeContacts;
 	private DashboardStatisticsCountElement unavailableContacts;
@@ -87,6 +79,12 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 	private DashboardStatisticsCountElement missedVisitsThreeDays;
 	private DashboardStatisticsCountElement missedVisitsGtThreeDays;
 
+	// "Stopped Follow-up" elements
+	private DashboardStatisticsPercentageElement followUpCompleted;
+	private DashboardStatisticsPercentageElement followUpCanceled;
+	private DashboardStatisticsPercentageElement lostToFollowUp;
+	private DashboardStatisticsPercentageElement contactStatusConverted;
+
 	// "Follow-Up Visits" elements
 	private DashboardStatisticsGraphicalGrowthElement missedVisits;
 	private DashboardStatisticsGraphicalGrowthElement unavailableVisits;
@@ -95,7 +93,6 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 	public ContactsDashboardStatisticsComponent(DashboardDataProvider dashboardDataProvider) {
 		super(dashboardDataProvider);
-
 	}
 
 	@Override
@@ -209,107 +206,56 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		secondComponent = new DashboardStatisticsSubComponent();
 
 		// Header
-		secondComponent.addHeader(I18nProperties.getString(Strings.headingContactFollowUp), null, true);
+		secondComponent.addHeader(I18nProperties.getString(Strings.headingUnderFollowUp), null, true);
 
 		// Content
 		secondComponent.addMainContent();
-		underFollowUp = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardUnderFollowUp), CssStyles.SVG_FILL_PRIMARY);
-		underFollowUp.setDescription(FollowUpStatus.FOLLOW_UP.getDescription());
-		followUpCompleted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCompletedFollowUp), CssStyles.SVG_FILL_POSITIVE);
-		followUpCompleted.setDescription(FollowUpStatus.COMPLETED.getDescription());
-		followUpCanceled = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCanceledFollowUp), CssStyles.SVG_FILL_IMPORTANT);
-		followUpCanceled.setDescription(FollowUpStatus.CANCELED.getDescription());
-		lostToFollowUp = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardLostToFollowUp), CssStyles.SVG_FILL_CRITICAL);
-		lostToFollowUp.setDescription(FollowUpStatus.LOST.getDescription());
-		contactStatusConverted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConvertedToCase), CssStyles.SVG_FILL_NEUTRAL);
-		contactStatusConverted.setDescription(I18nProperties.getDescription(Descriptions.descDashboardConvertedToCase));
-		secondComponent.addComponentToContent(underFollowUp);
-		secondComponent.addComponentToContent(followUpCompleted);
-		secondComponent.addComponentToContent(followUpCanceled);
-		secondComponent.addComponentToContent(lostToFollowUp);
-		secondComponent.addComponentToContent(contactStatusConverted);
+		
+		CssLayout visitStatusCountLayout = secondComponent.createCountLayout(true);
+		cooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardCooperative), CountElementStyle.POSITIVE);
+		secondComponent.addComponentToCountLayout(visitStatusCountLayout, cooperativeContacts);
+		uncooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUncooperative), CountElementStyle.CRITICAL);
+		secondComponent.addComponentToCountLayout(visitStatusCountLayout, uncooperativeContacts);
+		unavailableContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnavailable), CountElementStyle.RELEVANT);
+		secondComponent.addComponentToCountLayout(visitStatusCountLayout, unavailableContacts);
+		neverVisitedContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNeverVisited), CountElementStyle.MINOR);
+		secondComponent.addComponentToCountLayout(visitStatusCountLayout, neverVisitedContacts);
+
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+		infoLabel.setDescription(I18nProperties.getDescription(Descriptions.descDashboardFollowUpInfo));
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_SECONDARY, "follow-up-status-info-button");
+		secondComponent.addComponentToCountLayout(visitStatusCountLayout, infoLabel);
+
+		secondComponent.addComponentToContent(visitStatusCountLayout);
+
+		// Number of missed visits
+		Label missedVisitsLabel = new Label(I18nProperties.getCaption(Captions.dashboardNotVisitedFor));
+		CssStyles.style(missedVisitsLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, CssStyles.LABEL_ROUNDED_CORNERS_SLIM);
+		secondComponent.addComponentToContent(missedVisitsLabel);
+
+		CssLayout missedVisitsCountLayout = secondComponent.createCountLayout(false);
+		missedVisitsOneDay = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardOneDay), CountElementStyle.PRIMARY);
+		secondComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsOneDay);
+		missedVisitsTwoDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardTwoDays), CountElementStyle.PRIMARY);
+		secondComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsTwoDays);
+		missedVisitsThreeDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardThreeDays), CountElementStyle.PRIMARY);
+		secondComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsThreeDays);
+		missedVisitsGtThreeDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardGtThreeDays), CountElementStyle.PRIMARY);
+		secondComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsGtThreeDays);
+		secondComponent.addComponentToContent(missedVisitsCountLayout);
 
 		subComponentsLayout.addComponent(secondComponent, SECOND_LOC);
 	}
 
 	@Override
 	protected void updateSecondComponent(int visibleDiseasesCount) {
-		List<DashboardContactDto> contacts = dashboardDataProvider.getContacts();
-		contacts.removeIf(c -> c.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP);
+		List<DashboardContactDto> contacts = new ArrayList<>();
+		contacts.addAll(dashboardDataProvider.getContacts());
+		contacts.removeIf(c -> c.getFollowUpStatus() != FollowUpStatus.FOLLOW_UP);
 
 		int contactsCount = contacts.size();
 		secondComponent.updateCountLabel(contactsCount);
-
-		int underFollowUpCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP).count();
-		int underFollowUpPercentage = contactsCount == 0 ? 0 : (int) ((underFollowUpCount * 100.0f) / contactsCount);
-		int followUpCompletedCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.COMPLETED).count();
-		int followUpCompletedPercentage = contactsCount == 0 ? 0 : (int) ((followUpCompletedCount * 100.0f) / contactsCount);
-		int followUpCanceledCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.CANCELED).count();
-		int followUpCanceledPercentage = contactsCount == 0 ? 0 : (int) ((followUpCanceledCount * 100.0f) / contactsCount);
-		int lostToFollowUpCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST).count();
-		int lostToFollowUpPercentage = contactsCount == 0 ? 0 : (int) ((lostToFollowUpCount * 100.0f) / contactsCount);
-		int contactStatusConvertedCount = (int) contacts.stream().filter(c -> c.getContactStatus() == ContactStatus.CONVERTED).count();
-		int contactStatusConvertedPercentage = contactsCount == 0 ? 0 : (int) ((contactStatusConvertedCount * 100.0f) / contactsCount);
-
-		underFollowUp.updatePercentageValueWithCount(underFollowUpCount, underFollowUpPercentage);
-		followUpCompleted.updatePercentageValueWithCount(followUpCompletedCount, followUpCompletedPercentage);
-		followUpCanceled.updatePercentageValueWithCount(followUpCanceledCount, followUpCanceledPercentage);
-		lostToFollowUp.updatePercentageValueWithCount(lostToFollowUpCount, lostToFollowUpPercentage);
-		contactStatusConverted.updatePercentageValueWithCount(contactStatusConvertedCount, contactStatusConvertedPercentage);
-	}
-
-	@Override
-	protected void addThirdComponent() {
-		thirdComponent = new DashboardStatisticsSubComponent();
-
-		// Header
-		thirdComponent.addHeader(I18nProperties.getString(Strings.headingFollowUpSituation), null, false);
-
-		// Visit status of last visit
-		thirdComponent.addMainContent();
-		CssLayout visitStatusCountLayout = thirdComponent.createCountLayout(true);
-		cooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardCooperative), CountElementStyle.POSITIVE);
-		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, cooperativeContacts);
-		uncooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUncooperative), CountElementStyle.CRITICAL);
-		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, uncooperativeContacts);
-		unavailableContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnavailable), CountElementStyle.RELEVANT);
-		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, unavailableContacts);
-		neverVisitedContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNeverVisited), CountElementStyle.MINOR);
-		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, neverVisitedContacts);
-
-		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-		infoLabel.setSizeUndefined();
-		infoLabel.setDescription(I18nProperties.getDescription(Descriptions.descDashboardFollowUpInfo));
-		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_SECONDARY, "follow-up-status-info-button");
-		thirdComponent.addComponentToCountLayout(visitStatusCountLayout, infoLabel);
-
-		thirdComponent.addComponentToContent(visitStatusCountLayout);
-
-		// Number of missed visits
-		Label missedVisitsLabel = new Label(I18nProperties.getCaption(Captions.dashboardNotVisitedFor));
-		CssStyles.style(missedVisitsLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, CssStyles.LABEL_ROUNDED_CORNERS_SLIM);
-		thirdComponent.addComponentToContent(missedVisitsLabel);
-
-		CssLayout missedVisitsCountLayout = thirdComponent.createCountLayout(false);
-		missedVisitsOneDay = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardOneDay), CountElementStyle.PRIMARY);
-		thirdComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsOneDay);
-		missedVisitsTwoDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardTwoDays), CountElementStyle.PRIMARY);
-		thirdComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsTwoDays);
-		missedVisitsThreeDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardThreeDays), CountElementStyle.PRIMARY);
-		thirdComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsThreeDays);
-		missedVisitsGtThreeDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardGtThreeDays), CountElementStyle.PRIMARY);
-		thirdComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsGtThreeDays);
-		thirdComponent.addComponentToContent(missedVisitsCountLayout);
-
-		subComponentsLayout.addComponent(thirdComponent, THIRD_LOC);
-	}
-
-	@Override
-	protected void updateThirdComponent(int visibleDiseasesCount) {
-		List<DashboardContactDto> contacts = dashboardDataProvider.getContacts();
-		contacts.removeIf(c -> c.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP);
-
-		int contactsCount = contacts.size();
 
 		int cooperativeContactsCount = (int) contacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.COOPERATIVE).count();
 		int cooperativeContactsPercentage = contactsCount == 0 ? 0 : (int) ((cooperativeContactsCount * 100.0f) / contactsCount);
@@ -357,6 +303,58 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		missedVisitsTwoDays.updateCountLabel(missedVisitsTwoDaysCount);
 		missedVisitsThreeDays.updateCountLabel(missedVisitsThreeDaysCount);
 		missedVisitsGtThreeDays.updateCountLabel(missedVisitsGtThreeDaysCount);
+	}
+
+	@Override
+	protected void addThirdComponent() {
+		thirdComponent = new DashboardStatisticsSubComponent();
+
+		// Header
+		thirdComponent.addHeader(I18nProperties.getString(Strings.headingStoppedFollowUp), null, true);
+
+		// Visit status of last visit
+		thirdComponent.addMainContent();
+		
+		followUpCompleted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCompletedFollowUp), CssStyles.SVG_FILL_POSITIVE);
+		followUpCompleted.setDescription(FollowUpStatus.COMPLETED.getDescription());
+		followUpCanceled = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCanceledFollowUp), CssStyles.SVG_FILL_IMPORTANT);
+		followUpCanceled.setDescription(FollowUpStatus.CANCELED.getDescription());
+		lostToFollowUp = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardLostToFollowUp), CssStyles.SVG_FILL_CRITICAL);
+		lostToFollowUp.setDescription(FollowUpStatus.LOST.getDescription());
+		contactStatusConverted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConvertedToCase), CssStyles.SVG_FILL_NEUTRAL);
+		contactStatusConverted.setDescription(I18nProperties.getDescription(Descriptions.descDashboardConvertedToCase));
+		thirdComponent.addComponentToContent(followUpCompleted);
+		thirdComponent.addComponentToContent(followUpCanceled);
+		thirdComponent.addComponentToContent(lostToFollowUp);
+		thirdComponent.addComponentToContent(contactStatusConverted);
+		
+
+
+		subComponentsLayout.addComponent(thirdComponent, THIRD_LOC);
+	}
+
+	@Override
+	protected void updateThirdComponent(int visibleDiseasesCount) {
+		List<DashboardContactDto> contacts = new ArrayList<>();
+		contacts.addAll(dashboardDataProvider.getContacts());
+		contacts.removeIf(c -> c.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP || c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP);
+
+		int contactsCount = contacts.size();
+		thirdComponent.updateCountLabel(contactsCount);
+
+		int followUpCompletedCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.COMPLETED).count();
+		int followUpCompletedPercentage = contactsCount == 0 ? 0 : (int) ((followUpCompletedCount * 100.0f) / contactsCount);
+		int followUpCanceledCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.CANCELED).count();
+		int followUpCanceledPercentage = contactsCount == 0 ? 0 : (int) ((followUpCanceledCount * 100.0f) / contactsCount);
+		int lostToFollowUpCount = (int) contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST).count();
+		int lostToFollowUpPercentage = contactsCount == 0 ? 0 : (int) ((lostToFollowUpCount * 100.0f) / contactsCount);
+		int contactStatusConvertedCount = (int) contacts.stream().filter(c -> c.getContactStatus() == ContactStatus.CONVERTED).count();
+		int contactStatusConvertedPercentage = contactsCount == 0 ? 0 : (int) ((contactStatusConvertedCount * 100.0f) / contactsCount);
+
+		followUpCompleted.updatePercentageValueWithCount(followUpCompletedCount, followUpCompletedPercentage);
+		followUpCanceled.updatePercentageValueWithCount(followUpCanceledCount, followUpCanceledPercentage);
+		lostToFollowUp.updatePercentageValueWithCount(lostToFollowUpCount, lostToFollowUpPercentage);
+		contactStatusConverted.updatePercentageValueWithCount(contactStatusConvertedCount, contactStatusConvertedPercentage);
 	}
 
 	@Override

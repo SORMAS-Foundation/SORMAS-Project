@@ -73,4 +73,8 @@ public interface ContactFacade {
 	
 	List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
+	
+	int[] getContactCountsByCasesForDashboard(List<String> contactUuids);
+	
+	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 }

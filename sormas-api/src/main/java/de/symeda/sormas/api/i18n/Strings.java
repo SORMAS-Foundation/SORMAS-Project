@@ -6,6 +6,7 @@ public interface Strings {
 	public static String address = "address";
 	public static String and = "and";
 	public static String at = "at";
+	public static String average = "average";
 	public static String between = "between";
 	public static String bpm = "bpm";
 	public static String by = "by";
@@ -84,6 +85,7 @@ public interface Strings {
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	public static String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	public static String count = "count";
 	public static String done = "done";
 	public static String edit = "edit";
 	public static String entityAdditionalTest = "entityAdditionalTest";
@@ -155,10 +157,10 @@ public interface Strings {
 	public static String headingConfirmMerging = "headingConfirmMerging";
 	public static String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
 	public static String headingContactData = "headingContactData";
-	public static String headingContactFollowUp = "headingContactFollowUp";
 	public static String headingContactInformation = "headingContactInformation";
 	public static String headingContactMap = "headingContactMap";
 	public static String headingContactsDeleted = "headingContactsDeleted";
+	public static String headingContactsPerCase = "headingContactsPerCase";
 	public static String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	public static String headingCreateEntry = "headingCreateEntry";
 	public static String headingCreateNewCase = "headingCreateNewCase";
@@ -210,7 +212,6 @@ public interface Strings {
 	public static String headingExportFailed = "headingExportFailed";
 	public static String headingFilters = "headingFilters";
 	public static String headingFollowUpCanceled = "headingFollowUpCanceled";
-	public static String headingFollowUpSituation = "headingFollowUpSituation";
 	public static String headingFollowUpStatus = "headingFollowUpStatus";
 	public static String headingFollowUpStatusChanged = "headingFollowUpStatusChanged";
 	public static String headingHealthConditions = "headingHealthConditions";
@@ -246,6 +247,7 @@ public interface Strings {
 	public static String headingNewCases = "headingNewCases";
 	public static String headingNewEvents = "headingNewEvents";
 	public static String headingNewPassword = "headingNewPassword";
+	public static String headingNewSourceCases = "headingNewSourceCases";
 	public static String headingNewTestResults = "headingNewTestResults";
 	public static String headingNoCasesSelected = "headingNoCasesSelected";
 	public static String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
@@ -280,12 +282,14 @@ public interface Strings {
 	public static String headingSaveNotification = "headingSaveNotification";
 	public static String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	public static String headingSignsAndSymptoms = "headingSignsAndSymptoms";
+	public static String headingStoppedFollowUp = "headingStoppedFollowUp";
 	public static String headingTasksDeleted = "headingTasksDeleted";
 	public static String headingTemplateNotAvailable = "headingTemplateNotAvailable";
 	public static String headingTests = "headingTests";
 	public static String headingTransferCase = "headingTransferCase";
 	public static String headingTreatments = "headingTreatments";
 	public static String headingTreatmentsDeleted = "headingTreatmentsDeleted";
+	public static String headingUnderFollowUp = "headingUnderFollowUp";
 	public static String headingUpdatePassword = "headingUpdatePassword";
 	public static String headingUserData = "headingUserData";
 	public static String headingUserSettings = "headingUserSettings";
@@ -358,6 +362,7 @@ public interface Strings {
 	public static String lastTwoYears = "lastTwoYears";
 	public static String lastWeek = "lastWeek";
 	public static String lastYear = "lastYear";
+	public static String max = "max";
 	public static String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	public static String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	public static String messageAnimalContactsHint = "messageAnimalContactsHint";
@@ -510,6 +515,7 @@ public interface Strings {
 	public static String messageUserRoleCombination = "messageUserRoleCombination";
 	public static String messageVisitsDeleted = "messageVisitsDeleted";
 	public static String messageWrongFileType = "messageWrongFileType";
+	public static String min = "min";
 	public static String mmhg = "mmhg";
 	public static String no = "no";
 	public static String none = "none";
