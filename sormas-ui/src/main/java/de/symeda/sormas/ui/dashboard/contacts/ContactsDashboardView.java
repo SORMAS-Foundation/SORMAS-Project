@@ -38,6 +38,8 @@ import de.symeda.sormas.ui.dashboard.visualisation.DashboardNetworkComponent;
 public class ContactsDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
+	
+	private static final int ROW_HEIGHT = 555;
 
 	protected AbstractDashboardStatisticsComponent statisticsComponent;
 	protected AbstractEpiCurveComponent epiCurveComponent;
@@ -48,24 +50,29 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private VerticalLayout epiCurveLayout;
 	private Optional<VerticalLayout> mapLayout;
 	private Optional<VerticalLayout> networkDiagramLayout;
+	
+	private VerticalLayout rowsLayout;
 
 	public ContactsDashboardView() {
 		super(VIEW_NAME, DashboardType.CONTACTS);
 
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
+		
+		rowsLayout = new VerticalLayout();
+		dashboardLayout.addComponent(rowsLayout);
+		dashboardLayout.setExpandRatio(rowsLayout, 1);
 
 		// Add statistics
 		statisticsComponent = new ContactsDashboardStatisticsComponent(dashboardDataProvider);
-		dashboardLayout.addComponent(statisticsComponent);
-		dashboardLayout.setExpandRatio(statisticsComponent, 0);
+		rowsLayout.addComponent(statisticsComponent);
+		rowsLayout.setExpandRatio(statisticsComponent, 0);
 
 		epiCurveComponent = new ContactsEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
 
 		// Add epi curve and map
 		epiCurveAndMapLayout = createEpiCurveAndMapLayout();
-		dashboardLayout.addComponent(epiCurveAndMapLayout);
-		dashboardLayout.setExpandRatio(epiCurveAndMapLayout, 1);
+		rowsLayout.addComponent(epiCurveAndMapLayout);
 		
 		// add network diagram
 		networkDiagramComponent = Optional.of(FacadeProvider.getConfigFacade())
@@ -73,8 +80,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		.map(x -> new DashboardNetworkComponent(dashboardDataProvider));
 		
 		networkDiagramRowLayout = createNetworkDiagramRowLayout();
-		dashboardLayout.addComponent(networkDiagramRowLayout);
-		dashboardLayout.setExpandRatio(networkDiagramRowLayout, 1);
+		rowsLayout.addComponent(networkDiagramRowLayout);
 	}
 
 	protected HorizontalLayout createEpiCurveAndMapLayout() {
@@ -118,8 +124,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(false);
 		layout.setSpacing(false);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(400, Unit.PIXELS);
+		layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 
 		epiCurveComponent.setSizeFull();
 
@@ -128,17 +133,19 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 		epiCurveComponent.setExpandListener(expanded -> {
 			if (expanded) {
-				dashboardLayout.removeComponent(statisticsComponent);
+				rowsLayout.removeComponent(statisticsComponent);
 				mapLayout.ifPresent(epiCurveAndMapLayout::removeComponent);
 				ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
 				epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
 				epiCurveLayout.setSizeFull();
+				rowsLayout.setSizeFull();
 			} else {
-				dashboardLayout.addComponent(statisticsComponent, 1);
+				rowsLayout.addComponent(statisticsComponent, 1);
 				mapLayout.ifPresent(l -> epiCurveAndMapLayout.addComponent(l, 1));
-				epiCurveLayout.setHeight(400, Unit.PIXELS);
+				epiCurveLayout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 				ContactsDashboardView.this.setHeightUndefined();
 				epiCurveAndMapLayout.setHeightUndefined();
+				rowsLayout.setHeightUndefined();
 			}
 			networkDiagramRowLayout.setVisible(!expanded);
 		});
@@ -154,8 +161,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(false);
 		layout.setSpacing(false);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeight(555, Unit.PIXELS);
+		layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 
 		mapComponent.setSizeFull();
 
@@ -165,17 +171,19 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		mapComponent.setExpandListener(expanded -> {
 			
 			if (expanded) {
-				dashboardLayout.removeComponent(statisticsComponent);
+				rowsLayout.removeComponent(statisticsComponent);
 				epiCurveAndMapLayout.removeComponent(epiCurveLayout);
 				ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
 				epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
 				layout.setSizeFull();
+				rowsLayout.setSizeFull();
 			} else {
-				dashboardLayout.addComponent(statisticsComponent, 1);
+				rowsLayout.addComponent(statisticsComponent, 1);
 				epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
-				layout.setHeight(400, Unit.PIXELS);
+				layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 				ContactsDashboardView.this.setHeightUndefined();
 				epiCurveAndMapLayout.setHeightUndefined();
+				rowsLayout.setHeightUndefined();
 			}
 			networkDiagramRowLayout.setVisible(!expanded);
 		});
@@ -190,8 +198,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			VerticalLayout layout = new VerticalLayout();
 			layout.setMargin(false);
 			layout.setSpacing(false);
-			layout.setWidth(100, Unit.PERCENTAGE);
-			layout.setHeight(555, Unit.PIXELS);
+			layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 		
 			ndc.setSizeFull();
 		
@@ -200,15 +207,17 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	
 			ndc.setExpandListener(expanded -> {
 				if (expanded) {
-					dashboardLayout.removeComponent(statisticsComponent);
+					rowsLayout.removeComponent(statisticsComponent);
 					ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
 					layout.setSizeFull();
 					networkDiagramRowLayout.setHeight(100, Unit.PERCENTAGE);
+					rowsLayout.setSizeFull();
 				} else {
-					dashboardLayout.addComponent(statisticsComponent, 1);
+					rowsLayout.addComponent(statisticsComponent, 1);
 					ContactsDashboardView.this.setHeightUndefined();
-					layout.setHeight(400, Unit.PIXELS);
+					layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
 					networkDiagramRowLayout.setHeightUndefined();
+					rowsLayout.setHeightUndefined();
 				}
 				epiCurveAndMapLayout.setVisible(!expanded);
 			});
