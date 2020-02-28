@@ -85,7 +85,6 @@ public interface Strings {
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	public static String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
-	public static String count = "count";
 	public static String done = "done";
 	public static String edit = "edit";
 	public static String entityAdditionalTest = "entityAdditionalTest";
