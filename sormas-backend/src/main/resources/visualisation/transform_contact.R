@@ -76,12 +76,10 @@ network_transform = function()
   # extracting the case person id and contact person id for each contact
   #caze_id=as.character(contPerClassNet$caze_id)
   #person_id=as.character(contPerClassNet$person_id)
-  caze_id = contPerClassNet$caze_id
-  person_id = contPerClassNet$person_id
-  
-  elist = data.frame(caze_id,person_id) # edge list with person id and case id. This is the edgelist for all contacts in the systems.
+  elist = data.frame(contPerClassNet$caze_id, contPerClassNet$person_id,contPerClassNet$resultingcase_id,contPerClassNet$contactproximity  )
+  #colnames(elist) = data.frame(caze_id,person_id) # edge list with person id and case id. This is the edgelist for all contacts in the systems.
   #elist = apply(elist,2,as.character) # converting ids to character types in order to plot latter
-  colnames(elist) = c("caze_id", "contactPerson_id")
+  colnames(elist) = c("caze_id", "contactPerson_id", "resultingcase_id", "contactproximity")
   
   # Merging contact and case tables  to know the coresponding person_id of the cases incilved in the contacts in elist dataframe
   
@@ -91,18 +89,24 @@ network_transform = function()
   casesRealelist = merge(elist,casesRealNew, by = "caze_id") # these are the contact of only the cases we need
   
   ## number of cases with and without contacts
-  nCasesReal = nrow(casesRealNew)
-  nCasNoCont = nrow(casesRealNew[!(casesRealNew$caze_id %in% elist[,1]),]) # number of cases without contacts
+  nCasesReal = length(unique(casesRealNew$caze_id))
+  #uniqueId_allCases = unique(na.omit(c(casesRealelist$caze_id, casesRealelist$resultingcase_id))) # uniqeu person id of all cases and contacts that bejcame cases
+  uniqueId_CasesWithContact = unique(casesRealelist$caze_id) 
+  
+  nCasNoCont = nrow(casesRealNew[!(casesRealNew$caze_id %in% uniqueId_CasesWithContact),]) # number of cases without contacts
   nCasNoContPro = round(nCasNoCont/nCasesReal*100)
-  nCasCont = nrow(casesRealNew[casesRealNew$caze_id %in% elist[,1],]) # number of cases with contacts
+  nCasCont = nrow(casesRealNew[casesRealNew$caze_id %in% uniqueId_CasesWithContact,]) # number of cases with contacts
   nCasContPro = round(nCasCont/nCasesReal*100)
   
   
   ### Definitng classification status for all persons involved in contacts in elist
   pIdCon = as.character(casesRealelist[,2])  # contactPerson_id
   statusCon = rep("HEALTHY",nrow(casesRealelist)) # initialise all contacts persons as healthy ans update latter using case table
-  pIdCase = as.character(casesRealelist[,3])  # casePerson_id
-  statusCase = as.character(casesRealelist[,4])  # caseClass
+  pIdCase = as.character(casesRealelist[,5])  # casePerson_id
+  statusCase = as.character(casesRealelist[,6])  # caseClass
+  contactproximity =  as.character(casesRealelist[,4]) 
+  resultingcase_id =  as.character(casesRealelist[,3])
+  
   
   # Checking for contact persons that are also in case table and update their classification
   # Useing personCaseRegionDistSymp data
@@ -122,8 +126,33 @@ network_transform = function()
     }
     
   }
-  conData = data.frame(pIdCon,pIdCase,statusCase,statusCon) # contact data with classificatiion for each person incoled in teh contact
+  conData = data.frame(pIdCon,pIdCase,statusCase,statusCon, contactproximity, resultingcase_id) # contact data with classificatiion for each person incoled in teh contact
   conData[, ] = lapply(conData[, ], as.character)
+  
+  #defining contact cartegories
+  #Category I , contact follow u is  needed here
+  # ContactProximity.TOUCHED_FLUID = Touched fluid of source case
+  #ContactProximity.FACE_TO_FACE_LONG = Face-to-face contact of at least 15 minutes
+  #Used by other diseases
+  # ContactProximity.CLOTHES_OR_OTHER = Manipulation of clothes or other objects of source case
+  
+  #ContactProximity.CLOSE_CONTACT = Was in close proximity (1 meter) with source case
+  #ContactProximity.PHYSICAL_CONTACT = Direct physical contact with source case
+  # ContactProximity.SAME_ROOM = Was in same room or house with source case
+  
+  # ContactProximity.MEDICAL_UNSAVE = Medical personal at close proximity (2 meter) without protective equipment
+  # ContactProximity.AIRPLANE = Airplane, sitting up to two rows in front or behind the source case 
+  
+  # Category II, follow up not needed
+  #ContactProximity.FACE_TO_FACE_SHORT = Face-to-face contact of less than 15 minutes
+  # ContactProximity.MEDICAL_SAVE = Medical personal at save proximity (> 2 meter) or with protective equipment
+  
+
+conData$conProxCat = 0
+conData$conProxCat[conData$contactproximity %in% c("FACE_TO_FACE_SHORT","MEDICAL_SAVE" )] = 2 
+conData$conProxCat[!(conData$contactproximity %in% c("FACE_TO_FACE_SHORT","MEDICAL_SAVE" ))] = 1
+ 
+ 
   # node class
   personStatus = data.frame(nodes = c(pIdCase,pIdCon),status = c(statusCase,statusCon)) # concatenating all persons and their classification 
   personStatus = personStatus[!duplicated(personStatus[c("nodes")]),]
@@ -161,7 +190,7 @@ network_transform = function()
   # colnames(tempElist) = c("pIdCon","pIdCase")
   #eListPerson = rbind(conData[,1:2], tempElist )
   
-  eListPerson = conData[,c(2,1)]
+  eListPerson = conData =  conData[,c(2,1,5,7)]
   #eListPerson = data.frame(eListPerson$pIdCase,eListPerson$pIdCon)
   #colnames(eListPerson) = c("pIdCase","pIdCon")
   
@@ -197,14 +226,14 @@ sormas_contact = make_epicontacts(linelist = image_info$personStatus,
 #nodes <- c("123580")                  
 #sub = subset(sormas_contact, cluster_id = nodes)
 
-g = plot(sormas_contact,node_color = "status", node_shape = "sex",
-     shapes = c(M = "male", F = "female", UNK = "circle"), legend = TRUE
-    ) 
+g = plot(sormas_contact, node_color = "status", node_shape = "sex", 
+         shapes = c(M = "male", F = "female", UNK = "circle"), edge_label = "conProxCat",
+         legend = TRUE,
+         main = list(text = "Disease transmission chain", style = "font-family:'Open Sans', sans-serif, 'Source Sans Pro';color: #6591C4;font-weight: 600; font-size: 1.6em; text-align:center;"),
+         submain = list(text = "The arrows indicate the direction of transmission", style= "font-family:'Open Sans', sans-serif, 'Source Sans Pro' text-align:center;"), 
+		 footer = list(text = "1 = High risk contact, 2 = Low risk contact", style= "font-family:'Open Sans', sans-serif, 'Source Sans Pro'"), 
+         background = "white")
+
+library(visNetwork)
+library(dplyr)
 visNetwork::visSave(g, OUTFILE, selfcontained = FALSE)
-
-
-
-
-
-
-
