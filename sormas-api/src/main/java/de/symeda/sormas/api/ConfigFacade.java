@@ -48,7 +48,7 @@ public interface ConfigFacade {
 	
 	String getCustomFilesPath();
 
-	String getRExecutable();
+	String getRScriptExecutable();
 
 	char getCsvSeparator();
 

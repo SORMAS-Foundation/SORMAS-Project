@@ -49,6 +49,11 @@
 			<groupId>com.nexmo</groupId>
 			<artifactId>client</artifactId>
 		</dependency>
+			
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+		</dependency>
 
 		<!-- Testing -->
 
