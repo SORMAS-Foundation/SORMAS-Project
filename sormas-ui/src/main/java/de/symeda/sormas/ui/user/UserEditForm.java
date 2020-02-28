@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
@@ -55,6 +56,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			LayoutUtil.fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME)+
 			LayoutUtil.fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE)+
 			LayoutUtil.fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC)+
+			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_TOP_3, UserDto.LANGUAGE, "")+
 			LayoutUtil.h3(I18nProperties.getString(Strings.address)) +
 			LayoutUtil.fluidRowLocs(UserDto.ADDRESS) +
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingUserData)) +
@@ -88,6 +90,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     	getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
     	Label userPhoneDesc = new Label(I18nProperties.getString(Strings.infoUserPhoneNumber));
     	getContent().addComponent(userPhoneDesc, USER_PHONE_DESC_LOC);
+
+		ComboBox cbLanguage = addField(UserDto.LANGUAGE, ComboBox.class);
+		CssStyles.style(cbLanguage, CssStyles.COMBO_BOX_WITH_FLAG_ICON);
+		ControllerProvider.getUserController().setFlagIcons(cbLanguage);
     	    	
     	addField(UserDto.ADDRESS, LocationEditForm.class).setCaption(null);
     	

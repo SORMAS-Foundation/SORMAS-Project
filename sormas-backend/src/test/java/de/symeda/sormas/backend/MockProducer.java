@@ -50,11 +50,12 @@ public class MockProducer {
 	private static final Topic topic = mock(Topic.class);
 	private static final ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 	private static final TimerService timerService = mock(TimerService.class);
-	private static final Properties properties = new Properties();
+	public static final Properties properties = new Properties();
 	private static final UserTransaction userTransaction = mock(UserTransaction.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
+	
 	static {
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME,"nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");

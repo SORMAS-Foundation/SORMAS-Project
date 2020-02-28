@@ -59,6 +59,31 @@
     &.v-label-white {
     	color: #FFF;
     }
+   
+    &.v-label-bg-follow-up-symptomatic, .bg-follow-up-symptomatic {
+    	background: $s-critical-color;
+    	line-height: 2em;
+    }
+   
+    &.v-label-bg-follow-up-not-symptomatic, .bg-follow-up-not-symptomatic {
+    	background: $s-positive-color;
+    	line-height: 2em;
+    }
+   
+    &.v-label-bg-follow-up-unavailable, .bg-follow-up-unavailable {
+    	background: #6277cc;
+    	line-height: 2em;
+    }
+   
+    &.v-label-bg-follow-up-uncooperative, .bg-follow-up-uncooperative {
+    	background: #9400D3;
+    	line-height: 2em;
+    }
+   
+    &.v-label-bg-follow-up-not-performed, .bg-follow-up-not-performed {
+    	background: $s-minor-color;
+    	line-height: 2em;
+    }
 
 	// Label with rounded corners
 	&.v-label-rounded-corners, .rounded-corners {
@@ -92,6 +117,11 @@
 
 	&.v-label-large, .large {
 		font-size: 1.25em;
+	}
+
+	&.v-label-large-alt, .large-alt {
+		font-size: 1.25em;
+		line-height: 1.1;
 	}
 
 	&.v-label-xlarge, .xlarge {

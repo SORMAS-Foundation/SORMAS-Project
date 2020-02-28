@@ -18,17 +18,23 @@
 package de.symeda.sormas.ui.visit;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -48,9 +54,8 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 
 		setInEagerMode(true);
 		setCriteria(criteria);
-		ListDataProvider<VisitIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getVisitFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-
+		setEagerDataProvider();
+		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
@@ -78,13 +83,19 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			}
 		});
 	}
+	
+	public void setEagerDataProvider() {
+		ListDataProvider<VisitIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getVisitFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+	}
 
 	public void reload() {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
 
-		getDataProvider().refreshAll();
+		//getDataProvider().refreshAll(); // does not work for eager data providers
+		setEagerDataProvider();
 	}
 
 }

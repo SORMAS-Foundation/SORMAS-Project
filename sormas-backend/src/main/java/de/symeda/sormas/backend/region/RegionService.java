@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
@@ -35,7 +34,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.InfrastructureDataImporter;
 
 @Stateless
 @LocalBean
@@ -98,29 +96,4 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		}
 		return filter;
 	}
-
-	public void importRegions(String countryName, List<Region> regions) {
-		InfrastructureDataImporter.importRegions(countryName, 
-				(regionName, epidCode, growthRate) -> {
-
-					Optional<Region> regionResult = regions.stream()
-							.filter(r -> r.getName().equals(regionName))
-							.findFirst();
-
-					Region region;
-					if (regionResult.isPresent()) {
-						region = regionResult.get();
-					} else {
-						region = new Region();
-						regions.add(region);
-						region.setName(regionName);
-					}
-
-					region.setEpidCode(epidCode);
-					region.setGrowthRate(growthRate);
-
-					persist(region);
-				});
-	}
-	
 }

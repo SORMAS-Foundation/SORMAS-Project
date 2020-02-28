@@ -476,6 +476,7 @@
     <string name="message_change_final_laboratory_result">The result of this pathogen test differs from the current final laboratory result of the sample. Do you want to update the final laboratory result?</string>
     <string name="message_change_case_disease">Really change case disease?</string>
     <string name="action_change_case_disease">Yes, change disease</string>
+    <string name="message_language_change_unsuccessful">The language could not be changed due to an internal error.</string>
 
     <string name="notification_channel_tasks_name">New or Updated Tasks</string>
     <string name="notification_channel_tasks_description">Receive a notification when a new task is assigned to you or a task assigned to you has been edited</string>

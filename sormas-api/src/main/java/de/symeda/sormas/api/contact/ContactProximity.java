@@ -17,15 +17,51 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ContactProximity {
-	TOUCHED_FLUID,
+	TOUCHED_FLUID,		
 	PHYSICAL_CONTACT,
 	CLOTHES_OR_OTHER,
-	CLOSE_CONTACT,
-	SAME_ROOM
+	CLOSE_CONTACT,		
+	FACE_TO_FACE_LONG,	
+	MEDICAL_UNSAVE,		
+	SAME_ROOM,
+	AIRPLANE,
+	FACE_TO_FACE_SHORT,
+	MEDICAL_SAVE,
 	;
+	
+	public boolean hasFollowUp() {
+		switch (this) {
+		case AIRPLANE:
+		case CLOSE_CONTACT:
+		case CLOTHES_OR_OTHER:
+		case FACE_TO_FACE_LONG:
+		case MEDICAL_UNSAVE:
+		case PHYSICAL_CONTACT:
+		case SAME_ROOM:
+		case TOUCHED_FLUID:
+			return true;
+
+		case FACE_TO_FACE_SHORT:
+		case MEDICAL_SAVE:
+			return false;
+			
+		default:
+			throw new IllegalArgumentException(this.name());
+		}
+	}
+	
+	public static ContactProximity[] getValues(Disease disease) {
+		switch (disease) {
+		case CORONAVIRUS:
+			return new ContactProximity[] { TOUCHED_FLUID, FACE_TO_FACE_LONG, MEDICAL_UNSAVE, AIRPLANE, FACE_TO_FACE_SHORT, MEDICAL_SAVE };
+		default:
+			return new ContactProximity[] { TOUCHED_FLUID, PHYSICAL_CONTACT, CLOTHES_OR_OTHER, CLOSE_CONTACT, SAME_ROOM };
+		}
+	}
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

@@ -31,8 +31,12 @@ import androidx.databinding.DataBindingUtil;
 
 import com.crashlytics.android.Crashlytics;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.BaseLocalizedActivity;
+import de.symeda.sormas.app.LocaleManager;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -50,7 +54,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.util.SormasProperties;
 
-public class LoginActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, NotificationContext {
+public class LoginActivity extends BaseLocalizedActivity implements ActivityCompat.OnRequestPermissionsResultCallback, NotificationContext {
 
     private ActivityLoginLayoutBinding binding;
 
@@ -112,6 +116,7 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == AppUpdateController.INSTALL_RESULT) {
             switch (resultCode) {
                 // Do nothing if the installation was successful
@@ -214,6 +219,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
                                         if (ConfigProvider.getUser() != null) {
                                             initializeFirebase();
+                                            if (ConfigProvider.getUser().getLanguage() != null) {
+                                                setNewLocale(this, ConfigProvider.getUser().getLanguage());
+                                            }
                                             openLandingActivity();
                                         } else {
                                             binding.signInLayout.setVisibility(View.VISIBLE);
@@ -229,6 +237,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
                             }
 
                             initializeFirebase();
+                            if (ConfigProvider.getUser().getLanguage() != null) {
+                                setNewLocale(this, ConfigProvider.getUser().getLanguage());
+                            }
                             openLandingActivity();
                         }
                     } else {
@@ -239,6 +250,9 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
 
                         if (ConfigProvider.getUser() != null) {
                             initializeFirebase();
+                            if (ConfigProvider.getUser().getLanguage() != null) {
+                                setNewLocale(this, ConfigProvider.getUser().getLanguage());
+                            }
                             openLandingActivity();
                         } else {
                             binding.signInLayout.setVisibility(View.VISIBLE);
@@ -272,6 +286,13 @@ public class LoginActivity extends AppCompatActivity implements ActivityCompat.O
             return binding.getRoot();
 
         return null;
+    }
+
+    private void setNewLocale(AppCompatActivity mContext, Language language) {
+        LocaleManager.setNewLocale(this, language);
+        I18nProperties.setUserLanguage(ConfigProvider.getUser().getLanguage());
+        Intent intent = mContext.getIntent();
+        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
 }

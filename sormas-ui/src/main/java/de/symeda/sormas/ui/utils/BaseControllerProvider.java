@@ -45,7 +45,6 @@ public class BaseControllerProvider {
 	}
 
 	public static void requestEnd() {
-
 		controllerProviderThreadLocal.remove();
 	}
 }

@@ -66,6 +66,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -270,15 +271,23 @@ public class CaseController {
 
 		CaseDataDto caze;
 		PersonDto person;
+		SymptomsDto symptoms;
 		if (convertedContact != null) {
 			VisitDto lastVisit = FacadeProvider.getVisitFacade().getLastVisitByContact(convertedContact.toReference());
+			if (lastVisit != null) {
+				symptoms = lastVisit.getSymptoms();
+			} else {
+				symptoms = null;
+			}
 			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
 			caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
 		} else if (convertedEventParticipant != null) {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid());
+			symptoms = null;
 			person = convertedEventParticipant.getPerson();
 			caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, event.getDisease());
 		} else {
+			symptoms = null;
 			person = null;
 			caze = CaseDataDto.build(null, null);
 		}
@@ -307,6 +316,7 @@ public class CaseController {
 
 		createForm.setValue(caze);
 		createForm.setPerson(person);
+		createForm.setSymptoms(symptoms);
 
 		if (convertedContact != null || convertedEventParticipant != null) {
 			createForm.setNameReadOnly(true);
@@ -332,8 +342,16 @@ public class CaseController {
 								PersonDto person = PersonDto.build();
 								person.setFirstName(createForm.getPersonFirstName());
 								person.setLastName(createForm.getPersonLastName());
+								person.setBirthdateDD(createForm.getBirthdateDD());
+								person.setBirthdateMM(createForm.getBirthdateMM());
+								person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+								person.setSex(createForm.getSex());
+								person.setPresentCondition(createForm.getPresentCondition());
 								person = FacadeProvider.getPersonFacade().savePerson(person);
 								dto.setPerson(person.toReference());
+								SymptomsDto symptoms = SymptomsDto.build();
+								symptoms.setOnsetDate(createForm.getOnsetDate());
+								dto.setSymptoms(symptoms);
 								saveCase(dto);
 								Notification.show(I18nProperties.getString(Strings.messageCaseCreated),
 										Type.ASSISTIVE_NOTIFICATION);
@@ -527,6 +545,7 @@ public class CaseController {
 			public void onCommit() {
 				CaseBulkEditData updatedBulkEditData = form.getValue();
 
+				boolean diseaseChange = form.getDiseaseCheckBox().getValue();
 				boolean classificationChange = form.getClassificationCheckBox().getValue();
 				boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
 				boolean outcomeChange = form.getOutcomeCheckBox().getValue();
@@ -540,7 +559,7 @@ public class CaseController {
 							new Label(I18nProperties.getString(Strings.messageHealthFacilityMulitChanged)),
 							I18nProperties.getCaption(Captions.caseTransferCases),
 							I18nProperties.getCaption(Captions.caseEditData), 500, e -> {
-								bulkEditWithHealthFacilities(selectedCases, updatedBulkEditData,
+								bulkEditWithHealthFacilities(selectedCases, updatedBulkEditData, diseaseChange,
 										classificationChange, investigationStatusChange, outcomeChange,
 										surveillanceOfficerChange, e.booleanValue());
 
@@ -552,7 +571,8 @@ public class CaseController {
 
 				} else {
 					CaseFacade caseFacade = FacadeProvider.getCaseFacade();
-					bulkEdit(selectedCases, updatedBulkEditData, classificationChange, investigationStatusChange,
+					bulkEdit(selectedCases, updatedBulkEditData, diseaseChange, classificationChange,
+							investigationStatusChange,
 							outcomeChange, surveillanceOfficerChange, caseFacade);
 
 					popupWindow.close();
@@ -571,25 +591,26 @@ public class CaseController {
 	}
 
 	private void bulkEdit(Collection<CaseIndexDto> selectedCases, CaseBulkEditData updatedCaseBulkEditData,
-			boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
-			boolean surveillanceOfficerChange, CaseFacade caseFacade) {
+			boolean diseaseChange, boolean classificationChange, boolean investigationStatusChange,
+			boolean outcomeChange, boolean surveillanceOfficerChange, CaseFacade caseFacade) {
 		for (CaseIndexDto indexDto : selectedCases) {
 			CaseDataDto caseDto = changeCaseDto(updatedCaseBulkEditData,
-					caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange, investigationStatusChange,
-					outcomeChange, surveillanceOfficerChange);
+					caseFacade.getCaseDataByUuid(indexDto.getUuid()), diseaseChange, classificationChange,
+					investigationStatusChange, outcomeChange, surveillanceOfficerChange);
 
 			caseFacade.saveCase(caseDto);
 		}
 	}
 
 	private void bulkEditWithHealthFacilities(Collection<CaseIndexDto> selectedCases,
-			CaseBulkEditData updatedCaseBulkEditData, boolean classificationChange, boolean investigationStatusChange,
-			boolean outcomeChange, boolean surveillanceOfficerChange, Boolean doTransfer) {
+			CaseBulkEditData updatedCaseBulkEditData, boolean diseaseChange, boolean classificationChange,
+			boolean investigationStatusChange, boolean outcomeChange, boolean surveillanceOfficerChange,
+			Boolean doTransfer) {
 		CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 		for (CaseIndexDto indexDto : selectedCases) {
 			CaseDataDto updatedCase = changeCaseDto(updatedCaseBulkEditData,
-					caseFacade.getCaseDataByUuid(indexDto.getUuid()), classificationChange, investigationStatusChange,
-					outcomeChange, surveillanceOfficerChange);
+					caseFacade.getCaseDataByUuid(indexDto.getUuid()), diseaseChange, classificationChange,
+					investigationStatusChange, outcomeChange, surveillanceOfficerChange);
 			updatedCase.setRegion(updatedCaseBulkEditData.getRegion());
 			updatedCase.setDistrict(updatedCaseBulkEditData.getDistrict());
 			updatedCase.setCommunity(updatedCaseBulkEditData.getCommunity());
@@ -603,9 +624,16 @@ public class CaseController {
 	}
 
 	private CaseDataDto changeCaseDto(CaseBulkEditData updatedCaseBulkEditData, CaseDataDto caseDto,
-			boolean classificationChange, boolean investigationStatusChange, boolean outcomeChange,
-			boolean surveillanceOfficerChange) {
+			boolean diseaseChange, boolean classificationChange, boolean investigationStatusChange,
+			boolean outcomeChange, boolean surveillanceOfficerChange) {
 
+		if (diseaseChange) {
+			caseDto.setDisease(updatedCaseBulkEditData.getDisease());
+			caseDto.setDiseaseDetails(updatedCaseBulkEditData.getDiseaseDetails());
+			caseDto.setPlagueType(updatedCaseBulkEditData.getPlagueType());
+			caseDto.setDengueFeverType(updatedCaseBulkEditData.getDengueFeverType());
+			caseDto.setRabiesType(updatedCaseBulkEditData.getRabiesType());
+		}
 		if (classificationChange) {
 			caseDto.setCaseClassification(updatedCaseBulkEditData.getCaseClassification());
 		}

@@ -58,6 +58,7 @@ import de.symeda.sormas.ui.utils.UserRightsException;
 public class LoginScreen extends CssLayout {
 
 	private static final String UTF_8 = "UTF-8";
+	private static final int LOGO_WIDTH = 250;
 	private LoginListener loginListener;
 
 	public LoginScreen(LoginListener loginListener) {
@@ -235,7 +236,13 @@ public class LoginScreen extends CssLayout {
 		innerLayout.addComponent(fullNameText);
 		innerLayout.setComponentAlignment(fullNameText, Alignment.TOP_CENTER);
 		
-		Label missionText = new Label("\u2022 Disease Prevention<br>\u2022 Disease Detection<br>\u2022 Outbreak Response", ContentMode.HTML);
+		Label missionText = new Label(
+				"• " + I18nProperties.getCaption(Captions.LoginSidebar_diseasePrevention, "Disease Prevention")
+						+ "<br>• "
+						+ I18nProperties.getCaption(Captions.LoginSidebar_diseaseDetection, "Disease Detection")
+						+ "<br>• "
+						+ I18nProperties.getCaption(Captions.LoginSidebar_outbreakResponse, "Outbreak Response"),
+				ContentMode.HTML);
 		missionText.setWidth(320, Unit.PIXELS);
 		CssStyles.style(missionText, CssStyles.H2, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
 		innerLayout.addComponent(missionText);
@@ -243,20 +250,44 @@ public class LoginScreen extends CssLayout {
 		
 		loginSidebarLayout.addComponent(innerLayout);
 		
-		Label htmlLabel = new Label();
-		htmlLabel.setContentMode(ContentMode.HTML);
+		Label poweredByLabel = new Label(I18nProperties.getCaption(Captions.LoginSidebar_poweredBy, "Powered By"));
+		poweredByLabel.addStyleNames("headline-label", CssStyles.H2);
+		loginSidebarLayout.addComponent(poweredByLabel);
+
+		VerticalLayout poweredByLayout = new VerticalLayout();
+		poweredByLayout.addStyleNames(CssStyles.LAYOUT_SPACIOUS, "logo-container");
+		poweredByLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+		poweredByLayout.setSizeUndefined();
+		poweredByLayout.setSpacing(false);
+
+		Image imgHzi = new Image(null, new ThemeResource("img/hzi-logo.png"));
+		imgHzi.setWidth(LOGO_WIDTH, Unit.PIXELS);
+		poweredByLayout.addComponent(imgHzi);
+
+		Image imgSymeda = new Image(null, new ThemeResource("img/symeda-logo.png"));
+		imgSymeda.setWidth(LOGO_WIDTH, Unit.PIXELS);
+		poweredByLayout.addComponent(imgSymeda);
+
+		Image imgGiz = new Image(null, new ThemeResource("img/giz-logo.png"));
+		imgGiz.setWidth(LOGO_WIDTH, Unit.PIXELS);
+		poweredByLayout.addComponent(imgGiz);
+
+		loginSidebarLayout.addComponent(poweredByLayout);
+
+		Label customHtmlLabel = new Label();
+		customHtmlLabel.setContentMode(ContentMode.HTML);
 		
 		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
 		Path filePath = customHtmlDirectory.resolve("loginsidebar.html");
 		
 		try {
 			byte[] encoded = Files.readAllBytes(filePath);
-			htmlLabel.setValue(new String(encoded, UTF_8));
+			customHtmlLabel.setValue(new String(encoded, UTF_8));
 		} catch (IOException e) {
-			htmlLabel.setValue("");
+			customHtmlLabel.setValue("");
 		}
 		
-		loginSidebarLayout.addComponent(htmlLabel);
+		loginSidebarLayout.addComponent(customHtmlLabel);
 		return loginSidebarLayout;
 	}
 

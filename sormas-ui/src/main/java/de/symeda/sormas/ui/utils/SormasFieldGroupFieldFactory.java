@@ -152,17 +152,18 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	}
 
 	protected void populateWithDiseaseData(ComboBox diseaseField) {
-		diseaseField.removeAllItems();
-		for (Object p : diseaseField.getContainerPropertyIds()) {
-			diseaseField.removeContainerProperty(p);
-		}
-		diseaseField.addContainerProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID, String.class, "");
-		diseaseField.setItemCaptionPropertyId(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID);
-		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-		for (Disease disease : diseases) {
-			Item newItem = diseaseField.addItem(disease);
-			newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(disease.toString());
-		}
-	}
 
+		diseaseField.removeAllItems();
+        for (Object p : diseaseField.getContainerPropertyIds()) {
+        	diseaseField.removeContainerProperty(p);
+        }
+        diseaseField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
+        diseaseField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
+        @SuppressWarnings("unchecked")
+		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+        for (Object r : diseases) {
+            Item newItem = diseaseField.addItem(r);
+            newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
+        }
+	}
 }

@@ -56,7 +56,7 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 	protected PopupButton createEpiCurveModeSelector() {
 		if (epiCurveContactsMode == null) {
 			epiCurveContactsMode = ContactsEpiCurveMode.FOLLOW_UP_STATUS;
-			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Chart");
+			epiCurveLabel.setValue(I18nProperties.getCaption(Captions.dashboardFollowUpStatusChart));
 		}
 
 		PopupButton dataDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardData));
@@ -74,7 +74,14 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 		dataSelect.select(epiCurveContactsMode);
 		dataSelect.addValueChangeListener(e -> {
 			epiCurveContactsMode = (ContactsEpiCurveMode) e.getProperty().getValue();
-			epiCurveLabel.setValue(epiCurveContactsMode.toString() + " Chart");
+			switch (epiCurveContactsMode) {
+			case FOLLOW_UP_STATUS:
+				epiCurveLabel.setValue(I18nProperties.getCaption(Captions.dashboardFollowUpStatusChart)); break;
+			case CONTACT_CLASSIFICATION:
+				epiCurveLabel.setValue(I18nProperties.getCaption(Captions.dashboardContactClassificationChart)); break;
+			case FOLLOW_UP_UNTIL:
+				epiCurveLabel.setValue(I18nProperties.getCaption(Captions.dashboardFollowUpUntilChart)); break;
+			}
 			clearAndFillEpiCurveChart();
 		});
 		groupingLayout.addComponent(dataSelect);

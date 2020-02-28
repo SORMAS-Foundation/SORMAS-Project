@@ -23,8 +23,13 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.BaseLandingActivity;
 import de.symeda.sormas.app.BaseLandingFragment;
+import de.symeda.sormas.app.LocaleManager;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -104,6 +109,7 @@ public class SettingsActivity extends BaseLandingActivity {
     @Override
     // Handles the result of the attempt to install a new app version - should be added to every activity that uses the UpdateAppDialog
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == AppUpdateController.INSTALL_RESULT) {
             switch (resultCode) {
                 // Do nothing if the installation was successful
@@ -117,4 +123,12 @@ public class SettingsActivity extends BaseLandingActivity {
             }
         }
     }
+
+    public void setNewLocale(AppCompatActivity mContext, Language language) {
+        LocaleManager.setNewLocale(this, language);
+        I18nProperties.setUserLanguage(ConfigProvider.getUser().getLanguage());
+        Intent intent = mContext.getIntent();
+        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
+
 }

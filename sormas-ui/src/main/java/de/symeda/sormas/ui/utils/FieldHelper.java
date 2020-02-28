@@ -30,6 +30,8 @@ import java.util.stream.StreamSupport;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -362,8 +364,16 @@ public final class FieldHelper {
 			removeItems(select);
 		}
 		select.setReadOnly(readOnly);
-
 	}
+	
+    public static void updateEnumData(AbstractSelect select, 
+            Iterable<? extends Enum> enumData) {
+        select.removeAllItems();
+        for (Object r : enumData) {
+            Item newItem = select.addItem(r);
+            newItem.getItemProperty(DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(r.toString());
+        }
+    }
 
 	public static void removeItems(AbstractSelect select) {
 		boolean readOnly = select.isReadOnly();

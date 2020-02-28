@@ -59,6 +59,7 @@ import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
+import de.symeda.sormas.api.visualization.VisualizationFacade;
 
 public class FacadeProvider {
 
@@ -241,6 +242,10 @@ public class FacadeProvider {
 	
 	public static AggregateReportFacade getAggregateReportFacade() {
 		return get().lookupEjbRemote(AggregateReportFacade.class);
+	}
+	
+	public static VisualizationFacade getVisualizationFacade() {
+		return get().lookupEjbRemote(VisualizationFacade.class);
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -20,10 +20,10 @@ package de.symeda.sormas.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.View;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -35,13 +35,19 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.user.UserSettingsForm;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
@@ -83,6 +89,18 @@ public class Menu extends CssLayout {
         top.addComponent(title);
         menuPart.addComponent(top);
 
+        // settings menu item
+        MenuBar settingsMenu = new MenuBar();
+        settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, new Command() {
+        	@Override
+        	public void menuSelected(MenuItem selectedItem) {
+        		showSettingsPopup();
+        	}
+        });
+        
+        settingsMenu.addStyleNames("user-menu", "settings-menu");
+        menuPart.addComponent(settingsMenu);
+        
         // logout menu item
         MenuBar logoutMenu = new MenuBar();
         logoutMenu.addItem(I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName()+")", VaadinIcons.SIGN_OUT, new Command() {
@@ -93,7 +111,7 @@ public class Menu extends CssLayout {
         });
 
 
-        logoutMenu.addStyleName("user-menu");
+        logoutMenu.addStyleNames("user-menu", "logout-menu");
         menuPart.addComponent(logoutMenu);
 
         // button for toggling the visibility of the menu when on a small screen
@@ -118,6 +136,21 @@ public class Menu extends CssLayout {
         menuPart.addComponent(menuItemsLayout);
 
         addComponent(menuPart);
+    }
+    
+    private void showSettingsPopup() {
+    	Window window = VaadinUiUtil.createPopupWindow();
+    	window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
+    	window.setModal(true);
+    	
+		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController().getUserSettingsComponent(
+				UserProvider.getCurrent().getUuid(), 
+				() -> {
+					window.close();
+				});
+		
+		window.setContent(component);
+		UI.getCurrent().addWindow(window);
     }
 
     /**

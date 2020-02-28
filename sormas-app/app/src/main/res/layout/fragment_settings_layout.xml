@@ -25,6 +25,8 @@
 
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.user.User" />
     </data>
 
     <ScrollView
@@ -38,6 +40,11 @@
             android:padding="24dp"
             android:focusable="true"
             android:focusableInTouchMode="true">
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/user_language"
+                app:value="@={data.language}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/settings_serverUrl"
@@ -53,7 +60,6 @@
                 android:text="@string/action_change_PIN"
                 app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
                 app:rounded="true" />
-
 
             <de.symeda.sormas.app.component.controls.ControlButton
                 android:id="@+id/resynchronize_data"

@@ -29,6 +29,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import java.util.Locale;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -41,31 +42,25 @@ import de.symeda.sormas.app.util.LocationService;
 public class SormasApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
     private FirebaseAnalytics firebaseAnalytics;
-    private boolean firebaseUserIdSet;
 
     @Override
     protected void attachBaseContext(Context base) {
         DatabaseHelper.init(base);
         ConfigProvider.init(base);
-        super.attachBaseContext(buildLanguageContext(base));
+        super.attachBaseContext(LocaleManager.setLocale(base));
     }
 
-    private static Context buildLanguageContext(Context context) {
-        Locale locale = new Locale(ConfigProvider.getLocale());
-        Locale.setDefault(locale);
-        I18nProperties.setLocale(locale.toString());
-
-        Configuration configuration = context.getResources().getConfiguration();
-        configuration.setLocale(locale);
-        configuration.setLayoutDirection(locale);
-
-        return context.createConfigurationContext(configuration);
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        LocaleManager.setLocale(this);
     }
 
     @Override
     public void onCreate() {
         LocationService.init(this);
         VibrationHelper.getInstance(this);
+        LocaleManager.initializeI18nProperties();
 
         // Make sure the Enter Pin Activity is shown when the app has just started
         ConfigProvider.setAccessGranted(false);

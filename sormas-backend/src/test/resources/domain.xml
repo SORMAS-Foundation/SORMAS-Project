@@ -1,0 +1,41 @@
+<domain application-root="${com.sun.aas.instanceRoot}/applications" version="115" log-root="${com.sun.aas.instanceRoot}/logs">
+  <hazelcast-runtime-configuration></hazelcast-runtime-configuration>
+  <managed-job-config></managed-job-config>
+  <system-applications></system-applications>
+  <resources>
+    <jdbc-resource pool-name="__TimerPool" object-type="system-all" jndi-name="jdbc/__TimerPool"></jdbc-resource>
+    <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.ClientDataSource" name="DerbyPool" res-type="javax.sql.DataSource">
+      <property name="PortNumber" value="1527"></property>
+      <property name="Password" value="APP"></property>
+      <property name="User" value="APP"></property>
+      <property name="serverName" value="localhost"></property>
+      <property name="DatabaseName" value="sun-appserv-samples"></property>
+      <property name="connectionAttributes" value=";create=true"></property>
+    </jdbc-connection-pool>
+    <managed-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedExecutorService"></managed-executor-service>
+    <jdbc-connection-pool datasource-classname="org.postgresql.xa.PGXADataSource" name="sormasAuditlogPool" validation-classname="org.glassfish.api.jdbc.validation.PostgresConnectionValidation" is-connection-validation-required="true" connection-validation-method="custom-validation" res-type="javax.sql.XADataSource">
+      <property name="user" value="sormas_user"></property>
+      <property name="password" value="sormas_user"></property>
+      <property name="portNumber" value="5432"></property>
+      <property name="databaseName" value="sormas_audit_db"></property>
+      <property name="serverName" value="localhost"></property>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="sormasAuditlogPool" jndi-name="jdbc/AuditlogPool"></jdbc-resource>
+    <jdbc-connection-pool datasource-classname="org.postgresql.ds.PGConnectionPoolDataSource" name="sormasDataPool" validation-classname="org.glassfish.api.jdbc.validation.PostgresConnectionValidation" is-connection-validation-required="true" connection-validation-method="custom-validation" res-type="javax.sql.ConnectionPoolDataSource">
+      <property name="user" value="sormas_user"></property>
+      <property name="password" value="sormas_user"></property>
+      <property name="portNumber" value="5432"></property>
+      <property name="databaseName" value="sormas_db"></property>
+      <property name="serverName" value="localhost"></property>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="sormasDataPool" jndi-name="jdbc/sormasDataPool"></jdbc-resource>
+    <mail-resource auth="false" host="localhost" from="info@sormas.org" user="user" jndi-name="mail/MailSession"></mail-resource>
+    <custom-resource factory-class="org.glassfish.resources.custom.factory.PropertiesFactory" res-type="java.util.Properties" jndi-name="sormas/Properties">
+      <property name="org.glassfish.resources.custom.factory.PropertiesFactory.fileName" value="${com.sun.aas.instanceRoot}/sormas.properties"></property>
+    </custom-resource>
+  </resources>
+  <servers>
+    <server config-ref="server-config" name="server">
+    </server>
+  </servers>
+</domain>

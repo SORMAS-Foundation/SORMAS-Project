@@ -81,7 +81,7 @@ import de.symeda.sormas.app.util.NavigationHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-public abstract class BaseActivity extends AppCompatActivity implements NotificationContext {
+public abstract class BaseActivity extends BaseLocalizedActivity implements NotificationContext {
 
     public static final String TAG = BaseActivity.class.getSimpleName();
 

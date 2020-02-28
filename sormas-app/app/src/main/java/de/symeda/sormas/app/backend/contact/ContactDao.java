@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -40,6 +42,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.LocationService;
 
 /**
@@ -129,7 +132,30 @@ public class ContactDao extends AbstractAdoDao<Contact> {
             }
         }
 
+        updateFollowUpStatus(contact);
+
         return super.saveAndSnapshot(contact);
+    }
+
+    /**
+     * This is only the status. On the server we also update the follow up unitl field
+     * @param contact
+     */
+    private void updateFollowUpStatus(Contact contact) {
+        Disease disease = contact.getCaseDisease();
+        boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
+                && contact.getFollowUpStatus() != FollowUpStatus.LOST;
+
+        ContactProximity contactProximity = contact.getContactProximity();
+        if (!DiseaseConfigurationCache.getInstance().hasFollowUp(disease)
+                || (contactProximity != null && !contactProximity.hasFollowUp())) {
+            contact.setFollowUpUntil(null);
+            if (changeStatus) {
+                contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+            }
+        } else 	if (changeStatus) {
+            contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+        }
     }
 
     public long countByCriteria(ContactCriteria criteria) {

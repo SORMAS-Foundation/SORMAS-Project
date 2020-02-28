@@ -27,4 +27,5 @@ public final class UserHelper {
 		sb.append(trim2.length()>4?trim2.substring(0, 4):trim2);
 		return sb.toString();
 	}
+	
 }

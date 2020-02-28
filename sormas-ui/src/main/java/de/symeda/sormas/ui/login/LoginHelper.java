@@ -31,14 +31,17 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.UserRightsException;
 
 public final class LoginHelper {
 
     public static boolean login(String username, String password) throws UserRightsException {
-
-        if (username == null || username.isEmpty())
+        if (username == null || username.isEmpty()) {
             return false;
+        }
 
         BeanManager bm = CDI.current().getBeanManager();
     	@SuppressWarnings("unchecked")
@@ -54,8 +57,12 @@ public final class LoginHelper {
         		VaadinServletService.getCurrentServletRequest(),
         		VaadinServletService.getCurrentResponse().getHttpServletResponse(), authentication);
         
-        if (status == AuthenticationStatus.SUCCESS)
+        if (status == AuthenticationStatus.SUCCESS) {
+        	Language userLanguage = FacadeProvider.getUserFacade().getByUserName(username).getLanguage();
+        	I18nProperties.setUserLanguage(userLanguage);
         	return true;
+        }
+        
         return false;
     }
     

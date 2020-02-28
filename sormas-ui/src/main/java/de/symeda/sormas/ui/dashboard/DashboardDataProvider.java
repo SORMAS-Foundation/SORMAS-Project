@@ -56,7 +56,7 @@ public class DashboardDataProvider {
 	// TODO make disease specific when contact dashboard is updated
 	private List<DashboardContactDto> contacts = new ArrayList<>();
 	private List<DashboardContactDto> previousContacts = new ArrayList<>();
-	
+
 	// disease specific
 	private List<DashboardCaseDto> cases = new ArrayList<>();
 	private List<DashboardCaseDto> previousCases = new ArrayList<>();
@@ -72,7 +72,7 @@ public class DashboardDataProvider {
 	public void refreshData() {
 		// Update the entities lists according to the filters
 		String userUuid = UserProvider.getCurrent().getUuid();
-		
+
 		// Disease burden
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
 				toDate, previousFromDate, previousToDate, userUuid));
@@ -83,7 +83,7 @@ public class DashboardDataProvider {
 	private void refreshDataForSelectedDisease () {
 		// Update the entities lists according to the filters
 		String userUuid = UserProvider.getCurrent().getUuid();
-		
+
 		if (getDashboardType() == DashboardType.CONTACTS) {
 			// Contacts
 			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
@@ -92,40 +92,42 @@ public class DashboardDataProvider {
 					previousFromDate, previousToDate, userUuid));
 		}
 
-		if (this.disease == null) {
+		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
+			// Cases
+			CaseCriteria caseCriteria = new CaseCriteria();
+			caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
+			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, userUuid));
+
+			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
+			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+		}
+
+		if (this.disease == null || getDashboardType() == DashboardType.CONTACTS) {
 			return;
 		}
-		
-		// Cases
-		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
-		setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
-		setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, userUuid));
-		
-		caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
-		setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
-		
+
 		// Events
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.region(region).district(district).disease(disease).reportedBetween(fromDate, toDate);	
 		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));
-		
+
 		eventCriteria.reportedBetween(previousFromDate, previousToDate);
 		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));		
-		
+
 		eventCriteria.reportedBetween(fromDate, toDate);
 		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria, userUuid));
-		
+
 		// Test results
 		setTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district, disease,
 				fromDate, toDate, userUuid));
 		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
 				disease, previousFromDate, previousToDate, userUuid));
 		setTestResultCountByResultType(FacadeProvider.getSampleFacade().getNewTestResultCountByResultType(region, district, disease, fromDate, toDate, userUuid));
-	
+
 		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate), userUuid));
 	}
-	
+
 	public List<DashboardCaseDto> getCases() {
 		return cases;
 	}
@@ -157,19 +159,19 @@ public class DashboardDataProvider {
 	public void setPreviousEvents(List<DashboardEventDto> previousEvents) {
 		this.previousEvents = previousEvents;
 	}
-	
+
 	public Map<EventStatus, Long> getEventCountByStatus() {
 		return eventCountByStatus;
 	}
-	
+
 	public void setEventCountByStatus(Map<EventStatus, Long> events) {
 		this.eventCountByStatus = events;
 	}
-	
+
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType() {
 		return testResultCountByResultType;
 	}
-	
+
 	public void setTestResultCountByResultType(Map<PathogenTestResultType, Long> testResults) {
 		this.testResultCountByResultType = testResults;
 	}
@@ -252,7 +254,7 @@ public class DashboardDataProvider {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
-		
+
 		this.refreshDataForSelectedDisease();
 	}
 

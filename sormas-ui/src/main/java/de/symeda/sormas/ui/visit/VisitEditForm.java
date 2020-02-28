@@ -115,9 +115,9 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     	}   	
     	
     	symptomsForm.initializeSymptomRequirementsForVisit((OptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
-
-		FieldHelper.setEnabledWhen(getFieldGroup(), visitStatus, Arrays.asList(VisitStatus.COOPERATIVE),
-				Arrays.asList(VisitDto.SYMPTOMS), true);
+    	
+    	FieldHelper.setEnabledWhen(getFieldGroup(), visitStatus, Arrays.asList(VisitStatus.COOPERATIVE),
+				Arrays.asList(VisitDto.SYMPTOMS), true);    	
     }
 	
 	@Override

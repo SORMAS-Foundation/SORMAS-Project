@@ -41,6 +41,7 @@ public interface Captions {
 	public static String actionSave = "actionSave";
 	public static String actionSaveChanges = "actionSaveChanges";
 	public static String actionSelectAll = "actionSelectAll";
+	public static String actionSettings = "actionSettings";
 	public static String actionShowLessFilters = "actionShowLessFilters";
 	public static String actionShowMoreFilters = "actionShowMoreFilters";
 	public static String actionSkip = "actionSkip";
@@ -82,6 +83,7 @@ public interface Captions {
 	public static String bulkContactClassification = "bulkContactClassification";
 	public static String bulkContactOfficer = "bulkContactOfficer";
 	public static String bulkDelete = "bulkDelete";
+	public static String bulkDisease = "bulkDisease";
 	public static String bulkEdit = "bulkEdit";
 	public static String bulkEventStatus = "bulkEventStatus";
 	public static String bulkEventType = "bulkEventType";
@@ -145,6 +147,9 @@ public interface Captions {
 	public static String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	public static String CaseData_reportDate = "CaseData.reportDate";
 	public static String CaseData_reportingUser = "CaseData.reportingUser";
+	public static String CaseData_reportLat = "CaseData.reportLat";
+	public static String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
+	public static String CaseData_reportLon = "CaseData.reportLon";
 	public static String CaseData_sequelae = "CaseData.sequelae";
 	public static String CaseData_sequelaeDetails = "CaseData.sequelaeDetails";
 	public static String CaseData_smallpoxVaccinationReceived = "CaseData.smallpoxVaccinationReceived";
@@ -294,11 +299,13 @@ public interface Captions {
 	public static String contactCancelFollowUp = "contactCancelFollowUp";
 	public static String contactCaseContacts = "contactCaseContacts";
 	public static String contactContactsList = "contactContactsList";
+	public static String contactContactsOverview = "contactContactsOverview";
 	public static String contactCreateContactCase = "contactCreateContactCase";
 	public static String ContactExport_lastCooperativeVisitDate = "ContactExport.lastCooperativeVisitDate";
 	public static String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	public static String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	public static String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
+	public static String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	public static String contactLostToFollowUp = "contactLostToFollowUp";
 	public static String contactNewContact = "contactNewContact";
 	public static String contactOpenContactCase = "contactOpenContactCase";
@@ -319,6 +326,7 @@ public interface Captions {
 	public static String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
 	public static String dashboardConfirmed = "dashboardConfirmed";
 	public static String dashboardConfirmedContact = "dashboardConfirmedContact";
+	public static String dashboardContactClassificationChart = "dashboardContactClassificationChart";
 	public static String dashboardConvertedToCase = "dashboardConvertedToCase";
 	public static String dashboardCooperative = "dashboardCooperative";
 	public static String dashboardCustom = "dashboardCustom";
@@ -334,6 +342,8 @@ public interface Captions {
 	public static String dashboardDiseaseDifferenceYAxisLabel = "dashboardDiseaseDifferenceYAxisLabel";
 	public static String dashboardDone = "dashboardDone";
 	public static String dashboardFatalities = "dashboardFatalities";
+	public static String dashboardFollowUpStatusChart = "dashboardFollowUpStatusChart";
+	public static String dashboardFollowUpUntilChart = "dashboardFollowUpUntilChart";
 	public static String dashboardFollowUpUntilShort = "dashboardFollowUpUntilShort";
 	public static String dashboardGrouping = "dashboardGrouping";
 	public static String dashboardGt1ConfirmedCases = "dashboardGt1ConfirmedCases";
@@ -417,6 +427,12 @@ public interface Captions {
 	public static String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
 	public static String dashboardWeekBefore = "dashboardWeekBefore";
 	public static String dashboardYesterday = "dashboardYesterday";
+	public static String defaultCommunity = "defaultCommunity";
+	public static String defaultDistrict = "defaultDistrict";
+	public static String defaultHealthFacility = "defaultHealthFacility";
+	public static String defaultLaboratory = "defaultLaboratory";
+	public static String defaultPointOfEntry = "defaultPointOfEntry";
+	public static String defaultRegion = "defaultRegion";
 	public static String devModeCaseCount = "devModeCaseCount";
 	public static String devModeDisease = "devModeDisease";
 	public static String devModeDistrict = "devModeDistrict";
@@ -653,6 +669,10 @@ public interface Captions {
 	public static String Login_login = "Login.login";
 	public static String Login_password = "Login.password";
 	public static String Login_username = "Login.username";
+	public static String LoginSidebar_diseaseDetection = "LoginSidebar.diseaseDetection";
+	public static String LoginSidebar_diseasePrevention = "LoginSidebar.diseasePrevention";
+	public static String LoginSidebar_outbreakResponse = "LoginSidebar.outbreakResponse";
+	public static String LoginSidebar_poweredBy = "LoginSidebar.poweredBy";
 	public static String mainMenuAbout = "mainMenuAbout";
 	public static String mainMenuAggregateReports = "mainMenuAggregateReports";
 	public static String mainMenuCases = "mainMenuCases";

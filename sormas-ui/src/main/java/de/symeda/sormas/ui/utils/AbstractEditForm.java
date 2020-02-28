@@ -397,7 +397,15 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			getField(propertyId).setReadOnly(readOnly);
 		}
 	}
-
+	
+	@Override
+	public void clear() {
+		// clear the fields instead of the form itself
+		for (Field<?> field : fieldGroup.getFields()) {
+			field.clear();
+		}
+	}
+	
 	protected void setVisible(boolean visible, String ...fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			if (visible == false || isVisibleAllowed(propertyId)) {

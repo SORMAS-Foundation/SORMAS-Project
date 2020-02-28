@@ -23,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,10 +31,14 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
+import de.symeda.sormas.app.LocaleManager;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -41,18 +46,23 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.ConfirmationInputDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 /**
  * TODO SettingsFragment should probably not be a BaseLandingFragment, but a BaseFragment
@@ -68,7 +78,6 @@ public class SettingsFragment extends BaseLandingFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         super.onCreateView(inflater, container, savedInstanceState);
         binding = (FragmentSettingsLayoutBinding)rootBinding;
 
@@ -87,6 +96,25 @@ public class SettingsFragment extends BaseLandingFragment {
                     binding.logout.setVisibility(View.VISIBLE);
                 }
                 getBaseLandingActivity().getSaveMenu().setVisible(true);
+            }
+        });
+
+        binding.setData(ConfigProvider.getUser());
+        binding.userLanguage.initializeSpinner(DataUtils.getEnumItems(Language.class, true));
+        binding.userLanguage.addValueChangedListener(e -> {
+            if (!(e.getValue() == null && Language.fromLocaleString(ConfigProvider.getLocale()).equals(LocaleManager.getLanguagePref(getContext())))) {
+                if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
+                    try {
+                        Language newLanguage = e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getLocale());
+                        User user = binding.getData();
+                        if (user != null) {
+                            DatabaseHelper.getUserDao().saveAndSnapshot(user);
+                        }
+                        ((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
+                    } catch (DaoException ex) {
+                        NotificationHelper.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
+                    }
+                }
             }
         });
 

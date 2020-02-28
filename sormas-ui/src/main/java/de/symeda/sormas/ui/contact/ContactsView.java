@@ -39,6 +39,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -69,7 +70,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
@@ -79,9 +82,9 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -96,9 +99,9 @@ public class ContactsView extends AbstractView {
 	public static final String VIEW_NAME = "contacts";
 
 	private ContactCriteria criteria;
-	private ViewConfiguration viewConfiguration;
+	private ContactsViewConfiguration viewConfiguration;
 
-	private ContactGrid grid;    
+	private FilteredGrid<?, ContactCriteria> grid;
 	private VerticalLayout gridLayout;
 
 	private MenuBar bulkOperationsDropdown;
@@ -131,17 +134,29 @@ public class ContactsView extends AbstractView {
 
 		originalViewTitle = getViewTitleLabel().getValue();
 
-		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class);
+		if (viewConfiguration.getViewType() == null) {
+			viewConfiguration.setViewType(ContactsViewType.CONTACTS_OVERVIEW);
+		}
 		criteria = ViewModelProviders.of(ContactsView.class).get(ContactCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
-		grid = new ContactGrid(criteria, getClass());
+		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 7)));
+			grid = new ContactFollowUpGrid(criteria, getClass());
+		} else {
+			criteria.followUpUntilFrom(null);
+			grid = new ContactGrid(criteria, getClass());
+		}
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
+		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			gridLayout.addComponent(createFollowUpLegend());
+		}
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
@@ -149,7 +164,29 @@ public class ContactsView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+		OptionGroup contactsViewSwitcher = new OptionGroup();
+		CssStyles.style(contactsViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		contactsViewSwitcher.addItem(ContactsViewType.CONTACTS_OVERVIEW);
+		contactsViewSwitcher.setItemCaption(ContactsViewType.CONTACTS_OVERVIEW,
+				I18nProperties.getCaption(Captions.contactContactsOverview));
+
+		contactsViewSwitcher.addItem(ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW);
+		contactsViewSwitcher.setItemCaption(ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW,
+				I18nProperties.getCaption(Captions.contactFollowUpVisitsOverview));
+
+		contactsViewSwitcher.setValue(viewConfiguration.getViewType());
+		contactsViewSwitcher.addValueChangeListener(e -> {
+			if (ContactsViewType.CONTACTS_OVERVIEW.equals(e.getProperty().getValue())) {
+				viewConfiguration.setViewType(ContactsViewType.CONTACTS_OVERVIEW);
+				SormasUI.get().getNavigator().navigateTo(ContactsView.VIEW_NAME);
+			} else {
+				viewConfiguration.setViewType(ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW);
+				SormasUI.get().getNavigator().navigateTo(ContactsView.VIEW_NAME);
+			}
+		});
+		addHeaderComponent(contactsViewSwitcher);
+
+		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
@@ -206,7 +243,7 @@ public class ContactsView extends AbstractView {
 			});
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
 			btnEnterBulkEditMode.setId("enterBulkEditMode");
 			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
@@ -226,8 +263,8 @@ public class ContactsView extends AbstractView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
-				grid.setEagerDataProvider();
-				grid.reload();
+				((ContactGrid) grid).setEagerDataProvider();
+				((ContactGrid) grid).reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
@@ -289,7 +326,11 @@ public class ContactsView extends AbstractView {
 			searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
 			searchField.addTextChangeListener(e -> {
 				criteria.nameUuidCaseLike(e.getText());
-				grid.reload();
+				if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+					((ContactFollowUpGrid) grid).reload();
+				} else {
+					((ContactGrid) grid).reload();
+				}
 			});
 			firstFilterRowLayout.addComponent(searchField);
 
@@ -492,7 +533,7 @@ public class ContactsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
@@ -508,19 +549,19 @@ public class ContactsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = selectedItem -> {
-					ControllerProvider.getContactController().showBulkContactDataEditComponent(grid.asMultiSelect().getSelectedItems(), null);
+					ControllerProvider.getContactController().showBulkContactDataEditComponent(((ContactGrid) grid).asMultiSelect().getSelectedItems(), null);
 				};
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
 				Command cancelFollowUpCommand = selectedItem -> {
-					ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+					ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(((ContactGrid) grid).asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							navigateTo(criteria);
 						}
@@ -529,7 +570,7 @@ public class ContactsView extends AbstractView {
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, cancelFollowUpCommand);
 
 				Command lostToFollowUpCommand = selectedItem -> {
-					ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+					ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(((ContactGrid) grid).asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							navigateTo(criteria);
 						}
@@ -538,7 +579,7 @@ public class ContactsView extends AbstractView {
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, lostToFollowUpCommand);
 
 				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getContactController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+					ControllerProvider.getContactController().deleteAllSelectedItems(((ContactGrid) grid).asMultiSelect().getSelectedItems(), new Runnable() {
 						public void run() {
 							navigateTo(criteria);
 						}
@@ -555,6 +596,59 @@ public class ContactsView extends AbstractView {
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return statusFilterLayout;
+	}
+	
+	private HorizontalLayout createFollowUpLegend() {
+		HorizontalLayout legendLayout = new HorizontalLayout();
+		legendLayout.setSpacing(false);
+		CssStyles.style(legendLayout, CssStyles.VSPACE_TOP_4);
+		
+		Label notSymptomaticColor = new Label("");
+		notSymptomaticColor.setHeight(18, Unit.PIXELS);
+		notSymptomaticColor.setWidth(12, Unit.PIXELS);
+		CssStyles.style(notSymptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC, CssStyles.HSPACE_RIGHT_4);
+		legendLayout.addComponent(notSymptomaticColor);
+		
+		Label notSymptomaticLabel = new Label(VisitResult.NOT_SYMPTOMATIC.toString());
+		legendLayout.addComponent(notSymptomaticLabel);
+		
+		Label symptomaticColor = new Label("");
+		symptomaticColor.setHeight(18, Unit.PIXELS);
+		symptomaticColor.setWidth(12, Unit.PIXELS);
+		CssStyles.style(symptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC, CssStyles.HSPACE_RIGHT_4, CssStyles.HSPACE_LEFT_3);
+		legendLayout.addComponent(symptomaticColor);
+		
+		Label symptomaticLabel = new Label(VisitResult.SYMPTOMATIC.toString());
+		legendLayout.addComponent(symptomaticLabel);
+		
+		Label unavailableColor = new Label("");
+		unavailableColor.setHeight(18, Unit.PIXELS);
+		unavailableColor.setWidth(12, Unit.PIXELS);
+		CssStyles.style(unavailableColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE, CssStyles.HSPACE_RIGHT_4, CssStyles.HSPACE_LEFT_3);
+		legendLayout.addComponent(unavailableColor);
+		
+		Label unavailableLabel = new Label(VisitResult.UNAVAILABLE.toString());
+		legendLayout.addComponent(unavailableLabel);
+		
+		Label uncooperativeColor = new Label("");
+		uncooperativeColor.setHeight(18, Unit.PIXELS);
+		uncooperativeColor.setWidth(12, Unit.PIXELS);
+		CssStyles.style(uncooperativeColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNCOOPERATIVE, CssStyles.HSPACE_RIGHT_4, CssStyles.HSPACE_LEFT_3);
+		legendLayout.addComponent(uncooperativeColor);
+		
+		Label uncooperativeLabel = new Label(VisitResult.UNCOOPERATIVE.toString());
+		legendLayout.addComponent(uncooperativeLabel);
+		
+		Label notPerformedColor = new Label("");
+		notPerformedColor.setHeight(18, Unit.PIXELS);
+		notPerformedColor.setWidth(12, Unit.PIXELS);
+		CssStyles.style(notPerformedColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED, CssStyles.HSPACE_RIGHT_4, CssStyles.HSPACE_LEFT_3);
+		legendLayout.addComponent(notPerformedColor);
+		
+		Label notPerformedLabel = new Label(VisitResult.NOT_PERFORMED.toString());
+		legendLayout.addComponent(notPerformedLabel);
+		
+		return legendLayout;
 	}
 
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
@@ -592,7 +686,12 @@ public class ContactsView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-		grid.reload();
+		
+		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			((ContactFollowUpGrid) grid).reload();
+		} else {
+			((ContactGrid) grid).reload();
+		}
 	}
 
 	public void updateFilterComponents() {

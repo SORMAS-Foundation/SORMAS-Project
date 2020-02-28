@@ -3915,3 +3915,9 @@ UPDATE users SET limiteddisease = 'NEW_INFLUENZA' where limiteddisease = 'NEW_IN
 UPDATE users_history SET limiteddisease = 'NEW_INFLUENZA' where limiteddisease = 'NEW_INFLUENCA';
 
 INSERT INTO schema_version (version_number, comment) VALUES (180, 'Rename "New influenca" to "New influenza" #1458');
+
+-- 2019-02-19 Add language to user #1093
+ALTER TABLE users ADD COLUMN language varchar(255);
+ALTER TABLE users_history ADD COLUMN language varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (181, 'Add language to user #1093');

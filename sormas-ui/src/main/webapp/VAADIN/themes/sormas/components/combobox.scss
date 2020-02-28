@@ -39,6 +39,12 @@
 	  }
 	}
 
+	&.v-filterselect-with-flag-icon {
+  	  .v-filterselect-input {
+	    padding-left: 45px;
+	  }
+	}
+
 	&.v-filterselect-subtle {
 	  margin-bottom: 0px;
 	  [class$="input"] {

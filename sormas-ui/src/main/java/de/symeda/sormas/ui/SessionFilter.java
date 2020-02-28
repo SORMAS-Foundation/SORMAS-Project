@@ -30,6 +30,10 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 
 @WebFilter(asyncSupported = true, urlPatterns = "/*")
@@ -44,7 +48,6 @@ public class SessionFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
 		HttpSession session = ((HttpServletRequest) request).getSession();
 
 		ControllerProvider controllerProvider = (ControllerProvider) session.getAttribute("controllerProvider");
@@ -52,16 +55,25 @@ public class SessionFilter implements Filter {
 			controllerProvider = new ControllerProvider();
 			session.setAttribute("controllerProvider", controllerProvider);
 		}
+
+		Language userLanguage = null;
+		UserDto user = FacadeProvider.getUserFacade().getCurrentUser();
+		if (user != null) {
+			userLanguage = user.getLanguage();
+		}
+		I18nProperties.setUserLanguage(userLanguage);
 		BaseControllerProvider.requestStart(controllerProvider);
 
 		try {
 			sessionFilterBean.doFilter(chain, request, response);
 		} finally {
 			ControllerProvider.requestEnd();
+			I18nProperties.removeUserLanguage();
 		}
 	}
 
 	@Override
 	public void init(FilterConfig cfg) throws ServletException {
+
 	}
 }
