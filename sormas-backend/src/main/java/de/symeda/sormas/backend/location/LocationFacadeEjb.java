@@ -73,6 +73,7 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
+		target.setZipCode(source.getZipCode());
 
 		return target;
 	}
@@ -98,6 +99,7 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
+		target.setZipCode(source.getZipCode());
 		
 		return target;
 	}

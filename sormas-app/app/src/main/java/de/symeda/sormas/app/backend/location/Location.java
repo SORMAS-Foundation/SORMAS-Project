@@ -58,6 +58,8 @@ public class Location extends AbstractDomainObject {
 	private String city;
 	@Column
 	private AreaType areaType;
+	@Column
+	private String zipCode;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
@@ -137,6 +139,13 @@ public class Location extends AbstractDomainObject {
 	}
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
 	}
 
 	public String getCompleteString() {

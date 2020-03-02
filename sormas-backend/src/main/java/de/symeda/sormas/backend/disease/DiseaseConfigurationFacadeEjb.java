@@ -149,6 +149,16 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 			return followUpEnabledDiseases;
 		}
 	}
+	
+	@Override
+	public List<Disease> getAllActiveDiseasesWithFollowUp() {
+		User currentUser = userService.getCurrentUser();
+		if (currentUser.getLimitedDisease() != null) {
+			return followUpEnabledDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
+		} else {
+			return followUpEnabledDiseases.stream().filter(d -> activeDiseases.contains(d) && caseBasedDiseases.contains(d) && primaryDiseases.contains(d)).collect(Collectors.toList());
+		}
+	}
 
 	@Override
 	public int getFollowUpDuration(Disease disease) {
