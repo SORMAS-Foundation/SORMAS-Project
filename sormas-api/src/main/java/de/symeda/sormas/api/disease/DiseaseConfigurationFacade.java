@@ -35,6 +35,8 @@ public interface DiseaseConfigurationFacade {
 	
 	List<Disease> getAllDiseasesWithFollowUp();
 	
+	List<Disease> getAllActiveDiseasesWithFollowUp();
+	
 	int getFollowUpDuration(Disease disease);
 	
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);

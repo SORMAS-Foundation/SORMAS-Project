@@ -39,6 +39,7 @@ public class LocationDto extends EntityDto {
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String LAT_LON_ACCURACY = "latLonAccuracy";
+	public static final String ZIP_CODE = "zipCode";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -50,6 +51,7 @@ public class LocationDto extends EntityDto {
 	private Double latitude;
 	private Double longitude;
 	private Float latLonAccuracy;
+	private String zipCode;
 	
 	public String getAddress() {
 		return address;
@@ -106,6 +108,12 @@ public class LocationDto extends EntityDto {
 	}
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+	public String getZipCode() {
+		return zipCode;
+	}
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
 	}
 	
 	@Override

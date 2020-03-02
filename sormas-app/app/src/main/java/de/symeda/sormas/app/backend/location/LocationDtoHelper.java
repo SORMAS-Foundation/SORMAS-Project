@@ -70,6 +70,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
         target.setLatitude(source.getLatitude());
         target.setLongitude(source.getLongitude());
         target.setLatLonAccuracy(source.getLatLonAccuracy());
+        target.setZipCode(source.getZipCode());
 
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -86,6 +87,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
         target.setLatitude(source.getLatitude());
         target.setLongitude(source.getLongitude());
         target.setLatLonAccuracy(source.getLatLonAccuracy());
+        target.setZipCode(source.getZipCode());
 
         if (source.getCommunity() != null) {
             target.setCommunity(CommunityDtoHelper.toReferenceDto(DatabaseHelper.getCommunityDao().queryForId(source.getCommunity().getId())));

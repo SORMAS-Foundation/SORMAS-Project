@@ -50,11 +50,13 @@ public class Location extends AbstractDomainObject {
 	public static final String COMMUNITY = "community";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String ZIP_CODE = "zipCode";
 
 	private String address;
 	private String details;
 	private String city;
 	private AreaType areaType;
+	private String zipCode;
 	
 	private Region region;
 	private District district;
@@ -95,6 +97,14 @@ public class Location extends AbstractDomainObject {
 	}
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
+	}
+
+	@Column(length = 512)
+	public String getZipCode() {
+		return zipCode;
+	}
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
 	}
 	
 	@ManyToOne(cascade = {})
