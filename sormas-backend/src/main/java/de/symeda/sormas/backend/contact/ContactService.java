@@ -374,9 +374,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact, user));
 
 		// Date filter
-		Predicate dateFilter = cb.or(
-				cb.between(contact.get(Contact.REPORT_DATE_TIME), from, to),
-				cb.between(contact.get(Contact.FOLLOW_UP_UNTIL), from, to));
+		Predicate dateFilter = cb.and(
+				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to),
+				cb.greaterThanOrEqualTo(contact.get(Contact.FOLLOW_UP_UNTIL), from)
+				);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {

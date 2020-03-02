@@ -150,23 +150,35 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 		});
 
+		GeoLatLon countryCenter = FacadeProvider.getConfigFacade().getCountryCenter();
 		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
 				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
 				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
-			map.setZoom(6);
 			GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
-			map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+			if (mapCenter != null) {
+				map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+			} else {
+				map.setCenter(countryCenter.getLon(), countryCenter.getLat());
+			}
 		} else {
 			UserDto user = UserProvider.getCurrent().getUser();
 			if (user.getRegion() != null) {
 				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(user.getRegion());
-				map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+				if (mapCenter != null) {
+					map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+				} else {
+					map.setCenter(countryCenter.getLon(), countryCenter.getLat());
+				}
 			} else {
 				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
-				map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+				if (mapCenter != null) {
+					map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+				} else {
+					map.setCenter(countryCenter.getLon(), countryCenter.getLat());
+				}
 			}
-			map.setZoom(6);
 		}
+		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
 
 		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
 			showCases = true;
@@ -1060,7 +1072,12 @@ public class DashboardMapComponent extends VerticalLayout {
 			} else if (event.getDistrict() != null) {
 				GeoLatLon districtCenter = FacadeProvider.getGeoShapeProvider()
 						.getCenterOfDistrict(event.getDistrict());
-				marker.setLatLon(districtCenter.getLat(), districtCenter.getLon());
+				if (districtCenter != null) {
+					marker.setLatLon(districtCenter.getLat(), districtCenter.getLon());
+				} else {
+					GeoLatLon countryCenter = FacadeProvider.getConfigFacade().getCountryCenter();
+					marker.setLatLon(countryCenter.getLat(), countryCenter.getLon());
+				}
 			} else {
 				continue;
 			}

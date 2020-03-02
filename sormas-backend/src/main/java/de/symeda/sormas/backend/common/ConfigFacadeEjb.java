@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -42,6 +43,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
+	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
+	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
+	private static final String MAP_ZOOM = "map.zoom";
 	
 	public static final String VERSION_PLACEHOLER = "%version";
 	
@@ -56,6 +60,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String GENERATED_FILES_PATH = "generated.path";
 	public static final String CUSTOM_FILES_PATH = "custom.path";
 	public static final String CSV_SEPARATOR = "csv.separator";
+	public static final String RSCRIPT_EXECUTABLE = "rscript.executable";
 	
 	public static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
 	public static final String EMAIL_SENDER_NAME = "email.sender.name";
@@ -69,7 +74,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
 
 	@Resource(lookup="sormas/Properties")
@@ -132,6 +136,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 	
 	@Override
+	public GeoLatLon getCountryCenter() {
+		return new GeoLatLon(getDouble(COUNTRY_CENTER_LAT, 0), getDouble(COUNTRY_CENTER_LON, 0));
+	}
+
+	@Override
+	public int getMapZoom() {
+		return getInt(MAP_ZOOM, 1);
+	}
+
+	@Override
 	public boolean isDevMode() {
 		return getBoolean(DEV_MODE, false);
 	}
@@ -163,6 +177,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCustomFilesPath() {
 		return getProperty(CUSTOM_FILES_PATH, "/opt/sormas/custom/");
+	}
+
+	@Override
+	public String getRScriptExecutable() {
+		return getProperty(RSCRIPT_EXECUTABLE, null);
 	}
 	
 	@Override
@@ -264,5 +283,4 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Stateless
 	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
 	}
-	
 }

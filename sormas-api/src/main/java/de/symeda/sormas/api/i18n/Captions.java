@@ -326,6 +326,7 @@ public interface Captions {
 	public static String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
 	public static String dashboardConfirmed = "dashboardConfirmed";
 	public static String dashboardConfirmedContact = "dashboardConfirmedContact";
+	public static String dashboardContactClassificationChart = "dashboardContactClassificationChart";
 	public static String dashboardConvertedToCase = "dashboardConvertedToCase";
 	public static String dashboardCooperative = "dashboardCooperative";
 	public static String dashboardCustom = "dashboardCustom";
@@ -341,6 +342,8 @@ public interface Captions {
 	public static String dashboardDiseaseDifferenceYAxisLabel = "dashboardDiseaseDifferenceYAxisLabel";
 	public static String dashboardDone = "dashboardDone";
 	public static String dashboardFatalities = "dashboardFatalities";
+	public static String dashboardFollowUpStatusChart = "dashboardFollowUpStatusChart";
+	public static String dashboardFollowUpUntilChart = "dashboardFollowUpUntilChart";
 	public static String dashboardFollowUpUntilShort = "dashboardFollowUpUntilShort";
 	public static String dashboardGrouping = "dashboardGrouping";
 	public static String dashboardGt1ConfirmedCases = "dashboardGt1ConfirmedCases";

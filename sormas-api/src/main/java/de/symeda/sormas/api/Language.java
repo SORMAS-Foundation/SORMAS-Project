@@ -9,7 +9,8 @@ public enum Language {
 	EN(new Locale("en")),
 	EN_NG(new Locale("en_ng")),
 	EN_GH(new Locale("en_gh")),
-	FR(new Locale("fr"));
+	FR(new Locale("fr")),
+	DE(new Locale("de"));
 
 	private Locale locale;
 
@@ -31,6 +32,7 @@ public enum Language {
 		case "en_ng": return EN_NG;
 		case "en_gh": return EN_GH;
 		case "fr": return FR;
+		case "de": return DE;
 		default: return EN;
 		}
 	}

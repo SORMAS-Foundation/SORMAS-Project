@@ -95,6 +95,7 @@ public final class CssStyles {
 	public static final String LABEL_SMALL = "small";
 	public static final String LABEL_MEDIUM = "medium";
 	public static final String LABEL_LARGE = "large";
+	public static final String LABEL_LARGE_ALT = "large-alt";
 	public static final String LABEL_XLARGE = "xlarge";
 	public static final String LABEL_XXLARGE = "xxlarge";
 	public static final String LABEL_XXXLARGE = "xxxlarge";

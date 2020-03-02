@@ -128,22 +128,15 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_contactProximity"
+                    app:value="@{data.contactProximity}"
+                    style="@style/ControlSingleColumnStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/contact_contactProximity"
-                        app:value="@{data.contactProximity}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/contact_relationToCase"
-                        app:value="@{data.relationToCase}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_relationToCase"
+                    app:value="@{data.relationToCase}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_relationDescription"

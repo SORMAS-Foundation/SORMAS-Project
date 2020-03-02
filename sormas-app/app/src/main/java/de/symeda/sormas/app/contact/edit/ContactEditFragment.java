@@ -20,6 +20,7 @@ package de.symeda.sormas.app.contact.edit;
 
 import android.view.View;
 
+import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -120,12 +121,14 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     public void onLayoutBinding(FragmentContactEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
 
+        contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease()))));
+
         contentBinding.setData(record);
         contentBinding.setCaze(sourceCase);
 
         ContactValidator.initializeValidation(record, contentBinding);
 
-        contentBinding.setContactProximityClass(ContactProximity.class);
+        //contentBinding.setContactProximityClass(ContactProximity.class);
     }
 
     @Override
@@ -135,7 +138,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         // Initialize ControlSpinnerFields
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
         contentBinding.contactContactClassification.initializeSpinner(contactClassificationList);
-
         // Initialize ControlDateFields
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
     }

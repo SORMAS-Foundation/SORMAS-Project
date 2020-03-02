@@ -18,12 +18,15 @@
 
 package de.symeda.sormas.app.contact.edit;
 
+import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
@@ -36,6 +39,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     public static final String TAG = CaseNewFragment.class.getSimpleName();
 
     private Contact record;
+    private Case sourceCase;
 
     private List<Item> relationshipList;
 
@@ -56,13 +60,16 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     @Override
     protected void prepareFragmentData() {
         record = getActivityRootData();
+        sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
         relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
     }
 
     @Override
     public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
+
+        contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease()))));
+
         contentBinding.setData(record);
-        contentBinding.setContactProximityClass(ContactProximity.class);
 
         ContactValidator.initializeValidation(record, contentBinding);
     }

@@ -46,6 +46,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.ConfirmationInputDialog;
@@ -105,7 +106,10 @@ public class SettingsFragment extends BaseLandingFragment {
                 if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
                     try {
                         Language newLanguage = e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getLocale());
-                        DatabaseHelper.getUserDao().saveAndSnapshot(binding.getData());
+                        User user = binding.getData();
+                        if (user != null) {
+                            DatabaseHelper.getUserDao().saveAndSnapshot(user);
+                        }
                         ((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
                     } catch (DaoException ex) {
                         NotificationHelper.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));

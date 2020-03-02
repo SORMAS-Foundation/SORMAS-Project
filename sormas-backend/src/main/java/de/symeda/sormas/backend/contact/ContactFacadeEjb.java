@@ -564,6 +564,49 @@ public class ContactFacadeEjb implements ContactFacade {
 			return em.createQuery(cq).getResultList();
 		}
 	}
+	
+	@Override
+	public int[] getContactCountsByCasesForDashboard(List<String> contactUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> contact = cq.from(Contact.class);
+		Join<Contact, Case> caseJoin = contact.join(Contact.CAZE, JoinType.LEFT);
+		
+		cq.where(contact.get(Contact.UUID).in(contactUuids));
+		cq.select(caseJoin.get(Case.ID));
+		cq.distinct(true);
+		
+		List<Long> caseIds = em.createQuery(cq).getResultList();
+		
+		CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
+		Root<Contact> contact2 = cq2.from(Contact.class);
+		cq2.groupBy(contact2.get(Contact.CAZE));
+		
+		cq2.where(contact2.get(Contact.CAZE).in(caseIds));
+		cq2.select(cb.count(contact2.get(Contact.ID)));
+
+		List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
+
+		int[] counts = new int[3];
+		counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+		counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+		counts[2] = caseContactCounts.size() / caseIds.size();
+		return counts;
+	}
+	
+	@Override
+	public int getNonSourceCaseCountForDashboard(List<String> caseUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> contact = cq.from(Contact.class);
+		Join<Contact, Case> caseJoin = contact.join(Contact.RESULTING_CASE, JoinType.LEFT);
+		
+		cq.where(caseJoin.get(Case.UUID).in(caseUuids));
+		cq.select(cb.count(caseJoin.get(Case.ID)));
+		cq.distinct(true);
+		
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
 
