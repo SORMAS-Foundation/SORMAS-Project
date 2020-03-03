@@ -17,5 +17,8 @@ public interface AggregateReportFacade {
 	List<String> getAllUuids(String userUuid);
 	
 	List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria, String userUuid);
-	
+
+	List<AggregateReportDto> getList(AggregateReportCriteria criteria, String userUuid);
+
+	void deleteReport(String reportUuid, String userUuid);
 }

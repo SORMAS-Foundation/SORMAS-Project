@@ -4,6 +4,7 @@ public interface Strings {
 
 	public static String active = "active";
 	public static String address = "address";
+	public static String aggregateReportLegend = "aggregateReportLegend";
 	public static String and = "and";
 	public static String at = "at";
 	public static String average = "average";
@@ -121,6 +122,7 @@ public interface Strings {
 	public static String errorCaseMerging = "errorCaseMerging";
 	public static String errorEntityOutdated = "errorEntityOutdated";
 	public static String errorFieldValidationFailed = "errorFieldValidationFailed";
+	public static String errorIntegerFieldValidationFailed = "errorIntegerFieldValidationFailed";
 	public static String errorInvalidValue = "errorInvalidValue";
 	public static String errorNoAccessToWeb = "errorNoAccessToWeb";
 	public static String errorNotRequiredRights = "errorNotRequiredRights";
@@ -166,6 +168,7 @@ public interface Strings {
 	public static String headingContactsPerCase = "headingContactsPerCase";
 	public static String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	public static String headingCreateEntry = "headingCreateEntry";
+	public static String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
 	public static String headingCreateNewCase = "headingCreateNewCase";
 	public static String headingCreateNewClinicalVisit = "headingCreateNewClinicalVisit";
 	public static String headingCreateNewContact = "headingCreateNewContact";
@@ -192,6 +195,7 @@ public interface Strings {
 	public static String headingDownloadImportGuide = "headingDownloadImportGuide";
 	public static String headingDownloadImportTemplate = "headingDownloadImportTemplate";
 	public static String headingEditAdditionalTest = "headingEditAdditionalTest";
+	public static String headingEditAggregateReport = "headingEditAggregateReport";
 	public static String headingEditCases = "headingEditCases";
 	public static String headingEditClinicalVisit = "headingEditClinicalVisit";
 	public static String headingEditContacts = "headingEditContacts";
@@ -378,6 +382,7 @@ public interface Strings {
 	public static String max = "max";
 	public static String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	public static String messageAdditionalTestSaved = "messageAdditionalTestSaved";
+	public static String messageAggregateReportFound = "messageAggregateReportFound";
 	public static String messageAnimalContactsHint = "messageAnimalContactsHint";
 	public static String messageCaseArchived = "messageCaseArchived";
 	public static String messageCaseCreated = "messageCaseCreated";

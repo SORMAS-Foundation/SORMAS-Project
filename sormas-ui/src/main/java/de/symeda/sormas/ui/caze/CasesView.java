@@ -133,8 +133,6 @@ public class CasesView extends AbstractView {
 	private HorizontalLayout thirdFilterRowLayout;
 	private HorizontalLayout dateFilterRowLayout;
 
-	private String originalViewTitle;
-
 	// Filters
 	private ComboBox caseOriginFilter;
 	private ComboBox outcomeFilter;
@@ -159,7 +157,6 @@ public class CasesView extends AbstractView {
 
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
-	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
 	private Button btnEnterBulkEditMode;
 	private Button btnLeaveBulkEditMode;
@@ -170,7 +167,6 @@ public class CasesView extends AbstractView {
 
 	public CasesView() {
 		super(VIEW_NAME);
-		originalViewTitle = getViewTitleLabel().getValue();
 
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
@@ -896,7 +892,8 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, archiveCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE,
+						archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {

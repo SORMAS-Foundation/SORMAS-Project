@@ -24,6 +24,8 @@ import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -36,6 +38,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -60,7 +63,9 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
-	
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+
 	@Override
 	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
@@ -135,6 +140,13 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return reportList;
 	}
 	
+	@Override
+	public List<AggregateReportDto> getList(AggregateReportCriteria criteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		
+		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
 	public AggregateReport fromDto(@NotNull AggregateReportDto source) {
 		AggregateReport target = service.getByUuid(source.getUuid());
 		if (target == null) {
@@ -180,9 +192,21 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return target;
 	}
 	
+	@Override
+	public void deleteReport(String reportUuid, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+		if (!userRoleConfigFacade
+				.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+				.contains(UserRight.AGGREGATE_REPORT_EDIT)) {
+			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to edit aggregate reports.");
+		}
+
+		AggregateReport aggregateReport = service.getByUuid(reportUuid);
+		service.delete(aggregateReport);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class AggregateReportFacadeEjbLocal extends AggregateReportFacadeEjb {
 	}
-	
 }

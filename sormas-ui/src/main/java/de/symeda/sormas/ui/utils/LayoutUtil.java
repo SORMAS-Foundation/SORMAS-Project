@@ -276,6 +276,10 @@ public class LayoutUtil {
 		return fluidColumnLoc(9, 0, loc);
 	}
 	
+	public static FluidColumn oneOfSixCol(String loc) {
+		return fluidColumnLoc(2, 0, loc);
+	}
+
 	public static final class FluidColumn {
 
 		private final String str;

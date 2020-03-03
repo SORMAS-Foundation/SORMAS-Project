@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.report;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -8,6 +10,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.user.UserRole;
@@ -90,4 +93,21 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 		return filter;
 	}
 	
+	public List<AggregateReport> findBy(AggregateReportCriteria aggregateReportCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<AggregateReport> cq = cb.createQuery(getElementClass());
+		Root<AggregateReport> from = cq.from(getElementClass());
+
+		Predicate filter = createCriteriaFilter(aggregateReportCriteria, cb, cq, from);
+
+		if (user != null) {
+			filter = and(cb, filter, createUserFilter(cb, cq, from, user));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<AggregateReport> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
 }

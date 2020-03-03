@@ -30,6 +30,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -46,6 +47,8 @@ public class AggregateReportsView extends AbstractView {
 	private AggregateReportsGrid grid;
 	private VerticalLayout gridLayout;
 	private Button btnExport;
+	private Button btnCreate;
+	private Button btnEdit;
 
 	// Filters
 	private HorizontalLayout hlFirstFilterRow;
@@ -83,6 +86,27 @@ public class AggregateReportsView extends AbstractView {
 
 		addComponent(gridLayout);
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_EDIT)) {
+			btnCreate = new Button(I18nProperties.getCaption(Captions.aggregateReportNewAggregateReport));
+			btnCreate.setId("create");
+			btnCreate.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnCreate.setIcon(VaadinIcons.PLUS_CIRCLE);
+			btnCreate.addClickListener(
+					e -> ControllerProvider.getAggregateReportController()
+							.openEditOrCreateWindow((Runnable) () -> grid.reload(), false));
+			addHeaderComponent(btnCreate);
+
+			btnEdit = new Button(I18nProperties.getCaption(Captions.aggregateReportEditAggregateReport));
+			btnEdit.setId("edit");
+			btnEdit.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnEdit.setIcon(VaadinIcons.EDIT);
+			btnEdit.setVisible(false);
+			btnEdit.addClickListener(
+					e -> ControllerProvider.getAggregateReportController()
+							.openEditOrCreateWindow((Runnable) () -> grid.reload(), true));
+			addHeaderComponent(btnEdit);
+		}
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_EXPORT)) {
 			btnExport = new Button(I18nProperties.getCaption(Captions.export));
 			btnExport.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -119,6 +143,7 @@ public class AggregateReportsView extends AbstractView {
 		hlFirstFilterRow.setWidthUndefined();
 		{
 			cbRegionFilter = new ComboBox<>();
+			cbRegionFilter.addValueChangeListener(e -> updateButtonVisibility());
 			if (user.getRegion() == null) {
 				cbRegionFilter.setWidth(200, Unit.PIXELS);
 				cbRegionFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
@@ -138,6 +163,7 @@ public class AggregateReportsView extends AbstractView {
 			}
 
 			cbDistrictFilter = new ComboBox<>();
+			cbDistrictFilter.addValueChangeListener(e -> updateButtonVisibility());
 			cbDistrictFilter.setWidth(200, Unit.PIXELS);
 			cbDistrictFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 			binder.bind(cbDistrictFilter, AggregateReportCriteria.DISTRICT);
@@ -168,6 +194,8 @@ public class AggregateReportsView extends AbstractView {
 
 			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				cbFacilityFilter = new ComboBox<>();
+				cbFacilityFilter.addValueChangeListener(e -> updateButtonVisibility());
+				cbFacilityFilter.addValueChangeListener(e -> clearFilterIfNotEmpty(cbFacilityFilter, cbPoeFilter));
 				cbFacilityFilter.setWidth(200, Unit.PIXELS);
 				cbFacilityFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 				binder.bind(cbFacilityFilter, AggregateReportCriteria.HEALTH_FACILITY);
@@ -177,6 +205,8 @@ public class AggregateReportsView extends AbstractView {
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 				cbPoeFilter = new ComboBox<>();
+				cbPoeFilter.addValueChangeListener(e -> updateButtonVisibility());
+				cbPoeFilter.addValueChangeListener(e -> clearFilterIfNotEmpty(cbPoeFilter, cbFacilityFilter));
 				cbPoeFilter.setWidth(200, Unit.PIXELS);
 				cbPoeFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.POINT_OF_ENTRY));
 				binder.bind(cbPoeFilter, AggregateReportCriteria.POINT_OF_ENTRY);
@@ -196,9 +226,15 @@ public class AggregateReportsView extends AbstractView {
 			hlSecondFilterRow.addComponent(lblFrom);
 
 			cbFromYearFilter = new ComboBox<>();
+			cbFromYearFilter.addValueChangeListener(e -> clearFilterIfEmpty(cbFromYearFilter, cbFromEpiWeekFilter));
+			cbFromYearFilter.addValueChangeListener(e -> updateButtonVisibility());
 			cbFromEpiWeekFilter = new ComboBox<>();
+			cbFromEpiWeekFilter.addValueChangeListener(e -> updateButtonVisibility());
 			cbToYearFilter = new ComboBox<>();
+			cbToYearFilter.addValueChangeListener(e -> clearFilterIfEmpty(cbFromYearFilter, cbToEpiWeekFilter));
+			cbToYearFilter.addValueChangeListener(e -> updateButtonVisibility());
 			cbToEpiWeekFilter = new ComboBox<>();
+			cbToEpiWeekFilter.addValueChangeListener(e -> updateButtonVisibility());
 
 			cbFromYearFilter.setWidth(140, Unit.PIXELS);
 			cbFromYearFilter.setPlaceholder(I18nProperties.getString(Strings.year));
@@ -247,6 +283,33 @@ public class AggregateReportsView extends AbstractView {
 		return filterLayout;
 	}
 
+	private void clearFilterIfEmpty(ComboBox<?> filter1, ComboBox<?> filter2) {
+		if (filter1.getValue() == null) {
+			filter2.clear();
+		}
+	}
+
+	private void clearFilterIfNotEmpty(ComboBox<?> filter1, ComboBox<?> filter2) {
+		if (filter1.getValue() != null) {
+			filter2.clear();
+		}
+	}
+
+	private void updateButtonVisibility() {
+		if (btnEdit != null && btnCreate != null) {
+			if (cbRegionFilter.getValue() != null && cbDistrictFilter.getValue() != null
+					&& (cbFacilityFilter.getValue() != null || cbPoeFilter.getValue() != null)
+					&& cbFromEpiWeekFilter.getValue() != null
+					&& cbFromEpiWeekFilter.getValue().equals(cbToEpiWeekFilter.getValue())) {
+				btnCreate.setVisible(false);
+				btnEdit.setVisible(true);
+			} else {
+				btnCreate.setVisible(true);
+				btnEdit.setVisible(false);
+			}
+		}
+	}
+
 	@Override
 	public void enter(ViewChangeEvent event) {
 		EpiWeek epiWeekFrom = criteria.getEpiWeekFrom();
@@ -268,4 +331,7 @@ public class AggregateReportsView extends AbstractView {
 		grid.reload();
 	}
 
+	AggregateReportCriteria getCriteria() {
+		return criteria;
+	}
 }
