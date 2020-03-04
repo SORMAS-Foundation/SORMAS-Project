@@ -604,51 +604,51 @@ public class ContactsView extends AbstractView {
 		CssStyles.style(legendLayout, CssStyles.VSPACE_TOP_4);
 		
 		Label notSymptomaticColor = new Label("");
-		notSymptomaticColor.setHeight(18, Unit.PIXELS);
-		notSymptomaticColor.setWidth(12, Unit.PIXELS);
-		CssStyles.style(notSymptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC, CssStyles.HSPACE_RIGHT_4);
+		styleLegendEntry(notSymptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC, true);
 		legendLayout.addComponent(notSymptomaticColor);
 		
 		Label notSymptomaticLabel = new Label(VisitResult.NOT_SYMPTOMATIC.toString());
 		legendLayout.addComponent(notSymptomaticLabel);
 		
 		Label symptomaticColor = new Label("");
-		symptomaticColor.setHeight(18, Unit.PIXELS);
-		symptomaticColor.setWidth(12, Unit.PIXELS);
-		CssStyles.style(symptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC, CssStyles.HSPACE_RIGHT_4, CssStyles.HSPACE_LEFT_3);
+		styleLegendEntry(symptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC, false);
 		legendLayout.addComponent(symptomaticColor);
 		
 		Label symptomaticLabel = new Label(VisitResult.SYMPTOMATIC.toString());
 		legendLayout.addComponent(symptomaticLabel);
 		
 		Label unavailableColor = new Label("");
-		unavailableColor.setHeight(18, Unit.PIXELS);
-		unavailableColor.setWidth(12, Unit.PIXELS);
-		CssStyles.style(unavailableColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE, CssStyles.HSPACE_RIGHT_4, CssStyles.HSPACE_LEFT_3);
+		styleLegendEntry(unavailableColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE, false);
 		legendLayout.addComponent(unavailableColor);
 		
 		Label unavailableLabel = new Label(VisitResult.UNAVAILABLE.toString());
 		legendLayout.addComponent(unavailableLabel);
 		
 		Label uncooperativeColor = new Label("");
-		uncooperativeColor.setHeight(18, Unit.PIXELS);
-		uncooperativeColor.setWidth(12, Unit.PIXELS);
-		CssStyles.style(uncooperativeColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNCOOPERATIVE, CssStyles.HSPACE_RIGHT_4, CssStyles.HSPACE_LEFT_3);
+		styleLegendEntry(uncooperativeColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNCOOPERATIVE, false);
 		legendLayout.addComponent(uncooperativeColor);
 		
 		Label uncooperativeLabel = new Label(VisitResult.UNCOOPERATIVE.toString());
 		legendLayout.addComponent(uncooperativeLabel);
 		
 		Label notPerformedColor = new Label("");
-		notPerformedColor.setHeight(18, Unit.PIXELS);
-		notPerformedColor.setWidth(12, Unit.PIXELS);
-		CssStyles.style(notPerformedColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED, CssStyles.HSPACE_RIGHT_4, CssStyles.HSPACE_LEFT_3);
+		styleLegendEntry(notPerformedColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED, false);
 		legendLayout.addComponent(notPerformedColor);
 		
 		Label notPerformedLabel = new Label(VisitResult.NOT_PERFORMED.toString());
 		legendLayout.addComponent(notPerformedLabel);
 		
 		return legendLayout;
+	}
+	
+	private void styleLegendEntry(Label label, String style, boolean first) {
+		label.setHeight(18, Unit.PIXELS);
+		label.setWidth(12, Unit.PIXELS);
+		CssStyles.style(label, style, CssStyles.HSPACE_RIGHT_4);
+		
+		if (!first) {
+			CssStyles.style(label, CssStyles.HSPACE_LEFT_3);
+		}
 	}
 
 	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
