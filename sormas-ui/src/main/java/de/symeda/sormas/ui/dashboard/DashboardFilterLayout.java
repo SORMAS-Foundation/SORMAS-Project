@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.dashboard;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -83,6 +84,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	private HorizontalLayout customDateFilterLayout;
 	
 	private Runnable dateFilterChangeCallback;
+	private Consumer<Boolean> diseaseFilterChangeCallback;
 
 	public DashboardFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
 		this.dashboardView = dashboardView;
@@ -146,6 +148,9 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		}
 		diseaseFilter.addValueChangeListener(e -> {
 			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
+			if (diseaseFilterChangeCallback != null) {
+				diseaseFilterChangeCallback.accept(diseaseFilter.getValue() != null);
+			}
 			dashboardView.refreshDashboard();
 		});
 		addComponent(diseaseFilter);
@@ -462,6 +467,14 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	public void setDateFilterChangeCallback(Runnable dateFilterChangeCallback) {
 		this.dateFilterChangeCallback = dateFilterChangeCallback;
+	}
+	
+	public Consumer<Boolean> getDiseaseFilterChangeCallback() {
+		return diseaseFilterChangeCallback;
+	}
+	
+	public void setDiseaseFilterChangeCallback(Consumer<Boolean> diseaseFilterChangeCallback) {
+		this.diseaseFilterChangeCallback = diseaseFilterChangeCallback;
 	}
 
 }
