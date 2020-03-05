@@ -71,7 +71,7 @@ public interface ContactFacade {
 	
 	boolean isDeleted(String contactUuid);
 	
-	List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max,
+	List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
 	int[] getContactCountsByCasesForDashboard(List<String> contactUuids);

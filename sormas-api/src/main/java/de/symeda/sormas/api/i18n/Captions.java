@@ -305,11 +305,14 @@ public interface Captions {
 	public static String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	public static String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	public static String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
+	public static String contactFollowUpOverviewReferenceDate = "contactFollowUpOverviewReferenceDate";
 	public static String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	public static String contactLostToFollowUp = "contactLostToFollowUp";
+	public static String contactMinusDays = "contactMinusDays";
 	public static String contactNewContact = "contactNewContact";
 	public static String contactOpenContactCase = "contactOpenContactCase";
 	public static String contactPersonVisits = "contactPersonVisits";
+	public static String contactPlusDays = "contactPlusDays";
 	public static String contactRelated = "contactRelated";
 	public static String contactResumeFollowUp = "contactResumeFollowUp";
 	public static String creationDate = "creationDate";

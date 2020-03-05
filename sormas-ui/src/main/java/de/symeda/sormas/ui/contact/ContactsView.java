@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -29,6 +30,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -79,6 +81,7 @@ import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -144,8 +147,9 @@ public class ContactsView extends AbstractView {
 		}
 
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			criteria.reportDateTo(DateHelper.getEndOfDay(new Date()));
 			criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 7)));
-			grid = new ContactFollowUpGrid(criteria, getClass());
+			grid = new ContactFollowUpGrid(criteria, new Date(), getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = new ContactGrid(criteria, getClass());
@@ -512,6 +516,9 @@ public class ContactsView extends AbstractView {
 			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			CssStyles.style(statusAll, CssStyles.FORCE_CAPTION);
+		}
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
 		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
@@ -524,6 +531,9 @@ public class ContactsView extends AbstractView {
 			});
 			statusButton.setData(status);
 			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+				CssStyles.style(statusButton, CssStyles.FORCE_CAPTION);
+			}
 			statusButton.setCaptionAsHtml(true);
 			statusFilterLayout.addComponent(statusButton);
 			statusButtons.put(statusButton, status.toString());
@@ -589,6 +599,48 @@ public class ContactsView extends AbstractView {
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
+			
+			// Follow-up overview scrolling
+			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
+				
+				HorizontalLayout scrollLayout = new HorizontalLayout();
+				scrollLayout.setMargin(false);
+
+				DateField followUpReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactFollowUpOverviewReferenceDate), LocalDate.now());
+				
+				Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
+				CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+				minusDaysButton.addClickListener(e -> {
+					followUpReferenceDate.setValue(followUpReferenceDate.getValue().minusDays(8));
+				});
+				scrollLayout.addComponent(minusDaysButton);
+				
+				followUpReferenceDate.addValueChangeListener(e -> {
+					Date newDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+					
+					applyingCriteria = true;
+					
+					((ContactFollowUpGrid) grid).setReferenceDate(newDate);
+					criteria.reportDateTo(DateHelper.getEndOfDay(newDate));
+					criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(newDate, 7)));
+					
+					applyingCriteria = false;
+					
+					((ContactFollowUpGrid) grid).reload();
+				});
+				scrollLayout.addComponent(followUpReferenceDate);
+				
+				Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
+				CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+				plusDaysButton.addClickListener(e -> {
+					followUpReferenceDate.setValue(followUpReferenceDate.getValue().plusDays(8));
+				});
+				scrollLayout.addComponent(plusDaysButton);
+				
+				actionButtonsLayout.addComponent(scrollLayout);
+				
 			}
 		}
 		statusFilterLayout.addComponent(actionButtonsLayout);
