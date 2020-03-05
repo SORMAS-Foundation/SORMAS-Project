@@ -212,7 +212,7 @@ public class I18nProperties {
 
 
 	private I18nProperties() {
-		this(Language.EN);
+		this(defaultLanguage);
 	}
 
 	private I18nProperties(Language language) {
