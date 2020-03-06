@@ -418,7 +418,7 @@
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Already saving..</string>
     <string name="message_case_infrastructure_data_changed">You have changed the infrastructure data of this case. Do you want to transfer the case to the new health facility (the hospitalization data will be updated) or do you only want to edit the data to correct a mistake?</string>
-    <string name="message_download_app_failed">The download of the new SORMAS version failed. Please make sure you have the best internet connection possible and try again or inform a supervisor if you keep getting this error despite a good internet connection.</string>
+    <string name="message_download_app_failed">Der Download der neuen SORMAS Version ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie die bestmögliche Internetverbindung haben und versuchen Sie es erneut oder informieren Sie einen Verantwortlichen, wenn Sie diesen Fehler trotz einer guten Internetverbindung immer wieder erhalten.</string>
     <string name="message_empty_password">Please enter a password.</string>
     <string name="message_empty_username">Please enter a username.</string>
     <string name="message_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
@@ -432,8 +432,8 @@
     <string name="message_http_404">Could not find a SORMAS server at \'%s\'</string>
     <string name="message_http_503">SORMAS server is temporarily not available.</string>
     <string name="message_install_app">A new SORMAS version is ready to install. Please click on \'Install\' to continue. You will need to restart the app after the update has been completed.</string>
-    <string name="message_install_app_failed">There was an error installing the new SORMAS version. Maybe the downloaded file was incomplete because of an interrupted download. Please click on \'Redownload\' to try again or inform a supervisor if this error occurs again.</string>
-    <string name="message_install_app_not_possible">There was an error installing the new SORMAS version. Your supervisor will automatically be notified about this issue.</string>
+    <string name="message_install_app_failed">Beim Installieren der neuen SORMAS Version ist ein Fehler aufgetreten. Vielleicht war die heruntergeladene Datei wegen eines unterbrochenen Downloads unvollständig. Bitte klicken Sie auf \'Erneut downloaden\', um es erneut zu versuchen oder informieren Sie Ihre/n Vorgesetzte/n, wenn dieser Fehler erneut auftritt.</string>
+    <string name="message_install_app_not_possible">Beim Installieren der neuen SORMAS Version ist ein Fehler aufgetreten. Ihr/e Vorgesetzte/r wird automatisch über dieses Problem informiert.</string>
     <string name="message_no_connection">You are not connected to the internet.</string>
     <string name="message_no_matching_persons">No matching persons found.</string>
     <string name="message_no_more_entries">There are no more entries to display.</string>
