@@ -159,11 +159,12 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto person2 = creator.createPerson("Heinz", "Second").toReference();
 		CaseDataDto case1 = creator.createCase(user, person1, rdcf);
 		CaseDataDto case2 = creator.createCase(user, person2, rdcf);
+		
+		List<Long> caseIds = getCaseService().getAllIds(null);
 
 		// no existing samples
 		SampleFacade sampleFacade = getSampleFacade();
-		Map<PathogenTestResultType, Long> resultMap = sampleFacade.getNewTestResultCountByResultType(null, null,
-				null, null, null, user.getUuid());
+		Map<PathogenTestResultType, Long> resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
 		assertEquals(new Long(0), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -174,7 +175,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Facility lab = creator.createFacility("facility", rdcf.region, rdcf.district, rdcf.community);
 		creator.createSample(case1.toReference(), user, lab);
 
-		resultMap = sampleFacade.getNewTestResultCountByResultType(null, null, null, null, null, user.getUuid());
+		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
 		assertEquals(new Long(1), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -184,7 +185,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// one pending sample in each of two cases
 		creator.createSample(case2.toReference(), user, lab);
 
-		resultMap = sampleFacade.getNewTestResultCountByResultType(null, null, null, null, null, user.getUuid());
+		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
 		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -197,7 +198,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
 		sampleFacade.saveSample(sample);
 
-		resultMap = sampleFacade.getNewTestResultCountByResultType(null, null, null, null, null, user.getUuid());
+		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
 		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));

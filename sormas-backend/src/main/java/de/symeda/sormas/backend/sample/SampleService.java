@@ -27,6 +27,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -35,7 +36,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -198,66 +198,24 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(Region region, District district, Disease disease, Date from, Date to, User user) {
-		
+	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 		StringBuilder queryBuilder = new StringBuilder();
-		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (" + Sample.ASSOCIATED_CASE + "_id) "
-				+ Sample.ASSOCIATED_CASE + "_id, " + Sample.PATHOGEN_TEST_RESULT + ", " + Sample.SAMPLE_DATE_TIME
-				+ " FROM " + Sample.TABLE_NAME + " WHERE (" + Sample.SPECIMEN_CONDITION + " IS NULL OR "
-				+ Sample.SPECIMEN_CONDITION + " = '" + SpecimenCondition.ADEQUATE.name() + "') AND " + Sample.TABLE_NAME
-				+ "." + Sample.DELETED + " = false ORDER BY " + Sample.ASSOCIATED_CASE + "_id, "
-				+ Sample.SAMPLE_DATE_TIME + " desc) SELECT sortedsamples." + Sample.PATHOGEN_TEST_RESULT + ", COUNT("
-				+ Sample.ASSOCIATED_CASE + "_id) FROM sortedsamples JOIN " + Case.TABLE_NAME + " ON sortedsamples."
-				+ Sample.ASSOCIATED_CASE + "_id = " + Case.TABLE_NAME + ".id");
+		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
+				.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
+				.append(" FROM ").append(Sample.TABLE_NAME).append(" WHERE (").append(Sample.SPECIMEN_CONDITION).append(" IS NULL OR ")
+				.append(Sample.SPECIMEN_CONDITION).append(" = '").append(SpecimenCondition.ADEQUATE.name()).append("') AND ").append(Sample.TABLE_NAME)
+				.append(".").append(Sample.DELETED).append(" = false ORDER BY ").append(Sample.ASSOCIATED_CASE).append("_id, ")
+				.append(Sample.SAMPLE_DATE_TIME).append(" desc) SELECT sortedsamples.").append(Sample.PATHOGEN_TEST_RESULT).append(", COUNT(")
+				.append(Sample.ASSOCIATED_CASE).append("_id) FROM sortedsamples JOIN ").append(Case.TABLE_NAME).append(" ON sortedsamples.")
+				.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
+				.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (:ids) ")
+				.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
+
+		Query query = em.createNativeQuery(queryBuilder.toString());
+		query.setParameter("ids", caseIds);
 		
-		StringBuilder filterBuilder = new StringBuilder();
-
-		if (from != null && to != null) {
-			filterBuilder.append(" WHERE " + Case.TABLE_NAME + "." + Case.REPORT_DATE + " BETWEEN '"
-					+ from.toString() + "' AND '" + to.toString() + "'");
-		} else if (from != null) {
-			filterBuilder.append(
-					" WHERE " + Case.TABLE_NAME + "." + Case.REPORT_DATE + " >= '" + from.toString() + "'");
-		} else if (to != null) {
-			filterBuilder.append(
-					" WHERE " + Case.TABLE_NAME + "." + Case.REPORT_DATE + " <= '" + to.toString() + "'");
-		}
-
-		if (region != null) {
-			if (filterBuilder.length() > 0) {
-				filterBuilder.append(" AND ");
-			} else {
-				filterBuilder.append(" WHERE ");
-			}
-			filterBuilder.append(Case.TABLE_NAME + "." + Case.REGION + "_id = '" + region.getId() + "'");
-		}
-
-		if (district != null) {
-			if (filterBuilder.length() > 0) {
-				filterBuilder.append(" AND ");
-			} else {
-				filterBuilder.append(" WHERE ");
-			}
-			filterBuilder.append(Case.TABLE_NAME + "." + Case.DISTRICT + "_id = '" + district.getId() + "'");
-		}
-
-		if (disease != null) {
-			if (filterBuilder.length() > 0) {
-				filterBuilder.append(" AND ");
-			} else {
-				filterBuilder.append(" WHERE ");
-			}
-			filterBuilder.append(Case.TABLE_NAME + "." + Case.DISEASE + " = '" + disease.name() + "'");
-		}
-
-		if (filterBuilder.length() > 0) {
-			queryBuilder.append(filterBuilder.toString());
-		}
-
-		queryBuilder.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
-
 		@SuppressWarnings("unchecked")
-		List<Object[]> results = em.createNativeQuery(queryBuilder.toString()).getResultList();
+		List<Object[]> results = query.getResultList();
 		
 		return results.stream().filter(e -> e[0] != null).collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]),
 				e -> ((BigInteger) e[1]).longValue()));

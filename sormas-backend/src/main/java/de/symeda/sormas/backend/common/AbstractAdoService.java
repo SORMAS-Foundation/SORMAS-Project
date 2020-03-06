@@ -175,10 +175,10 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public List<Integer> getAllIds(User user) {
+	public List<Long> getAllIds(User user) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ADO> from = cq.from(getElementClass());
 
 		if (user != null) {

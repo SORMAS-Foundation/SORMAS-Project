@@ -65,6 +65,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseStatisticsFacadeEjb.CaseStatisticsFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
@@ -160,6 +161,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
+	}
+	
+	public CaseService getCaseService() {
+		return getBean(CaseService.class);
 	}
 	
 	public CaseStatisticsFacade getCaseStatisticsFacade() {
