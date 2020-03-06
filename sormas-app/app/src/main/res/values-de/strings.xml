@@ -139,7 +139,7 @@
     <string name="caption_confirmed_events">Confirmed Events</string>
     <string name="caption_contact_information">Kontaktinformationen</string>
     <string name="caption_contact_tasks">Kontakt-Aufgaben</string>
-    <string name="caption_contact_visits">Follow-Up Information</string>
+    <string name="caption_contact_visits">Follow-Up Informationen</string>
     <string name="caption_converted_to_case">Converted to Case</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="caption_date_of_sampling">Date of Sampling</string>
@@ -245,7 +245,7 @@
     <string name="error_case_transfer">An error occurred while trying to transfer the case.</string>
     <string name="error_case_referring_from_poe">An error occurred while trying to refer the case.</string>
     <string name="error_changes_dropped_no_access">Changes dropped because you have no longer access to this entity.</string>
-    <string name="error_internal_error">An internal error occurred. Please contact an administrator.</string>
+    <string name="error_internal_error">Ein interner Fehler ist aufgetreten. Bitte kontaktieren Sie einen Administrator.</string>
     <string name="error_modified_list_entry_deleted">A list entry you modified was deleted:</string>
     <string name="error_server_connection">Could not connect to SORMAS server. Try again later.</string>
     <string name="error_synchronization">Synchronization failed. Please try again later.</string>
@@ -276,7 +276,7 @@
     <string name="heading_contact_read">Kontakt anzeigen</string>
     <string name="heading_contact_summary">Kontakt-Zusammenfassung</string>
     <string name="heading_contact_visit">Kontakt Besuch</string>
-    <string name="heading_contacts_list">Contact Listing</string>
+    <string name="heading_contacts_list">Kontaktliste</string>
     <string name="heading_create_new_pin">Create New PIN</string>
     <string name="heading_create_pin">Create PIN</string>
     <string name="heading_disease_detection">Disease Detection</string>
@@ -428,7 +428,7 @@
     <string name="message_gps_permission">SORMAS needs access to your GPS location for all of its features to work as intended. Please click on \"Allow GPS Access\" to allow SORMAS to access the required functionality on your device.</string>
     <string name="message_gps_problem">No GPS coordinates could be found.</string>
     <string name="message_http_401">Could not authenticate. Please check your username and password.</string>
-    <string name="message_http_403">You do not have the needed permissions. Please contact the support.</string>
+    <string name="message_http_403">Sie haben nicht die erforderlichen Berechtigungen. Bitte kontaktieren Sie den Support.</string>
     <string name="message_http_404">Could not find a SORMAS server at \'%s\'</string>
     <string name="message_http_503">SORMAS server is temporarily not available.</string>
     <string name="message_install_app">A new SORMAS version is ready to install. Please click on \'Install\' to continue. You will need to restart the app after the update has been completed.</string>
@@ -508,14 +508,14 @@
     <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
     <string name="validation_symptoms_fever">Temperature is in fever range. Fever should be set to \'Yes\'.</string>
     <string name="validation_visit_date_time_after_followup">The visit cannot be more than 30 days after the end of the follow-up duration.</string>
-    <string name="validation_visit_date_time_before_contact_date">The visit cannot be more than 30 days before the last contact date.</string>
-    <string name="validation_visit_date_time_before_report_date">The visit cannot be more than 30 days before the contact report date.</string>
+    <string name="validation_visit_date_time_before_contact_date">Der Besuch darf nicht länger als 30 Tage vor dem letzten Kontaktdatum sein.</string>
+    <string name="validation_visit_date_time_before_report_date">Der Besuch darf nicht mehr als 30 Tage vor dem Datum des Kontaktberichts liegen.</string>
     <string name="value_age_unknown">Age N/A</string>
     <string name="value_blood_pressure_unknown">Blood Pressure N/A</string>
     <string name="value_case_uuid_unknown">Case ID N/A</string>
     <string name="value_comment_unknown">Comment N/A</string>
-    <string name="value_contact_proximity_unknown">Proximity N/A</string>
-    <string name="value_contact_uuid_unknown">Contact ID N/A</string>
+    <string name="value_contact_proximity_unknown">Nähe N/A</string>
+    <string name="value_contact_uuid_unknown">Kontakt-ID N/A</string>
     <string name="value_date_unknown">Date N/A</string>
     <string name="value_description_unknown">Description N/A</string>
     <string name="value_disease_unknown">Disease N/A</string>
