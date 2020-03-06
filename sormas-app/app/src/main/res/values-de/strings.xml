@@ -53,7 +53,7 @@
     <string name="action_download_later">Later</string>
     <string name="action_edit">Edit</string>
     <string name="action_edit_case">Edit Case</string>
-    <string name="action_edit_contact">Edit Contact</string>
+    <string name="action_edit_contact">Kontakt bearbeiten</string>
     <string name="action_edit_event">Edit Event</string>
     <string name="action_edit_sample">Edit Sample</string>
     <string name="action_forgot_PIN">Forgot PIN?</string>
@@ -68,7 +68,7 @@
     <string name="action_markAllAsRead">Mark all as read</string>
     <string name="action_new">New</string>
     <string name="action_new_case">New Case</string>
-    <string name="action_new_contact">New Contact</string>
+    <string name="action_new_contact">Neuer Kontakt</string>
     <string name="action_new_event">New Event</string>
     <string name="action_new_sample">New Sample</string>
     <string name="action_new_task">New Task</string>
@@ -90,7 +90,7 @@
     <string name="action_save">Save</string>
     <string name="action_save_case">Save Case</string>
     <string name="action_save_clinical_visit">Save Clinical Visit</string>
-    <string name="action_save_contact">Save Contact</string>
+    <string name="action_save_contact">Kontakt speichern</string>
     <string name="action_save_event">Save Event</string>
     <string name="action_save_event_participant">Save Event Participant</string>
     <string name="action_save_prescription">Save Prescription</string>
@@ -115,7 +115,7 @@
     <string name="caption_age">Age</string>
     <string name="caption_attended_by">Attended by</string>
     <string name="caption_case_clinical_visits">Clinical Assessments</string>
-    <string name="caption_case_contacts">Case Contacts</string>
+    <string name="caption_case_contacts">Fallkontakte</string>
     <string name="caption_case_epidemiological_data">Epidemiological Info</string>
     <string name="caption_case_fatality_rate">Case Fatality Rate</string>
     <string name="caption_case_health_conditions">Pre-Existing Conditions</string>
@@ -137,8 +137,8 @@
     <string name="caption_confirmed">Confirmed</string>
     <string name="caption_confirmed_case">Confirmed Case</string>
     <string name="caption_confirmed_events">Confirmed Events</string>
-    <string name="caption_contact_information">Contact Information</string>
-    <string name="caption_contact_tasks">Contact Tasks</string>
+    <string name="caption_contact_information">Kontaktinformationen</string>
+    <string name="caption_contact_tasks">Kontakt-Aufgaben</string>
     <string name="caption_contact_visits">Follow-Up Information</string>
     <string name="caption_converted_to_case">Converted to Case</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
@@ -165,12 +165,12 @@
     <string name="caption_my_reports">My Reports</string>
     <string name="caption_negative">Negative</string>
     <string name="caption_new_case">New Case</string>
-    <string name="caption_new_contact">New Contact</string>
+    <string name="caption_new_contact">Neuer Kontakt</string>
     <string name="caption_new_event_participant">New Person Involved</string>
     <string name="caption_new_sample">New Sample</string>
     <string name="caption_new_pathogen_test">New Pathogen Test</string>
     <string name="caption_new_task">New Task</string>
-    <string name="caption_not_a_contact">Not a Contact</string>
+    <string name="caption_not_a_contact">Kein Kontakt</string>
     <string name="caption_not_an_event">Not an Event</string>
     <string name="caption_outbreak">Outbreaks</string>
     <string name="caption_password">Password</string>
@@ -206,7 +206,7 @@
     <string name="caption_tasks_removed">Tasks Removed</string>
     <string name="caption_time_of_sampling">Time of Sampling</string>
     <string name="caption_total_cases">Total Cases</string>
-    <string name="caption_total_contacts">Total Contacts</string>
+    <string name="caption_total_contacts">Gesamte Kontakte</string>
     <string name="caption_total_events">Total Events</string>
     <string name="caption_total_samples">Total Samples</string>
     <string name="caption_total_tasks">Total Tasks</string>
@@ -238,7 +238,7 @@
     <string name="description_username">Username</string>
     <string name="description_year">Year</string>
     <string name="entity_case">Case</string>
-    <string name="entity_contact">Contact</string>
+    <string name="entity_contact">Kontakt</string>
     <string name="entity_event">Event</string>
     <string name="entity_sample">Sample</string>
     <string name="entity_task">Task</string>
@@ -252,7 +252,7 @@
     <string name="error_server_communication">Could not communicate with SORMAS server. Try again later.</string>
     <string name="error_no_pathogentest_labuser">the pathogen test has no lab user</string>
     <string name="heading_additional_medical_information">Additional Medical Information</string>
-    <string name="heading_animal_contacts">Animal Contacts</string>
+    <string name="heading_animal_contacts">Tierkontakte</string>
     <string name="heading_app_download_failed">App download failed</string>
     <string name="heading_app_downloading">Downloading</string>
     <string name="heading_app_update_required">App update required</string>
@@ -271,11 +271,11 @@
     <string name="heading_complications">Complications</string>
     <string name="heading_confirm_pin">Confirm PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
-    <string name="heading_contact_edit">Edit Contact</string>
-    <string name="heading_contact_new">New Contact</string>
-    <string name="heading_contact_read">Read Contact</string>
-    <string name="heading_contact_summary">Contact Summary</string>
-    <string name="heading_contact_visit">Contact Visit</string>
+    <string name="heading_contact_edit">Kontakt bearbeiten</string>
+    <string name="heading_contact_new">Neuer Kontakt</string>
+    <string name="heading_contact_read">Kontakt anzeigen</string>
+    <string name="heading_contact_summary">Kontakt-Zusammenfassung</string>
+    <string name="heading_contact_visit">Kontakt Besuch</string>
     <string name="heading_contacts_list">Contact Listing</string>
     <string name="heading_create_new_pin">Create New PIN</string>
     <string name="heading_create_pin">Create PIN</string>
@@ -408,7 +408,7 @@
     <string name="info_case_creation_mark_check_box">This case is a <b>new case</b> and <b>not a duplicate</b> of one of the cases above</string>
     <string name="info_aggregate_report_legend">C = New cases; L = Lab confirmations; D = Deaths</string>
     <string name="main_menu_cases">Cases</string>
-    <string name="main_menu_contacts">Contacts</string>
+    <string name="main_menu_contacts">Kontakte</string>
     <string name="main_menu_dashboard">Dashboard</string>
     <string name="main_menu_events">Events</string>
     <string name="main_menu_reports">Reports</string>
