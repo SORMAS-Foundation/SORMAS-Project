@@ -67,9 +67,9 @@ public class LoginScreen extends CssLayout {
 	}
 
 	private void buildUI() {
-		addStyleName("login-screen-back");
+		addStyleName(CssStyles.LOGINSCREEN_BACK);
 		CssLayout layout = new CssLayout();
-		layout.addStyleName("login-screen");
+		layout.addStyleName(CssStyles.LOGINSCREEN);
 		addComponent(layout);
 
 		layout.addComponent(buildLoginLayout());
@@ -96,7 +96,7 @@ public class LoginScreen extends CssLayout {
 
 		if (html.contains("location=\"login\"")) {
 			CustomLayout loginDetailsLayout = new CustomLayout();
-			loginDetailsLayout.setStyleName("login-details");
+			loginDetailsLayout.setStyleName(CssStyles.LOGINDEATILS);
 			loginDetailsLayout.setWidth(100, Unit.PERCENTAGE);
 
 			loginDetailsLayout.setTemplateContents(html);
@@ -112,7 +112,7 @@ public class LoginScreen extends CssLayout {
 
 		// login form, centered in the available part of the screen
 		VerticalLayout loginFormLayout = new VerticalLayout();
-		CssStyles.style(loginFormLayout, "login-form", CssStyles.LAYOUT_SPACIOUS);
+		CssStyles.style(loginFormLayout, CssStyles.LOGINFORM, CssStyles.LAYOUT_SPACIOUS);
 		loginFormLayout.setMargin(true);
 		loginFormLayout.setSpacing(false);
 
@@ -139,7 +139,7 @@ public class LoginScreen extends CssLayout {
 		// - see the theme for how this is made responsive for various screen
 		// sizes
 		CssLayout loginLayout = new CssLayout();
-		loginLayout.setStyleName("login-form-container");
+		loginLayout.setStyleName(CssStyles.LOGINFORM_CONTAINER);
 		loginLayout.addComponent(loginFormLayout);
 
 		return loginLayout;
@@ -194,7 +194,7 @@ public class LoginScreen extends CssLayout {
 	private CssLayout buildLoginDetails() {
 
 		CssLayout loginDetailsLayout = new CssLayout();
-		loginDetailsLayout.setStyleName("login-details");
+		loginDetailsLayout.setStyleName(CssStyles.LOGINDEATILS);
 		loginDetailsLayout.setWidth(100, Unit.PERCENTAGE);
 
 		Label htmlLabel = new Label();
@@ -218,7 +218,7 @@ public class LoginScreen extends CssLayout {
 	private Layout buildLoginSidebarLayout() {
 
 		CssLayout loginSidebarLayout = new CssLayout();
-		loginSidebarLayout.setStyleName("login-sidebar");
+		loginSidebarLayout.setStyleName(CssStyles.LOGINSIDEBAR);
 		
 		VerticalLayout innerLayout = new VerticalLayout();
 		CssStyles.style(innerLayout, CssStyles.LAYOUT_SPACIOUS);
@@ -236,13 +236,9 @@ public class LoginScreen extends CssLayout {
 		innerLayout.addComponent(fullNameText);
 		innerLayout.setComponentAlignment(fullNameText, Alignment.TOP_CENTER);
 		
-		Label missionText = new Label(
-				"• " + I18nProperties.getCaption(Captions.LoginSidebar_diseasePrevention, "Disease Prevention")
-						+ "<br>• "
-						+ I18nProperties.getCaption(Captions.LoginSidebar_diseaseDetection, "Disease Detection")
-						+ "<br>• "
-						+ I18nProperties.getCaption(Captions.LoginSidebar_outbreakResponse, "Outbreak Response"),
-				ContentMode.HTML);
+		Label missionText = new Label("• " + I18nProperties.getCaption(Captions.LoginSidebar_diseasePrevention)
+				+ "<br>• " + I18nProperties.getCaption(Captions.LoginSidebar_diseaseDetection) + "<br>• "
+				+ I18nProperties.getCaption(Captions.LoginSidebar_outbreakResponse), ContentMode.HTML);
 		missionText.setWidth(320, Unit.PIXELS);
 		CssStyles.style(missionText, CssStyles.H2, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
 		innerLayout.addComponent(missionText);
@@ -250,12 +246,12 @@ public class LoginScreen extends CssLayout {
 		
 		loginSidebarLayout.addComponent(innerLayout);
 		
-		Label poweredByLabel = new Label(I18nProperties.getCaption(Captions.LoginSidebar_poweredBy, "Powered By"));
-		poweredByLabel.addStyleNames("headline-label", CssStyles.H2);
+		Label poweredByLabel = new Label(I18nProperties.getCaption(Captions.LoginSidebar_poweredBy));
+		poweredByLabel.addStyleNames(CssStyles.LOGIN_HEADLINELABEL, CssStyles.H2);
 		loginSidebarLayout.addComponent(poweredByLabel);
 
 		VerticalLayout poweredByLayout = new VerticalLayout();
-		poweredByLayout.addStyleNames(CssStyles.LAYOUT_SPACIOUS, "logo-container");
+		poweredByLayout.addStyleNames(CssStyles.LAYOUT_SPACIOUS, CssStyles.LOGIN_LOGOCONTAINER);
 		poweredByLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		poweredByLayout.setSizeUndefined();
 		poweredByLayout.setSpacing(false);
