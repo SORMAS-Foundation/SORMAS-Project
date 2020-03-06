@@ -41,7 +41,7 @@
     <string name="action_close_app">Close SORMAS</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_create">Create</string>
-    <string name="action_create_case_from_contact">Create a case for this contact person</string>
+    <string name="action_create_case_from_contact">Fall für diese Kontaktperson erstellen</string>
     <string name="action_create_case_from_event_person">Create a case for this event person</string>
     <string name="action_create_treatment">Create treatment</string>
     <string name="action_edit_data">Edit data</string>
@@ -83,7 +83,7 @@
     <string name="action_pick_gps">Pick current GPS for address</string>
     <string name="action_redownload_app">Redownload</string>
     <string name="action_redownload_app_later">Redownload later</string>
-    <string name="action_refer_case_from_poe">Refer case from Point of Entry</string>
+    <string name="action_refer_case_from_poe">Fall vom Einreiseort weiterleiten</string>
     <string name="action_report">Report Problem</string>
     <string name="action_repull_data">Re-synchronize data</string>
     <string name="action_reset_filters">Reset filters</string>
@@ -317,7 +317,7 @@
     <string name="heading_prescription_new">New Prescription</string>
     <string name="heading_previous_hospitalization">Previous Hospitalization</string>
     <string name="heading_previous_hospitalizations">Previous Hospitalizations</string>
-    <string name="heading_refer_case_from_poe">Refer Case from Point of Entry</string>
+    <string name="heading_refer_case_from_poe">Fall vom Einreiseort weiterleiten</string>
     <string name="heading_reset_PIN">Reset PIN</string>
     <string name="heading_response_management">Antwortverwaltung &amp; Analysesystem</string>
     <string name="heading_sample_edit">Edit Sample</string>
@@ -532,7 +532,7 @@
     <string name="value_no_username">No Username</string>
     <string name="value_not_available">N/A</string>
     <string name="value_person_unknown">Person N/A</string>
-    <string name="value_point_of_entry_unknown">Point of Entry N/A</string>
+    <string name="value_point_of_entry_unknown">Einreiseort N/A</string>
     <string name="value_prescribing_clinician_unknown">Prescribing Clinician N/A</string>
     <string name="value_prescription_date_unknown">Date Prescription Issued N/A</string>
     <string name="value_prescription_period_unknown">Prescription Period N/A</string>
