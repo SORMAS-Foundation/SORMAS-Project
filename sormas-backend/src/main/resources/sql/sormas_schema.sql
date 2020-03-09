@@ -3842,7 +3842,7 @@ ALTER TABLE diseaseconfiguration_history ADD COLUMN casebased boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (176, 'Add caseBased column to diseaseconfiguration #1277');
 
--- 2019-01-08 Add archived to infrastructure data #1412
+-- 2020-01-08 Add archived to infrastructure data #1412
 ALTER TABLE region ADD COLUMN archived boolean DEFAULT false;
 ALTER TABLE district ADD COLUMN archived boolean DEFAULT false;
 ALTER TABLE community ADD COLUMN archived boolean DEFAULT false;
@@ -3851,7 +3851,7 @@ ALTER TABLE pointofentry ADD COLUMN archived boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (177, 'Add archived to infrastructure data #1412');
 
--- 2019-01-28 Add fields for Coronavirus #1476
+-- 2020-01-28 Add fields for Coronavirus #1476
 ALTER TABLE symptoms ADD COLUMN fluidinlungcavityauscultation varchar(255);
 ALTER TABLE symptoms ADD COLUMN fluidinlungcavityxray varchar(255);
 ALTER TABLE symptoms ADD COLUMN abnormallungxrayfindings varchar(255);
@@ -3883,7 +3883,7 @@ ALTER TABLE healthconditions_history ADD COLUMN cardiovasculardiseaseincludinghy
 
 INSERT INTO schema_version (version_number, comment) VALUES (178, 'Add fields for Coronavirus #1476');
 
--- 2019-01-28 Set missing point of entry type for default entries #1484
+-- 2020-01-28 Set missing point of entry type for default entries #1484
 UPDATE pointofentry SET pointofentrytype='AIRPORT', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-AIRPORTX';
 UPDATE pointofentry SET pointofentrytype='SEAPORT', changedate=now() WHERE uuid='SORMAS-CONSTID-OTHERS-SEAPORTX';
 UPDATE pointofentry SET pointofentrytype='GROUND_CROSSING', changedate=now() WHERE uuid='SORMAS-CONSTIG-OTHERS-GROUNDCR';
@@ -3891,7 +3891,7 @@ UPDATE pointofentry SET pointofentrytype='OTHER', changedate=now() WHERE uuid='S
 
 INSERT INTO schema_version (version_number, comment) VALUES (179, 'Set missing point of entry type for default entries #1484');
 
--- 2019-01-28 Rename "New influenca" to "New influenza" #1458
+-- 2020-01-28 Rename "New influenca" to "New influenza" #1458
 UPDATE cases SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
 UPDATE cases_history SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
 UPDATE events SET disease = 'NEW_INFLUENZA' where disease = 'NEW_INFLUENCA';
@@ -3916,7 +3916,7 @@ UPDATE users_history SET limiteddisease = 'NEW_INFLUENZA' where limiteddisease =
 
 INSERT INTO schema_version (version_number, comment) VALUES (180, 'Rename "New influenca" to "New influenza" #1458');
 
--- 2019-02-19 Add language to user #1093
+-- 2020-02-19 Add language to user #1093
 ALTER TABLE users ADD COLUMN language varchar(255);
 ALTER TABLE users_history ADD COLUMN language varchar(255);
 
