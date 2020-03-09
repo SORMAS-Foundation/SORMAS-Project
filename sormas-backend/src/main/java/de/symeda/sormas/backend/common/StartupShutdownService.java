@@ -499,6 +499,12 @@ public class StartupShutdownService {
 		}
 
 		try {
+			importFacade.generateCaseContactImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create case contact import template .csv file.");
+		}
+
+		try {
 			importFacade.generateCaseLineListingImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create line listing import template .csv file.");

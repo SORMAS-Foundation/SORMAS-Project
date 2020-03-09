@@ -19,7 +19,6 @@ package de.symeda.sormas.api.user;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -51,7 +50,8 @@ public enum UserRole implements StatisticsGroupingKey {
 	NATIONAL_CLINICIAN(false, false, false, false),
 	POE_INFORMANT(false, false, true, true),
 	POE_SUPERVISOR(true, false, false, true),
-	POE_NATIONAL_USER(false, false, false, true);
+	POE_NATIONAL_USER(false, false, false, true),
+	IMPORT_USER(false,false,false,false);
 	
 	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
@@ -73,6 +73,7 @@ public enum UserRole implements StatisticsGroupingKey {
 	public static final String _POE_INFORMANT = POE_INFORMANT.name();
 	public static final String _POE_SUPERVISOR = POE_SUPERVISOR.name();
 	public static final String _POE_NATIONAL_USER = POE_NATIONAL_USER.name();
+	public static final String _IMPORT_USER = IMPORT_USER.name();
 	
 	private final boolean supervisor;
 	private final boolean officer;
@@ -195,6 +196,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		case EXTERNAL_LAB_USER:
 			collection.add(EXTERNAL_LAB_USER);
 			break;
+		case IMPORT_USER:
+			collection.add(IMPORT_USER);
+			break;
 		default:
 			break;
 		}
@@ -213,40 +217,42 @@ public enum UserRole implements StatisticsGroupingKey {
 		case ADMIN:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN);
+					EVENT_OFFICER, LAB_USER, NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN, IMPORT_USER);
 		case NATIONAL_USER:
-			return Arrays.asList(LAB_USER, ADMIN, NATIONAL_CLINICIAN);
+			return Arrays.asList(LAB_USER, ADMIN, NATIONAL_CLINICIAN, IMPORT_USER);
 		case NATIONAL_OBSERVER:
-			return Arrays.asList(ADMIN);
+			return Arrays.asList(ADMIN, IMPORT_USER);
 		case NATIONAL_CLINICIAN:
-			return Arrays.asList(ADMIN, NATIONAL_USER);
+			return Arrays.asList(ADMIN, NATIONAL_USER, IMPORT_USER);
 		case CASE_SUPERVISOR:
 		case CONTACT_SUPERVISOR:
 		case SURVEILLANCE_SUPERVISOR:
 		case EVENT_OFFICER:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, ADMIN);
+					EVENT_OFFICER, LAB_USER, ADMIN, IMPORT_USER);
 		case LAB_USER:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN);
+					EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN, IMPORT_USER);
 		case SURVEILLANCE_OFFICER:
 		case CASE_OFFICER:
 		case CONTACT_OFFICER:
-			return Arrays.asList(SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER);
+			return Arrays.asList(SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER, IMPORT_USER);
 		case HOSPITAL_INFORMANT:
-			return Arrays.asList(HOSPITAL_INFORMANT);
+			return Arrays.asList(HOSPITAL_INFORMANT, IMPORT_USER);
 		case COMMUNITY_INFORMANT:
-			return Arrays.asList(COMMUNITY_INFORMANT);
+			return Arrays.asList(COMMUNITY_INFORMANT, IMPORT_USER);
 		case EXTERNAL_LAB_USER:
-			return Arrays.asList(EXTERNAL_LAB_USER);
+			return Arrays.asList(EXTERNAL_LAB_USER, IMPORT_USER);
 		case STATE_OBSERVER:
 		case DISTRICT_OBSERVER:
 		case POE_INFORMANT:
 		case POE_SUPERVISOR:
 		case POE_NATIONAL_USER:
-			return Collections.emptyList();
+			return Arrays.asList(IMPORT_USER);
+		case IMPORT_USER:
+			return Arrays.asList(UserRole.values());
 		default:
 			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
 		}

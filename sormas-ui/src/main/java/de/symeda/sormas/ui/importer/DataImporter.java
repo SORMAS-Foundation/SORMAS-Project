@@ -76,9 +76,11 @@ public abstract class DataImporter {
 	/**
 	 * Opens a progress layout and runs the import in a separate thread
 	 */
-	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI) throws IOException {
+	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible)
+			throws IOException {
 
-		ImportProgressLayout progressLayout = new ImportProgressLayout(readImportFileLength(inputFile), currentUI, this::cancelImport);
+		ImportProgressLayout progressLayout = new ImportProgressLayout(readImportFileLength(inputFile), currentUI,
+				this::cancelImport, duplicatesPossible);
 
 		importedLineCallback = new Consumer<ImportLineResult>() {
 			@Override

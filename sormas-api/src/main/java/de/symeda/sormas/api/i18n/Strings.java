@@ -217,6 +217,7 @@ public interface Strings {
 	public static String headingHealthConditions = "headingHealthConditions";
 	public static String headingHospitalization = "headingHospitalization";
 	public static String headingHowToMergeCases = "headingHowToMergeCases";
+	public static String headingImportCaseContacts = "headingImportCaseContacts";
 	public static String headingImportCases = "headingImportCases";
 	public static String headingImportCommunities = "headingImportCommunities";
 	public static String headingImportCsvFile = "headingImportCsvFile";

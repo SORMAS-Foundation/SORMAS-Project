@@ -97,6 +97,8 @@ public class ContactDto extends EntityDto {
 
 		contact.setCaze(caze);
 
+		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
+
 		contact.setReportDateTime(new Date());
 		contact.setContactClassification(ContactClassification.UNCONFIRMED);
 		contact.setContactStatus(ContactStatus.ACTIVE);

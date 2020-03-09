@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface ContactFacade {
@@ -77,4 +78,6 @@ public interface ContactFacade {
 	int[] getContactCountsByCasesForDashboard(List<String> contactUuids);
 	
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
+
+	void validate(ContactDto contact) throws ValidationRuntimeException;
 }

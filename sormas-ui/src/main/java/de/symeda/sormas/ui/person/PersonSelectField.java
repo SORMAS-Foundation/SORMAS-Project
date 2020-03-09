@@ -21,17 +21,23 @@ import java.util.function.Consumer;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.v7.ui.TextField;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -42,12 +48,24 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 	
 	private final TextField firstNameField = new TextField();
 	private final TextField lastNameField = new TextField();
+	private final Label nicknameLabel = new Label();
+	private final Label approximateAgeLabel = new Label();
+	private final Label sexLabel = new Label();
+	private final Label presentConditionLabel = new Label();
+	private final Label districtLabel = new Label();
+	private final Label communityLabel = new Label();
+	private final Label cityLabel = new Label();
 	private final Button searchMatchesButton = new Button(I18nProperties.getCaption(Captions.personFindMatching));
 	private PersonGrid personGrid;
 	private OptionGroup selectPerson;
 	private OptionGroup createNewPerson;
 	private Consumer<Boolean> selectionChangeCallback;
+	private boolean importMode;
 	
+	public PersonSelectField(boolean importMode) {
+		this.importMode = importMode;
+	}
+
 	@Override
 	protected Component initContent() {
 		VerticalLayout layout = new VerticalLayout();
@@ -70,16 +88,57 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 		lastNameField.setWidth(100, Unit.PERCENTAGE);
 		lastNameField.setRequired(true);
 		nameLayout.addComponent(lastNameField);
-
+		
 		CssStyles.style(searchMatchesButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
 		searchMatchesButton.addClickListener(e -> {
 			personGrid.reload(firstNameField.getValue(), lastNameField.getValue());
 			selectBestMatch();
 		});
-		nameLayout.addComponent(searchMatchesButton);
-		
+
+		if (!importMode) {
+			nameLayout.addComponent(searchMatchesButton);
+		}
+
 		layout.addComponent(nameLayout);
-		
+
+		if (importMode) {
+			HorizontalLayout infoLayout = new HorizontalLayout();
+			infoLayout.setSpacing(true);
+			
+			nicknameLabel.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.NICKNAME));
+			nicknameLabel.setWidthUndefined();
+			infoLayout.addComponent(nicknameLabel);
+
+			approximateAgeLabel
+					.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
+			approximateAgeLabel.setWidthUndefined();
+			infoLayout.addComponent(approximateAgeLabel);
+
+			sexLabel.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+			sexLabel.setWidthUndefined();
+			infoLayout.addComponent(sexLabel);
+
+			presentConditionLabel
+					.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
+			presentConditionLabel.setWidthUndefined();
+			;
+			infoLayout.addComponent(presentConditionLabel);
+
+			districtLabel.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
+			districtLabel.setWidthUndefined();
+			infoLayout.addComponent(districtLabel);
+
+			communityLabel.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
+			communityLabel.setWidthUndefined();
+			infoLayout.addComponent(communityLabel);
+
+			cityLabel.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
+			cityLabel.setWidthUndefined();
+			infoLayout.addComponent(cityLabel);
+
+			layout.addComponent(infoLayout);
+		}
+
 		selectPerson = new OptionGroup(null);
 		selectPerson.addItem(SELECT_PERSON);
 		selectPerson.setItemCaption(SELECT_PERSON, I18nProperties.getCaption(Captions.personSelect));
@@ -93,8 +152,9 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 				}
 			}
 		});
+
 		layout.addComponent(selectPerson);
-		
+
 		initPersonGrid();
 		// unselect "create new" when person is selected
 		personGrid.addSelectionListener(e -> {
@@ -197,6 +257,44 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 
 	public TextField getLastNameField() {
 		return lastNameField;
+	}
+
+	public void setNickname(String nickname) {
+		nicknameLabel.setValue(nickname);
+	}
+
+	public void setApproximateAge(Integer approximateAge) {
+		if (approximateAge != null) {
+			approximateAgeLabel.setValue(approximateAge.toString());
+		}
+	}
+
+	public void setSex(Sex sex) {
+		if (sex != null) {
+			sexLabel.setValue(sex.toString());
+		}
+	}
+
+	public void setPresentCondition(PresentCondition presentCondition) {
+		if (presentCondition != null) {
+			presentConditionLabel.setValue(presentCondition.toString());
+		}
+	}
+
+	public void setDistrict(DistrictReferenceDto districtReferenceDto) {
+		if (districtReferenceDto != null) {
+			districtLabel.setValue(districtReferenceDto.getCaption());
+		}
+	}
+
+	public void setCommunity(CommunityReferenceDto communityReferenceDto) {
+		if (communityReferenceDto != null) {
+			communityLabel.setValue(communityReferenceDto.getCaption());
+		}
+	}
+
+	public void setCity(String city) {
+		cityLabel.setValue(city);
 	}
 
 	public boolean hasMatches() {

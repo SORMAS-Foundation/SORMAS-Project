@@ -18,11 +18,16 @@
 
 package de.symeda.sormas.ui;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.junit.Before;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -31,6 +36,8 @@ import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -59,6 +66,17 @@ public class AbstractBeanTest extends BaseBeanTest {
 		em.getTransaction().commit();
 	}
 	
+	@Before
+	public void createDiseaseConfigurations() {
+		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease())
+				.collect(Collectors.toList());
+		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
+			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
+			getDiseaseConfigurationService().ensurePersisted(configuration);
+		});
+	}
+
 	public PersonFacade getPersonFacade() {
 		return getBean(PersonFacadeEjbLocal.class);
 	}
@@ -85,5 +103,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public EntityManager getEntityManager() {
 		return getBean(EntityManagerWrapper.class).getEntityManager();
+	}
+
+	public DiseaseConfigurationService getDiseaseConfigurationService() {
+		return getBean(DiseaseConfigurationService.class);
 	}
 }

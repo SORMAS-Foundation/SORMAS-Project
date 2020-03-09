@@ -17,24 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.importer;
 
+import java.util.List;
+
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.person.PersonDto;
 
-public class ImportSimilarityResult {
+public class CaseImportSimilarityInput {
 
-	private final CaseIndexDto matchingCase;
-	private final ImportSimilarityResultOption resultOption;
+	private final CaseDataDto caze;
+	private final PersonDto person;
+	private final List<CaseIndexDto> similarCases;
 	
-	public ImportSimilarityResult(CaseIndexDto matchingCase, ImportSimilarityResultOption resultOption) {
-		this.matchingCase = matchingCase;
-		this.resultOption = resultOption;
+	public CaseImportSimilarityInput(CaseDataDto caze, PersonDto person, List<CaseIndexDto> similarCases) {
+		this.similarCases = similarCases;
+		this.caze = caze;
+		this.person = person;
 	}
 
-	public CaseIndexDto getMatchingCase() {
-		return matchingCase;
+	public List<CaseIndexDto> getSimilarCases() {
+		return similarCases;
 	}
-	
-	public ImportSimilarityResultOption getResultOption() {
-		return resultOption;
+
+	public CaseDataDto getCaze() {
+		return caze;
 	}
-	
+
+	public PersonDto getPerson() {
+		return person;
+	}
+
 }
