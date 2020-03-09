@@ -23,10 +23,7 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -63,6 +60,6 @@ public interface SampleFacade {
 
 	boolean isDeleted(String sampleUuid);
 	
-	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(RegionReferenceDto regionReference, DistrictReferenceDto districtReference, Disease disease, Date from, Date to, String userUuid);
+	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds);
 	
 }

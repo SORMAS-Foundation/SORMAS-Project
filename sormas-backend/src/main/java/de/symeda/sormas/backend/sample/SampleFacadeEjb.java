@@ -43,15 +43,12 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -537,12 +534,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType (RegionReferenceDto regionReference, DistrictReferenceDto districtReference, Disease disease, Date from, Date to, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionReference);
-		District district = districtService.getByReferenceDto(districtReference);
-
-		return sampleService.getNewTestResultCountByResultType(region, district, disease, from, to, user);
+	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
+		return sampleService.getNewTestResultCountByResultType(caseIds);
 	}
 
 	public Sample fromDto(@NotNull SampleDto source) {

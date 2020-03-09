@@ -18,6 +18,7 @@ public class ContactFollowUpDto implements Serializable {
 	public static final String PERSON = "person";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String DAY_1_RESULT = "day1Result";
 	public static final String DAY_2_RESULT = "day2Result";
@@ -32,6 +33,7 @@ public class ContactFollowUpDto implements Serializable {
 	private PersonReferenceDto person;
 	private UserReferenceDto contactOfficer;
 	private Date lastContactDate;
+	private Date reportDateTime;
 	private Date followUpUntil;
 	private Disease disease;
 	private VisitResult day1Result = VisitResult.NOT_PERFORMED;
@@ -45,11 +47,12 @@ public class ContactFollowUpDto implements Serializable {
 	
 	public ContactFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
 			String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
-			Date lastContactDate, Date followUpUntil, Disease disease) {
+			Date lastContactDate, Date reportDateTime, Date followUpUntil, Disease disease) {
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.contactOfficer = new UserReferenceDto(contactOfficerUuid, contactOfficerFirstName, contactOfficerLastName, null);
 		this.lastContactDate = lastContactDate;
+		this.reportDateTime = reportDateTime;
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
 	}
@@ -84,6 +87,14 @@ public class ContactFollowUpDto implements Serializable {
 
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
+	}
+
+	public Date getReportDateTime() {
+		return reportDateTime;
+	}
+
+	public void setReportDateTime(Date reportDateTime) {
+		this.reportDateTime = reportDateTime;
 	}
 
 	public Date getFollowUpUntil() {

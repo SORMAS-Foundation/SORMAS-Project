@@ -351,8 +351,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 	
 	@Override
-	public List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		Date end = DateHelper.getEndOfDay(new Date());
+	public List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max, List<SortProperty> sortProperties) {
+		Date end = DateHelper.getEndOfDay(referenceDate);
 		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, 7));
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -364,7 +364,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
 				contactOfficer.get(User.UUID), contactOfficer.get(User.FIRST_NAME), contactOfficer.get(User.LAST_NAME), contact.get(Contact.LAST_CONTACT_DATE),
-				contact.get(Contact.FOLLOW_UP_UNTIL), contactCase.get(Case.DISEASE));
+				contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.FOLLOW_UP_UNTIL), contactCase.get(Case.DISEASE));
 		
 		Predicate filter = null;		
 		// Only use user filter if no restricting case is specified
@@ -389,6 +389,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				switch (sortProperty.propertyName) {
 				case ContactFollowUpDto.UUID:
 				case ContactFollowUpDto.LAST_CONTACT_DATE:
+				case ContactFollowUpDto.REPORT_DATE_TIME:
 				case ContactFollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
 					break;

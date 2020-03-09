@@ -108,8 +108,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
     	contactOfficerField.setNullSelectionAllowed(true);
     	
-    	setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, 
-    			ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL);
+		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS,
+				ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL);
     	
     	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.FOLLOW_UP_STATUS, 
     			Arrays.asList(ContactDto.FOLLOW_UP_COMMENT), 

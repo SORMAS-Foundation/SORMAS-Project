@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.contacts;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
@@ -57,6 +59,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private VerticalLayout epiCurveLayout;
 	private Optional<VerticalLayout> mapLayout;
 	private Optional<VerticalLayout> networkDiagramLayout;
+	private HorizontalLayout noNetworkDiagramLayout;
 	
 	private VerticalLayout rowsLayout;
 	
@@ -100,6 +103,13 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		
 		networkDiagramRowLayout = createNetworkDiagramRowLayout();
 		rowsLayout.addComponent(networkDiagramRowLayout);
+		
+		filterLayout.setDiseaseFilterChangeCallback((diseaseSelected) -> {
+			networkDiagramLayout.ifPresent(l -> {
+				l.setVisible(diseaseSelected);
+				noNetworkDiagramLayout.setVisible(!diseaseSelected);
+			});
+		});
 	}
 	
 	private HorizontalLayout createCaseStatisticsLayout() {
@@ -210,6 +220,19 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		// network diagram layout 
 		networkDiagramLayout = createNetworkDiagramLayout();
 		networkDiagramLayout.ifPresent(layout::addComponent);
+		
+		noNetworkDiagramLayout = new HorizontalLayout();
+		noNetworkDiagramLayout.setMargin(true);
+		Label noDiagramLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoNoNetworkDiagram), ContentMode.HTML);
+		noNetworkDiagramLayout.addComponent(noDiagramLabel);
+		layout.addComponent(noNetworkDiagramLayout);
+		layout.setComponentAlignment(noNetworkDiagramLayout, Alignment.MIDDLE_CENTER);
+		noNetworkDiagramLayout.setVisible(false);
+		
+		networkDiagramLayout.ifPresent(l -> {
+			l.setVisible(false);
+			noNetworkDiagramLayout.setVisible(true);
+		});
 
 		return layout;
 	}

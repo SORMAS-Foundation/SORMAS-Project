@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Label;
@@ -76,8 +77,9 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());
 		}
 
-		addDownloadImportTemplateComponent(1, templateFilePath, templateFileName);		
-		addImportCsvComponent(2, new ImportReceiver(fileNameAddition, new Consumer<File>() {
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);		
+		addImportCsvComponent(3, new ImportReceiver(fileNameAddition, new Consumer<File>() {
 			@Override
 			public void accept(File file) {
 				resetDownloadErrorReportButton();
@@ -123,7 +125,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			upload.setEnabled(false);
 		}
 		
-		addDownloadErrorReportComponent(3);
+		addDownloadErrorReportComponent(4);
 	}
 
 }

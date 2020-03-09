@@ -228,6 +228,16 @@ public final class CssStyles {
 	// Notification styles
 	public static final String NOTIFICATION_ERROR = "notification-error";
 	
+	// Login
+	public static final String LOGINDEATILS = "login-details";
+	public static final String LOGINFORM = "login-form";
+	public static final String LOGINFORM_CONTAINER = "login-form-container";
+	public static final String LOGINSCREEN = "login-screen";
+	public static final String LOGINSCREEN_BACK = "login-screen-back";
+	public static final String LOGINSIDEBAR = "login-sidebar";
+	public static final String LOGIN_HEADLINELABEL = "headline-label";
+	public static final String LOGIN_LOGOCONTAINER = "logo-container";
+
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
 	 */
