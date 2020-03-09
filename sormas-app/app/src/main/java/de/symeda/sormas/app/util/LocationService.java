@@ -36,8 +36,6 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 
-import com.google.common.collect.Maps;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -238,7 +236,7 @@ public final class LocationService {
             return false;
         }
         // Discard the location if it's not in the server's country
-        String countryLocale = ConfigProvider.getLocale();
+        String countryLocale = ConfigProvider.getServerLocale();
         if (!StringUtils.isEmpty(countryLocale)) {
             try {
                 List<Address> addresses = instance.geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);

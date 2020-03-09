@@ -601,7 +601,7 @@ public final class ConfigProvider {
     /**
      * When no locale is set Locale.getDefault is set.
      */
-    public static String getLocale() {
+    public static String getServerLocale() {
         if (instance.locale == null)
             synchronized (ConfigProvider.class) {
                 if (instance.locale == null) {

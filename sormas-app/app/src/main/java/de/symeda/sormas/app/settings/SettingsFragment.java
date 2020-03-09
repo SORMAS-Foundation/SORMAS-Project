@@ -18,8 +18,6 @@
 
 package de.symeda.sormas.app.settings;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -32,7 +30,6 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.LocaleManager;
@@ -58,7 +55,6 @@ import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
@@ -102,10 +98,10 @@ public class SettingsFragment extends BaseLandingFragment {
         binding.setData(ConfigProvider.getUser());
         binding.userLanguage.initializeSpinner(DataUtils.getEnumItems(Language.class, true));
         binding.userLanguage.addValueChangedListener(e -> {
-            if (!(e.getValue() == null && Language.fromLocaleString(ConfigProvider.getLocale()).equals(LocaleManager.getLanguagePref(getContext())))) {
+            if (!(e.getValue() == null && Language.fromLocaleString(ConfigProvider.getServerLocale()).equals(LocaleManager.getLanguagePref(getContext())))) {
                 if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
                     try {
-                        Language newLanguage = e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getLocale());
+                        Language newLanguage = e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getServerLocale());
                         User user = binding.getData();
                         if (user != null) {
                             DatabaseHelper.getUserDao().saveAndSnapshot(user);

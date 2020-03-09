@@ -31,6 +31,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
@@ -121,7 +122,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     public void onLayoutBinding(FragmentContactEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
 
-        contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease()))));
+        contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease(), ConfigProvider.getServerLocale()))));
 
         contentBinding.setData(record);
         contentBinding.setCaze(sourceCase);
