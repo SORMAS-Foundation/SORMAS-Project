@@ -114,7 +114,7 @@
     <string name="caption_address">Address</string>
     <string name="caption_age">Age</string>
     <string name="caption_attended_by">Attended by</string>
-    <string name="caption_case_clinical_visits">Clinical Assessments</string>
+    <string name="caption_case_clinical_visits">Klinische Bewertungen</string>
     <string name="caption_case_contacts">Fallkontakte</string>
     <string name="caption_case_epidemiological_data">Epidemiological Info</string>
     <string name="caption_case_fatality_rate">Case Fatality Rate</string>
@@ -130,9 +130,9 @@
     <string name="caption_case_similarity_create">Create a new case</string>
     <string name="caption_changed_data_lost">Changed data lost during re-sync.</string>
     <string name="caption_clinical_measurements">Clinical Measurements</string>
-    <string name="caption_clinical_visit_date">Date of Assessment</string>
-    <string name="caption_clinical_visit_information">Assessment Information</string>
-    <string name="caption_clinical_visit_time">Time of Assessment</string>
+    <string name="caption_clinical_visit_date">Datum der Bewertung</string>
+    <string name="caption_clinical_visit_information">Bewertungsinformationen</string>
+    <string name="caption_clinical_visit_time">Bewertungszeit</string>
     <string name="caption_confirmation_date">Confirmation Date: %1$s</string>
     <string name="caption_confirmed">Bestätigt</string>
     <string name="caption_confirmed_case">Bestätigter Fall</string>
@@ -266,8 +266,8 @@
     <string name="heading_case_infrastructure_data_changed">Infrastructure data has changed</string>
     <string name="heading_cases_list">Case Listing</string>
     <string name="heading_classification_for">Classification for</string>
-    <string name="heading_clinical_visit">Clinical Assessment</string>
-    <string name="heading_clinical_visit_new">New Clinical Assessment</string>
+    <string name="heading_clinical_visit">Klinische Bewertung</string>
+    <string name="heading_clinical_visit_new">Neue klinische Bewertung</string>
     <string name="heading_complications">Complications</string>
     <string name="heading_confirm_pin">Confirm PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
