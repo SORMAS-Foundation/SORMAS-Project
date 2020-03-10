@@ -30,12 +30,21 @@ public class FeatureConfiguration extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String DISEASE = "disease";
 	public static final String END_DATE = "endDate";
+	public static final String ENABLED = "enabled";
 	
 	private FeatureType featureType;
 	private Region region;
 	private District district;
 	private Disease disease;
 	private Date endDate;
+	private boolean enabled;
+	
+	public static FeatureConfiguration build(FeatureType featureType, boolean enabled) {
+		FeatureConfiguration configuration = new FeatureConfiguration();
+		configuration.setFeatureType(featureType);
+		configuration.setEnabled(enabled);
+		return configuration;
+	}
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -81,6 +90,15 @@ public class FeatureConfiguration extends AbstractDomainObject {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	@Column
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 }

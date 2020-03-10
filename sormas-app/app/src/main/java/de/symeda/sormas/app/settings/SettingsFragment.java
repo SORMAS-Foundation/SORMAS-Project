@@ -18,8 +18,6 @@
 
 package de.symeda.sormas.app.settings;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -32,7 +30,6 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.LocaleManager;
@@ -58,7 +55,6 @@ import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
@@ -75,6 +71,8 @@ public class SettingsFragment extends BaseLandingFragment {
     private int versionClickedCount;
 
     protected boolean isShowDevOptions() { return versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT; }
+
+    protected boolean hasServerUrl() {return ConfigProvider.getServerRestUrl() != null;}
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -102,15 +100,17 @@ public class SettingsFragment extends BaseLandingFragment {
         binding.setData(ConfigProvider.getUser());
         binding.userLanguage.initializeSpinner(DataUtils.getEnumItems(Language.class, true));
         binding.userLanguage.addValueChangedListener(e -> {
-            if (!(e.getValue() == null && Language.fromLocaleString(ConfigProvider.getLocale()).equals(LocaleManager.getLanguagePref(getContext())))) {
+            if (!(e.getValue() == null && Language.fromLocaleString(ConfigProvider.getServerLocale()).equals(LocaleManager.getLanguagePref(getContext())))) {
                 if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
                     try {
-                        Language newLanguage = e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getLocale());
+                        Language newLanguage = e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getServerLocale());
                         User user = binding.getData();
                         if (user != null) {
                             DatabaseHelper.getUserDao().saveAndSnapshot(user);
                         }
-                        ((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
+                        if (newLanguage != null) {
+                            ((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
+                        }
                     } catch (DaoException ex) {
                         NotificationHelper.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
                     }
@@ -131,7 +131,8 @@ public class SettingsFragment extends BaseLandingFragment {
         super.onResume();
 
         boolean hasUser = ConfigProvider.getUser() != null;
-        binding.settingsServerUrl.setVisibility(isShowDevOptions() ? View.VISIBLE : View.GONE);
+        binding.settingsServerUrlInfo.setVisibility(!hasServerUrl() ? View.VISIBLE : View.GONE);
+        binding.settingsServerUrl.setVisibility(!hasServerUrl() || isShowDevOptions() ? View.VISIBLE : View.GONE);
         binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
@@ -275,6 +276,6 @@ public class SettingsFragment extends BaseLandingFragment {
 
     @Override
     public boolean isShowSaveAction() {
-        return isShowDevOptions();
+        return !hasServerUrl() || isShowDevOptions();
     }
 }

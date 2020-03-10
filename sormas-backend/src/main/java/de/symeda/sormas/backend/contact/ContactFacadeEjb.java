@@ -645,6 +645,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}
@@ -739,6 +740,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setExternalID(source.getExternalID());
 		
 		return target;
 	}

@@ -50,6 +50,7 @@ public class Location extends AbstractDomainObject {
 	public static final String COMMUNITY = "community";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String POSTAL_CODE = "postalCode";
 
 	private String address;
 	private String details;
@@ -64,6 +65,8 @@ public class Location extends AbstractDomainObject {
 	private Double longitude;
 	private Float latLonAccuracy;
 	
+	private String postalCode;
+
 	@Column(length = 255)
 	public String getAddress() {
 		return address;
@@ -142,6 +145,15 @@ public class Location extends AbstractDomainObject {
 		this.latLonAccuracy = latLonAccuracy;
 	}
 	
+	@Column(length = 255)
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
 	public String buildGpsCoordinatesCaption() {
 		if (latitude == null && longitude == null) {
 			return "";

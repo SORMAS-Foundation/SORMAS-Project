@@ -901,12 +901,10 @@ public class CaseController {
 		}
 	}
 
-	public void openClassificationRulesPopup(CaseDataDto caze) {
+	public void openClassificationRulesPopup(DiseaseClassificationCriteriaDto diseaseCriteria) {
 		VerticalLayout classificationRulesLayout = new VerticalLayout();
 		classificationRulesLayout.setMargin(true);
 
-		DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade()
-				.getByDisease(caze.getDisease());
 		if (diseaseCriteria != null) {
 			Label suspectContent = new Label();
 			suspectContent.setContentMode(ContentMode.HTML);
@@ -940,7 +938,8 @@ public class CaseController {
 		popupWindow.setWidth(860, Unit.PIXELS);
 		popupWindow.setHeight(80, Unit.PERCENTAGE);
 		popupWindow.setCaption(
-				I18nProperties.getString(Strings.classificationRulesFor) + " " + caze.getDisease().toString());
+				I18nProperties.getString(Strings.classificationRulesFor) + " "
+						+ diseaseCriteria.getDisease().toString());
 	}
 
 	public void deleteAllSelectedItems(Collection<CaseIndexDto> selectedRows, Runnable callback) {

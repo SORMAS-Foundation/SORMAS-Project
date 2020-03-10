@@ -558,4 +558,8 @@
     <string name="value_visit_time_unknown">Visit Time N/A</string>
     <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
     <string name="value_investigation_status_unknown">Investigation Status N/A</string>
+    <string name="message_http_404_empty">No SORMAS server defined in settings.</string>
+    <string name="hint_settings_server_url">e.g. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
+    <string name="caption_settings_server_url">Server URL</string>
+    <string name="message_settings_server_url">Welcome! Please start by entering the URL of your SORMAS server. Afterwards you can log-in with your user name and password.</string>
 </resources>

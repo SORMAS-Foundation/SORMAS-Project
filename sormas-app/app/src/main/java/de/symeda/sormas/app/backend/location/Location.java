@@ -26,7 +26,6 @@ import com.j256.ormlite.table.DatabaseTable;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -72,6 +71,9 @@ public class Location extends AbstractDomainObject {
 	private Double longitude;
 	@DatabaseField
 	private Float latLonAccuracy;
+
+	@Column(length = 255)
+	private String postalCode;
 
 	@Bindable
 	public String getAddress() {
@@ -137,6 +139,14 @@ public class Location extends AbstractDomainObject {
 	}
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
 	}
 
 	public String getCompleteString() {

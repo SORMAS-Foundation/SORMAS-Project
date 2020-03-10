@@ -39,6 +39,7 @@ public class LocationDto extends EntityDto {
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String LAT_LON_ACCURACY = "latLonAccuracy";
+	public static final String POSTAL_CODE = "postalCode";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -50,6 +51,7 @@ public class LocationDto extends EntityDto {
 	private Double latitude;
 	private Double longitude;
 	private Float latLonAccuracy;
+	private String postalCode;
 	
 	public String getAddress() {
 		return address;
@@ -135,6 +137,14 @@ public class LocationDto extends EntityDto {
 		this.latLonAccuracy = latLonAccuracy;
 	}
 	
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
 	public static LocationDto build() {
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());

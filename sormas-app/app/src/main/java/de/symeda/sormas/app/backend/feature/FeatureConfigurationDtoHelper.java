@@ -41,6 +41,7 @@ public class FeatureConfigurationDtoHelper extends AdoDtoHelper<FeatureConfigura
         target.setDisease(source.getDisease());
         target.setFeatureType(source.getFeatureType());
         target.setEndDate(source.getEndDate());
+        target.setEnabled(source.isEnabled());
     }
 
     @Override
@@ -48,7 +49,7 @@ public class FeatureConfigurationDtoHelper extends AdoDtoHelper<FeatureConfigura
         target.setDisease(source.getDisease());
         target.setFeatureType(source.getFeatureType());
         target.setEndDate(source.getEndDate());
+        target.setEnabled(source.isEnabled());
     }
-
 
 }

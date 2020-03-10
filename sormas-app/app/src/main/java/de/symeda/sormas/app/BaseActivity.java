@@ -52,6 +52,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -414,19 +415,19 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
                 caseMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CASE_VIEW));
 
             if (aggregateReportsMenu != null)
-                aggregateReportsMenu.setVisible(ConfigProvider.hasUserRight(UserRight.AGGREGATE_REPORT_VIEW));
+                aggregateReportsMenu.setVisible(ConfigProvider.hasUserRight(UserRight.AGGREGATE_REPORT_VIEW) && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.AGGREGATE_REPORTING));
 
             if (sampleMenu != null)
                 sampleMenu.setVisible(ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW));
 
             if (eventMenu != null)
-                eventMenu.setVisible(ConfigProvider.hasUserRight(UserRight.EVENT_VIEW));
+                eventMenu.setVisible(ConfigProvider.hasUserRight(UserRight.EVENT_VIEW) && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE));
 
             if (contactMenu != null)
                 contactMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW));
 
             if (reportMenu != null)
-                reportMenu.setVisible(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_VIEW));
+                reportMenu.setVisible(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_VIEW) && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.WEEKLY_REPORTING));
 
         }
 
@@ -687,8 +688,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
     }
 
     public void goToSettings(View view) {
-        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-        startActivity(intent);
+        NavigationHelper.goToSettings(view.getContext());
     }
 
     public void goToNewView() {

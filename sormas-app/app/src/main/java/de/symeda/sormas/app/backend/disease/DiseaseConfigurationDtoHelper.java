@@ -59,6 +59,7 @@ public class DiseaseConfigurationDtoHelper extends AdoDtoHelper<DiseaseConfigura
         target.setDisease(source.getDisease());
         target.setActive(source.getActive());
         target.setPrimaryDisease(source.getPrimaryDisease());
+        target.setCaseBased(source.getCaseBased());
         target.setFollowUpEnabled(source.getFollowUpEnabled());
         target.setFollowUpDuration(source.getFollowUpDuration());
     }
@@ -68,6 +69,7 @@ public class DiseaseConfigurationDtoHelper extends AdoDtoHelper<DiseaseConfigura
         target.setDisease(source.getDisease());
         target.setActive(source.getActive());
         target.setPrimaryDisease(source.getPrimaryDisease());
+        target.setCaseBased(source.getCaseBased());
         target.setFollowUpEnabled(source.getFollowUpEnabled());
         target.setFollowUpDuration(source.getFollowUpDuration());
     }

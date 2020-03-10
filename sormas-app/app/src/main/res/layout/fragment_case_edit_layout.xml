@@ -70,6 +70,11 @@
                     app:softRequired="true"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_externalID"
+                    app:value="@={data.externalID}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_caseClassification"
                     app:required="true"
@@ -283,6 +288,17 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_additionalDetails"
+                    app:value="@={data.additionalDetails}"
+                    app:inputType="textMultiLine"
+                    app:textAlignment="gravity"
+                    app:gravity="top|start"
+                    app:singleLine="false"
+                    app:maxLines="3"
+                    app:textArea="true"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 

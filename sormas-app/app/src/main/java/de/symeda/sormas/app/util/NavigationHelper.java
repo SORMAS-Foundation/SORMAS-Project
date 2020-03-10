@@ -33,6 +33,7 @@ import de.symeda.sormas.app.event.list.EventListActivity;
 import de.symeda.sormas.app.report.ReportActivity;
 import de.symeda.sormas.app.report.aggregate.AggregateReportsActivity;
 import de.symeda.sormas.app.sample.list.SampleListActivity;
+import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.task.list.TaskListActivity;
 
 public class NavigationHelper {
@@ -80,6 +81,11 @@ public class NavigationHelper {
 
     public static void goToReports(Context context) {
         Intent intent = new Intent(context, ReportActivity.class);
+        context.startActivity(intent);
+    }
+
+    public static void goToSettings(Context context) {
+        Intent intent = new Intent(context, SettingsActivity.class);
         context.startActivity(intent);
     }
 

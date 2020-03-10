@@ -31,14 +31,14 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append("SELECT ").append(AbstractDomainObject.UUID).append(" FROM ").append(FeatureConfiguration.TABLE_NAME)
 		.append(AbstractDomainObject.HISTORY_TABLE_SUFFIX).append(" h WHERE sys_period @> CAST (?1 AS timestamptz) ");
-		
+
 		if (user.getRegion() != null) {
 			queryBuilder.append(" AND h.").append(FeatureConfiguration.REGION).append("_id = ").append(user.getRegion().getId()).append(" ");
 		}
 		if (user.getDistrict() != null) {
 			queryBuilder.append(" AND h.").append(FeatureConfiguration.DISTRICT).append("_id = ").append(user.getDistrict().getId()).append(" ");
 		}
-		
+
 		queryBuilder.append(" AND NOT EXISTS (SELECT FROM ").append(FeatureConfiguration.TABLE_NAME).append(" WHERE ")
 		.append(AbstractDomainObject.ID).append(" = h.").append(AbstractDomainObject.ID).append(")");
 		Query nativeQuery = em.createNativeQuery(queryBuilder.toString());
@@ -62,6 +62,9 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 		if (criteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.DISEASE), criteria.getDisease()));
 		}
+		if (criteria.getEnabled() != null) {
+			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.ENABLED), criteria.getEnabled()));
+		}
 		return filter;
 	}
 
@@ -74,10 +77,18 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 
 		Predicate filter = null;
 		if (user.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.REGION), user.getRegion()));
+			filter = and(cb, filter, 
+					cb.or(
+							cb.isNull(from.get(FeatureConfiguration.REGION)),
+							cb.equal(from.get(FeatureConfiguration.REGION), user.getRegion())
+							));
 		}
 		if (user.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.DISTRICT), user.getDistrict()));
+			filter = and(cb, filter, 
+					cb.or(
+							cb.isNull(from.get(FeatureConfiguration.DISTRICT)),
+							cb.equal(from.get(FeatureConfiguration.DISTRICT), user.getDistrict())
+							));
 		}
 
 		return filter;
