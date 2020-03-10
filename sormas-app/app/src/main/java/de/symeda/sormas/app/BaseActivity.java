@@ -687,8 +687,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
     }
 
     public void goToSettings(View view) {
-        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-        startActivity(intent);
+        NavigationHelper.goToSettings(view.getContext());
     }
 
     public void goToNewView() {

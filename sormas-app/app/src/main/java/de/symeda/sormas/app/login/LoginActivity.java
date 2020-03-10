@@ -187,6 +187,12 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
     }
 
     private void checkLoginAndDoUpdateAndInitialSync() {
+
+        if (DataHelper.isNullOrEmpty(ConfigProvider.getServerRestUrl())) {
+            NavigationHelper.goToSettings(this);
+            return;
+        }
+
         if (ConfigProvider.getUsername() == null) return;
 
         if (progressDialog == null || !progressDialog.isShowing()) {

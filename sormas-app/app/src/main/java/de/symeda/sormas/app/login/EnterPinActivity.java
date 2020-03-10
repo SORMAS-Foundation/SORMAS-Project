@@ -41,6 +41,7 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.ActivityEnterPinLayoutBinding;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.settings.SettingsActivity;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 public class EnterPinActivity extends AppCompatActivity implements NotificationContext {
 
@@ -325,8 +326,7 @@ public class EnterPinActivity extends AppCompatActivity implements NotificationC
     }
 
     public void backToSettings(View view) {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        NavigationHelper.goToSettings(view.getContext());
     }
 
     public void forgotPIN(final View view) {

@@ -438,8 +438,17 @@ public final class ConfigProvider {
     }
 
     public static void setServerRestUrl(String serverRestUrl) {
+
+        if (serverRestUrl != null) {
+            serverRestUrl = serverRestUrl.trim();
+        }
+
         if (serverRestUrl != null && serverRestUrl.isEmpty()) {
             serverRestUrl = null;
+        }
+
+        if (serverRestUrl != null && !serverRestUrl.endsWith("/"))  {
+            serverRestUrl += "/";
         }
 
         if (serverRestUrl == instance.serverRestUrl

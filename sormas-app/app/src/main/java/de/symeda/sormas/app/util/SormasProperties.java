@@ -44,7 +44,7 @@ public class SormasProperties {
 
 
     public static String getServerUrlDefault() {
-         return get().getProperty(SERVER_URL_DEFAULT, "https://sormas.org.ng/sormas-rest/");
+         return get().getProperty(SERVER_URL_DEFAULT, null);
     }
 
     public static String getUserNameDefault() {

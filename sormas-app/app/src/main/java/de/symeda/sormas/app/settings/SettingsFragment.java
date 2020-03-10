@@ -72,6 +72,8 @@ public class SettingsFragment extends BaseLandingFragment {
 
     protected boolean isShowDevOptions() { return versionClickedCount >= SHOW_DEV_OPTIONS_CLICK_LIMIT; }
 
+    protected boolean hasServerUrl() {return ConfigProvider.getServerRestUrl() != null;}
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -106,7 +108,9 @@ public class SettingsFragment extends BaseLandingFragment {
                         if (user != null) {
                             DatabaseHelper.getUserDao().saveAndSnapshot(user);
                         }
-                        ((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
+                        if (newLanguage != null) {
+                            ((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
+                        }
                     } catch (DaoException ex) {
                         NotificationHelper.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
                     }
@@ -127,7 +131,8 @@ public class SettingsFragment extends BaseLandingFragment {
         super.onResume();
 
         boolean hasUser = ConfigProvider.getUser() != null;
-        binding.settingsServerUrl.setVisibility(isShowDevOptions() ? View.VISIBLE : View.GONE);
+        binding.settingsServerUrlInfo.setVisibility(!hasServerUrl() ? View.VISIBLE : View.GONE);
+        binding.settingsServerUrl.setVisibility(!hasServerUrl() || isShowDevOptions() ? View.VISIBLE : View.GONE);
         binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
@@ -271,6 +276,6 @@ public class SettingsFragment extends BaseLandingFragment {
 
     @Override
     public boolean isShowSaveAction() {
-        return isShowDevOptions();
+        return !hasServerUrl() || isShowDevOptions();
     }
 }

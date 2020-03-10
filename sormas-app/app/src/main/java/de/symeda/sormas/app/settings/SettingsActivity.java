@@ -60,8 +60,7 @@ public class SettingsActivity extends BaseLandingActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (ConfigProvider.getUser() == null) {
-                    // Settings don't have a parent -> go back instead of up
-                    onBackPressed();
+                    onBackPressed(); // Settings don't have a parent -> go back instead of up
                     return true;
                 }
                 return super.onOptionsItemSelected(item);
@@ -69,7 +68,8 @@ public class SettingsActivity extends BaseLandingActivity {
             case R.id.action_save:
                 String serverUrl = getActiveFragment().getServerUrl();
                 ConfigProvider.setServerRestUrl(serverUrl);
-                onResume();
+
+                onBackPressed(); // Settings don't have a parent -> go back instead of up
 
                 NotificationHelper.showNotification(this, NotificationPosition.BOTTOM, NotificationType.SUCCESS, R.string.message_settings_saved);
 
