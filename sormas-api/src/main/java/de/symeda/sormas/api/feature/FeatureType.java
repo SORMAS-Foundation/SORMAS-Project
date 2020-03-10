@@ -7,6 +7,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum FeatureType {
 
+	/**
+	 * New module features are automatically added to the database in StartupShutdownService.createMissingFeatureConfigurations().
+	 * The corresponding feature configurations are set to be enabled by default.
+	 */
+	
 	LINE_LISTING(false),
 	AGGREGATE_REPORTING(true),
 	EVENT_SURVEILLANCE(true),
