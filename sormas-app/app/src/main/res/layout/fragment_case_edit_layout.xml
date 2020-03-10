@@ -70,6 +70,11 @@
                     app:softRequired="true"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_externalID"
+                    app:value="@={data.externalID}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_caseClassification"
                     app:required="true"

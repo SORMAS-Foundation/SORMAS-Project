@@ -108,6 +108,8 @@ public class Contact extends AbstractDomainObject {
 	private ContactRelation relationToCase;
 	@Column(length = 512)
 	private String relationDescription;
+	@Column(length = 255)
+	private String externalID;
 
 	@DatabaseField
 	private String resultingCaseUuid;
@@ -290,5 +292,13 @@ public class Contact extends AbstractDomainObject {
 
 	public void setCaseDisease(Disease caseDisease) {
 		this.caseDisease = caseDisease;
+	}
+
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
 	}
 }

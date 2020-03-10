@@ -1735,6 +1735,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}
@@ -1827,6 +1828,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}

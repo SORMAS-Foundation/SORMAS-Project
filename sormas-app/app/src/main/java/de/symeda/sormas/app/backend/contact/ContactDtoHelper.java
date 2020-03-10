@@ -94,6 +94,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
         target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+        target.setExternalID(source.getExternalID());
     }
 
     @Override
@@ -146,6 +147,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setReportLat(source.getReportLat());
         target.setReportLon(source.getReportLon());
         target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+        target.setExternalID(source.getExternalID());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

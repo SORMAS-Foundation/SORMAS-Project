@@ -69,7 +69,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		LayoutUtil.h3(I18nProperties.getString(Strings.headingContactData))+
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
-			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.UUID) +
+					LayoutUtil.fluidRowLocs(6, ContactDto.LAST_CONTACT_DATE, 6, null)
+					+
+			LayoutUtil.fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
 			LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
@@ -92,6 +94,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
     	addField(ContactDto.CONTACT_STATUS, OptionGroup.class);
     	addField(ContactDto.UUID, TextField.class);
+    	addField(ContactDto.EXTERNAL_ID, TextField.class);
     	addField(ContactDto.REPORTING_USER, ComboBox.class);
     	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	addField(ContactDto.REPORT_DATE_TIME, DateField.class);

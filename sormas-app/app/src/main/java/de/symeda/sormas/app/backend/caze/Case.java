@@ -248,6 +248,9 @@ public class Case extends AbstractDomainObject {
     @Column(length = 512)
     private String additionalDetails;
 
+    @Column(length = 255)
+    private String externalID;
+
     public boolean isUnreferredPortHealthCase() {
         return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
     }
@@ -728,5 +731,13 @@ public class Case extends AbstractDomainObject {
 
     public void setAdditionalDetails(String additionalDetails) {
         this.additionalDetails = additionalDetails;
+    }
+
+    public String getExternalID() {
+        return externalID;
+    }
+
+    public void setExternalID(String externalID) {
+        this.externalID = externalID;
     }
 }

@@ -3940,3 +3940,11 @@ ALTER TABLE featureconfiguration_history ADD COLUMN enabled boolean;
 UPDATE featureconfiguration SET enabled = true;
 
 INSERT INTO schema_version (version_number, comment) VALUES (184, 'Add enabled field to feature configuration #1559');
+
+-- 2020-03-10 Add external ID text field to case and contact #1571
+ALTER TABLE cases ADD COLUMN externalid varchar(255);
+ALTER TABLE cases_history ADD COLUMN externalid varchar(255);
+ALTER TABLE contact ADD COLUMN externalid varchar(255);
+ALTER TABLE contact_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (185, 'Add external ID text field to case and contact #1571');
