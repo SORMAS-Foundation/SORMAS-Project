@@ -280,7 +280,7 @@
     <string name="heading_contacts_list">Kontaktliste</string>
     <string name="heading_create_new_pin">Neue PIN erstellen</string>
     <string name="heading_create_pin">PIN erstellen</string>
-    <string name="heading_disease_detection">Krankheitserkennung</string>
+    <string name="heading_disease_detection">Krankheitsdetektion</string>
     <string name="heading_disease_prevention">Krankheitsvorbeugung</string>
     <string name="heading_enter_pin">PIN eingeben</string>
     <string name="heading_environmental_exposure">Umweltexpositionen</string>
