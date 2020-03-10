@@ -438,25 +438,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			for (Object[] followUpInfo : followUpInfoList) {
 				int day = DateHelper.getDaysBetween(start, (Date) followUpInfo[0]);
 				VisitResult result = getVisitResult((VisitStatus) followUpInfo[1], (boolean) followUpInfo[2]);
-				
-				switch (day) {
-				case 1:
-					followUpDto.setDay1Result(result); break;
-				case 2:
-					followUpDto.setDay2Result(result); break;
-				case 3:
-					followUpDto.setDay3Result(result); break;
-				case 4:
-					followUpDto.setDay4Result(result); break;
-				case 5:
-					followUpDto.setDay5Result(result); break;
-				case 6:
-					followUpDto.setDay6Result(result); break;
-				case 7:
-					followUpDto.setDay7Result(result); break;
-				case 8:
-					followUpDto.setDay8Result(result); break;
-				}
+				followUpDto.getVisitResults()[day - 1] = result;
 			}
 		}
 		

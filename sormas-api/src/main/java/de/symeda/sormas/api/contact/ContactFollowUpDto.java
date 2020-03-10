@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -36,14 +37,7 @@ public class ContactFollowUpDto implements Serializable {
 	private Date reportDateTime;
 	private Date followUpUntil;
 	private Disease disease;
-	private VisitResult day1Result = VisitResult.NOT_PERFORMED;
-	private VisitResult day2Result = VisitResult.NOT_PERFORMED;
-	private VisitResult day3Result = VisitResult.NOT_PERFORMED;
-	private VisitResult day4Result = VisitResult.NOT_PERFORMED;
-	private VisitResult day5Result = VisitResult.NOT_PERFORMED;
-	private VisitResult day6Result = VisitResult.NOT_PERFORMED;
-	private VisitResult day7Result = VisitResult.NOT_PERFORMED;
-	private VisitResult day8Result = VisitResult.NOT_PERFORMED;
+	private VisitResult[] visitResults;
 	
 	public ContactFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
 			String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
@@ -55,6 +49,8 @@ public class ContactFollowUpDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
+		visitResults = new VisitResult[8];
+		Arrays.fill(visitResults, VisitResult.NOT_PERFORMED);
 	}
 
 	public String getUuid() {
@@ -113,68 +109,12 @@ public class ContactFollowUpDto implements Serializable {
 		this.disease = disease;
 	}
 
-	public VisitResult getDay1Result() {
-		return day1Result;
+	public VisitResult[] getVisitResults() {
+		return visitResults;
 	}
 
-	public void setDay1Result(VisitResult day1Result) {
-		this.day1Result = day1Result;
-	}
-
-	public VisitResult getDay2Result() {
-		return day2Result;
-	}
-
-	public void setDay2Result(VisitResult day2Result) {
-		this.day2Result = day2Result;
-	}
-
-	public VisitResult getDay3Result() {
-		return day3Result;
-	}
-
-	public void setDay3Result(VisitResult day3Result) {
-		this.day3Result = day3Result;
-	}
-
-	public VisitResult getDay4Result() {
-		return day4Result;
-	}
-
-	public void setDay4Result(VisitResult day4Result) {
-		this.day4Result = day4Result;
-	}
-
-	public VisitResult getDay5Result() {
-		return day5Result;
-	}
-
-	public void setDay5Result(VisitResult day5Result) {
-		this.day5Result = day5Result;
-	}
-
-	public VisitResult getDay6Result() {
-		return day6Result;
-	}
-
-	public void setDay6Result(VisitResult day6Result) {
-		this.day6Result = day6Result;
-	}
-
-	public VisitResult getDay7Result() {
-		return day7Result;
-	}
-
-	public void setDay7Result(VisitResult day7Result) {
-		this.day7Result = day7Result;
-	}
-
-	public VisitResult getDay8Result() {
-		return day8Result;
-	}
-
-	public void setDay8Result(VisitResult day8Result) {
-		this.day8Result = day8Result;
+	public void setVisitResults(VisitResult[] visitResults) {
+		this.visitResults = visitResults;
 	}
 	
 }
