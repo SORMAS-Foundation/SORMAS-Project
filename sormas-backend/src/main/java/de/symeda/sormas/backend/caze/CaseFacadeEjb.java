@@ -471,7 +471,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
+		/*
+		 * Sort by report date DESC, but also by id for stable Sorting in case of equal report dates.
+		 * Since this method supports paging, values might jump between pages when sorting is unstable.
+		 */
+		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)), cb.desc(caseRoot.get(Case.ID)));
 
 		List<CaseExportDto> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
