@@ -3927,3 +3927,9 @@ ALTER TABLE cases ADD COLUMN additionaldetails varchar(512);
 ALTER TABLE cases_history ADD COLUMN additionaldetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (182, 'Add additional details to case #1564');
+
+-- 2020-03-10 Add postal code to location #1553
+ALTER TABLE location ADD COLUMN postalcode varchar(255);
+ALTER TABLE location_history ADD COLUMN postalcode varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (183, 'Add postal code to location #1553');

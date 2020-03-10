@@ -68,6 +68,11 @@
                 app:value="@={data.community}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_postalCode"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.postalCode}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/location_city"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.city}" />

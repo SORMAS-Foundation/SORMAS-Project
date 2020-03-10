@@ -74,6 +74,8 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
         target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
+
+        target.setPostalCode(source.getPostalCode());
     }
 
     @Override
@@ -102,5 +104,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
         } else {
             target.setRegion(null);
         }
+
+        target.setPostalCode(source.getPostalCode());
     }
 }
