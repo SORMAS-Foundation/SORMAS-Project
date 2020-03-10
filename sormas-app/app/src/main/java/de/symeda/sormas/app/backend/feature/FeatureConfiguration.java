@@ -25,6 +25,7 @@ public class FeatureConfiguration extends AbstractDomainObject {
 
     public static final String FEATURE_TYPE = "featureType";
     public static final String DISEASE = "disease";
+    public static final String ENABLED = "enabled";
     public static final String END_DATE = "endDate";
 
     @Enumerated(EnumType.STRING)
@@ -32,6 +33,9 @@ public class FeatureConfiguration extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private Disease disease;
+
+    @DatabaseField
+    private boolean enabled;
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date endDate;
@@ -58,6 +62,14 @@ public class FeatureConfiguration extends AbstractDomainObject {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
