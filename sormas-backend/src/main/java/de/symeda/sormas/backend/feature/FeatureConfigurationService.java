@@ -62,6 +62,9 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 		if (criteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.DISEASE), criteria.getDisease()));
 		}
+		if (criteria.getEnabled() != null) {
+			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.ENABLED), criteria.getEnabled()));
+		}
 		return filter;
 	}
 

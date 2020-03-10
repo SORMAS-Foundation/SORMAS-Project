@@ -12,6 +12,8 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -97,7 +99,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		
 		cq.multiselect(root.get(FeatureConfiguration.UUID), regionJoin.get(Region.UUID), regionJoin.get(Region.NAME),
 				districtJoin.get(District.UUID), districtJoin.get(District.NAME), root.get(FeatureConfiguration.DISEASE),
-				root.get(FeatureConfiguration.END_DATE));
+				root.get(FeatureConfiguration.ENABLED), root.get(FeatureConfiguration.END_DATE));
 		
 		if (criteria != null) {
 			Predicate filter = service.createCriteriaFilter(criteria, cb, cq, root);
@@ -107,7 +109,6 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 		
 		List<FeatureConfigurationIndexDto> resultList = em.createQuery(cq).getResultList();
-		resultList.stream().forEach(config -> config.setActive(true));
 		
 		if (includeInactive) {
 			if (criteria.getDistrict() == null) {
@@ -124,7 +125,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				
 				for (District district : districts) {
 					resultList.add(new FeatureConfigurationIndexDto(null, district.getRegion().getUuid(), district.getRegion().getName(), 
-							district.getUuid(), district.getName(), criteria.getDisease(), null));
+							district.getUuid(), district.getName(), criteria.getDisease(), false, null));
 				}
 			}
 		}
@@ -153,7 +154,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	@Override
 	public void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType) {	
 		// Delete an existing configuration that was set inactive
-		if (Boolean.FALSE.equals(configuration.getActive())) {
+		if (Boolean.FALSE.equals(configuration.isEnabled())) {
 			FeatureConfiguration existingConfiguration = service.getByUuid(configuration.getUuid());
 			if (existingConfiguration != null) {
 				service.delete(existingConfiguration);
@@ -170,6 +171,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto.setDisease(configuration.getDisease());
 			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid()));
 			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid()));
+			configurationDto.setEnabled(configuration.isEnabled());
 		}
 		
 		configurationDto.setEndDate(DateHelper.getEndOfDay(configuration.getEndDate()));
@@ -209,6 +211,22 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		resultList.forEach(result -> service.delete(result));
 	}
 	
+	@Override
+	public boolean isFeatureDisabled(FeatureType featureType) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+		
+		cq.where(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType));
+		
+		try {
+			FeatureConfiguration result = em.createQuery(cq).getSingleResult();
+			return !result.isEnabled();
+		} catch (NoResultException | NonUniqueResultException e) {
+			return false;
+		}
+	}
+	
 	public static FeatureConfigurationDto toDto(FeatureConfiguration source) {
 		if (source == null) {
 			return null;
@@ -222,6 +240,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
+		target.setEnabled(source.isEnabled());
 		
 		return target;
 	}
@@ -242,6 +261,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
+		target.setEnabled(source.isEnabled());
 		
 		return target;
 	}

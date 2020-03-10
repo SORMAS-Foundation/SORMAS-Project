@@ -13,7 +13,7 @@ public class FeatureConfigurationIndexDto implements Serializable {
 
 	public static final String REGION_NAME = "regionName";
 	public static final String DISTRICT_NAME = "districtName";
-	public static final String ACTIVE = "active";
+	public static final String ENABLED = "enabled";
 	public static final String END_DATE = "endDate";
 	
 	private String uuid;
@@ -22,17 +22,18 @@ public class FeatureConfigurationIndexDto implements Serializable {
 	private String districtUuid;
 	private String districtName;
 	private Disease disease;
-	private Boolean active;
+	private boolean enabled;
 	private Date endDate;
 	
 	public FeatureConfigurationIndexDto(String uuid, String regionUuid, String regionName,
-			String districtUuid, String districtName, Disease disease, Date endDate) {
+			String districtUuid, String districtName, Disease disease, boolean enabled, Date endDate) {
 		this.uuid = uuid;
 		this.regionUuid = regionUuid;
 		this.regionName = regionName;
 		this.districtUuid = districtUuid;
 		this.districtName = districtName;
 		this.disease = disease;
+		this.enabled = enabled;
 		this.endDate = endDate;
 	}
 	
@@ -84,12 +85,12 @@ public class FeatureConfigurationIndexDto implements Serializable {
 		this.disease = disease;
 	}
 	
-	public Boolean getActive() {
-		return active;
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
-	public void setActive(Boolean active) {
-		this.active = active;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 	public Date getEndDate() {

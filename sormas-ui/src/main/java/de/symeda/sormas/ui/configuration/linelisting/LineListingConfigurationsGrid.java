@@ -41,7 +41,7 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 
 	public void enableAll() {
 		configurations.stream().forEach(config -> { 
-			config.setActive(true);
+			config.setEnabled(true);
 			if (config.getEndDate() == null) {
 				config.setEndDate(DateHelper.addDays(new Date(), 21));
 			}
@@ -52,7 +52,7 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 
 	public void disableAll() {
 		configurations.stream().forEach(config -> {
-			config.setActive(false);
+			config.setEnabled(false);
 			config.setEndDate(null);
 		});
 		changedConfigurations.addAll(configurations);
@@ -87,9 +87,9 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.DISTRICT_NAME));
 		addComponentColumn(config -> {
 			CheckBox cbActive = new CheckBox();
-			cbActive.setValue(config.getActive() != null ? config.getActive() : Boolean.FALSE);
+			cbActive.setValue(config.isEnabled());
 			cbActive.addValueChangeListener(e -> {
-				config.setActive(e.getValue());
+				config.setEnabled(e.getValue());
 				if (Boolean.TRUE.equals(e.getValue())) {
 					config.setEndDate(DateHelper.addDays(new Date(), 21));
 					dateFieldMap.get(config).setValue(DateHelper8.toLocalDate(DateHelper.addDays(new Date(), 21)));
@@ -101,7 +101,7 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 			});
 			return cbActive;
 		})
-		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.ACTIVE));
+		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.ENABLED));
 		addComponentColumn(config -> {
 			DateField dfEndDate = new DateField();
 			dfEndDate.setValue(DateHelper8.toLocalDate(config.getEndDate()));

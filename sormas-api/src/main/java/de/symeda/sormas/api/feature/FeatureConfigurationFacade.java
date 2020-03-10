@@ -27,4 +27,6 @@ public interface FeatureConfigurationFacade {
 	
 	void deleteAllExpiredFeatureConfigurations(Date date);
 	
+	boolean isFeatureDisabled(FeatureType featureType);
+	
 }

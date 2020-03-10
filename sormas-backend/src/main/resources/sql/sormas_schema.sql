@@ -3933,3 +3933,10 @@ ALTER TABLE location ADD COLUMN postalcode varchar(255);
 ALTER TABLE location_history ADD COLUMN postalcode varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (183, 'Add postal code to location #1553');
+
+-- 2020-03-10 Add enabled field to feature configuration #1559
+ALTER TABLE featureconfiguration ADD COLUMN enabled boolean;
+ALTER TABLE featureconfiguration_history ADD COLUMN enabled boolean;
+UPDATE featureconfiguration SET enabled = true;
+
+INSERT INTO schema_version (version_number, comment) VALUES (184, 'Add enabled field to feature configuration #1559');
