@@ -102,6 +102,7 @@ public interface Captions {
 	public static String caseContacts = "caseContacts";
 	public static String caseCreateCase = "caseCreateCase";
 	public static String CaseData = "CaseData";
+	public static String CaseData_additionalDetails = "CaseData.additionalDetails";
 	public static String CaseData_caseClassification = "CaseData.caseClassification";
 	public static String CaseData_caseOfficer = "CaseData.caseOfficer";
 	public static String CaseData_caseOrigin = "CaseData.caseOrigin";
@@ -121,6 +122,7 @@ public interface Captions {
 	public static String CaseData_doses = "CaseData.doses";
 	public static String CaseData_epiData = "CaseData.epiData";
 	public static String CaseData_epidNumber = "CaseData.epidNumber";
+	public static String CaseData_externalID = "CaseData.externalID";
 	public static String CaseData_healthConditions = "CaseData.healthConditions";
 	public static String CaseData_healthFacility = "CaseData.healthFacility";
 	public static String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
@@ -277,6 +279,7 @@ public interface Captions {
 	public static String Contact_contactProximity = "Contact.contactProximity";
 	public static String Contact_contactStatus = "Contact.contactStatus";
 	public static String Contact_description = "Contact.description";
+	public static String Contact_externalID = "Contact.externalID";
 	public static String Contact_firstName = "Contact.firstName";
 	public static String Contact_followUpComment = "Contact.followUpComment";
 	public static String Contact_followUpStatus = "Contact.followUpStatus";
@@ -305,11 +308,14 @@ public interface Captions {
 	public static String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	public static String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	public static String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
+	public static String contactFollowUpOverviewReferenceDate = "contactFollowUpOverviewReferenceDate";
 	public static String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	public static String contactLostToFollowUp = "contactLostToFollowUp";
+	public static String contactMinusDays = "contactMinusDays";
 	public static String contactNewContact = "contactNewContact";
 	public static String contactOpenContactCase = "contactOpenContactCase";
 	public static String contactPersonVisits = "contactPersonVisits";
+	public static String contactPlusDays = "contactPlusDays";
 	public static String contactRelated = "contactRelated";
 	public static String contactResumeFollowUp = "contactResumeFollowUp";
 	public static String creationDate = "creationDate";
@@ -604,8 +610,8 @@ public interface Captions {
 	public static String facilityAllLaboratories = "facilityAllLaboratories";
 	public static String facilityArchivedFacilities = "facilityArchivedFacilities";
 	public static String facilityArchivedLaboratories = "facilityArchivedLaboratories";
-	public static String FeatureConfiguration_active = "FeatureConfiguration.active";
 	public static String FeatureConfiguration_districtName = "FeatureConfiguration.districtName";
+	public static String FeatureConfiguration_enabled = "FeatureConfiguration.enabled";
 	public static String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
 	public static String firstName = "firstName";
 	public static String formatNumberOfVisitsFormat = "formatNumberOfVisitsFormat";
@@ -665,6 +671,7 @@ public interface Captions {
 	public static String Location_latLon = "Location.latLon";
 	public static String Location_latLonAccuracy = "Location.latLonAccuracy";
 	public static String Location_longitude = "Location.longitude";
+	public static String Location_postalCode = "Location.postalCode";
 	public static String Login_doLogIn = "Login.doLogIn";
 	public static String Login_login = "Login.login";
 	public static String Login_password = "Login.password";

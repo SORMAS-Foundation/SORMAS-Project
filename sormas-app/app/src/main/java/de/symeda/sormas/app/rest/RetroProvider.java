@@ -125,6 +125,11 @@ public final class RetroProvider {
 
         this.context = context;
 
+        String serverUrl = ConfigProvider.getServerRestUrl();
+        if (DataHelper.isNullOrEmpty(serverUrl)) {
+            throw new ServerConnectionException(404);
+        }
+
         RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory = RuntimeTypeAdapterFactory
                 .of(ClassificationCriteriaDto.class, "type")
                 .registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
@@ -190,7 +195,7 @@ public final class RetroProvider {
         });
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(ConfigProvider.getServerRestUrl())
+                .baseUrl(serverUrl)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(httpClient.build())
                 .build();
@@ -273,7 +278,6 @@ public final class RetroProvider {
         if (connecting) {
             throw new IllegalStateException("Already connecting.");
         }
-
         if (!isConnectedToNetwork(context)) {
             throw new ServerConnectionException(600);
         }

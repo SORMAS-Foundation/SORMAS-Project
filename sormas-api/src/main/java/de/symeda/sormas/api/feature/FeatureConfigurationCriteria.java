@@ -13,12 +13,13 @@ public class FeatureConfigurationCriteria extends BaseCriteria implements Clonea
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String DISEASE = "disease";
-	public static final String END_DATE = "endDate";
+	public static final String ENABLED = "enabled";
 	
 	private FeatureType featureType;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
+	private Boolean enabled;
 	
 	public FeatureType getFeatureType() {
 		return featureType;
@@ -41,6 +42,7 @@ public class FeatureConfigurationCriteria extends BaseCriteria implements Clonea
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
+	
 	public FeatureConfigurationCriteria district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
@@ -52,6 +54,15 @@ public class FeatureConfigurationCriteria extends BaseCriteria implements Clonea
 	
 	public FeatureConfigurationCriteria disease(Disease disease) {
 		this.disease = disease;
+		return this;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public FeatureConfigurationCriteria enabled(Boolean enabled) {
+		this.enabled = enabled;
 		return this;
 	}
 	

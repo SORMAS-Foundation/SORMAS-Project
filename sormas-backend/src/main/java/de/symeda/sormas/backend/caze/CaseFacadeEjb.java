@@ -722,7 +722,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<DashboardCaseDto> result;
 		if (filter != null) {
 			cq.where(filter);
-			cq.multiselect(caze.get(Case.UUID), caze.get(Case.REPORT_DATE), symptoms.get(Symptoms.ONSET_DATE),
+			cq.multiselect(caze.get(Case.ID), caze.get(Case.UUID), caze.get(Case.REPORT_DATE), symptoms.get(Symptoms.ONSET_DATE),
 					caze.get(Case.CASE_CLASSIFICATION), caze.get(Case.DISEASE), caze.get(Case.INVESTIGATION_STATUS),
 					person.get(Person.PRESENT_CONDITION), person.get(Person.CAUSE_OF_DEATH_DISEASE));
 
@@ -1734,6 +1734,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setCaseOrigin(source.getCaseOrigin());
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
+		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}
@@ -1825,6 +1827,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setCaseOrigin(source.getCaseOrigin());
 		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
+		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}

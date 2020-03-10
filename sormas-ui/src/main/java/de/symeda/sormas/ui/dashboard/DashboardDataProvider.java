@@ -19,8 +19,10 @@ package de.symeda.sormas.ui.dashboard;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -101,6 +103,14 @@ public class DashboardDataProvider {
 
 			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
 			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+
+			if (getDashboardType() != DashboardType.CONTACTS) {
+				if (getCases().size() > 0) {
+					setTestResultCountByResultType(FacadeProvider.getSampleFacade().getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
+				} else {
+					setTestResultCountByResultType(new HashMap<>());
+				}
+			}
 		}
 
 		if (this.disease == null || getDashboardType() == DashboardType.CONTACTS) {
@@ -119,11 +129,10 @@ public class DashboardDataProvider {
 		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria, userUuid));
 
 		// Test results
-		setTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district, disease,
-				fromDate, toDate, userUuid));
-		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
-				disease, previousFromDate, previousToDate, userUuid));
-		setTestResultCountByResultType(FacadeProvider.getSampleFacade().getNewTestResultCountByResultType(region, district, disease, fromDate, toDate, userUuid));
+		//		setTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district, disease,
+		//				fromDate, toDate, userUuid));
+		//		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
+		//				disease, previousFromDate, previousToDate, userUuid));
 
 		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate), userUuid));
 	}

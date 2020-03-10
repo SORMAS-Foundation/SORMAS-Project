@@ -125,9 +125,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return countryName;
 	}
 
+	/**
+	 * Returns the locale in lower case
+	 */
 	@Override
 	public String getCountryLocale() {
-		return getProperty(COUNTRY_LOCALE, Locale.getDefault().toString());
+		String locale = getProperty(COUNTRY_LOCALE, Locale.getDefault().toString());
+		if (locale != null) {
+			locale = locale.toLowerCase();
+		}
+		return locale;
 	}
 	
 	@Override

@@ -50,11 +50,25 @@ public class FeatureConfigurationDao extends AbstractAdoDao<FeatureConfiguration
         return diseases;
     }
 
+    public boolean isFeatureDisabled(FeatureType featureType) {
+        try {
+            QueryBuilder builder = queryBuilder();
+            Where where = builder.where();
+            where.eq(FeatureConfiguration.FEATURE_TYPE, featureType);
+            where.and().eq(FeatureConfiguration.ENABLED, false);
+            return builder.countOf() > 0;
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform isFeatureDisabled");
+            throw new RuntimeException(e);
+        }
+    }
+
     public void deleteExpiredFeatureConfigurations() {
         try {
             QueryBuilder builder = queryBuilder();
             Where where = builder.where();
-            where.lt(FeatureConfiguration.END_DATE, new Date());
+            where.isNotNull(FeatureConfiguration.END_DATE);
+            where.and().lt(FeatureConfiguration.END_DATE, new Date());
             List<FeatureConfiguration> result = builder.query();
             if (result != null) {
                 for (FeatureConfiguration config : result) {

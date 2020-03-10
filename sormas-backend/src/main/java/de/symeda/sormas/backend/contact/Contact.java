@@ -71,6 +71,7 @@ public class Contact extends CoreAdo {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
+	public static final String EXTERNAL_ID = "externalID";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -91,6 +92,7 @@ public class Contact extends CoreAdo {
 	private Date followUpUntil;
 	private User contactOfficer;
 	private String description;
+	private String externalID;
 	
 	private Case resultingCase;
 	private User resultingCaseUser;
@@ -295,5 +297,14 @@ public class Contact extends CoreAdo {
 
 	public void setResultingCaseUser(User resultingCaseUser) {
 		this.resultingCaseUser = resultingCaseUser;
+	}
+
+	@Column(length = 255)
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
 	}	
 }

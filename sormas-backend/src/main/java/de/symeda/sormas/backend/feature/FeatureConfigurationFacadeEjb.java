@@ -45,7 +45,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
-	
+
 	@EJB
 	private FeatureConfigurationService service;
 	@EJB
@@ -58,7 +58,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	@Override
 	public List<FeatureConfigurationDto> getAllAfter(Date date, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return service.getAllAfter(date, user)
 				.stream()
 				.map(d -> toDto(d))
@@ -76,17 +76,17 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	@Override
 	public List<String> getAllUuids(String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return service.getAllUuids(user);
 	}
-	
+
 	@Override
 	public List<String> getDeletedUuids(Date since, String userUuid) {
 		User user = userService.getByUuid(userUuid);
-		
+
 		return service.getDeletedUuids(since, user);
 	}
-	
+
 	@Override
 	public List<FeatureConfigurationIndexDto> getFeatureConfigurations(FeatureConfigurationCriteria criteria, boolean includeInactive) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -94,21 +94,20 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
 		Join<FeatureConfiguration, Region> regionJoin = root.join(FeatureConfiguration.REGION, JoinType.LEFT);
 		Join<FeatureConfiguration, District> districtJoin = root.join(FeatureConfiguration.DISTRICT, JoinType.LEFT);
-		
+
 		cq.multiselect(root.get(FeatureConfiguration.UUID), regionJoin.get(Region.UUID), regionJoin.get(Region.NAME),
 				districtJoin.get(District.UUID), districtJoin.get(District.NAME), root.get(FeatureConfiguration.DISEASE),
-				root.get(FeatureConfiguration.END_DATE));
-		
+				root.get(FeatureConfiguration.ENABLED), root.get(FeatureConfiguration.END_DATE));
+
 		if (criteria != null) {
 			Predicate filter = service.createCriteriaFilter(criteria, cb, cq, root);
 			if (filter != null) {
 				cq.where(filter);
 			}
 		}
-		
+
 		List<FeatureConfigurationIndexDto> resultList = em.createQuery(cq).getResultList();
-		resultList.stream().forEach(config -> config.setActive(true));
-		
+
 		if (includeInactive) {
 			if (criteria.getDistrict() == null) {
 				List<District> districts = null;
@@ -118,17 +117,17 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				} else {
 					districts = districtService.getAllActive();
 				}
-				
+
 				List<String> activeUuids = resultList.stream().map(config -> config.getDistrictUuid()).collect(Collectors.toList());
 				districts = districts.stream().filter(district -> !activeUuids.contains(district.getUuid())).collect(Collectors.toList());
-				
+
 				for (District district : districts) {
 					resultList.add(new FeatureConfigurationIndexDto(null, district.getRegion().getUuid(), district.getRegion().getName(), 
-							district.getUuid(), district.getName(), criteria.getDisease(), null));
+							district.getUuid(), district.getName(), criteria.getDisease(), false, null));
 				}
 			}
 		}
-		
+
 		if (criteria.getRegion() != null) {
 			resultList.sort((c1, c2) -> c1.getDistrictName().compareTo(c2.getDistrictName()));
 		} else {
@@ -142,26 +141,26 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 		return resultList;
 	}
-	
+
 	@Override
 	public void saveFeatureConfigurations(Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType) {
 		for (FeatureConfigurationIndexDto config : configurations) {
 			saveFeatureConfiguration(config, featureType);
 		}
 	}
-	
+
 	@Override
 	public void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType) {	
 		// Delete an existing configuration that was set inactive
-		if (Boolean.FALSE.equals(configuration.getActive())) {
+		if (Boolean.FALSE.equals(configuration.isEnabled())) {
 			FeatureConfiguration existingConfiguration = service.getByUuid(configuration.getUuid());
 			if (existingConfiguration != null) {
 				service.delete(existingConfiguration);
 			}
-			
+
 			return;
 		}
-		
+
 		// Create or update an active configuration
 		FeatureConfigurationDto configurationDto = toDto(service.getByUuid(configuration.getUuid()));
 		if (configurationDto == null) {
@@ -170,62 +169,79 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto.setDisease(configuration.getDisease());
 			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid()));
 			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid()));
+			configurationDto.setEnabled(configuration.isEnabled());
 		}
-		
+
 		configurationDto.setEndDate(DateHelper.getEndOfDay(configuration.getEndDate()));
-		
+
 		FeatureConfiguration entity = fromDto(configurationDto);
 		service.ensurePersisted(entity);
 	}
-	
+
 	@Override
 	public void deleteAllFeatureConfigurations(FeatureConfigurationCriteria criteria) {
 		if (criteria == null) {
 			return;
 		}
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);
 		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
-		
+
 		Predicate filter = service.createCriteriaFilter(criteria, cb, cq, root);
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
 		resultList.forEach(result -> service.delete(result));
 	}
-	
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void deleteAllExpiredFeatureConfigurations(Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);
 		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
-		
+
 		cq.where(cb.lessThan(root.get(FeatureConfiguration.END_DATE), date));
 		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
 		resultList.forEach(result -> service.delete(result));
 	}
-	
+
+	@Override
+	public boolean isFeatureDisabled(FeatureType featureType) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+
+		cq.where(cb.and(
+				cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType),
+				cb.isFalse(root.get(FeatureConfiguration.ENABLED))
+				));
+		cq.select(cb.count(root));
+
+		return em.createQuery(cq).getSingleResult() > 0;
+	}
+
 	public static FeatureConfigurationDto toDto(FeatureConfiguration source) {
 		if (source == null) {
 			return null;
 		}
-		
+
 		FeatureConfigurationDto target = new FeatureConfigurationDto();
 		DtoHelper.fillDto(target, source);
-		
+
 		target.setFeatureType(source.getFeatureType());
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
-		
+		target.setEnabled(source.isEnabled());
+
 		return target;
 	}
-	
+
 	public FeatureConfiguration fromDto(@NotNull FeatureConfigurationDto source) {
 		FeatureConfiguration target = service.getByUuid(source.getUuid());
 		if (target == null) {
@@ -236,13 +252,14 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			}
 		}
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setFeatureType(source.getFeatureType());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
-		
+		target.setEnabled(source.isEnabled());
+
 		return target;
 	}
 
@@ -251,5 +268,5 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	public static class FeatureConfigurationFacadeEjbLocal extends FeatureConfigurationFacadeEjb {
 
 	}
-	
+
 }

@@ -46,6 +46,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
@@ -63,6 +64,8 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
+import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
@@ -123,36 +126,40 @@ public class StartupShutdownService {
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private DiseaseConfigurationService diseaseConfigurationService;
+	@EJB
+	private FeatureConfigurationService featureConfigurationService;
 
 	@PostConstruct
 	public void startup() {
 		logger.info("Initiating automatic database update of main database...");
-		
+
 		updateDatabase(em, "/sql/sormas_schema.sql");
-		
+
 		logger.info("Initiating automatic database update of audit database...");
-		
+
 		updateDatabase(emAudit, "/sql/sormas_audit_schema.sql");
-		
+
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
-		
+
 		createDefaultInfrastructureData();
-		
+
 		facilityService.createConstantFacilities();
 
 		createConstantPointsOfEntry();
 
 		createDefaultUsers();
-		
+
 		upgrade();
-		
+
 		createImportTemplateFiles();
-		
+
 		createMissingDiseaseConfigurations();
-		
+
+		createMissingFeatureConfigurations();
+
 		configFacade.validateAppUrls();
 	}
-	
+
 	private void createDefaultInfrastructureData() {
 
 		// Region
@@ -181,7 +188,7 @@ public class StartupShutdownService {
 			districtService.ensurePersisted(district);
 			region.getDistricts().add(district);
 		}
-		
+
 		// Community
 		Community community = null;
 		if (communityService.count() == 0) {
@@ -195,7 +202,7 @@ public class StartupShutdownService {
 			communityService.ensurePersisted(community);
 			district.getCommunities().add(community);
 		}
-		
+
 		// Health Facility
 		Facility healthFacility;
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
@@ -204,7 +211,7 @@ public class StartupShutdownService {
 			healthFacility = new Facility();
 			healthFacility.setUuid(DataHelper.createUuid());
 			healthFacility
-					.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
+			.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
 			if (community == null) {
 				community = communityService.getAll().get(0);
 			}
@@ -219,7 +226,7 @@ public class StartupShutdownService {
 			healthFacility.setRegion(region);
 			facilityService.ensurePersisted(healthFacility);
 		}
-		
+
 		// Laboratory
 		Facility laboratory;
 		facilityCriteria.type(FacilityType.LABORATORY);
@@ -242,7 +249,7 @@ public class StartupShutdownService {
 			laboratory.setType(FacilityType.LABORATORY);
 			facilityService.ensurePersisted(laboratory);
 		}
-		
+
 		// Point of Entry
 		PointOfEntry pointOfEntry;
 		if (pointOfEntryService.count() == 0) {
@@ -299,7 +306,7 @@ public class StartupShutdownService {
 
 	private void createDefaultUsers() {
 		if (userService.count() == 0) {
-	
+
 			Region region = regionService.getAll().get(0);
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
@@ -308,12 +315,12 @@ public class StartupShutdownService {
 			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
 			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
-	
+
 			// Create Admin
 			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
 			admin.setUserName("admin");
 			userService.persist(admin);
-	
+
 			// Create Surveillance Supervisor
 			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance",
 					"Supervisor", "SurvSup");
@@ -364,7 +371,7 @@ public class StartupShutdownService {
 					"NatClin");
 			nationalClinician.setUserName("NatClin");
 			userService.persist(nationalClinician);
-	
+
 			// Create Surveillance Officer
 			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance",
 					"Officer", "SurvOff");
@@ -392,10 +399,10 @@ public class StartupShutdownService {
 			userService.persist(poeInformant);
 		}
 	}
-	
+
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
 		logger.info("Starting automatic database update...");
-		
+
 		boolean hasSchemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
 		Integer currentVersion;
 		if (hasSchemaVersion) {
@@ -405,35 +412,35 @@ public class StartupShutdownService {
 		}
 		File schemaFile = new File(getClass().getClassLoader().getResource(schemaFileName).getFile());
 		Scanner scanner = null;
-		
+
 		try {
 			scanner = new Scanner(schemaFile);
 			StringBuilder nextUpdateBuilder = new StringBuilder();
 			boolean currentVersionReached = currentVersion == null;
-			
+
 			while (scanner.hasNextLine()) {
 				String nextLine = scanner.nextLine();
-				
+
 				if (nextLine.isEmpty()) {
 					continue;
 				}
-				
+
 				if (nextLine.trim().startsWith("--")) {
 					continue;
 				}
-				
+
 				if (!currentVersionReached) {
 					if (nextLine.startsWith("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
 						currentVersionReached = true;
 					}
 					continue;
 				}
-				
+
 				nextLine = nextLine.replaceAll(":", "\\\\:");
-				
+
 				// Add the line to the StringBuilder
 				nextUpdateBuilder.append(nextLine).append("\n");
-				
+
 				// Perform the current update when the INSERT INTO schema_version statement is reached
 				if (nextLine.startsWith("INSERT INTO schema_version")) {
 					String newVersion = nextLine.substring(61, nextLine.indexOf(",", 61));
@@ -454,43 +461,43 @@ public class StartupShutdownService {
 	private void upgrade() {
 		@SuppressWarnings("unchecked")
 		List<Integer> versionsNeedingUpgrade = em
-				.createNativeQuery("SELECT version_number FROM schema_version WHERE upgradeNeeded")
-				.getResultList();
-		
+		.createNativeQuery("SELECT version_number FROM schema_version WHERE upgradeNeeded")
+		.getResultList();
+
 		// IMPORTANT: Never write code to go through all entities in a table and do something
 		// here. This will make the deployment fail when there are too many entities in the database.
-		
+
 		for (Integer versionNeedingUpgrade : versionsNeedingUpgrade) {
 			switch (versionNeedingUpgrade) {
-				case 95:
-					// update follow up and status for all contacts
-					for (Contact contact : contactService.getAll()) {				
-						contactService.updateFollowUpUntilAndStatus(contact);
-						contactService.udpateContactStatus(contact);
-					}
-					break;
-					
-				default:
-					throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade)); 
+			case 95:
+				// update follow up and status for all contacts
+				for (Contact contact : contactService.getAll()) {				
+					contactService.updateFollowUpUntilAndStatus(contact);
+					contactService.udpateContactStatus(contact);
+				}
+				break;
+
+			default:
+				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade)); 
 			} 
-			
+
 			int updatedRows = em
-				.createNativeQuery("UPDATE schema_version SET upgradeNeeded=false WHERE version_number=?1")
-				.setParameter(1, versionNeedingUpgrade)
-				.executeUpdate();
+					.createNativeQuery("UPDATE schema_version SET upgradeNeeded=false WHERE version_number=?1")
+					.setParameter(1, versionNeedingUpgrade)
+					.executeUpdate();
 			if (updatedRows != 1) {
 				logger.error("Could not UPDATE schema_version table. Missing user rights?");
 			}
 		}		
 	}
-	
+
 	private void createImportTemplateFiles() {
 		try {
 			importFacade.generateCaseImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create case import template .csv file.");
 		}
-		
+
 		try {
 			importFacade.generateCaseLineListingImportTemplateFile();
 		} catch (IOException e) {
@@ -502,7 +509,7 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create point of entry import template .csv file.");
 		}
-		
+
 		try {
 			importFacade.generatePopulationDataImportTemplateFile();
 		} catch (IOException e) {
@@ -530,13 +537,22 @@ public class StartupShutdownService {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
 	}
-	
+
 	private void createMissingDiseaseConfigurations() {
 		List<DiseaseConfiguration> diseaseConfigurations = diseaseConfigurationService.getAll();
 		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			diseaseConfigurationService.ensurePersisted(configuration);
+		});
+	}
+
+	private void createMissingFeatureConfigurations() {
+		List<FeatureConfiguration> featureConfigurations = featureConfigurationService.getAll();
+		List<FeatureType> existingConfigurations = featureConfigurations.stream().filter(config -> config.getFeatureType().isModuleFeature()).map(config -> config.getFeatureType()).collect(Collectors.toList());
+		FeatureType.getAllModuleFeatures().stream().filter(feature -> !existingConfigurations.contains(feature)).forEach(featureType -> {
+			FeatureConfiguration configuration = FeatureConfiguration.build(featureType, true);
+			featureConfigurationService.ensurePersisted(configuration);
 		});
 	}
 

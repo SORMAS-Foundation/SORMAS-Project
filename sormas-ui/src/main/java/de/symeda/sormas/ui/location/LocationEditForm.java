@@ -40,7 +40,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     				LayoutUtil.fluidRow(
     						LayoutUtil.loc(LocationDto.ADDRESS), 
     						LayoutUtil.divs(
-    								LayoutUtil.fluidRowLocs(LocationDto.AREA_TYPE, LocationDto.CITY))),
+									LayoutUtil.fluidRow(
+											LayoutUtil.fluidColumn(6, 0,
+													LayoutUtil.locs(LocationDto.POSTAL_CODE, LocationDto.AREA_TYPE)),
+											LayoutUtil.fluidColumn(6, 0, LayoutUtil.loc(LocationDto.CITY))))),
     				LayoutUtil.fluidRowLocs(
     						LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
     				LayoutUtil.fluidRow(
@@ -58,9 +61,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
     @Override
 	protected void addFields() {
-    	addField(LocationDto.ADDRESS, TextArea.class).setRows(2);
+		addField(LocationDto.ADDRESS, TextArea.class).setRows(5);
     	addField(LocationDto.DETAILS, TextField.class);
     	addField(LocationDto.CITY, TextField.class);
+		addField(LocationDto.POSTAL_CODE, TextField.class);
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
     	

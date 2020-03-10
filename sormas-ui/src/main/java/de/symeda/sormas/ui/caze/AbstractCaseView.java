@@ -30,6 +30,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -155,10 +156,10 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			if (caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
 				menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
-			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW) && !caze.isUnreferredPortHealthCase()) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW) && !caze.isUnreferredPortHealthCase() && !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW) && !caze.isUnreferredPortHealthCase()) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW) && !caze.isUnreferredPortHealthCase() && !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(ClinicalCourseView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE), params);
 			}
 		}

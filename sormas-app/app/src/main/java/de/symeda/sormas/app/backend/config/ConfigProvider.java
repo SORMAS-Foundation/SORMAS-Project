@@ -438,8 +438,17 @@ public final class ConfigProvider {
     }
 
     public static void setServerRestUrl(String serverRestUrl) {
+
+        if (serverRestUrl != null) {
+            serverRestUrl = serverRestUrl.trim();
+        }
+
         if (serverRestUrl != null && serverRestUrl.isEmpty()) {
             serverRestUrl = null;
+        }
+
+        if (serverRestUrl != null && !serverRestUrl.endsWith("/"))  {
+            serverRestUrl += "/";
         }
 
         if (serverRestUrl == instance.serverRestUrl
@@ -601,7 +610,7 @@ public final class ConfigProvider {
     /**
      * When no locale is set Locale.getDefault is set.
      */
-    public static String getLocale() {
+    public static String getServerLocale() {
         if (instance.locale == null)
             synchronized (ConfigProvider.class) {
                 if (instance.locale == null) {

@@ -27,6 +27,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -98,12 +99,12 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
         Case caze = getStoredRootEntity();
         // Sections must be removed in reverse order
         if (!ConfigProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
-                (caze != null && caze.getClinicalCourse() == null)) {
+                (caze != null && caze.getClinicalCourse() == null) || DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
             menuItems.set(CaseSection.CLINICAL_VISITS.ordinal(), null);
             menuItems.set(CaseSection.HEALTH_CONDITIONS.ordinal(), null);
         }
         if (!ConfigProvider.hasUserRight(UserRight.THERAPY_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
-                (caze != null && caze.getTherapy() == null)) {
+                (caze != null && caze.getTherapy() == null) || DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
             menuItems.set(CaseSection.TREATMENTS.ordinal(), null);
             menuItems.set(CaseSection.PRESCRIPTIONS.ordinal(), null);
         }

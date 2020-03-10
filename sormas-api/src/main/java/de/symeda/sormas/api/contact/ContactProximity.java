@@ -54,13 +54,19 @@ public enum ContactProximity {
 		}
 	}
 	
-	public static ContactProximity[] getValues(Disease disease) {
-		switch (disease) {
-		case CORONAVIRUS:
-			return new ContactProximity[] { TOUCHED_FLUID, FACE_TO_FACE_LONG, MEDICAL_UNSAVE, AIRPLANE, FACE_TO_FACE_SHORT, MEDICAL_SAVE };
-		default:
-			return new ContactProximity[] { TOUCHED_FLUID, PHYSICAL_CONTACT, CLOTHES_OR_OTHER, CLOSE_CONTACT, SAME_ROOM };
+	/**
+	 * TODO Replace locale with customizable solution or whatever is needed based on #1503
+	 */
+	public static ContactProximity[] getValues(Disease disease, String serverLocale) {
+		if (serverLocale != null && serverLocale.startsWith("de")) {
+			switch (disease) {
+			case CORONAVIRUS:
+				return new ContactProximity[] { TOUCHED_FLUID, FACE_TO_FACE_LONG, MEDICAL_UNSAVE, AIRPLANE, FACE_TO_FACE_SHORT, MEDICAL_SAVE };
+			default:
+				break;
+			}
 		}
+		return new ContactProximity[] { TOUCHED_FLUID, PHYSICAL_CONTACT, CLOTHES_OR_OTHER, CLOSE_CONTACT, SAME_ROOM };
 	}
 	
 	public String toString() {

@@ -23,6 +23,7 @@ import android.content.Context;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 
@@ -56,8 +57,14 @@ public class ServerConnectionException extends Exception {
                 return context.getResources().getString(R.string.message_http_401);
             case 403:
                 return context.getResources().getString(R.string.message_http_403);
-            case 404:
-                return String.format(context.getResources().getString(R.string.message_http_404), ConfigProvider.getServerRestUrl());
+            case 404: {
+                String serverUrl = ConfigProvider.getServerRestUrl();
+                if (DataHelper.isNullOrEmpty(serverUrl)) {
+                    return context.getResources().getString(R.string.message_http_404_empty);
+                } else {
+                    return String.format(context.getResources().getString(R.string.message_http_404), serverUrl);
+                }
+            }
             case 503:
                 return context.getResources().getString(R.string.message_http_503);
             case 600:

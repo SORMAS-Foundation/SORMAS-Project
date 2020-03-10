@@ -41,16 +41,27 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
+            <TextView
+                android:id="@+id/settings_server_url_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/message_settings_server_url"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/settings_server_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:caption="@string/caption_settings_server_url"
+                app:hint="@string/hint_settings_server_url"/>
+
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/user_language"
                 app:value="@={data.language}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/settings_serverUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/textControlMarginBottom" />
+                style="@style/ControlSingleColumnStyle"
+                android:layout_marginBottom="@dimen/textControlMarginBottom"  />
 
             <de.symeda.sormas.app.component.controls.ControlButton
                 android:id="@+id/change_pin"

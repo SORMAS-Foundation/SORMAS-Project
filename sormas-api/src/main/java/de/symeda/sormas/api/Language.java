@@ -33,7 +33,8 @@ public enum Language {
 		case "en_gh": return EN_GH;
 		case "fr": return FR;
 		case "de": return DE;
-		default: return EN;
+		default:
+			throw new IllegalArgumentException(locale);
 		}
 	}
 

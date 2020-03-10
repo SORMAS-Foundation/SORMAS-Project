@@ -54,6 +54,7 @@ public class ContactDto extends EntityDto {
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String RESULTING_CASE_USER = "resultingCaseUser";
 	public static final String VISITS = "visits";
+	public static final String EXTERNAL_ID = "externalID";
 	
 	@Required
 	private Date reportDateTime;
@@ -79,6 +80,7 @@ public class ContactDto extends EntityDto {
 	private String description;
 	private ContactRelation relationToCase;
 	private String relationDescription;
+	private String externalID;
 	
 	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
 	private UserReferenceDto resultingCaseUser;
@@ -228,5 +230,13 @@ public class ContactDto extends EntityDto {
 	 */
 	public void setCaseDisease(Disease caseDisease) {
 		this.caseDisease = caseDisease;
+	}
+
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
 	}
 }

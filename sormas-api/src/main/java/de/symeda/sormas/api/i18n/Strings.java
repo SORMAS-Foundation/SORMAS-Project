@@ -341,6 +341,7 @@ public interface Strings {
 	public static String infoMergingPickDescription = "infoMergingPickDescription";
 	public static String infoNoAdditionalTests = "infoNoAdditionalTests";
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	public static String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
 	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
 	public static String infoPopulationCollectionDate = "infoPopulationCollectionDate";

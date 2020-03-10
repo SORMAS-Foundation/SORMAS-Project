@@ -17,12 +17,14 @@ public class FeatureConfigurationDto extends EntityDto {
 	public static final String DISTRICT = "district";
 	public static final String DISEASE = "disease";
 	public static final String END_DATE = "endDate";
+	public static final String ENABLED = "enabled";
 	
 	private FeatureType featureType;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
 	private Date endDate;
+	private boolean enabled;
 	
 	public static FeatureConfigurationDto build() {
 		FeatureConfigurationDto config = new FeatureConfigurationDto();
@@ -68,6 +70,14 @@ public class FeatureConfigurationDto extends EntityDto {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 }

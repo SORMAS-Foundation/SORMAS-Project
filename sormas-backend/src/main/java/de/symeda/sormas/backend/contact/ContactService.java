@@ -764,6 +764,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getReportDateFrom() != null && contactCriteria.getReportDateTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateFrom(), contactCriteria.getReportDateTo()));
+		} else if (contactCriteria.getReportDateFrom() != null) {
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateFrom()));
+		} else if (contactCriteria.getReportDateTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), contactCriteria.getReportDateTo()));
 		}
 		if (contactCriteria.getLastContactDateFrom() != null && contactCriteria.getLastContactDateTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.LAST_CONTACT_DATE), contactCriteria.getLastContactDateFrom(), contactCriteria.getLastContactDateTo()));
@@ -771,9 +775,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getFollowUpUntilFrom() != null && contactCriteria.getFollowUpUntilTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom(), contactCriteria.getFollowUpUntilTo()));
 		} else if (contactCriteria.getFollowUpUntilFrom() != null) {
-			filter = and(cb, filter, cb.greaterThan(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom()));
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom()));
 		} else if (contactCriteria.getFollowUpUntilTo() != null) {
-			filter = and(cb, filter, cb.lessThan(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
 		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {

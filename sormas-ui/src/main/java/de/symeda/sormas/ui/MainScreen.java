@@ -28,6 +28,8 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -116,14 +118,14 @@ public class MainScreen extends HorizontalLayout {
 			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_VIEW) && !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AGGREGATE_REPORTING)) {
 			menu.addView(AggregateReportsView.class, AggregateReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAggregateReports), VaadinIcons.GRID_SMALL);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);
 			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuContacts), VaadinIcons.HAND);
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW) && !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)) {
 			ControllerProvider.getEventController().registerViews(navigator);
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
@@ -131,7 +133,7 @@ public class MainScreen extends HorizontalLayout {
 			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.WEEKLYREPORT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.WEEKLYREPORT_VIEW) && !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.WEEKLY_REPORTING)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.STATISTICS_ACCESS)) {

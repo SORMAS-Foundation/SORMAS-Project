@@ -17,7 +17,7 @@ public class LocaleManager {
     private static final String LANGUAGE_KEY = "language_key";
 
     static void initializeI18nProperties() {
-        Locale locale = new Locale(ConfigProvider.getLocale());
+        Locale locale = new Locale(ConfigProvider.getServerLocale());
         I18nProperties.setDefaultLanguage(Language.fromLocaleString(locale.toString()));
         I18nProperties.setUserLanguage(Language.fromLocaleString(locale.toString()));
     }
