@@ -3921,3 +3921,9 @@ ALTER TABLE users ADD COLUMN language varchar(255);
 ALTER TABLE users_history ADD COLUMN language varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (181, 'Add language to user #1093');
+
+-- 2020-03-09 Add additional details to case #1564
+ALTER TABLE cases ADD COLUMN additionaldetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN additionaldetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (182, 'Add additional details to case #1564');

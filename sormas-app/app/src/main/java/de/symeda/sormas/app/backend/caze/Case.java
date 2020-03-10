@@ -245,6 +245,9 @@ public class Case extends AbstractDomainObject {
     @DatabaseField
     private Float completeness;
 
+    @Column(length = 512)
+    private String additionalDetails;
+
     public boolean isUnreferredPortHealthCase() {
         return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
     }
@@ -717,5 +720,13 @@ public class Case extends AbstractDomainObject {
 
     public void setCompleteness(Float completeness) {
         this.completeness = completeness;
+    }
+
+    public String getAdditionalDetails() {
+        return additionalDetails;
+    }
+
+    public void setAdditionalDetails(String additionalDetails) {
+        this.additionalDetails = additionalDetails;
     }
 }

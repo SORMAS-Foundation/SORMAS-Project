@@ -111,6 +111,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String CASE_ORIGIN = "caseOrigin";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -223,6 +224,7 @@ public class CaseDataDto extends EntityDto {
 	private CaseOrigin caseOrigin;
 	private PointOfEntryReferenceDto pointOfEntry;
 	private String pointOfEntryDetails;
+	private String additionalDetails;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -737,6 +739,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setPointOfEntryDetails(String pointOfEntryDetails) {
 		this.pointOfEntryDetails = pointOfEntryDetails;
+	}
+
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
 	}
 
 }

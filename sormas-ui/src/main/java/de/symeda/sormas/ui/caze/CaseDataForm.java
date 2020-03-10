@@ -34,6 +34,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -109,6 +111,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON,
 					CaseDataDto.REPORT_LAT_LON_ACCURACY)
+			+ LayoutUtil.fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS)
 			+ LayoutUtil.loc(MEDICAL_INFORMATION_LOC)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "")
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES)
@@ -213,18 +216,20 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			updateFacilityFields(facility, facilityDetails);
 		});
 		
-		addField(CaseDataDto.REPORT_LAT, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(CaseDataDto.REPORT_LON, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
-
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
 		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
-		addFields(CaseDataDto.PREGNANT,
-				CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE, CaseDataDto.VACCINE, 
-				CaseDataDto.SMALLPOX_VACCINATION_SCAR,CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.VACCINATION_DATE);
+		addField(CaseDataDto.REPORT_LAT, TextField.class).setConverter(new StringToAngularLocationConverter());
+		addField(CaseDataDto.REPORT_LON, TextField.class).setConverter(new StringToAngularLocationConverter());
+		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
+
+		addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class).setRows(3);
+
+		addFields(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES,
+				CaseDataDto.VACCINATION_INFO_SOURCE, CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR,
+				CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.VACCINATION_DATE);
 
 		// Set initial visibilities
 
@@ -341,12 +346,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);
 
 		// Automatic case classification rules button - invisible for other diseases
-		if (disease != Disease.OTHER) {
+		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade()
+				.getByDisease(disease);
+		if (disease != Disease.OTHER && diseaseClassificationCriteria != null) {
 			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.info), VaadinIcons.INFO_CIRCLE);
 			CssStyles.style(classificationRulesButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 			classificationRulesButton.addClickListener(e -> {
-				ControllerProvider.getCaseController().openClassificationRulesPopup(getValue());
+				ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria);
 			});
+
 			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 		}
 

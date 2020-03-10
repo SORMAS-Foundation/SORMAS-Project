@@ -121,6 +121,7 @@ public class Case extends CoreAdo {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String COMPLETENESS = "completeness";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 
 	private Person person;
 	private String description;
@@ -200,6 +201,7 @@ public class Case extends CoreAdo {
 	private String pointOfEntryDetails;
 	
 	private Float completeness;
+	private String additionalDetails;
 
 	private List<Task> tasks;
 
@@ -813,6 +815,15 @@ public class Case extends CoreAdo {
 
 	public void setCompleteness(Float completeness) {
 		this.completeness = completeness;
+	}
+
+	@Column(length = 512)
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
 	}
 
 }

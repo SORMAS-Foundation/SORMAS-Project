@@ -158,6 +158,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setRabiesType(source.getRabiesType());
 
         target.setCreationVersion(source.getCreationVersion());
+
+        target.setAdditionalDetails(source.getAdditionalDetails());
     }
 
     @Override
@@ -316,6 +318,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setRabiesType(source.getRabiesType());
 
         target.setCreationVersion(source.getCreationVersion());
+
+        target.setAdditionalDetails(source.getAdditionalDetails());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

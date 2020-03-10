@@ -284,6 +284,17 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_additionalDetails"
+                    app:value="@={data.additionalDetails}"
+                    app:inputType="textMultiLine"
+                    app:textAlignment="gravity"
+                    app:gravity="top|start"
+                    app:singleLine="false"
+                    app:maxLines="3"
+                    app:textArea="true"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
                 <TextView
