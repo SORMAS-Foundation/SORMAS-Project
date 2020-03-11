@@ -117,7 +117,7 @@
     <string name="caption_case_clinical_visits">Klinische Bewertungen</string>
     <string name="caption_case_contacts">Fallkontakte</string>
     <string name="caption_case_epidemiological_data">Epidemiologische Info</string>
-    <string name="caption_case_fatality_rate">Fall-Fatalitätsrate</string>
+    <string name="caption_case_fatality_rate">Todesfallrate</string>
     <string name="caption_case_health_conditions">Vorerkrankungen</string>
     <string name="caption_case_hospitalization">Information zum Krankenhausaufenthalt</string>
     <string name="caption_case_information">Fallinformationen</string>
