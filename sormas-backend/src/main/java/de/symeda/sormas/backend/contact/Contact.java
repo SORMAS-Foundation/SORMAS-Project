@@ -40,6 +40,8 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
@@ -72,6 +74,8 @@ public class Contact extends CoreAdo {
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -79,6 +83,9 @@ public class Contact extends CoreAdo {
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 
+	private Region region;
+	private District district;
+	
 	private Person person;
 	private Case caze;
 	private ContactRelation relationToCase;
@@ -306,5 +313,24 @@ public class Contact extends CoreAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
-	}	
+	}
+
+	@ManyToOne(cascade = {})
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	@ManyToOne(cascade = {})
+	public District getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(District district) {
+		this.district = district;
+	}
+	
 }

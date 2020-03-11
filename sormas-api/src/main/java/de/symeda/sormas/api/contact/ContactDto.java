@@ -23,6 +23,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
@@ -55,6 +57,8 @@ public class ContactDto extends EntityDto {
 	public static final String RESULTING_CASE_USER = "resultingCaseUser";
 	public static final String VISITS = "visits";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
 	
 	@Required
 	private Date reportDateTime;
@@ -64,6 +68,8 @@ public class ContactDto extends EntityDto {
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
 	@Required
 	private PersonReferenceDto person;
 	@Required
@@ -239,4 +245,21 @@ public class ContactDto extends EntityDto {
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
 	}
+
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
+	}
+
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
+	}
+	
 }

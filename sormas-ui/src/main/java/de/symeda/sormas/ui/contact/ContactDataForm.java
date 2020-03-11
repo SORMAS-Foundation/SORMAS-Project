@@ -48,6 +48,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
@@ -69,8 +70,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		LayoutUtil.h3(I18nProperties.getString(Strings.headingContactData))+
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
-					LayoutUtil.fluidRowLocs(6, ContactDto.LAST_CONTACT_DATE, 6, null)
-					+
+			LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+			LayoutUtil.fluidRowLocs(6, ContactDto.LAST_CONTACT_DATE, 6, null) +
 			LayoutUtil.fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
 			LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
@@ -80,8 +81,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
-			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, ContactDto.CONTACT_OFFICER)
-		    ;
+			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, ContactDto.CONTACT_OFFICER);
     
 	private OptionGroup contactProximity;
 
@@ -107,6 +107,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     	addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
     	addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
     	addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
+    	
+		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
+		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
+		region.addValueChangeListener(e -> {
+			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(district,
+					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+		});
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
     	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
     	contactOfficerField.setNullSelectionAllowed(true);

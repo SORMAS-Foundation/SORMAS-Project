@@ -41,6 +41,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
@@ -57,6 +58,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	
     private static final String HTML_LAYOUT = 
 			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
+			LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, "") +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
@@ -78,6 +80,14 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	protected void addFields() {
     	TextField firstName = addCustomField(FIRST_NAME, String.class, TextField.class);
     	TextField lastName = addCustomField(LAST_NAME, String.class, TextField.class);
+		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
+		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
+		region.addValueChangeListener(e -> {
+			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(district,
+					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+		});
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
    
     	DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
     	contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);

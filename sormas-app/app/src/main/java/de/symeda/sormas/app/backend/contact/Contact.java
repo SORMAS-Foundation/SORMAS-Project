@@ -39,6 +39,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name=Contact.TABLE_NAME)
@@ -80,6 +82,10 @@ public class Contact extends AbstractDomainObject {
 	@DatabaseField
 	private Float reportLatLonAccuracy;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Region region;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private District district;
 	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 	@DatabaseField
@@ -301,4 +307,21 @@ public class Contact extends AbstractDomainObject {
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
 	}
+
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	public District getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(District district) {
+		this.district = district;
+	}
+
 }

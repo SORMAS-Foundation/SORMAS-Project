@@ -33,6 +33,7 @@ import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.visit.edit.VisitValidator;
 
 public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayoutBinding, Contact, Contact> {
@@ -43,6 +44,8 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     private Case sourceCase;
 
     private List<Item> relationshipList;
+    private List<Item> initialRegions;
+    private List<Item> initialDistricts;
 
     public static ContactNewFragment newInstance(Contact activityRootData) {
         return newInstance(ContactNewFragment.class, null, activityRootData);
@@ -63,14 +66,21 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
         record = getActivityRootData();
         sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
         relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
+        initialRegions = InfrastructureHelper.loadRegions();
+        initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
     }
 
     @Override
     public void onLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
-
         contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease(), ConfigProvider.getServerLocale()))));
 
         contentBinding.setData(record);
+
+        InfrastructureHelper.initializeRegionFields(
+                contentBinding.contactRegion, initialRegions, record.getRegion(),
+                contentBinding.contactDistrict, initialDistricts, record.getDistrict(),
+                null, null, null
+        );
 
         ContactValidator.initializeValidation(record, contentBinding);
     }

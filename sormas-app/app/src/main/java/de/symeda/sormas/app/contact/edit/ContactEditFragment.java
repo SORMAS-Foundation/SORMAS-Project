@@ -38,6 +38,7 @@ import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
 
@@ -50,6 +51,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
     private List<Item> relationshipList;
     private List<Item> contactClassificationList;
+    private List<Item> initialRegions;
+    private List<Item> initialDistricts;
 
     // Instance methods
 
@@ -116,6 +119,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
         contactClassificationList = DataUtils.getEnumItems(ContactClassification.class, true);
+        initialRegions = InfrastructureHelper.loadRegions();
+        initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
     }
 
     @Override
@@ -126,6 +131,12 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         contentBinding.setData(record);
         contentBinding.setCaze(sourceCase);
+
+        InfrastructureHelper.initializeRegionFields(
+                contentBinding.contactRegion, initialRegions, record.getRegion(),
+                contentBinding.contactDistrict, initialDistricts, record.getDistrict(),
+                null, null, null
+        );
 
         ContactValidator.initializeValidation(record, contentBinding);
 
