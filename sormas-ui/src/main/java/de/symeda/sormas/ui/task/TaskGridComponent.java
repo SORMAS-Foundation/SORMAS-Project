@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.task;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -57,7 +58,7 @@ public class TaskGridComponent extends VerticalLayout {
 
 	private TaskGrid grid;    
 	private TasksView tasksView;
-	private HashMap<Button, String> statusButtons;
+	private Map<Button, String> statusButtons;
 	private Button activeStatusButton;
 
 	// Filter
@@ -184,11 +185,7 @@ public class TaskGridComponent extends VerticalLayout {
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getTaskController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-						public void run() {
-							tasksView.navigateTo(criteria);
-						}
-					});
+					ControllerProvider.getTaskController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria));
 				};
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 				bulkOperationsDropdown.setVisible(tasksView.getViewConfiguration().isInEagerMode());
@@ -252,8 +249,8 @@ public class TaskGridComponent extends VerticalLayout {
 				activeStatusButton = b;
 			}
 		});
-		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
+			CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
