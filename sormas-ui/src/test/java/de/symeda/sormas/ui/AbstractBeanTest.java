@@ -24,9 +24,17 @@ import javax.persistence.Query;
 import org.junit.Before;
 
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.CommunityFacade;
+import de.symeda.sormas.api.region.DistrictFacade;
+import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public class AbstractBeanTest extends BaseBeanTest {
@@ -57,6 +65,22 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
+	}
+	
+	public RegionFacade getRegionFacade() {
+		return getBean(RegionFacadeEjbLocal.class);
+	}
+	
+	public DistrictFacade getDistrictFacade() {
+		return getBean(DistrictFacadeEjbLocal.class);
+	}
+	
+	public CommunityFacade getCommunityFacade() {
+		return getBean(CommunityFacadeEjbLocal.class);
+	}
+	
+	public FacilityFacade getFacilityFacade() {
+		return getBean(FacilityFacadeEjbLocal.class);
 	}
 
 	public EntityManager getEntityManager() {
