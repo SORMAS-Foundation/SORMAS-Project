@@ -50,7 +50,13 @@
 	  <role-name>POE_SUPERVISOR</role-name>
 	</security-role>
 	<security-role>
-	  <role-name>POE_NATIONAL_USER</role-name>
+	  <role-name>SURVEILLANCE_OFFICER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>CONTACT_OFFICER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>CASE_OFFICER</role-name>
 	</security-role>
   	
   	<!-- 
