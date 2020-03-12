@@ -365,7 +365,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
-		if (dto.getType() != FacilityType.LABORATORY) {
+		if (!FacilityType.LABORATORY.equals(dto.getType())) {
 			if (dto.getRegion() == null) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 			}

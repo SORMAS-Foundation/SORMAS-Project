@@ -6,7 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.function.Function;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
@@ -36,13 +37,13 @@ public class InfrastructureImporter extends DataImporter {
 	@Override
 	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties,
 			String[][] entityPropertyPaths, boolean firstLine)
-			throws IOException, InvalidColumnException, InterruptedException {
+					throws IOException, InvalidColumnException, InterruptedException {
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
 			return ImportLineResult.ERROR;
 		}
-		
+
 		EntityDto newEntityDto;
 
 		switch (type) {
@@ -65,20 +66,17 @@ public class InfrastructureImporter extends DataImporter {
 			throw new IllegalArgumentException(type.toString());
 		}
 
-		boolean iHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false,
-				new Function<ImportCellData, Exception>() {
-					@Override
-					public Exception apply(ImportCellData importColumnInformation) {
-						try {
-							insertColumnEntryIntoData(newEntityDto, importColumnInformation.getValue(),
-									importColumnInformation.getEntityPropertyPath());
-						} catch (ImportErrorException | InvalidColumnException e) {
-							return e;
-						}
+		boolean iHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
+			try {
+				if (!StringUtils.isEmpty(cellData.getValue())) {
+					insertColumnEntryIntoData(newEntityDto, cellData.getValue(), cellData.getEntityPropertyPath());
+				}
+			} catch (ImportErrorException | InvalidColumnException e) {
+				return e;
+			}
 
-						return null;
-					}
-				});
+			return null;
+		});
 
 		if (!iHasImportError) {
 			try {
