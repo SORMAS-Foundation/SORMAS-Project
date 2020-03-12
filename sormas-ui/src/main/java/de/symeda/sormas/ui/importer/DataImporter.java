@@ -2,13 +2,13 @@ package de.symeda.sormas.ui.importer;
 
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -179,7 +179,7 @@ public abstract class DataImporter {
 		CSVReader csvReader = null;
 		try {
 			csvReader = CSVUtils.createCSVReader(
-					new FileReader(URLDecoder.decode(inputFile.getPath(), StandardCharsets.UTF_8.name())),
+					new InputStreamReader(new FileInputStream(inputFile), "UTF-8"),
 					FacadeProvider.getConfigFacade().getCsvSeparator());
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
 		
