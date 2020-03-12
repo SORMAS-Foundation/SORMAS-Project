@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -78,6 +80,15 @@ public enum ApproximateAgeType {
 		
 		public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate) {
 			return getApproximateAge(birthDate, null);
+		}
+		
+		public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD, Date deathDate) {
+			Calendar birthdate = new GregorianCalendar();
+			birthdate.set(birthdateYYYY,
+					birthdateMM !=null ? birthdateMM - 1 : 0, 
+							birthdateDD != null ? birthdateDD : 1);
+
+			return getApproximateAge(birthdate.getTime(), deathDate);
 		}
 		
 		public static String formatApproximateAge(Integer approximateAge, ApproximateAgeType approximateAgeType) {

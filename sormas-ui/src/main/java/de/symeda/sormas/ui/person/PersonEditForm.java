@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
