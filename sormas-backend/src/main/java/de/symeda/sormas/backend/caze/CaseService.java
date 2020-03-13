@@ -38,6 +38,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -274,7 +276,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Case> caze = cq.from(Case.class);
-			
+
 			Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
 			if (!DataHelper.isNullOrEmpty(caseUuid)) {
 				filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
@@ -295,7 +297,33 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			query.setParameter(regexParam4, "g");
 			query.setMaxResults(1);
 			return query.getSingleResult();
-			
+
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
+		if (StringUtils.isEmpty(searchTerm)) {
+			return null;
+		}
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> root = cq.from(Case.class);
+
+		Predicate filter = cb.or(
+				cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase())
+				);
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(root.get(Case.REPORT_DATE)));
+		cq.select(root.get(Case.UUID));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -739,7 +767,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (!featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			filter = or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
 		}
-		
+
 		// only show cases of a specific disease if a limited disease is set
 		if (user.getLimitedDisease() != null) {
 			filter = and(cb, filter, cb.equal(casePath.get(Case.DISEASE), user.getLimitedDisease()));

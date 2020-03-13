@@ -154,6 +154,7 @@ public interface Captions {
 	public static String CaseData_reportLon = "CaseData.reportLon";
 	public static String CaseData_sequelae = "CaseData.sequelae";
 	public static String CaseData_sequelaeDetails = "CaseData.sequelaeDetails";
+	public static String CaseData_sharedToCountry = "CaseData.sharedToCountry";
 	public static String CaseData_smallpoxVaccinationReceived = "CaseData.smallpoxVaccinationReceived";
 	public static String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	public static String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
@@ -234,6 +235,8 @@ public interface Captions {
 	public static String CasePreviousHospitalization_isolated = "CasePreviousHospitalization.isolated";
 	public static String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
 	public static String caseReferToFacility = "caseReferToFacility";
+	public static String caseSearchCase = "caseSearchCase";
+	public static String caseSearchSpecificCase = "caseSearchSpecificCase";
 	public static String caseTransferCase = "caseTransferCase";
 	public static String caseTransferCases = "caseTransferCases";
 	public static String city = "city";

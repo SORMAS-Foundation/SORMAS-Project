@@ -354,6 +354,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
 		return caseService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
+	
+	@Override
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
+		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
+	}
 
 	@Override
 	public long count(CaseCriteria caseCriteria, String userUuid) {

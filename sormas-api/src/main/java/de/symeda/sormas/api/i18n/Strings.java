@@ -248,6 +248,7 @@ public interface Strings {
 	public static String headingNewPassword = "headingNewPassword";
 	public static String headingNewSourceCases = "headingNewSourceCases";
 	public static String headingNewTestResults = "headingNewTestResults";
+	public static String headingNoCaseFound = "headingNoCaseFound";
 	public static String headingNoCasesSelected = "headingNoCasesSelected";
 	public static String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	public static String headingNoContactsSelected = "headingNoContactsSelected";
@@ -350,6 +351,7 @@ public interface Strings {
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
+	public static String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";
 	public static String infoStatisticsResults = "infoStatisticsResults";
@@ -462,6 +464,7 @@ public interface Strings {
 	public static String messageLoginFailed = "messageLoginFailed";
 	public static String messageMissingDateFilter = "messageMissingDateFilter";
 	public static String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
+	public static String messageNoCaseFound = "messageNoCaseFound";
 	public static String messageNoCasesSelected = "messageNoCasesSelected";
 	public static String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	public static String messageNoContactsSelected = "messageNoContactsSelected";
