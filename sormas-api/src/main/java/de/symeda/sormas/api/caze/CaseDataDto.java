@@ -113,6 +113,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -227,6 +228,7 @@ public class CaseDataDto extends EntityDto {
 	private String pointOfEntryDetails;
 	private String additionalDetails;
 	private String externalID;
+	private boolean sharedToCountry;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -757,6 +759,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public boolean isSharedToCountry() {
+		return sharedToCountry;
+	}
+
+	public void setSharedToCountry(boolean sharedToCountry) {
+		this.sharedToCountry = sharedToCountry;
 	}
 
 }

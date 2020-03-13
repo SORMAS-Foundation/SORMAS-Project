@@ -1742,6 +1742,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
+		target.setSharedToCountry(source.isSharedToCountry());
 
 		return target;
 	}
@@ -1835,6 +1836,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
+		target.setSharedToCountry(source.isSharedToCountry());
 
 		return target;
 	}

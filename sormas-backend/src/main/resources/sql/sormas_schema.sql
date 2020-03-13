@@ -3959,3 +3959,10 @@ ALTER TABLE contact ADD CONSTRAINT fk_contact_region_id FOREIGN KEY (region_id) 
 ALTER TABLE contact ADD CONSTRAINT fk_contact_district_id FOREIGN KEY (district_id) REFERENCES district (id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (186, 'Add region and district to contact #1561');
+
+-- 2020-03-13 Add sharedToCountry to case #1562
+ALTER TABLE cases ADD COLUMN sharedtocountry boolean;
+ALTER TABLE cases_history ADD COLUMN sharedtocountry boolean;
+UPDATE cases SET sharedtocountry = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (187, 'Add sharedToCountry to case #1562');

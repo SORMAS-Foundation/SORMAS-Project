@@ -297,7 +297,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		
 		// Set approximate age if it hasn't been set before
-		if (newPerson.getApproximateAge() == null) {
+		if (newPerson.getApproximateAge() == null && newPerson.getBirthdateYYYY() != null) {
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
 					newPerson.getBirthdateYYYY(), newPerson.getBirthdateMM(), newPerson.getBirthdateDD(), newPerson.getDeathDate()
 					);

@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -75,6 +76,7 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
@@ -126,6 +128,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	TreatmentService treatmentService;
 	@EJB
 	PrescriptionService prescriptionService;
+	@EJB
+	FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public CaseService() {
 		super(Case.class);
@@ -731,6 +735,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		//Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
 		//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 
+		// all users (without specific restrictions) get access to cases that have been made available to the whole country
+		if (!featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
+			filter = or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
+		}
+		
 		// only show cases of a specific disease if a limited disease is set
 		if (user.getLimitedDisease() != null) {
 			filter = and(cb, filter, cb.equal(casePath.get(Case.DISEASE), user.getLimitedDisease()));
