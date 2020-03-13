@@ -21,7 +21,7 @@ import static de.symeda.sormas.api.user.UserRole.*;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 public enum UserRight {
@@ -892,7 +892,7 @@ public enum UserRight {
 	private final Set<UserRole> defaultUserRoles;
 
 	private UserRight(UserRole... defaultUserRoles) {
-		this.defaultUserRoles = Collections.unmodifiableSet(new HashSet<UserRole>(Arrays.asList(defaultUserRoles)));
+		this.defaultUserRoles = Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(defaultUserRoles)));
 	}
 
 	public boolean isDefaultForRole(UserRole userRole) {

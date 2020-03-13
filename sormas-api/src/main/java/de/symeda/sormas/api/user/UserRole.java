@@ -20,7 +20,8 @@ package de.symeda.sormas.api.user;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
+import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -74,6 +75,12 @@ public enum UserRole implements StatisticsGroupingKey {
 	public static final String _POE_SUPERVISOR = POE_SUPERVISOR.name();
 	public static final String _POE_NATIONAL_USER = POE_NATIONAL_USER.name();
 	
+	private static final Set<UserRole> NATIONAL_ROLES = EnumSet.of(
+			UserRole.NATIONAL_OBSERVER,
+			UserRole.NATIONAL_USER,
+			UserRole.NATIONAL_CLINICIAN,
+			UserRole.POE_NATIONAL_USER);
+	
 	private final boolean supervisor;
 	private final boolean officer;
 	private final boolean informant;
@@ -83,12 +90,12 @@ public enum UserRole implements StatisticsGroupingKey {
 	 */
 	private final boolean portHealthUser;
 	
-	private HashSet<UserRight> defaultUserRights = null;
+	private Set<UserRight> defaultUserRights = null;
 	
-	private static HashSet<UserRole> supervisorRoles = null;
-	private static HashSet<UserRole> officerRoles = null;
-	private static HashSet<UserRole> informantRoles = null;
-	private static HashSet<UserRole> portHealthUserRoles = null;
+	private static Set<UserRole> supervisorRoles = null;
+	private static Set<UserRole> officerRoles = null;
+	private static Set<UserRole> informantRoles = null;
+	private static Set<UserRole> portHealthUserRoles = null;
 	
 	private UserRole(boolean supervisor, boolean officer, boolean informant, boolean portHealthUser) {
 		this.supervisor = supervisor;
@@ -122,12 +129,12 @@ public enum UserRole implements StatisticsGroupingKey {
 	}
 	
 	public boolean isNational() {
-		return this == UserRole.NATIONAL_OBSERVER || this == UserRole.NATIONAL_USER || this == UserRole.NATIONAL_CLINICIAN || this == UserRole.POE_NATIONAL_USER;
+		return NATIONAL_ROLES.contains(this);
 	}
 	
-	public HashSet<UserRight> getDefaultUserRights() {
+	public Set<UserRight> getDefaultUserRights() {
 		if (defaultUserRights == null) {
-			defaultUserRights = new HashSet<UserRight>();
+			defaultUserRights = EnumSet.noneOf(UserRight.class);
 			for (UserRight userRight : UserRight.values()) {
 				if (userRight.isDefaultForRole(this)) {
 					defaultUserRights.add(userRight);
@@ -200,8 +207,8 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 	}
 	
-	public static HashSet<UserRole> getAssignableRoles(Collection<UserRole> roles) {
-		HashSet<UserRole> result = new HashSet<UserRole>();
+	public static Set<UserRole> getAssignableRoles(Collection<UserRole> roles) {
+		Set<UserRole> result = EnumSet.noneOf(UserRole.class);
 		for (UserRole role : roles) {
 			role.addAssignableRoles(result);
 		}
@@ -325,9 +332,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 	}
 
-	public static HashSet<UserRole> getSupervisorRoles() {
+	public static Set<UserRole> getSupervisorRoles() {
 		if (supervisorRoles == null) {
-			supervisorRoles = new HashSet<>();
+			supervisorRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
 				if (userRole.isSupervisor()) {
 					supervisorRoles.add(userRole);
@@ -337,9 +344,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		return supervisorRoles;
 	}
 	
-	public static HashSet<UserRole> getOfficerRoles() {
+	public static Set<UserRole> getOfficerRoles() {
 		if (officerRoles == null) {
-			officerRoles = new HashSet<>();
+			officerRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
 				if (userRole.isOfficer()) {
 					officerRoles.add(userRole);
@@ -349,9 +356,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		return officerRoles;
 	}
 	
-	public static HashSet<UserRole> getInformantRoles() {
+	public static Set<UserRole> getInformantRoles() {
 		if (informantRoles == null) {
-			informantRoles = new HashSet<>();
+			informantRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
 				if (userRole.isInformant()) {
 					informantRoles.add(userRole);
@@ -361,9 +368,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		return informantRoles;
 	}
 	
-	public static HashSet<UserRole> getPortHealthUserRoles() {
+	public static Set<UserRole> getPortHealthUserRoles() {
 		if (portHealthUserRoles == null) {
-			portHealthUserRoles = new HashSet<>();
+			portHealthUserRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
 				if (userRole.isPortHealthUser()) {
 					portHealthUserRoles.add(userRole);
