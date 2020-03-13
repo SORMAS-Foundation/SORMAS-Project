@@ -107,6 +107,7 @@ import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
 
@@ -241,6 +242,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public UserFacade getUserFacade() {
 		return getBean(UserFacadeEjbLocal.class);
+	}
+
+	public UserService getUserService() {
+		return getBean(UserService.class);
 	}
 
 	public UserRoleConfigFacade getUserRoleConfigFacade() {
