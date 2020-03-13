@@ -155,6 +155,7 @@ public interface Strings {
 	public static String headingConfirmDeletion = "headingConfirmDeletion";
 	public static String headingConfirmMerging = "headingConfirmMerging";
 	public static String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
+	public static String headingContactConfirmationRequired = "headingContactConfirmationRequired";
 	public static String headingContactData = "headingContactData";
 	public static String headingContactInformation = "headingContactInformation";
 	public static String headingContactMap = "headingContactMap";
@@ -403,6 +404,7 @@ public interface Strings {
 	public static String messageContactSaved = "messageContactSaved";
 	public static String messageContactsDeleted = "messageContactsDeleted";
 	public static String messageContactsEdited = "messageContactsEdited";
+	public static String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	public static String messageCopyPassword = "messageCopyPassword";
 	public static String messageCreateCollectionTask = "messageCreateCollectionTask";
 	public static String messageDatabaseExportFailed = "messageDatabaseExportFailed";

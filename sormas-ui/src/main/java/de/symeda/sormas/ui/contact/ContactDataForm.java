@@ -24,9 +24,12 @@ import org.joda.time.LocalDate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.ComboBox;
@@ -58,6 +61,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class ContactDataForm extends AbstractEditForm<ContactDto> {
@@ -144,17 +148,22 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		    	Link linkToData = ControllerProvider.getCaseController().createLinkToData(getValue().getResultingCase().getUuid(), 
     		    			I18nProperties.getCaption(Captions.contactOpenContactCase));
     		    	getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
-    	    	}
-    	    	else if (getValue().getContactClassification() == ContactClassification.CONFIRMED) {
-    	    		// only when confirmed
+    	    	} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())){
     	    		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
 	    		    	Button toCaseButton = new Button(I18nProperties.getCaption(Captions.contactCreateContactCase));
 	    				toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
+	    				final FieldGroup fieldGroup = getFieldGroup();
 	    				
 	    				toCaseButton.addClickListener(new ClickListener() {
 	    					@Override
 	    					public void buttonClick(ClickEvent event) {
-	    						ControllerProvider.getCaseController().createFromContact(getValue());
+	    						if (!ContactClassification.CONFIRMED.equals(getValue().getContactClassification())) {
+	    							VaadinUiUtil.showSimplePopupWindow(
+	    									I18nProperties.getString(Strings.headingContactConfirmationRequired),
+	    									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
+	    						} else {
+		    						ControllerProvider.getCaseController().createFromContact(getValue());
+	    						}
 	    					}
 	    				});
 	    				
