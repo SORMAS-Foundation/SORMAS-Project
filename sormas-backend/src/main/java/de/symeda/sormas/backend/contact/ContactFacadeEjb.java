@@ -575,7 +575,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		int[] counts = new int[3];
 		counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
 		counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-		counts[2] = caseContactCounts.size() / caseIds.size();
+		counts[2] =  caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
 		return counts;
 	}
 	

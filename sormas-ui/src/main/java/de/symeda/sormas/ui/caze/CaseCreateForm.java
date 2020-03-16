@@ -88,7 +88,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		CssStyles.style(epidField, CssStyles.ERROR_COLOR_PRIMARY);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
-		addDiseaseField(CaseDataDto.DISEASE, false);
+		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
@@ -226,6 +226,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		cbPointOfEntry.addValueChangeListener(e -> {
 			updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
+		});
+	
+		addValueChangeListener(e -> {
+			Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
+			if (defaultDisease != null) {
+				disease.setValue(defaultDisease);
+			}
 		});
 	}
 
