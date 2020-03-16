@@ -1355,6 +1355,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 				if (newCase.getSurveillanceOfficer() != null) {
 					task.setAssigneeUser(newCase.getSurveillanceOfficer());
+				} else if (newCase.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+					task.setAssigneeUser(newCase.getReportingUser());
 				} else {
 					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
 							UserRole.SURVEILLANCE_SUPERVISOR);
