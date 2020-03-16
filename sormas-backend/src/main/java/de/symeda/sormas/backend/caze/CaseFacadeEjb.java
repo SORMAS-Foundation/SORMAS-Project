@@ -1467,11 +1467,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void setResponsibleSurveillanceOfficer(Case caze) {
-		
 		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
 		} else {
-			List<User> informants = userService.getInformantsOfFacility(caze.getHealthFacility());
+			List<User> informants = caze.getHealthFacility() != null ? userService.getInformantsOfFacility(caze.getHealthFacility()) : new ArrayList<>();
 			Random rand = new Random();
 			if (!informants.isEmpty()) {
 				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
