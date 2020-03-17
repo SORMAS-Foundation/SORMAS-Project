@@ -555,6 +555,7 @@ public interface Captions {
 	public static String EpiDataTravel_travelDestination = "EpiDataTravel.travelDestination";
 	public static String EpiDataTravel_travelPeriod = "EpiDataTravel.travelPeriod";
 	public static String EpiDataTravel_travelType = "EpiDataTravel.travelType";
+	public static String epiDataTraveledIncubationPeriod = "epiDataTraveledIncubationPeriod";
 	public static String epiWeekFrom = "epiWeekFrom";
 	public static String epiWeekTo = "epiWeekTo";
 	public static String Event = "Event";
