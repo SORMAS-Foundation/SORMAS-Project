@@ -95,41 +95,26 @@ public final class FieldHelper {
 
 	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Object sourcePropertyId,
 			List<Object> sourceValues, boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, false,
-				clearOnHidden);
-	}
-
-	public static void setVisibleWhenNotNull(FieldGroup fieldGroup, String targetPropertyId, Object sourcePropertyId,
-			boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, Arrays.asList((Object) null),
-				true, clearOnHidden);
-	}
-
-	public static void setVisibleWhen(FieldGroup fieldGroup, List<String> targetPropertyIds, Object sourcePropertyId,
-			List<Object> sourceValues, boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, targetPropertyIds, sourcePropertyId, sourceValues, false, clearOnHidden);
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnHidden);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
-			Object sourcePropertyId, final List<Object> sourceValues, boolean visibleWhenNot,
-			final boolean clearOnHidden) {
+			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		
-		setVisibleWhen(fieldGroup, targetPropertyIds, sourceField, sourceValues, visibleWhenNot, clearOnHidden);
+		setVisibleWhen(fieldGroup, targetPropertyIds, sourceField, sourceValues, clearOnHidden);
 	}
 	
 	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Field sourceField,
 			List<Object> sourceValues, boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourceField, sourceValues, false,
-				clearOnHidden);
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourceField, sourceValues, clearOnHidden);
 	}
 	
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
-			Field sourceField, final List<Object> sourceValues, boolean visibleWhenNot,
-			final boolean clearOnHidden) {
+			Field sourceField, final List<Object> sourceValues, final boolean clearOnHidden) {
 
 		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField) sourceField).setImmediate(true);
@@ -138,7 +123,6 @@ public final class FieldHelper {
 		// initialize
 		{
 			boolean visible = sourceValues.contains(sourceField.getValue());
-			visible = visible != visibleWhenNot;
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setVisible(visible);
@@ -150,7 +134,6 @@ public final class FieldHelper {
 
 		sourceField.addValueChangeListener(event -> {
 			boolean visible = sourceValues.contains(event.getProperty().getValue());
-			visible = visible != visibleWhenNot;
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				targetField.setVisible(visible);
@@ -163,31 +146,23 @@ public final class FieldHelper {
 	
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
-			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot,
-			final boolean clearOnHidden) {
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
 
-		onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden);
+		onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, clearOnHidden);
 
 		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
-			fieldGroup.getField(sourcePropertyId).addValueChangeListener(event -> onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden));
+			fieldGroup.getField(sourcePropertyId).addValueChangeListener(event -> onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, clearOnHidden));
 		});
 	}
 	
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, String targetPropertyId,
-			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot,
-			final boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, visibleWhenNot, clearOnHidden);
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static void setVisibleWhen(final FieldGroup fieldGroup, String targetPropertyId,
 			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
-		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, false, clearOnHidden);
+		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, clearOnHidden);
 	}
 	
 	private static void onValueChangedSetVisible (final FieldGroup fieldGroup, List<String> targetPropertyIds, 
-			Map<Object, List<Object>> sourcePropertyIdsAndValues, boolean visibleWhenNot, final boolean clearOnHidden) {
+			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
 		
 		//a workaround variable to be modified in the forEach lambda
 		boolean[] visible_ = { true }; 
@@ -198,7 +173,6 @@ public final class FieldHelper {
 		});
 		
 		boolean visible = visible_[0];
-		visible = visible != visibleWhenNot;
 		
 		for (Object targetPropertyId : targetPropertyIds) {
 			Field targetField = fieldGroup.getField(targetPropertyId);

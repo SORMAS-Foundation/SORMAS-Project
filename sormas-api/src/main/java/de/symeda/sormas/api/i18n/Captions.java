@@ -264,6 +264,7 @@ public interface Captions {
 	public static String Configuration_Outbreaks = "Configuration.Outbreaks";
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
+	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
 	public static String Contact_caseDisease = "Contact.caseDisease";
 	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
 	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
@@ -287,6 +288,9 @@ public interface Captions {
 	public static String Contact_followUpComment = "Contact.followUpComment";
 	public static String Contact_followUpStatus = "Contact.followUpStatus";
 	public static String Contact_followUpUntil = "Contact.followUpUntil";
+	public static String Contact_highPriority = "Contact.highPriority";
+	public static String Contact_immunosuppressiveTherapyBasicDisease = "Contact.immunosuppressiveTherapyBasicDisease";
+	public static String Contact_immunosuppressiveTherapyBasicDiseaseDetails = "Contact.immunosuppressiveTherapyBasicDiseaseDetails";
 	public static String Contact_lastContactDate = "Contact.lastContactDate";
 	public static String Contact_lastName = "Contact.lastName";
 	public static String Contact_numberOfVisits = "Contact.numberOfVisits";
@@ -316,6 +320,7 @@ public interface Captions {
 	public static String contactLostToFollowUp = "contactLostToFollowUp";
 	public static String contactMinusDays = "contactMinusDays";
 	public static String contactNewContact = "contactNewContact";
+	public static String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	public static String contactOpenContactCase = "contactOpenContactCase";
 	public static String contactPersonVisits = "contactPersonVisits";
 	public static String contactPlusDays = "contactPlusDays";

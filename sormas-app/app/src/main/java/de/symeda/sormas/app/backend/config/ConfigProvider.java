@@ -627,6 +627,10 @@ public final class ConfigProvider {
         return instance.locale;
     }
 
+    public static boolean isGermanServer() {
+        return getServerLocale().toLowerCase().startsWith("de");
+    }
+
     /**
      * Note: This will only take effect after the app has been restarted
      */

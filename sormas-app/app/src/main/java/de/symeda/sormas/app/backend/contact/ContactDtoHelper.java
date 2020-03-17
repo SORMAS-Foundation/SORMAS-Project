@@ -101,6 +101,11 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setExternalID(source.getExternalID());
         target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
         target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+
+        target.setHighPriority(source.isHighPriority());
+        target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+        target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+        target.setCareForPeopleOver60(source.getCareForPeopleOver60());
     }
 
     @Override
@@ -166,6 +171,11 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setReportLon(source.getReportLon());
         target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
         target.setExternalID(source.getExternalID());
+
+        target.setHighPriority(source.isHighPriority());
+        target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+        target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+        target.setCareForPeopleOver60(source.getCareForPeopleOver60());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

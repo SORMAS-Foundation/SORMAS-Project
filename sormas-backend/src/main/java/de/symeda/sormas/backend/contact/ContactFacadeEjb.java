@@ -68,6 +68,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
@@ -641,6 +642,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 
+		target.setHighPriority(source.isHighPriority());
+		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
+		
 		return target;
 	}
 
@@ -738,6 +744,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+
+		target.setHighPriority(source.isHighPriority());
+		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 		
 		return target;
 	}
@@ -805,6 +816,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
 			task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
 			task.setAssigneeUser(assignee);
+			
+			if (contact.isHighPriority()) {
+				task.setPriority(TaskPriority.HIGH);
+			}
+			
 			taskService.ensurePersisted(task);
 		}
 	}

@@ -27,6 +27,7 @@
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -170,6 +171,28 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_description"
                     app:value="@{data.description}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/contact_highPriority"
+                    app:value="@{data.highPriority}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_immunosuppressiveTherapyBasicDisease"
+                    app:value="@{data.immunosuppressiveTherapyBasicDisease}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_immunosuppressiveTherapyBasicDiseaseDetails"
+                    app:value="@{data.immunosuppressiveTherapyBasicDiseaseDetails}"
+                    app:dependencyParentField="@{contactImmunosuppressiveTherapyBasicDisease}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_careForPeopleOver60"
+                    app:value="@{data.careForPeopleOver60}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>

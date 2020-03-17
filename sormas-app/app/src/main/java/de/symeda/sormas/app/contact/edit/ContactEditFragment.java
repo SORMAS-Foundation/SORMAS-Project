@@ -27,6 +27,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -97,6 +98,23 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         if (record.getContactClassification() != ContactClassification.CONFIRMED) {
             contentBinding.createCase.setVisibility(GONE);
+        }
+
+        if (!ConfigProvider.isGermanServer()) {
+            contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
+            contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
+            contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
+        } else {
+            contentBinding.contactImmunosuppressiveTherapyBasicDisease.addValueChangedListener(e -> {
+                if (YesNoUnknown.YES.equals(e.getValue())) {
+                    contentBinding.contactHighPriority.setValue(true);
+                }
+            });
+            contentBinding.contactCareForPeopleOver60.addValueChangedListener(e -> {
+                if (YesNoUnknown.YES.equals(e.getValue())) {
+                    contentBinding.contactHighPriority.setValue(true);
+                }
+            });
         }
     }
 

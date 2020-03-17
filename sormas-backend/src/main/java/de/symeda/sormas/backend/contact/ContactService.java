@@ -817,6 +817,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				}
 			}
 		}
+		if (Boolean.TRUE.equals(contactCriteria.getOnlyHighPriorityContacts())) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.HIGH_PRIORITY), true));
+		}
 
 		return filter;
 	}

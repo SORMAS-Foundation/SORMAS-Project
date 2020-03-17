@@ -3966,3 +3966,16 @@ ALTER TABLE cases_history ADD COLUMN sharedtocountry boolean;
 UPDATE cases SET sharedtocountry = false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (187, 'Add sharedToCountry to case #1562');
+
+-- 2020-03-17 Add high priority status to contact #1595
+ALTER TABLE contact ADD COLUMN highpriority boolean;
+UPDATE contact SET highpriority = false;
+ALTER TABLE contact ADD COLUMN immunosuppressiveTherapyBasicDisease varchar(255);
+ALTER TABLE contact ADD COLUMN immunosuppressiveTherapyBasicDiseaseDetails varchar(512);
+ALTER TABLE contact ADD COLUMN careForPeopleOver60 varchar(255);
+ALTER TABLE contact_history ADD COLUMN highpriority boolean;
+ALTER TABLE contact_history ADD COLUMN immunosuppressiveTherapyBasicDisease varchar(255);
+ALTER TABLE contact_history ADD COLUMN immunosuppressiveTherapyBasicDiseaseDetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN careForPeopleOver60 varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (188, 'Add high priority status to contact #1595');

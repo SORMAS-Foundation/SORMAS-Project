@@ -26,6 +26,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.databinding.FragmentContactReadLayoutBinding;
@@ -63,6 +64,12 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
         if (record.getResultingCaseUuid() == null
                 || DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
             contentBinding.openResultingCase.setVisibility(GONE);
+        }
+
+        if (!ConfigProvider.isGermanServer()) {
+            contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
+            contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
+            contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
         }
     }
 
