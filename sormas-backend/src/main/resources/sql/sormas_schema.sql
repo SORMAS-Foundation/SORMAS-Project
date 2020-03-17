@@ -3979,3 +3979,9 @@ ALTER TABLE contact_history ADD COLUMN immunosuppressiveTherapyBasicDiseaseDetai
 ALTER TABLE contact_history ADD COLUMN careForPeopleOver60 varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (188, 'Add high priority status to contact #1595');
+
+-- 2020-03-17 Add general practitioner details to person #1600
+ALTER TABLE person ADD COLUMN generalpractitionerdetails varchar(512);
+ALTER TABLE person_history ADD COLUMN generalpractitionerdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (189, 'Add general practitioner details to person #1600');

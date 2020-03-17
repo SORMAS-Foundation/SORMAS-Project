@@ -92,6 +92,8 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 
         if (!ConfigProvider.isGermanServer()) {
             contentBinding.caseDataExternalID.setVisibility(GONE);
+        } else {
+            contentBinding.caseDataEpidNumber.setVisibility(GONE);
         }
     }
 

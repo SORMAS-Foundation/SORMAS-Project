@@ -147,6 +147,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
         if (!ConfigProvider.isGermanServer()) {
             contentBinding.caseDataExternalID.setVisibility(GONE);
+        } else {
+            contentBinding.caseDataEpidNumber.setVisibility(GONE);
         }
     }
 

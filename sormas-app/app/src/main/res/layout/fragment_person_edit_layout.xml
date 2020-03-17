@@ -459,6 +459,17 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_generalPractitionerDetails"
+                app:value="@={data.generalPractitionerDetails}"
+                app:inputType="textMultiLine"
+                app:textAlignment="gravity"
+                app:gravity="top|start"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:textArea="true"
+                style="@style/ControlSingleColumnStyle" />
+
         </LinearLayout>
 
     </ScrollView>

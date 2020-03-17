@@ -394,6 +394,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
+		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
+		
 		return target;
 	}
 
@@ -488,6 +490,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
+		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
+		
 		return target;
 	}
 

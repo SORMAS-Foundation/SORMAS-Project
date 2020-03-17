@@ -158,6 +158,8 @@ public class Person extends AbstractDomainObject {
 	@Column(length=512)
 	private String occupationFacilityDetails;
 
+	@Column(length=512)
+	private String generalPractitionerDetails;
 
 	@Bindable
 	public String getFirstName() {
@@ -487,5 +489,13 @@ public class Person extends AbstractDomainObject {
 
 	public void setBirthWeight(Integer birthWeight) {
 		this.birthWeight = birthWeight;
+	}
+
+	public String getGeneralPractitionerDetails() {
+		return generalPractitionerDetails;
+	}
+
+	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
+		this.generalPractitionerDetails = generalPractitionerDetails;
 	}
 }

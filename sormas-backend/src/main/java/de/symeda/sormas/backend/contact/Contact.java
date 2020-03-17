@@ -81,6 +81,7 @@ public class Contact extends CoreAdo {
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
+	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPracticionerDetails";
 	
 	private Date reportDateTime;
 	private User reportingUser;

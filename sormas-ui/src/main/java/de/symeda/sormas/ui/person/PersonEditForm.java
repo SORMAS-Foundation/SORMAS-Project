@@ -127,7 +127,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					CssStyles.VSPACE_3,
 					LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 					LayoutUtil.fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER))
+					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
+					LayoutUtil.loc(PersonDto.GENERAL_PRACTITIONER_DETAILS))
 			;
 
 	private boolean initialized = false;
@@ -227,6 +228,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		occupationFacility.setImmediate(true);
 		occupationFacility.setNullSelectionAllowed(true);
 		occupationFacilityDetails = addField(PersonDto.OCCUPATION_FACILITY_DETAILS, TextField.class);
+		
+		addField(PersonDto.GENERAL_PRACTITIONER_DETAILS, TextField.class);
 
 		// Set requirements that don't need visibility changes and read only status
 

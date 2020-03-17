@@ -119,6 +119,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
         target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
         target.setBirthWeight(source.getBirthWeight());
+
+        target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
     }
 
     @Override
@@ -212,6 +214,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
         target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
         target.setBirthWeight(source.getBirthWeight());
+
+        target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
     }
 
     public static PersonReferenceDto toReferenceDto(Person ado) {

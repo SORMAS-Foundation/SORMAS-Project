@@ -433,7 +433,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			
 			if (!isGermanServer()) {
 				setVisible(false, CaseDataDto.EXTERNAL_ID);
-			} 
+			} else {
+				setVisible(false, CaseDataDto.EPID_NUMBER);
+			}
 		});
 	}
 
