@@ -122,7 +122,7 @@
     <string name="caption_case_hospitalization">Information zum Krankenhausaufenthalt</string>
     <string name="caption_case_information">Fallinformationen</string>
     <string name="caption_case_maternal_history">Vorgeschichte der Mutter</string>
-    <string name="caption_case_port_health_info">Port Health Info</string>
+    <string name="caption_case_port_health_info">Einreiseinformation (Flughafen)</string>
     <string name="caption_case_prescriptions">Verschreibungen</string>
     <string name="caption_case_samples">Fall-Proben</string>
     <string name="caption_case_tasks">Fall Aufgaben</string>
