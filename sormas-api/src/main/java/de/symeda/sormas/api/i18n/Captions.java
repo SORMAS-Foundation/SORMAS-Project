@@ -778,6 +778,7 @@ public interface Captions {
 	public static String Person_educationDetails = "Person.educationDetails";
 	public static String Person_educationType = "Person.educationType";
 	public static String Person_fathersName = "Person.fathersName";
+	public static String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	public static String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
 	public static String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	public static String Person_lastDisease = "Person.lastDisease";
