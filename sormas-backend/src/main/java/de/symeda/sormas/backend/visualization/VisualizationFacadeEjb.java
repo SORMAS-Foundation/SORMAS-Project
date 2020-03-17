@@ -135,12 +135,6 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	
 	static String buildTransmissionChainJson(String rScriptExecutable, Path tempBasePath, Path domainXmlPath, LocalDate from, LocalDate to, Collection<Disease> diseases) {
 
-
-		// TODO vaadin component
-
-		// TODO correct script
-		// TODO ENVIRONMENT
-		
 		Path tempDir;
 		try {
 			tempDir = Files.createTempDirectory(tempBasePath, "vis_");
