@@ -170,6 +170,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactContactClassification.initializeSpinner(contactClassificationList);
         // Initialize ControlDateFields
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
+        contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
     }
 
     @Override

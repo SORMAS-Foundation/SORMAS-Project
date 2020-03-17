@@ -40,6 +40,11 @@
             android:focusableInTouchMode="true"
             android:id="@+id/main_content">
 
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/contact_reportDateTime"
+                app:value="@={data.reportDateTime}"
+                style="@style/ControlSingleColumnStyle" />
+
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/person_firstName"
                 android:nextFocusForward="@+id/person_lastName"

@@ -140,9 +140,9 @@
                         app:value="@{data.reportingUser}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/contact_reportDateTime"
-                        app:value="@{data.reportDateTime}"
+                        app:value="@={data.reportDateTime}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
