@@ -184,7 +184,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				
 				if (!isGermanServer()) {
 					setVisible(false, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS,
-							ContactDto.CARE_FOR_PEOPLE_OVER_60);
+							ContactDto.CARE_FOR_PEOPLE_OVER_60, ContactDto.EXTERNAL_ID);
 				} else {
 					ogImmunosuppressiveTherapyBasicDisease.addValueChangeListener(getHighPriorityValueChangeListener(cbHighPriority));
 					ogCareForPeopleOver60.addValueChangeListener(getHighPriorityValueChangeListener(cbHighPriority));

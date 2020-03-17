@@ -70,6 +70,7 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
             contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
             contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
             contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
+            contentBinding.contactExternalID.setVisibility(GONE);
         }
     }
 

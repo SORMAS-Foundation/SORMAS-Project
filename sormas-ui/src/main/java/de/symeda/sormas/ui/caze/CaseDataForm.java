@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -429,6 +430,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
+			
+			if (!isGermanServer()) {
+				setVisible(false, CaseDataDto.EXTERNAL_ID);
+			} 
 		});
 	}
 
