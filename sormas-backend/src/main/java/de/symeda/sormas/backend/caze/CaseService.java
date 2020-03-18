@@ -742,13 +742,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 				filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 				break;
-			case ADMIN:
-			case EXTERNAL_LAB_USER:
-			case POE_NATIONAL_USER:
-				break;
-
 			default:
-				throw new IllegalArgumentException(userRole.toString());
+				break;
 			}
 		}
 
