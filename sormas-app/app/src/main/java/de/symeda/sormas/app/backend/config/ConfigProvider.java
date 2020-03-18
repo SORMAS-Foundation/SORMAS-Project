@@ -58,6 +58,7 @@ import javax.security.auth.x500.X500Principal;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
@@ -242,10 +243,7 @@ public final class ConfigProvider {
             instance.password = null;
 
             // remember the username - needed to decide whether non-infrastructure data has to be cleared
-//            if (configDao.queryForId(KEY_USERNAME) != null) {
-//                configDao.delete(new Config(KEY_USERNAME, ""));
-//            }
-//            instance.username = null;
+            // instance.username = null;
 
             instance.user = null;
             instance.userRights = null;
@@ -420,6 +418,14 @@ public final class ConfigProvider {
         }
     }
 
+    private static void saveConfigEntry(String configKey, String configValue) {
+        if (configValue == null) {
+            DatabaseHelper.getConfigDao().delete(new Config(configKey, ""));
+        } else {
+            DatabaseHelper.getConfigDao().createOrUpdate(new Config(configKey, configValue));
+        }
+    }
+
     public static String getServerRestUrl() {
         if (instance.serverRestUrl == null)
             synchronized (ConfigProvider.class) {
@@ -427,10 +433,23 @@ public final class ConfigProvider {
                     Config config = DatabaseHelper.getConfigDao().queryForId(KEY_SERVER_REST_URL);
                     if (config != null) {
                         instance.serverRestUrl = config.getValue();
+
+                        // take care of old mal-formatted urls
+                        String properServerRestUrl = toProperRestUrl(instance.serverRestUrl);
+                        if (!DataHelper.equal(instance.serverRestUrl, properServerRestUrl)) {
+                            instance.serverRestUrl = properServerRestUrl;
+                            saveConfigEntry(KEY_SERVER_REST_URL, instance.serverRestUrl);
+                        }
                     }
 
                     if (instance.serverRestUrl == null) {
-                        setServerRestUrl(SormasProperties.getServerUrlDefault());
+                        // fallback to default
+
+                        String serverUrlDefault = toProperRestUrl(SormasProperties.getServerUrlDefault());
+                        if (serverUrlDefault != null) {
+                            instance.serverRestUrl = serverUrlDefault;
+                            saveConfigEntry(KEY_SERVER_REST_URL, instance.serverRestUrl);
+                        }
                     }
                 }
             }
@@ -439,36 +458,36 @@ public final class ConfigProvider {
 
     public static void setServerRestUrl(String serverRestUrl) {
 
-        if (serverRestUrl != null) {
-            serverRestUrl = serverRestUrl.trim();
-        }
+        serverRestUrl = toProperRestUrl(serverRestUrl);
+        String currentServerRestUrl = getServerRestUrl();
 
-        if (serverRestUrl != null && serverRestUrl.isEmpty()) {
-            serverRestUrl = null;
-        }
-
-        if (serverRestUrl != null && !serverRestUrl.endsWith("/"))  {
-            serverRestUrl += "/";
-        }
-
-        if (serverRestUrl == instance.serverRestUrl
-                || (serverRestUrl != null && serverRestUrl.equals(instance.serverRestUrl)))
+        if (DataHelper.equal(serverRestUrl, currentServerRestUrl))
             return;
 
-        boolean wasNull = instance.serverRestUrl == null;
-        instance.serverRestUrl = serverRestUrl;
+        boolean wasNull = currentServerRestUrl == null;
 
-        if (serverRestUrl == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(KEY_SERVER_REST_URL, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_SERVER_REST_URL, serverRestUrl));
-        }
+        instance.serverRestUrl = serverRestUrl;
+        saveConfigEntry(KEY_SERVER_REST_URL, serverRestUrl);
 
         if (!wasNull) {
-            // clear everything
+            // new server: clear everything
             clearUserLogin();
             DatabaseHelper.clearTables(true);
         }
+    }
+
+    private static String toProperRestUrl(String serverRestUrl) {
+        // clean up url
+        if (serverRestUrl != null) {
+            serverRestUrl = serverRestUrl.trim();
+        }
+        if (serverRestUrl != null && serverRestUrl.isEmpty()) {
+            serverRestUrl = null;
+        }
+        if (serverRestUrl != null && !serverRestUrl.endsWith("/"))  {
+            serverRestUrl += "/";
+        }
+        return serverRestUrl;
     }
 
     public static Date getLastNotificationDate() {
@@ -491,11 +510,7 @@ public final class ConfigProvider {
         }
 
         instance.lastNotificationDate = lastNotificationDate;
-        if (lastNotificationDate == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(LAST_NOTIFICATION_DATE, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime())));
-        }
+        saveConfigEntry(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime()));
     }
 
     public static Date getLastArchivedSyncDate() {
@@ -520,11 +535,7 @@ public final class ConfigProvider {
         }
 
         instance.lastArchivedSyncDate = lastArchivedSyncDate;
-        if (lastArchivedSyncDate == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(LAST_ARCHIVED_SYNC_DATE, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_ARCHIVED_SYNC_DATE, String.valueOf(lastArchivedSyncDate.getTime())));
-        }
+        saveConfigEntry(LAST_ARCHIVED_SYNC_DATE, String.valueOf(lastArchivedSyncDate.getTime()));
     }
 
     public static Date getLastDeletedSyncDate() {
@@ -549,11 +560,7 @@ public final class ConfigProvider {
         }
 
         instance.lastDeletedSyncDate = lastDeletedSyncDate;
-        if (lastDeletedSyncDate == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(LAST_DELETED_SYNC_DATE, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LAST_DELETED_SYNC_DATE, String.valueOf(lastDeletedSyncDate.getTime())));
-        }
+        saveConfigEntry(LAST_DELETED_SYNC_DATE, String.valueOf(lastDeletedSyncDate.getTime()));
     }
 
     public static Long getCurrentAppDownloadId() {
@@ -576,11 +583,7 @@ public final class ConfigProvider {
         }
 
         instance.currentAppDownloadId = currentAppDownloadId;
-        if (currentAppDownloadId == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(CURRENT_APP_DOWNLOAD_ID, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(CURRENT_APP_DOWNLOAD_ID, String.valueOf(currentAppDownloadId)));
-        }
+        saveConfigEntry(CURRENT_APP_DOWNLOAD_ID, String.valueOf(currentAppDownloadId));
     }
 
     public static Boolean isAccessGranted() {
@@ -603,7 +606,6 @@ public final class ConfigProvider {
         }
 
         instance.accessGranted = accessGranted;
-
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_ACCESS_GRANTED, String.valueOf(accessGranted)));
     }
 
@@ -644,12 +646,7 @@ public final class ConfigProvider {
             return;
 
         instance.locale = locale;
-
-        if (locale == null) {
-            DatabaseHelper.getConfigDao().delete(new Config(LOCALE, ""));
-        } else {
-            DatabaseHelper.getConfigDao().createOrUpdate(new Config(LOCALE, locale));
-        }
+        saveConfigEntry(LOCALE, locale);
     }
 
     public static boolean isRepullNeeded() {
@@ -668,7 +665,6 @@ public final class ConfigProvider {
         }
 
         instance.repullNeeded = repullNeeded;
-
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_REPULL_NEEDED, String.valueOf(repullNeeded)));
     }
 
