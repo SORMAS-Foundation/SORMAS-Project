@@ -89,7 +89,7 @@
     <string name="action_reset_filters">Filter zurücksetzen</string>
     <string name="action_save">Speichern</string>
     <string name="action_save_case">Fall speichern</string>
-    <string name="action_save_clinical_visit">Klinischen Anruf speichern</string>
+    <string name="action_save_clinical_visit">Klinischen Besuch speichern</string>
     <string name="action_save_contact">Kontakt speichern</string>
     <string name="action_save_event">Ereignis speichern</string>
     <string name="action_save_event_participant">Ereignisteilnehmer*in speichern</string>
@@ -258,7 +258,7 @@
     <string name="heading_app_downloading">Lade herunter</string>
     <string name="heading_app_update_required">App-Update erforderlich</string>
     <string name="heading_burial">Bestattung</string>
-    <string name="heading_burials_visited">Anrufte Bestattungen</string>
+    <string name="heading_burials_visited">Besuchte Bestattungen</string>
     <string name="heading_case_disease_changed">Fall-Krankheit hat sich geändert</string>
     <string name="heading_case_edit">Fall bearbeiten</string>
     <string name="heading_case_new">Neuer Fall</string>
