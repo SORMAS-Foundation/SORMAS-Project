@@ -183,8 +183,12 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 			Disease outbreakDisease = outbreak.getDisease();
 
 			// Only show the Outbreak if its Disease is active on the system
-			if (Boolean.TRUE.equals(FacadeProvider.getDiseaseConfigurationFacade().isActiveDisease(outbreakDisease))) {
-				((OutbreakRegionConfiguration) container.getItem(outbreakRegion).getItemProperty(outbreakDisease).getValue()).getAffectedDistricts().add(outbreakDistrict);
+			if (FacadeProvider.getDiseaseConfigurationFacade().isActiveDisease(outbreakDisease)) {
+				Item item = container.getItem(outbreakRegion);
+				if (item != null) { // region may be no longer active
+					OutbreakRegionConfiguration configuration = (OutbreakRegionConfiguration) item.getItemProperty(outbreakDisease).getValue();
+					configuration.getAffectedDistricts().add(outbreakDistrict);
+				}
 			}
 		}
 	}
