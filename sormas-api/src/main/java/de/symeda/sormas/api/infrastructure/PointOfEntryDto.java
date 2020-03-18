@@ -27,6 +27,7 @@ public class PointOfEntryDto extends EntityDto {
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String ACTIVE = "active";
+	public static final String EXTERNAL_ID = "externalID";
 	
 	private PointOfEntryType pointOfEntryType;
 	private String name;
@@ -36,6 +37,7 @@ public class PointOfEntryDto extends EntityDto {
 	private Double longitude;
 	private boolean active;
 	private boolean archived;
+	private String externalID;
 
 	public PointOfEntryDto(Date creationDate, Date changeDate, String uuid, boolean archived, PointOfEntryType pointOfEntryType,
 			String name, String regionUuid, String regionName, String districtUuid, String districtName,
@@ -128,6 +130,14 @@ public class PointOfEntryDto extends EntityDto {
 		this.archived = archived;
 	}
 	
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
+	}
+
 	@Override
 	public String toString() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);

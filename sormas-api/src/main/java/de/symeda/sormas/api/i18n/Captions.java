@@ -254,6 +254,7 @@ public interface Captions {
 	public static String columnDiseaseShort = "columnDiseaseShort";
 	public static String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
 	public static String community = "community";
+	public static String Community_externalID = "Community.externalID";
 	public static String communityActiveCommunities = "communityActiveCommunities";
 	public static String communityAllCommunities = "communityAllCommunities";
 	public static String communityArchivedCommunities = "communityArchivedCommunities";
@@ -463,6 +464,7 @@ public interface Captions {
 	public static String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
 	public static String district = "district";
 	public static String District_epidCode = "District.epidCode";
+	public static String District_externalID = "District.externalID";
 	public static String District_growthRate = "District.growthRate";
 	public static String District_population = "District.population";
 	public static String districtActiveDistricts = "districtActiveDistricts";
@@ -608,6 +610,7 @@ public interface Captions {
 	public static String exportSamples = "exportSamples";
 	public static String exportSelectSormasData = "exportSelectSormasData";
 	public static String exportSormasData = "exportSormasData";
+	public static String Facility_externalID = "Facility.externalID";
 	public static String Facility_latitude = "Facility.latitude";
 	public static String Facility_longitude = "Facility.longitude";
 	public static String Facility_NO_FACILITY = "Facility.NO_FACILITY";
@@ -809,6 +812,7 @@ public interface Captions {
 	public static String personFindMatching = "personFindMatching";
 	public static String personSelect = "personSelect";
 	public static String PointOfEntry_active = "PointOfEntry.active";
+	public static String PointOfEntry_externalID = "PointOfEntry.externalID";
 	public static String PointOfEntry_latitude = "PointOfEntry.latitude";
 	public static String PointOfEntry_longitude = "PointOfEntry.longitude";
 	public static String PointOfEntry_OTHER_AIRPORT = "PointOfEntry.OTHER_AIRPORT";
@@ -862,6 +866,7 @@ public interface Captions {
 	public static String prescriptionNewPrescription = "prescriptionNewPrescription";
 	public static String region = "region";
 	public static String Region_epidCode = "Region.epidCode";
+	public static String Region_externalID = "Region.externalID";
 	public static String Region_growthRate = "Region.growthRate";
 	public static String Region_population = "Region.population";
 	public static String regionActiveRegions = "regionActiveRegions";

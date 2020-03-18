@@ -278,6 +278,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 		dto.setArchived(entity.isArchived());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}
@@ -293,6 +294,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		target.setName(source.getName());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}

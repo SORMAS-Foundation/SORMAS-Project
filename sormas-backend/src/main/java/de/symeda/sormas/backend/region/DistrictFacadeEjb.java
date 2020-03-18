@@ -305,6 +305,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setArchived(entity.isArchived());
+		dto.setExternalID(dto.getExternalID());
 
 		return dto;
 	}	
@@ -321,6 +322,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
+		dto.setExternalID(dto.getExternalID());
 
 		return dto;
 	}	
@@ -338,6 +340,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setArchived(source.isArchived());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}

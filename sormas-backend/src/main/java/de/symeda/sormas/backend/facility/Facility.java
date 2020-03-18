@@ -46,6 +46,7 @@ public class Facility extends InfrastructureAdo {
 	public static final String LONGITUDE = "longitude";
 	public static final String TYPE = "type";
 	public static final String PUBLIC_OWNERSHIP = "publicOwnership";
+	public static final String EXTERNAL_ID = "externalID";
 	
 	private String name;
 	private Region region;
@@ -56,6 +57,7 @@ public class Facility extends InfrastructureAdo {
 	private Double longitude;
 	private FacilityType type;
 	private boolean publicOwnership;
+	private String externalID;
 	
 	public String getName() {
 		return name;
@@ -124,6 +126,15 @@ public class Facility extends InfrastructureAdo {
 	}
 	public void setPublicOwnership(boolean publicOwnership) {
 		this.publicOwnership = publicOwnership;
+	}
+
+	@Column(length = 255)
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
 	}
 
 	@Override

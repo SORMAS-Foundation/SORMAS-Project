@@ -3985,3 +3985,12 @@ ALTER TABLE person ADD COLUMN generalpractitionerdetails varchar(512);
 ALTER TABLE person_history ADD COLUMN generalpractitionerdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (189, 'Add general practitioner details to person #1600');
+
+-- 2020-03-18 Add external ID field to region, district, community, facility and point of entry #1604
+ALTER TABLE region ADD COLUMN externalid varchar(255);
+ALTER TABLE district ADD COLUMN externalid varchar(255);
+ALTER TABLE community ADD COLUMN externalid varchar(255);
+ALTER TABLE facility ADD COLUMN externalid varchar(255);
+ALTER TABLE pointofentry ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (190, 'Add external ID field to region, district, community, facility and point of entry #1604');

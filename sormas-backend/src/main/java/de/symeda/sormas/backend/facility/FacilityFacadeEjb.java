@@ -264,6 +264,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setLatitude(entity.getLatitude());
 		dto.setLongitude(entity.getLongitude());
 		dto.setArchived(entity.isArchived());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}
@@ -401,6 +402,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		target.setType(source.getType());
 		target.setArchived(source.isArchived());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}

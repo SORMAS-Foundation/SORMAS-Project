@@ -238,6 +238,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setArchived(entity.isArchived());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}
@@ -253,6 +254,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}
@@ -281,6 +283,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setArchived(source.isArchived());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}

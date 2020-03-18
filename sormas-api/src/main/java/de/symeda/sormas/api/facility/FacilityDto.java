@@ -43,6 +43,7 @@ public class FacilityDto extends EntityDto {
 	public static final String CITY = "city";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String EXTERNAL_ID = "externalID";
 
 	private String name;
 	private RegionReferenceDto region;
@@ -54,10 +55,12 @@ public class FacilityDto extends EntityDto {
 	private FacilityType type;
 	private boolean publicOwnership;
 	private boolean archived;
+	private String externalID;
 
-	public FacilityDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name, String regionUuid, String regionName, String districtUuid, String districtName,
-			String communityUuid, String communityName, String city, Double latitude, Double longitude, FacilityType type,
-			boolean publicOwnership) {
+	public FacilityDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name,
+			String regionUuid, String regionName, String districtUuid, String districtName, String communityUuid,
+			String communityName, String city, Double latitude, Double longitude, FacilityType type,
+			boolean publicOwnership, String externalID) {
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
 		this.name = name;
@@ -75,6 +78,7 @@ public class FacilityDto extends EntityDto {
 		this.longitude = longitude;
 		this.type = type;
 		this.publicOwnership = publicOwnership;
+		this.externalID = externalID;
 	}
 	
 	public FacilityDto() {
@@ -163,6 +167,14 @@ public class FacilityDto extends EntityDto {
 
 	public FacilityReferenceDto toReference() {
 		return new FacilityReferenceDto(getUuid(), toString());
+	}
+
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
 	}
 
 	@Override

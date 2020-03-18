@@ -58,7 +58,8 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			setCriteria(criteria);
 		}
 
-		setColumns(RegionIndexDto.NAME, RegionIndexDto.EPID_CODE, RegionIndexDto.POPULATION, RegionIndexDto.GROWTH_RATE);
+		setColumns(RegionIndexDto.NAME, RegionIndexDto.EPID_CODE, RegionIndexDto.EXTERNAL_ID, RegionIndexDto.POPULATION,
+				RegionIndexDto.GROWTH_RATE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			Column<RegionIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
