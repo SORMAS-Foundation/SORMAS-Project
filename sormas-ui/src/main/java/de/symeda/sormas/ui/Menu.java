@@ -89,6 +89,27 @@ public class Menu extends CssLayout {
         top.addComponent(title);
         menuPart.addComponent(top);
 
+        // button for toggling the visibility of the menu when on a small screen
+        final Button showMenu = new Button(I18nProperties.getCaption(Captions.menu), new Button.ClickListener() {
+            @Override
+            public void buttonClick(final Button.ClickEvent event) {
+                if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {
+                    menuPart.removeStyleName(VALO_MENU_VISIBLE);
+                } else {
+                    menuPart.addStyleName(VALO_MENU_VISIBLE);
+                }
+            }
+        });
+        showMenu.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        showMenu.addStyleName(VALO_MENU_TOGGLE);
+        showMenu.setIcon(VaadinIcons.MENU);
+        menuPart.addComponent(showMenu);
+
+        // container for the navigation buttons, which are added by addView()
+        menuItemsLayout = new CssLayout();
+        menuItemsLayout.setPrimaryStyleName(VALO_MENUITEMS);
+        menuPart.addComponent(menuItemsLayout);
+
         // settings menu item
         MenuBar settingsMenu = new MenuBar();
         settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, new Command() {
@@ -113,27 +134,6 @@ public class Menu extends CssLayout {
 
         logoutMenu.addStyleNames("user-menu", "logout-menu");
         menuPart.addComponent(logoutMenu);
-
-        // button for toggling the visibility of the menu when on a small screen
-        final Button showMenu = new Button(I18nProperties.getCaption(Captions.menu), new Button.ClickListener() {
-            @Override
-            public void buttonClick(final Button.ClickEvent event) {
-                if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {
-                    menuPart.removeStyleName(VALO_MENU_VISIBLE);
-                } else {
-                    menuPart.addStyleName(VALO_MENU_VISIBLE);
-                }
-            }
-        });
-        showMenu.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        showMenu.addStyleName(VALO_MENU_TOGGLE);
-        showMenu.setIcon(VaadinIcons.MENU);
-        menuPart.addComponent(showMenu);
-
-        // container for the navigation buttons, which are added by addView()
-        menuItemsLayout = new CssLayout();
-        menuItemsLayout.setPrimaryStyleName(VALO_MENUITEMS);
-        menuPart.addComponent(menuItemsLayout);
 
         addComponent(menuPart);
     }
