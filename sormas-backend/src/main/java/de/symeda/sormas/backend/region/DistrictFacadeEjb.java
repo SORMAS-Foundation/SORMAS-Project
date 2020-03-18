@@ -106,11 +106,13 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return em.createQuery(cq).getResultList();
 	}
 
+	// Need to be in the same order as in the constructor
 	private void selectDtoFields(CriteriaQuery<DistrictDto> cq, Root<District> root) {
 		Join<District, Region> region = root.join(District.REGION, JoinType.LEFT);
 
 		cq.multiselect(root.get(District.CREATION_DATE), root.get(District.CHANGE_DATE), root.get(District.UUID), root.get(District.ARCHIVED),
-				root.get(District.NAME), root.get(District.EPID_CODE), root.get(District.GROWTH_RATE), region.get(Region.UUID), region.get(Region.NAME));
+				root.get(District.NAME), root.get(District.EPID_CODE), root.get(District.GROWTH_RATE),
+				region.get(Region.UUID), region.get(Region.NAME), root.get(District.EXTERNAL_ID));
 	}
 
 	@Override

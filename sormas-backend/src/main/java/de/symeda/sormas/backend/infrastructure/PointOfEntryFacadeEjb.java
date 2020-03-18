@@ -104,6 +104,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		return em.createQuery(cq).getResultList();
 	}
 
+	// Need to be in the same order as in the constructor
 	private void selectDtoFields(CriteriaQuery<PointOfEntryDto> cq, Root<PointOfEntry> root) {
 		Join<PointOfEntry, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<PointOfEntry, Region> region = root.join(Facility.REGION, JoinType.LEFT);
@@ -112,7 +113,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 				root.get(PointOfEntry.ARCHIVED), root.get(PointOfEntry.POINT_OF_ENTRY_TYPE), root.get(PointOfEntry.NAME),
 				region.get(Region.UUID), region.get(Region.NAME), district.get(District.UUID),
 				district.get(District.NAME), root.get(PointOfEntry.LATITUDE), root.get(PointOfEntry.LONGITUDE),
-				root.get(PointOfEntry.ACTIVE));
+				root.get(PointOfEntry.ACTIVE), root.get(PointOfEntry.EXTERNAL_ID));
 	}
 
 	@Override
