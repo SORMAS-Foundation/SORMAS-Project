@@ -82,6 +82,23 @@
 			<artifactId>bean-test</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+	    	<groupId>org.glassfish.jersey.inject</groupId>
+	    	<artifactId>jersey-hk2</artifactId>
+			<version>${jersey.version}</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
