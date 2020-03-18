@@ -89,7 +89,7 @@
     <string name="action_reset_filters">Filter zurücksetzen</string>
     <string name="action_save">Speichern</string>
     <string name="action_save_case">Fall speichern</string>
-    <string name="action_save_clinical_visit">Klinischen Besuch speichern</string>
+    <string name="action_save_clinical_visit">Klinischen Anruf speichern</string>
     <string name="action_save_contact">Kontakt speichern</string>
     <string name="action_save_event">Ereignis speichern</string>
     <string name="action_save_event_participant">Ereignisteilnehmer*in speichern</string>
@@ -97,7 +97,7 @@
     <string name="action_save_sample">Probe speichern</string>
     <string name="action_save_task">Aufgabe speichern</string>
     <string name="action_save_treatment">Behandlung speichern</string>
-    <string name="action_save_visit">Follow-up-Besuch speichern</string>
+    <string name="action_save_visit">Follow-up-Anruf speichern</string>
     <string name="action_select">Auswählen</string>
     <string name="action_send">Senden</string>
     <string name="action_set_cleared_to_no">Auf Nein gesetzt</string>
@@ -213,10 +213,10 @@
     <string name="caption_total_tasks">Gesamte Aufgaben</string>
     <string name="caption_unconfirmed">Unbestätigt</string>
     <string name="caption_username">Benutzername</string>
-    <string name="caption_visit_date">Datum des Besuchs</string>
-    <string name="caption_visit_information">Besuch-Informationen</string>
+    <string name="caption_visit_date">Datum des Anrufs</string>
+    <string name="caption_visit_information">Anruf-Informationen</string>
     <string name="caption_visit_symptoms">Symptom-Informationen</string>
-    <string name="caption_visit_time">Zeit des Besuchs</string>
+    <string name="caption_visit_time">Zeit des Anrufs</string>
     <string name="caption_year">Jahr</string>
     <string name="caption_latest_submission">Letzte Einreichung: %1$s</string>
     <string name="caption_aggregate_new_cases">Neue Fälle</string>
@@ -258,7 +258,7 @@
     <string name="heading_app_downloading">Lade herunter</string>
     <string name="heading_app_update_required">App-Update erforderlich</string>
     <string name="heading_burial">Bestattung</string>
-    <string name="heading_burials_visited">Besuchte Bestattungen</string>
+    <string name="heading_burials_visited">Anrufte Bestattungen</string>
     <string name="heading_case_disease_changed">Fall-Krankheit hat sich geändert</string>
     <string name="heading_case_edit">Fall bearbeiten</string>
     <string name="heading_case_new">Neuer Fall</string>
@@ -276,7 +276,7 @@
     <string name="heading_contact_new">Neuer Kontakt</string>
     <string name="heading_contact_read">Kontakt anzeigen</string>
     <string name="heading_contact_summary">Kontakt-Zusammenfassung</string>
-    <string name="heading_contact_visit">Kontakt Besuch</string>
+    <string name="heading_contact_visit">Kontakt Anruf</string>
     <string name="heading_contacts_list">Kontaktliste</string>
     <string name="heading_create_new_pin">Neue PIN erstellen</string>
     <string name="heading_create_pin">PIN erstellen</string>
@@ -511,9 +511,9 @@
     <string name="validation_soft_case_epid_number">Die EPID-Nummer stimmt nicht mit dem erforderlichen Muster überein. Sie können den Fall trotzdem speichern und später die korrekte Nummer eingeben.</string>
     <string name="validation_soft_case_epid_number_empty">Es muss eine EPID-Nummer angegeben werden. Sie können den Fall trotzdem speichern und später die korrekte Nummer eingeben.</string>
     <string name="validation_symptoms_fever">Die Temperatur liegt im Fieberbereich. Das Fieber sollte auf \"Ja\" gesetzt werden.</string>
-    <string name="validation_visit_date_time_after_followup">Der Besuch darf nicht länger als 30 Tage nach Ablauf des Follow-up-Zeitraums erfolgen.</string>
-    <string name="validation_visit_date_time_before_contact_date">Der Besuch darf nicht länger als 30 Tage vor dem letzten Kontaktdatum sein.</string>
-    <string name="validation_visit_date_time_before_report_date">Der Besuch darf nicht mehr als 30 Tage vor dem Datum des Kontaktberichts liegen.</string>
+    <string name="validation_visit_date_time_after_followup">Der Anruf darf nicht länger als 30 Tage nach Ablauf des Follow-up-Zeitraums erfolgen.</string>
+    <string name="validation_visit_date_time_before_contact_date">Der Anruf darf nicht länger als 30 Tage vor dem letzten Kontaktdatum sein.</string>
+    <string name="validation_visit_date_time_before_report_date">Der Anruf darf nicht mehr als 30 Tage vor dem Datum des Kontaktberichts liegen.</string>
     <string name="value_age_unknown">Alter N/A</string>
     <string name="value_blood_pressure_unknown">Blutdruck N/A</string>
     <string name="value_case_uuid_unknown">Fall ID N/A</string>
@@ -553,9 +553,9 @@
     <string name="value_treatment_date_time_unknown">Behandlungsdatum N/A</string>
     <string name="value_type_unknown">Typ N/A</string>
     <string name="value_uuid_unknown">ID N/A</string>
-    <string name="value_visit_date_unknown">Besuchsdatum N/A</string>
+    <string name="value_visit_date_unknown">Anrufsdatum N/A</string>
     <string name="value_visit_remarks_unknown">Anmerkungen N/A</string>
-    <string name="value_visit_time_unknown">Besuchszeit N/A</string>
+    <string name="value_visit_time_unknown">Anrufszeit N/A</string>
     <string name="value_visiting_person_unknown">Anwesende*r Arzt/Ärztin N/A</string>
     <string name="value_investigation_status_unknown">Untersuchungsstatus N/A</string>
 </resources>
