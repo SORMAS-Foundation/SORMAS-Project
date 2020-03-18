@@ -545,5 +545,9 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	protected boolean isVisibleAllowed(String propertyId) {
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
 	}
+	
+	protected boolean isGermanServer() {
+		return FacadeProvider.getConfigFacade().getCountryLocale().toLowerCase().startsWith("de");
+	}
 
 }

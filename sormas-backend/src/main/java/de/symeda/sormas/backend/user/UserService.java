@@ -113,7 +113,6 @@ public class UserService extends AbstractAdoService<User> {
 	}
 	
 	public List<User> getInformantsOfFacility(Facility facility) {
-
 		if (facility == null || facility.getType() == FacilityType.LABORATORY) {
 			throw new IllegalArgumentException("Facility is null or a laboratory");
 		}

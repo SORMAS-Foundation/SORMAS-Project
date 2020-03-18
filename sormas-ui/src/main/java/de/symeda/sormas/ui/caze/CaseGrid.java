@@ -144,6 +144,11 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 			}
 		}
 
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
+		if (viewConfiguration.isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
 	}
 	

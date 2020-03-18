@@ -8,7 +8,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum FeatureType {
 
 	/**
-	 * New module features are automatically added to the database in StartupShutdownService.createMissingFeatureConfigurations().
+	 * New server features are automatically added to the database in StartupShutdownService.createMissingFeatureConfigurations().
 	 * The corresponding feature configurations are set to be enabled by default.
 	 */
 	
@@ -16,31 +16,36 @@ public enum FeatureType {
 	AGGREGATE_REPORTING(true),
 	EVENT_SURVEILLANCE(true),
 	WEEKLY_REPORTING(true),
-	CLINICAL_MANAGEMENT(true);
+	CLINICAL_MANAGEMENT(true),
+	NATIONAL_CASE_SHARING(true);
 	
-	private boolean moduleFeature;
+	/**
+	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
+	 * is supposed to operate.
+	 */
+	private boolean serverFeature;
 	
-	FeatureType(boolean moduleFeature) {
-		this.moduleFeature = moduleFeature;
+	FeatureType(boolean serverFeature) {
+		this.serverFeature = serverFeature;
 	}
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
 	
-	public boolean isModuleFeature() {
-		return moduleFeature;
+	public boolean isServerFeature() {
+		return serverFeature;
 	}
 	
-	public static List<FeatureType> getAllModuleFeatures() {
-		List<FeatureType> moduleFeatures = new ArrayList<>();
+	public static List<FeatureType> getAllServerFeatures() {
+		List<FeatureType> serverFeatures = new ArrayList<>();
 		for (FeatureType featureType : values()) {
-			if (featureType.isModuleFeature()) {
-				moduleFeatures.add(featureType);
+			if (featureType.isServerFeature()) {
+				serverFeatures.add(featureType);
 			}
 		}
 		
-		return moduleFeatures;
+		return serverFeatures;
 	}
 	
 }

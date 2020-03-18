@@ -30,6 +30,8 @@
         <import type="de.symeda.sormas.api.person.EducationType" />
         <import type="de.symeda.sormas.api.person.CauseOfDeath" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person"/>
     </data>
@@ -84,21 +86,21 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/person_birthdateYYYY"
                     app:showCaption="false"
-                    app:hint="@string/hint_select_year"
+                    app:hint="@{I18nProperties.getString(Strings.year)}"
                     app:value="@={data.birthdateYYYY}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/person_birthdateMM"
                     app:showCaption="false"
-                    app:hint="@string/hint_select_month"
+                    app:hint="@{I18nProperties.getString(Strings.month)}"
                     app:value="@={data.birthdateMM}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/person_birthdateDD"
                     app:showCaption="false"
-                    app:hint="@string/hint_select_day"
+                    app:hint="@{I18nProperties.getString(Strings.day)}"
                     app:value="@={data.birthdateDD}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
@@ -458,6 +460,17 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_generalPractitionerDetails"
+                app:value="@={data.generalPractitionerDetails}"
+                app:inputType="textMultiLine"
+                app:textAlignment="gravity"
+                app:gravity="top|start"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:textArea="true"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 

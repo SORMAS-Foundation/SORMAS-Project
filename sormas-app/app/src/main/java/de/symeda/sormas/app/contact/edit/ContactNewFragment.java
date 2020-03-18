@@ -89,6 +89,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     public void onAfterLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
+        contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
     }
 
     @Override

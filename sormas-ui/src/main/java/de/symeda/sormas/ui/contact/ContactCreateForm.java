@@ -57,6 +57,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String LAST_NAME = PersonDto.LAST_NAME;
 	
     private static final String HTML_LAYOUT = 
+			LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, "") +
 			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
 			LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, "") +
@@ -78,6 +79,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     
     @Override
 	protected void addFields() {
+		addField(ContactDto.REPORT_DATE_TIME, DateField.class);
     	TextField firstName = addCustomField(FIRST_NAME, String.class, TextField.class);
     	TextField lastName = addCustomField(LAST_NAME, String.class, TextField.class);
 		ComboBox region = addInfrastructureField(CaseDataDto.REGION);

@@ -28,6 +28,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class ContactDto extends EntityDto {
 
@@ -59,6 +60,10 @@ public class ContactDto extends EntityDto {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String HIGH_PRIORITY = "highPriority";
+	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
+	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
+	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	
 	@Required
 	private Date reportDateTime;
@@ -90,12 +95,19 @@ public class ContactDto extends EntityDto {
 	
 	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
 	private UserReferenceDto resultingCaseUser;
+	
+	private boolean highPriority;
+	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
+	private String immunosuppressiveTherapyBasicDiseaseDetails;
+	private YesNoUnknown careForPeopleOver60;
 
 	public static ContactDto build(CaseReferenceDto caze) {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 
 		contact.setCaze(caze);
+
+		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
 
 		contact.setReportDateTime(new Date());
 		contact.setContactClassification(ContactClassification.UNCONFIRMED);
@@ -260,6 +272,38 @@ public class ContactDto extends EntityDto {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public boolean isHighPriority() {
+		return highPriority;
+	}
+
+	public void setHighPriority(boolean highPriority) {
+		this.highPriority = highPriority;
+	}
+
+	public YesNoUnknown getImmunosuppressiveTherapyBasicDisease() {
+		return immunosuppressiveTherapyBasicDisease;
+	}
+
+	public void setImmunosuppressiveTherapyBasicDisease(YesNoUnknown immunosuppressiveTherapyBasicDisease) {
+		this.immunosuppressiveTherapyBasicDisease = immunosuppressiveTherapyBasicDisease;
+	}
+
+	public String getImmunosuppressiveTherapyBasicDiseaseDetails() {
+		return immunosuppressiveTherapyBasicDiseaseDetails;
+	}
+
+	public void setImmunosuppressiveTherapyBasicDiseaseDetails(String immunosuppressiveTherapyBasicDiseaseDetails) {
+		this.immunosuppressiveTherapyBasicDiseaseDetails = immunosuppressiveTherapyBasicDiseaseDetails;
+	}
+
+	public YesNoUnknown getCareForPeopleOver60() {
+		return careForPeopleOver60;
+	}
+
+	public void setCareForPeopleOver60(YesNoUnknown careForPeopleOver60) {
+		this.careForPeopleOver60 = careForPeopleOver60;
 	}
 	
 }

@@ -354,6 +354,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
 		return caseService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
+	
+	@Override
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
+		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
+	}
 
 	@Override
 	public long count(CaseCriteria caseCriteria, String userUuid) {
@@ -1350,6 +1355,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 				if (newCase.getSurveillanceOfficer() != null) {
 					task.setAssigneeUser(newCase.getSurveillanceOfficer());
+				} else if (newCase.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+					task.setAssigneeUser(newCase.getReportingUser());
 				} else {
 					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
 							UserRole.SURVEILLANCE_SUPERVISOR);
@@ -1462,11 +1469,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void setResponsibleSurveillanceOfficer(Case caze) {
-		
 		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
 		} else {
-			List<User> informants = userService.getInformantsOfFacility(caze.getHealthFacility());
+			List<User> informants = caze.getHealthFacility() != null ? userService.getInformantsOfFacility(caze.getHealthFacility()) : new ArrayList<>();
 			Random rand = new Random();
 			if (!informants.isEmpty()) {
 				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
@@ -1742,6 +1748,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
+		target.setSharedToCountry(source.isSharedToCountry());
 
 		return target;
 	}
@@ -1835,6 +1842,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
+		target.setSharedToCountry(source.isSharedToCountry());
 
 		return target;
 	}

@@ -34,6 +34,8 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -52,6 +54,7 @@ import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
 
@@ -395,6 +398,11 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
         verifyBurialStatus();
         verifyGatheringStatus();
         verifyTravelStatus();
+
+        if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease()) > 0) {
+            contentBinding.epiDataTraveled.setCaption(String.format(I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod),
+                    DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease())));
+        }
     }
 
     @Override

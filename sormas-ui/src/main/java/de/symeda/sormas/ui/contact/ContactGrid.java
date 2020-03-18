@@ -49,9 +49,14 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
+	Class viewClass;
+
 	@SuppressWarnings("unchecked")
 	public <V extends View> ContactGrid(ContactCriteria criteria, Class<V> viewClass) {
 		super(ContactIndexDto.class);
+
+		this.viewClass = viewClass;
+
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
@@ -125,6 +130,11 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
 		}
 
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
+		if (viewConfiguration.isInEagerMode()) {
+			setEagerDataProvider();
+		}
+		
 		getDataProvider().refreshAll();
 	}
 	

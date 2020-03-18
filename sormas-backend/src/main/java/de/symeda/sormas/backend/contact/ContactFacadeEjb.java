@@ -62,16 +62,20 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -575,7 +579,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		int[] counts = new int[3];
 		counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
 		counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-		counts[2] = caseContactCounts.size() / caseIds.size();
+		counts[2] =  caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
 		return counts;
 	}
 	
@@ -609,7 +613,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setReportDateTime(source.getReportDateTime());
+		if (source.getReportDateTime() != null) {
+			target.setReportDateTime(source.getReportDateTime());
+		} else { // make sure we do have a report date
+			target.setReportDateTime(new Date());
+		}
 
 		// use only date, not time
 		target.setLastContactDate(source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
@@ -634,6 +642,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 
+		target.setHighPriority(source.isHighPriority());
+		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
+		
 		return target;
 	}
 
@@ -731,6 +744,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+
+		target.setHighPriority(source.isHighPriority());
+		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 		
 		return target;
 	}
@@ -798,7 +816,30 @@ public class ContactFacadeEjb implements ContactFacade {
 			task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
 			task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
 			task.setAssigneeUser(assignee);
+			
+			if (contact.isHighPriority()) {
+				task.setPriority(TaskPriority.HIGH);
+			}
+			
 			taskService.ensurePersisted(task);
+		}
+	}
+
+	@Override
+	public void validate(ContactDto contact) throws ValidationRuntimeException {
+		// Check whether any required field that does not have a not null constraint in
+		// the database is empty
+		if (contact.getReportDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
+		}
+		if (contact.getReportingUser() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
+		}
+		if (contact.getCaze() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCase));
+		}
+		if (contact.getPerson() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
 		}
 	}
 

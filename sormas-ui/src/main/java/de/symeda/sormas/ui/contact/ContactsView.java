@@ -40,6 +40,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
@@ -123,6 +124,7 @@ public class ContactsView extends AbstractView {
 	private ComboBox officerFilter;
 	private ComboBox followUpStatusFilter;
 	private ComboBox reportedByFilter;
+	private CheckBox onlyHighPriorityContacts;
 	private TextField searchField;
 	private Button resetButton;
 	private EpiWeekAndDateFilterComponent<ContactDateType> weekAndDateFilter;
@@ -442,6 +444,15 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
+			
+			onlyHighPriorityContacts = new CheckBox();
+			onlyHighPriorityContacts.setCaption(I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts));
+			CssStyles.style(onlyHighPriorityContacts, CssStyles.CHECKBOX_FILTER_INLINE);
+			onlyHighPriorityContacts.addValueChangeListener(e -> {
+				criteria.onlyHighPriorityContacts((Boolean) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			secondFilterRowLayout.addComponent(onlyHighPriorityContacts);
 		}
 		filterLayout.addComponent(secondFilterRowLayout);
 		secondFilterRowLayout.setVisible(false);
@@ -764,6 +775,7 @@ public class ContactsView extends AbstractView {
 		officerFilter.setValue(criteria.getContactOfficer());
 		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
+		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
 		searchField.setValue(criteria.getNameUuidCaseLike());		
 
 		ContactDateType contactDateType = criteria.getReportDateFrom() != null ? ContactDateType.REPORT_DATE 

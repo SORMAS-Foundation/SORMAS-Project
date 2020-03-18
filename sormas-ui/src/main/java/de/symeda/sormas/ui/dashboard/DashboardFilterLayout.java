@@ -142,7 +142,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		diseaseFilter.setWidth(200, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
 		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
-			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp());
+			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp(true, true, true).toArray());
+			diseaseFilter.setValue(dashboardDataProvider.getDisease());
 		} else {
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
 		}

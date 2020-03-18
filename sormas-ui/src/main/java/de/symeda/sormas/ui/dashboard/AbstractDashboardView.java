@@ -22,6 +22,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
@@ -49,6 +50,9 @@ public abstract class AbstractDashboardView extends AbstractView {
 		dashboardDataProvider = new DashboardDataProvider();
 		if (dashboardDataProvider.getDashboardType() == null) {
 			dashboardDataProvider.setDashboardType(dashboardType);
+		}
+		if (DashboardType.CONTACTS.equals(dashboardDataProvider.getDashboardType())) {
+			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
 		}
 
 		OptionGroup dashboardSwitcher = new OptionGroup();

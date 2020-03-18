@@ -68,6 +68,11 @@ $valo-menu-background-color: $s-default-color !default;
 		}
 	  }
 	}
+	
+    .v-menubar-user-menu {
+    	margin: 8px 0px;
+    	text-align: left;
+    }
   }
   
   .valo-menu-responsive[width-range~="0-800px"] {
@@ -98,14 +103,9 @@ $valo-menu-background-color: $s-default-color !default;
   // Move logout and settings buttons to the bottom of the menu on large screens
   .v-ui[width-range~="801px-"] .valo-menu-part {
   	.settings-menu {
-  	  position: fixed;
-  	  bottom: 0;
-  	  margin-bottom: 35px;
+  	  margin-top: 42px;
   	}
     .logout-menu {
-      position: fixed;
-      bottom: 0;
-      margin-bottom: 0;
     }
   }
   

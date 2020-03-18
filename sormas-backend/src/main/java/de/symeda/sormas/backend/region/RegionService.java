@@ -48,16 +48,19 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
-		cq.where(cb.equal(cb.upper(from.get(Region.NAME)), name.toUpperCase()));
+		cq.where(cb.or(
+				cb.equal(from.get(Region.NAME), name),
+				cb.equal(cb.lower(from.get(Region.NAME)), name.toLowerCase())
+				));
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<Long> getIdsByReferenceDtos(List<RegionReferenceDto> references) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Region> from = cq.from(getElementClass());
-		
+
 		cq.where(from.get(Region.UUID).in(references.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList())));
 		cq.select(from.get(Region.ID));
 		return em.createQuery(cq).getResultList();

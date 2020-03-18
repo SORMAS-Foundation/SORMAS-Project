@@ -53,7 +53,7 @@ public class CaseImportLayout extends AbstractImportLayout {
 						public void accept(StreamResource resource) {
 							extendDownloadErrorReportButton(resource);
 						}
-					}, currentUI);
+					}, currentUI, true);
 				} catch (IOException e) {
 					new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 				}

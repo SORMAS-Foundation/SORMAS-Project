@@ -89,6 +89,12 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
         if (diseaseClassificationCriteria == null || !diseaseClassificationCriteria.hasAnyCriteria()) {
             contentBinding.caseButtonsPanel.setVisibility(GONE);
         }
+
+        if (!ConfigProvider.isGermanServer()) {
+            contentBinding.caseDataExternalID.setVisibility(GONE);
+        } else {
+            contentBinding.caseDataEpidNumber.setVisibility(GONE);
+        }
     }
 
     private void setUpControlListeners(FragmentCaseReadLayoutBinding contentBinding) {

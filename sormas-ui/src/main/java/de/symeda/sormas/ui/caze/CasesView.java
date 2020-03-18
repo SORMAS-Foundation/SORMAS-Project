@@ -214,7 +214,6 @@ public class CasesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-
 			PopupButton importButton = new PopupButton(I18nProperties.getCaption(Captions.actionImport));
 			importButton.setId("import");
 			importButton.setIcon(VaadinIcons.UPLOAD);
@@ -446,6 +445,18 @@ public class CasesView extends AbstractView {
 				addHeaderComponent(mergeDuplicatesButton);
 			}
 		}
+		
+		Button searchSpecificCaseButton = new Button(I18nProperties.getCaption(Captions.caseSearchSpecificCase));
+		searchSpecificCaseButton.setId("searchSpecificCase");
+		searchSpecificCaseButton.setIcon(VaadinIcons.SEARCH);
+		searchSpecificCaseButton.addClickListener(e -> buildAndOpenSearchSpecificCaseWindow());
+		if (moreLayout != null) {
+			searchSpecificCaseButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
+			moreLayout.addComponent(searchSpecificCaseButton);
+		} else {
+			addHeaderComponent(searchSpecificCaseButton);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			lineListingButton = new Button(I18nProperties.getCaption(Captions.caseLineListing));
@@ -473,6 +484,16 @@ public class CasesView extends AbstractView {
 		Window window = VaadinUiUtil.showPopupWindow(new CasesGuideLayout());
 		window.setWidth(1024, Unit.PIXELS);
 		window.setCaption(I18nProperties.getString(Strings.headingCasesGuide));
+	}
+	
+	private void buildAndOpenSearchSpecificCaseWindow() {
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setCaption(I18nProperties.getCaption(Captions.caseSearchSpecificCase));
+		window.setWidth(768, Unit.PIXELS);
+		
+		SearchSpecificCaseLayout layout = new SearchSpecificCaseLayout(() -> window.close());
+		window.setContent(layout);
+		UI.getCurrent().addWindow(window);
 	}
 
 	private void enterBulkEditMode() {

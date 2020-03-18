@@ -38,6 +38,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -48,6 +50,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -75,6 +78,7 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
@@ -126,6 +130,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	TreatmentService treatmentService;
 	@EJB
 	PrescriptionService prescriptionService;
+	@EJB
+	FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public CaseService() {
 		super(Case.class);
@@ -270,7 +276,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Case> caze = cq.from(Case.class);
-			
+
 			Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
 			if (!DataHelper.isNullOrEmpty(caseUuid)) {
 				filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
@@ -291,7 +297,33 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			query.setParameter(regexParam4, "g");
 			query.setMaxResults(1);
 			return query.getSingleResult();
-			
+
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
+		if (StringUtils.isEmpty(searchTerm)) {
+			return null;
+		}
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> root = cq.from(Case.class);
+
+		Predicate filter = cb.or(
+				cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase())
+				);
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(root.get(Case.REPORT_DATE)));
+		cq.select(root.get(Case.UUID));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -730,6 +762,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// users can only be assigned to a task when they have also access to the case
 		//Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
 		//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
+
+		// all users (without specific restrictions) get access to cases that have been made available to the whole country
+		if (!featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
+			filter = or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
+		}
 
 		// only show cases of a specific disease if a limited disease is set
 		if (user.getLimitedDisease() != null) {

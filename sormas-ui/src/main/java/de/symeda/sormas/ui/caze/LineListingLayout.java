@@ -480,6 +480,8 @@ public class LineListingLayout extends VerticalLayout {
 		private void formatAsFirstLine() {
 
 			setRequiredInicatorsVisibility(true);
+			
+			formatAsOtherLine();
 
 			dateOfReport.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
 			dateOfReport.removeStyleName(CssStyles.CAPTION_HIDDEN);
@@ -487,8 +489,10 @@ public class LineListingLayout extends VerticalLayout {
 			community.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY));
 			facility.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 			facility.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			facilityDetails.setCaption(I18nProperties.getCaption(Captions.caseHealthFacilityDetailsShort));
-			facilityDetails.removeStyleName(CssStyles.CAPTION_HIDDEN);
+			// no caption due to limited space and dependence on type of facility (other or home)
+//			facilityDetails.setCaption(I18nProperties.getCaption(Captions.caseHealthFacilityDetailsShort));
+//			facilityDetails.removeStyleName(CssStyles.CAPTION_HIDDEN);
+			CssStyles.style(facilityDetails, CssStyles.FORCE_CAPTION);
 			firstname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 			firstname.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			lastname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
