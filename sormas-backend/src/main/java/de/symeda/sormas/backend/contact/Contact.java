@@ -37,6 +37,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -82,6 +83,9 @@ public class Contact extends CoreAdo {
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPracticionerDetails";
+	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_FROM = "quarantineFrom";
+	public static final String QUARANTINE_TO = "quarantineTo";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -115,6 +119,10 @@ public class Contact extends CoreAdo {
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
 	
+	private QuarantineType quarantine;
+	private Date quarantineFrom;
+	private Date quarantineTo;
+
 	private List<Task> tasks;
 	
 	@ManyToOne(cascade = {})
@@ -379,5 +387,31 @@ public class Contact extends CoreAdo {
 	public void setCareForPeopleOver60(YesNoUnknown careForPeopleOver60) {
 		this.careForPeopleOver60 = careForPeopleOver60;
 	}
-	
+
+	@Enumerated(EnumType.STRING)
+	public QuarantineType getQuarantine() {
+		return quarantine;
+	}
+
+	public void setQuarantine(QuarantineType quarantine) {
+		this.quarantine = quarantine;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+	}
 }

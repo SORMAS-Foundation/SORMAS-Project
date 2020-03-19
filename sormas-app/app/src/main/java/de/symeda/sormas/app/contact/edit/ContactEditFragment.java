@@ -27,6 +27,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -52,6 +53,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
     private List<Item> relationshipList;
     private List<Item> contactClassificationList;
+    private List<Item> quarantineList;
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
 
@@ -138,6 +140,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
         contactClassificationList = DataUtils.getEnumItems(ContactClassification.class, true);
+        quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
     }
@@ -169,9 +172,13 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         // Initialize ControlSpinnerFields
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
         contentBinding.contactContactClassification.initializeSpinner(contactClassificationList);
+        contentBinding.contactQuarantine.initializeSpinner(quarantineList);
+
         // Initialize ControlDateFields
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
         contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
+        contentBinding.contactQuarantineFrom.initializeDateField(getFragmentManager());
+        contentBinding.contactQuarantineTo.initializeDateField(getFragmentManager());
     }
 
     @Override

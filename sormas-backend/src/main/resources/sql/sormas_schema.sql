@@ -3994,3 +3994,13 @@ ALTER TABLE facility ADD COLUMN externalid varchar(255);
 ALTER TABLE pointofentry ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (190, 'Add external ID field to region, district, community, facility and point of entry #1604');
+
+-- 2020-03-19 Add quarantine information to contact #1608
+ALTER TABLE contact ADD COLUMN quarantine varchar(255);
+ALTER TABLE contact ADD COLUMN quarantinefrom timestamp;
+ALTER TABLE contact ADD COLUMN quarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantine varchar(255);
+ALTER TABLE contact_history ADD COLUMN quarantinefrom timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineto timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (191, 'Add quarantine information to contact #1608');

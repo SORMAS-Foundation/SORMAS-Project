@@ -46,6 +46,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -79,8 +80,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
+					LayoutUtil.fluidRowLocs(
+							6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO)
+					+
 			LayoutUtil.locCss(CssStyles.VSPACE_3, ContactDto.HIGH_PRIORITY) +
 			LayoutUtil.fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
 			LayoutUtil.loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
@@ -90,6 +94,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					+ LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.CONTACT_OFFICER);
 
 	private OptionGroup contactProximity;
+	private Field<?> quarantine;
+	private DateField quarantineFrom;
+	private DateField quarantineTo;
 
 	public ContactDataForm(UserRight editOrCreateUserRight) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -108,6 +115,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
+
+		quarantine = addField(ContactDto.QUARANTINE);
+		quarantine.addValueChangeListener(e -> updateQuarantineFields());
+		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
+		quarantineFrom.setVisible(false);
+		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
+		quarantineTo.setVisible(false);
+
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
 		addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
@@ -193,6 +208,21 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS);
 		FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
+	}
+
+	private void updateQuarantineFields() {
+		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
+		boolean visible;
+		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+			visible = true;
+		} else {
+			visible = false;
+			quarantineFrom.clear();
+			quarantineTo.clear();
+		}
+
+		quarantineFrom.setVisible(visible);
+		quarantineTo.setVisible(visible);
 	}
 
 	private ValueChangeListener getHighPriorityValueChangeListener(CheckBox cbHighPriority) {

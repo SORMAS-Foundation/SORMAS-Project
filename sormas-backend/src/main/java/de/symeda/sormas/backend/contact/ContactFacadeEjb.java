@@ -647,6 +647,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 		
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
+
 		return target;
 	}
 
@@ -750,6 +754,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 		
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
+
 		return target;
 	}
 

@@ -28,6 +28,7 @@
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.contact.QuarantineType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -86,6 +87,34 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/contact_contactStatus"
                         app:value="@{data.contactStatus}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_quarantine"
+                    app:value="@{data.quarantine}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_quarantineFrom"
+                        app:dependencyParentField="@{contactQuarantine}"
+                        app:dependencyParentValue="@{QuarantineType.HOME}"
+                        app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                        app:value="@{data.quarantineFrom}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_quarantineTo"
+                        app:dependencyParentField="@{contactQuarantine}"
+                        app:dependencyParentValue="@{QuarantineType.HOME}"
+                        app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                        app:value="@{data.quarantineTo}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

@@ -35,6 +35,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -131,6 +132,13 @@ public class Contact extends AbstractDomainObject {
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown careForPeopleOver60;
+
+	@Enumerated(EnumType.STRING)
+	private QuarantineType quarantine;
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	private Date quarantineFrom;
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	private Date quarantineTo;
 
 	public Person getPerson() {
 		return person;
@@ -364,5 +372,29 @@ public class Contact extends AbstractDomainObject {
 
 	public void setCareForPeopleOver60(YesNoUnknown careForPeopleOver60) {
 		this.careForPeopleOver60 = careForPeopleOver60;
+	}
+
+	public QuarantineType getQuarantine() {
+		return quarantine;
+	}
+
+	public void setQuarantine(QuarantineType quarantine) {
+		this.quarantine = quarantine;
+	}
+
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 	}
 }
