@@ -1074,7 +1074,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, PointOfEntry> pointOfEntry = root.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = root.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
-		cq.multiselect(root.get(AbstractDomainObject.ID), root.get(Case.UUID), root.get(Case.EPID_NUMBER),
+		cq.multiselect(root.get(AbstractDomainObject.ID), root.get(Case.UUID), root.get(Case.EPID_NUMBER), root.get(Case.EXTERNAL_ID),
 				person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME), root.get(Case.DISEASE),
 				root.get(Case.DISEASE_DETAILS), root.get(Case.CASE_CLASSIFICATION), root.get(Case.INVESTIGATION_STATUS),
 				person.get(Person.PRESENT_CONDITION), root.get(Case.REPORT_DATE),
@@ -1105,6 +1105,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				case CaseIndexDto.ID:
 				case CaseIndexDto.UUID:
 				case CaseIndexDto.EPID_NUMBER:
+				case CaseIndexDto.EXTERNAL_ID:
 				case CaseIndexDto.DISEASE:
 				case CaseIndexDto.DISEASE_DETAILS:
 				case CaseIndexDto.CASE_CLASSIFICATION:

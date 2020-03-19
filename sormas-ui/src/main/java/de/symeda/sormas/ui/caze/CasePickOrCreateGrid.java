@@ -8,6 +8,7 @@ import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -33,10 +34,16 @@ public class CasePickOrCreateGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 		
-		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME,
+		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, CaseIndexDto.EXTERNAL_ID, CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME,
 				CaseIndexDto.AGE_AND_BIRTH_DATE, CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.SEX, CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME);
-
+		
+		if (FacadeProvider.getConfigFacade().isGermanServer()) {
+			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
+		} else {
+			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);			
+		}
+		
 		getColumn(CaseIndexDto.UUID).setRenderer(new V7UuidRenderer());
 		getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 		

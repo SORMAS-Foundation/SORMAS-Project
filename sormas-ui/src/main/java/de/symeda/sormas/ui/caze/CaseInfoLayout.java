@@ -22,6 +22,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -60,9 +61,15 @@ public class CaseInfoLayout extends HorizontalLayout {
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID))
 			.setDescription(caseDto.getUuid());
 			
-			addDescLabel(leftColumnLayout, caseDto.getEpidNumber(),
-					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER))
-			.setDescription(caseDto.getEpidNumber());
+			if (FacadeProvider.getConfigFacade().isGermanServer()) {
+				addDescLabel(leftColumnLayout, caseDto.getExternalID(),
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_ID))
+				.setDescription(caseDto.getEpidNumber());
+			} else {
+				addDescLabel(leftColumnLayout, caseDto.getEpidNumber(),
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER))
+				.setDescription(caseDto.getEpidNumber());				
+			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(leftColumnLayout, caseDto.getPerson(),

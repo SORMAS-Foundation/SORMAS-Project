@@ -547,7 +547,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	}
 	
 	protected boolean isGermanServer() {
-		return FacadeProvider.getConfigFacade().getCountryLocale().toLowerCase().startsWith("de");
+		return FacadeProvider.getConfigFacade().isGermanServer();
 	}
 
 }

@@ -91,11 +91,17 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 			return label;
 		}).setId(COLUMN_COMPLETENESS);
 
-		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, DISEASE_SHORT, 
+		setColumns(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, CaseIndexDto.EXTERNAL_ID, DISEASE_SHORT, 
 				CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
 				CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
 				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS);
+		
+		if (FacadeProvider.getConfigFacade().isGermanServer()) {
+			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
+		} else {
+			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);			
+		}
 
 		getColumn(COLUMN_COMPLETENESS)
 				.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));

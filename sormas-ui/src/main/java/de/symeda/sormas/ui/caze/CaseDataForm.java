@@ -431,10 +431,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
 			
-			if (!isGermanServer()) {
-				setVisible(false, CaseDataDto.EXTERNAL_ID);
-			} else {
+			if (isGermanServer()) {
 				setVisible(false, CaseDataDto.EPID_NUMBER);
+			} else {
+				setVisible(false, CaseDataDto.EXTERNAL_ID);
 			}
 		});
 	}
