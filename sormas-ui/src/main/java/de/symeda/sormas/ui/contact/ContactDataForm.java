@@ -18,8 +18,6 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import org.joda.time.LocalDate;
 
@@ -76,7 +74,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingContactData))+
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
 			LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
-			LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 			LayoutUtil.fluidRowLocs(6, ContactDto.LAST_CONTACT_DATE, 6, null) +
 			LayoutUtil.fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
 			LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
@@ -89,8 +86,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
 			LayoutUtil.h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
 			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
-			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, ContactDto.CONTACT_OFFICER);
+					LayoutUtil.fluidRowLocs(3, ContactDto.FOLLOW_UP_UNTIL, 9, ContactDto.FOLLOW_UP_COMMENT)
+					+ LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.CONTACT_OFFICER);
 
 	private OptionGroup contactProximity;
 
@@ -117,8 +114,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
 		addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 
-		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
-		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
+		ComboBox region = addInfrastructureField(ContactDto.REGION);
+		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
+		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
+		district.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.DISTRICT));
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(district,
