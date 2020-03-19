@@ -67,7 +67,7 @@ public class ImportProgressLayout extends VerticalLayout {
 	
 	private UI currentUI;
 	
-	public ImportProgressLayout(int totalCount, UI currentUI, Runnable cancelCallback) {
+	public ImportProgressLayout(int totalCount, UI currentUI, Runnable cancelCallback, boolean duplicatesPossible) {
 		this.totalCount = totalCount;
 		this.currentUI = currentUI;
 		
@@ -108,7 +108,9 @@ public class ImportProgressLayout extends VerticalLayout {
 		progressInfoLayout.addComponent(importErrorsLabel);
 		importDuplicatesLabel = new Label(String.format(I18nProperties.getCaption(Captions.importDuplicates), 0));
 		CssStyles.style(importDuplicatesLabel, CssStyles.LABEL_WARNING);
-		progressInfoLayout.addComponent(importDuplicatesLabel);
+		if (duplicatesPossible) {
+			progressInfoLayout.addComponent(importDuplicatesLabel);
+		}
 		importSkipsLabel = new Label(String.format(I18nProperties.getCaption(Captions.importSkips), 0));
 		CssStyles.style(importSkipsLabel, CssStyles.LABEL_MINOR);
 		progressInfoLayout.addComponent(importSkipsLabel);

@@ -37,6 +37,7 @@ public class CaseIndexDto implements Serializable {
 	public static final String ID = "id";
 	public static final String UUID = "uuid";
 	public static final String EPID_NUMBER = "epidNumber";
+	public static final String EXTERNAL_ID = "externalID";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String DISEASE = "disease";
@@ -61,6 +62,7 @@ public class CaseIndexDto implements Serializable {
 	private long id;
 	private String uuid;
 	private String epidNumber;
+	private String externalID;
 	private String personFirstName;
 	private String personLastName;
 	private Disease disease;
@@ -82,7 +84,7 @@ public class CaseIndexDto implements Serializable {
 	private String ageAndBirthDate;
 	private Float completeness;
 
-	public CaseIndexDto(long id, String uuid, String epidNumber, String personFirstName, String personLastName, Disease disease,
+	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid, 
 			String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
@@ -91,6 +93,7 @@ public class CaseIndexDto implements Serializable {
 		this.id = id;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
+		this.externalID = externalID;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.disease = disease;
@@ -261,6 +264,14 @@ public class CaseIndexDto implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
 	}
 
 }

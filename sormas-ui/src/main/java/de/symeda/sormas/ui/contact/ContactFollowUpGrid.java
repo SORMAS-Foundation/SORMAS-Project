@@ -26,14 +26,10 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, ContactCriteria> {
 
-	public static final String DAY_1_RESULT = "day1ResultLoc";
-	public static final String DAY_2_RESULT = "day2ResultLoc";
-	public static final String DAY_3_RESULT = "day3ResultLoc";
-	public static final String DAY_4_RESULT = "day4ResultLoc";
-	public static final String DAY_5_RESULT = "day5ResultLoc";
-	public static final String DAY_6_RESULT = "day6ResultLoc";
-	public static final String DAY_7_RESULT = "day7ResultLoc";
-	public static final String DAY_8_RESULT = "day8ResultLoc";
+	private static final String[] DAY_RESULTS = new String[] {
+			"day1ResultLoc", "day2ResultLoc", "day3ResultLoc", "day4ResultLoc",
+			"day5ResultLoc", "day6ResultLoc", "day7ResultLoc", "day8ResultLoc"
+	};
 	
 	private Date referenceDate;
 	private Date[] dates;
@@ -47,35 +43,25 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 		setDataProvider();
 		setCriteria(criteria);
-
-		addComponentColumn(followUpDto -> {
-			return new Label("");
-		}).setId(DAY_1_RESULT);
-		addComponentColumn(followUpDto -> {
-			return new Label("");
-		}).setId(DAY_2_RESULT);
-		addComponentColumn(followUpDto -> {
-			return new Label("");
-		}).setId(DAY_3_RESULT);
-		addComponentColumn(followUpDto -> {
-			return new Label("");
-		}).setId(DAY_4_RESULT);
-		addComponentColumn(followUpDto -> {
-			return new Label("");
-		}).setId(DAY_5_RESULT);
-		addComponentColumn(followUpDto -> {
-			return new Label("");
-		}).setId(DAY_6_RESULT);
-		addComponentColumn(followUpDto -> {
-			return new Label("");
-		}).setId(DAY_7_RESULT);
-		addComponentColumn(followUpDto -> {
-			return new Label("");
-		}).setId(DAY_8_RESULT);
+		setDates();
 
 		setColumns(ContactFollowUpDto.UUID, ContactFollowUpDto.PERSON, ContactFollowUpDto.CONTACT_OFFICER,
-				ContactFollowUpDto.LAST_CONTACT_DATE, ContactFollowUpDto.REPORT_DATE_TIME, ContactFollowUpDto.FOLLOW_UP_UNTIL, DAY_1_RESULT,
-				DAY_2_RESULT, DAY_3_RESULT, DAY_4_RESULT, DAY_5_RESULT, DAY_6_RESULT, DAY_7_RESULT, DAY_8_RESULT);
+				ContactFollowUpDto.LAST_CONTACT_DATE, ContactFollowUpDto.REPORT_DATE_TIME, ContactFollowUpDto.FOLLOW_UP_UNTIL);
+		
+		for (int i = 0; i < DAY_RESULTS.length; i++) {
+			addComponentColumn(followUpDto -> {
+				return new Label("");
+			}).setId(DAY_RESULTS[i]);
+			
+			final int index = i;
+			getColumn(DAY_RESULTS[i]).setCaption(DateHelper.formatLocalShortDate(dates[i])).setSortable(false).setStyleGenerator(
+					new StyleGenerator<ContactFollowUpDto>() {
+						@Override
+						public String apply(ContactFollowUpDto item) {
+							return getVisitResultCssStyle(item.getVisitResults()[index], dates[index], item.getReportDateTime(), item.getFollowUpUntil());
+						}
+					});
+		}
 
 		((Column<ContactFollowUpDto, String>) getColumn(ContactFollowUpDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalShortDateFormat()));
@@ -86,65 +72,6 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			column.setCaption(I18nProperties.getPrefixCaption(
 					ContactFollowUpDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-
-		setDates();
-		
-		getColumn(DAY_1_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[0])).setSortable(false).setStyleGenerator(
-				new StyleGenerator<ContactFollowUpDto>() {
-					@Override
-					public String apply(ContactFollowUpDto item) {
-						return getVisitResultCssStyle(item.getDay1Result(), dates[0], item.getReportDateTime(), item.getFollowUpUntil());
-					}
-				});
-		getColumn(DAY_2_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[1])).setSortable(false).setStyleGenerator(
-				new StyleGenerator<ContactFollowUpDto>() {
-					@Override
-					public String apply(ContactFollowUpDto item) {
-						return getVisitResultCssStyle(item.getDay2Result(), dates[1], item.getReportDateTime(), item.getFollowUpUntil());
-					}
-				});
-		getColumn(DAY_3_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[2])).setSortable(false).setStyleGenerator(
-				new StyleGenerator<ContactFollowUpDto>() {
-					@Override
-					public String apply(ContactFollowUpDto item) {
-						return getVisitResultCssStyle(item.getDay3Result(), dates[2], item.getReportDateTime(), item.getFollowUpUntil());
-					}
-				});
-		getColumn(DAY_4_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[3])).setSortable(false).setStyleGenerator(
-				new StyleGenerator<ContactFollowUpDto>() {
-					@Override
-					public String apply(ContactFollowUpDto item) {
-						return getVisitResultCssStyle(item.getDay4Result(), dates[3], item.getReportDateTime(), item.getFollowUpUntil());
-					}
-				});
-		getColumn(DAY_5_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[4])).setSortable(false).setStyleGenerator(
-				new StyleGenerator<ContactFollowUpDto>() {
-					@Override
-					public String apply(ContactFollowUpDto item) {
-						return getVisitResultCssStyle(item.getDay5Result(), dates[4], item.getReportDateTime(), item.getFollowUpUntil());
-					}
-				});
-		getColumn(DAY_6_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[5])).setSortable(false).setStyleGenerator(
-				new StyleGenerator<ContactFollowUpDto>() {
-					@Override
-					public String apply(ContactFollowUpDto item) {
-						return getVisitResultCssStyle(item.getDay6Result(), dates[5], item.getReportDateTime(), item.getFollowUpUntil());
-					}
-				});
-		getColumn(DAY_7_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[6])).setSortable(false).setStyleGenerator(
-				new StyleGenerator<ContactFollowUpDto>() {
-					@Override
-					public String apply(ContactFollowUpDto item) {
-						return getVisitResultCssStyle(item.getDay7Result(), dates[6], item.getReportDateTime(), item.getFollowUpUntil());
-					}
-				});
-		getColumn(DAY_8_RESULT).setCaption(DateHelper.formatLocalShortDate(this.referenceDate)).setSortable(false).setStyleGenerator(
-				new StyleGenerator<ContactFollowUpDto>() {
-					@Override
-					public String apply(ContactFollowUpDto item) {
-						return getVisitResultCssStyle(item.getDay8Result(), getReferenceDate(), item.getReportDateTime(), item.getFollowUpUntil());
-					}
-				});
 
 		addItemClickListener(e ->  {
 			if ((e.getColumn() != null && ContactFollowUpDto.UUID.equals(e.getColumn().getId()))
@@ -205,19 +132,15 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	}
 	
 	private void setColumnCaptions() {
-		getColumn(DAY_1_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[0]));
-		getColumn(DAY_2_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[1]));
-		getColumn(DAY_3_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[2]));
-		getColumn(DAY_4_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[3]));
-		getColumn(DAY_5_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[4]));
-		getColumn(DAY_6_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[5]));
-		getColumn(DAY_7_RESULT).setCaption(DateHelper.formatLocalShortDate(dates[6]));
-		getColumn(DAY_8_RESULT).setCaption(DateHelper.formatLocalShortDate(referenceDate));
+		for (int i = 0; i < DAY_RESULTS.length; i++) {
+			getColumn(DAY_RESULTS[i]).setCaption(DateHelper.formatLocalShortDate(dates[i]));
+		}
 	}
 	
 	private void setDates() {
 		dates = new Date[]{DateHelper.subtractDays(referenceDate, 7), DateHelper.subtractDays(referenceDate, 6), DateHelper.subtractDays(referenceDate, 5), 
-				DateHelper.subtractDays(referenceDate, 4), DateHelper.subtractDays(referenceDate, 3), DateHelper.subtractDays(referenceDate, 2), DateHelper.subtractDays(referenceDate, 1)}; 
+				DateHelper.subtractDays(referenceDate, 4), DateHelper.subtractDays(referenceDate, 3), DateHelper.subtractDays(referenceDate, 2), 
+				DateHelper.subtractDays(referenceDate, 1), referenceDate}; 
 	}
 	
 }

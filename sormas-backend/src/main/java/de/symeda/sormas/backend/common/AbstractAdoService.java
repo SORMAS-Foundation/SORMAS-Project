@@ -18,9 +18,12 @@
 package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -289,31 +292,41 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	 * TODO move to CriteriaBuilderHelper
 	 * @param existing nullable
 	 */
-	public static Predicate and(CriteriaBuilder cb, Predicate existing, Predicate additional) {
-		if (existing == null && additional == null) {
-			return null;
-		} else if (existing == null) {
-			return additional;
-		} else if (additional == null) {
-			return existing;
-		}
-		
-		return cb.and(existing, additional);
+	public static Predicate and(CriteriaBuilder cb, Predicate ... predicates) {
+		return reduce(cb::and, predicates);
+	}
+	@SafeVarargs
+	public static Optional<Predicate> and(CriteriaBuilder cb, Optional<Predicate> ... predicates) {
+		return reduce(cb::and, Arrays.stream(predicates));
+	}
+	public static Predicate or(CriteriaBuilder cb, Predicate ... predicates) {
+		return reduce(cb::or, predicates);
+	}
+	@SafeVarargs
+	public static Optional<Predicate> or(CriteriaBuilder cb, Optional<Predicate> ... predicates) {
+		return reduce(cb::or, Arrays.stream(predicates));
 	}
 	
-	/**
-	 * TODO move to CriteriaBuilderHelper
-	 * @param existing nullable
-	 */
-	public static Predicate or(CriteriaBuilder cb, Predicate existing, Predicate additional) {
-		if (existing == null && additional == null) {
-			return null;
-		} else if (existing == null) {
-			return additional;
-		} else if (additional == null) {
-			return existing;
+	static Optional<Predicate> reduce(Function<Predicate[], Predicate> op, Stream<Optional<Predicate>> predicates) {
+		Predicate[] cleaned = predicates
+		.filter(Optional::isPresent)
+		.map(Optional::get)
+		.toArray(Predicate[]::new);
+		
+		switch (cleaned.length) {
+			case 0:
+				return Optional.empty();
+			case 1:
+				return Optional.of(cleaned[0]);
+			default:
+				return Optional.of(op.apply(cleaned));
 		}
-		return cb.or(existing, additional);
+	}
+	
+	static Predicate reduce(Function<Predicate[], Predicate> op, Predicate ... predicates) {
+		return reduce(op, Arrays.stream(predicates)
+			.map(Optional::ofNullable))
+			.orElse(null);
 	}
 	
 	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Timestamp> path,

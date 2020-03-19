@@ -32,18 +32,12 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -56,13 +50,13 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String LAST_NAME = PersonDto.LAST_NAME;
 	
     private static final String HTML_LAYOUT = 
+			LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, "") +
 			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
 			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, "") +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
-					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_OFFICER, "");
+					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
     
 	private OptionGroup contactProximity;
 
@@ -76,6 +70,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     
     @Override
 	protected void addFields() {
+		addField(ContactDto.REPORT_DATE_TIME, DateField.class);
     	TextField firstName = addCustomField(FIRST_NAME, String.class, TextField.class);
     	TextField lastName = addCustomField(LAST_NAME, String.class, TextField.class);
    
@@ -88,24 +83,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	
     	CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, lastContactDate, contactProximity, relationToCase);
 
-    	ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
-    	contactOfficerField.setNullSelectionAllowed(true);
-    	
     	setRequired(true, FIRST_NAME, LAST_NAME);
     	FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.RELATION_DESCRIPTION, ContactDto.RELATION_TO_CASE, Arrays.asList(ContactRelation.OTHER), true);
-    	
-    	addValueChangeListener(e -> {
-
-    		updateLastContactDateValidator();
-    		
-    		// set assignable officers
-    		ContactDto contactDto = getValue();
-        	if (contactDto != null) {
-    	    	CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-        		updateDiseaseConfiguration(caseDto.getDisease());
-    	    	contactOfficerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
-        	}
-    	});
     }
     
 	private void updateRelationDescriptionField(ComboBox relationToCase, TextField relationDescription) {
@@ -129,17 +108,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	}
     }
 
-	private void updateDiseaseConfiguration(Disease disease) {
-		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
-			boolean visible = DiseasesConfiguration.isDefinedOrMissing(ContactDto.class, (String)propertyId, disease);
-			getFieldGroup().getField(propertyId).setVisible(visible);
-		}
-		
-		ContactProximity value = (ContactProximity)contactProximity.getValue();
-		FieldHelper.updateEnumData(contactProximity, Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
-		contactProximity.setValue(value);
-	}
-    
     public String getPersonFirstName() {
     	return (String) getField(FIRST_NAME).getValue();
     }

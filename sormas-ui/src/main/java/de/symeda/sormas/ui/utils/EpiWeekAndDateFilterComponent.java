@@ -125,7 +125,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 			if (!StringUtils.isEmpty(infoText)) {
 				Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 				infoLabel.setSizeUndefined();
-				infoLabel.setDescription(infoText);
+				infoLabel.setDescription(infoText, ContentMode.HTML);
 				CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 				addComponent(infoLabel);
 			}

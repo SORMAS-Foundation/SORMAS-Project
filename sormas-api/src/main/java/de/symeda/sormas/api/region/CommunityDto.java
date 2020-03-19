@@ -31,18 +31,22 @@ public class CommunityDto extends EntityDto {
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String EXTERNAL_ID = "externalID";
 	
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private boolean archived;
+	private String externalID;
 	
-	public CommunityDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name, String regionUuid, String regionName, String districtUuid, String districtName) {
+	public CommunityDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name,
+			String regionUuid, String regionName, String districtUuid, String districtName, String externalID) {
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
 		this.name = name;
 		this.region = new RegionReferenceDto(regionUuid, regionName);
 		this.district = new DistrictReferenceDto(districtUuid, districtName);
+		this.externalID = externalID;
 	}
 	
 	public CommunityDto() {
@@ -78,6 +82,14 @@ public class CommunityDto extends EntityDto {
 		this.archived = archived;
 	}
 	
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
+	}
+
 	public CommunityReferenceDto toReference() {
 		return new CommunityReferenceDto(getUuid());
 	}

@@ -28,6 +28,8 @@
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <import type="de.symeda.sormas.api.user.UserRight" />
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.contact.QuarantineType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -85,6 +87,35 @@
                     app:softRequired="true"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_quarantine"
+                    app:value="@={data.quarantine}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/contact_quarantineFrom"
+                        app:dependencyParentField="@{contactQuarantine}"
+                        app:dependencyParentValue="@{QuarantineType.HOME}"
+                        app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                        app:value="@={data.quarantineFrom}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/contact_quarantineTo"
+                        app:allowedDaysInFuture="-1"
+                        app:dependencyParentField="@{contactQuarantine}"
+                        app:dependencyParentValue="@{QuarantineType.HOME}"
+                        app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                        app:value="@={data.quarantineTo}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -122,9 +153,9 @@
                         app:value="@{data.reportingUser}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/contact_reportDateTime"
-                        app:value="@{data.reportDateTime}"
+                        app:value="@={data.reportDateTime}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
@@ -154,6 +185,45 @@
                     android:id="@+id/contact_description"
                     app:value="@={data.description}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/contact_highPriority"
+                    app:value="@={data.highPriority}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/contact_immunosuppressiveTherapyBasicDisease"
+                    app:value="@={data.immunosuppressiveTherapyBasicDisease}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_immunosuppressiveTherapyBasicDiseaseDetails"
+                    app:value="@={data.immunosuppressiveTherapyBasicDiseaseDetails}"
+                    app:dependencyParentField="@{contactImmunosuppressiveTherapyBasicDisease}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/contact_careForPeopleOver60"
+                    app:value="@={data.careForPeopleOver60}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/contact_region"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@={data.region}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/contact_district"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@={data.district}" />
+
+                </LinearLayout>
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 

@@ -358,9 +358,9 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public Set<UserRole> getValidRoles(String userName, String password) {
+	public Set<UserRole> getValidLoginRoles(String userName, String password) {
 		User user = userService.getByUserName(userName);
-		if (user != null) {
+		if (user != null && user.isActive()) {
 			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
 				return new HashSet<UserRole>(user.getUserRoles());
 			}

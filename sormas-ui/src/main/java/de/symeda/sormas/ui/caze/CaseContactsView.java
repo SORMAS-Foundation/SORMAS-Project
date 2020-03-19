@@ -31,6 +31,7 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -43,6 +44,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -52,9 +54,11 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
+import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CaseContactsView extends AbstractCaseView {
@@ -206,6 +210,27 @@ public class CaseContactsView extends AbstractCaseView {
 			statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
+			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
+			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			importButton.setIcon(VaadinIcons.UPLOAD);
+
+			importButton.addClickListener(e -> {
+				Window popupWindow = VaadinUiUtil
+						.showPopupWindow(new CaseContactsImportLayout(criteria.getCaze(), criteria.getCaseDisease()));
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCaseContacts));
+				popupWindow.addCloseListener(c -> {
+					grid.reload();
+				});
+			});
+
+			statusFilterLayout.addComponent(importButton);
+			statusFilterLayout.setComponentAlignment(importButton, Alignment.MIDDLE_RIGHT);
+			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				statusFilterLayout.setExpandRatio(importButton, 1);
+			}
+		}
+		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -306,5 +331,4 @@ public class CaseContactsView extends AbstractCaseView {
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
-
 }

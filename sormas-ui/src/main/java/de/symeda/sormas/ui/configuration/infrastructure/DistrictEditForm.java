@@ -22,6 +22,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.DistrictDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -32,7 +33,8 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 	private static final String HTML_LAYOUT =
 			LayoutUtil.fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE)
-			+ LayoutUtil.fluidRowLocs(DistrictDto.REGION);//, DistrictDto.GROWTH_RATE);
+					+ LayoutUtil.fluidRowLocs(DistrictDto.REGION) + LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID);// ,
+																													// DistrictDto.GROWTH_RATE);
 
 	private boolean create;
 	
@@ -53,6 +55,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		addField(DistrictDto.NAME, TextField.class);
 		addField(DistrictDto.EPID_CODE, TextField.class);
 		ComboBox region = addInfrastructureField(DistrictDto.REGION);
+		addField(RegionDto.EXTERNAL_ID, TextField.class);
 //		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));

@@ -73,6 +73,6 @@ public interface UserFacade {
 	
 	UserReferenceDto getCurrentUserAsReference();
 
-	Set<UserRole> getValidRoles(String userName, String password);
+	Set<UserRole> getValidLoginRoles(String userName, String password);
 	
 }

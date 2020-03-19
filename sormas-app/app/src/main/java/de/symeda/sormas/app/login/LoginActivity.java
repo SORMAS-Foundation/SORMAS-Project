@@ -193,7 +193,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
             return;
         }
 
-        if (ConfigProvider.getUsername() == null) return;
+        if (ConfigProvider.getPassword() == null) return;
 
         if (progressDialog == null || !progressDialog.isShowing()) {
             boolean isInitialSync = DatabaseHelper.getFacilityDao().isEmpty();

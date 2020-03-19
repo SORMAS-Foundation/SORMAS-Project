@@ -50,7 +50,7 @@ In general synchronization is based on the following rules:
 * whoever created the weekly report
 * national users see all weekly reports in the database
 * supervisors see all weekly reports from facilities in their region
-* officers see all weekly reports from facilities in their district
+* officers see all weekly reports of their informants
 
 # WeeklyReportEntries
 * users can see all weekly report entries associated with weekly reports they can access

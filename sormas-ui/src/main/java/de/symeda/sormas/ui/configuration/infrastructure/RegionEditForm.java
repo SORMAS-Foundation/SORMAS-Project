@@ -30,6 +30,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 	
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE)
+					+ LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID)
 			;//+ LayoutUtil.fluidRowLocs(RegionDto.GROWTH_RATE);
 
 	public RegionEditForm(UserRight editOrCreateUserRight, boolean create) {
@@ -46,6 +47,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 	protected void addFields() {
 		addField(RegionDto.NAME, TextField.class);
 		addField(RegionDto.EPID_CODE, TextField.class);
+		addField(RegionDto.EXTERNAL_ID, TextField.class);
 //		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));

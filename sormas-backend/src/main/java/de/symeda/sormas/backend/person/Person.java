@@ -96,6 +96,7 @@ public class Person extends AbstractDomainObject {
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
+	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPractitionerDetails";
 
 	private String firstName;
 	private String lastName;
@@ -146,6 +147,7 @@ public class Person extends AbstractDomainObject {
 	private Community occupationCommunity;
 	private Facility occupationFacility;
 	private String occupationFacilityDetails;
+	private String generalPractitionerDetails;
 	
 	@Column(nullable = false)
 	public String getFirstName() {
@@ -474,7 +476,14 @@ public class Person extends AbstractDomainObject {
 	public void setBirthWeight(Integer birthWeight) {
 		this.birthWeight = birthWeight;
 	}
-	
+
+	@Column(length = 512)
+	public String getGeneralPractitionerDetails() {
+		return generalPractitionerDetails;
+	}
+	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
+		this.generalPractitionerDetails = generalPractitionerDetails;
+	}
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);

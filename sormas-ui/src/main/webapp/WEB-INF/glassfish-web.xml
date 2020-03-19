@@ -9,8 +9,11 @@
         <role-name>USER</role-name>
         <group-name>ADMIN</group-name>
         <group-name>SURVEILLANCE_SUPERVISOR</group-name>
+        <group-name>SURVEILLANCE_OFFICER</group-name>
         <group-name>CASE_SUPERVISOR</group-name>
+        <group-name>CASE_OFFICER</group-name>
         <group-name>CONTACT_SUPERVISOR</group-name>
+        <group-name>CONTACT_OFFICER</group-name>
         <group-name>EVENT_OFFICER</group-name>
         <group-name>LAB_USER</group-name>
         <group-name>EXTERNAL_LAB_USER</group-name>

@@ -22,10 +22,10 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -40,7 +40,8 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(CommunityDto.NAME)
-			+ LayoutUtil.fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT);
+					+ LayoutUtil.fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT)
+					+ LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private boolean create;
 	
@@ -61,6 +62,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		addField(CommunityDto.NAME, TextField.class);
 		ComboBox region = addInfrastructureField(CommunityDto.REGION);
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
+		addField(RegionDto.EXTERNAL_ID, TextField.class);
 		
 		setRequired(true, CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT);
 		
@@ -84,6 +86,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 			region.setEnabled(false);
 			district.setEnabled(false);
 		}
+
 	}
 
 	@Override

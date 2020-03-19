@@ -3948,3 +3948,59 @@ ALTER TABLE contact ADD COLUMN externalid varchar(255);
 ALTER TABLE contact_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (185, 'Add external ID text field to case and contact #1571');
+
+-- 2020-03-11 Add region and district to contact #1561
+ALTER TABLE contact ADD COLUMN region_id bigint;
+ALTER TABLE contact ADD COLUMN district_id bigint;
+ALTER TABLE contact_history ADD COLUMN region_id bigint;
+ALTER TABLE contact_history ADD COLUMN district_id bigint;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_region_id FOREIGN KEY (region_id) REFERENCES region (id);
+ALTER TABLE contact ADD CONSTRAINT fk_contact_district_id FOREIGN KEY (district_id) REFERENCES district (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (186, 'Add region and district to contact #1561');
+
+-- 2020-03-13 Add sharedToCountry to case #1562
+ALTER TABLE cases ADD COLUMN sharedtocountry boolean;
+ALTER TABLE cases_history ADD COLUMN sharedtocountry boolean;
+UPDATE cases SET sharedtocountry = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (187, 'Add sharedToCountry to case #1562');
+
+-- 2020-03-17 Add high priority status to contact #1595
+ALTER TABLE contact ADD COLUMN highpriority boolean;
+UPDATE contact SET highpriority = false;
+ALTER TABLE contact ADD COLUMN immunosuppressiveTherapyBasicDisease varchar(255);
+ALTER TABLE contact ADD COLUMN immunosuppressiveTherapyBasicDiseaseDetails varchar(512);
+ALTER TABLE contact ADD COLUMN careForPeopleOver60 varchar(255);
+ALTER TABLE contact_history ADD COLUMN highpriority boolean;
+ALTER TABLE contact_history ADD COLUMN immunosuppressiveTherapyBasicDisease varchar(255);
+ALTER TABLE contact_history ADD COLUMN immunosuppressiveTherapyBasicDiseaseDetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN careForPeopleOver60 varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (188, 'Add high priority status to contact #1595');
+
+-- 2020-03-17 Add general practitioner details to person #1600
+ALTER TABLE person ADD COLUMN generalpractitionerdetails varchar(512);
+ALTER TABLE person_history ADD COLUMN generalpractitionerdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (189, 'Add general practitioner details to person #1600');
+
+-- 2020-03-18 Add external ID field to region, district, community, facility and point of entry #1604
+ALTER TABLE region ADD COLUMN externalid varchar(255);
+ALTER TABLE district ADD COLUMN externalid varchar(255);
+ALTER TABLE community ADD COLUMN externalid varchar(255);
+ALTER TABLE facility ADD COLUMN externalid varchar(255);
+ALTER TABLE pointofentry ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (190, 'Add external ID field to region, district, community, facility and point of entry #1604');
+
+-- 2020-03-19 Add quarantine information to contact #1608
+ALTER TABLE contact ADD COLUMN quarantine varchar(255);
+ALTER TABLE contact ADD COLUMN quarantinefrom timestamp;
+ALTER TABLE contact ADD COLUMN quarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantine varchar(255);
+ALTER TABLE contact_history ADD COLUMN quarantinefrom timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineto timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (191, 'Add quarantine information to contact #1608');

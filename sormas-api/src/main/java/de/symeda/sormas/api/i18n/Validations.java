@@ -52,8 +52,11 @@ public interface Validations {
 	public static String validDisease = "validDisease";
 	public static String validDistrict = "validDistrict";
 	public static String validFacility = "validFacility";
+	public static String validPerson = "validPerson";
 	public static String validPointOfEntry = "validPointOfEntry";
 	public static String validRegion = "validRegion";
+	public static String validReportDateTime = "validReportDateTime";
+	public static String validReportingUser = "validReportingUser";
 	public static String validSample = "validSample";
 	public static String visitAfterFollowUp = "visitAfterFollowUp";
 	public static String visitBeforeContactReport = "visitBeforeContactReport";

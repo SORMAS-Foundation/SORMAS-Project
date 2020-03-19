@@ -54,6 +54,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
+	private Boolean onlyHighPriorityContacts;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -248,6 +249,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getNameUuidCaseLike() {
 		return nameUuidCaseLike;
+	}
+
+	public Boolean getOnlyHighPriorityContacts() {
+		return onlyHighPriorityContacts;
+	}
+
+	public ContactCriteria onlyHighPriorityContacts(Boolean onlyHighPriorityContacts) {
+		this.onlyHighPriorityContacts = onlyHighPriorityContacts;
+		return this;
 	}
 	
 }

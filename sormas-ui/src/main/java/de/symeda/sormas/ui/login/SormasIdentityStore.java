@@ -20,7 +20,7 @@ public class SormasIdentityStore implements IdentityStore {
 	
 	public CredentialValidationResult validate(UsernamePasswordCredential usernamePasswordCredential) {
 		
-		Set<UserRole> userRoles = FacadeProvider.getUserFacade().getValidRoles(
+		Set<UserRole> userRoles = FacadeProvider.getUserFacade().getValidLoginRoles(
 				usernamePasswordCredential.getCaller(), usernamePasswordCredential.getPasswordAsString());
 
 		if (userRoles != null && !userRoles.isEmpty()) {

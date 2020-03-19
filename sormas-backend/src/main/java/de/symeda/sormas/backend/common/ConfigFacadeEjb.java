@@ -138,6 +138,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 	
 	@Override
+	public boolean isGermanServer() {
+		return getCountryLocale().toLowerCase().startsWith("de");
+	}
+	
+	@Override
 	public String getEpidPrefix() {
 		return getProperty(COUNTRY_EPID_PREFIX, "");
 	}

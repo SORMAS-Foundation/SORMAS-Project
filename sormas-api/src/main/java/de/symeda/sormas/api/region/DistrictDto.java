@@ -32,20 +32,24 @@ public class DistrictDto extends EntityDto {
 	public static final String EPID_CODE = "epidCode";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
+	public static final String EXTERNAL_ID = "externalID";
 	
 	private String name;
 	private String epidCode;
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private boolean archived;
+	private String externalID;
 	
-	public DistrictDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name, String epidCode, Float growthRate, String regionUuid, String regionName) {
+	public DistrictDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name, String epidCode,
+			Float growthRate, String regionUuid, String regionName, String externalID) {
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
 		this.name = name;
 		this.epidCode = epidCode;
 		this.growthRate = growthRate;
 		this.region = new RegionReferenceDto(regionUuid, regionName);
+		this.externalID = externalID;
 	}
 	
 	public DistrictDto() {
@@ -92,6 +96,14 @@ public class DistrictDto extends EntityDto {
 		this.archived = archived;
 	}
 	
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
+	}
+
 	public DistrictReferenceDto toReference() {
 		return new DistrictReferenceDto(getUuid());
 	}

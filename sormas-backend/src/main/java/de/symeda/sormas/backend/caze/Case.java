@@ -123,6 +123,7 @@ public class Case extends CoreAdo {
 	public static final String COMPLETENESS = "completeness";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 
 	private Person person;
 	private String description;
@@ -204,6 +205,7 @@ public class Case extends CoreAdo {
 	private Float completeness;
 	private String additionalDetails;
 	private String externalID;
+	private boolean sharedToCountry;
 
 	private List<Task> tasks;
 
@@ -835,6 +837,15 @@ public class Case extends CoreAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	@Column
+	public boolean isSharedToCountry() {
+		return sharedToCountry;
+	}
+
+	public void setSharedToCountry(boolean sharedToCountry) {
+		this.sharedToCountry = sharedToCountry;
 	}
 
 }

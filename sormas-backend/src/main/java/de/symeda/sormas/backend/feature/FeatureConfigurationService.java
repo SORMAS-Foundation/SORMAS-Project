@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.feature;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -13,6 +14,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.District;
@@ -94,4 +96,14 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 		return filter;
 	}
 
+	public void createMissingFeatureConfigurations() {
+		List<FeatureConfiguration> featureConfigurations = getAll();
+		List<FeatureType> existingConfigurations = featureConfigurations.stream()
+				.filter(config -> config.getFeatureType().isServerFeature())
+				.map(config -> config.getFeatureType()).collect(Collectors.toList());
+		FeatureType.getAllServerFeatures().stream().filter(feature -> !existingConfigurations.contains(feature)).forEach(featureType -> {
+			FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
+			ensurePersisted(configuration);
+		});
+	}
 }

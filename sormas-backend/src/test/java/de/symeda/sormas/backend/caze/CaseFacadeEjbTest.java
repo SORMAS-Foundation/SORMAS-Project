@@ -17,10 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
@@ -40,6 +43,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -81,6 +85,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
@@ -271,6 +276,59 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 //		assertNotNull(exportDto.getSampleLab1());
 //		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
 //		assertTrue(StringUtils.isNotEmpty(exportDto.getTravelHistory()));
+	}
+
+	/**
+	 * Assure that n cardinalities do not duplicate case
+	 */
+	@Test
+	public void testGetExportListNoDuplicates() {
+
+		CaseFacade cut = getCaseFacade();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		CaseDataDto caze = creator
+			.createCase(
+				user.toReference(),
+				cazePerson.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+
+		caze.getEpiData().setTraveled(YesNoUnknown.YES);
+
+		{
+			EpiDataTravelDto travel = EpiDataTravelDto.build();
+			travel.setTravelDestination("Ghana");
+			travel.setTravelDateFrom(new Date());
+			travel.setTravelDateTo(new Date());
+			caze.getEpiData().getTravels().add(travel);
+		}
+		{
+			EpiDataTravelDto travel = EpiDataTravelDto.build();
+			travel.setTravelDestination("Nigeria");
+			travel.setTravelDateFrom(new Date());
+			travel.setTravelDateTo(new Date());
+			caze.getEpiData().getTravels().add(travel);
+		}
+
+		caze = cut.saveCase(caze);
+
+		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, user.getUuid(), null);
+		assertThat(result, hasSize(1));
+		CaseExportDto exportDto = result.get(0);
+		assertNotNull(exportDto.getEpiDataId());
+		assertThat(exportDto.getUuid(), equalTo(caze.getUuid()));
+		assertThat(exportDto.getTraveled(), equalTo(YesNoUnknown.YES));
 	}
 
 	@Test

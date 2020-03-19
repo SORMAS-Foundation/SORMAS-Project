@@ -144,6 +144,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (contentBinding.showClassificationRules.getVisibility() == GONE && contentBinding.referCaseFromPoe.getVisibility() == GONE) {
             contentBinding.caseButtonsPanel.setVisibility(GONE);
         }
+
+        if (!ConfigProvider.isGermanServer()) {
+            contentBinding.caseDataExternalID.setVisibility(GONE);
+        } else {
+            contentBinding.caseDataEpidNumber.setVisibility(GONE);
+        }
     }
 
     private void setUpButtonListeners(FragmentCaseEditLayoutBinding contentBinding) {

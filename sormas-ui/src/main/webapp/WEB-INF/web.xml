@@ -52,6 +52,15 @@
 	<security-role>
 	  <role-name>POE_NATIONAL_USER</role-name>
 	</security-role>
+	<security-role>
+	  <role-name>SURVEILLANCE_OFFICER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>CONTACT_OFFICER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>CASE_OFFICER</role-name>
+	</security-role>
   	
   	<!-- 
   	<security-constraint>

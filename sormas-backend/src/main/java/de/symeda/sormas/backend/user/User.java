@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -285,6 +286,14 @@ public class User extends AbstractDomainObject {
 	}
 	public void setLanguage(Language language) {
 		this.language = language;
+	}
+	
+	/**
+	 * Checks if the User possesses any of the specified userRoles
+	 */
+	public boolean hasAnyUserRole(UserRole ... userRoles) {
+		return Arrays.stream(userRoles)
+				.anyMatch(getUserRoles()::contains);
 	}
 	
 }

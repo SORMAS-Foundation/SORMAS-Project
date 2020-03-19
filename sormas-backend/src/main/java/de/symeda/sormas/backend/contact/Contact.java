@@ -37,9 +37,13 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
@@ -72,6 +76,16 @@ public class Contact extends CoreAdo {
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String HIGH_PRIORITY = "highPriority";
+	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
+	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
+	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
+	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPracticionerDetails";
+	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_FROM = "quarantineFrom";
+	public static final String QUARANTINE_TO = "quarantineTo";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -79,6 +93,9 @@ public class Contact extends CoreAdo {
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 
+	private Region region;
+	private District district;
+	
 	private Person person;
 	private Case caze;
 	private ContactRelation relationToCase;
@@ -97,6 +114,15 @@ public class Contact extends CoreAdo {
 	private Case resultingCase;
 	private User resultingCaseUser;
 	
+	private boolean highPriority;
+	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
+	private String immunosuppressiveTherapyBasicDiseaseDetails;
+	private YesNoUnknown careForPeopleOver60;
+	
+	private QuarantineType quarantine;
+	private Date quarantineFrom;
+	private Date quarantineTo;
+
 	private List<Task> tasks;
 	
 	@ManyToOne(cascade = {})
@@ -306,5 +332,86 @@ public class Contact extends CoreAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
-	}	
+	}
+
+	@ManyToOne(cascade = {})
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
+	}
+
+	@ManyToOne(cascade = {})
+	public District getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(District district) {
+		this.district = district;
+	}
+
+	@Column
+	public boolean isHighPriority() {
+		return highPriority;
+	}
+
+	public void setHighPriority(boolean highPriority) {
+		this.highPriority = highPriority;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getImmunosuppressiveTherapyBasicDisease() {
+		return immunosuppressiveTherapyBasicDisease;
+	}
+
+	public void setImmunosuppressiveTherapyBasicDisease(YesNoUnknown immunosuppressiveTherapyBasicDisease) {
+		this.immunosuppressiveTherapyBasicDisease = immunosuppressiveTherapyBasicDisease;
+	}
+
+	@Column(length=512)
+	public String getImmunosuppressiveTherapyBasicDiseaseDetails() {
+		return immunosuppressiveTherapyBasicDiseaseDetails;
+	}
+
+	public void setImmunosuppressiveTherapyBasicDiseaseDetails(String immunosuppressiveTherapyBasicDiseaseDetails) {
+		this.immunosuppressiveTherapyBasicDiseaseDetails = immunosuppressiveTherapyBasicDiseaseDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getCareForPeopleOver60() {
+		return careForPeopleOver60;
+	}
+
+	public void setCareForPeopleOver60(YesNoUnknown careForPeopleOver60) {
+		this.careForPeopleOver60 = careForPeopleOver60;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public QuarantineType getQuarantine() {
+		return quarantine;
+	}
+
+	public void setQuarantine(QuarantineType quarantine) {
+		this.quarantine = quarantine;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+	}
 }

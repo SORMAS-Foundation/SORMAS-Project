@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.2.3" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
+  <class id="1" language="java" name="de.symeda.sormas.backend.caze.Case" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/caze/Case.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="392" y="323"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="2" language="java" name="de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory" 
+    project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/caze/maternalhistory/MaternalHistory.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="120" y="459"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" name="de.symeda.sormas.backend.contact.Contact" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/contact/Contact.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="401" y="444"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="de.symeda.sormas.backend.facility.Facility" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/facility/Facility.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1006" y="43"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="de.symeda.sormas.backend.feature.FeatureConfiguration" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/feature/FeatureConfiguration.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1055" y="775"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="de.symeda.sormas.backend.hospitalization.Hospitalization" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/hospitalization/Hospitalization.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="130" y="333"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="de.symeda.sormas.backend.hospitalization.PreviousHospitalization" 
+    project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/hospitalization/PreviousHospitalization.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="156" y="129"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="de.symeda.sormas.backend.infrastructure.PointOfEntry" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/infrastructure/PointOfEntry.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1272" y="108"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="de.symeda.sormas.backend.infrastructure.PopulationData" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/infrastructure/PopulationData.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="840" y="846"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="de.symeda.sormas.backend.location.Location" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/location/Location.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="286" y="42"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="de.symeda.sormas.backend.outbreak.Outbreak" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/outbreak/Outbreak.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="583" y="844"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="de.symeda.sormas.backend.person.Person" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/person/Person.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="469" y="215"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="de.symeda.sormas.backend.region.Community" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/region/Community.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1283" y="266"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="14" language="java" name="de.symeda.sormas.backend.region.District" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/region/District.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1149" y="358"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="de.symeda.sormas.backend.region.Region" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/region/Region.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1012" y="463"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="16" language="java" name="de.symeda.sormas.backend.report.AggregateReport" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/report/AggregateReport.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1409" y="559"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="17" language="java" name="de.symeda.sormas.backend.report.WeeklyReport" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/report/WeeklyReport.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1329" y="634"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="18" language="java" name="de.symeda.sormas.backend.report.WeeklyReportEntry" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/report/WeeklyReportEntry.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1410" y="741"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <class id="19" language="java" name="de.symeda.sormas.backend.user.User" project="sormas-backend" 
+    file="/sormas-backend/src/main/java/de/symeda/sormas/backend/user/User.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="329" y="731"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
+    </display>  
+  </class>  
+  <association id="20">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="21" name="resultingCaseUser">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="22" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="23">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="24" name="hospitalization">        
+        <position height="0" width="0" x="-661" y="-616"/>      
+      </attribute>      
+      <multiplicity id="25" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-661" y="-616"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="26">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="27" name="address">        
+        <position height="0" width="0" x="-955" y="-893"/>      
+      </attribute>      
+      <multiplicity id="28" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-955" y="-893"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="29">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="30" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="31" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="32">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="33" name="caseOfficer">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="34" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="35">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="36" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="37" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="38">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="39" name="maternalHistory">        
+        <position height="0" width="0" x="-736" y="-401"/>      
+      </attribute>      
+      <multiplicity id="40" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-736" y="-401"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="41">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="42" name="community">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="43" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="44">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="45" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="46" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="47">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="48" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="49" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="50">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="51" name="caze">        
+        <position height="0" width="0" x="-477" y="36"/>      
+      </attribute>      
+      <multiplicity id="52" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-477" y="36"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="53">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="54" name="address">        
+        <position height="0" width="0" x="-955" y="-893"/>      
+      </attribute>      
+      <multiplicity id="55" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-955" y="-893"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="56">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="57" name="healthFacility">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </attribute>      
+      <multiplicity id="58" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="59">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="60" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="61" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="62">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="63" name="healthFacility">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </attribute>      
+      <multiplicity id="64" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="65">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="66" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="67" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="68">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="69" name="reportingUser">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="70" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="71">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="72" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="73" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="74">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="75" name="rashExposureRegion">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="76" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="77">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="78" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="79" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="80">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="81" name="person">        
+        <position height="0" width="0" x="-396" y="29"/>      
+      </attribute>      
+      <multiplicity id="82" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-396" y="29"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="83">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="84" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="85" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="86">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="87" name="community">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="88" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="89">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="90" name="rashExposureCommunity">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="91" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="92">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="93" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="94" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="95">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="96" name="reportingUser">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="97" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="98">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="99" name="contactOfficer">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="100" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="101">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="102" name="duplicateOf">        
+        <position height="0" width="0" x="-477" y="36"/>      
+      </attribute>      
+      <multiplicity id="103" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-477" y="36"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="104">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="105" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="106" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="107">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="108" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="109" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="110">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="111" name="occupationFacility">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </attribute>      
+      <multiplicity id="112" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="113">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="114" name="classificationUser">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="115" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="116">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="117" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="118" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="119">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="120" name="occupationRegion">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="121" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="122">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="123" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="124" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="125">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="126" name="community">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="127" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="128">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="129" name="community">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="130" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="131">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="132" name="placeOfBirthCommunity">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="133" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="134">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="135" name="reportingUser">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="136" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="137">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="138" name="associatedOfficer">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="139" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="140">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="141" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="142" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="143">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="144" name="healthFacility">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </attribute>      
+      <multiplicity id="145" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="146">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="147" name="surveillanceOfficer">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="148" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="149">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="150" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="151" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="152">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="153" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="154" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="155">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="156" name="community">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="157" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="158">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="159" name="pointOfEntry">        
+        <position height="0" width="0" x="829" y="-654"/>      
+      </attribute>      
+      <multiplicity id="160" minimum="0" maximum="1">        
+        <position height="0" width="0" x="829" y="-654"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="161">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="162" name="communities">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="163" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="164">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="165" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="166" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="167">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="168" name="hospitalization">        
+        <position height="0" width="0" x="-661" y="-616"/>      
+      </attribute>      
+      <multiplicity id="169" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-661" y="-616"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="170">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="171" name="previousHospitalizations">        
+        <position height="0" width="0" x="-841" y="-818"/>      
+      </attribute>      
+      <multiplicity id="172" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-841" y="-818"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="173">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="174" name="pointOfEntry">        
+        <position height="0" width="0" x="829" y="-654"/>      
+      </attribute>      
+      <multiplicity id="175" minimum="0" maximum="1">        
+        <position height="0" width="0" x="829" y="-654"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="176">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="177" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="178" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="179">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="180" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="181" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="182">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="183" name="rashExposureDistrict">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="184" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="185">    
+    <end type="SOURCE" refId="18" navigable="false">      
+      <attribute id="186" name="weeklyReport">        
+        <position height="0" width="0" x="1063" y="-182"/>      
+      </attribute>      
+      <multiplicity id="187" minimum="0" maximum="1">        
+        <position height="0" width="0" x="1063" y="-182"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="188">    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="189" name="districts">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="190" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="191">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="192" name="laboratory">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </attribute>      
+      <multiplicity id="193" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="194">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="195" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="196" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="197">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="198" name="person">        
+        <position height="0" width="0" x="-396" y="29"/>      
+      </attribute>      
+      <multiplicity id="199" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-396" y="29"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="200">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="201" name="placeOfBirthDistrict">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="202" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="203">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="204" name="placeOfBirthFacility">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </attribute>      
+      <multiplicity id="205" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="206">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="207" name="pointOfEntry">        
+        <position height="0" width="0" x="829" y="-654"/>      
+      </attribute>      
+      <multiplicity id="208" minimum="0" maximum="1">        
+        <position height="0" width="0" x="829" y="-654"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="209">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="210" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="211" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="212">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="213" name="region">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="214" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="215">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="216" name="assignedOfficer">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="217" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="218">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="219" name="community">        
+        <position height="18" width="59" x="1135" y="253"/>      
+      </attribute>      
+      <multiplicity id="220" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="221">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="222" name="reportEntries">        
+        <position height="0" width="0" x="1162" y="-144"/>      
+      </attribute>      
+      <multiplicity id="223" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="1162" y="-144"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="18" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="224">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="225" name="occupationCommunity">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </attribute>      
+      <multiplicity id="226" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-383" y="-200"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="227">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="228" name="resultingCase">        
+        <position height="0" width="0" x="-477" y="36"/>      
+      </attribute>      
+      <multiplicity id="229" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-477" y="36"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="230">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="231" name="healthFacility">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </attribute>      
+      <multiplicity id="232" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="233">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="234" name="placeOfBirthRegion">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </attribute>      
+      <multiplicity id="235" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-612" y="-66"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="236">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="237" name="occupationDistrict">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="238" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="239">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="240" name="reportingUser">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="241" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="242">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="243" name="healthFacility">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </attribute>      
+      <multiplicity id="244" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-432" y="-294"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="245">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="246" name="reportingUser">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </attribute>      
+      <multiplicity id="247" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-138" y="242"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="248">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="249" name="district">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </attribute>      
+      <multiplicity id="250" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-502" y="-139"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    sort-features="false" accessors="true" visibility="true">    
+    <attributes public="false" package="false" protected="false" private="false" static="false"/>    
+    <operations public="false" package="false" protected="false" private="false" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

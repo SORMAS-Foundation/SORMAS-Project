@@ -22,8 +22,8 @@ import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
-import de.symeda.sormas.ui.importer.ImportSimilarityInput;
-import de.symeda.sormas.ui.importer.ImportSimilarityResult;
+import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
+import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,8 +69,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
-			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
+			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
 			}
 		};
 		importResult = caseImporter.runImport();
@@ -83,8 +83,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
-			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.PICK));
+			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new CaseImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.PICK));
 			}
 		};
 		importResult = caseImporter.runImport();
@@ -97,8 +97,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
-			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
+			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
 			}
 		};
 		importResult = caseImporter.runImport();
@@ -111,8 +111,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
-			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.OVERRIDE));
+			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new CaseImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.OVERRIDE));
 			}
 		};
 		importResult = caseImporter.runImport();
@@ -125,8 +125,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
-			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 			}
 		};
 		importResult = caseImporter.runImport();
@@ -145,8 +145,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
 			@Override
-			protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
+				resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 			}
 		};
 		importResult = caseImporter.runImport();
@@ -176,8 +176,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 			super(inputFile, hasEntityClassRow, currentUser);
 		}
 
-		protected void handleSimilarity(ImportSimilarityInput input, Consumer<ImportSimilarityResult> resultConsumer) {
-			resultConsumer.accept(new ImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+		protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
+			resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 		}
 
 		protected Writer createErrorReportWriter() {

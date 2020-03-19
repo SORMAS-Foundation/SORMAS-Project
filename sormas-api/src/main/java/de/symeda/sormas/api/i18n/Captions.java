@@ -154,6 +154,7 @@ public interface Captions {
 	public static String CaseData_reportLon = "CaseData.reportLon";
 	public static String CaseData_sequelae = "CaseData.sequelae";
 	public static String CaseData_sequelaeDetails = "CaseData.sequelaeDetails";
+	public static String CaseData_sharedToCountry = "CaseData.sharedToCountry";
 	public static String CaseData_smallpoxVaccinationReceived = "CaseData.smallpoxVaccinationReceived";
 	public static String CaseData_smallpoxVaccinationScar = "CaseData.smallpoxVaccinationScar";
 	public static String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
@@ -234,6 +235,8 @@ public interface Captions {
 	public static String CasePreviousHospitalization_isolated = "CasePreviousHospitalization.isolated";
 	public static String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
 	public static String caseReferToFacility = "caseReferToFacility";
+	public static String caseSearchCase = "caseSearchCase";
+	public static String caseSearchSpecificCase = "caseSearchSpecificCase";
 	public static String caseTransferCase = "caseTransferCase";
 	public static String caseTransferCases = "caseTransferCases";
 	public static String city = "city";
@@ -251,6 +254,7 @@ public interface Captions {
 	public static String columnDiseaseShort = "columnDiseaseShort";
 	public static String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
 	public static String community = "community";
+	public static String Community_externalID = "Community.externalID";
 	public static String communityActiveCommunities = "communityActiveCommunities";
 	public static String communityAllCommunities = "communityAllCommunities";
 	public static String communityArchivedCommunities = "communityArchivedCommunities";
@@ -261,6 +265,7 @@ public interface Captions {
 	public static String Configuration_Outbreaks = "Configuration.Outbreaks";
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
+	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
 	public static String Contact_caseDisease = "Contact.caseDisease";
 	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
 	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
@@ -279,15 +284,23 @@ public interface Captions {
 	public static String Contact_contactProximity = "Contact.contactProximity";
 	public static String Contact_contactStatus = "Contact.contactStatus";
 	public static String Contact_description = "Contact.description";
+	public static String Contact_district = "Contact.district";
 	public static String Contact_externalID = "Contact.externalID";
 	public static String Contact_firstName = "Contact.firstName";
 	public static String Contact_followUpComment = "Contact.followUpComment";
 	public static String Contact_followUpStatus = "Contact.followUpStatus";
 	public static String Contact_followUpUntil = "Contact.followUpUntil";
+	public static String Contact_highPriority = "Contact.highPriority";
+	public static String Contact_immunosuppressiveTherapyBasicDisease = "Contact.immunosuppressiveTherapyBasicDisease";
+	public static String Contact_immunosuppressiveTherapyBasicDiseaseDetails = "Contact.immunosuppressiveTherapyBasicDiseaseDetails";
 	public static String Contact_lastContactDate = "Contact.lastContactDate";
 	public static String Contact_lastName = "Contact.lastName";
 	public static String Contact_numberOfVisits = "Contact.numberOfVisits";
 	public static String Contact_person = "Contact.person";
+	public static String Contact_quarantine = "Contact.quarantine";
+	public static String Contact_quarantineFrom = "Contact.quarantineFrom";
+	public static String Contact_quarantineTo = "Contact.quarantineTo";
+	public static String Contact_region = "Contact.region";
 	public static String Contact_relationDescription = "Contact.relationDescription";
 	public static String Contact_relationToCase = "Contact.relationToCase";
 	public static String Contact_reportDateTime = "Contact.reportDateTime";
@@ -313,6 +326,7 @@ public interface Captions {
 	public static String contactLostToFollowUp = "contactLostToFollowUp";
 	public static String contactMinusDays = "contactMinusDays";
 	public static String contactNewContact = "contactNewContact";
+	public static String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	public static String contactOpenContactCase = "contactOpenContactCase";
 	public static String contactPersonVisits = "contactPersonVisits";
 	public static String contactPlusDays = "contactPlusDays";
@@ -455,6 +469,7 @@ public interface Captions {
 	public static String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
 	public static String district = "district";
 	public static String District_epidCode = "District.epidCode";
+	public static String District_externalID = "District.externalID";
 	public static String District_growthRate = "District.growthRate";
 	public static String District_population = "District.population";
 	public static String districtActiveDistricts = "districtActiveDistricts";
@@ -547,6 +562,7 @@ public interface Captions {
 	public static String EpiDataTravel_travelDestination = "EpiDataTravel.travelDestination";
 	public static String EpiDataTravel_travelPeriod = "EpiDataTravel.travelPeriod";
 	public static String EpiDataTravel_travelType = "EpiDataTravel.travelType";
+	public static String epiDataTraveledIncubationPeriod = "epiDataTraveledIncubationPeriod";
 	public static String epiWeekFrom = "epiWeekFrom";
 	public static String epiWeekTo = "epiWeekTo";
 	public static String Event = "Event";
@@ -599,6 +615,7 @@ public interface Captions {
 	public static String exportSamples = "exportSamples";
 	public static String exportSelectSormasData = "exportSelectSormasData";
 	public static String exportSormasData = "exportSormasData";
+	public static String Facility_externalID = "Facility.externalID";
 	public static String Facility_latitude = "Facility.latitude";
 	public static String Facility_longitude = "Facility.longitude";
 	public static String Facility_NO_FACILITY = "Facility.NO_FACILITY";
@@ -769,6 +786,7 @@ public interface Captions {
 	public static String Person_educationDetails = "Person.educationDetails";
 	public static String Person_educationType = "Person.educationType";
 	public static String Person_fathersName = "Person.fathersName";
+	public static String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	public static String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
 	public static String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	public static String Person_lastDisease = "Person.lastDisease";
@@ -799,6 +817,7 @@ public interface Captions {
 	public static String personFindMatching = "personFindMatching";
 	public static String personSelect = "personSelect";
 	public static String PointOfEntry_active = "PointOfEntry.active";
+	public static String PointOfEntry_externalID = "PointOfEntry.externalID";
 	public static String PointOfEntry_latitude = "PointOfEntry.latitude";
 	public static String PointOfEntry_longitude = "PointOfEntry.longitude";
 	public static String PointOfEntry_OTHER_AIRPORT = "PointOfEntry.OTHER_AIRPORT";
@@ -852,6 +871,7 @@ public interface Captions {
 	public static String prescriptionNewPrescription = "prescriptionNewPrescription";
 	public static String region = "region";
 	public static String Region_epidCode = "Region.epidCode";
+	public static String Region_externalID = "Region.externalID";
 	public static String Region_growthRate = "Region.growthRate";
 	public static String Region_population = "Region.population";
 	public static String regionActiveRegions = "regionActiveRegions";
