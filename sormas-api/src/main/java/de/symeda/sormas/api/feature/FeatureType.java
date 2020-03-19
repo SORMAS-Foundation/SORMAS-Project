@@ -7,35 +7,54 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum FeatureType {
 
-	LINE_LISTING(false),
-	AGGREGATE_REPORTING(true),
-	EVENT_SURVEILLANCE(true),
-	WEEKLY_REPORTING(true),
-	CLINICAL_MANAGEMENT(true);
+	/**
+	 * New server features are automatically added to the database in FeatueConfigurationFacadeEjb.createMissingFeatureConfigurations().
+	 */
 	
-	private boolean moduleFeature;
+	LINE_LISTING(false, false),
+	AGGREGATE_REPORTING(true, true),
+	EVENT_SURVEILLANCE(true, true),
+	WEEKLY_REPORTING(true, true),
+	CLINICAL_MANAGEMENT(true, true),
+	NATIONAL_CASE_SHARING(true, false);
 	
-	FeatureType(boolean moduleFeature) {
-		this.moduleFeature = moduleFeature;
+	/**
+	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
+	 * is supposed to operate.
+	 */
+	private boolean serverFeature;
+	
+	/**
+	 * Is the feature enabled by default?
+	 */
+	private boolean enabledDefault;
+
+	FeatureType(boolean serverFeature, boolean enabledDefault) {
+		this.serverFeature = serverFeature;
+		this.enabledDefault = enabledDefault;
 	}
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
 	
-	public boolean isModuleFeature() {
-		return moduleFeature;
+	public boolean isServerFeature() {
+		return serverFeature;
 	}
 	
-	public static List<FeatureType> getAllModuleFeatures() {
-		List<FeatureType> moduleFeatures = new ArrayList<>();
+	public boolean isEnabledDefault() {
+		return enabledDefault;
+	}
+	
+	public static List<FeatureType> getAllServerFeatures() {
+		List<FeatureType> serverFeatures = new ArrayList<>();
 		for (FeatureType featureType : values()) {
-			if (featureType.isModuleFeature()) {
-				moduleFeatures.add(featureType);
+			if (featureType.isServerFeature()) {
+				serverFeatures.add(featureType);
 			}
 		}
 		
-		return moduleFeatures;
+		return serverFeatures;
 	}
 	
 }

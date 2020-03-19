@@ -27,6 +27,7 @@
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -95,6 +96,23 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_region"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@{data.region}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_district"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@{data.district}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/contact_followUpStatus"
                         app:value="@{data.followUpStatus}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
@@ -153,6 +171,28 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_description"
                     app:value="@{data.description}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/contact_highPriority"
+                    app:value="@{data.highPriority}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_immunosuppressiveTherapyBasicDisease"
+                    app:value="@{data.immunosuppressiveTherapyBasicDisease}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_immunosuppressiveTherapyBasicDiseaseDetails"
+                    app:value="@{data.immunosuppressiveTherapyBasicDiseaseDetails}"
+                    app:dependencyParentField="@{contactImmunosuppressiveTherapyBasicDisease}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_careForPeopleOver60"
+                    app:value="@{data.careForPeopleOver60}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>

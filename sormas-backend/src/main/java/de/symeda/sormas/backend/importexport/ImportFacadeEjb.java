@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
@@ -130,6 +132,8 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
 			+ "_import_case_template.csv";
+	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_case_contact_template.csv";
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
 			+ "_import_line_listing_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
@@ -147,13 +151,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				
-		// Create the export directory if it doesn't exist
-		try {	
-			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
-		} catch (IOException e) {
-			logger.error("Generated files directory doesn't exist and creation failed.");
-			throw e;
-		}
+		createExportDirectoryIfNessecary();
 
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
@@ -169,14 +167,23 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 	
 	@Override
-	public void generateCaseLineListingImportTemplateFile() throws IOException {
-		// Create the export directory if it doesn't exist
-		try {
-			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
-		} catch (IOException e) {
-			logger.error("Generated files directory doesn't exist and creation failed.");
-			throw e;
+	public void generateCaseContactImportTemplateFile() throws IOException {
+		createExportDirectoryIfNessecary();
+
+		List<String> columnNames = new ArrayList<>();
+		List<String> entityNames = new ArrayList<>();
+		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
+		columnNames.removeAll(Arrays.asList(ContactDto.CAZE, ContactDto.CASE_DISEASE, ContactDto.RESULTING_CASE));
+		Path filePath = Paths.get(getCaseContactImportTemplateFilePath());
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.flush();
 		}
+	}
+
+	@Override
+	public void generateCaseLineListingImportTemplateFile() throws IOException {
+		createExportDirectoryIfNessecary();
 
 		List<String> columnNames = new ArrayList<>();
 		columnNames.add(CaseDataDto.DISEASE);
@@ -216,13 +223,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	
 	@Override
 	public void generatePopulationDataImportTemplateFile() throws IOException {
-		// Create the export directory if it doesn't exist
-		try {
-			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
-		} catch (IOException e) {
-			logger.error("Generated files directory doesn't exist and creation failed.");
-			throw e;
-		}
+		
+		createExportDirectoryIfNessecary();
 		
 		List<String> columnNames = new ArrayList<>();
 		columnNames.add(PopulationDataDto.REGION);
@@ -240,6 +242,15 @@ public class ImportFacadeEjb implements ImportFacade {
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
 			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 			writer.flush();
+		}
+	}
+
+	private void createExportDirectoryIfNessecary() throws IOException {
+		try {
+			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
+		} catch (IOException e) {
+			logger.error("Generated files directory doesn't exist and creation failed.");
+			throw e;
 		}
 	}
 
@@ -264,13 +275,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath) throws IOException {
-		// Create the export directory if it doesn't exist
-		try {
-			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
-		} catch (IOException e) {
-			logger.error("Generated files directory doesn't exist and creation failed.");
-			throw e;
-		}
+		createExportDirectoryIfNessecary();
 
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
@@ -289,6 +294,13 @@ public class ImportFacadeEjb implements ImportFacade {
 		return filePath.toString();
 	}
 	
+	@Override
+	public String getCaseContactImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
 	@Override
 	public String getCaseLineListingImportTemplateFilePath() {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
@@ -397,5 +409,6 @@ public class ImportFacadeEjb implements ImportFacade {
 	@LocalBean
 	@Stateless
 	public static class ImportFacadeEjbLocal extends ImportFacadeEjb {
+
 	}
 }

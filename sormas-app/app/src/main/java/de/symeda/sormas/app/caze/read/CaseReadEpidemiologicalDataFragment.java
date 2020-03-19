@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -44,6 +46,7 @@ import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseReadEpidLayoutBinding;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<FragmentCaseReadEpidLayoutBinding, EpiData, Case> {
 
@@ -160,6 +163,11 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
     @Override
     public void onAfterLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
         setVisibilityByDisease(EpiDataDto.class, getActivityRootData().getDisease(), contentBinding.mainContent);
+
+        if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease()) > 0) {
+            contentBinding.epiDataTraveled.setCaption(String.format(I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod),
+                    DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease())));
+        }
     }
 
     @Override

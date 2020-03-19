@@ -42,7 +42,9 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 			setCriteria(criteria);
 		}
 		
-		setColumns(PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE, PointOfEntryDto.REGION, PointOfEntryDto.DISTRICT, PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE, PointOfEntryDto.ACTIVE);
+		setColumns(PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE, PointOfEntryDto.REGION,
+				PointOfEntryDto.DISTRICT, PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE,
+				PointOfEntryDto.EXTERNAL_ID, PointOfEntryDto.ACTIVE);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			Column<PointOfEntryDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());

@@ -124,7 +124,10 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(cb.upper(from.get(Facility.NAME)), name.toUpperCase());
+		Predicate filter = cb.or(
+				cb.equal(from.get(Facility.NAME), name),
+				cb.equal(cb.lower(from.get(Facility.NAME)), name.toLowerCase())
+				);
 		// Additional null check is required because notEqual returns true if one of the
 		// values is null
 		filter = cb.and(filter, cb.or(cb.isNull(from.get(Facility.TYPE)),
@@ -149,7 +152,10 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(cb.upper(from.get(Facility.NAME)), name.toUpperCase());
+		Predicate filter = cb.or(
+				cb.equal(from.get(Facility.NAME), name),
+				cb.equal(cb.lower(from.get(Facility.NAME)), name.toLowerCase())
+				);
 		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
 
 		cq.where(filter);

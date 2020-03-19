@@ -88,6 +88,8 @@ public class PersonDto extends EntityDto {
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
+	
+	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPractitionerDetails";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -165,6 +167,7 @@ public class PersonDto extends EntityDto {
 	private CommunityReferenceDto occupationCommunity;
 	private FacilityReferenceDto occupationFacility;
 	private String occupationFacilityDetails;
+	private String generalPractitionerDetails;
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -498,6 +501,14 @@ public class PersonDto extends EntityDto {
 
 	public void setBirthWeight(Integer birthWeight) {
 		this.birthWeight = birthWeight;
+	}
+
+	public String getGeneralPractitionerDetails() {
+		return generalPractitionerDetails;
+	}
+
+	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
+		this.generalPractitionerDetails = generalPractitionerDetails;
 	}
 
 	@Override

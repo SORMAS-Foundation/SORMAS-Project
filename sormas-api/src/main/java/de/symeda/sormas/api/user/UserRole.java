@@ -19,8 +19,8 @@ package de.symeda.sormas.api.user;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
+import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -51,7 +51,8 @@ public enum UserRole implements StatisticsGroupingKey {
 	NATIONAL_CLINICIAN(false, false, false, false),
 	POE_INFORMANT(false, false, true, true),
 	POE_SUPERVISOR(true, false, false, true),
-	POE_NATIONAL_USER(false, false, false, true);
+	POE_NATIONAL_USER(false, false, false, true),
+	IMPORT_USER(false,false,false,false);
 	
 	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
@@ -73,6 +74,13 @@ public enum UserRole implements StatisticsGroupingKey {
 	public static final String _POE_INFORMANT = POE_INFORMANT.name();
 	public static final String _POE_SUPERVISOR = POE_SUPERVISOR.name();
 	public static final String _POE_NATIONAL_USER = POE_NATIONAL_USER.name();
+	public static final String _IMPORT_USER = IMPORT_USER.name();
+	
+	private static final Set<UserRole> NATIONAL_ROLES = EnumSet.of(
+			UserRole.NATIONAL_OBSERVER,
+			UserRole.NATIONAL_USER,
+			UserRole.NATIONAL_CLINICIAN,
+			UserRole.POE_NATIONAL_USER);
 	
 	private final boolean supervisor;
 	private final boolean officer;
@@ -83,12 +91,12 @@ public enum UserRole implements StatisticsGroupingKey {
 	 */
 	private final boolean portHealthUser;
 	
-	private HashSet<UserRight> defaultUserRights = null;
+	private Set<UserRight> defaultUserRights = null;
 	
-	private static HashSet<UserRole> supervisorRoles = null;
-	private static HashSet<UserRole> officerRoles = null;
-	private static HashSet<UserRole> informantRoles = null;
-	private static HashSet<UserRole> portHealthUserRoles = null;
+	private static Set<UserRole> supervisorRoles = null;
+	private static Set<UserRole> officerRoles = null;
+	private static Set<UserRole> informantRoles = null;
+	private static Set<UserRole> portHealthUserRoles = null;
 	
 	private UserRole(boolean supervisor, boolean officer, boolean informant, boolean portHealthUser) {
 		this.supervisor = supervisor;
@@ -122,12 +130,12 @@ public enum UserRole implements StatisticsGroupingKey {
 	}
 	
 	public boolean isNational() {
-		return this == UserRole.NATIONAL_OBSERVER || this == UserRole.NATIONAL_USER || this == UserRole.NATIONAL_CLINICIAN || this == UserRole.POE_NATIONAL_USER;
+		return NATIONAL_ROLES.contains(this);
 	}
 	
-	public HashSet<UserRight> getDefaultUserRights() {
+	public Set<UserRight> getDefaultUserRights() {
 		if (defaultUserRights == null) {
-			defaultUserRights = new HashSet<UserRight>();
+			defaultUserRights = EnumSet.noneOf(UserRight.class);
 			for (UserRight userRight : UserRight.values()) {
 				if (userRight.isDefaultForRole(this)) {
 					defaultUserRights.add(userRight);
@@ -195,13 +203,16 @@ public enum UserRole implements StatisticsGroupingKey {
 		case EXTERNAL_LAB_USER:
 			collection.add(EXTERNAL_LAB_USER);
 			break;
+		case IMPORT_USER:
+			collection.add(IMPORT_USER);
+			break;
 		default:
 			break;
 		}
 	}
 	
-	public static HashSet<UserRole> getAssignableRoles(Collection<UserRole> roles) {
-		HashSet<UserRole> result = new HashSet<UserRole>();
+	public static Set<UserRole> getAssignableRoles(Collection<UserRole> roles) {
+		Set<UserRole> result = EnumSet.noneOf(UserRole.class);
 		for (UserRole role : roles) {
 			role.addAssignableRoles(result);
 		}
@@ -213,40 +224,42 @@ public enum UserRole implements StatisticsGroupingKey {
 		case ADMIN:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN);
+					EVENT_OFFICER, LAB_USER, NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN, IMPORT_USER);
 		case NATIONAL_USER:
-			return Arrays.asList(LAB_USER, ADMIN, NATIONAL_CLINICIAN);
+			return Arrays.asList(LAB_USER, ADMIN, NATIONAL_CLINICIAN, IMPORT_USER);
 		case NATIONAL_OBSERVER:
-			return Arrays.asList(ADMIN);
+			return Arrays.asList(ADMIN, IMPORT_USER);
 		case NATIONAL_CLINICIAN:
-			return Arrays.asList(ADMIN, NATIONAL_USER);
+			return Arrays.asList(ADMIN, NATIONAL_USER, IMPORT_USER);
 		case CASE_SUPERVISOR:
 		case CONTACT_SUPERVISOR:
 		case SURVEILLANCE_SUPERVISOR:
 		case EVENT_OFFICER:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, ADMIN);
+					EVENT_OFFICER, LAB_USER, ADMIN, IMPORT_USER);
 		case LAB_USER:
 			return Arrays.asList(
 					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN);
+					EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN, IMPORT_USER);
 		case SURVEILLANCE_OFFICER:
 		case CASE_OFFICER:
 		case CONTACT_OFFICER:
-			return Arrays.asList(SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER);
+			return Arrays.asList(SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER, IMPORT_USER);
 		case HOSPITAL_INFORMANT:
-			return Arrays.asList(HOSPITAL_INFORMANT);
+			return Arrays.asList(HOSPITAL_INFORMANT, IMPORT_USER);
 		case COMMUNITY_INFORMANT:
-			return Arrays.asList(COMMUNITY_INFORMANT);
+			return Arrays.asList(COMMUNITY_INFORMANT, IMPORT_USER);
 		case EXTERNAL_LAB_USER:
-			return Arrays.asList(EXTERNAL_LAB_USER);
+			return Arrays.asList(EXTERNAL_LAB_USER, IMPORT_USER);
 		case STATE_OBSERVER:
 		case DISTRICT_OBSERVER:
 		case POE_INFORMANT:
 		case POE_SUPERVISOR:
 		case POE_NATIONAL_USER:
-			return Collections.emptyList();
+			return Arrays.asList(IMPORT_USER);
+		case IMPORT_USER:
+			return Arrays.asList(UserRole.values());
 		default:
 			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
 		}
@@ -325,9 +338,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 	}
 
-	public static HashSet<UserRole> getSupervisorRoles() {
+	public static Set<UserRole> getSupervisorRoles() {
 		if (supervisorRoles == null) {
-			supervisorRoles = new HashSet<>();
+			supervisorRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
 				if (userRole.isSupervisor()) {
 					supervisorRoles.add(userRole);
@@ -337,9 +350,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		return supervisorRoles;
 	}
 	
-	public static HashSet<UserRole> getOfficerRoles() {
+	public static Set<UserRole> getOfficerRoles() {
 		if (officerRoles == null) {
-			officerRoles = new HashSet<>();
+			officerRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
 				if (userRole.isOfficer()) {
 					officerRoles.add(userRole);
@@ -349,9 +362,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		return officerRoles;
 	}
 	
-	public static HashSet<UserRole> getInformantRoles() {
+	public static Set<UserRole> getInformantRoles() {
 		if (informantRoles == null) {
-			informantRoles = new HashSet<>();
+			informantRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
 				if (userRole.isInformant()) {
 					informantRoles.add(userRole);
@@ -361,9 +374,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		return informantRoles;
 	}
 	
-	public static HashSet<UserRole> getPortHealthUserRoles() {
+	public static Set<UserRole> getPortHealthUserRoles() {
 		if (portHealthUserRoles == null) {
-			portHealthUserRoles = new HashSet<>();
+			portHealthUserRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
 				if (userRole.isPortHealthUser()) {
 					portHealthUserRoles.add(userRole);

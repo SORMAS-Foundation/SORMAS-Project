@@ -70,7 +70,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.flightNumber = flightNumber;
 	}
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getDepartureDateTime() {
 		return departureDateTime;
 	}
@@ -79,7 +79,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.departureDateTime = departureDateTime;
 	}
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getArrivalDateTime() {
 		return arrivalDateTime;
 	}

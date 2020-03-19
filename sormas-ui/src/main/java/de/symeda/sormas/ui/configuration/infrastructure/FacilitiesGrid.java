@@ -59,7 +59,7 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 		}
 
 		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY, FacilityDto.CITY,
-				FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
+				FacilityDto.LATITUDE, FacilityDto.LONGITUDE, FacilityDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			Column<FacilityDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());

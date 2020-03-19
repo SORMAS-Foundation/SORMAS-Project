@@ -58,6 +58,8 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
+	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
+	
 	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria, String userUuid);
 
 	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);

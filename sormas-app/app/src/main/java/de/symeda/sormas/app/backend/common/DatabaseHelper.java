@@ -127,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 184;
+	public static final int DATABASE_VERSION = 187;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1424,7 +1424,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					currentVersion = 183;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN externalID varchar(255);");
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN externalID varchar(255);");
-					
+				case 184:
+					currentVersion = 184;
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN region_id bigint REFERENCES region(id);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN district_id bigint REFERENCES district(id);");
+				case 185:
+					currentVersion = 185;
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN highPriority SMALLINT DEFAULT 0;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN immunosuppressiveTherapyBasicDisease varchar(255);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN immunosuppressiveTherapyBasicDiseaseDetails varchar(512);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN careForPeopleOver60 varchar(255);");
+				case 186:
+					currentVersion = 186;
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN generalPractitionerDetails varchar(512);");
+
 					// ATTENTION: break should only be done after last version
 					break;
 				default:

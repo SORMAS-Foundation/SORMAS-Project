@@ -86,6 +86,10 @@ public class TestDataCreator {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
+	public UserDto createUser(RDCF rdcf, UserRole... roles) {
+		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+	}
+
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
 			String lastName, UserRole... roles) {
 		UserDto user = UserDto.build();

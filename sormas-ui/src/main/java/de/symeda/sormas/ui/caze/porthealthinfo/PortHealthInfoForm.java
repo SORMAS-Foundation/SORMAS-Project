@@ -22,6 +22,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -108,8 +109,8 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 		addFields(PortHealthInfoDto.AIRLINE_NAME, PortHealthInfoDto.FLIGHT_NUMBER, PortHealthInfoDto.DEPARTURE_AIRPORT, PortHealthInfoDto.SEAT_NUMBER,
 				PortHealthInfoDto.TRANSIT_STOP_DETAILS_1, PortHealthInfoDto.TRANSIT_STOP_DETAILS_2, PortHealthInfoDto.TRANSIT_STOP_DETAILS_3,
 				PortHealthInfoDto.TRANSIT_STOP_DETAILS_4, PortHealthInfoDto.TRANSIT_STOP_DETAILS_5);
-		DateField dfDepartureDateTime = addField(PortHealthInfoDto.DEPARTURE_DATE_TIME, DateField.class);
-		DateField dfArrivalDateTime = addField(PortHealthInfoDto.ARRIVAL_DATE_TIME, DateField.class);
+		DateTimeField dfDepartureDateTime = addField(PortHealthInfoDto.DEPARTURE_DATE_TIME, DateTimeField.class);
+		DateTimeField dfArrivalDateTime = addField(PortHealthInfoDto.ARRIVAL_DATE_TIME, DateTimeField.class);
 		addField(PortHealthInfoDto.FREE_SEATING, OptionGroup.class);
 		ComboBox cbNumberOfTransitStops = addField(PortHealthInfoDto.NUMBER_OF_TRANSIT_STOPS, ComboBox.class);
 		
@@ -132,8 +133,8 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 
 	private void addSeaportFields() {
 		addFields(PortHealthInfoDto.VESSEL_NAME, PortHealthInfoDto.VESSEL_DETAILS, PortHealthInfoDto.PORT_OF_DEPARTURE, PortHealthInfoDto.LAST_PORT_OF_CALL);
-		DateField dfDepartureDateTime = addField(PortHealthInfoDto.DEPARTURE_DATE_TIME, DateField.class);
-		DateField dfArrivalDateTime = addField(PortHealthInfoDto.ARRIVAL_DATE_TIME, DateField.class);
+		DateTimeField dfDepartureDateTime = addField(PortHealthInfoDto.DEPARTURE_DATE_TIME, DateTimeField.class);
+		DateTimeField dfArrivalDateTime = addField(PortHealthInfoDto.ARRIVAL_DATE_TIME, DateTimeField.class);
 
 		// Validations
 		dfDepartureDateTime.addValidator(new DateComparisonValidator(dfDepartureDateTime, dfArrivalDateTime, true, false,

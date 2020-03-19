@@ -19,10 +19,8 @@ package de.symeda.sormas.backend.person;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,7 +56,6 @@ import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -298,6 +295,16 @@ public class PersonFacadeEjb implements PersonFacade {
 				}
 			}
 		}
+		
+		// Set approximate age if it hasn't been set before
+		if (newPerson.getApproximateAge() == null && newPerson.getBirthdateYYYY() != null) {
+			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
+					newPerson.getBirthdateYYYY(), newPerson.getBirthdateMM(), newPerson.getBirthdateDD(), newPerson.getDeathDate()
+					);
+			newPerson.setApproximateAge(pair.getElement0());
+			newPerson.setApproximateAgeType(pair.getElement1());
+			newPerson.setApproximateAgeReferenceDate(newPerson.getDeathDate() != null ? newPerson.getDeathDate() : new Date());
+		}
 
 		// Update caseAge of all associated cases when approximateAge has changed
 		if ((existingPerson == null && newPerson.getApproximateAge() != null) || 
@@ -387,6 +394,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
+		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
+		
 		return target;
 	}
 
@@ -430,14 +439,8 @@ public class PersonFacadeEjb implements PersonFacade {
 			// calculate the approximate age based on the birth date
 			// still not sure whether this is a good solution
 			
-			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(source.getBirthdateYYYY(),
-					source.getBirthdateMM()!=null?source.getBirthdateMM()-1:0, 
-					source.getBirthdateDD()!=null?source.getBirthdateDD():1);
-
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
-					birthdate.getTime(),
-					source.getDeathDate()
+					source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD(), source.getDeathDate()
 					);
 			target.setApproximateAge(pair.getElement0());
 			target.setApproximateAgeType(pair.getElement1());
@@ -487,6 +490,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPlaceOfBirthFacilityDetails(source.getPlaceOfBirthFacilityDetails());
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
+		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
+		
 		return target;
 	}
 

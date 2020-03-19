@@ -36,6 +36,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
@@ -121,7 +122,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         contentBinding.setData(record);
         contentBinding.setCaseOriginClass(CaseOrigin.class);
 
-        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
 
@@ -132,7 +132,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
                 contentBinding.caseDataHealthFacility, initialFacilities, record.getHealthFacility(),
                 contentBinding.caseDataPointOfEntry, initialPointsOfEntry, record.getPointOfEntry());
 
-        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+        contentBinding.caseDataDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
         contentBinding.caseDataDisease.addValueChangedListener(e -> {
             contentBinding.rapidCaseEntryCheckBox.setVisibility(
                     e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);

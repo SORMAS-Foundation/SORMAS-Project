@@ -41,6 +41,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.LocationService;
@@ -104,11 +105,18 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
     @Override
     public Contact build() {
-
         Contact contact = super.build();
+        User user = ConfigProvider.getUser();
 
         contact.setReportDateTime(new Date());
-        contact.setReportingUser(ConfigProvider.getUser());
+        contact.setReportingUser(user);
+
+        if (user.getRegion() != null) {
+            contact.setRegion(user.getRegion());
+        }
+        if (user.getDistrict() != null) {
+            contact.setDistrict(user.getDistrict());
+        }
 
         return contact;
     }

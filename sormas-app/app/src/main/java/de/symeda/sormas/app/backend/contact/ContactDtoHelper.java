@@ -28,6 +28,10 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
+import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -95,6 +99,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setReportLon(source.getReportLon());
         target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
         target.setExternalID(source.getExternalID());
+        target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
+        target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+
+        target.setHighPriority(source.isHighPriority());
+        target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+        target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+        target.setCareForPeopleOver60(source.getCareForPeopleOver60());
     }
 
     @Override
@@ -104,6 +115,18 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
             target.setPerson(PersonDtoHelper.toReferenceDto(person));
         } else {
             target.setPerson(null);
+        }
+        if (source.getRegion() != null) {
+            Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());
+            target.setRegion(RegionDtoHelper.toReferenceDto(region));
+        } else {
+            target.setRegion(null);
+        }
+        if (source.getDistrict() != null) {
+            District district = DatabaseHelper.getDistrictDao().queryForId(source.getDistrict().getId());
+            target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
+        } else {
+            target.setDistrict(null);
         }
         if (source.getCaseUuid() != null) {
             target.setCaze(new CaseReferenceDto(source.getCaseUuid()));
@@ -148,6 +171,11 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setReportLon(source.getReportLon());
         target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
         target.setExternalID(source.getExternalID());
+
+        target.setHighPriority(source.isHighPriority());
+        target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+        target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+        target.setCareForPeopleOver60(source.getCareForPeopleOver60());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

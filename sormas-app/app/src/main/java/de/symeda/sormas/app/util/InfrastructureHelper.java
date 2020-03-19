@@ -106,21 +106,27 @@ public final class InfrastructureHelper {
             }
         });
 
-        districtField.initializeSpinner(initialDistricts, field -> {
-            District selectedDistrict = (District) field.getValue();
-            if (selectedDistrict != null) {
-                List<Item> newCommunities = loadCommunities(selectedDistrict);
-                if (initialCommunity != null && selectedDistrict.equals(initialCommunity.getDistrict())
-                        && !newCommunities.contains(communityItem)) {
-                    newCommunities.add(communityItem);
+        if (communityField != null) {
+            districtField.initializeSpinner(initialDistricts, field -> {
+                District selectedDistrict = (District) field.getValue();
+                if (selectedDistrict != null) {
+                    List<Item> newCommunities = loadCommunities(selectedDistrict);
+                    if (initialCommunity != null && selectedDistrict.equals(initialCommunity.getDistrict())
+                            && !newCommunities.contains(communityItem)) {
+                        newCommunities.add(communityItem);
+                    }
+                    communityField.setSpinnerData(newCommunities, communityField.getValue());
+                } else {
+                    communityField.setSpinnerData(null);
                 }
-                communityField.setSpinnerData(newCommunities, communityField.getValue());
-            } else {
-                communityField.setSpinnerData(null);
-            }
-        });
+            });
+        } else {
+            districtField.initializeSpinner(initialDistricts);
+        }
 
-        communityField.initializeSpinner(initialCommunities);
+        if (communityField != null) {
+            communityField.initializeSpinner(initialCommunities);
+        }
     }
 
     public static void initializeFacilityFields(final ControlSpinnerField regionField, List<Item> regions, Region initialRegion,

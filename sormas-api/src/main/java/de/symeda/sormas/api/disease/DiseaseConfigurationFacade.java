@@ -39,4 +39,8 @@ public interface DiseaseConfigurationFacade {
 	
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
 	
+	Disease getDefaultDisease();
+	
+	List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, Boolean caseBased);
+
 }

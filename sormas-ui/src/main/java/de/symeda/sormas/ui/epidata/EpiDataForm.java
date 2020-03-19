@@ -26,6 +26,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.i18n.Captions;
@@ -248,6 +249,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			updateTravelsHint(traveledField, travelsField);
 			traveledField.setEnabled(travelsField.getValue() == null || travelsField.getValue().size() == 0);
 		});
+		
+		if (FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(disease) > 0) {
+			getFieldGroup().getField(EpiDataDto.TRAVELED).setCaption(String.format(I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod), 
+					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(disease)));
+		}
 	}
 	
 	private void updateEnvironmentalExposureFields() {

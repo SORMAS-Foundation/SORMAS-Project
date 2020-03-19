@@ -63,6 +63,7 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDao;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -83,6 +84,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.LocationService;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -225,6 +227,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
         // Location
         User currentUser = ConfigProvider.getUser();
+
+        // Set the disease if a default disease is available
+        Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
+        if (defaultDisease != null) {
+            caze.setDisease(defaultDisease);
+        }
 
         if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
             caze.setRegion(currentUser.getRegion());

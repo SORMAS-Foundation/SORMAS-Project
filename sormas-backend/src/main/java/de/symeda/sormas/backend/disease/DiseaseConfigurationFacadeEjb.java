@@ -109,6 +109,11 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		diseaseList.sort((d1, d2) -> d1.toString().compareTo(d2.toString()));
 		return diseaseList;
 	}
+	
+	@Override
+	public List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, Boolean caseBased) {
+		return getAllDiseases(active, primary, caseBased).stream().filter(d -> followUpEnabledDiseases.contains(d)).collect(Collectors.toList());
+	}
 
 	@Override
 	public List<Disease> getAllActiveDiseases() {
@@ -158,6 +163,19 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	@Override
 	public void saveDiseaseConfiguration(DiseaseConfigurationDto configuration) {
 		service.ensurePersisted(fromDto(configuration));
+	}
+	
+	@Override
+	public Disease getDefaultDisease() {
+		List<Disease> diseases = getAllDiseases(true, true, true).stream()
+				.filter(d -> d != Disease.OTHER && d != Disease.UNDEFINED)
+				.collect(Collectors.toList());
+		
+		if (diseases.size() == 1) {
+			return diseases.get(0);
+		}
+		
+		return null;
 	}
 	
 	public static DiseaseConfigurationDto toDto(DiseaseConfiguration source) {

@@ -354,6 +354,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
 		return caseService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
+	
+	@Override
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
+		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
+	}
 
 	@Override
 	public long count(CaseCriteria caseCriteria, String userUuid) {
@@ -457,6 +462,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES),
 				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE));
 
+		cq.distinct(true);
+
 		User user = userService.getByUuid(userUuid);
 		Predicate filter = caseService.createUserFilter(cb, cq, caseRoot, user);
 
@@ -469,7 +476,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
+		/*
+		 * Sort by report date DESC, but also by id for stable Sorting in case of equal report dates.
+		 * Since this method supports paging, values might jump between pages when sorting is unstable.
+		 */
+		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)), cb.desc(caseRoot.get(Case.ID)));
 
 		List<CaseExportDto> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
@@ -1063,7 +1074,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, PointOfEntry> pointOfEntry = root.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
 		Join<Case, User> surveillanceOfficer = root.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
-		cq.multiselect(root.get(AbstractDomainObject.ID), root.get(Case.UUID), root.get(Case.EPID_NUMBER),
+		cq.multiselect(root.get(AbstractDomainObject.ID), root.get(Case.UUID), root.get(Case.EPID_NUMBER), root.get(Case.EXTERNAL_ID),
 				person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME), root.get(Case.DISEASE),
 				root.get(Case.DISEASE_DETAILS), root.get(Case.CASE_CLASSIFICATION), root.get(Case.INVESTIGATION_STATUS),
 				person.get(Person.PRESENT_CONDITION), root.get(Case.REPORT_DATE),
@@ -1094,6 +1105,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				case CaseIndexDto.ID:
 				case CaseIndexDto.UUID:
 				case CaseIndexDto.EPID_NUMBER:
+				case CaseIndexDto.EXTERNAL_ID:
 				case CaseIndexDto.DISEASE:
 				case CaseIndexDto.DISEASE_DETAILS:
 				case CaseIndexDto.CASE_CLASSIFICATION:
@@ -1344,6 +1356,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 				if (newCase.getSurveillanceOfficer() != null) {
 					task.setAssigneeUser(newCase.getSurveillanceOfficer());
+				} else if (newCase.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+					task.setAssigneeUser(newCase.getReportingUser());
 				} else {
 					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
 							UserRole.SURVEILLANCE_SUPERVISOR);
@@ -1456,11 +1470,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void setResponsibleSurveillanceOfficer(Case caze) {
-		
 		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
 		} else {
-			List<User> informants = userService.getInformantsOfFacility(caze.getHealthFacility());
+			List<User> informants = caze.getHealthFacility() != null ? userService.getInformantsOfFacility(caze.getHealthFacility()) : new ArrayList<>();
 			Random rand = new Random();
 			if (!informants.isEmpty()) {
 				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
@@ -1736,6 +1749,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
+		target.setSharedToCountry(source.isSharedToCountry());
 
 		return target;
 	}
@@ -1829,6 +1843,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
+		target.setSharedToCountry(source.isSharedToCountry());
 
 		return target;
 	}

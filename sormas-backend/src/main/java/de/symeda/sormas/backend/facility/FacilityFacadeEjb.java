@@ -158,6 +158,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		return em.createQuery(cq).getResultList();
 	}
 
+	// Need to be in the same order as in the constructor
 	private void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
 		Join<Facility, Community> community = root.join(Facility.COMMUNITY, JoinType.LEFT);
 		Join<Facility, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
@@ -167,7 +168,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 				root.get(Facility.NAME), region.get(Region.UUID), region.get(Region.NAME), district.get(District.UUID),
 				district.get(District.NAME), community.get(Community.UUID), community.get(Community.NAME),
 				root.get(Facility.CITY), root.get(Facility.LATITUDE), root.get(Facility.LONGITUDE),
-				root.get(Facility.TYPE), root.get(Facility.PUBLIC_OWNERSHIP));
+				root.get(Facility.TYPE), root.get(Facility.PUBLIC_OWNERSHIP), root.get(Facility.EXTERNAL_ID));
 	}
 
 	@Override
@@ -264,6 +265,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setLatitude(entity.getLatitude());
 		dto.setLongitude(entity.getLongitude());
 		dto.setArchived(entity.isArchived());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}
@@ -365,7 +367,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
-		if (dto.getType() != FacilityType.LABORATORY) {
+		if (!FacilityType.LABORATORY.equals(dto.getType())) {
 			if (dto.getRegion() == null) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 			}
@@ -401,6 +403,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		target.setType(source.getType());
 		target.setArchived(source.isArchived());
+		target.setExternalID(source.getExternalID());
 
 		return target;
 	}

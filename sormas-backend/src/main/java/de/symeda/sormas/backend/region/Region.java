@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.region;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -37,11 +38,13 @@ public class Region extends InfrastructureAdo {
 	public static final String EPID_CODE = "epidCode";
 	public static final String DISTRICTS = "districts";
 	public static final String GROWTH_RATE = "growthRate";
+	public static final String EXTERNAL_ID = "externalID";
 	
 	private String name;
 	private String epidCode;
 	private List<District> districts;
 	private Float growthRate;
+	private String externalID;
 	
 	public String getName() {
 		return name;
@@ -78,4 +81,12 @@ public class Region extends InfrastructureAdo {
 		this.growthRate = growthRate;
 	}
 	
+	@Column(length = 255)
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
+	}
 }

@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.region;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -33,9 +34,11 @@ public class Community extends InfrastructureAdo {
 	
 	public static final String NAME = "name";
 	public static final String DISTRICT = "district";
+	public static final String EXTERNAL_ID = "externalID";
 
 	private String name;
 	private District district;
+	private String externalID;
 	
 	public String getName() {
 		return name;
@@ -51,6 +54,15 @@ public class Community extends InfrastructureAdo {
 	}
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+
+	@Column(length = 255)
+	public String getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(String externalID) {
+		this.externalID = externalID;
 	}
 
 	@Override

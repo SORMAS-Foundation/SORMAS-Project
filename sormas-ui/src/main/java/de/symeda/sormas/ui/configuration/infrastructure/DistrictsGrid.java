@@ -58,7 +58,8 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			setCriteria(criteria);
 		}
 		
-		setColumns(DistrictIndexDto.NAME, DistrictIndexDto.REGION, DistrictIndexDto.EPID_CODE, DistrictIndexDto.POPULATION, DistrictIndexDto.GROWTH_RATE);
+		setColumns(DistrictIndexDto.NAME, DistrictIndexDto.REGION, DistrictIndexDto.EPID_CODE,
+				DistrictIndexDto.EXTERNAL_ID, DistrictIndexDto.POPULATION, DistrictIndexDto.GROWTH_RATE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			Column<DistrictIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());

@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -178,6 +179,18 @@ public class DiseaseConfigurationCache {
         });
 
         return diseaseList;
+    }
+
+    public Disease getDefaultDisease() {
+        List<Disease> diseases = getAllDiseases(true, true, true).stream()
+                .filter(d -> d != Disease.OTHER && d != Disease.UNDEFINED)
+                .collect(Collectors.toList());
+
+        if (diseases.size() == 1) {
+            return diseases.get(0);
+        }
+
+        return null;
     }
 
     public boolean isActiveDisease(Disease disease) {

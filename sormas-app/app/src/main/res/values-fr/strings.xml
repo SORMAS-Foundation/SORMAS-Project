@@ -194,7 +194,6 @@
     <string name="caption_resync">SYNC</string>
     <string name="caption_rumor">Signals</string>
     <string name="caption_sample_information">Sample Information</string>
-    <string name="caption_settings_server_url">Server URL</string>
     <string name="caption_smallpox_vaccination_scar_img">Smallpox Vaccination Scar</string>
     <string name="caption_suspected_case">Suspected Case</string>
     <string name="caption_symptoms">Symptom Information</string>
@@ -382,7 +381,6 @@
     <string name="hint_select_month">Select Month</string>
     <string name="hint_select_epi_week">Select Epi Week</string>
     <string name="hint_select_year">Select Year</string>
-    <string name="hint_settings_server_url">e.g. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
     <string name="hint_case_numbers_not_submitted">Case numbers not submitted yet</string>
@@ -432,7 +430,6 @@
     <string name="message_http_401">Could not authenticate. Please check your username and password.</string>
     <string name="message_http_403">You do not have the needed permissions. Please contact the support.</string>
     <string name="message_http_404">Could not find a SORMAS server at \'%s\'</string>
-    <string name="message_http_404_empty">No SORMAS server defined in settings.</string>
     <string name="message_http_503">SORMAS server is temporarily not available.</string>
     <string name="message_install_app">A new SORMAS version is ready to install. Please click on \'Install\' to continue. You will need to restart the app after the update has been completed.</string>
     <string name="message_install_app_failed">There was an error installing the new SORMAS version. Maybe the downloaded file was incomplete because of an interrupted download. Please click on \'Redownload\' to try again or inform a supervisor if this error occurs again.</string>
@@ -452,7 +449,6 @@
     <string name="message_save_error">%1$s could not be saved because of an internal error.</string>
     <string name="message_save_success">%1$s saved successfully.</string>
     <string name="message_settings_saved">Application settings has been changed.</string>
-    <string name="message_settings_server_url">Welcome! Please start by entering the URL of your SORMAS server. Afterwards you can log-in with your user name and password.</string>
     <string name="message_sync_conflict">Synchronization conflicts detected. Please check the Sync Log to review them.</string>
     <string name="message_sync_not_synchronized">Some entries could not be synchronized. Please try again later.</string>
     <string name="message_sync_success">Synchronization successful.</string>

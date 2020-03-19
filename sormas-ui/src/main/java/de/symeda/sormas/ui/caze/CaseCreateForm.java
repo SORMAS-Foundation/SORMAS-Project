@@ -36,6 +36,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -70,8 +71,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS)
 			+ LayoutUtil.fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
 			+ LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
-			+ LayoutUtil.fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD)
-			+ LayoutUtil.fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
+			+ LayoutUtil.fluidRow(
+					LayoutUtil.fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+					LayoutUtil.fluidRowLocs(PersonDto.SEX))
+			+ LayoutUtil.fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
 
 	public CaseCreateForm(UserRight editOrCreateUserRight) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
@@ -88,7 +91,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		CssStyles.style(epidField, CssStyles.ERROR_COLOR_PRIMARY);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
-		addDiseaseField(CaseDataDto.DISEASE, false);
+		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
 		addField(CaseDataDto.DISEASE_DETAILS, TextField.class);
 		OptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, OptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, OptionGroup.class);
@@ -100,12 +103,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateDay.setNullSelectionAllowed(true);
 		birthDateDay.addStyleName(CssStyles.FORCE_CAPTION);
+		birthDateDay.setInputPrompt(I18nProperties.getString(Strings.day));
 		ComboBox birthDateMonth = addCustomField(PersonDto.BIRTH_DATE_MM, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateMonth.setNullSelectionAllowed(true);
 		birthDateMonth.addItems(DateHelper.getMonthsInYear());
 		birthDateMonth.setPageLength(12);
 		birthDateMonth.addStyleName(CssStyles.FORCE_CAPTION);
+		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
 		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addCustomField(PersonDto.BIRTH_DATE_YYYY, Integer.class, ComboBox.class);
 		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
@@ -113,6 +118,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		birthDateYear.setNullSelectionAllowed(true);
 		birthDateYear.addItems(DateHelper.getYearsToNow());
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
 			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
@@ -226,6 +232,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		cbPointOfEntry.addValueChangeListener(e -> {
 			updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
+		});
+	
+		addValueChangeListener(e -> {
+			Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
+			if (defaultDisease != null) {
+				disease.setValue(defaultDisease);
+			}
 		});
 	}
 

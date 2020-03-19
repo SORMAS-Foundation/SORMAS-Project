@@ -22,9 +22,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -108,7 +110,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return Collections.emptyList();
 		}
 
-		return weeklyReportService.getAllAfter(date, user).stream().map(r -> toDto(r)).collect(Collectors.toList());
+		return weeklyReportService.getAllAfter(date, user).stream()
+				.map(WeeklyReportFacadeEjb::toDto)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -149,6 +153,12 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
+
+		//Only for national users
+		if (! UserRole.isNational(userService.getCurrentUser().getUserRoles())) {
+			return new ArrayList<>();
+		}
+		
 		List<WeeklyReportRegionSummaryDto> summaryDtos = new ArrayList<>();
 
 		WeeklyReportCriteria regionReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek);
@@ -195,46 +205,56 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public List<WeeklyReportOfficerSummaryDto> getSummariesPerOfficer(RegionReferenceDto regionRef, EpiWeek epiWeek) {
-
-		List<WeeklyReportOfficerSummaryDto> summaryDtos = new ArrayList<>();
-
+		
 		WeeklyReportCriteria officerReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek);
 		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).officerReport(false);
 
 		Region region = regionService.getByReferenceDto(regionRef);
-		List<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER);
-		officers.sort((a, b) -> a.getDistrict().getName().compareTo(b.getDistrict().getName()));
-
-		for (User officer : officers) {
-			officerReportCriteria.reportingUser(new UserReferenceDto(officer.getUuid()));
-			List<WeeklyReport> officerReports = weeklyReportService.queryByCriteria(officerReportCriteria, null, null,
-					true);
+		
+		Stream<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER).stream();
+		officers = weeklyReportService.filterWeeklyReportUsers(userService.getCurrentUser(), officers);
+		
+		List<WeeklyReportOfficerSummaryDto> summaryDtos = officers
+		.sorted(Comparator.comparing(a -> a.getDistrict().getName()))
+		.map(officer -> {
 
 			WeeklyReportOfficerSummaryDto summaryDto = new WeeklyReportOfficerSummaryDto();
 			summaryDto.setOfficer(UserFacadeEjb.toReferenceDto(officer));
 			summaryDto.setDistrict(DistrictFacadeEjb.toReferenceDto(officer.getDistrict()));
 
-			if (officerReports.size() > 0) {
-				WeeklyReport officerReport = officerReports.get(0);
-				summaryDto.setOfficerReportDate(officerReport.getReportDateTime());
-				summaryDto.setTotalCaseCount(officerReport.getTotalNumberOfCases());
+			{
+				officerReportCriteria.reportingUser(new UserReferenceDto(officer.getUuid()));
+				weeklyReportService.queryByCriteria(officerReportCriteria, null, null, true).stream()
+				.findFirst()
+				.ifPresent(officerReport -> {
+					summaryDto.setOfficerReportDate(officerReport.getReportDateTime());
+					summaryDto.setTotalCaseCount(officerReport.getTotalNumberOfCases());
+				});
 			}
 
-			Long informants = userService.countByAssignedOfficer(officer, UserRole.HOSPITAL_INFORMANT,
-					UserRole.COMMUNITY_INFORMANT);
-			summaryDto.setInformants(informants.intValue());
+			{
+				Long informants = userService.countByAssignedOfficer(officer, 
+						UserRole.HOSPITAL_INFORMANT,
+						UserRole.COMMUNITY_INFORMANT);
+				summaryDto.setInformants(informants.intValue());
+			}
 
 			informantsReportCriteria.assignedOfficer(summaryDto.getOfficer());
-			informantsReportCriteria.zeroReport(false);
-			Long informantCaseReports = weeklyReportService.countByCriteria(informantsReportCriteria, null);
-			summaryDto.setInformantCaseReports(informantCaseReports.intValue());
+			{
+				informantsReportCriteria.zeroReport(false);
+				Long informantCaseReports = weeklyReportService.countByCriteria(informantsReportCriteria, null);
+				summaryDto.setInformantCaseReports(informantCaseReports.intValue());
+			}
+			{
+				informantsReportCriteria.zeroReport(true);
+				Long informantZeroReports = weeklyReportService.countByCriteria(informantsReportCriteria, null);
+				summaryDto.setInformantZeroReports(informantZeroReports.intValue());
+			}
 
-			informantsReportCriteria.zeroReport(true);
-			Long informantZeroReports = weeklyReportService.countByCriteria(informantsReportCriteria, null);
-			summaryDto.setInformantZeroReports(informantZeroReports.intValue());
-
-			summaryDtos.add(summaryDto);
-		}
+			return summaryDto;
+		})
+		.collect(Collectors.toList());
+		
 
 		return summaryDtos;
 	}

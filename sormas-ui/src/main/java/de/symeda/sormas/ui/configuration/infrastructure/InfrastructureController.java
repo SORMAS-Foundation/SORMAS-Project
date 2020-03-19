@@ -145,7 +145,10 @@ public class InfrastructureController {
 			}
 		});
 
-		extendEditComponentWithArchiveButton(editView, facility.isArchived(), facility.getUuid(), InfrastructureType.FACILITY, facility.getType());
+		if (facility.getUuid() != null) {
+			extendEditComponentWithArchiveButton(editView, facility.isArchived(), facility.getUuid(),
+					InfrastructureType.FACILITY, facility.getType());
+		}
 
 		return editView;
 	}
@@ -170,7 +173,10 @@ public class InfrastructureController {
 			}
 		});
 
-		extendEditComponentWithArchiveButton(editView, region.isArchived(), region.getUuid(), InfrastructureType.REGION, null);
+		if (region.getUuid() != null) {
+			extendEditComponentWithArchiveButton(editView, region.isArchived(), region.getUuid(),
+					InfrastructureType.REGION, null);
+		}
 
 		return editView;
 	}
@@ -196,7 +202,10 @@ public class InfrastructureController {
 			}
 		});
 
-		extendEditComponentWithArchiveButton(editView, district.isArchived(), district.getUuid(), InfrastructureType.DISTRICT, null);
+		if (district.getUuid() != null) {
+			extendEditComponentWithArchiveButton(editView, district.isArchived(), district.getUuid(),
+					InfrastructureType.DISTRICT, null);
+		}
 
 		return editView;
 	}
@@ -222,7 +231,10 @@ public class InfrastructureController {
 			}
 		});
 
-		extendEditComponentWithArchiveButton(editView, community.isArchived(), community.getUuid(), InfrastructureType.COMMUNITY, null);
+		if (community.getUuid() != null) {
+			extendEditComponentWithArchiveButton(editView, community.isArchived(), community.getUuid(),
+					InfrastructureType.COMMUNITY, null);
+		}
 
 		return editView;
 	}
@@ -242,7 +254,10 @@ public class InfrastructureController {
 			SormasUI.get().getNavigator().navigateTo(PointsOfEntryView.VIEW_NAME);
 		});
 
-		extendEditComponentWithArchiveButton(view, pointOfEntry.isArchived(), pointOfEntry.getUuid(), InfrastructureType.POINT_OF_ENTRY, null);
+		if (pointOfEntry.getUuid() != null) {
+			extendEditComponentWithArchiveButton(view, pointOfEntry.isArchived(), pointOfEntry.getUuid(),
+					InfrastructureType.POINT_OF_ENTRY, null);
+		}
 
 		return view;
 	}

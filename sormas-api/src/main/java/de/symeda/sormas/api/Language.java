@@ -26,6 +26,9 @@ public enum Language {
 		return locale;
 	}
 
+	/**
+	 * @return EN when the locale does not fit any language
+	 */
 	public static Language fromLocaleString(String locale) {
 		switch (locale) {
 		case "en": return EN;
@@ -34,7 +37,7 @@ public enum Language {
 		case "fr": return FR;
 		case "de": return DE;
 		default:
-			throw new IllegalArgumentException(locale);
+			return EN;
 		}
 	}
 

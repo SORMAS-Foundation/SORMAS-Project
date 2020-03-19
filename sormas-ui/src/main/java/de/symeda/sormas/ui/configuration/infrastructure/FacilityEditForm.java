@@ -26,6 +26,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -40,7 +41,8 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	private static final String HTML_LAYOUT = LayoutUtil.fluidRowLocs(FacilityDto.NAME, FacilityDto.REGION)
 			+ LayoutUtil.fluidRowLocs(FacilityDto.DISTRICT, FacilityDto.COMMUNITY)
 			+ LayoutUtil.fluidRowLocs(FacilityDto.CITY)
-			+ LayoutUtil.fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE);
+			+ LayoutUtil.fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
+			+ LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private boolean laboratory;
 	private boolean create;
@@ -71,6 +73,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		TextField longitude = addField(FacilityDto.LONGITUDE, TextField.class);
 		longitude.setConverter(new StringToAngularLocationConverter());
 		longitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, longitude.getCaption()));
+		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
 		name.setRequired(true);
 		if (!laboratory) {
@@ -107,6 +110,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 				community.setEnabled(false);
 			}
 		}
+
 	}
 
 	@Override

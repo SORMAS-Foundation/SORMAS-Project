@@ -8,6 +8,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -21,6 +22,7 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 			LayoutUtil.fluidRowLocs(PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE)
 			+ LayoutUtil.fluidRowLocs(PointOfEntryDto.REGION, PointOfEntryDto.DISTRICT)
 			+ LayoutUtil.fluidRowLocs(PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE)
+					+ LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID)
 			+ LayoutUtil.fluidRowLocs(PointOfEntryDto.ACTIVE, "");
 	
 	private boolean create;
@@ -46,6 +48,7 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		TextField tfLongitude = addField(PointOfEntryDto.LONGITUDE, TextField.class);
 		ComboBox cbRegion = addInfrastructureField(PointOfEntryDto.REGION);
 		ComboBox cbDistrict = addInfrastructureField(PointOfEntryDto.DISTRICT);
+		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
 		tfLatitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLatitude.getCaption()));

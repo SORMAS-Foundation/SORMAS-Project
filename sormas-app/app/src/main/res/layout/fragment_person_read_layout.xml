@@ -357,6 +357,14 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/person_generalPractitionerDetails"
+                app:value="@{data.generalPractitionerDetails}"
+                app:singleLine="false"
+                app:maxLines="2"
+                app:textArea="true"
+                style="@style/ControlSingleColumnStyle" />
+
         </LinearLayout>
 
     </ScrollView>
