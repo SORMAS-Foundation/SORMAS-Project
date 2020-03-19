@@ -223,6 +223,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			CheckBox cbSharedToCountry = addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
+			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 		
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
@@ -255,7 +256,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER), CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS);
-		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT), CaseDataDto.SHARED_TO_COUNTRY);
 		
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
 		// dynamically setting the visibility
