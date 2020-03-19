@@ -284,6 +284,7 @@ public interface Captions {
 	public static String Contact_contactProximity = "Contact.contactProximity";
 	public static String Contact_contactStatus = "Contact.contactStatus";
 	public static String Contact_description = "Contact.description";
+	public static String Contact_district = "Contact.district";
 	public static String Contact_externalID = "Contact.externalID";
 	public static String Contact_firstName = "Contact.firstName";
 	public static String Contact_followUpComment = "Contact.followUpComment";
@@ -296,6 +297,10 @@ public interface Captions {
 	public static String Contact_lastName = "Contact.lastName";
 	public static String Contact_numberOfVisits = "Contact.numberOfVisits";
 	public static String Contact_person = "Contact.person";
+	public static String Contact_quarantine = "Contact.quarantine";
+	public static String Contact_quarantineFrom = "Contact.quarantineFrom";
+	public static String Contact_quarantineTo = "Contact.quarantineTo";
+	public static String Contact_region = "Contact.region";
 	public static String Contact_relationDescription = "Contact.relationDescription";
 	public static String Contact_relationToCase = "Contact.relationToCase";
 	public static String Contact_reportDateTime = "Contact.reportDateTime";
