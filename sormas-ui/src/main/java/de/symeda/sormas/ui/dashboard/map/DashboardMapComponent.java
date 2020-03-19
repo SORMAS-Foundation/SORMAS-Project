@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -68,6 +69,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.region.GeoShapeProvider;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -149,35 +151,33 @@ public class DashboardMapComponent extends VerticalLayout {
 				onMarkerClicked(event.getGroupId(), event.getMarkerIndex());
 			}
 		});
+		
+		{
+	
+			GeoShapeProvider geoShapeProvider = FacadeProvider.getGeoShapeProvider();
+			
+			final GeoLatLon mapCenter;
+			if (UserProvider.getCurrent().hasAnyUserRole(
+					UserRole.NATIONAL_USER, 
+					UserRole.NATIONAL_CLINICIAN, 
+					UserRole.NATIONAL_OBSERVER)) {
+				mapCenter = geoShapeProvider.getCenterOfAllRegions();
+				
+			} else {
+				UserDto user = UserProvider.getCurrent().getUser();
+				if (user.getRegion() != null) {
+					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
+				} else {
+					mapCenter = geoShapeProvider.getCenterOfAllRegions();
+				}
+			}
+			
+			GeoLatLon center = Optional.ofNullable(mapCenter)
+				.orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
 
-		GeoLatLon countryCenter = FacadeProvider.getConfigFacade().getCountryCenter();
-		if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
-				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
-				|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
-			GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
-			if (mapCenter != null) {
-				map.setCenter(mapCenter.getLon(), mapCenter.getLat());
-			} else {
-				map.setCenter(countryCenter.getLon(), countryCenter.getLat());
-			}
-		} else {
-			UserDto user = UserProvider.getCurrent().getUser();
-			if (user.getRegion() != null) {
-				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfRegion(user.getRegion());
-				if (mapCenter != null) {
-					map.setCenter(mapCenter.getLon(), mapCenter.getLat());
-				} else {
-					map.setCenter(countryCenter.getLon(), countryCenter.getLat());
-				}
-			} else {
-				GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
-				if (mapCenter != null) {
-					map.setCenter(mapCenter.getLon(), mapCenter.getLat());
-				} else {
-					map.setCenter(countryCenter.getLon(), countryCenter.getLat());
-				}
-			}
+			map.setCenter(center);
 		}
+		
 		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
 
 		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
