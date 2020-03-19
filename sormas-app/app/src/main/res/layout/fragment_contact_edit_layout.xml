@@ -81,23 +81,6 @@
                     app:required="true"
                     style="@style/ControlSingleColumnStyle" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/contact_region"
-                        style="@style/ControlFirstOfTwoColumnsStyle"
-                        app:value="@={data.region}" />
-
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/contact_district"
-                        style="@style/ControlSecondOfTwoColumnsStyle"
-                        app:value="@={data.district}" />
-
-                </LinearLayout>
-
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/contact_lastContactDate"
                     app:value="@={data.lastContactDate}"
@@ -224,6 +207,23 @@
                     android:id="@+id/contact_careForPeopleOver60"
                     app:value="@={data.careForPeopleOver60}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/contact_region"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@={data.region}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/contact_district"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@={data.district}" />
+
+                </LinearLayout>
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
