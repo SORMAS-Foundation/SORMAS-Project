@@ -46,7 +46,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
@@ -64,7 +63,6 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -155,7 +153,7 @@ public class StartupShutdownService {
 
 		createMissingDiseaseConfigurations();
 
-		createMissingFeatureConfigurations();
+		featureConfigurationService.createMissingFeatureConfigurations();
 
 		configFacade.validateAppUrls();
 	}
@@ -550,15 +548,6 @@ public class StartupShutdownService {
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			diseaseConfigurationService.ensurePersisted(configuration);
-		});
-	}
-
-	private void createMissingFeatureConfigurations() {
-		List<FeatureConfiguration> featureConfigurations = featureConfigurationService.getAll();
-		List<FeatureType> existingConfigurations = featureConfigurations.stream().filter(config -> config.getFeatureType().isServerFeature()).map(config -> config.getFeatureType()).collect(Collectors.toList());
-		FeatureType.getAllServerFeatures().stream().filter(feature -> !existingConfigurations.contains(feature)).forEach(featureType -> {
-			FeatureConfiguration configuration = FeatureConfiguration.build(featureType, true);
-			featureConfigurationService.ensurePersisted(configuration);
 		});
 	}
 
