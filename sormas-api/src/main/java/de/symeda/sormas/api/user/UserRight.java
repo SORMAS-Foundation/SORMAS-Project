@@ -170,6 +170,7 @@ public enum UserRight {
 	CASE_IMPORT(
 			ADMIN, IMPORT_USER
 			),
+	/** Also includes sharing the case with other users **/
 	CASE_EXPORT(
 			ADMIN,
 			NATIONAL_USER,
