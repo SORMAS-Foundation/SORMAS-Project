@@ -73,4 +73,13 @@ public class GeoLatLon implements Serializable, Cloneable {
         }
         return true;
     }
+    
+    @Override
+    public GeoLatLon clone() {
+    	try {
+			return (GeoLatLon) super.clone();
+		} catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone failed", e);
+		}
+    }
 }
