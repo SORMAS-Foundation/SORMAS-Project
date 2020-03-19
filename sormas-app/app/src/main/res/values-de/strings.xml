@@ -194,6 +194,7 @@
     <string name="caption_resync">SYNC</string>
     <string name="caption_rumor">Signale</string>
     <string name="caption_sample_information">Probeninformation</string>
+    <string name="caption_settings_server_url">Server-URL</string>
     <string name="caption_smallpox_vaccination_scar_img">Pockenimpfungs-Narbe</string>
     <string name="caption_suspected_case">Verdachtsfall</string>
     <string name="caption_symptoms">Symptom Informationen</string>
@@ -381,6 +382,7 @@
     <string name="hint_select_month">Wählen Sie einen Monat</string>
     <string name="hint_select_epi_week">Wählen Sie eine Epi-Woche</string>
     <string name="hint_select_year">Wählen Sie ein Jahr</string>
+    <string name="hint_settings_server_url">z.B. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Sie müssen den Bericht für die letzte Woche bestätigen.</string>
     <string name="hint_weekly_report_no_data">Keine Daten für diese Epi-Woche verfügbar.</string>
     <string name="hint_case_numbers_not_submitted">Fallnummern noch nicht übermittelt</string>
@@ -430,6 +432,7 @@
     <string name="message_http_401">Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihren Benutzernamen und Ihr Passwort.</string>
     <string name="message_http_403">Sie haben nicht die erforderlichen Berechtigungen. Bitte kontaktieren Sie den Support.</string>
     <string name="message_http_404">Konnte keinen SORMAS Server auf \'%s \' finden</string>
+    <string name="message_http_404_empty">Kein SORMAS Server in den Einstellungen definiert.</string>
     <string name="message_http_503">SORMAS Server ist vorübergehend nicht verfügbar.</string>
     <string name="message_install_app">Eine neue SORMAS Version ist bereit zur Installation. Bitte klicken Sie auf \'Installieren\', um fortzufahren. Sie müssen die App neu starten, nachdem die Aktualisierung abgeschlossen ist.</string>
     <string name="message_install_app_failed">Beim Installieren der neuen SORMAS Version ist ein Fehler aufgetreten. Vielleicht war die heruntergeladene Datei wegen eines unterbrochenen Downloads unvollständig. Bitte klicken Sie auf \'Erneut downloaden\', um es erneut zu versuchen oder informieren Sie Ihre/n Vorgesetzte/n, wenn dieser Fehler erneut auftritt.</string>
@@ -449,6 +452,7 @@
     <string name="message_save_error">%1$s konnte aufgrund eines internen Fehlers nicht gespeichert werden.</string>
     <string name="message_save_success">%1$s erfolgreich gespeichert.</string>
     <string name="message_settings_saved">Anwendungseinstellungen wurden geändert.</string>
+    <string name="message_settings_server_url">Willkommen! Bitte geben Sie zuerst die URL Ihres SORMAS Servers ein, danach können Sie sich mit Ihrem Benutzernamen und Passwort anmelden.</string>
     <string name="message_sync_conflict">Synchronisierungskonflikte erkannt. Bitte überprüfen Sie das Sync-Log um diese zu überprüfen.</string>
     <string name="message_sync_not_synchronized">Einige Einträge konnten nicht synchronisiert werden. Bitte versuchen Sie es später erneut.</string>
     <string name="message_sync_success">Synchronisierung erfolgreich.</string>
@@ -554,8 +558,4 @@
     <string name="value_visit_time_unknown">Anrufszeit N/A</string>
     <string name="value_visiting_person_unknown">Anwesende*r Arzt/Ärztin N/A</string>
     <string name="value_investigation_status_unknown">Untersuchungsstatus N/A</string>
-    <string name="message_http_404_empty">Kein SORMAS-Server in den Einstellungen definiert.</string>
-    <string name="caption_settings_server_url">Server-URL</string>
-    <string name="hint_settings_server_url">z.B. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
-    <string name="message_settings_server_url">Willkommen! Bitte beginnen Sie mit der Eingabe der URL Ihres SORMAS-Servers. Danach können Sie sich mit Ihrem Benutzernamen und Passwort einloggen.</string>
 </resources>
