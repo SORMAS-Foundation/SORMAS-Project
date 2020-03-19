@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.map;
 
+import de.symeda.sormas.api.region.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 
@@ -58,6 +59,11 @@ public class LeafletMarker {
 	public void setLatLon(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
+	}
+
+	public void setLatLon(GeoLatLon coordinates) {
+		this.latitude = coordinates.getLat();
+		this.longitude = coordinates.getLon();
 	}
 
 	public MarkerIcon getIcon() {

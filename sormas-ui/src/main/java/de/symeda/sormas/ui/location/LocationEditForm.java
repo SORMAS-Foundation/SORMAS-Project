@@ -19,8 +19,17 @@ package de.symeda.sormas.ui.location;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 
+import java.util.Collections;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
@@ -34,6 +43,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.map.LeafletMap;
+import de.symeda.sormas.ui.map.LeafletMarker;
+import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -42,7 +54,7 @@ import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 @SuppressWarnings("serial")
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
-	private static final String GEOCODING_LOC = "geocoding";
+	private static final String GEO_BUTTONS_LOC = "geoButtons";
 
 	private static final String HTML_LAYOUT = 
 			LayoutUtil.divs(
@@ -56,21 +68,90 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			LayoutUtil.fluidRow(LayoutUtil.loc(LocationDto.DETAILS),
 					LayoutUtil.fluidRow(
-							fluidColumnLoc(2, 0, GEOCODING_LOC), 
+							fluidColumnLoc(2, 0, GEO_BUTTONS_LOC), 
 							fluidColumnLoc(3, 0, LocationDto.LATITUDE),
 							fluidColumnLoc(3, 0, LocationDto.LONGITUDE),
 							fluidColumnLoc(4, 0, LocationDto.LAT_LON_ACCURACY))));
 
+	private MapPopupView leafletMapPopup;
+
 	public LocationEditForm(UserRight editOrCreateUserRight) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight);
+		
+		HorizontalLayout geoButtons = new HorizontalLayout();
+		geoButtons.setMargin(false);
+		geoButtons.setSpacing(false);
+		getContent().addComponent(geoButtons, GEO_BUTTONS_LOC);
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
 			Button geocodeButton = new Button(VaadinIcons.MAP_MARKER, e -> triggerGeocoding());
-			geocodeButton.setWidth(100, Unit.PERCENTAGE);
-			geocodeButton.setStyleName(ValoTheme.BUTTON_HUGE);
 			geocodeButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-			getContent().addComponent(geocodeButton, GEOCODING_LOC);
+			geocodeButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+			geocodeButton.addStyleName(ValoTheme.BUTTON_LARGE);
+			
+			geoButtons.addComponent(geocodeButton);
+			geoButtons.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
 		}
+		
+		{
+			leafletMapPopup = new MapPopupView();
+			leafletMapPopup.setCaption(" ");
+			leafletMapPopup.setEnabled(false);
+			leafletMapPopup.setStyleName(ValoTheme.BUTTON_LARGE);
+			leafletMapPopup.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+			
+			geoButtons.addComponent(leafletMapPopup);
+			geoButtons.setComponentAlignment(leafletMapPopup, Alignment.BOTTOM_RIGHT);
+		}
+	}
+	
+	private static class MapPopupView extends PopupView {
+
+    	//eye-icon styled as button
+		private static final String MINNIMIZED_HTML = "<div tabindex=\"0\" role=\"button\" class=\"v-button v-widget icon-only v-button-icon-only borderless v-button-borderless large v-button-large\"><span class=\"v-button-wrap\">"+
+				VaadinIcons.EYE.getHtml() +
+				"<span class=\"v-button-caption\"></span></span></div>";
+		
+		private GeoLatLon coordinates = null;
+		
+		public MapPopupView() {
+			setContent(new Content() {
+
+				@Override
+		        public String getMinimizedValueAsHTML() {
+		        	return MINNIMIZED_HTML;
+		        }
+		
+		        @Override
+		        public Component getPopupComponent() {
+		        	return createLeafletMap();
+		        }
+		    });
+		}
+	
+		private LeafletMap createLeafletMap() {
+			
+			LeafletMap map = new LeafletMap();
+    		map.setWidth(420, Unit.PIXELS);
+    		map.setHeight(420, Unit.PIXELS);
+    		map.setZoom(12);
+		
+			map.setCenter(coordinates.getLat(), coordinates.getLon());
+			
+			LeafletMarker marker = new LeafletMarker();
+			marker.setLatLon(coordinates.getLat(), coordinates.getLon());
+			marker.setIcon(MarkerIcon.CASE_UNCLASSIFIED);
+			marker.setMarkerCount(1);
+			
+			map.addMarkerGroup("cases", Collections.singletonList(marker));
+			
+			return map;
+		}
+		
+        
+        public void setCoordinates(GeoLatLon coordinates) {
+        	this.coordinates = coordinates;
+        }
 	}
 
 	private void triggerGeocoding() {
@@ -127,6 +208,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		
+		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
+		.map(this::getField)
+		.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+		
+	}
+	
+	private void updateLeafletMapContent() {
+		Double lat = getConvertedValue(LocationDto.LATITUDE);
+		Double lon = getConvertedValue(LocationDto.LONGITUDE);
+		GeoLatLon coordinates;
+		if (ObjectUtils.allNotNull(lat, lon)) {
+			coordinates = new GeoLatLon(lat, lon);
+		} else {
+			coordinates = null;
+		}
+		leafletMapPopup.setEnabled(coordinates != null);
+		leafletMapPopup.setCoordinates(coordinates);
 	}
 
 	@Override
