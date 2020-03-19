@@ -64,8 +64,6 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	public LeafletMap() {
 		setId(getDomId());
 		getState().setZoom(5);
-		getState().setCenterLatitude(51.505);
-		getState().setCenterLongitude(-0.09);
 		getState().setTileLayerVisible(true);
 		getState().setTileLayerOpacity(1);
 
