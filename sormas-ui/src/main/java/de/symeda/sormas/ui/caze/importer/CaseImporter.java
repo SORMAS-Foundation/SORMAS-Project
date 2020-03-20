@@ -71,31 +71,40 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
- * These are the steps performed by the case importer:
+ * Data importer that is used to import cases and associated samples.
+ * This importer adds the following logic:
  * 
- * 1) Read the CSV file from the passed file path and open an error report file
- * 2) Read the header row from the CSV and build a list of properties based on its columns
- * 3) Read the next line from the CSV and fill a case with its contents by using reflection;
- *    Validate the case afterwards
- * 	  - If an error is thrown doing this, the import of this case is canceled and the case gets
- *   	added to the error report file
- * 4) Check the database for similar cases and, if at least one is found, execute the 
+ * -  Check the database for similar cases and, if at least one is found, execute the 
  *    similarityCallback received by the calling class.
  *    - The import will wait for the similarityCallback to be resolved before it is continued
- * 5) Based on the results of the similarityCallback, an existing case might be overridden by 
+ * -  Based on the results of the similarityCallback, an existing case might be overridden by 
  * 	  the data in the CSV file
- * 6) Save the person and case to the database (unless the case was skipped or the import
+ * -  Save the person and case to the database (unless the case was skipped or the import
  *    was canceled)
- * 7) Repeat from step 3 until all cases have been handled
  */
 public class CaseImporter extends DataImporter {
 
+	/**
+	 * The name of the first column that belongs to a sample. This is used to determine whether the property
+	 * belongs to a new or the currently processed sample.
+	 */
 	private String firstSampleColumnName;
+	/**
+	 * The name of the first column that belongs to a pathogen test. This is used to determine whether the property
+	 * belongs to a new or the currently processed pathogen test.
+	 */
 	private String firstPathogenTestColumnName;
+	/**
+	 * When a new sample or pathogen test is reached and the sample that was processed last does not have any entries,
+	 * it is discarded.
+	 */
 	private boolean currentSampleHasEntries = false;
+	/**
+	 * When a new sample or pathogen test is reached and the pathogen test that was processed last does not have any entries,
+	 * it is discarded.
+	 */
 	private boolean currentPathogenTestHasEntries = false;
 
-	// needed to let the user handle similarities
 	private UI currentUI;
 
 	public CaseImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
@@ -117,15 +126,19 @@ public class CaseImporter extends DataImporter {
 			return ImportLineResult.ERROR;
 		}
 
+		// Create new temporary objects for the case and its person
 		final PersonDto newPersonTmp = PersonDto.build();
 		final CaseDataDto newCaseTmp = CaseDataDto.build(newPersonTmp.toReference(), null);
 		newCaseTmp.setReportingUser(currentUser);
 
+		// Create lists for all samples and pathogen tests that might get associated with the case
 		final List<SampleDto> samples = new ArrayList<>();
 		final List<PathogenTestDto> pathogenTests = new ArrayList<>();
-		
+
 		boolean caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, !firstLine, (cellData) -> {
 			try {
+				// If the first column of a new sample or pathogen test has been reached, remove the last sample and 
+				// pathogen test if they don't have any entries
 				if (String.join(".", cellData.getEntityPropertyPath()).equals(firstSampleColumnName) ||
 						String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
 					if (samples.size() > 0 && !currentSampleHasEntries) {
@@ -137,8 +150,10 @@ public class CaseImporter extends DataImporter {
 						currentPathogenTestHasEntries = true;
 					}
 				}
-				
+
 				if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))) {
+					// If the current column belongs to a sample, set firstSampleColumnName if it's empty, add a new sample
+					// to the list if the first column of a new sample has been reached and insert the entry of the cell into the sample
 					if (firstSampleColumnName == null) {
 						firstSampleColumnName = String.join(".", cellData.getEntityPropertyPath());
 					}
@@ -150,7 +165,10 @@ public class CaseImporter extends DataImporter {
 						currentSampleHasEntries = true;
 						insertColumnEntryIntoSampleData(samples.get(samples.size() - 1), null, cellData.getValue(), cellData.getEntityPropertyPath());
 					}
+
 				} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
+					// If the current column belongs to a pathogen test, set firstPathogenTestColumnName if it's empty, add a new test
+					// to the list if the first column of a new test has been reached and insert the entry of the cell into the test
 					if (firstPathogenTestColumnName == null) {
 						firstPathogenTestColumnName = String.join(".", cellData.getEntityPropertyPath());
 					}
@@ -163,7 +181,8 @@ public class CaseImporter extends DataImporter {
 						currentPathogenTestHasEntries = true;					
 						insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
 					}
-				} else if (!StringUtils.isEmpty(cellData.getValue())){
+				} else if (!StringUtils.isEmpty(cellData.getValue())) {
+					// If the cell entry is not empty, try to insert it into the current case or its person
 					insertColumnEntryIntoData(newCaseTmp, newPersonTmp, cellData.getValue(), cellData.getEntityPropertyPath());
 				}
 			} catch (ImportErrorException | InvalidColumnException e) {
@@ -173,16 +192,18 @@ public class CaseImporter extends DataImporter {
 			return null;
 		});
 
+		// Remove the last sample and pathogen test if empty
 		if (samples.size() > 0 && !currentSampleHasEntries) {
 			samples.remove(samples.size() - 1);
 		}
 		if (pathogenTests.size() > 0 && !currentPathogenTestHasEntries) {
 			pathogenTests.remove(pathogenTests.size() - 1);
 		}
-		
+
 		CaseDataDto newCase = newCaseTmp;
 		PersonDto newPerson = newPersonTmp;
 
+		// If the row does not have any import errors, call the backend validation of all associated entities
 		if (!caseHasImportError) {
 			try {
 				FacadeProvider.getPersonFacade().validate(newPerson);
@@ -199,13 +220,17 @@ public class CaseImporter extends DataImporter {
 			}
 		}
 
+		// If the case still does not have any import errors, search for similar cases in the database and, if there are any,
+		// display a window to resolve the conflict to the user
 		if (!caseHasImportError) {
 			try {
 				CaseImportConsumer consumer = new CaseImportConsumer();
 				ImportSimilarityResultOption resultOption = null;
 
 				CaseImportLock LOCK = new CaseImportLock();
+				// We need to pause the current thread to prevent the import from continuing until the user has acted
 				synchronized (LOCK) {
+					// Retrieve all similar cases from the database
 					CaseCriteria caseCriteria = new CaseCriteria()
 							.disease(newCase.getDisease())
 							.region(newCase.getRegion());
@@ -217,6 +242,8 @@ public class CaseImporter extends DataImporter {
 					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria, currentUser.getUuid());
 
 					if (similarCases.size() > 0) {
+						// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
+						// to allow the importer to resume
 						handleSimilarity(new CaseImportSimilarityInput(newCase, newPerson, similarCases), new Consumer<CaseImportSimilarityResult>() {
 							@Override
 							public void accept(CaseImportSimilarityResult result) {
@@ -237,6 +264,7 @@ public class CaseImporter extends DataImporter {
 							resultOption = consumer.result.getResultOption();
 						}
 
+						// If the user chose to override an existing case with the imported case, insert the new data into the existing case and associate the imported samples with it
 						if (resultOption != null && resultOption != ImportSimilarityResultOption.SKIP && resultOption != ImportSimilarityResultOption.CANCEL && resultOption != ImportSimilarityResultOption.PICK) {
 							if (resultOption == ImportSimilarityResultOption.OVERRIDE && consumer.result.getMatchingCase() != null) {
 								final CaseDataDto matchingCaseTmp = FacadeProvider.getCaseFacade().getCaseDataByUuid(consumer.result.getMatchingCase().getUuid());
@@ -270,17 +298,18 @@ public class CaseImporter extends DataImporter {
 					}
 				}
 
+				// Prevent the case from being imported if it has an epid number that already exists in the system
 				if (!caseHasImportError && !ImportSimilarityResultOption.OVERRIDE.equals(resultOption) && newCase.getEpidNumber() != null && 
 						FacadeProvider.getCaseFacade().doesEpidNumberExist(newCase.getEpidNumber(), "", newCase.getDisease())) {
 					caseHasImportError = true;
 					writeImportError(values, I18nProperties.getString(Strings.messageEpidNumberWarning));
 				}
 
+				// Determine the import result and, if there was no duplicate, the user did not skip over the case 
+				// or an existing case was overridden, save the case, person, samples and pathogen tests to the database
 				if (caseHasImportError) {
-					// In case insertRowIntoCase when matching person/case has thrown an unexpected error
 					return ImportLineResult.ERROR;
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.SKIP) {
-					// Reset the import result
 					consumer.result = null;
 					return ImportLineResult.SKIPPED;
 				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.PICK) {
@@ -299,7 +328,6 @@ public class CaseImporter extends DataImporter {
 					for (PathogenTestDto pathogenTest : pathogenTests) {
 						FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
 					}
-					// Reset the import result
 					consumer.result = null;
 					return ImportLineResult.SUCCESS;
 				}
@@ -312,6 +340,9 @@ public class CaseImporter extends DataImporter {
 		}
 	}
 
+	/**
+	 * Inserts the entry of a single cell into the case or its person.
+	 */
 	private void insertColumnEntryIntoData(CaseDataDto caze, PersonDto person, String entry, String[] entryHeaderPath) throws InvalidColumnException, ImportErrorException {
 		Object currentElement = caze;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
@@ -320,7 +351,7 @@ public class CaseImporter extends DataImporter {
 			try {
 				if (i != entryHeaderPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
-					// Replace PersonReferenceDto with the created person
+					// Set the current element to the created person
 					if (currentElement instanceof PersonReferenceDto) {
 						currentElement = person;
 					}
@@ -328,6 +359,8 @@ public class CaseImporter extends DataImporter {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
+					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
+					// according to the types of the case or person fields
 					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
@@ -393,6 +426,9 @@ public class CaseImporter extends DataImporter {
 		}
 	}
 
+	/**
+	 * Inserts the entry of a single cell into the sample or pathogen test.
+	 */
 	private void insertColumnEntryIntoSampleData(SampleDto sample, PathogenTestDto test, String entry, String[] entryHeaderPath) throws InvalidColumnException, ImportErrorException {
 		Object currentElement = sample != null ? sample : test;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
@@ -405,6 +441,8 @@ public class CaseImporter extends DataImporter {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
+					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
+					// according to the types of the sample or pathogen test fields
 					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
@@ -437,6 +475,10 @@ public class CaseImporter extends DataImporter {
 		}
 	}
 
+	/**
+	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate cases.
+	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
+	 */
 	protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
 		currentUI.accessSynchronously(new Runnable() {
 			@Override
