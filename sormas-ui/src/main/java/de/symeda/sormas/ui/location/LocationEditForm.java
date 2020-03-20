@@ -136,10 +136,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
     		map.setHeight(420, Unit.PIXELS);
     		map.setZoom(12);
 		
-			map.setCenter(coordinates.getLat(), coordinates.getLon());
+			map.setCenter(coordinates);
 			
 			LeafletMarker marker = new LeafletMarker();
-			marker.setLatLon(coordinates.getLat(), coordinates.getLon());
+			marker.setLatLon(coordinates);
 			marker.setIcon(MarkerIcon.CASE_UNCLASSIFIED);
 			marker.setMarkerCount(1);
 			
