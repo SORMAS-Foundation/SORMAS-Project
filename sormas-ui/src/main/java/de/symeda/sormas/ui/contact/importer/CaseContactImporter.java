@@ -182,7 +182,7 @@ public class CaseContactImporter extends DataImporter {
 
 				if (personSelect.hasMatches()) {
 					personSelect.selectBestMatch();
-					final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = new CommitDiscardWrapperComponent<PersonSelectField>(
+					final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = new CommitDiscardWrapperComponent<>(
 							personSelect);
 
 					ValueChangeListener nameChangeListener = e -> {
@@ -287,7 +287,7 @@ public class CaseContactImporter extends DataImporter {
 		}
 	}
 
-	private class ContactImportLock {
+	private static class ContactImportLock {
 		protected boolean wasNotified = false;
 	}
 }

@@ -31,7 +31,7 @@ public class CaseContactsImportLayout extends AbstractImportLayout {
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
 				new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		addDownloadImportTemplateComponent(2,
-				FacadeProvider.getImportFacade().getCaseContactImportTemplateFilePath().toString(),
+				FacadeProvider.getImportFacade().getCaseContactImportTemplateFilePath(),
 				"sormas_import_case_contact_template.csv");
 		addImportCsvComponent(3, new ImportReceiver("_case_contact_import_", new Consumer<File>() {
 			@Override
