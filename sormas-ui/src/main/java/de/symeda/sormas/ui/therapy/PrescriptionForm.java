@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.therapy;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import java.util.Arrays;
 
 import com.vaadin.v7.ui.ComboBox;
@@ -17,19 +20,19 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 
+	private static final long serialVersionUID = 1L;
+	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocs(PrescriptionDto.PRESCRIPTION_TYPE, PrescriptionDto.PRESCRIPTION_DETAILS) +
-			LayoutUtil.loc(PrescriptionDto.TYPE_OF_DRUG) +
-			LayoutUtil.fluidRowLocs(PrescriptionDto.PRESCRIPTION_DATE, PrescriptionDto.PRESCRIBING_CLINICIAN) +
-			LayoutUtil.fluidRowLocs(PrescriptionDto.PRESCRIPTION_START, PrescriptionDto.PRESCRIPTION_END) +
-			LayoutUtil.fluidRowLocs(PrescriptionDto.FREQUENCY, PrescriptionDto.DOSE) +
-			LayoutUtil.fluidRowLocs(PrescriptionDto.ROUTE, PrescriptionDto.ROUTE_DETAILS) +
-			LayoutUtil.loc(PrescriptionDto.ADDITIONAL_NOTES);
+			fluidRowLocs(PrescriptionDto.PRESCRIPTION_TYPE, PrescriptionDto.PRESCRIPTION_DETAILS) +
+			loc(PrescriptionDto.TYPE_OF_DRUG) +
+			fluidRowLocs(PrescriptionDto.PRESCRIPTION_DATE, PrescriptionDto.PRESCRIBING_CLINICIAN) +
+			fluidRowLocs(PrescriptionDto.PRESCRIPTION_START, PrescriptionDto.PRESCRIPTION_END) +
+			fluidRowLocs(PrescriptionDto.FREQUENCY, PrescriptionDto.DOSE) +
+			fluidRowLocs(PrescriptionDto.ROUTE, PrescriptionDto.ROUTE_DETAILS) +
+			loc(PrescriptionDto.ADDITIONAL_NOTES);
 
 	public PrescriptionForm(boolean create, UserRight editOrCreateUserRight, boolean readOnly) {
 		super(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX, editOrCreateUserRight);

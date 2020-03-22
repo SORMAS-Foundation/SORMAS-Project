@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.hospitalization;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -41,23 +47,25 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
-@SuppressWarnings("serial")
 public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;	
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingHospitalization)) +
-			LayoutUtil.fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
-			LayoutUtil.fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
-			LayoutUtil.fluidRowLocs(HospitalizationDto.ACCOMMODATION, HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "") +
-			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLocCss(CssStyles.VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
-			LayoutUtil.fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
+			h3(I18nProperties.getString(Strings.headingHospitalization)) +
+			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
+			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
+			fluidRowLocs(HospitalizationDto.ACCOMMODATION, HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "") +
+			fluidRow(
+					fluidColumnLocCss(VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
+			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
 			;		
 
 	public HospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {

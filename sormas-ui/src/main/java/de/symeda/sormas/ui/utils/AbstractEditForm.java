@@ -51,8 +51,10 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.ui.UserProvider;
 
-@SuppressWarnings("serial")
 public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private final BeanFieldGroup<DTO> fieldGroup;
 

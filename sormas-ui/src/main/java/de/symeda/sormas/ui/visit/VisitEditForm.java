@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.visit;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 import java.util.Date;
 
@@ -38,16 +40,16 @@ import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.fluidRowLocs(VisitDto.VISIT_STATUS)+
-    		LayoutUtil.fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS)+
-			LayoutUtil.fluidRowLocs(VisitDto.SYMPTOMS)
-			;
+    		fluidRowLocs(VisitDto.VISIT_STATUS) +
+    		fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) +
+			fluidRowLocs(VisitDto.SYMPTOMS);
     
     private final Disease disease;
     private final ContactDto contact;

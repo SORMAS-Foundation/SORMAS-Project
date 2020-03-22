@@ -17,7 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.location;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -48,30 +54,36 @@ import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 
-@SuppressWarnings("serial")
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String GEO_BUTTONS_LOC = "geoButtons";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.divs(
-			LayoutUtil.fluidRow(
-					LayoutUtil.loc(LocationDto.ADDRESS),
-					LayoutUtil.divs(
-							LayoutUtil.fluidRow(
-									LayoutUtil.fluidColumn(6, 0,
-											LayoutUtil.locs(LocationDto.POSTAL_CODE, LocationDto.AREA_TYPE)),
-													LayoutUtil.fluidColumn(6, 0, LayoutUtil.loc(LocationDto.CITY))))),
-			LayoutUtil.fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
-			LayoutUtil.fluidRow(LayoutUtil.loc(LocationDto.DETAILS),
-					LayoutUtil.fluidRow(
-							fluidColumnLoc(2, 0, GEO_BUTTONS_LOC), 
-							fluidColumnLoc(3, 0, LocationDto.LATITUDE),
-							fluidColumnLoc(3, 0, LocationDto.LONGITUDE),
-							fluidColumnLoc(4, 0, LocationDto.LAT_LON_ACCURACY))));
+			//XXX #1620 are the divs needed?
+			divs(
+				fluidRow(
+						loc(LocationDto.ADDRESS),
+						//XXX #1620 are the divs needed?
+						divs(
+								fluidRow(
+										fluidColumn(6, 0, locs(LocationDto.POSTAL_CODE, LocationDto.AREA_TYPE)),
+										fluidColumn(6, 0, loc(LocationDto.CITY)))
+						)
+				),
+				fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
+				fluidRow(
+						loc(LocationDto.DETAILS),
+						fluidRow(
+								fluidColumnLoc(2, 0, GEO_BUTTONS_LOC), 
+								fluidColumnLoc(3, 0, LocationDto.LATITUDE),
+								fluidColumnLoc(3, 0, LocationDto.LONGITUDE),
+								fluidColumnLoc(4, 0, LocationDto.LAT_LON_ACCURACY)))
+			);
 
 	private MapPopupView leafletMapPopup;
 

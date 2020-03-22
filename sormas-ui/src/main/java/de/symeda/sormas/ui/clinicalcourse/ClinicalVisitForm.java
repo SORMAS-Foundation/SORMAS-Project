@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.clinicalcourse;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -10,15 +13,15 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocs(ClinicalVisitDto.VISIT_DATE_TIME, ClinicalVisitDto.VISITING_PERSON) +
-			LayoutUtil.loc(ClinicalVisitDto.VISIT_REMARKS) +
-			LayoutUtil.fluidRowLocs(ClinicalVisitDto.SYMPTOMS);
+			fluidRowLocs(ClinicalVisitDto.VISIT_DATE_TIME, ClinicalVisitDto.VISITING_PERSON) +
+			loc(ClinicalVisitDto.VISIT_REMARKS) +
+			fluidRowLocs(ClinicalVisitDto.SYMPTOMS);
 
     private final Disease disease;
     private final PersonDto person;

@@ -17,6 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
+import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
+import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.style;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.inlineLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,17 +86,15 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.LayoutUtil.FluidColumn;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
-@SuppressWarnings("serial")
 public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
-
+	
+	private static final long serialVersionUID = 1L;
+	
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 	private static final String PAPER_FORM_DATES_LOC = "paperFormDatesLoc";
 	private static final String SMALLPOX_VACCINATION_SCAR_IMG = "smallpoxVaccinationScarImg";
@@ -89,45 +105,47 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 
-	private static final String HTML_LAYOUT = LayoutUtil.h3(I18nProperties.getString(Strings.headingCaseData))
-			+ LayoutUtil.fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER)
-			+ LayoutUtil.inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC)
-			+ LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumnLoc(3, 0, CaseDataDto.CLASSIFICATION_DATE),
-					LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 5, 0, CaseDataDto.CLASSIFICATION_USER),
-					LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CLASSIFIED_BY_SYSTEM_LOC))
-			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE)
-			+ LayoutUtil.fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, ASSIGN_NEW_EPID_NUMBER_LOC)
-			+ LayoutUtil.loc(EPID_NUMBER_WARNING_LOC)
-			+ LayoutUtil.fluidRowLocs(6, CaseDataDto.EXTERNAL_ID, 6, null)
-			+ LayoutUtil.fluidRow(
-					new FluidColumn(null, 6, 0, CaseDataDto.DISEASE, null),
-					new FluidColumn(null, 6, 0, null,
-							LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE,
-									CaseDataDto.DENGUE_FEVER_TYPE, CaseDataDto.RABIES_TYPE)))
-			+ LayoutUtil.fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE)
-			+ LayoutUtil.fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-			+ LayoutUtil.locCss(CssStyles.VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON,
-					CaseDataDto.REPORT_LAT_LON_ACCURACY)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS)
-			+ LayoutUtil.loc(MEDICAL_INFORMATION_LOC)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.PREGNANT, "")
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINE, "")
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR)
-			+ LayoutUtil.fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL)
-			+ LayoutUtil.loc(PAPER_FORM_DATES_LOC)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE);
+	private static final String HTML_LAYOUT = 
+			h3(I18nProperties.getString(Strings.headingCaseData)) +
+			fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
+			inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC) +
+			fluidRow(
+					fluidColumnLoc(3, 0, CaseDataDto.CLASSIFICATION_DATE),
+					fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 5, 0, CaseDataDto.CLASSIFICATION_USER),
+					fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 4, 0, CLASSIFIED_BY_SYSTEM_LOC)) +
+			fluidRowLocs(9, CaseDataDto.INVESTIGATION_STATUS, 3, CaseDataDto.INVESTIGATED_DATE) +
+			fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, ASSIGN_NEW_EPID_NUMBER_LOC) +
+			loc(EPID_NUMBER_WARNING_LOC) +
+			fluidRowLocs(6, CaseDataDto.EXTERNAL_ID, 6, null) +
+			fluidRow(
+					fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
+					fluidColumn(6, 0,  locs(
+							CaseDataDto.DISEASE_DETAILS, 
+							CaseDataDto.PLAGUE_TYPE,
+							CaseDataDto.DENGUE_FEVER_TYPE,
+							CaseDataDto.RABIES_TYPE))) +
+			fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
+			fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
+			fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
+			fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+			fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+			fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
+			fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
+			locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
+			fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
+			fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
+			loc(MEDICAL_INFORMATION_LOC) +
+			fluidRowLocs(CaseDataDto.PREGNANT, "") +
+			fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
+			fluidRowLocs(CaseDataDto.VACCINE, "") +
+			fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
+			fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
+			fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE) +
+			fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME) +
+			fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
+			fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
+			loc(PAPER_FORM_DATES_LOC) +
+			fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE);
 
 	private final PersonDto person;
 	private final Disease disease;
@@ -156,20 +174,20 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		// Button to automatically assign a new epid number
 		Button assignNewEpidNumberButton = new Button(I18nProperties.getCaption(Captions.actionAssignNewEpidNumber));
-		CssStyles.style(assignNewEpidNumberButton, ValoTheme.BUTTON_DANGER, CssStyles.FORCE_CAPTION);
+		style(assignNewEpidNumberButton, ValoTheme.BUTTON_DANGER, FORCE_CAPTION);
 		getContent().addComponent(assignNewEpidNumberButton, ASSIGN_NEW_EPID_NUMBER_LOC);
 		assignNewEpidNumberButton.setVisible(false);
 		
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
-		CssStyles.style(epidField, CssStyles.ERROR_COLOR_PRIMARY);
+		style(epidField, ERROR_COLOR_PRIMARY);
 		
 		assignNewEpidNumberButton.addClickListener(e -> {
 			epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue().toReference()));
 		});
 
 		Label epidNumberWarningLabel = new Label(I18nProperties.getString(Strings.messageEpidNumberWarning));
-		epidNumberWarningLabel.addStyleName(CssStyles.VSPACE_3);
+		epidNumberWarningLabel.addStyleName(VSPACE_3);
 		addField(CaseDataDto.EXTERNAL_ID, TextField.class);
 
 		addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
@@ -190,7 +208,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		community.addStyleName(CssStyles.SOFT_REQUIRED);
+		community.addStyleName(SOFT_REQUIRED);
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
@@ -325,7 +343,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		if (disease == Disease.MONKEYPOX) {
 			Image smallpoxVaccinationScarImg = new Image(null, new ThemeResource("img/smallpox-vaccination-scar.jpg"));
-			CssStyles.style(smallpoxVaccinationScarImg, CssStyles.VSPACE_3);
+			style(smallpoxVaccinationScarImg, VSPACE_3);
 			getContent().addComponent(smallpoxVaccinationScarImg, SMALLPOX_VACCINATION_SCAR_IMG);
 
 			// Set up initial image visibility
@@ -345,14 +363,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
 				Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
-				medicalInformationCaptionLabel.addStyleName(CssStyles.H3);
+				medicalInformationCaptionLabel.addStyleName(H3);
 				getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
 				break;
 			}
 		}
 
 		Label paperFormDatesLabel = new Label(I18nProperties.getString(Strings.headingPaperFormDates));
-		paperFormDatesLabel.addStyleName(CssStyles.H3);
+		paperFormDatesLabel.addStyleName(H3);
 		getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);
 
 		// Automatic case classification rules button - invisible for other diseases
@@ -360,7 +378,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				.getByDisease(disease);
 		if (disease != Disease.OTHER && diseaseClassificationCriteria != null) {
 			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.info), VaadinIcons.INFO_CIRCLE);
-			CssStyles.style(classificationRulesButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+			style(classificationRulesButton, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 			classificationRulesButton.addClickListener(e -> {
 				ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria);
 			});

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 
 import org.joda.time.LocalDate;
@@ -41,22 +43,22 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private static final String FIRST_NAME = PersonDto.FIRST_NAME;
 	private static final String LAST_NAME = PersonDto.LAST_NAME;
 	
     private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, "") +
-			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
-			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, "") +
-			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
-			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
-			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
+			fluidRowLocs(ContactDto.REPORT_DATE_TIME, "") +
+			fluidRowLocs(FIRST_NAME, LAST_NAME) +
+			fluidRowLocs(ContactDto.LAST_CONTACT_DATE, "") +
+			fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+			fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+			fluidRowLocs(ContactDto.DESCRIPTION);
     
 	private OptionGroup contactProximity;
 

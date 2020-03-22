@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+
 import java.util.Arrays;
 
 import org.joda.time.LocalDate;
@@ -61,37 +67,37 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-@SuppressWarnings("serial")
 public class ContactDataForm extends AbstractEditForm<ContactDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingContactData))+
-			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
-			LayoutUtil.locCss(CssStyles.VSPACE_3, TO_CASE_BTN_LOC) +
-			LayoutUtil.fluidRowLocs(6, ContactDto.LAST_CONTACT_DATE, 6, null) +
-			LayoutUtil.fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
-			LayoutUtil.fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
-			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
-			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
-					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION) +
-			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-					LayoutUtil.fluidRowLocs(
-							6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO)
-					+
-			LayoutUtil.locCss(CssStyles.VSPACE_3, ContactDto.HIGH_PRIORITY) +
-			LayoutUtil.fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
-			LayoutUtil.loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
-			LayoutUtil.fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-					LayoutUtil.fluidRowLocs(3, ContactDto.FOLLOW_UP_UNTIL, 9, ContactDto.FOLLOW_UP_COMMENT)
-					+ LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.CONTACT_OFFICER);
+			h3(I18nProperties.getString(Strings.headingContactData)) +
+			fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
+			locCss(VSPACE_3, TO_CASE_BTN_LOC) +
+			fluidRowLocs(6, ContactDto.LAST_CONTACT_DATE, 6, null) +
+			fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
+			fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
+			fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
+			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+			fluidRowLocs(ContactDto.DESCRIPTION) +
+			fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+			locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
+			fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
+			loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
+			
+			h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
+			fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
+			fluidRowLocs(3, ContactDto.FOLLOW_UP_UNTIL, 9, ContactDto.FOLLOW_UP_COMMENT) +
+			fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.CONTACT_OFFICER);
 
 	private OptionGroup contactProximity;
 	private Field<?> quarantine;

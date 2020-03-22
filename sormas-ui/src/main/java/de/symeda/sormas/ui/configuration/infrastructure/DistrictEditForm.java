@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
@@ -25,16 +27,15 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 	private static final long serialVersionUID = 7573666294384000190L;
 
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE)
-					+ LayoutUtil.fluidRowLocs(DistrictDto.REGION) + LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID);// ,
-																													// DistrictDto.GROWTH_RATE);
+			fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE) +
+			fluidRowLocs(DistrictDto.REGION) + 
+			fluidRowLocs(RegionDto.EXTERNAL_ID); // ,DistrictDto.GROWTH_RATE);
 
 	private boolean create;
 	
