@@ -146,7 +146,7 @@
     <string name="caption_drawer_close">Navigation schließen</string>
     <string name="caption_drawer_open">Navigation öffnen</string>
     <string name="caption_dropped">Gelöscht</string>
-    <string name="caption_epi_week">Epi Woche</string>
+    <string name="caption_epi_week">Epi-Woche</string>
     <string name="caption_event_information">Ereignisinformation</string>
     <string name="caption_event_participants">Beteiligte Personen</string>
     <string name="caption_event_tasks">Ereignis-Aufgaben</string>
@@ -228,7 +228,7 @@
     <string name="confirmation_action">Sind Sie sicher, dass Sie dies tun wollen?</string>
     <string name="confirmation_delete">Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?</string>
     <string name="confirmation_pick_gps">Sind Sie gerade an diesem Ort?</string>
-    <string name="description_epi_week">Epi Woche</string>
+    <string name="description_epi_week">Epi-Woche</string>
     <string name="description_first_name">Vorname</string>
     <string name="description_last_name">Nachname</string>
     <string name="description_password">Passwort</string>
