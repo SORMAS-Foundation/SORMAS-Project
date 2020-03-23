@@ -83,3 +83,18 @@ The SORMAS sprint board is segmented into the following categories:
 The general workflow is that whenever a contributor starts working on an issue, they **assign** themselves to it and manually **move the issue** from **Backlog** to **In Progress**.
 
 The GitHub project has been configured to **automatically** move issues that are closed to **Review** and issues that are reopened back to **In Progress**.
+
+### Eclipse Troubleshooting
+
+Unfortunatley, when using eclipse together with the Payara Tools, there are a number of deployment problems that you might run into. Examples of these include:
+
+* ClassDefNotFoundExceptions after deploying the artifacts and logging in to the web app
+* Error messages in eclipse telling you that the deployment failed
+
+There are a couple of things you can do to fix these problems:
+
+* Do a Maven update for all projects
+* Stop and restart the server
+* Re-deploy the server artifacts
+
+If the problem occurred right after you've pulled new code from GitHub, your safest bet is probably to start with the Maven update. For most other problems, a simple re-deployment or, if necessary, server restart should suffice.
