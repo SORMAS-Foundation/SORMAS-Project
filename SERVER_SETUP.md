@@ -47,14 +47,14 @@
 	
 ## SORMAS Server	
 
-* Get the latest SORMAS build by downloading the deploy.zip file from GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
+* Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
 * **Linux**:
   * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
   * ``cd /root/deploy/sormas/$(date +%F)``
   * Make the setup script executable with ``chmod +x server-setup.sh``
 * **Windows**:
   * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
-  * Unzip the deploy.zip archive (e.g. into you download directory)
+  * Unzip the ZIP archive (e.g. into you download directory)
   * Open Git Bash and navigate to the setup sub-directory
 * Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin)
 * Set up the database and a Payara domain for SORMAS by executing the setup script: ``./server-setup.sh`` Press enter whenever asked for it
