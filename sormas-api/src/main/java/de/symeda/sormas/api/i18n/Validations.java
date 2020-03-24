@@ -28,6 +28,12 @@ public interface Validations {
 	public static String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	public static String importRegionNotUnique = "importRegionNotUnique";
 	public static String importUnexpectedError = "importUnexpectedError";
+	public static String importRegionAlreadyExists = "importRegionAlreadyExists";
+	public static String importDistrictAlreadyExists = "importDistrictAlreadyExists";
+	public static String importCommunityAlreadyExists = "importCommunityAlreadyExists";
+	public static String importFacilityAlreadyExists = "importFacilityAlreadyExists";
+	public static String importLaboratoryAlreadyExists = "importLaboratoryAlreadyExists";
+	public static String importPointOfEntryAlreadyExists = "importPointOfEntryAlreadyExists";
 	public static String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	public static String noCommunityInDistrict = "noCommunityInDistrict";
 	public static String noDistrictInRegion = "noDistrictInRegion";
@@ -61,4 +67,4 @@ public interface Validations {
 	public static String visitAfterFollowUp = "visitAfterFollowUp";
 	public static String visitBeforeContactReport = "visitBeforeContactReport";
 	public static String visitBeforeLastContactDate = "visitBeforeLastContactDate";
- }
+}

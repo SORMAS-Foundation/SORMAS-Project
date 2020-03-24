@@ -37,12 +37,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.region.RegionIndexDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -260,9 +263,18 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		return dto;
 	}
+	
+	@Override
+	public void saveRegion(RegionDto dto) throws ValidationRuntimeException {
+		saveRegion(dto, true);
+	}
 
 	@Override
-	public void saveRegion(RegionDto dto) {
+	public void saveRegion(RegionDto dto, boolean allowExistingName) throws ValidationRuntimeException {
+		if (!allowExistingName && !regionService.getByName(dto.getName()).isEmpty()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
+		}
+		
 		Region region = regionService.getByUuid(dto.getUuid());
 		region = fillOrBuildEntity(dto, region);
 		regionService.ensurePersisted(region);

@@ -53,6 +53,8 @@ public interface DistrictFacade {
 	
 	void saveDistrict(DistrictDto dto) throws ValidationRuntimeException;
 	
+	void saveDistrict(DistrictDto dto, boolean allowExistingName) throws ValidationRuntimeException;
+	
 	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef);
 	
 	List<String> getNamesByIds(List<Long> districtIds);
@@ -62,7 +64,6 @@ public interface DistrictFacade {
 	void archive(String districtUuid);
 	
 	void dearchive(String districtUuid);
-	
 	
 	boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids);
 	

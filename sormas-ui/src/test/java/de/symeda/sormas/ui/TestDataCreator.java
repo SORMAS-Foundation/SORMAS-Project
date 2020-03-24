@@ -307,7 +307,6 @@ public class TestDataCreator {
 		FacilityDto facility = FacilityDto.build();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
-		facility.setType(FacilityType.PRIMARY);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);

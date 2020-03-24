@@ -218,9 +218,18 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	public DistrictReferenceDto getDistrictReferenceById(long id) {
 		return toReferenceDto(districtService.getById(id));
 	}
-
+	
 	@Override
 	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
+		saveDistrict(dto, true);
+	}
+
+	@Override
+	public void saveDistrict(DistrictDto dto, boolean allowExistingName) throws ValidationRuntimeException {
+		if (!allowExistingName && !getByName(dto.getName(), dto.getRegion()).isEmpty()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
+		}
+		
 		District district = districtService.getByUuid(dto.getUuid());
 
 		if (dto.getRegion() == null) {

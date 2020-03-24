@@ -23,6 +23,8 @@ public interface PointOfEntryFacade {
 	
 	void save(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
 	
+	void save(PointOfEntryDto pointOfEntry, boolean allowExistingName) throws ValidationRuntimeException;
+	
 	List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
 	long count(PointOfEntryCriteria criteria);
