@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -20,6 +21,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -27,7 +29,10 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.DataImporter;
@@ -35,6 +40,7 @@ import de.symeda.sormas.ui.importer.ImportCellData;
 import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.importer.ImporterPersonHelper;
 import de.symeda.sormas.ui.person.PersonSelectField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -271,9 +277,44 @@ public class CaseContactImporter extends DataImporter {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
-					// Execute the default invokes specified in the data importer
+					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
+					// according to the types of the contact or person fields
 					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
+					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
+						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, contact, person, currentElement));
+						if (district.isEmpty()) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildEntityProperty(entryHeaderPath)));
+						} else if (district.size() > 1) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importDistrictNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, district.get(0));
+						}
+					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
+						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getPersonDistrict(pd.getName(), person));
+						if (community.isEmpty()) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
+						} else if (community.size() > 1) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCommunityNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, community.get(0));
+						}
+					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
+						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData = ImporterPersonHelper.getPersonDistrictAndCommunity(pd.getName(), person);
+						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1());
+						if (facility.isEmpty()) {
+							if (infrastructureData.getElement1() != null) {
+								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrCommunity, entry, buildEntityProperty(entryHeaderPath)));
+							} else {
+								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
+							}
+						} else if (facility.size() > 1 && infrastructureData.getElement1() == null) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
+						} else if (facility.size() > 1 && infrastructureData.getElement1() != null) {
+							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildEntityProperty(entryHeaderPath)));
+						} else {
+							pd.getWriteMethod().invoke(currentElement, facility.get(0));
+						}
 					} else {
 						throw new UnsupportedOperationException(I18nProperties.getValidationError(
 								Validations.importPropertyTypeNotAllowed, propertyType.getName()));

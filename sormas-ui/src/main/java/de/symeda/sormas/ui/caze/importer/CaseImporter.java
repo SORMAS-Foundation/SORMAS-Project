@@ -48,15 +48,18 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
@@ -65,6 +68,7 @@ import de.symeda.sormas.ui.importer.ImportCellData;
 import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.importer.ImporterPersonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -364,7 +368,7 @@ public class CaseImporter extends DataImporter {
 					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
-						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, caze.getRegion());
+						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), caze, null, person, currentElement));
 						if (district.isEmpty()) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (district.size() > 1) {
@@ -373,7 +377,7 @@ public class CaseImporter extends DataImporter {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, caze.getDistrict());
+						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getDistrictBasedOnCommunity(pd.getName(), caze, person, currentElement));
 						if (community.isEmpty()) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (community.size() > 1) {
@@ -382,16 +386,17 @@ public class CaseImporter extends DataImporter {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
-						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, caze.getDistrict(), caze.getCommunity());
+						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData = ImporterPersonHelper.getDistrictAndCommunityBasedOnFacility(pd.getName(), caze, person, currentElement);
+						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1());
 						if (facility.isEmpty()) {
-							if (caze.getCommunity() != null) {
+							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrCommunity, entry, buildEntityProperty(entryHeaderPath)));
 							} else {
 								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
 							}
-						} else if (facility.size() > 1 && caze.getCommunity() == null) {
+						} else if (facility.size() > 1 && infrastructureData.getElement1() == null) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
-						} else if (facility.size() > 1 && caze.getCommunity() != null) {
+						} else if (facility.size() > 1 && infrastructureData.getElement1() != null) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, facility.get(0));
