@@ -136,6 +136,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 				case District.NAME:
 				case District.EPID_CODE:
 				case District.GROWTH_RATE:
+				case District.EXTERNAL_ID:
 					expression = district.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
@@ -324,7 +325,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
-		dto.setExternalID(dto.getExternalID());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}	
