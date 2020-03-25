@@ -34,7 +34,7 @@ public class ContactIndexDto implements Serializable {
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
-	public static final String CASE_DISEASE = "caseDisease";
+	public static final String DISEASE = "disease";
 	public static final String CASE_PERSON = "casePerson";
 	public static final String CASE_REGION_UUID = "caseRegionUuid";
 	public static final String CASE_DISTRICT_UUID = "caseDistrictUuid";
@@ -50,8 +50,8 @@ public class ContactIndexDto implements Serializable {
 	private String uuid;
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
-	private Disease caseDisease;
-	private String caseDiseaseDetails;
+	private Disease disease;
+	private String diseaseDetails;
 	private String caseRegionUuid;
 	private String caseDistrictUuid;
 	private String caseHealthFacilityUuid;
@@ -65,15 +65,15 @@ public class ContactIndexDto implements Serializable {
 	private Date reportDateTime;
 	
 	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
-			Disease caseDisease, String caseDiseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String caseRegionUuid,
+			Disease disease, String diseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String caseRegionUuid,
 			String caseDistrictUuid, String caseHealthFacilityUuid, Date lastContactDate, ContactProximity contactProximity,
 			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, 
 			Date followUpUntil, String contactOfficerUuid, Date reportDateTime) {
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
-		this.caseDisease = caseDisease;
-		this.caseDiseaseDetails = caseDiseaseDetails;
+		this.disease = disease;
+		this.diseaseDetails = diseaseDetails;
 		this.caseRegionUuid = caseRegionUuid;
 		this.caseDistrictUuid = caseDistrictUuid;
 		this.caseHealthFacilityUuid = caseHealthFacilityUuid;
@@ -105,17 +105,17 @@ public class ContactIndexDto implements Serializable {
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 	}
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
-	public void setCaseDisease(Disease caseDisease) {
-		this.caseDisease = caseDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
-	public String getCaseDiseaseDetails() {
-		return caseDiseaseDetails;
+	public String getDiseaseDetails() {
+		return diseaseDetails;
 	}
-	public void setCaseDiseaseDetails(String caseDiseaseDetails) {
-		this.caseDiseaseDetails = caseDiseaseDetails;
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 	public Date getLastContactDate() {
 		return lastContactDate;

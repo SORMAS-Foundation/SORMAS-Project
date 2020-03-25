@@ -33,13 +33,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
-/**
- * CaseDataView for reading and editing the case data fields. Contains the
- * {@link CaseDataForm}.
- * 
- * @author Stefan Szczesny
- *
- */
 public class ContactDataView extends AbstractContactView {
 
 	private static final long serialVersionUID = -1L;

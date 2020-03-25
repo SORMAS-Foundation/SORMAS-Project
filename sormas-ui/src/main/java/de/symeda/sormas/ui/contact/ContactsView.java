@@ -308,10 +308,10 @@ public class ContactsView extends AbstractView {
 
 			diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
-			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
+			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISEASE));
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
 			diseaseFilter.addValueChangeListener(e -> {
-				criteria.caseDisease(((Disease)e.getProperty().getValue()));
+				criteria.disease(((Disease)e.getProperty().getValue()));
 				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
@@ -768,7 +768,7 @@ public class ContactsView extends AbstractView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		classificationFilter.setValue(criteria.getContactClassification());
-		diseaseFilter.setValue(criteria.getCaseDisease());
+		diseaseFilter.setValue(criteria.getDisease());
 		regionFilter.setValue(criteria.getCaseRegion());
 		districtFilter.setValue(criteria.getCaseDistrict());
 		facilityFilter.setValue(criteria.getCaseFacility());

@@ -28,7 +28,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -37,7 +36,6 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -119,20 +117,6 @@ public class TestDataCreator {
 		caze = FacadeProvider.getCaseFacade().saveCase(caze);
 
 		return caze;
-	}
-
-	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
-		ContactDto contact = ContactDto.build(caze);
-		contact.setReportingUser(reportingUser);
-		contact.setContactOfficer(contactOfficer);
-		contact.setPerson(contactPerson);
-		contact.setReportDateTime(reportDateTime);
-		contact.setLastContactDate(lastContactDate);
-
-		contact = FacadeProvider.getContactFacade().saveContact(contact);
-
-		return contact;
 	}
 
 	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseReferenceDto caze,

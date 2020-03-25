@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -67,6 +68,8 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	
 	@Required
 	private Date reportDateTime;
@@ -82,7 +85,8 @@ public class ContactDto extends EntityDto {
 	private PersonReferenceDto person;
 	@Required
 	private CaseReferenceDto caze;
-	private Disease caseDisease;
+	private Disease disease;
+	private String diseaseDetails;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -108,12 +112,17 @@ public class ContactDto extends EntityDto {
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
-	public static ContactDto build(CaseReferenceDto caze) {
+	public static ContactDto build(CaseDataDto caze) {
+		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+	}
+	
+	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 
 		contact.setCaze(caze);
-
+		contact.setDisease(disease);
+		contact.setDiseaseDetails(diseaseDetails);
 		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
 
 		contact.setReportDateTime(new Date());
@@ -247,14 +256,19 @@ public class ContactDto extends EntityDto {
 	public void setResultingCaseUser(UserReferenceDto resultingCaseUser) {
 		this.resultingCaseUser = resultingCaseUser;
 	}
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
-	/**
-	 * Read-only
-	 */
-	public void setCaseDisease(Disease caseDisease) {
-		this.caseDisease = caseDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public String getExternalID() {

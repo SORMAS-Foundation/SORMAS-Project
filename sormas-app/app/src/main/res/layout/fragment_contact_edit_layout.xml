@@ -274,7 +274,7 @@
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseData_disease"
-                        app:value="@{data.caseDisease}"
+                        app:value="@{data.disease}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField

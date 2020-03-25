@@ -167,7 +167,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			if (getValue() != null) {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
 				updateLastContactDateValidator();
-				updateDiseaseConfiguration(caseDto.getDisease());
+				updateDiseaseConfiguration(getValue().getDisease());
 
 				updateFollowUpStatusComponents();
 

@@ -22,7 +22,6 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -60,11 +59,10 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 		
 		infoLabel.setValue(contactRef.getCaption());
-		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
 		infoLabelSub.setValue(
-				caseData.getDisease() != Disease.OTHER 
-				? caseData.getDisease().toShortString()
-				: DataHelper.toStringNullable(caseData.getDiseaseDetails()));
+				contact.getDisease() != Disease.OTHER 
+				? contact.getDisease().toShortString()
+				: DataHelper.toStringNullable(contact.getDiseaseDetails()));
     }
 	
 	@Override

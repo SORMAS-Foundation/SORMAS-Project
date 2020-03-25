@@ -36,7 +36,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = 5114202107622217837L;
 
 	private UserRole reportingUserRole;
-	private Disease caseDisease;
+	private Disease disease;
 	private CaseReferenceDto caze;
 	private RegionReferenceDto caseRegion;
 	private DistrictReferenceDto caseDistrict;
@@ -65,12 +65,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public ContactCriteria caseDisease(Disease disease) {
-		this.caseDisease = disease;
+	public ContactCriteria disease(Disease disease) {
+		this.disease = disease;
 		return this;
 	}
 

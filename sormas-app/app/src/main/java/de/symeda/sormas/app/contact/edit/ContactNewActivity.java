@@ -90,14 +90,14 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     protected Contact buildRootEntity() {
-
         Person _person = DatabaseHelper.getPersonDao().build();
         Contact _contact = DatabaseHelper.getContactDao().build();
 
         // not null, because contact can only be created when the user has access to the case
         Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
         _contact.setCaseUuid(caseUuid);
-        _contact.setCaseDisease(contactCase.getDisease());
+        _contact.setDisease(contactCase.getDisease());
+        _contact.setDiseaseDetails(contactCase.getDiseaseDetails());
 
         _contact.setPerson(_person);
         _contact.setReportDateTime(new Date());

@@ -71,12 +71,12 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 		}
 
 		Column<ContactIndexDto, String> diseaseShortColumn = addColumn(entry -> 
-			DiseaseHelper.toString(entry.getCaseDisease(), entry.getCaseDiseaseDetails()));
+			DiseaseHelper.toString(entry.getDisease(), entry.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
-		diseaseShortColumn.setSortProperty(ContactIndexDto.CASE_DISEASE);
+		diseaseShortColumn.setSortProperty(ContactIndexDto.DISEASE);
 
 		Column<ContactIndexDto, String> visitsColumn = addColumn(entry -> {
-			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getCaseDisease())) {
+			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getDisease())) {
 				int numberOfVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(entry.toReference(), null);
 				int numberOfRequiredVisits = ContactLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDateTime(), entry.getFollowUpUntil());
 				int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;

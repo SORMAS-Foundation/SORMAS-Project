@@ -28,7 +28,6 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -67,7 +66,7 @@ public class ContactController {
 		create(null);
 	}
 
-	public void create(CaseReferenceDto caze) {
+	public void create(CaseDataDto caze) {
 		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));    	
 	}
@@ -121,7 +120,7 @@ public class ContactController {
 				+ fragmentParameter, false);
 	}
 
-	private ContactDto createNewContact(CaseReferenceDto caze) {
+	private ContactDto createNewContact(CaseDataDto caze) {
 		ContactDto contact = ContactDto.build(caze);
 		
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
@@ -130,8 +129,7 @@ public class ContactController {
 		return contact;
 	}
 
-	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseReferenceDto caze) {
-
+	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
 		ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE);
 		createForm.setValue(createNewContact(caze));
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());

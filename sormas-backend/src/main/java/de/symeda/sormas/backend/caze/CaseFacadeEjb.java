@@ -354,7 +354,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
 		return caseService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
 		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
@@ -592,7 +592,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 				if (personAddresses != null || exportConfiguration.getProperties().contains(PersonDto.ADDRESS)) {
 					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
-							.ifPresent(personAddress -> exportDto.setAddress(personAddress.toString()));
+					.ifPresent(personAddress -> exportDto.setAddress(personAddress.toString()));
 				}
 				if (personAddresses != null
 						|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
@@ -653,8 +653,8 @@ public class CaseFacadeEjb implements CaseFacade {
 								exportDto.setSampleDateTime1(sample.getSampleDateTime());
 								if (sample.getLab() != null) {
 									exportDto
-											.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
-													sample.getLab().getName(), sample.getLabDetails()));
+									.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+											sample.getLab().getName(), sample.getLabDetails()));
 								}
 								exportDto.setSampleResult1(sample.getPathogenTestResult());
 								break;
@@ -662,8 +662,8 @@ public class CaseFacadeEjb implements CaseFacade {
 								exportDto.setSampleDateTime2(sample.getSampleDateTime());
 								if (sample.getLab() != null) {
 									exportDto
-											.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
-													sample.getLab().getName(), sample.getLabDetails()));
+									.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+											sample.getLab().getName(), sample.getLabDetails()));
 								}
 								exportDto.setSampleResult2(sample.getPathogenTestResult());
 								break;
@@ -671,8 +671,8 @@ public class CaseFacadeEjb implements CaseFacade {
 								exportDto.setSampleDateTime3(sample.getSampleDateTime());
 								if (sample.getLab() != null) {
 									exportDto
-											.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
-													sample.getLab().getName(), sample.getLabDetails()));
+									.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+											sample.getLab().getName(), sample.getLabDetails()));
 								}
 								exportDto.setSampleResult3(sample.getPathogenTestResult());
 								break;
@@ -1198,7 +1198,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException {
 		return saveCase(dto, true);
 	}
-	
+
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges) throws ValidationRuntimeException {
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
@@ -1330,6 +1330,21 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		updateCaseAge(existingCase, newCase);
 
+		// Change the disease of all contacts if the case disease or disease details have changed
+		if (existingCase != null && 
+				(newCase.getDisease() != existingCase.getDisease() ||
+				!StringUtils.equals(newCase.getDiseaseDetails(), existingCase.getDiseaseDetails()))) {
+			for (Contact contact : contactService.findBy(new ContactCriteria().caze(newCase.toReference()), null)) {
+				if (contact.getDisease() != newCase.getDisease() || 
+						!StringUtils.equals(contact.getDiseaseDetails(), newCase.getDiseaseDetails())) {
+					// Only do the change if it hasn't been done in the mobile app before
+					contact.setDisease(newCase.getDisease());
+					contact.setDiseaseDetails(newCase.getDiseaseDetails());
+					contactService.ensurePersisted(contact);
+				}
+			}
+		}
+		
 		if (existingCase == null || newCase.getDisease() != existingCase.getDisease()
 				|| newCase.getReportDate() != existingCase.getReportDate()
 				|| newCase.getSymptoms().getOnsetDate() != existingCase.getSymptoms().getOnsetDate()) {
@@ -1983,7 +1998,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
-		
+
 		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
 		if (suffixSeperatorIndex == -1) {
 			// no suffix - use the whole string as prefix
@@ -1996,7 +2011,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
-		
+
 		Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
 		if (!DataHelper.isNullOrEmpty(caseUuid)) {
 			filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
@@ -2006,7 +2021,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (suffixString.length() > 0) {
 			// has to start with prefix
 			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
-			
+
 			// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
 			int suffixNumber = Integer.parseInt(suffixString);
 			regexParam2 = cb.parameter(String.class);
@@ -2108,7 +2123,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
-	
+
 	@Override
 	public Date getOldestCaseOnsetDate() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2181,7 +2196,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			assert(DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
 		}
-		
+
 		// 2 Change CaseReference
 		Case leadCase = caseService.getByUuid(leadCaseData.getUuid());
 		Case otherCase = caseService.getByUuid(otherCaseData.getUuid());
@@ -2190,7 +2205,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Contact> contacts = contactService.findBy(new ContactCriteria().caze(otherCase.toReference()), null);
 		for (Contact contact : contacts) {
 			if (cloning) {
-				ContactDto newContact = ContactDto.build(leadCase.toReference());
+				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
 				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false);
 

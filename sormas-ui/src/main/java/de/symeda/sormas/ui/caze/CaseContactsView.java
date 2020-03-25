@@ -217,7 +217,8 @@ public class CaseContactsView extends AbstractCaseView {
 
 			importButton.addClickListener(e -> {
 				Window popupWindow = VaadinUiUtil
-						.showPopupWindow(new CaseContactsImportLayout(criteria.getCaze(), criteria.getCaseDisease()));
+						.showPopupWindow(new CaseContactsImportLayout(
+								FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCaseContacts));
 				popupWindow.addCloseListener(c -> {
 					grid.reload();
@@ -251,7 +252,7 @@ public class CaseContactsView extends AbstractCaseView {
 			newButton = new Button(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact));
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			newButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
+			newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaze()));
 			statusFilterLayout.addComponent(newButton);
 			statusFilterLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
 		}

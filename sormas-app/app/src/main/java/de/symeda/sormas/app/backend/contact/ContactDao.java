@@ -150,7 +150,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
      * @param contact
      */
     private void updateFollowUpStatus(Contact contact) {
-        Disease disease = contact.getCaseDisease();
+        Disease disease = contact.getDisease();
         boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
                 && contact.getFollowUpStatus() != FollowUpStatus.LOST;
 

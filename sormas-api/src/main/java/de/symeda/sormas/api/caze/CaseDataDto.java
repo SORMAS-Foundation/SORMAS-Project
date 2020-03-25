@@ -250,7 +250,7 @@ public class CaseDataDto extends EntityDto {
 	}
 	
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
-		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getCaseDisease());
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
 			SymptomsDto oldSymptoms = lastVisit.getSymptoms();

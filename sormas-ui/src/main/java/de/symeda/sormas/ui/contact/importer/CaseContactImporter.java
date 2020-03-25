@@ -17,9 +17,8 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Property.ValueChangeListener;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -59,15 +58,13 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class CaseContactImporter extends DataImporter {
 
-	CaseReferenceDto caseReference;
-	Disease caseDisease;
+	CaseDataDto caze;
 	UI currentUI;
 
 	public CaseContactImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser,
-			CaseReferenceDto caseReference, Disease caseDisease) {
+			CaseDataDto caze) {
 		super(inputFile, hasEntityClassRow, currentUser);
-		this.caseReference = caseReference;
-		this.caseDisease = caseDisease;
+		this.caze = caze;
 	}
 
 	@Override
@@ -88,9 +85,8 @@ public class CaseContactImporter extends DataImporter {
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
-		final ContactDto newContact = ContactDto.build(caseReference);
+		final ContactDto newContact = ContactDto.build(caze);
 		newContact.setReportingUser(currentUser);
-		newContact.setCaseDisease(caseDisease);
 
 		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true,
 				new Function<ImportCellData, Exception>() {

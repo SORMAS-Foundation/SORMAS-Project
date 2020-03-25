@@ -12,28 +12,28 @@ public interface Validations {
 	public static String futureDateStrict = "futureDateStrict";
 	public static String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";
 	public static String importCasesUnexpectedError = "importCasesUnexpectedError";
+	public static String importCommunityAlreadyExists = "importCommunityAlreadyExists";
 	public static String importCommunityNotUnique = "importCommunityNotUnique";
+	public static String importDistrictAlreadyExists = "importDistrictAlreadyExists";
 	public static String importDistrictNotUnique = "importDistrictNotUnique";
 	public static String importEntryDoesNotExist = "importEntryDoesNotExist";
 	public static String importEntryDoesNotExistDbOrCommunity = "importEntryDoesNotExistDbOrCommunity";
 	public static String importEntryDoesNotExistDbOrDistrict = "importEntryDoesNotExistDbOrDistrict";
 	public static String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
 	public static String importErrorInColumn = "importErrorInColumn";
+	public static String importFacilityAlreadyExists = "importFacilityAlreadyExists";
 	public static String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";
 	public static String importFacilityNotUniqueInDistrict = "importFacilityNotUniqueInDistrict";
 	public static String importInvalidDate = "importInvalidDate";
 	public static String importLabNotUnique = "importLabNotUnique";
+	public static String importLaboratoryAlreadyExists = "importLaboratoryAlreadyExists";
 	public static String importLineTooLong = "importLineTooLong";
+	public static String importPointOfEntryAlreadyExists = "importPointOfEntryAlreadyExists";
 	public static String importPointOfEntryNotUniqueInDistrict = "importPointOfEntryNotUniqueInDistrict";
 	public static String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
+	public static String importRegionAlreadyExists = "importRegionAlreadyExists";
 	public static String importRegionNotUnique = "importRegionNotUnique";
 	public static String importUnexpectedError = "importUnexpectedError";
-	public static String importRegionAlreadyExists = "importRegionAlreadyExists";
-	public static String importDistrictAlreadyExists = "importDistrictAlreadyExists";
-	public static String importCommunityAlreadyExists = "importCommunityAlreadyExists";
-	public static String importFacilityAlreadyExists = "importFacilityAlreadyExists";
-	public static String importLaboratoryAlreadyExists = "importLaboratoryAlreadyExists";
-	public static String importPointOfEntryAlreadyExists = "importPointOfEntryAlreadyExists";
 	public static String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	public static String noCommunityInDistrict = "noCommunityInDistrict";
 	public static String noDistrictInRegion = "noDistrictInRegion";
@@ -67,4 +67,4 @@ public interface Validations {
 	public static String visitAfterFollowUp = "visitAfterFollowUp";
 	public static String visitBeforeContactReport = "visitBeforeContactReport";
 	public static String visitBeforeLastContactDate = "visitBeforeLastContactDate";
-}
+ }

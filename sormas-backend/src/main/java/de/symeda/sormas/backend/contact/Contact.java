@@ -31,6 +31,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -86,6 +87,8 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -98,6 +101,8 @@ public class Contact extends CoreAdo {
 	
 	private Person person;
 	private Case caze;
+	private Disease disease;
+	private String diseaseDetails;
 	private ContactRelation relationToCase;
 	private String relationDescription;
 	private Date lastContactDate;
@@ -143,7 +148,25 @@ public class Contact extends CoreAdo {
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
-	
+
+	@Enumerated(EnumType.STRING)
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	@Column(length=512)
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable=false)
 	public Date getReportDateTime() {

@@ -223,8 +223,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		if (disease != null) {
-			Join<Contact, Case> caze = from.join(Contact.CAZE);
-			filter = cb.and(filter, cb.equal(caze.get(Case.DISEASE), disease));
+			filter = cb.and(filter, cb.equal(from.get(Contact.DISEASE), disease));
 		}
 
 		cq.where(filter);
@@ -240,8 +239,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createDefaultFilter(cb, from);
 		filter = cb.and(filter, cb.equal(from.get(Contact.PERSON), person));
-		Join<Contact, Case> caze = from.join(Contact.CAZE);
-		filter = cb.and(filter, cb.equal(caze.get(Case.DISEASE), disease));
+		filter = cb.and(filter, cb.equal(from.get(Contact.DISEASE), disease));
 		cq.where(filter);
 
 		List<Contact> result = em.createQuery(cq).getResultList();
@@ -323,7 +321,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
+			Predicate diseaseFilter = cb.equal(contact.get(Contact.DISEASE), disease);
 			if (filter != null) {
 				filter = cb.and(filter, diseaseFilter);
 			} else {
@@ -403,7 +401,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
+			Predicate diseaseFilter = cb.equal(contact.get(Contact.DISEASE), disease);
 			if (filter != null) {
 				filter = cb.and(filter, diseaseFilter);
 			} else {
@@ -421,7 +419,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					contact.get(Contact.CONTACT_CLASSIFICATION),
 					contact.get(Contact.FOLLOW_UP_STATUS),
 					contact.get(Contact.FOLLOW_UP_UNTIL),
-					caze.get(Case.DISEASE));
+					contact.get(Contact.DISEASE));
 
 			result = em.createQuery(cq).getResultList();	
 			for (DashboardContactDto dashboardContactDto : result) {
@@ -598,7 +596,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 * </ul>
 	 */
 	public void updateFollowUpUntilAndStatus(Contact contact) {
-		Disease disease = contact.getCaze().getDisease();
+		Disease disease = contact.getDisease();
 		boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
 				&& contact.getFollowUpStatus() != FollowUpStatus.LOST;
 
@@ -657,11 +655,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
-		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
 
 		Predicate filter = createActiveContactsFilter(cb, from);
 		filter = cb.and(filter, cb.equal(from.get(Contact.PERSON), visit.getPerson()));
-		filter = cb.and(filter, cb.equal(caze.get(Case.DISEASE), visit.getDisease()));
+		filter = cb.and(filter, cb.equal(from.get(Contact.DISEASE), visit.getDisease()));
 
 		Predicate dateStartFilter = cb.or(
 				cb.and(cb.isNotNull(from.get(Contact.LAST_CONTACT_DATE)),
@@ -708,8 +705,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
 				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			if (user.getLimitedDisease() != null) {
-				Join<Contact, Case> caze = contactPath.join(Contact.CAZE, JoinType.LEFT);
-				return cb.equal(caze.get(Case.DISEASE), user.getLimitedDisease());
+				return cb.equal(contactPath.get(Contact.DISEASE), user.getLimitedDisease());
 			} else {
 				return null;
 			}
@@ -737,8 +733,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = and(cb, filter, cb.isMember(contactCriteria.getReportingUserRole(),
 					from.join(Contact.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
 		}
-		if (contactCriteria.getCaseDisease() != null) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), contactCriteria.getCaseDisease()));
+		if (contactCriteria.getDisease() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.DISEASE), contactCriteria.getDisease()));
 		}
 		if (contactCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), contactCriteria.getCaze().getUuid()));

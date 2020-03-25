@@ -208,10 +208,11 @@ public class ContactFacadeEjb implements ContactFacade {
 //			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
 //		}
 		
+		validate(dto);
+		
 		contactService.ensurePersisted(entity);
 		
 		if (handleChanges) {
-
 			contactService.updateFollowUpUntilAndStatus(entity);
 			contactService.udpateContactStatus(entity);
 			
@@ -266,8 +267,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.UUID),
 				contactCase.get(Case.UUID),
 				contactCase.get(Case.CASE_CLASSIFICATION),
-				contactCase.get(Case.DISEASE),
-				contactCase.get(Case.DISEASE_DETAILS),
+				contact.get(Contact.DISEASE),
+				contact.get(Contact.DISEASE_DETAILS),
 				contact.get(Contact.CONTACT_CLASSIFICATION),
 				contact.get(Contact.LAST_CONTACT_DATE),
 				contactPerson.get(Person.FIRST_NAME),
@@ -366,11 +367,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		Root<Contact> contact = cq.from(Contact.class);
 		Join<Contact, Person> contactPerson = contact.join(Contact.PERSON, JoinType.LEFT);
 		Join<Contact, User> contactOfficer = contact.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
-		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
 		
 		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
 				contactOfficer.get(User.UUID), contactOfficer.get(User.FIRST_NAME), contactOfficer.get(User.LAST_NAME), contact.get(Contact.LAST_CONTACT_DATE),
-				contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.FOLLOW_UP_UNTIL), contactCase.get(Case.DISEASE));
+				contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.FOLLOW_UP_UNTIL), contact.get(Contact.DISEASE));
 		
 		Predicate filter = null;		
 		// Only use user filter if no restricting case is specified
@@ -478,7 +478,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		Join<Contact, User> contactOfficer = contact.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
 		
 		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
-				contactCase.get(Case.UUID), contactCase.get(Case.DISEASE), contactCase.get(Case.DISEASE_DETAILS), contactCasePerson.get(Person.UUID), contactCasePerson.get(Person.FIRST_NAME),
+				contactCase.get(Case.UUID), contact.get(Contact.DISEASE), contact.get(Contact.DISEASE_DETAILS), contactCasePerson.get(Person.UUID), contactCasePerson.get(Person.FIRST_NAME),
 				contactCasePerson.get(Person.LAST_NAME), contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID),
 				contactCaseFacility.get(Facility.UUID), contact.get(Contact.LAST_CONTACT_DATE), contact.get(Contact.CONTACT_PROXIMITY),
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS), contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
@@ -513,6 +513,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				case ContactIndexDto.FOLLOW_UP_STATUS:
 				case ContactIndexDto.FOLLOW_UP_UNTIL:
 				case ContactIndexDto.REPORT_DATE_TIME:
+				case ContactIndexDto.DISEASE:
 					expression = contact.get(sortProperty.propertyName);
 					break;
 				case ContactIndexDto.PERSON:
@@ -524,9 +525,6 @@ public class ContactFacadeEjb implements ContactFacade {
 					expression = contactCasePerson.get(Person.FIRST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = contactCasePerson.get(Person.LAST_NAME);
-					break;
-				case ContactIndexDto.CASE_DISEASE:
-					expression = contactCase.get(Case.DISEASE);
 					break;
 				case ContactIndexDto.CASE_REGION_UUID:
 					expression = contactCaseRegion.get(Region.NAME);
@@ -611,6 +609,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
+		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		if (source.getReportDateTime() != null) {
@@ -722,7 +722,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
-		target.setCaseDisease(source.getCaze().getDisease());
+		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
@@ -842,6 +843,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 		if (contact.getReportingUser() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
+		}
+		if (contact.getDisease() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
 		}
 		if (contact.getCaze() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCase));

@@ -4004,3 +4004,14 @@ ALTER TABLE contact_history ADD COLUMN quarantinefrom timestamp;
 ALTER TABLE contact_history ADD COLUMN quarantineto timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (191, 'Add quarantine information to contact #1608');
+
+-- 2020-03-24 Add disease to contact #1643
+ALTER TABLE contact ADD COLUMN disease varchar(255);
+ALTER TABLE contact ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN disease varchar(255);
+ALTER TABLE contact_history ADD COLUMN diseasedetails varchar(512);
+
+UPDATE contact SET disease = cases.disease FROM cases WHERE contact.caze_id = cases.id
+UPDATE contact SET diseasedetails = cases.diseasedetails FROM cases WHERE contact.caze_id = cases.id
+
+INSERT INTO schema_version (version_number, comment) VALUES (192, 'Add disease to contact #1643');

@@ -38,7 +38,6 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.District;
@@ -56,7 +55,7 @@ public class Contact extends AbstractDomainObject {
 
 	public static final String PERSON = "person_id";
 	public static final String CASE_UUID = "caseUuid";
-	public static final String CASE_DISEASE = "caseDisease";
+	public static final String CASE_DISEASE = "disease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -92,8 +91,10 @@ public class Contact extends AbstractDomainObject {
 	private Person person;
 	@DatabaseField
 	private String caseUuid;
-	@Enumerated(EnumType.STRING)
-	private Disease caseDisease;
+	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "caseDisease")
+	private Disease disease;
+	@Column(length=512)
+	private String diseaseDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date lastContactDate;
 	@Enumerated(EnumType.STRING)
@@ -146,28 +147,28 @@ public class Contact extends AbstractDomainObject {
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
+
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
-	
+
 	public User getReportingUser() {
 		return reportingUser;
 	}
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
 	}
-	
+
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
@@ -310,12 +311,20 @@ public class Contact extends AbstractDomainObject {
 		this.caseUuid = caseUuid;
 	}
 
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setCaseDisease(Disease caseDisease) {
-		this.caseDisease = caseDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public String getExternalID() {

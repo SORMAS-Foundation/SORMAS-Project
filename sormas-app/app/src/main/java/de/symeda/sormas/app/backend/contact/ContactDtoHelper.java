@@ -74,7 +74,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     @Override
     public void fillInnerFromDto(Contact target, ContactDto source) {
         target.setCaseUuid(source.getCaze() != null ? source.getCaze().getUuid() : null);
-        target.setCaseDisease(source.getCaseDisease());
+        target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
         target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 
         target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
@@ -143,7 +144,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
             target.setResultingCase(null);
         }
 
-        target.setCaseDisease(source.getCaseDisease());
+        target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
 
         if (source.getReportingUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
