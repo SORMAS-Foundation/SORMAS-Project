@@ -28,7 +28,7 @@
     <string name="system">Système</string>
     <string name="yes">Oui</string>
     <string name="all">Tous</string>
-    <string name="completed">completed</string>
+    <string name="completed">completé</string>
     <string name="action_add_missing_case">Ajouter un cas manquant</string>
     <string name="action_allow_gps_access">Autoriser l\'accès GPS</string>
     <string name="action_apply_filters">Appliquer les filtres</string>
@@ -98,10 +98,10 @@
     <string name="action_save_task">Enregistrer la tâche</string>
     <string name="action_save_treatment">Enregistrer le traitement</string>
     <string name="action_save_visit">Enregistrer la visite de suivi</string>
-    <string name="action_select">Select</string>
-    <string name="action_send">Send</string>
+    <string name="action_select">Sélectionner</string>
+    <string name="action_send">Envoyer</string>
     <string name="action_set_cleared_to_no">Set Cleared to No</string>
-    <string name="action_show_classification_rules">View classification rules</string>
+    <string name="action_show_classification_rules">Voir les règles de classification</string>
     <string name="action_submit_report">Submit Weekly Report</string>
     <string name="action_sync">Sync</string>
     <string name="action_transfer_case">Transfer case</string>
