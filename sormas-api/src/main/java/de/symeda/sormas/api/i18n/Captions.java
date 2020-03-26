@@ -266,7 +266,6 @@ public interface Captions {
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
 	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
-	public static String Contact_caseDisease = "Contact.caseDisease";
 	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
 	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
 	public static String Contact_caseRegionUuid = "Contact.caseRegionUuid";
@@ -284,6 +283,8 @@ public interface Captions {
 	public static String Contact_contactProximity = "Contact.contactProximity";
 	public static String Contact_contactStatus = "Contact.contactStatus";
 	public static String Contact_description = "Contact.description";
+	public static String Contact_disease = "Contact.disease";
+	public static String Contact_diseaseDetails = "Contact.diseaseDetails";
 	public static String Contact_district = "Contact.district";
 	public static String Contact_externalID = "Contact.externalID";
 	public static String Contact_firstName = "Contact.firstName";

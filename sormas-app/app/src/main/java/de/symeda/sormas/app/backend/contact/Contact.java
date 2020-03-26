@@ -141,6 +141,11 @@ public class Contact extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date quarantineTo;
 
+	@Column
+	private String caseIdExternalSystem;
+	@Column(length = 512)
+	private String caseOrEventInformation;
+
 	public Person getPerson() {
 		return person;
 	}
@@ -406,4 +411,21 @@ public class Contact extends AbstractDomainObject {
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}
+
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+
 }

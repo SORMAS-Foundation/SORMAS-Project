@@ -23,6 +23,7 @@ import android.view.View;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -40,9 +41,11 @@ import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLayoutBinding, Contact, Contact> {
 
@@ -56,6 +59,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     private List<Item> quarantineList;
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
+    private List<Item> diseaseList;
 
     // Instance methods
 
@@ -87,7 +91,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     }
 
     private void setUpFieldVisibilities(FragmentContactEditLayoutBinding contentBinding) {
-        setVisibilityByDisease(ContactDto.class, sourceCase.getDisease(), contentBinding.mainContent);
+        setVisibilityByDisease(ContactDto.class, record.getDisease(), contentBinding.mainContent);
 
         if (record.getResultingCaseUuid() != null) {
             contentBinding.createCase.setVisibility(GONE);
@@ -96,6 +100,13 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
             }
         } else {
             contentBinding.openResultingCase.setVisibility(GONE);
+        }
+        if (sourceCase == null) {
+            contentBinding.openSourceCase.setVisibility(GONE);
+        } else {
+            contentBinding.contactDisease.setVisibility(GONE);
+            contentBinding.contactCaseIdExternalSystem.setVisibility(GONE);
+            contentBinding.contactCaseOrEventInformation.setVisibility(GONE);
         }
 
         if (record.getContactClassification() != ContactClassification.CONFIRMED) {
@@ -136,20 +147,21 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     @Override
     protected void prepareFragmentData() {
         record = getActivityRootData();
-        sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
+        if (record.getCaseUuid() != null) {
+            sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
+        }
 
         relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
         contactClassificationList = DataUtils.getEnumItems(ContactClassification.class, true);
         quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
+        diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
     }
 
     @Override
     public void onLayoutBinding(FragmentContactEditLayoutBinding contentBinding) {
         setUpControlListeners(contentBinding);
-
-        contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease(), ConfigProvider.getServerLocale()))));
 
         contentBinding.setData(record);
         contentBinding.setCaze(sourceCase);
@@ -159,6 +171,24 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
                 contentBinding.contactDistrict, initialDistricts, record.getDistrict(),
                 null, null, null
         );
+        contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
+        contentBinding.contactDisease.addValueChangedListener(e -> {
+            contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+            contentBinding.contactContactProximity.clear();
+            contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
+        });
+
+        contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale()))));
+
+        if (record.getCaseUuid() != null) {
+            contentBinding.contactDisease.setVisibility(GONE);
+            contentBinding.contactCaseIdExternalSystem.setVisibility(GONE);
+            contentBinding.contactCaseOrEventInformation.setVisibility(GONE);
+        } else {
+            contentBinding.contactDisease.setRequired(true);
+            contentBinding.contactRegion.setRequired(true);
+            contentBinding.contactDistrict.setRequired(true);
+        }
 
         ContactValidator.initializeValidation(record, contentBinding);
 

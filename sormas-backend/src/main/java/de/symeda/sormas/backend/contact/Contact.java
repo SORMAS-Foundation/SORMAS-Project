@@ -89,6 +89,8 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
+	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -127,6 +129,9 @@ public class Contact extends CoreAdo {
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	
+	private String caseIdExternalSystem;
+	private String caseOrEventInformation;
 
 	private List<Task> tasks;
 	
@@ -141,7 +146,7 @@ public class Contact extends CoreAdo {
 	}
 	
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn
 	public Case getCaze() {
 		return caze;
 	}
@@ -287,16 +292,14 @@ public class Contact extends CoreAdo {
 	@Override
 	public String toString() {
 		Person contactPerson = getPerson();
-		Person casePerson = getCaze().getPerson();
 		return ContactReferenceDto.buildCaption(contactPerson.getFirstName(), contactPerson.getLastName(),
-				casePerson.getFirstName(), casePerson.getLastName());
+				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
 	}
 	
 	public ContactReferenceDto toReference() {
 		Person contactPerson = getPerson();
-		Person casePerson = getCaze().getPerson();
 		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(),
-				casePerson.getFirstName(), casePerson.getLastName());
+				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
 	}
 	
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)
@@ -437,4 +440,23 @@ public class Contact extends CoreAdo {
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}
+
+	@Column(length=255)
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	@Column(length=512)
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+	
 }

@@ -23,6 +23,7 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
     </data>
@@ -59,6 +60,18 @@
                 app:value="@={data.person.lastName}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/contact_disease"
+                app:value="@={data.disease}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_diseaseDetails"
+                app:value="@={data.diseaseDetails}"
+                app:dependencyParentField="@{contactDisease}"
+                app:dependencyParentValue="@{Disease.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,6 +95,11 @@
                 app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_caseIdExternalSystem"
+                app:value="@={data.caseIdExternalSystem}"
+                style="@style/ControlSingleColumnStyle" />
+
             <de.symeda.sormas.app.component.controls.ControlRadioGroupField
                 android:id="@+id/contact_contactProximity"
                 app:value="@={data.contactProximity}"
@@ -103,6 +121,12 @@
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/contact_description"
+                app:inputType="textMultiLine"
+                app:textAlignment="gravity"
+                app:gravity="top|start"
+                app:textArea="true"
+                app:singleLine="false"
+                app:maxLines="3"
                 app:value="@={data.description}"
                 style="@style/ControlSingleColumnStyle" />
 
