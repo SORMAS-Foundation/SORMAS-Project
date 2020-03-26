@@ -1354,21 +1354,8 @@ public class CaseFacadeEjb implements CaseFacade {
 					continue;
 				}
 
-				if (newCase.getSurveillanceOfficer() != null) {
-					task.setAssigneeUser(newCase.getSurveillanceOfficer());
-				} else if (newCase.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-					task.setAssigneeUser(newCase.getReportingUser());
-				} else {
-					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
-							UserRole.SURVEILLANCE_SUPERVISOR);
-					if (!supervisors.isEmpty()) {
-						Random rand = new Random();
-						task.setAssigneeUser(supervisors.get(rand.nextInt(supervisors.size())));
-					} else {
-						task.setAssigneeUser(null);
-					}
-				}
-
+				assignOfficerOrSupervisorToTask(newCase, task);
+				
 				taskService.ensurePersisted(task);
 			}
 		}
@@ -1963,18 +1950,29 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void assignOfficerOrSupervisorToTask(Case caze, Task task) {
 		if (caze.getSurveillanceOfficer() != null) {
+			// 1) The surveillance officer that is responsible for the case
 			task.setAssigneeUser(caze.getSurveillanceOfficer());
 		} else {
-			// assign the first supervisor
-			List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(),
-					UserRole.SURVEILLANCE_SUPERVISOR);
-			if (!supervisors.isEmpty()) {
-				task.setAssigneeUser(supervisors.get(0));
+			// 2) A random surveillance officer from the case district
+			List<User> officers = userService.getAllByDistrict(caze.getDistrict(), false, UserRole.SURVEILLANCE_OFFICER);
+			if (!officers.isEmpty()) {
+				Random rand = new Random();
+				task.setAssigneeUser(officers.get(rand.nextInt(officers.size())));
+			}
+		}
+		
+		if (task.getAssigneeUser() == null) {
+			if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+				// 3) If the case was created by a surveillance supervisor, assign them
+				task.setAssigneeUser(caze.getReportingUser());
 			} else {
-				User currentUser = userService.getCurrentUser();
-				if (currentUser != null) {
-					task.setAssigneeUser(currentUser);
+				// 4) Assign a random surveillance supervisor from the case region
+				List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+				if (!supervisors.isEmpty()) {
+					Random rand = new Random();
+					task.setAssigneeUser(supervisors.get(rand.nextInt(supervisors.size())));
 				} else {
+					task.setAssigneeUser(null);
 					logger.warn("No valid assignee user found for task " + task.getUuid());
 				}
 			}
