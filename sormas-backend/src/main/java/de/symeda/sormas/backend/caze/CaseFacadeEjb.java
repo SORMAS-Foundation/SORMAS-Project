@@ -354,7 +354,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
 		return caseService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
 		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
@@ -592,7 +592,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 				if (personAddresses != null || exportConfiguration.getProperties().contains(PersonDto.ADDRESS)) {
 					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
-							.ifPresent(personAddress -> exportDto.setAddress(personAddress.toString()));
+					.ifPresent(personAddress -> exportDto.setAddress(personAddress.toString()));
 				}
 				if (personAddresses != null
 						|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
@@ -653,8 +653,8 @@ public class CaseFacadeEjb implements CaseFacade {
 								exportDto.setSampleDateTime1(sample.getSampleDateTime());
 								if (sample.getLab() != null) {
 									exportDto
-											.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
-													sample.getLab().getName(), sample.getLabDetails()));
+									.setSampleLab1(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+											sample.getLab().getName(), sample.getLabDetails()));
 								}
 								exportDto.setSampleResult1(sample.getPathogenTestResult());
 								break;
@@ -662,8 +662,8 @@ public class CaseFacadeEjb implements CaseFacade {
 								exportDto.setSampleDateTime2(sample.getSampleDateTime());
 								if (sample.getLab() != null) {
 									exportDto
-											.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
-													sample.getLab().getName(), sample.getLabDetails()));
+									.setSampleLab2(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+											sample.getLab().getName(), sample.getLabDetails()));
 								}
 								exportDto.setSampleResult2(sample.getPathogenTestResult());
 								break;
@@ -671,8 +671,8 @@ public class CaseFacadeEjb implements CaseFacade {
 								exportDto.setSampleDateTime3(sample.getSampleDateTime());
 								if (sample.getLab() != null) {
 									exportDto
-											.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
-													sample.getLab().getName(), sample.getLabDetails()));
+									.setSampleLab3(FacilityHelper.buildFacilityString(sample.getLab().getUuid(),
+											sample.getLab().getName(), sample.getLabDetails()));
 								}
 								exportDto.setSampleResult3(sample.getPathogenTestResult());
 								break;
@@ -1198,7 +1198,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException {
 		return saveCase(dto, true);
 	}
-	
+
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges) throws ValidationRuntimeException {
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
@@ -1354,20 +1354,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					continue;
 				}
 
-				if (newCase.getSurveillanceOfficer() != null) {
-					task.setAssigneeUser(newCase.getSurveillanceOfficer());
-				} else if (newCase.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-					task.setAssigneeUser(newCase.getReportingUser());
-				} else {
-					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
-							UserRole.SURVEILLANCE_SUPERVISOR);
-					if (!supervisors.isEmpty()) {
-						Random rand = new Random();
-						task.setAssigneeUser(supervisors.get(rand.nextInt(supervisors.size())));
-					} else {
-						task.setAssigneeUser(null);
-					}
-				}
+				assignOfficerOrSupervisorToTask(newCase, task);
 
 				taskService.ensurePersisted(task);
 			}
@@ -1962,28 +1949,43 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void assignOfficerOrSupervisorToTask(Case caze, Task task) {
+		User assignee = null;
+
 		if (caze.getSurveillanceOfficer() != null) {
-			task.setAssigneeUser(caze.getSurveillanceOfficer());
-		} else {
-			// assign the first supervisor
-			List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(),
-					UserRole.SURVEILLANCE_SUPERVISOR);
-			if (!supervisors.isEmpty()) {
-				task.setAssigneeUser(supervisors.get(0));
-			} else {
-				User currentUser = userService.getCurrentUser();
-				if (currentUser != null) {
-					task.setAssigneeUser(currentUser);
-				} else {
-					logger.warn("No valid assignee user found for task " + task.getUuid());
+			// 1) The surveillance officer that is responsible for the case
+			assignee = caze.getSurveillanceOfficer();
+		} else if (caze.getDistrict() != null) {
+			// 2) A random surveillance officer from the case district
+			List<User> officers = userService.getAllByDistrict(caze.getDistrict(), false, UserRole.SURVEILLANCE_OFFICER);
+			if (!officers.isEmpty()) {
+				Random rand = new Random();
+				assignee = officers.get(rand.nextInt(officers.size()));
+			}
+		}
+
+		if (assignee == null) {
+			if (caze.getReportingUser() != null && caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+				// 3) If the case was created by a surveillance supervisor, assign them
+				assignee = caze.getReportingUser();
+			} else if (caze.getRegion() != null) {
+				// 4) Assign a random surveillance supervisor from the case region
+				List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+				if (!supervisors.isEmpty()) {
+					Random rand = new Random();
+					assignee = supervisors.get(rand.nextInt(supervisors.size()));
 				}
 			}
+		}
+
+		task.setAssigneeUser(assignee);
+		if (assignee == null) {
+			logger.warn("No valid assignee user found for task " + task.getUuid());
 		}
 	}
 
 	@Override
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
-		
+
 		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
 		if (suffixSeperatorIndex == -1) {
 			// no suffix - use the whole string as prefix
@@ -1996,7 +1998,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
-		
+
 		Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
 		if (!DataHelper.isNullOrEmpty(caseUuid)) {
 			filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
@@ -2006,7 +2008,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (suffixString.length() > 0) {
 			// has to start with prefix
 			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
-			
+
 			// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
 			int suffixNumber = Integer.parseInt(suffixString);
 			regexParam2 = cb.parameter(String.class);
@@ -2108,7 +2110,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 	}
-	
+
 	@Override
 	public Date getOldestCaseOnsetDate() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -2181,7 +2183,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			assert(DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
 		}
-		
+
 		// 2 Change CaseReference
 		Case leadCase = caseService.getByUuid(leadCaseData.getUuid());
 		Case otherCase = caseService.getByUuid(otherCaseData.getUuid());
