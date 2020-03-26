@@ -784,12 +784,12 @@ public class ContactFacadeEjb implements ContactFacade {
 				if (officers.isEmpty() && contact.getPerson().getAddress().getDistrict() != null) {
 					officers = userService.getAllByDistrict(contact.getPerson().getAddress().getDistrict(), false, UserRole.CONTACT_OFFICER);
 				}
-				if (officers.isEmpty()) {
+				if (officers.isEmpty() && contact.getCaze().getDistrict() != null) {
 					officers = userService.getAllByDistrict(contact.getCaze().getDistrict(), false, UserRole.CONTACT_OFFICER);
-					if (!officers.isEmpty()) {
-						Random rand = new Random();
-						assignee = officers.get(rand.nextInt(officers.size()));
-					}
+				}
+				if (!officers.isEmpty()) {
+					Random rand = new Random();
+					assignee = officers.get(rand.nextInt(officers.size()));
 				}
 			}
 			
@@ -804,13 +804,13 @@ public class ContactFacadeEjb implements ContactFacade {
 				}
 				if (supervisors.isEmpty()) {
 					supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);
-					if (!supervisors.isEmpty()) {
-						Random rand = new Random();
-						assignee = supervisors.get(rand.nextInt(supervisors.size()));
-					} else {
-						logger.warn("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
-						continue;
-					}
+				}
+				if (!supervisors.isEmpty()) {
+					Random rand = new Random();
+					assignee = supervisors.get(rand.nextInt(supervisors.size()));
+				} else {
+					logger.warn("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
+					continue;
 				}
 			}
 

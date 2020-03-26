@@ -51,6 +51,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -129,6 +130,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
 		addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 
+		ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
+		contactOfficerField.setNullSelectionAllowed(true);
+		
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
@@ -138,10 +142,17 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FieldHelper.updateItems(district,
 					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
+		district.addValueChangeListener(e -> {
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			if (districtDto == null) {
+				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
+				districtDto = caseDto.getDistrict();
+			}
+			
+			FieldHelper.updateItems(contactOfficerField, districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
+		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
-		contactOfficerField.setNullSelectionAllowed(true);
 		
 		CheckBox cbHighPriority = addField(ContactDto.HIGH_PRIORITY, CheckBox.class);
 		OptionGroup ogImmunosuppressiveTherapyBasicDisease = addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, OptionGroup.class);
@@ -165,7 +176,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 				updateFollowUpStatusComponents();
 
-				contactOfficerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
+				contactOfficerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(
+						getValue().getDistrict() != null ? getValue().getDistrict() : caseDto.getDistrict(), false, UserRole.CONTACT_OFFICER));
 
 				getContent().removeComponent(TO_CASE_BTN_LOC);
 				if (getValue().getResultingCase() != null) {
