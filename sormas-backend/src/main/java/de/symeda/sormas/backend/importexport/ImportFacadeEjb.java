@@ -173,7 +173,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
 		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
-		columnNames.removeAll(Arrays.asList(ContactDto.CAZE, ContactDto.CASE_DISEASE, ContactDto.RESULTING_CASE));
+		columnNames.removeAll(Arrays.asList(ContactDto.CAZE, ContactDto.DISEASE, ContactDto.DISEASE_DETAILS, ContactDto.RESULTING_CASE));
 		Path filePath = Paths.get(getCaseContactImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
 			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));

@@ -4015,3 +4015,14 @@ UPDATE contact SET disease = cases.disease FROM cases WHERE contact.caze_id = ca
 UPDATE contact SET diseasedetails = cases.diseasedetails FROM cases WHERE contact.caze_id = cases.id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (192, 'Add disease to contact #1643');
+
+-- 2020-03-25 Allow creation of contacts without a case #1599
+ALTER TABLE contact ALTER COLUMN caze_id DROP NOT NULL;
+ALTER TABLE contact_history ALTER COLUMN caze_id DROP NOT NULL;
+
+ALTER TABLE contact ADD COLUMN caseidexternalsystem varchar(255);
+ALTER TABLE contact ADD COLUMN caseoreventinformation varchar(512);
+ALTER TABLE contact_history ADD COLUMN caseidexternalsystem varchar(255);
+ALTER TABLE contact_history ADD COLUMN caseoreventinformation varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (193, 'Allow creation of contacts without a case #1599');

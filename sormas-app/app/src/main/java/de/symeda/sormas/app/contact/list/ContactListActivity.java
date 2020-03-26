@@ -31,11 +31,14 @@ import java.util.Random;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.contact.edit.ContactNewActivity;
 import de.symeda.sormas.app.util.Callback;
 
 public class ContactListActivity extends PagedBaseListActivity {
@@ -137,6 +140,17 @@ public class ContactListActivity extends PagedBaseListActivity {
         super.onCreateOptionsMenu(menu);
         getNewMenu().setTitle(R.string.action_new_contact);
         return true;
+    }
+
+    @Override
+    public void goToNewView() {
+        ContactNewActivity.startActivity(getContext(), null);
+        finish();
+    }
+
+    @Override
+    public boolean isEntryCreateAllowed() {
+        return ConfigProvider.hasUserRight(UserRight.CONTACT_CREATE);
     }
 
     @Override

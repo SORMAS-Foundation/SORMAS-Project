@@ -237,7 +237,7 @@ public class ContactsView extends AbstractView {
 					},
 					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
-
+			
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
 			warningLabel.setWidth(100, Unit.PERCENTAGE);
@@ -280,6 +280,14 @@ public class ContactsView extends AbstractView {
 				searchField.setEnabled(true);
 				navigateTo(criteria);
 			});
+		}
+		
+		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+			Button btnNewContact = new Button(I18nProperties.getCaption(Captions.contactNewContact));
+			btnNewContact.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnNewContact.setIcon(VaadinIcons.PLUS_CIRCLE);
+			btnNewContact.addClickListener(e -> ControllerProvider.getContactController().create());
+			addHeaderComponent(btnNewContact);
 		}
 
 		addComponent(gridLayout);
@@ -365,7 +373,7 @@ public class ContactsView extends AbstractView {
 				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-					criteria.caseRegion(region);
+					criteria.region(region);
 					navigateTo(criteria);
 				});
 				secondFilterRowLayout.addComponent(regionFilter);
@@ -377,7 +385,7 @@ public class ContactsView extends AbstractView {
 			districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 			districtFilter.addValueChangeListener(e -> {
 				DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-				criteria.caseDistrict(district);
+				criteria.district(district);
 				navigateTo(criteria);
 			});
 
@@ -769,8 +777,8 @@ public class ContactsView extends AbstractView {
 		}
 		classificationFilter.setValue(criteria.getContactClassification());
 		diseaseFilter.setValue(criteria.getDisease());
-		regionFilter.setValue(criteria.getCaseRegion());
-		districtFilter.setValue(criteria.getCaseDistrict());
+		regionFilter.setValue(criteria.getRegion());
+		districtFilter.setValue(criteria.getDistrict());
 		facilityFilter.setValue(criteria.getCaseFacility());
 		officerFilter.setValue(criteria.getContactOfficer());
 		followUpStatusFilter.setValue(criteria.getFollowUpStatus());

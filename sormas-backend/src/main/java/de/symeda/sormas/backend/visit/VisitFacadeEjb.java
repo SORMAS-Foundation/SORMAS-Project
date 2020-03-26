@@ -313,22 +313,29 @@ public class VisitFacadeEjb implements VisitFacade {
 			Set<Contact> contacts = new HashSet<>(
 					contactService.getAllByVisit(visitService.getByUuid(newVisit.getUuid())));
 			for (Contact contact : contacts) {
-				Case contactCase = contact.getCaze();
 				// Skip if there is already a symptomatic visit for this contact
 				if (visitService.getSymptomaticCountByContact(contact) > 1) {
 					continue;
 				}
 
-				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contactCase.getRegion(),
-						UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+				Case contactCase = contact.getCaze();
+				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contact.getRegion() != null ? 
+						contact.getRegion() : contactCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
 				for (User recipient : messageRecipients) {
 					try {
+						String messageContent;
+						if (contactCase != null) {
+							messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
+									DataHelper.getShortUuid(contact.getUuid()),
+									DataHelper.getShortUuid(contactCase.getUuid()));
+						} else {
+							messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
+									DataHelper.getShortUuid(contact.getUuid()));
+						}
+						
 						messagingService.sendMessage(recipient,
 								I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC),
-								String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
-										DataHelper.getShortUuid(contact.getUuid()),
-										DataHelper.getShortUuid(contactCase.getUuid())),
-								MessageType.EMAIL, MessageType.SMS);
+								messageContent, MessageType.EMAIL, MessageType.SMS);
 					} catch (NotificationDeliveryFailedException e) {
 						logger.error(String.format(
 								"EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "

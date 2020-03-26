@@ -39,7 +39,6 @@ public class ContactDto extends EntityDto {
 	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
-	public static final String CASE_DISEASE = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -70,6 +69,8 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
+	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
 	
 	@Required
 	private Date reportDateTime;
@@ -111,7 +112,14 @@ public class ContactDto extends EntityDto {
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
-
+	
+	private String caseIdExternalSystem;
+	private String caseOrEventInformation;
+	
+	public static ContactDto build() {
+		return build(null, null, null);
+	}
+	
 	public static ContactDto build(CaseDataDto caze) {
 		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
 	}
@@ -350,4 +358,21 @@ public class ContactDto extends EntityDto {
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}
+
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+	
 }

@@ -121,16 +121,16 @@ public class ContactController {
 	}
 
 	private ContactDto createNewContact(CaseDataDto caze) {
-		ContactDto contact = ContactDto.build(caze);
-		
+		ContactDto contact = caze != null ? ContactDto.build(caze) : ContactDto.build();
+
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		contact.setReportingUser(userReference);
-		
+
 		return contact;
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
-		ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE);
+		ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE, caze != null ? caze.getDisease() : null, caze != null);
 		createForm.setValue(createNewContact(caze));
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
 
@@ -148,7 +148,7 @@ public class ContactController {
 
 									// set the contact person's address to the one of the case when it is currently empty and
 									// the relationship with the case has been set to living in the same household
-									if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD) {
+									if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 										PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid());
 										if (personDto.getAddress().isEmptyLocation()) {
 											CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -187,7 +187,7 @@ public class ContactController {
 
 					// set the contact person's address to the one of the case when it is currently empty and
 					// the relationship with the case has been set to living in the same household
-					if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD) {
+					if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
 						if (person.getAddress().isEmptyLocation()) {
 							CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
@@ -237,7 +237,7 @@ public class ContactController {
 		}
 
 		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
-			
+
 		// Create a temporary contact in order to use the CommitDiscardWrapperComponent
 		ContactBulkEditData bulkEditData = new ContactBulkEditData();
 
@@ -298,7 +298,7 @@ public class ContactController {
 			});
 		}
 	}
-	
+
 	public void cancelFollowUpOfAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
@@ -321,7 +321,7 @@ public class ContactController {
 			});
 		}
 	}
-	
+
 	public void setAllSelectedItemsToLostToFollowUp(Collection<ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 

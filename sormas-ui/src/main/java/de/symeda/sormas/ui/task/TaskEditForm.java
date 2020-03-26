@@ -143,9 +143,14 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    		region = caseDto.getRegion();
 	    	} else if (taskDto.getContact() != null) {
 	    		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
-	    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-	    		district = caseDto.getDistrict();
-	    		region = caseDto.getRegion();
+	    		if (contactDto.getCaze() != null) {
+	    			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+		    		district = caseDto.getDistrict();
+		    		region = caseDto.getRegion();
+	    		} else {
+	    			district = contactDto.getDistrict();
+	    			region = contactDto.getRegion();
+	    		}
 	    	} else if (taskDto.getEvent() != null) {
 	    		EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
 	    		district = eventDto.getEventLocation().getDistrict();

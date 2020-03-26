@@ -75,10 +75,12 @@ public class ContactDataView extends AbstractContactView {
 		layout.addComponent(editComponent, EDIT_LOC);
 
 		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
-		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
-		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(caseInfoLayout, CASE_LOC);
+		if (contactDto.getCaze() != null) {
+			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+			CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
+			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(caseInfoLayout, CASE_LOC);
+		}
 
 		TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
