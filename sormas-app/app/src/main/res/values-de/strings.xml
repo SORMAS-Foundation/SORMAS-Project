@@ -97,7 +97,7 @@
     <string name="action_save_sample">Probe speichern</string>
     <string name="action_save_task">Aufgabe speichern</string>
     <string name="action_save_treatment">Behandlung speichern</string>
-    <string name="action_save_visit">Nachverfolgungs-Anruf speichern</string>
+    <string name="action_save_visit">Follow-up/Nachverfolgungs-Anruf speichern</string>
     <string name="action_select">Auswählen</string>
     <string name="action_send">Senden</string>
     <string name="action_set_cleared_to_no">Auf Nein gesetzt</string>
@@ -146,7 +146,7 @@
     <string name="caption_drawer_close">Navigation schließen</string>
     <string name="caption_drawer_open">Navigation öffnen</string>
     <string name="caption_dropped">Gelöscht</string>
-    <string name="caption_epi_week">Epi-Woche</string>
+    <string name="caption_epi_week">Epi Woche</string>
     <string name="caption_event_information">Ereignisinformation</string>
     <string name="caption_event_participants">Beteiligte Personen</string>
     <string name="caption_event_tasks">Ereignis-Aufgaben</string>
@@ -228,7 +228,7 @@
     <string name="confirmation_action">Sind Sie sicher, dass Sie dies tun wollen?</string>
     <string name="confirmation_delete">Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?</string>
     <string name="confirmation_pick_gps">Sind Sie gerade an diesem Ort?</string>
-    <string name="description_epi_week">Epi-Woche</string>
+    <string name="description_epi_week">Epi Woche</string>
     <string name="description_first_name">Vorname</string>
     <string name="description_last_name">Nachname</string>
     <string name="description_password">Passwort</string>
@@ -511,7 +511,7 @@
     <string name="validation_soft_case_epid_number">Die EPID-Nummer stimmt nicht mit dem erforderlichen Muster überein. Sie können den Fall trotzdem speichern und später die korrekte Nummer eingeben.</string>
     <string name="validation_soft_case_epid_number_empty">Es muss eine EPID-Nummer angegeben werden. Sie können den Fall trotzdem speichern und später die korrekte Nummer eingeben.</string>
     <string name="validation_symptoms_fever">Die Temperatur liegt im Fieberbereich. Das Fieber sollte auf \"Ja\" gesetzt werden.</string>
-    <string name="validation_visit_date_time_after_followup">Der Anruf darf nicht länger als 30 Tage nach Ablauf des Nachverfolgungs-Zeitraums erfolgen.</string>
+    <string name="validation_visit_date_time_after_followup">Der Anruf darf nicht länger als 30 Tage nach Ablauf des Follow-up/Nachverfolgungs-Zeitraums erfolgen.</string>
     <string name="validation_visit_date_time_before_contact_date">Der Anruf darf nicht länger als 30 Tage vor dem letzten Kontaktdatum sein.</string>
     <string name="validation_visit_date_time_before_report_date">Der Anruf darf nicht mehr als 30 Tage vor dem Datum des Kontaktberichts liegen.</string>
     <string name="value_age_unknown">Alter N/A</string>
