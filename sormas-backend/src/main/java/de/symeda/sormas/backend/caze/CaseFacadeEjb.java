@@ -1369,20 +1369,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					continue;
 				}
 
-				if (newCase.getSurveillanceOfficer() != null) {
-					task.setAssigneeUser(newCase.getSurveillanceOfficer());
-				} else if (newCase.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
-					task.setAssigneeUser(newCase.getReportingUser());
-				} else {
-					List<User> supervisors = userService.getAllByRegionAndUserRoles(newCase.getRegion(),
-							UserRole.SURVEILLANCE_SUPERVISOR);
-					if (!supervisors.isEmpty()) {
-						Random rand = new Random();
-						task.setAssigneeUser(supervisors.get(rand.nextInt(supervisors.size())));
-					} else {
-						task.setAssigneeUser(null);
-					}
-				}
+				assignOfficerOrSupervisorToTask(newCase, task);
 
 				taskService.ensurePersisted(task);
 			}
@@ -1977,22 +1964,37 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void assignOfficerOrSupervisorToTask(Case caze, Task task) {
+		User assignee = null;
+
 		if (caze.getSurveillanceOfficer() != null) {
-			task.setAssigneeUser(caze.getSurveillanceOfficer());
-		} else {
-			// assign the first supervisor
-			List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(),
-					UserRole.SURVEILLANCE_SUPERVISOR);
-			if (!supervisors.isEmpty()) {
-				task.setAssigneeUser(supervisors.get(0));
-			} else {
-				User currentUser = userService.getCurrentUser();
-				if (currentUser != null) {
-					task.setAssigneeUser(currentUser);
-				} else {
-					logger.warn("No valid assignee user found for task " + task.getUuid());
+			// 1) The surveillance officer that is responsible for the case
+			assignee = caze.getSurveillanceOfficer();
+		} else if (caze.getDistrict() != null) {
+			// 2) A random surveillance officer from the case district
+			List<User> officers = userService.getAllByDistrict(caze.getDistrict(), false, UserRole.SURVEILLANCE_OFFICER);
+			if (!officers.isEmpty()) {
+				Random rand = new Random();
+				assignee = officers.get(rand.nextInt(officers.size()));
+			}
+		}
+
+		if (assignee == null) {
+			if (caze.getReportingUser() != null && caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)) {
+				// 3) If the case was created by a surveillance supervisor, assign them
+				assignee = caze.getReportingUser();
+			} else if (caze.getRegion() != null) {
+				// 4) Assign a random surveillance supervisor from the case region
+				List<User> supervisors = userService.getAllByRegionAndUserRoles(caze.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+				if (!supervisors.isEmpty()) {
+					Random rand = new Random();
+					assignee = supervisors.get(rand.nextInt(supervisors.size()));
 				}
 			}
+		}
+
+		task.setAssigneeUser(assignee);
+		if (assignee == null) {
+			logger.warn("No valid assignee user found for task " + task.getUuid());
 		}
 	}
 

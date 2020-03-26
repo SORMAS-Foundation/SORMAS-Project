@@ -124,13 +124,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	public void testGenerateContactFollowUpTasks() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto contactOfficer = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Cont", "Off", UserRole.CONTACT_OFFICER);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		ContactDto contact = creator.createContact(user.toReference(), contactOfficer.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 
-		 getContactFacade().generateContactFollowUpTasks();
+		getContactFacade().generateContactFollowUpTasks();
 		
 		// task should have been generated
 		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference());
@@ -139,6 +140,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		assertEquals(TaskType.CONTACT_FOLLOW_UP, task.getTaskType());
 		assertEquals(TaskStatus.PENDING, task.getTaskStatus());
 		assertEquals(LocalDate.now(), DateHelper8.toLocalDate(task.getDueDate()));
+		assertEquals(contactOfficer.toReference(), task.getAssigneeUser());
 
 		// task should not be generated multiple times 
 		 getContactFacade().generateContactFollowUpTasks();

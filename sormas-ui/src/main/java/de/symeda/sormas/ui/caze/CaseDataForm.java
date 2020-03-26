@@ -204,6 +204,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 		
+		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
+		surveillanceOfficerField.setNullSelectionAllowed(true);
 		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
@@ -226,6 +228,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
 			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 			FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
+			FieldHelper.updateItems(surveillanceOfficerField, districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
 		});
 		community.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
@@ -244,8 +247,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 		
-		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
-		surveillanceOfficerField.setNullSelectionAllowed(true);
 		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
@@ -388,6 +389,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
+			surveillanceOfficerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(getValue().getDistrict(), false, UserRole.SURVEILLANCE_OFFICER));
 
 			// Replace classification user if case has been automatically classified
 			if (getValue().getClassificationDate() != null && getValue().getClassificationUser() == null) {

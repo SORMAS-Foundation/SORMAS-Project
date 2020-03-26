@@ -700,6 +700,19 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(cut.isArchived(case2.getUuid()));
 	}
 
+	@Test
+	public void testCreateInvestigationTask() throws Exception {
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR).toReference();
+		UserReferenceDto surveillanceOfficer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		PersonReferenceDto person = creator.createPerson("Case", "Person").toReference();
+		
+		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		
+		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
+		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
+	}
+
 //	@Test
 //	public void testGetSimilarCases() {
 //		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
