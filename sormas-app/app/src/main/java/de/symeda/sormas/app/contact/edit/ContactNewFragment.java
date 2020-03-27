@@ -100,6 +100,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
         if (record.getCaseUuid() != null) {
             contentBinding.contactDisease.setVisibility(GONE);
             contentBinding.contactCaseIdExternalSystem.setVisibility(GONE);
+            contentBinding.contactCaseOrEventInformation.setVisibility(GONE);
             contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(sourceCase.getDisease(), ConfigProvider.getServerLocale()))));
         } else {
             contentBinding.contactDisease.setRequired(true);

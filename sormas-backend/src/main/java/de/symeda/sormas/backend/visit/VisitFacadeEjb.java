@@ -329,7 +329,7 @@ public class VisitFacadeEjb implements VisitFacade {
 									DataHelper.getShortUuid(contact.getUuid()),
 									DataHelper.getShortUuid(contactCase.getUuid()));
 						} else {
-							messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
+							messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC),
 									DataHelper.getShortUuid(contact.getUuid()));
 						}
 						

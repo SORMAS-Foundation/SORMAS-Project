@@ -123,6 +123,19 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_caseIdExternalSystem"
+                    app:value="@{data.caseIdExternalSystem}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_caseOrEventInformation"
+                    app:singleLine="false"
+                    app:maxLines="3"
+                    app:textArea="true"
+                    app:value="@{data.caseOrEventInformation}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_quarantine"
                     app:value="@{data.quarantine}"
                     style="@style/ControlSingleColumnStyle" />
@@ -236,19 +249,6 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_careForPeopleOver60"
                     app:value="@{data.careForPeopleOver60}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/contact_caseIdExternalSystem"
-                    app:value="@{data.caseIdExternalSystem}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/contact_caseOrEventInformation"
-                    app:singleLine="false"
-                    app:maxLines="3"
-                    app:textArea="true"
-                    app:value="@{data.caseOrEventInformation}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

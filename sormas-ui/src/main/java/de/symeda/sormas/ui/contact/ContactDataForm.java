@@ -87,6 +87,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
 			fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
 			fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+			fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
+			loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
 			fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
 			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 			fluidRowLocs(ContactDto.DESCRIPTION) +
@@ -95,8 +97,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 			fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
 			loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
-			fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
-			loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
 			h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
 			fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 			fluidRowLocs(3, ContactDto.FOLLOW_UP_UNTIL, 9, ContactDto.FOLLOW_UP_COMMENT) +
@@ -138,7 +138,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
-		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(3);
+		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(2);
 
 		addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);

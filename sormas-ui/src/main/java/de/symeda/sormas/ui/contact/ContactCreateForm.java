@@ -61,6 +61,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			fluidRowLocs(FIRST_NAME, LAST_NAME) +
 			fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 			fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
+			fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
 			fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 			fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
@@ -103,7 +104,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
-    	
+		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(2);
+		
     	CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, lastContactDate, contactProximity, relationToCase);
 
     	region.addValueChangeListener(e -> {
@@ -125,7 +127,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
     	
     	addValueChangeListener(e -> {
     		if (hasCaseRelation) {
-    			setVisible(false, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM);
+    			setVisible(false, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION);
     		} else {
     			setRequired(true, ContactDto.DISEASE, ContactDto.REGION, ContactDto.DISTRICT);
     			

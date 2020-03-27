@@ -100,6 +100,17 @@
                 app:value="@={data.caseIdExternalSystem}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_caseOrEventInformation"
+                app:inputType="textMultiLine"
+                app:textAlignment="gravity"
+                app:gravity="top|start"
+                app:textArea="true"
+                app:singleLine="false"
+                app:maxLines="3"
+                app:value="@={data.caseOrEventInformation}"
+                style="@style/ControlSingleColumnStyle" />
+
             <de.symeda.sormas.app.component.controls.ControlRadioGroupField
                 android:id="@+id/contact_contactProximity"
                 app:value="@={data.contactProximity}"

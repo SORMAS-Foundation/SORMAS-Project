@@ -117,6 +117,22 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_caseIdExternalSystem"
+                    app:value="@={data.caseIdExternalSystem}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_caseOrEventInformation"
+                    app:inputType="textMultiLine"
+                    app:textAlignment="gravity"
+                    app:gravity="top|start"
+                    app:textArea="true"
+                    app:singleLine="false"
+                    app:maxLines="3"
+                    app:value="@={data.caseOrEventInformation}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/contact_quarantine"
                     app:value="@={data.quarantine}"
@@ -236,22 +252,6 @@
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/contact_careForPeopleOver60"
                     app:value="@={data.careForPeopleOver60}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/contact_caseIdExternalSystem"
-                    app:value="@={data.caseIdExternalSystem}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/contact_caseOrEventInformation"
-                    app:inputType="textMultiLine"
-                    app:textAlignment="gravity"
-                    app:gravity="top|start"
-                    app:textArea="true"
-                    app:singleLine="false"
-                    app:maxLines="3"
-                    app:value="@={data.caseOrEventInformation}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
