@@ -88,19 +88,19 @@ public class InfrastructureImporter extends DataImporter {
 			try {
 				switch (type) {
 				case COMMUNITY:
-					FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto, false);
+					FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto);
 					break;
 				case DISTRICT:
-					FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto, false);
+					FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto);
 					break;
 				case FACILITY:
-					FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto, false);
+					FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto);
 					break;
 				case POINT_OF_ENTRY:
-					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto, false);
+					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto);
 					break;
 				case REGION:
-					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto, false);
+					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto);
 					break;
 				default:
 					throw new IllegalArgumentException(type.toString());

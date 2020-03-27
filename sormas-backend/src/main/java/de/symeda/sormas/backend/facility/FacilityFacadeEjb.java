@@ -365,12 +365,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
-		saveFacility(dto, true);
-	}
-
-	@Override
-	public void saveFacility(FacilityDto dto, boolean allowExistingName) throws ValidationRuntimeException {
-		if (!allowExistingName) {
+		if (getByUuid(dto.getUuid()) == null) {
 			if (FacilityType.LABORATORY.equals(dto.getType()) && !getLaboratoriesByName(dto.getName()).isEmpty()) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importLaboratoryAlreadyExists));
 			} else if (!getByName(dto.getName(), dto.getDistrict(), dto.getCommunity()).isEmpty()) {

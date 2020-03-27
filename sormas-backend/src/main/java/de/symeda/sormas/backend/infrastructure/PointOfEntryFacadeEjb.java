@@ -138,12 +138,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
-		save(dto, true);
-	}
-
-	@Override
-	public void save(PointOfEntryDto dto, boolean allowExistingName) throws ValidationRuntimeException {
-		if (!allowExistingName && !getByName(dto.getName(), dto.getDistrict()).isEmpty()) {
+		if (getByUuid(dto.getUuid()) == null && !getByName(dto.getName(), dto.getDistrict()).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPointOfEntryAlreadyExists));
 		}
 		
