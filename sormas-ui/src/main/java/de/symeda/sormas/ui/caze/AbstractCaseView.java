@@ -59,7 +59,6 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
 
 	private CaseReferenceDto caseRef = null;
-	private CaseDataDto caze = null;
 	private Boolean hasOutbreak;
 
 	private ViewConfiguration viewConfiguration;
@@ -113,7 +112,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			return;
 		}
 		
-		caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 
 		// Handle outbreaks for the disease and district of the case
 		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease()) && caze.getDisease().usesSimpleViewForOutbreaks()) {
@@ -187,10 +186,6 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 	public CaseReferenceDto getCaseRef() {
 		return caseRef;
-	}
-	
-	public CaseDataDto getCaze() {
-		return caze;
 	}
 
 	public boolean isHasOutbreak() {

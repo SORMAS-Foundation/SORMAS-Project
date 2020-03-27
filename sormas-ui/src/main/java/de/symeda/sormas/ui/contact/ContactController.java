@@ -28,6 +28,7 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -66,7 +67,11 @@ public class ContactController {
 		create(null);
 	}
 
-	public void create(CaseDataDto caze) {
+	public void create(CaseReferenceDto caseRef) {
+		CaseDataDto caze = null;
+		if (caseRef != null) {
+			caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
+		}
 		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));    	
 	}

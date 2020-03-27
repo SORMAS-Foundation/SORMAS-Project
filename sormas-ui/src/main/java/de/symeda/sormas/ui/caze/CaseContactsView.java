@@ -252,7 +252,7 @@ public class CaseContactsView extends AbstractCaseView {
 			newButton = new Button(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact));
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			newButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaze()));
+			newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
 			statusFilterLayout.addComponent(newButton);
 			statusFilterLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
 		}
