@@ -101,7 +101,7 @@ if [[ ${LINUX} = true ]]; then
 else
 	echo "OS: Windows"
 fi
-echo "Java JDK: ${AS_JAVA_NATIVE}"
+echo "Custom Java JDK: ${AS_JAVA_NATIVE}"
 echo "Payara: ${PAYARA_VERSION}"
 echo "Temp directory: ${TEMP_DIR}"
 echo "Directory for generated files: ${GENERATED_DIR}"
