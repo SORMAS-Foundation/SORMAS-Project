@@ -401,10 +401,10 @@
     <string name="info_reset_pin">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="info_resync_duration">Re-sync will probably take several minutes.</string>
     <string name="info_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
-    <string name="info_sign_in">Sign into SORMAS to continue the journey of saving lives.</string>
-    <string name="info_similar_persons_found">The name of at least one person already existing in SORMAS is similar to the name you entered.</string>
-    <string name="info_symptoms">Please select an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
-    <string name="info_synchronizing">Synchronizing with SORMAS server...</string>
+    <string name="info_sign_in">Connectez-vous à SORMAS pour continuer à sauver des vies.</string>
+    <string name="info_similar_persons_found">Le nom d\'au moins une personne existant déjà dans SORMAS est similaire au nom que vous avez saisi.</string>
+    <string name="info_symptoms">Veuillez sélectionner une réponse pour TOUS les symptômes indiquant s\'ils sont survenus au cours de cette maladie entre l\'apparition des symptômes et la détection du cas :</string>
+    <string name="info_synchronizing">Synchronisation avec le serveur SORMAS...</string>
     <string name="info_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="info_pick_or_create_case">There is at least one existing case in the database that seems very similar to the one you are about to create. Please do one of the following:\n\n\u2022 Tap on a case that you <b>are sure</b> is the same case that you were about to create\n\u2022 Scroll to the bottom of this window and check the check box if you <b>are sure</b> that your case is a new case\n\nClick on the button in the bottom right to confirm your choice.</string>
     <string name="info_case_creation_mark_check_box">This case is a <b>new case</b> and <b>not a duplicate</b> of one of the cases above</string>
