@@ -90,6 +90,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 	
+	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
+	
+	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
+
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
@@ -142,11 +146,11 @@ public class StartupShutdownService {
 	public void startup() {
 		logger.info("Initiating automatic database update of main database...");
 
-		updateDatabase(em, "sql/sormas_schema.sql");
+		updateDatabase(em, SORMAS_SCHEMA);
 
 		logger.info("Initiating automatic database update of audit database...");
 
-		updateDatabase(emAudit, "sql/sormas_audit_schema.sql");
+		updateDatabase(emAudit, AUDIT_SCHEMA);
 
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 
@@ -413,17 +417,17 @@ public class StartupShutdownService {
 		logger.info("Starting automatic database update...");
 
 		boolean hasSchemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
-		Integer currentVersion;
+		Integer databaseVersion;
 		if (hasSchemaVersion) {
-			currentVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();	
+			databaseVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();	
 		} else {
-			currentVersion = null;
+			databaseVersion = null;
 		}
 
 		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName);
 				Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
 			StringBuilder nextUpdateBuilder = new StringBuilder();
-			boolean currentVersionReached = currentVersion == null;
+			boolean currentVersionReached = databaseVersion == null;
 
 			while (scanner.hasNextLine()) {
 				String nextLine = scanner.nextLine();
@@ -432,12 +436,11 @@ public class StartupShutdownService {
 					continue;
 				}
 				
-				Integer newVersion = extractSchemaVersion(nextLine);
+				Integer schemaLineVersion = extractSchemaVersion(nextLine);
 
+				//skip until current version of database is reached
 				if (!currentVersionReached) {
-					if (currentVersion.equals(newVersion)) {
-						currentVersionReached = true;
-					}
+					currentVersionReached = databaseVersion.equals(schemaLineVersion);
 					continue;
 				}
 
@@ -447,8 +450,8 @@ public class StartupShutdownService {
 				nextUpdateBuilder.append(nextLine).append("\n");
 
 				// Perform the current update when the INSERT INTO schema_version statement is reached
-				if (newVersion != null) {
-					logger.info("Updating database to version {}...", newVersion);
+				if (schemaLineVersion != null) {
+					logger.info("Updating database to version {}...", schemaLineVersion);
 					entityManager.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
 					nextUpdateBuilder.setLength(0);
 				}
