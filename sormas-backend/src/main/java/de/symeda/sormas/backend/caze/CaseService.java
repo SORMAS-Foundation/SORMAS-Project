@@ -549,6 +549,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 			}
 		}
+		if (caseCriteria.getSourceCaseInfoLike() != null) {
+			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
+							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
+							cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
 		return filter;
 	}
 

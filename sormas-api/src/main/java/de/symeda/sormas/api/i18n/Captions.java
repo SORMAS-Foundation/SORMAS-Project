@@ -268,6 +268,8 @@ public interface Captions {
 	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
 	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
 	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
+	public static String Contact_caseIdExternalSystem = "Contact.caseIdExternalSystem";
+	public static String Contact_caseOrEventInformation = "Contact.caseOrEventInformation";
 	public static String Contact_caseRegionUuid = "Contact.caseRegionUuid";
 	public static String Contact_caze = "Contact.caze";
 	public static String Contact_caze_ageSex = "Contact.caze.ageSex";
@@ -315,6 +317,8 @@ public interface Captions {
 	public static String contactArchivedContacts = "contactArchivedContacts";
 	public static String contactCancelFollowUp = "contactCancelFollowUp";
 	public static String contactCaseContacts = "contactCaseContacts";
+	public static String contactChangeCase = "contactChangeCase";
+	public static String contactChooseCase = "contactChooseCase";
 	public static String contactContactsList = "contactContactsList";
 	public static String contactContactsOverview = "contactContactsOverview";
 	public static String contactCreateContactCase = "contactCreateContactCase";
@@ -332,6 +336,7 @@ public interface Captions {
 	public static String contactPersonVisits = "contactPersonVisits";
 	public static String contactPlusDays = "contactPlusDays";
 	public static String contactRelated = "contactRelated";
+	public static String contactRemoveCase = "contactRemoveCase";
 	public static String contactResumeFollowUp = "contactResumeFollowUp";
 	public static String creationDate = "creationDate";
 	public static String dashboardAlive = "dashboardAlive";

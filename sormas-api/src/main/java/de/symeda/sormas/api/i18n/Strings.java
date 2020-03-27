@@ -283,6 +283,7 @@ public interface Strings {
 	public static String headingResults = "headingResults";
 	public static String headingSamplesDeleted = "headingSamplesDeleted";
 	public static String headingSaveNotification = "headingSaveNotification";
+	public static String headingSelectSourceCase = "headingSelectSourceCase";
 	public static String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	public static String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	public static String headingStoppedFollowUp = "headingStoppedFollowUp";
@@ -317,6 +318,7 @@ public interface Strings {
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoCompletenessMerge = "infoCompletenessMerge";
+	public static String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	public static String infoContactDashboard = "infoContactDashboard";
 	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
@@ -347,6 +349,7 @@ public interface Strings {
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
+	public static String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
 	public static String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	public static String infoPopulationDataView = "infoPopulationDataView";
@@ -354,6 +357,7 @@ public interface Strings {
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
+	public static String infoSearchCaseForContact = "infoSearchCaseForContact";
 	public static String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";
@@ -534,6 +538,7 @@ public interface Strings {
 	public static String notificationCaseInvestigationDoneSubject = "notificationCaseInvestigationDoneSubject";
 	public static String notificationContactSymptomatic = "notificationContactSymptomatic";
 	public static String notificationContactSymptomaticSubject = "notificationContactSymptomaticSubject";
+	public static String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	public static String notificationDiseaseChanged = "notificationDiseaseChanged";
 	public static String notificationDiseaseChangedSubject = "notificationDiseaseChangedSubject";
 	public static String notificationLabResultArrived = "notificationLabResultArrived";
