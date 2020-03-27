@@ -325,7 +325,7 @@ cp stop-payara-sormas.sh "${DOMAIN_DIR}"
 cp logback.xml ${DOMAIN_DIR}/config/
 if [[ ${DEV_SYSTEM} = true ]] && [[ ${LINUX} != true ]]; then
 	# Fixes outdated certificate - don't do this on linux systems!
-	cp cacerts.jks "${DOMAIN_DIR}/config/cacerts.jks"
+	cp cacerts.jks.bin "${DOMAIN_DIR}/config/cacerts.jks"
 fi
 cp loginsidebar.html "${CUSTOM_DIR}"
 cp logindetails.html "${CUSTOM_DIR}"
