@@ -163,7 +163,7 @@ public class ContactController {
 									if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 										PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid());
 										if (personDto.getAddress().isEmptyLocation()) {
-											CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+											CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
 											personDto.getAddress().setRegion(caseDto.getRegion());
 											personDto.getAddress().setDistrict(caseDto.getDistrict());
 											personDto.getAddress().setCommunity(caseDto.getCommunity());
@@ -184,7 +184,6 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
-
 		ContactDataForm editForm = new ContactDataForm(UserRight.CONTACT_EDIT);
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);

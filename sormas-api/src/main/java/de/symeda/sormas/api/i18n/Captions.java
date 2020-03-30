@@ -319,6 +319,7 @@ public interface Captions {
 	public static String contactCaseContacts = "contactCaseContacts";
 	public static String contactChangeCase = "contactChangeCase";
 	public static String contactChooseCase = "contactChooseCase";
+	public static String contactChooseSourceCase = "contactChooseSourceCase";
 	public static String contactContactsList = "contactContactsList";
 	public static String contactContactsOverview = "contactContactsOverview";
 	public static String contactCreateContactCase = "contactCreateContactCase";

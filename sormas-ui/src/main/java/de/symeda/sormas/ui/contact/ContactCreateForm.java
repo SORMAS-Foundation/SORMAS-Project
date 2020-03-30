@@ -158,6 +158,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 						chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
 
 						cbDisease.setValue(selectedCase.getDisease());
+						getValue().setCaze(this.selectedCase);
 						updateFieldVisibilitiesByCase(true);
 					}
 				});
@@ -167,6 +168,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			CssStyles.style(removeCaseButton, ValoTheme.BUTTON_LINK);
 			removeCaseButton.addClickListener(e -> {
 				this.selectedCase = null;
+				getValue().setCaze(null);
 				caseInfoLabel.setValue(I18nProperties.getString(Strings.infoNoSourceCaseSelected));
 				caseInfoLabel.addStyleName(CssStyles.VSPACE_TOP_4);
 				removeCaseButton.setVisible(false);
