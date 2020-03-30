@@ -50,6 +50,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDateType;
@@ -133,6 +134,7 @@ public class ContactsView extends AbstractView {
 	private Button expandFiltersButton;
 	private Button collapseFiltersButton;
 	private ComboBox relevanceStatusFilter;
+	private ComboBox categoryFilter;
 
 	private String originalViewTitle;
 
@@ -325,6 +327,19 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
+
+			if (isGermanServer()) {
+				categoryFilter = new ComboBox();
+				categoryFilter.setWidth(140, Unit.PIXELS);
+				categoryFilter.setInputPrompt(
+						I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CATEGORY));
+				categoryFilter.addItems((Object[]) ContactCategory.values());
+				categoryFilter.addValueChangeListener(e -> {
+					criteria.contactCategory(((ContactCategory) e.getProperty().getValue()));
+					navigateTo(criteria);
+				});
+				firstFilterRowLayout.addComponent(categoryFilter);
+			}
 
 			followUpStatusFilter = new ComboBox();
 			followUpStatusFilter.setWidth(140, Unit.PIXELS);
@@ -796,7 +811,8 @@ public class ContactsView extends AbstractView {
 		reportedByFilter.setValue(criteria.getReportingUserRole());
 		quarantineToFilter.setValue(criteria.getQuarantineTo());
 		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
-		searchField.setValue(criteria.getNameUuidCaseLike());		
+		searchField.setValue(criteria.getNameUuidCaseLike());
+		categoryFilter.setValue(criteria.getContactCategory());
 
 		ContactDateType contactDateType = criteria.getReportDateFrom() != null ? ContactDateType.REPORT_DATE 
 				: criteria.getLastContactDateFrom() != null ? ContactDateType.LAST_CONTACT_DATE : null;

@@ -48,6 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -90,10 +91,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 			fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
 			loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
-			fluidRowLocs(ContactDto.CONTACT_PROXIMITY, "") +
+			fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
+					fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
 			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+					fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 			fluidRowLocs(ContactDto.DESCRIPTION) +
-			fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
 			locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 			fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
@@ -108,6 +111,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
 	private ComboBox cbDisease;
+
+	private OptionGroup contactCategory;
 
 	public ContactDataForm(UserRight editOrCreateUserRight) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -124,6 +129,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		if (isGermanServer()) {
+			contactProximity.addValueChangeListener(
+					e -> trySetContactProximityDetails((ContactProximity) contactProximity.getValue()));
+			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
+			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
+		}
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
 		cbDisease = addDiseaseField(ContactDto.DISEASE, false);
@@ -252,6 +263,33 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS);
 		FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
+	}
+
+	/*
+	 * Only used for Systems in Germany. Follows specific rules for german systems.
+	 */
+	private void trySetContactProximityDetails(ContactProximity proximity) {
+		if (proximity != null && contactCategory.getValue() == null) {
+			switch (proximity) {
+			case FACE_TO_FACE_LONG:
+			case TOUCHED_FLUID:
+			case AEROSOL:
+			case MEDICAL_UNSAVE:
+				contactCategory.setValue(ContactCategory.HIGH_RISK);
+				break;
+			case SAME_ROOM:
+			case FACE_TO_FACE_SHORT:
+			case MEDICAL_SAME_ROOM:
+				contactCategory.setValue(ContactCategory.LOW_RISK);
+				break;
+			case MEDICAL_DISTANT:
+			case MEDICAL_SAVE:
+				contactCategory.setValue(ContactCategory.NO_RISK);
+				break;
+			default:
+				throw new IllegalArgumentException(proximity.toString());
+			}
+		}
 	}
 
 	private void updateQuarantineFields() {

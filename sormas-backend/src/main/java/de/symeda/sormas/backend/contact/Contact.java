@@ -32,6 +32,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -91,6 +92,8 @@ public class Contact extends CoreAdo {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
 	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
+	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
+	public static final String CONTACT_CATEGORY = "contactCategory";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -132,6 +135,9 @@ public class Contact extends CoreAdo {
 	
 	private String caseIdExternalSystem;
 	private String caseOrEventInformation;
+
+	private String contactProximityDetails;
+	private ContactCategory contactCategory;
 
 	private List<Task> tasks;
 	
@@ -459,4 +465,21 @@ public class Contact extends CoreAdo {
 		this.caseOrEventInformation = caseOrEventInformation;
 	}
 	
+	@Column(length = 512)
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
 }

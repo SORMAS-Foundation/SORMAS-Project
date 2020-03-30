@@ -105,8 +105,11 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 		pendingTasksColumn.setSortable(false);
 
 		setColumns(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
-				ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
+				ContactIndexDto.PERSON, ContactIndexDto.CONTACT_CATEGORY, ContactIndexDto.CONTACT_PROXIMITY,
 				ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.QUARANTINE_TO, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
+		if (!FacadeProvider.getConfigFacade().isGermanServer()) {
+			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
+		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>)getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));

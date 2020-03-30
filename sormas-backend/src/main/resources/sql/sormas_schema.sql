@@ -4046,3 +4046,13 @@ ALTER TABLE cases_history ADD COLUMN quarantinefrom timestamp;
 ALTER TABLE cases_history ADD COLUMN quarantineto timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (195, 'Add quarantine information to case #1675');
+
+-- 2020-03-27 Add contact category and type of contact comment #1635
+ALTER TABLE contact ADD COLUMN contactcategory varchar(255);
+ALTER TABLE contact ADD COLUMN contactproximitydetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN contactcategory varchar(255);
+ALTER TABLE contact_history ADD COLUMN contactproximitydetails varchar(512);
+-- Compromise solution for international systems (non-synchronized data from mobile devices are neglected):
+UPDATE contact SET contactproximitydetails = 'Airplane' WHERE contactproximity = 'AIRPLANE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (196, 'Add contact category and type of contact comment #1635');

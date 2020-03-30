@@ -832,6 +832,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getQuarantineTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Contact.QUARANTINE_TO), DateHelper.getStartOfDay(contactCriteria.getQuarantineTo()), DateHelper.getEndOfDay(contactCriteria.getQuarantineTo())));
 		}
+		if (contactCriteria.getContactCategory() != null) {
+			filter = and(cb, filter,
+					cb.equal(from.get(Contact.CONTACT_CATEGORY), contactCriteria.getContactCategory()));
+		}
 
 		return filter;
 	}

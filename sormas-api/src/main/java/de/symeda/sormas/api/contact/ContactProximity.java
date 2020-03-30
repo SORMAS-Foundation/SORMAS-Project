@@ -31,7 +31,7 @@ public enum ContactProximity {
 	SAME_ROOM,
 	AIRPLANE,
 	FACE_TO_FACE_SHORT,
-	MEDICAL_SAVE;
+	MEDICAL_SAVE, MEDICAL_SAME_ROOM, AEROSOL, MEDICAL_DISTANT;
 	
 	public boolean hasFollowUp() {
 		switch (this) {
@@ -43,10 +43,13 @@ public enum ContactProximity {
 		case PHYSICAL_CONTACT:
 		case SAME_ROOM:
 		case TOUCHED_FLUID:
+		case MEDICAL_SAME_ROOM:
+		case AEROSOL:
 			return true;
 
 		case FACE_TO_FACE_SHORT:
 		case MEDICAL_SAVE:
+		case MEDICAL_DISTANT:
 			return false;
 			
 		default:
@@ -61,7 +64,8 @@ public enum ContactProximity {
 		if (disease != null && serverLocale != null && serverLocale.startsWith("de")) {
 			switch (disease) {
 			case CORONAVIRUS:
-				return new ContactProximity[] { TOUCHED_FLUID, FACE_TO_FACE_LONG, MEDICAL_UNSAVE, AIRPLANE, FACE_TO_FACE_SHORT, MEDICAL_SAVE };
+				return new ContactProximity[] { TOUCHED_FLUID, FACE_TO_FACE_LONG, MEDICAL_UNSAVE, FACE_TO_FACE_SHORT,
+						MEDICAL_SAVE, SAME_ROOM, MEDICAL_SAME_ROOM, AEROSOL, MEDICAL_DISTANT };
 			default:
 				break;
 			}

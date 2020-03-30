@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -60,6 +61,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
     private List<Item> diseaseList;
+    private List<Item> categoryList;
 
     // Instance methods
 
@@ -157,6 +159,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
         diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+        categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
     }
 
     @Override
@@ -180,6 +183,14 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale()))));
 
+        String germanyLocale = "de";
+        if (germanyLocale.equals(ConfigProvider.getServerLocale())){
+            contentBinding.contactContactProximity.addValueChangedListener(e -> trySetContactProximityDetails(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
+        } else {
+            contentBinding.contactContactProximityDetails.setVisibility(GONE);
+            contentBinding.contactContactCategory.setVisibility(GONE);
+        }
+
         if (record.getCaseUuid() != null) {
             contentBinding.contactDisease.setVisibility(GONE);
             contentBinding.contactCaseIdExternalSystem.setVisibility(GONE);
@@ -195,6 +206,33 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         //contentBinding.setContactProximityClass(ContactProximity.class);
     }
 
+    /*
+     * Only used for Systems in Germany. Follows specific rules for german systems.
+     */
+    private void trySetContactProximityDetails(FragmentContactEditLayoutBinding contentBinding, ContactProximity proximity) {
+        if (proximity != null && contentBinding.contactContactCategory.getValue() == null) {
+            switch (proximity) {
+                case FACE_TO_FACE_LONG:
+                case TOUCHED_FLUID:
+                case AEROSOL:
+                case MEDICAL_UNSAVE:
+                    contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK);
+                    break;
+                case SAME_ROOM:
+                case FACE_TO_FACE_SHORT:
+                case MEDICAL_SAME_ROOM:
+                    contentBinding.contactContactCategory.setValue(ContactCategory.LOW_RISK);
+                    break;
+                case MEDICAL_DISTANT:
+                case MEDICAL_SAVE:
+                    contentBinding.contactContactCategory.setValue(ContactCategory.NO_RISK);
+                    break;
+                default:
+                    throw new IllegalArgumentException(proximity.toString());
+            }
+        }
+    }
+
     @Override
     public void onAfterLayoutBinding(FragmentContactEditLayoutBinding contentBinding) {
         setUpFieldVisibilities(contentBinding);
@@ -203,6 +241,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
         contentBinding.contactContactClassification.initializeSpinner(contactClassificationList);
         contentBinding.contactQuarantine.initializeSpinner(quarantineList);
+        contentBinding.contactContactCategory.initializeSpinner(categoryList);
 
         // Initialize ControlDateFields
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
