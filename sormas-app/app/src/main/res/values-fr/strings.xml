@@ -419,7 +419,7 @@
     <string name="main_menu_tasks">Tâches</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Déjà en train de sauvegarder..</string>
-    <string name="message_case_infrastructure_data_changed">You have changed the infrastructure data of this case. Do you want to transfer the case to the new health facility (the hospitalization data will be updated) or do you only want to edit the data to correct a mistake?</string>
+    <string name="message_case_infrastructure_data_changed">Vous avez modifié les données d\'infrastructure de ce cas. Voulez-vous transférer le cas vers le nouvel établissement de santé (les données d\'hospitalisation seront mises à jour) ou voulez-vous seulement modifier les données pour corriger une erreur ?</string>
     <string name="message_download_app_failed">The download of the new SORMAS version failed. Please make sure you have the best internet connection possible and try again or inform a supervisor if you keep getting this error despite a good internet connection.</string>
     <string name="message_empty_password">Please enter a password.</string>
     <string name="message_empty_username">Please enter a username.</string>
