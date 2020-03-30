@@ -51,6 +51,7 @@ public interface Strings {
 	public static String confirmationArchiveRegions = "confirmationArchiveRegions";
 	public static String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	public static String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
+	public static String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
 	public static String confirmationDearchiveCase = "confirmationDearchiveCase";
 	public static String confirmationDearchiveCases = "confirmationDearchiveCases";
 	public static String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
@@ -84,6 +85,7 @@ public interface Strings {
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
+	public static String confirmationRemoveCaseFromContact = "confirmationRemoveCaseFromContact";
 	public static String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	public static String day = "day";
 	public static String done = "done";
@@ -185,6 +187,7 @@ public interface Strings {
 	public static String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	public static String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	public static String headingDisableLineListing = "headingDisableLineListing";
+	public static String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
 	public static String headingDownloadErrorReport = "headingDownloadErrorReport";
 	public static String headingDownloadImportGuide = "headingDownloadImportGuide";
 	public static String headingDownloadImportTemplate = "headingDownloadImportTemplate";
@@ -278,11 +281,13 @@ public interface Strings {
 	public static String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
 	public static String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	public static String headingReferSample = "headingReferSample";
+	public static String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
 	public static String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	public static String headingRequestedPathogenTests = "headingRequestedPathogenTests";
 	public static String headingResults = "headingResults";
 	public static String headingSamplesDeleted = "headingSamplesDeleted";
 	public static String headingSaveNotification = "headingSaveNotification";
+	public static String headingSelectSourceCase = "headingSelectSourceCase";
 	public static String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	public static String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	public static String headingStoppedFollowUp = "headingStoppedFollowUp";
@@ -317,6 +322,7 @@ public interface Strings {
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoCompletenessMerge = "infoCompletenessMerge";
+	public static String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	public static String infoContactDashboard = "infoContactDashboard";
 	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
@@ -347,6 +353,7 @@ public interface Strings {
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
+	public static String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
 	public static String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	public static String infoPopulationDataView = "infoPopulationDataView";
@@ -354,6 +361,7 @@ public interface Strings {
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
+	public static String infoSearchCaseForContact = "infoSearchCaseForContact";
 	public static String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";
@@ -402,6 +410,8 @@ public interface Strings {
 	public static String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	public static String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	public static String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
+	public static String messageContactCaseChanged = "messageContactCaseChanged";
+	public static String messageContactCaseRemoved = "messageContactCaseRemoved";
 	public static String messageContactCreated = "messageContactCreated";
 	public static String messageContactSaved = "messageContactSaved";
 	public static String messageContactsDeleted = "messageContactsDeleted";
@@ -534,6 +544,7 @@ public interface Strings {
 	public static String notificationCaseInvestigationDoneSubject = "notificationCaseInvestigationDoneSubject";
 	public static String notificationContactSymptomatic = "notificationContactSymptomatic";
 	public static String notificationContactSymptomaticSubject = "notificationContactSymptomaticSubject";
+	public static String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	public static String notificationDiseaseChanged = "notificationDiseaseChanged";
 	public static String notificationDiseaseChangedSubject = "notificationDiseaseChangedSubject";
 	public static String notificationLabResultArrived = "notificationLabResultArrived";

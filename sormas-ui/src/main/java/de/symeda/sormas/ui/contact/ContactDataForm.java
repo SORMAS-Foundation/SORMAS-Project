@@ -47,6 +47,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -106,6 +107,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
+	private ComboBox cbDisease;
 
 	public ContactDataForm(UserRight editOrCreateUserRight) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -124,7 +126,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
-		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false);
+		cbDisease = addDiseaseField(ContactDto.DISEASE, false);
 		cbDisease.setNullSelectionAllowed(false);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 
@@ -358,6 +360,29 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		ContactProximity value = (ContactProximity) contactProximity.getValue();
 		FieldHelper.updateEnumData(contactProximity, Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
 		contactProximity.setValue(value);
+	}
+	
+	public Disease getSelectedDisease() {
+		if (getValue().getCaze() != null) {
+			return getValue().getDisease();
+		} else {
+			return (Disease) cbDisease.getValue();
+		}
+	}
+	
+	public void setSourceCase(CaseIndexDto caze) {
+		if (caze != null) {
+			getValue().setCaze(caze.toReference());
+			updateFieldVisibilitiesByCase(true);
+		} else {
+			getValue().setCaze(null);
+			updateFieldVisibilitiesByCase(false);
+		}
+	}
+
+	private void updateFieldVisibilitiesByCase(boolean caseSelected) {
+		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION);
+		setRequired(!caseSelected, ContactDto.DISEASE, ContactDto.REGION, ContactDto.DISTRICT);
 	}
 
 	@Override

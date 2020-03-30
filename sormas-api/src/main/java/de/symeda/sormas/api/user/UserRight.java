@@ -411,6 +411,13 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			CONTACT_SUPERVISOR
 			),
+	// reassign or remove the case from an existing contact
+	CONTACT_REASSIGN_CASE(
+			ADMIN,
+			NATIONAL_USER,
+			SURVEILLANCE_SUPERVISOR,
+			CONTACT_SUPERVISOR
+			),
 	VISIT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
