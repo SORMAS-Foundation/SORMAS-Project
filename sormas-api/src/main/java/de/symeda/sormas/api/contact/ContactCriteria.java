@@ -55,6 +55,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String nameUuidCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
+	private Date quarantineTo;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -257,6 +258,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria onlyHighPriorityContacts(Boolean onlyHighPriorityContacts) {
 		this.onlyHighPriorityContacts = onlyHighPriorityContacts;
+		return this;
+	}
+	
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+	
+	public ContactCriteria quarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 		return this;
 	}
 	

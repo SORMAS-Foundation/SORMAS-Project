@@ -73,6 +73,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private CaseOrigin caseOrigin;
 	private EntityRelevanceStatus relevanceStatus;
 	private String sourceCaseInfoLike;
+	private Date quarantineTo;
 	
 	@Override
 	public CaseCriteria clone() {
@@ -373,6 +374,19 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
+	}
+	
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+	
+	public CaseCriteria quarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+		return this;
+	}
+	
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 	}
 	
 }

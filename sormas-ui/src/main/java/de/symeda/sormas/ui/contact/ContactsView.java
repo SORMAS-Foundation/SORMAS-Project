@@ -43,6 +43,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -124,6 +125,7 @@ public class ContactsView extends AbstractView {
 	private ComboBox officerFilter;
 	private ComboBox followUpStatusFilter;
 	private ComboBox reportedByFilter;
+	private PopupDateField quarantineToFilter;
 	private CheckBox onlyHighPriorityContacts;
 	private TextField searchField;
 	private Button resetButton;
@@ -452,6 +454,15 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
+			
+			quarantineToFilter = new PopupDateField();
+			quarantineToFilter.setWidth(200, Unit.PIXELS);
+			quarantineToFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO));
+			quarantineToFilter.addValueChangeListener(e -> {
+				criteria.quarantineTo((Date) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			secondFilterRowLayout.addComponent(quarantineToFilter);
 			
 			onlyHighPriorityContacts = new CheckBox();
 			onlyHighPriorityContacts.setCaption(I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts));
@@ -783,6 +794,7 @@ public class ContactsView extends AbstractView {
 		officerFilter.setValue(criteria.getContactOfficer());
 		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
+		quarantineToFilter.setValue(criteria.getQuarantineTo());
 		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
 		searchField.setValue(criteria.getNameUuidCaseLike());		
 

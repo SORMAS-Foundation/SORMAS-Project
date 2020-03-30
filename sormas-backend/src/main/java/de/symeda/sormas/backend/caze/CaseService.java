@@ -470,6 +470,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getCreationDateTo() != null) {
 			filter = and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(caseCriteria.getCreationDateTo())));
 		}
+		if (caseCriteria.getQuarantineTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Case.QUARANTINE_TO), DateHelper.getStartOfDay(caseCriteria.getQuarantineTo()), DateHelper.getEndOfDay(caseCriteria.getQuarantineTo())));
+		}
 		if (caseCriteria.getPerson() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}

@@ -1085,7 +1085,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				surveillanceOfficer.get(User.UUID), root.get(Case.OUTCOME), person.get(Person.APPROXIMATE_AGE),
 				person.get(Person.APPROXIMATE_AGE_TYPE), person.get(Person.BIRTHDATE_DD),
 				person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY), person.get(Person.SEX),
-				root.get(Case.COMPLETENESS));
+				root.get(Case.QUARANTINE_TO), root.get(Case.COMPLETENESS));
 	}
 
 	private void setIndexDtoSortingOrder(CriteriaBuilder cb, CriteriaQuery<CaseIndexDto> cq, Root<Case> root,
@@ -1113,6 +1113,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				case CaseIndexDto.REPORT_DATE:
 				case CaseIndexDto.CREATION_DATE:
 				case CaseIndexDto.OUTCOME:
+				case CaseIndexDto.QUARANTINE_TO:
 				case CaseIndexDto.COMPLETENESS:
 					expression = root.get(sortProperty.propertyName);
 					break;
