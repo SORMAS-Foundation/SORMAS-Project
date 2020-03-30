@@ -4026,3 +4026,13 @@ ALTER TABLE contact_history ADD COLUMN caseidexternalsystem varchar(255);
 ALTER TABLE contact_history ADD COLUMN caseoreventinformation varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (193, 'Allow creation of contacts without a case #1599');
+
+-- 2020-03-30 Add email address, passport number and national health id to person #1639 & #1681
+ALTER TABLE person ADD COLUMN emailaddress varchar(255);
+ALTER TABLE person ADD COLUMN passportnumber varchar(255);
+ALTER TABLE person ADD COLUMN nationalhealthid varchar(255);
+ALTER TABLE person_history ADD COLUMN emailaddress varchar(255);
+ALTER TABLE person_history ADD COLUMN passportnumber varchar(255);
+ALTER TABLE person_history ADD COLUMN nationalhealthid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (194, 'Add email address, passport number and national health id to person #1639 & #1681');
