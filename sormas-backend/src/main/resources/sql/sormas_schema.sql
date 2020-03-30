@@ -4036,3 +4036,13 @@ ALTER TABLE person_history ADD COLUMN passportnumber varchar(255);
 ALTER TABLE person_history ADD COLUMN nationalhealthid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (194, 'Add email address, passport number and national health id to person #1639 & #1681');
+
+-- 2020-03-30 Add quarantine information to case #1675
+ALTER TABLE cases ADD COLUMN quarantine varchar(255);
+ALTER TABLE cases ADD COLUMN quarantinefrom timestamp;
+ALTER TABLE cases ADD COLUMN quarantineto timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantine varchar(255);
+ALTER TABLE cases_history ADD COLUMN quarantinefrom timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineto timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (195, 'Add quarantine information to case #1675');
