@@ -337,7 +337,7 @@ fi
 
 
 if [[ ${LINUX} = true ]]; then
-	cp payara-sormas /etc/init.d
+	cp payara-sormas.sh /etc/init.d/payara-sormas
 	chmod 755 /etc/init.d/payara-sormas
 	update-rc.d payara-sormas defaults
 	
