@@ -183,8 +183,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale()))));
 
-        String germanyLocale = "de";
-        if (germanyLocale.equals(ConfigProvider.getServerLocale())){
+        if (ConfigProvider.isGermanServer()){
             contentBinding.contactContactProximity.addValueChangedListener(e -> trySetContactProximityDetails(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
         } else {
             contentBinding.contactContactProximityDetails.setVisibility(GONE);
