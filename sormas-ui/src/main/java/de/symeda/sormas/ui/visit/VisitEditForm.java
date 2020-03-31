@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.visit;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 import java.util.Date;
 
@@ -26,6 +28,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
@@ -38,16 +41,16 @@ import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.fluidRowLocs(VisitDto.VISIT_STATUS)+
-    		LayoutUtil.fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS)+
-			LayoutUtil.fluidRowLocs(VisitDto.SYMPTOMS)
-			;
+    		fluidRowLocs(VisitDto.VISIT_STATUS) +
+    		fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) +
+			fluidRowLocs(VisitDto.SYMPTOMS);
     
     private final Disease disease;
     private final ContactDto contact;
@@ -99,7 +102,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	    		@Override
 	    		public void validate(Object value) throws InvalidValueException {
 	    			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
-	    			Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+	    			Date contactReferenceDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 	    			if (visitDateTime.before(contactReferenceDate) && DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
 	    				if (contact.getLastContactDate() != null) {
 	    					throw new InvalidValueException(I18nProperties.getValidationError(Validations.visitBeforeLastContactDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));

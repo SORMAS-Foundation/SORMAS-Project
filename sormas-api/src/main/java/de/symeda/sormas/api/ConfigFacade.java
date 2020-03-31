@@ -73,5 +73,7 @@ public interface ConfigFacade {
 	GeoLatLon getCountryCenter();
 
 	int getMapZoom();
+
+	String getGeocodingOsgtsEndpoint();
 	
 }

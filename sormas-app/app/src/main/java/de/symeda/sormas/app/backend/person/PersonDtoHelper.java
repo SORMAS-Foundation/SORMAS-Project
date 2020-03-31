@@ -121,6 +121,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setBirthWeight(source.getBirthWeight());
 
         target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
+        target.setEmailAddress(source.getEmailAddress());
+        target.setPassportNumber(source.getPassportNumber());
+        target.setNationalHealthId(source.getNationalHealthId());
     }
 
     @Override
@@ -216,6 +219,9 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setBirthWeight(source.getBirthWeight());
 
         target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
+        target.setEmailAddress(source.getEmailAddress());
+        target.setPassportNumber(source.getPassportNumber());
+        target.setNationalHealthId(source.getNationalHealthId());
     }
 
     public static PersonReferenceDto toReferenceDto(Person ado) {

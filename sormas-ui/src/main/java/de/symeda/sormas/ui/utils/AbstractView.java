@@ -27,6 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -130,5 +131,9 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 	public void setApplyingCriteria(boolean applyingCriteria) {
 		this.applyingCriteria = applyingCriteria;
+	}
+
+	protected boolean isGermanServer() {
+		return FacadeProvider.getConfigFacade().isGermanServer();
 	}
 }

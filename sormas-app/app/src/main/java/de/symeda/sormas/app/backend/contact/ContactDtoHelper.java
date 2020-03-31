@@ -74,7 +74,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     @Override
     public void fillInnerFromDto(Contact target, ContactDto source) {
         target.setCaseUuid(source.getCaze() != null ? source.getCaze().getUuid() : null);
-        target.setCaseDisease(source.getCaseDisease());
+        target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
         target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 
         target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
@@ -106,6 +107,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
         target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
         target.setCareForPeopleOver60(source.getCareForPeopleOver60());
+
+        target.setQuarantine(source.getQuarantine());
+        target.setQuarantineFrom(source.getQuarantineFrom());
+        target.setQuarantineTo(source.getQuarantineTo());
+
+        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
     }
 
     @Override
@@ -139,7 +147,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
             target.setResultingCase(null);
         }
 
-        target.setCaseDisease(source.getCaseDisease());
+        target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
 
         if (source.getReportingUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
@@ -176,6 +185,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
         target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
         target.setCareForPeopleOver60(source.getCareForPeopleOver60());
+
+        target.setQuarantine(source.getQuarantine());
+        target.setQuarantineFrom(source.getQuarantineFrom());
+        target.setQuarantineTo(source.getQuarantineTo());
+
+        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

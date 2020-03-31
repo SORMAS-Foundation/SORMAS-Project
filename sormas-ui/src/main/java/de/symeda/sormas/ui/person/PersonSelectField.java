@@ -121,7 +121,6 @@ public class PersonSelectField extends CustomField<PersonIndexDto> {
 			presentConditionLabel
 					.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 			presentConditionLabel.setWidthUndefined();
-			;
 			infoLayout.addComponent(presentConditionLabel);
 
 			districtLabel.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));

@@ -31,8 +31,9 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException {
-
-		RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		TestDataCreator creator = new TestDataCreator();
+		
+		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
 				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -154,6 +155,19 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(6, getCaseFacade().count(null, user.getUuid()));
 		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		
+		// Successful import of a case with different infrastructure combinations
+		creator.createRDCF("R1", "D1", "C1", "F1");
+		creator.createRDCF("R2", "D2", "C2", "F2");
+		creator.createRDCF("R3", "D3", "C3", "F3");
+		creator.createRDCF("R4", "D4", "C4", "F4");
+		
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_different_infrastructure.csv").getFile());
+		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(7, getCaseFacade().count(null, user.getUuid()));
 	}
 
 	@Test

@@ -31,6 +31,7 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.util.ReflectTools;
 
+import de.symeda.sormas.api.region.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 
@@ -63,8 +64,6 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	public LeafletMap() {
 		setId(getDomId());
 		getState().setZoom(5);
-		getState().setCenterLatitude(51.505);
-		getState().setCenterLongitude(-0.09);
 		getState().setTileLayerVisible(true);
 		getState().setTileLayerOpacity(1);
 
@@ -104,9 +103,9 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		return getState().getZoom();
 	}
 
-	public void setCenter(double lat, double lon) {
-		getState().setCenterLatitude(lat);
-		getState().setCenterLongitude(lon);
+	public void setCenter(GeoLatLon coordinates) {
+		getState().setCenterLatitude(coordinates.getLat());
+		getState().setCenterLongitude(coordinates.getLon());
 	}
 	
 	public void setTileLayerVisible(boolean tileLayerVisible) {

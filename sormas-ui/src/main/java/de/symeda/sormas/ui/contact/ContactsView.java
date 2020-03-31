@@ -43,12 +43,14 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDateType;
@@ -124,6 +126,7 @@ public class ContactsView extends AbstractView {
 	private ComboBox officerFilter;
 	private ComboBox followUpStatusFilter;
 	private ComboBox reportedByFilter;
+	private PopupDateField quarantineToFilter;
 	private CheckBox onlyHighPriorityContacts;
 	private TextField searchField;
 	private Button resetButton;
@@ -131,6 +134,7 @@ public class ContactsView extends AbstractView {
 	private Button expandFiltersButton;
 	private Button collapseFiltersButton;
 	private ComboBox relevanceStatusFilter;
+	private ComboBox categoryFilter;
 
 	private String originalViewTitle;
 
@@ -237,7 +241,7 @@ public class ContactsView extends AbstractView {
 					},
 					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
-
+			
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
 			warningLabel.setWidth(100, Unit.PERCENTAGE);
@@ -281,6 +285,14 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 		}
+		
+		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+			Button btnNewContact = new Button(I18nProperties.getCaption(Captions.contactNewContact));
+			btnNewContact.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnNewContact.setIcon(VaadinIcons.PLUS_CIRCLE);
+			btnNewContact.addClickListener(e -> ControllerProvider.getContactController().create());
+			addHeaderComponent(btnNewContact);
+		}
 
 		addComponent(gridLayout);
 	}
@@ -308,13 +320,26 @@ public class ContactsView extends AbstractView {
 
 			diseaseFilter = new ComboBox();
 			diseaseFilter.setWidth(140, Unit.PIXELS);
-			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISEASE));
+			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISEASE));
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
 			diseaseFilter.addValueChangeListener(e -> {
-				criteria.caseDisease(((Disease)e.getProperty().getValue()));
+				criteria.disease(((Disease)e.getProperty().getValue()));
 				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
+
+			if (isGermanServer()) {
+				categoryFilter = new ComboBox();
+				categoryFilter.setWidth(140, Unit.PIXELS);
+				categoryFilter.setInputPrompt(
+						I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CATEGORY));
+				categoryFilter.addItems((Object[]) ContactCategory.values());
+				categoryFilter.addValueChangeListener(e -> {
+					criteria.contactCategory(((ContactCategory) e.getProperty().getValue()));
+					navigateTo(criteria);
+				});
+				firstFilterRowLayout.addComponent(categoryFilter);
+			}
 
 			followUpStatusFilter = new ComboBox();
 			followUpStatusFilter.setWidth(140, Unit.PIXELS);
@@ -365,7 +390,7 @@ public class ContactsView extends AbstractView {
 				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-					criteria.caseRegion(region);
+					criteria.region(region);
 					navigateTo(criteria);
 				});
 				secondFilterRowLayout.addComponent(regionFilter);
@@ -377,7 +402,7 @@ public class ContactsView extends AbstractView {
 			districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 			districtFilter.addValueChangeListener(e -> {
 				DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-				criteria.caseDistrict(district);
+				criteria.district(district);
 				navigateTo(criteria);
 			});
 
@@ -444,6 +469,15 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
+			
+			quarantineToFilter = new PopupDateField();
+			quarantineToFilter.setWidth(200, Unit.PIXELS);
+			quarantineToFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO));
+			quarantineToFilter.addValueChangeListener(e -> {
+				criteria.quarantineTo((Date) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			secondFilterRowLayout.addComponent(quarantineToFilter);
 			
 			onlyHighPriorityContacts = new CheckBox();
 			onlyHighPriorityContacts.setCaption(I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts));
@@ -768,15 +802,17 @@ public class ContactsView extends AbstractView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		classificationFilter.setValue(criteria.getContactClassification());
-		diseaseFilter.setValue(criteria.getCaseDisease());
-		regionFilter.setValue(criteria.getCaseRegion());
-		districtFilter.setValue(criteria.getCaseDistrict());
+		diseaseFilter.setValue(criteria.getDisease());
+		regionFilter.setValue(criteria.getRegion());
+		districtFilter.setValue(criteria.getDistrict());
 		facilityFilter.setValue(criteria.getCaseFacility());
 		officerFilter.setValue(criteria.getContactOfficer());
 		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
+		quarantineToFilter.setValue(criteria.getQuarantineTo());
 		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
-		searchField.setValue(criteria.getNameUuidCaseLike());		
+		searchField.setValue(criteria.getNameUuidCaseLike());
+		categoryFilter.setValue(criteria.getContactCategory());
 
 		ContactDateType contactDateType = criteria.getReportDateFrom() != null ? ContactDateType.REPORT_DATE 
 				: criteria.getLastContactDateFrom() != null ? ContactDateType.LAST_CONTACT_DATE : null;

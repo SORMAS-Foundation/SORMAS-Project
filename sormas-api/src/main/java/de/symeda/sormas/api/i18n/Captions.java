@@ -266,9 +266,10 @@ public interface Captions {
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
 	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
-	public static String Contact_caseDisease = "Contact.caseDisease";
 	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
 	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
+	public static String Contact_caseIdExternalSystem = "Contact.caseIdExternalSystem";
+	public static String Contact_caseOrEventInformation = "Contact.caseOrEventInformation";
 	public static String Contact_caseRegionUuid = "Contact.caseRegionUuid";
 	public static String Contact_caze = "Contact.caze";
 	public static String Contact_caze_ageSex = "Contact.caze.ageSex";
@@ -284,6 +285,9 @@ public interface Captions {
 	public static String Contact_contactProximity = "Contact.contactProximity";
 	public static String Contact_contactStatus = "Contact.contactStatus";
 	public static String Contact_description = "Contact.description";
+	public static String Contact_disease = "Contact.disease";
+	public static String Contact_diseaseDetails = "Contact.diseaseDetails";
+	public static String Contact_district = "Contact.district";
 	public static String Contact_externalID = "Contact.externalID";
 	public static String Contact_firstName = "Contact.firstName";
 	public static String Contact_followUpComment = "Contact.followUpComment";
@@ -296,6 +300,10 @@ public interface Captions {
 	public static String Contact_lastName = "Contact.lastName";
 	public static String Contact_numberOfVisits = "Contact.numberOfVisits";
 	public static String Contact_person = "Contact.person";
+	public static String Contact_quarantine = "Contact.quarantine";
+	public static String Contact_quarantineFrom = "Contact.quarantineFrom";
+	public static String Contact_quarantineTo = "Contact.quarantineTo";
+	public static String Contact_region = "Contact.region";
 	public static String Contact_relationDescription = "Contact.relationDescription";
 	public static String Contact_relationToCase = "Contact.relationToCase";
 	public static String Contact_reportDateTime = "Contact.reportDateTime";
@@ -309,6 +317,9 @@ public interface Captions {
 	public static String contactArchivedContacts = "contactArchivedContacts";
 	public static String contactCancelFollowUp = "contactCancelFollowUp";
 	public static String contactCaseContacts = "contactCaseContacts";
+	public static String contactChangeCase = "contactChangeCase";
+	public static String contactChooseCase = "contactChooseCase";
+	public static String contactChooseSourceCase = "contactChooseSourceCase";
 	public static String contactContactsList = "contactContactsList";
 	public static String contactContactsOverview = "contactContactsOverview";
 	public static String contactCreateContactCase = "contactCreateContactCase";
@@ -326,6 +337,7 @@ public interface Captions {
 	public static String contactPersonVisits = "contactPersonVisits";
 	public static String contactPlusDays = "contactPlusDays";
 	public static String contactRelated = "contactRelated";
+	public static String contactRemoveCase = "contactRemoveCase";
 	public static String contactResumeFollowUp = "contactResumeFollowUp";
 	public static String creationDate = "creationDate";
 	public static String dashboardAlive = "dashboardAlive";

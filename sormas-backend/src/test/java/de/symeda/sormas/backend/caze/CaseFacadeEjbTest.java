@@ -110,7 +110,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
-				caze.toReference(), new Date(), new Date());
+				caze, new Date(), new Date());
 
 		// Follow-up status and duration should be set to the requirements for EVD
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
@@ -346,7 +346,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
-				caze.toReference(), new Date(), new Date());
+				caze, new Date(), new Date());
 		TaskDto task = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
 				caze.toReference(), null, null, new Date(), user.toReference());
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(),
@@ -564,7 +564,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		otherCase.setClinicianName("name");
 		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
 		ContactDto contact = creator.createContact(otherUserReference, otherUserReference, otherPersonReference,
-				otherCaseReference, new Date(), new Date());
+				otherCase, new Date(), new Date());
 		Region region = creator.createRegion("");
 		District district = creator.createDistrict("", region);
 		SampleDto sample = creator.createSample(otherCaseReference, otherUserReference,
@@ -698,6 +698,19 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
 		assertTrue(cut.isArchived(case1.getUuid()));
 		assertTrue(cut.isArchived(case2.getUuid()));
+	}
+
+	@Test
+	public void testCreateInvestigationTask() throws Exception {
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR).toReference();
+		UserReferenceDto surveillanceOfficer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		PersonReferenceDto person = creator.createPerson("Case", "Person").toReference();
+		
+		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		
+		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
+		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
 	}
 
 //	@Test

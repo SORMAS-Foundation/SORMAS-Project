@@ -30,14 +30,15 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.District;
@@ -55,7 +56,7 @@ public class Contact extends AbstractDomainObject {
 
 	public static final String PERSON = "person_id";
 	public static final String CASE_UUID = "caseUuid";
-	public static final String CASE_DISEASE = "caseDisease";
+	public static final String CASE_DISEASE = "disease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -91,8 +92,10 @@ public class Contact extends AbstractDomainObject {
 	private Person person;
 	@DatabaseField
 	private String caseUuid;
-	@Enumerated(EnumType.STRING)
-	private Disease caseDisease;
+	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "caseDisease")
+	private Disease disease;
+	@Column(length=512)
+	private String diseaseDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date lastContactDate;
 	@Enumerated(EnumType.STRING)
@@ -132,34 +135,51 @@ public class Contact extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown careForPeopleOver60;
 
+	@Enumerated(EnumType.STRING)
+	private QuarantineType quarantine;
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	private Date quarantineFrom;
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	private Date quarantineTo;
+
+	@Column
+	private String caseIdExternalSystem;
+	@Column(length = 512)
+	private String caseOrEventInformation;
+
+	@Enumerated(EnumType.STRING)
+	private ContactCategory contactCategory;
+	@Column(length = 512)
+	private String contactProximityDetails;
+
 	public Person getPerson() {
 		return person;
 	}
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
+
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
-	
+
 	public User getReportingUser() {
 		return reportingUser;
 	}
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
 	}
-	
+
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
@@ -302,12 +322,20 @@ public class Contact extends AbstractDomainObject {
 		this.caseUuid = caseUuid;
 	}
 
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setCaseDisease(Disease caseDisease) {
-		this.caseDisease = caseDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public String getExternalID() {
@@ -364,5 +392,60 @@ public class Contact extends AbstractDomainObject {
 
 	public void setCareForPeopleOver60(YesNoUnknown careForPeopleOver60) {
 		this.careForPeopleOver60 = careForPeopleOver60;
+	}
+
+	public QuarantineType getQuarantine() {
+		return quarantine;
+	}
+
+	public void setQuarantine(QuarantineType quarantine) {
+		this.quarantine = quarantine;
+	}
+
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+	}
+
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
+
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
 	}
 }

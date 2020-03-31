@@ -151,9 +151,9 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDisease(dashboardDataProvider.getDisease())
-						.caseRegion(dashboardDataProvider.getRegion())
-						.caseDistrict(dashboardDataProvider.getDistrict());
+						.disease(dashboardDataProvider.getDisease())
+						.region(dashboardDataProvider.getRegion())
+						.district(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					contactCriteria.reportDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
@@ -199,9 +199,9 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDisease(dashboardDataProvider.getDisease())
-						.caseRegion(dashboardDataProvider.getRegion())
-						.caseDistrict(dashboardDataProvider.getDistrict());
+						.disease(dashboardDataProvider.getDisease())
+						.region(dashboardDataProvider.getRegion())
+						.district(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					contactCriteria.reportDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
@@ -276,9 +276,9 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 				Date date = datesGroupedBy.get(i);
 
 				ContactCriteria contactCriteria = new ContactCriteria()
-						.caseDisease(dashboardDataProvider.getDisease())
-						.caseRegion(dashboardDataProvider.getRegion())
-						.caseDistrict(dashboardDataProvider.getDistrict());
+						.disease(dashboardDataProvider.getDisease())
+						.region(dashboardDataProvider.getRegion())
+						.district(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					contactCriteria.followUpUntilBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {

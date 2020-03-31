@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+
 import java.util.Arrays;
 
 import com.vaadin.v7.ui.CheckBox;
@@ -26,19 +30,18 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class BulkEventDataForm extends AbstractEditForm<EventDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String EVENT_STATUS_CHECKBOX = "eventStatusCheckbox";
-	private static final String EVENT_TYPE_CHECKBOX = "eventTypeCheckbox";
 	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, EVENT_STATUS_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(EventDto.EVENT_STATUS);
+			fluidRowLocsCss(VSPACE_4, EVENT_STATUS_CHECKBOX) +
+			fluidRowLocs(EventDto.EVENT_STATUS);
 
 	private CheckBox eventStatusCheckBox;
 	

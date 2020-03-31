@@ -63,7 +63,6 @@ public interface DistrictFacade {
 	
 	void dearchive(String districtUuid);
 	
-	
 	boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids);
 	
 	boolean hasArchivedParentInfrastructure(Collection<String> districtUuids);

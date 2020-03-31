@@ -217,6 +217,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	@Override
 	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
 		Community community = communityService.getByUuid(dto.getUuid());
+		
+		if (community == null && !getByName(dto.getName(), dto.getDistrict()).isEmpty()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCommunityAlreadyExists));
+		}
 
 		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));

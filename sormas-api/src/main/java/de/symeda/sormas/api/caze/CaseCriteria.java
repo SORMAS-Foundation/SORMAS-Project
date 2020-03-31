@@ -72,6 +72,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
 	private EntityRelevanceStatus relevanceStatus;
+	private String sourceCaseInfoLike;
+	private Date quarantineTo;
 	
 	@Override
 	public CaseCriteria clone() {
@@ -295,7 +297,17 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public String getNameUuidEpidNumberLike() {
 		return nameUuidEpidNumberLike;
 	}
-	
+
+	@IgnoreForUrl
+	public String getSourceCaseInfoLike() {
+		return sourceCaseInfoLike;
+	}
+
+	public CaseCriteria setSourceCaseInfoLike(String sourceCaseInfoLike) {
+		this.sourceCaseInfoLike = sourceCaseInfoLike;
+		return this;
+	}
+
 	public CaseCriteria reportingUserLike(String reportingUserLike) {
 		this.reportingUserLike = reportingUserLike;
 		return this;
@@ -362,6 +374,19 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
+	}
+	
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+	
+	public CaseCriteria quarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+		return this;
+	}
+	
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 	}
 	
 }

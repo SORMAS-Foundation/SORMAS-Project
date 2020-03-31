@@ -40,6 +40,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -250,6 +251,13 @@ public class Case extends AbstractDomainObject {
 
     @Column(length = 255)
     private String externalID;
+
+    @Enumerated(EnumType.STRING)
+    private QuarantineType quarantine;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date quarantineFrom;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date quarantineTo;
 
     public boolean isUnreferredPortHealthCase() {
         return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -739,5 +747,29 @@ public class Case extends AbstractDomainObject {
 
     public void setExternalID(String externalID) {
         this.externalID = externalID;
+    }
+
+    public QuarantineType getQuarantine() {
+        return quarantine;
+    }
+
+    public void setQuarantine(QuarantineType quarantine) {
+        this.quarantine = quarantine;
+    }
+
+    public Date getQuarantineFrom() {
+        return quarantineFrom;
+    }
+
+    public void setQuarantineFrom(Date quarantineFrom) {
+        this.quarantineFrom = quarantineFrom;
+    }
+
+    public Date getQuarantineTo() {
+        return quarantineTo;
+    }
+
+    public void setQuarantineTo(Date quarantineTo) {
+        this.quarantineTo = quarantineTo;
     }
 }

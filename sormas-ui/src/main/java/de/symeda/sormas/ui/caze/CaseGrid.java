@@ -95,7 +95,7 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 				CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
 				CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
-				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS);
+				CaseIndexDto.REPORT_DATE, CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS);
 		
 		if (FacadeProvider.getConfigFacade().isGermanServer()) {
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
@@ -109,6 +109,7 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));

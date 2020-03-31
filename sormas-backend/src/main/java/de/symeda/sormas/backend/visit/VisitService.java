@@ -200,8 +200,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 	}
 
 	public Visit getLastVisitByContact(Contact contact, VisitStatus visitStatus) {
-		
-		return getLastVisitByContactId(contact.getPerson().getId(), contact.getLastContactDate(),  contact.getReportDateTime(), contact.getFollowUpUntil(), contact.getCaze().getDisease(), visitStatus);
+		return getLastVisitByContactId(contact.getPerson().getId(), contact.getLastContactDate(),  contact.getReportDateTime(), contact.getFollowUpUntil(), contact.getDisease(), visitStatus);
 	}
 
 	public Visit getLastVisitByContactId(long contactPersonId, Date lastContactDate, Date contactReportDate, Date followUpUntil, Disease disease, VisitStatus visitStatus) {
@@ -268,7 +267,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 	 * The logic to calculate the listed visits needs to match the ContactService.getAllByVisit method.
 	 */
 	private Predicate buildVisitFilter(Contact contact, VisitStatus visitStatus, CriteriaBuilder cb, Root<?> from) {
-		return buildVisitFilter(contact.getPerson().getId(), contact.getCaze().getDisease(), visitStatus, contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil(), cb, from);
+		return buildVisitFilter(contact.getPerson().getId(), contact.getDisease(), visitStatus, contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil(), cb, from);
 	}
 	
 	/**

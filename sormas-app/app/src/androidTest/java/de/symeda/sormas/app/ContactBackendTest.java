@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -92,7 +91,8 @@ public class ContactBackendTest {
         Contact mergeContact = (Contact) contact.clone();
         mergeContact.setPerson((Person) contact.getPerson().clone());
         mergeContact.setCaseUuid(contact.getCaseUuid());
-        mergeContact.setCaseDisease(contact.getCaseDisease());
+        mergeContact.setDisease(contact.getDisease());
+        mergeContact.setDiseaseDetails(contact.getDiseaseDetails());
         mergeContact.setId(null);
         mergeContact.getPerson().getAddress().setId(null);
 
