@@ -520,7 +520,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel,
 			String fieldValue) {
-		if (FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(),
+		if (!isGermanServer() && FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(),
 				getValue().getDisease())) {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);
@@ -529,7 +529,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		} else {
 			epidField.setComponentError(null);
 			getContent().removeComponent(epidNumberWarningLabel);
-			assignNewEpidNumberButton.setVisible(
+			assignNewEpidNumberButton.setVisible(!isGermanServer() && 
 					!CaseLogic.isEpidNumberPrefix(fieldValue) && !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}
 	}
