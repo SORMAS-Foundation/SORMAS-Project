@@ -117,12 +117,12 @@ public class InfrastructureController {
 	}
 
 	private CommitDiscardWrapperComponent<FacilityEditForm> getFacilityEditComponent(FacilityDto facility, boolean laboratory) {
-		FacilityEditForm editForm = new FacilityEditForm(facility == null ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, 
-				facility == null, laboratory);
-		boolean notNew = true;
-		if (facility == null) {
+		boolean isNew = facility == null;
+		FacilityEditForm editForm = new FacilityEditForm(
+				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT,
+				isNew, laboratory);
+		if (isNew) {
 			facility = FacilityDto.build();
-			notNew = false;
 			if (laboratory) {
 				facility.setType(FacilityType.LABORATORY);
 			}
@@ -147,7 +147,7 @@ public class InfrastructureController {
 			}
 		});
 
-		if (notNew) {
+		if (!isNew) {
 			extendEditComponentWithArchiveButton(editView, facility.isArchived(), facility.getUuid(),
 					InfrastructureType.FACILITY, facility.getType());
 		}
@@ -156,11 +156,11 @@ public class InfrastructureController {
 	}
 
 	private CommitDiscardWrapperComponent<RegionEditForm> getRegionEditComponent(RegionDto region) {
-		RegionEditForm editForm = new RegionEditForm(region == null ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, region == null);
-		boolean notNew = true;
-		if (region == null) {
+		boolean isNew = region == null;
+		RegionEditForm editForm = new RegionEditForm(
+				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		if (isNew) {
 			region = RegionDto.build();
-			notNew = false;
 		}
 
 		editForm.setValue(region);
@@ -177,7 +177,7 @@ public class InfrastructureController {
 			}
 		});
 
-		if (notNew) {
+		if (!isNew) {
 			extendEditComponentWithArchiveButton(editView, region.isArchived(), region.getUuid(),
 					InfrastructureType.REGION, null);
 		}
@@ -186,12 +186,11 @@ public class InfrastructureController {
 	}
 
 	private CommitDiscardWrapperComponent<DistrictEditForm> getDistrictEditComponent(DistrictDto district) {
-		DistrictEditForm editForm = new DistrictEditForm(district == null ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT,
-				district == null);
-		boolean notNew = true;
-		if (district == null) {
+		boolean isNew = district == null;
+		DistrictEditForm editForm = new DistrictEditForm(
+				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		if (isNew) {
 			district = DistrictDto.build();
-			notNew = false;
 		}
 
 		editForm.setValue(district);
@@ -208,7 +207,7 @@ public class InfrastructureController {
 			}
 		});
 
-		if (notNew) {
+		if (!isNew) {
 			extendEditComponentWithArchiveButton(editView, district.isArchived(), district.getUuid(),
 					InfrastructureType.DISTRICT, null);
 		}
@@ -217,12 +216,11 @@ public class InfrastructureController {
 	}
 
 	private CommitDiscardWrapperComponent<CommunityEditForm> getCommunityEditComponent(CommunityDto community) {
-		CommunityEditForm editForm = new CommunityEditForm(community == null ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT,
-				community == null);
-		boolean notNew = true;
-		if (community == null) {
+		boolean isNew = community == null;
+		CommunityEditForm editForm = new CommunityEditForm(
+				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		if (isNew) {
 			community = CommunityDto.build();
-			notNew = false;
 		}
 
 		editForm.setValue(community);
@@ -239,7 +237,7 @@ public class InfrastructureController {
 			}
 		});
 
-		if (notNew) {
+		if (!isNew) {
 			extendEditComponentWithArchiveButton(editView, community.isArchived(), community.getUuid(),
 					InfrastructureType.COMMUNITY, null);
 		}
@@ -248,13 +246,11 @@ public class InfrastructureController {
 	}
 
 	private CommitDiscardWrapperComponent<PointOfEntryForm> getPointOfEntryEditComponent(PointOfEntryDto pointOfEntry) {
+		boolean isNew = pointOfEntry == null;
 		PointOfEntryForm form = new PointOfEntryForm(
-				pointOfEntry == null ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT,
-				pointOfEntry == null);
-		boolean notNew = true;
-		if (pointOfEntry == null) {
+				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		if (isNew) {
 			pointOfEntry = PointOfEntryDto.build();
-			notNew = false;
 		}
 
 		form.setValue(pointOfEntry);
@@ -266,7 +262,7 @@ public class InfrastructureController {
 			SormasUI.get().getNavigator().navigateTo(PointsOfEntryView.VIEW_NAME);
 		});
 
-		if (notNew) {
+		if (!isNew) {
 			extendEditComponentWithArchiveButton(view, pointOfEntry.isArchived(), pointOfEntry.getUuid(),
 					InfrastructureType.POINT_OF_ENTRY, null);
 		}
