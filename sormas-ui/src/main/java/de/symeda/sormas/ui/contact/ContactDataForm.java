@@ -202,7 +202,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, Arrays.asList(YesNoUnknown.YES), true);
     	FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
     	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
-    	FieldHelper.setReadOnlyWhen(getFieldGroup(), Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(Boolean.FALSE), false, false);
+    	FieldHelper.setReadOnlyWhen(getFieldGroup(), Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(Boolean.FALSE), false, true);
     	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), Arrays.asList(Boolean.TRUE));
     	
 		addValueChangeListener(e -> {

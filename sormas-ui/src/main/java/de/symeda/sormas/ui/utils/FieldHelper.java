@@ -44,13 +44,13 @@ import de.symeda.sormas.api.utils.Diseases;
 public final class FieldHelper {
 
 	public static void setReadOnlyWhen(FieldGroup fieldGroup, Object targetPropertyId, Object sourcePropertyId,
-			List<Object> sourceValues, boolean clearOnReadOnly, boolean allowNullValues) {
-		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnReadOnly, allowNullValues);
+			List<Object> sourceValues, boolean clearOnReadOnly, boolean readOnlyWhenNull) {
+		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnReadOnly, readOnlyWhenNull);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static void setReadOnlyWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds,
-			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnReadOnly, boolean allowNullValues) {
+			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnReadOnly, boolean readOnlyWhenNull) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		if (sourceField instanceof AbstractField<?>) {
@@ -60,8 +60,8 @@ public final class FieldHelper {
 		// initialize
 		{
 			boolean readOnly;
-			if (!allowNullValues && sourceField.getValue() == null) {
-				readOnly = true;
+			if (sourceField.getValue() == null) {
+				readOnly = readOnlyWhenNull;
 			} else {
 				readOnly = sourceValues.contains(sourceField.getValue());
 			}
@@ -82,8 +82,8 @@ public final class FieldHelper {
 
 		sourceField.addValueChangeListener(event -> {
 			boolean readOnly;
-			if (!allowNullValues && event.getProperty().getValue() == null) {
-				readOnly = true;
+			if (sourceField.getValue() == null) {
+				readOnly = readOnlyWhenNull;
 			} else {
 				readOnly = sourceValues.contains(event.getProperty().getValue());
 			}
