@@ -111,6 +111,8 @@ public class Person extends AbstractDomainObject {
 	private String phone;
 	@Column(length = 255)
 	private String phoneOwner;
+	@Column
+	private String emailAddress;
 
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
@@ -160,6 +162,10 @@ public class Person extends AbstractDomainObject {
 
 	@Column(length=512)
 	private String generalPractitionerDetails;
+	@Column
+	private String passportNumber;
+	@Column
+	private String nationalHealthId;
 
 	@Bindable
 	public String getFirstName() {
@@ -497,5 +503,29 @@ public class Person extends AbstractDomainObject {
 
 	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
 		this.generalPractitionerDetails = generalPractitionerDetails;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+
+	public void setPassportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
+	}
+
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
 	}
 }

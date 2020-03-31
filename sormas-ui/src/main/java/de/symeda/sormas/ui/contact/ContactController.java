@@ -18,21 +18,27 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -44,6 +50,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
+import de.symeda.sormas.ui.caze.CaseSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -156,7 +163,7 @@ public class ContactController {
 									if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 										PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid());
 										if (personDto.getAddress().isEmptyLocation()) {
-											CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+											CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
 											personDto.getAddress().setRegion(caseDto.getRegion());
 											personDto.getAddress().setDistrict(caseDto.getDistrict());
 											personDto.getAddress().setCommunity(caseDto.getCommunity());
@@ -177,7 +184,6 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
-
 		ContactDataForm editForm = new ContactDataForm(UserRight.CONTACT_EDIT);
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
@@ -348,6 +354,25 @@ public class ContactController {
 				}
 			});
 		}
+	}
+	
+	public void openSelectCaseForContactWindow(Disease disease, Consumer<CaseIndexDto> selectedCaseCallback) {
+		CaseCriteria criteria = new CaseCriteria().disease(disease);
+		CaseSelectionField selectionField = new CaseSelectionField(criteria);
+		selectionField.setWidth(1280, Unit.PIXELS);
+		
+		final CommitDiscardWrapperComponent<CaseSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
+		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+		component.getCommitButton().setEnabled(false);
+		component.addCommitListener(() -> {
+			selectedCaseCallback.accept(selectionField.getValue());
+		});
+		
+		selectionField.setSelectionChangeCallback((commitAllowed) -> {
+			component.getCommitButton().setEnabled(commitAllowed);
+		});
+		
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
 
 }

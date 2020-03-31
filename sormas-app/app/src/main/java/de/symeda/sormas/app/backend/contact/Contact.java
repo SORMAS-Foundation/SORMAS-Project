@@ -30,6 +30,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -145,6 +146,11 @@ public class Contact extends AbstractDomainObject {
 	private String caseIdExternalSystem;
 	@Column(length = 512)
 	private String caseOrEventInformation;
+
+	@Enumerated(EnumType.STRING)
+	private ContactCategory contactCategory;
+	@Column(length = 512)
+	private String contactProximityDetails;
 
 	public Person getPerson() {
 		return person;
@@ -427,5 +433,19 @@ public class Contact extends AbstractDomainObject {
 	public void setCaseOrEventInformation(String caseOrEventInformation) {
 		this.caseOrEventInformation = caseOrEventInformation;
 	}
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
 
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
+
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
+	}
 }

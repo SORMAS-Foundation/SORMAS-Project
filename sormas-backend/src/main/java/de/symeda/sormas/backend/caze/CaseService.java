@@ -470,6 +470,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getCreationDateTo() != null) {
 			filter = and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(caseCriteria.getCreationDateTo())));
 		}
+		if (caseCriteria.getQuarantineTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Case.QUARANTINE_TO), DateHelper.getStartOfDay(caseCriteria.getQuarantineTo()), DateHelper.getEndOfDay(caseCriteria.getQuarantineTo())));
+		}
 		if (caseCriteria.getPerson() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
@@ -545,6 +548,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
 							cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
 							cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		if (caseCriteria.getSourceCaseInfoLike() != null) {
+			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
+							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
+							cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

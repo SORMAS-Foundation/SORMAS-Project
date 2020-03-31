@@ -71,7 +71,9 @@ public class ContactDto extends EntityDto {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
 	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
-	
+	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
+	public static final String CONTACT_CATEGORY = "contactCategory";
+
 	@Required
 	private Date reportDateTime;
 	@Required
@@ -116,6 +118,9 @@ public class ContactDto extends EntityDto {
 	private String caseIdExternalSystem;
 	private String caseOrEventInformation;
 	
+	private String contactProximityDetails;
+	private ContactCategory contactCategory;
+
 	public static ContactDto build() {
 		return build(null, null, null);
 	}
@@ -375,4 +380,19 @@ public class ContactDto extends EntityDto {
 		this.caseOrEventInformation = caseOrEventInformation;
 	}
 	
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
+	}
+
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
 }

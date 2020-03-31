@@ -58,6 +58,7 @@ public class CaseIndexDto implements Serializable {
 	public static final String SEX = "sex";
 	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
 	public static final String COMPLETENESS = "completeness";
+	public static final String QUARANTINE_TO = "quarantineTo";
 
 	private long id;
 	private String uuid;
@@ -83,13 +84,14 @@ public class CaseIndexDto implements Serializable {
 	private Sex sex;
 	private String ageAndBirthDate;
 	private Float completeness;
+	private Date quarantineTo;
 
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
 			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid, 
 			String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
-			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Float completeness) {
+			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo, Float completeness) {
 		this.id = id;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
@@ -113,6 +115,7 @@ public class CaseIndexDto implements Serializable {
 		this.outcome = outcome;
 		this.ageAndBirthDate = PersonHelper.getAgeAndBirthdateString(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
 		this.sex = sex;
+		this.quarantineTo = quarantineTo;
 		this.completeness = completeness;
 	}
 
@@ -272,6 +275,14 @@ public class CaseIndexDto implements Serializable {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 	}
 
 }

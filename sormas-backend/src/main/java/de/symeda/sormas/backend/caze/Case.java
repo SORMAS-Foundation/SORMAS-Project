@@ -47,6 +47,7 @@ import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
@@ -123,7 +124,10 @@ public class Case extends CoreAdo {
 	public static final String COMPLETENESS = "completeness";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
-	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
+	public static final String SHARED_TO_COUNTRY = "sharedToCountry";	
+	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_FROM = "quarantineFrom";
+	public static final String QUARANTINE_TO = "quarantineTo";
 
 	private Person person;
 	private String description;
@@ -206,6 +210,10 @@ public class Case extends CoreAdo {
 	private String additionalDetails;
 	private String externalID;
 	private boolean sharedToCountry;
+	
+	private QuarantineType quarantine;
+	private Date quarantineFrom;
+	private Date quarantineTo;
 
 	private List<Task> tasks;
 
@@ -846,6 +854,33 @@ public class Case extends CoreAdo {
 
 	public void setSharedToCountry(boolean sharedToCountry) {
 		this.sharedToCountry = sharedToCountry;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public QuarantineType getQuarantine() {
+		return quarantine;
+	}
+
+	public void setQuarantine(QuarantineType quarantine) {
+		this.quarantine = quarantine;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 	}
 
 }

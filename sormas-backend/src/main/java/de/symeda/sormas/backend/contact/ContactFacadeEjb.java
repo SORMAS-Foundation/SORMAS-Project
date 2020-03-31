@@ -482,12 +482,16 @@ public class ContactFacadeEjb implements ContactFacade {
 		Join<Case, Facility> contactCaseFacility = contactCase.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Contact, User> contactOfficer = contact.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
 
-		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
-				contactCase.get(Case.UUID), contact.get(Contact.DISEASE), contact.get(Contact.DISEASE_DETAILS), contactCasePerson.get(Person.UUID), contactCasePerson.get(Person.FIRST_NAME),
-				contactCasePerson.get(Person.LAST_NAME), contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID),
-				contactCaseFacility.get(Facility.UUID), contact.get(Contact.LAST_CONTACT_DATE), contact.get(Contact.CONTACT_PROXIMITY),
-				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS), contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
-				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME));
+		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME),
+				contactPerson.get(Person.LAST_NAME), contactCase.get(Case.UUID), contact.get(Contact.DISEASE),
+				contact.get(Contact.DISEASE_DETAILS), contactCasePerson.get(Person.UUID),
+				contactCasePerson.get(Person.FIRST_NAME), contactCasePerson.get(Person.LAST_NAME),
+				contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID),
+				contactCaseFacility.get(Facility.UUID), contact.get(Contact.LAST_CONTACT_DATE),
+				contact.get(Contact.CONTACT_CATEGORY), contact.get(Contact.CONTACT_PROXIMITY),
+				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS),
+				contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
+				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.QUARANTINE_TO));
 
 		Predicate filter = null;		
 		// Only use user filter if no restricting case is specified
@@ -513,12 +517,14 @@ public class ContactFacadeEjb implements ContactFacade {
 				case ContactIndexDto.UUID:
 				case ContactIndexDto.LAST_CONTACT_DATE:
 				case ContactIndexDto.CONTACT_PROXIMITY:
+				case ContactIndexDto.CONTACT_CATEGORY:
 				case ContactIndexDto.CONTACT_CLASSIFICATION:
 				case ContactIndexDto.CONTACT_STATUS:
 				case ContactIndexDto.FOLLOW_UP_STATUS:
 				case ContactIndexDto.FOLLOW_UP_UNTIL:
 				case ContactIndexDto.REPORT_DATE_TIME:
 				case ContactIndexDto.DISEASE:
+				case ContactIndexDto.QUARANTINE_TO:
 					expression = contact.get(sortProperty.propertyName);
 					break;
 				case ContactIndexDto.PERSON:
@@ -661,6 +667,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
 		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
+		target.setContactProximityDetails(source.getContactProximityDetails());
+		target.setContactCategory(source.getContactCategory());
+
 		return target;
 	}
 
@@ -771,6 +780,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		
 		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
 		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+
+		target.setContactProximityDetails(source.getContactProximityDetails());
+		target.setContactCategory(source.getContactCategory());
 
 		return target;
 	}

@@ -213,6 +213,16 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_contactProximityDetails"
+                    app:value="@{data.contactProximityDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_contactCategory"
+                    app:value="@{data.contactCategory}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_relationToCase"
                     app:value="@{data.relationToCase}"
                     style="@style/ControlSingleColumnStyle" />
