@@ -45,11 +45,8 @@ public class AdditionalTestResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<AdditionalTestDto> getAllAdditionalTests(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<AdditionalTestDto> additionalTests = FacadeProvider.getAdditionalTestFacade()
-				.getAllActiveAdditionalTestsAfter(new Date(since), userDto.getUuid());
-		return additionalTests;
+		return FacadeProvider.getAdditionalTestFacade()
+				.getAllActiveAdditionalTestsAfter(new Date(since));
 	}
 
 	@POST
@@ -69,10 +66,6 @@ public class AdditionalTestResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getAdditionalTestFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getAdditionalTestFacade().getAllActiveUuids();
 	}
-	
 }

@@ -149,19 +149,16 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 	public void setLazyDataProvider() {
 		DataProvider<ContactIndexDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getContactFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int)FacadeProvider.getContactFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
+				query -> (int)FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 	
 	public void setEagerDataProvider() {
-		ListDataProvider<ContactIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getContactFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		ListDataProvider<ContactIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getContactFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

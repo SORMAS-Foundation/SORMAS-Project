@@ -50,7 +50,7 @@ public interface PathogenTestFacade {
 	
 	void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException;
 	
-	List<String> getDeletedUuidsSince(String userUuid, Date since);
+	List<String> getDeletedUuidsSince(Date since);
 	
 	Date getLatestPathogenTestDate(String sampleUuid);
 	

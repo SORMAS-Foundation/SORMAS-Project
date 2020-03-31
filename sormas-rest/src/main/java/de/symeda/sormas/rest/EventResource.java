@@ -45,11 +45,7 @@ public class EventResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<EventDto> getAllEvents(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<EventDto> events = FacadeProvider.getEventFacade().getAllActiveEventsAfter(new Date(since),
-				userDto.getUuid());
-		return events;
+		return FacadeProvider.getEventFacade().getAllActiveEventsAfter(new Date(since));
 	}
 
 	@POST
@@ -69,28 +65,19 @@ public class EventResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getEventFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getEventFacade().getAllActiveUuids();
 	}
 
 	@GET
 	@Path("/archived/{since}")
 	public List<String> getArchivedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getEventFacade().getArchivedUuidsSince(userDto.getUuid(), new Date(since));
-		return uuids;
+		return FacadeProvider.getEventFacade().getArchivedUuidsSince(new Date(since));
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getEventFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
-		return uuids;
+		return FacadeProvider.getEventFacade().getDeletedUuidsSince(new Date(since));
 	}
 	
 }
