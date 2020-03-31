@@ -1,5 +1,4 @@
-package de.symeda.sormas.api.utils;
-
+package de.symeda.sormas.ui.utils;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum EpiWeekFilterOption {

@@ -25,7 +25,11 @@ public class AggregateReportController {
 				edit);
 		window.setHeight(90, Unit.PERCENTAGE);
 		window.setWidth(createLayout.getWidth() + 64 + 20, Unit.PIXELS);
-		window.setCaption(I18nProperties.getString(Strings.headingEditAggregateReport));
+		if (edit) {
+			window.setCaption(I18nProperties.getString(Strings.headingEditAggregateReport));
+		} else {
+			window.setCaption(I18nProperties.getString(Strings.headingCreateNewAggregateReport));
+		}
 		window.setContent(createLayout);
 		window.addCloseListener(e -> onClose.run());
 		UI.getCurrent().addWindow(window);

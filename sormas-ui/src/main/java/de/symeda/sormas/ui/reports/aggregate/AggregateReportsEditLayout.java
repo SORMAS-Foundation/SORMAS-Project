@@ -34,13 +34,17 @@ import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.api.utils.EpiWeekFilterOption;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.EpiWeekFilterOption;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * @author Christopher Riedel
+ * 
+ *         Should better be an edit form and use an new DTO that contains the
+ *         list of AggregateReport entries. The save method should be moved to a
+ *         controller
  */
 public class AggregateReportsEditLayout extends VerticalLayout {
 
@@ -248,7 +252,9 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
 
-		initialize();
+		if (!edit) {
+			initialize();
+		}
 	}
 
 	private void checkForExistingData() {
@@ -261,7 +267,6 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			criteria.setHealthFacility(comboBoxFacility.getValue());
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
-			reports = null;
 			reports = FacadeProvider.getAggregateReportFacade()
 					.getList(criteria, FacadeProvider.getUserFacade().getCurrentUser().getUuid()).stream()
 					.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
@@ -271,7 +276,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 					@Override
 					public void accept(Boolean edit) {
 						if (edit) {
-							reloadEditForms();
+							switchToEditMode();
 						} else {
 							comboBoxFacility.clear();
 							comboBoxPoe.clear();
@@ -293,8 +298,9 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		epiweekOptions.setValue(EpiWeekFilterOption.THIS_WEEK);
 	}
 
-	private void reloadEditForms() {
+	private void switchToEditMode() {
 
+		window.setCaption(I18nProperties.getString(Strings.headingEditAggregateReport));
 		for (AggregateReportEditForm editForm : editForms) {
 			String disease = editForm.getDisease();
 			AggregateReportDto report = reports.get(diseaseMap.get(disease));
