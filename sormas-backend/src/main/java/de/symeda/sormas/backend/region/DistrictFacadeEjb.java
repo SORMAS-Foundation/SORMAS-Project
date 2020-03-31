@@ -221,11 +221,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
-		if (getDistrictByUuid(dto.getUuid()) == null && !getByName(dto.getName(), dto.getRegion()).isEmpty()) {
+		District district = districtService.getByUuid(dto.getUuid());
+		
+		if (district == null && !getByName(dto.getName(), dto.getRegion()).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
 		}
-		
-		District district = districtService.getByUuid(dto.getUuid());
 
 		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
