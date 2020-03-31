@@ -139,7 +139,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 	
 	@Override
-	public List<PrescriptionExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+	public List<PrescriptionExportDto> getExportList(CaseCriteria criteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PrescriptionExportDto> cq = cb.createQuery(PrescriptionExportDto.class);
 		Root<Prescription> prescription = cq.from(Prescription.class);
@@ -164,7 +164,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				prescription.get(Prescription.ROUTE_DETAILS),
 				prescription.get(Prescription.ADDITIONAL_NOTES));
 		
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 		Predicate filter = service.createUserFilter(cb, cq, prescription, user);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);

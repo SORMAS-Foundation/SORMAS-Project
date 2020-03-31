@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.contact.importer;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.ui.MockProducer;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -49,6 +51,8 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), Disease.CORONAVIRUS,
 				CaseClassification.CONFIRMED, InvestigationStatus.PENDING, new Date(), rdcf);
 
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+
 		// Successful import of 5 case contacts
 		File csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").getFile());
@@ -56,7 +60,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, contactFacade.count(null, null));
+		assertEquals(5, contactFacade.count(null));
 
 		// Person Similarity: pick
 		List<PersonNameDto> persons = FacadeProvider.getPersonFacade()
@@ -84,8 +88,8 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(6, contactFacade.count(null, null));
-		assertEquals(6, getPersonFacade().getAllUuids(user.getUuid()).size());
+		assertEquals(6, contactFacade.count( null));
+		assertEquals(6, getPersonFacade().getAllUuids().size());
 
 		// Person Similarity: skip
 		csvFile = new File(
@@ -100,8 +104,8 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(6, contactFacade.count(null, null));
-		assertEquals(6, getPersonFacade().getAllUuids(user.getUuid()).size());
+		assertEquals(6, contactFacade.count(null));
+		assertEquals(6, getPersonFacade().getAllUuids().size());
 
 		// Person Similarity: create
 		csvFile = new File(
@@ -116,8 +120,8 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(7, contactFacade.count(null, null));
-		assertEquals(7, getPersonFacade().getAllUuids(user.getUuid()).size());
+		assertEquals(7, contactFacade.count(null));
+		assertEquals(7, getPersonFacade().getAllUuids().size());
 	}
 
 	private static class CaseContactImporterExtension extends CaseContactImporter {

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.user.UserRole;
 import org.junit.Before;
 
 import de.symeda.sormas.api.Disease;
@@ -46,6 +47,8 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
 
+import static org.mockito.Mockito.when;
+
 public class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator();
@@ -58,6 +61,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public void init() {
 		MockProducer.resetMocks();
 		initH2Functions();
+
+		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
 	}
 
 	private void initH2Functions() {

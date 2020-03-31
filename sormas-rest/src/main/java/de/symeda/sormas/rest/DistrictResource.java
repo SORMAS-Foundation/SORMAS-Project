@@ -60,9 +60,6 @@ public class DistrictResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getDistrictFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getDistrictFacade().getAllUuids();
 	}
 }

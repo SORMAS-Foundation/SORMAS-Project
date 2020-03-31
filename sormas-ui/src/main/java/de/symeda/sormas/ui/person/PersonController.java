@@ -154,7 +154,7 @@ public class PersonController {
 	private void savePerson(PersonDto personDto) {
 
 		PersonDto existingPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
-		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid());
 
 		onPersonChanged(existingPerson, personDto);
 		

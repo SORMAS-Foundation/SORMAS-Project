@@ -43,7 +43,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
+		assertEquals(5, getCaseFacade().count(null));
 
 		// Failed import of 5 cases because of errors
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_errors.csv").getFile());
@@ -51,7 +51,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
+		assertEquals(5, getCaseFacade().count(null));
 
 		// Failed import
 		boolean exceptionWasThrown = false;
@@ -64,7 +64,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 			exceptionWasThrown = true;
 		}
 		assertEquals(true, exceptionWasThrown);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
+		assertEquals(5, getCaseFacade().count(null));
 
 		// Similarity: skip
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
@@ -77,8 +77,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
-		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		assertEquals(5, getCaseFacade().count(null));
+		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: pick
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
@@ -91,8 +91,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
-		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		assertEquals(5, getCaseFacade().count(null));
+		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: cancel
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
@@ -105,8 +105,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.CANCELED, importResult);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
-		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		assertEquals(5, getCaseFacade().count(null));
+		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: override
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
@@ -119,8 +119,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
-		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		assertEquals(5, getCaseFacade().count(null));
+		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: create -> fail because of duplicate epid number
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
@@ -133,14 +133,14 @@ public class CaseImporterTest extends AbstractBeanTest {
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
-		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		assertEquals(5, getCaseFacade().count(null));
+		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Change epid number of the case in database to pass creation test
-		CaseDataDto caze = getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0);
+		CaseDataDto caze = getCaseFacade().getAllActiveCasesAfter(null).get(0);
 		caze.setEpidNumber("ABC-DEF-GHI-19-99");
 		getCaseFacade().saveCase(caze);
-		assertEquals("ABC-DEF-GHI-19-99", getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
+		assertEquals("ABC-DEF-GHI-19-99", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: create -> pass
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
@@ -153,21 +153,21 @@ public class CaseImporterTest extends AbstractBeanTest {
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(6, getCaseFacade().count(null, user.getUuid()));
-		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).get(0).getEpidNumber());
-		
+		assertEquals(6, getCaseFacade().count(null));
+		assertEquals("ABC-DEF-GHI-19-10", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
+
 		// Successful import of a case with different infrastructure combinations
 		creator.createRDCF("R1", "D1", "C1", "F1");
 		creator.createRDCF("R2", "D2", "C2", "F2");
 		creator.createRDCF("R3", "D3", "C3", "F3");
 		creator.createRDCF("R4", "D4", "C4", "F4");
-		
+
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_different_infrastructure.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference());
 		importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(7, getCaseFacade().count(null, user.getUuid()));
+		assertEquals(7, getCaseFacade().count(null));
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = caseImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, getCaseFacade().count(null, user.getUuid()));
+		assertEquals(5, getCaseFacade().count(null));
 	}
 
 	private static class CaseImporterExtension extends CaseImporter {

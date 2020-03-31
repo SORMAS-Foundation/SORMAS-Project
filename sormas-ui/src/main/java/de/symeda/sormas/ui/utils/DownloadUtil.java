@@ -261,9 +261,9 @@ public class DownloadUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static StreamResource createCaseManagementExportResource(String userUuid, CaseCriteria criteria, String exportFileName) {
+	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, String exportFileName) {
 		StreamResource casesResource = createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_MANAGEMENT,
-				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, userUuid, null),
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, null),
 				(propertyId,type) -> {
 					String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
@@ -280,7 +280,7 @@ public class DownloadUtil {
 				"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 
 		StreamResource prescriptionsResource = createCsvExportStreamResource(PrescriptionExportDto.class, null,
-				(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(userUuid, criteria, start, max),
+				(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(criteria, start, max),
 				(propertyId,type) -> {
 					String caption = I18nProperties.getPrefixCaption(PrescriptionExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, propertyId));
@@ -292,7 +292,7 @@ public class DownloadUtil {
 				"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 
 		StreamResource treatmentsResource = createCsvExportStreamResource(TreatmentExportDto.class, null,
-				(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(userUuid, criteria, start, max),
+				(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(criteria, start, max),
 				(propertyId,type) -> {
 					String caption = I18nProperties.getPrefixCaption(TreatmentExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, propertyId));
@@ -304,7 +304,7 @@ public class DownloadUtil {
 				"sormas_prescriptions_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 
 		StreamResource clinicalVisitsResource = createCsvExportStreamResource(ClinicalVisitExportDto.class, null,
-				(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(userUuid, criteria, start, max),
+				(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(criteria, start, max),
 				(propertyId,type) -> {
 					String caption = I18nProperties.getPrefixCaption(ClinicalVisitExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(ClinicalVisitDto.I18N_PREFIX, propertyId,

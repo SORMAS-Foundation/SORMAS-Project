@@ -46,11 +46,7 @@ public class SampleResource extends EntityDtoResource {
 	@Path("/all/{since}")
 	public List<SampleDto> getAllSamples(@Context SecurityContext sc, @PathParam("since") long since) {
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<SampleDto> samples = FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since),
-				userDto.getUuid());
-		return samples;
+		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since));
 	}
 
 	@POST
@@ -73,19 +69,12 @@ public class SampleResource extends EntityDtoResource {
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getSampleFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getSampleFacade().getAllActiveUuids();
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getSampleFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
-		return uuids;
+		return FacadeProvider.getSampleFacade().getDeletedUuidsSince(new Date(since));
 	}
-	
 }

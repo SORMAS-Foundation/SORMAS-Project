@@ -83,7 +83,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 		
-		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), null, 0, 100, null);
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(null, 0, 100, null);
 		
 		// List should have one entry
 		assertEquals(2, sampleIndexDtos.size());
@@ -110,11 +110,11 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
 
-		getSampleFacade().deleteSample(sample.toReference(), adminUuid);
+		getSampleFacade().deleteSample(sample.toReference());
 
 		// Sample and pathogen test should be marked as deleted
-		assertTrue(getSampleFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sampleTest.getUuid()));
+		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
 	}
 	
 	@Test
@@ -128,24 +128,24 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, caze.getDisease(), new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
-		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
 		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
 		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
 		
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
-		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(0, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(0, getSampleFacade().getAllActiveUuids().size());
 		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
 		assertEquals(0, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
-		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
 		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
 		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
 	}

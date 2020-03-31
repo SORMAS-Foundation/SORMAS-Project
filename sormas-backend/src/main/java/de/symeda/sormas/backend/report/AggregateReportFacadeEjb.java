@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.report;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -67,8 +68,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	@Override
-	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -90,8 +91,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -101,8 +102,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 	
 	@Override
-	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
+		User user = userService.getCurrentUser();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -136,7 +137,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 		
 		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet.values());
-		reportList.sort((r1, r2) -> r1.getDisease().toString().compareTo(r2.getDisease().toString()));
+		reportList.sort(Comparator.comparing(r -> r.getDisease().toString()));
 		return reportList;
 	}
 	

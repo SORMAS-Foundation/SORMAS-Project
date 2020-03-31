@@ -34,9 +34,9 @@ public interface PersonFacade {
 
 	List<PersonNameDto> getNameDtos(UserReferenceDto user);
 
-	List<PersonDto> getPersonsAfter(Date date, String uuid);
+	List<PersonDto> getPersonsAfter(Date date);
 
-	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
+	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease);
 	
     PersonReferenceDto getReferenceByUuid(String uuid);
     
@@ -46,11 +46,11 @@ public interface PersonFacade {
     
     void validate(PersonDto dto) throws ValidationRuntimeException;
     
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 
 	List<PersonDto> getByUuids(List<String> uuids);
 	
 	PersonIndexDto getIndexDto(String uuid);
 	
-	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid);
+	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria);
 }

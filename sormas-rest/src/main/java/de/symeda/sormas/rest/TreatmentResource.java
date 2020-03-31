@@ -28,8 +28,7 @@ public class TreatmentResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<TreatmentDto> getAllTreatments(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		return FacadeProvider.getTreatmentFacade().getAllActiveTreatmentsAfter(new Date(since), userDto.getUuid());
+		return FacadeProvider.getTreatmentFacade().getAllActiveTreatmentsAfter(new Date(since));
 	}
 
 	@POST
@@ -47,9 +46,7 @@ public class TreatmentResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());	
-		return FacadeProvider.getTreatmentFacade().getAllActiveUuids(userDto.getUuid());
+		return FacadeProvider.getTreatmentFacade().getAllActiveUuids();
 	}
 
 }

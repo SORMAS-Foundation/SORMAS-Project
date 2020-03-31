@@ -47,7 +47,7 @@ public interface DistrictFacade {
 
 	List<DistrictReferenceDto> getAllActiveAsReference();
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 	
 	List<DistrictDto> getByUuids(List<String> uuids);
 	
