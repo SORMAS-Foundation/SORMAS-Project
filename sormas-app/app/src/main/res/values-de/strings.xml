@@ -219,12 +219,6 @@
     <string name="caption_visit_time">Zeit des Anrufs</string>
     <string name="caption_year">Jahr</string>
     <string name="caption_latest_submission">Letzte Einreichung: %1$s</string>
-    <string name="caption_aggregate_new_cases">Neue Fälle</string>
-    <string name="caption_aggregate_lab_confirmations">Laborbestätigungen</string>
-    <string name="caption_aggregate_deaths">Todesfälle</string>
-    <string name="caption_aggregate_new_cases_abbr">F</string>
-    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
-    <string name="caption_aggregate_deaths_abbr">T</string>
     <string name="confirmation_action">Sind Sie sicher, dass Sie dies tun wollen?</string>
     <string name="confirmation_delete">Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?</string>
     <string name="confirmation_pick_gps">Sind Sie gerade an diesem Ort?</string>
@@ -408,7 +402,6 @@
     <string name="info_user_report">Bitte beschreiben Sie kurz das aufgetretene Problem. Geben Sie keine persönlichen oder anderweitig sensiblen Daten ein!</string>
     <string name="info_pick_or_create_case">Es gibt mindestens einen vorhandenen Fall in der Datenbank, der dem, den Sie gerade erstellen, sehr ähnelt. Bitte tun Sie eins der folgenden Dinge:\n\n\u2022 Wählen Sie einen Fall, bei dem Sie <b>sicher sind</b>, dass es derselbe Fall ist wie der, den Sie gerade erstellen\n\u2022 Scrollen Sie zu dem Ende des Fensters und aktivieren Sie das Kontrollkästchen, wenn Sie <b>sicher sind</b>, dass der Fall ein neuer Fall ist\n\nklicken Sie auf die Schaltfläche rechts unten um Ihre Auswahl zu bestätigen.</string>
     <string name="info_case_creation_mark_check_box">Dieser Fall ist ein <b>neuer Fall</b> und <b>kein Duplikat</b> eines der obigen Fälle</string>
-    <string name="info_aggregate_report_legend">C = Neue Fälle; L = Laborbestätigungen; D = Tod</string>
     <string name="main_menu_cases">Fälle</string>
     <string name="main_menu_contacts">Kontakte</string>
     <string name="main_menu_dashboard">Übersicht</string>
