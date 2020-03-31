@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import org.joda.time.LocalDate;
 
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -63,6 +65,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -103,7 +106,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
 			h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
 			fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-			fluidRowLocs(3, ContactDto.FOLLOW_UP_UNTIL, 9, ContactDto.FOLLOW_UP_COMMENT) +
+			fluidRowLocs(4, ContactDto.FOLLOW_UP_UNTIL, 8, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
+			fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
 			fluidRowLocs(ContactDto.CONTACT_OFFICER, "");
 
 	private OptionGroup contactProximity;
@@ -126,7 +130,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.EXTERNAL_ID, TextField.class);
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
-		addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isGermanServer()) {
@@ -155,7 +159,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
-		addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
+		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 
 		ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
 		contactOfficerField.setNullSelectionAllowed(true);
@@ -182,6 +186,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 
 		CheckBox cbHighPriority = addField(ContactDto.HIGH_PRIORITY, CheckBox.class);
+		addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
 		OptionGroup ogImmunosuppressiveTherapyBasicDisease = addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, OptionGroup.class);
 		addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, TextField.class);
 		OptionGroup ogCareForPeopleOver60 = addField(ContactDto.CARE_FOR_PEOPLE_OVER_60, OptionGroup.class);
@@ -190,16 +195,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
     		updateDiseaseConfiguration((Disease) e.getProperty().getValue());
     	});
 		
-		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS,
-				ContactDto.FOLLOW_UP_STATUS, ContactDto.FOLLOW_UP_UNTIL);
+		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS);
 
-		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.FOLLOW_UP_STATUS, 
-				Arrays.asList(ContactDto.FOLLOW_UP_COMMENT), 
-				Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
+		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.FOLLOW_UP_STATUS, Arrays.asList(ContactDto.FOLLOW_UP_COMMENT), Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.RELATION_DESCRIPTION, ContactDto.RELATION_TO_CASE, Arrays.asList(ContactRelation.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, Arrays.asList(YesNoUnknown.YES), true);
     	FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
     	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+    	FieldHelper.setReadOnlyWhen(getFieldGroup(), Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(Boolean.FALSE), false, false);
+    	FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), Arrays.asList(Boolean.TRUE));
     	
 		addValueChangeListener(e -> {
 			if (getValue() != null) {
@@ -214,7 +218,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				
 				updateLastContactDateValidator();
 				updateDiseaseConfiguration(getValue().getDisease());
-
 				updateFollowUpStatusComponents();
 
 				DistrictReferenceDto referenceDistrict = getValue().getDistrict() != null ? getValue().getDistrict() : caseDto != null ? caseDto.getDistrict() : null;
@@ -258,6 +261,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					ogImmunosuppressiveTherapyBasicDisease.addValueChangeListener(getHighPriorityValueChangeListener(cbHighPriority));
 					ogCareForPeopleOver60.addValueChangeListener(getHighPriorityValueChangeListener(cbHighPriority));
 				}
+				
+				// Add follow-up until validator
+				Date minimumFollowUpUntilDate = DateHelper.addDays(ContactLogic.getStartDate(lastContactDate.getValue(), reportDate.getValue()),
+						FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) cbDisease.getValue()));
+				dfFollowUpUntil.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.contactFollowUpUntilDate), 
+						minimumFollowUpUntilDate, null, Resolution.DAY));
 			}
 		});
 

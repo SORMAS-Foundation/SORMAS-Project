@@ -94,6 +94,7 @@ public class Contact extends CoreAdo {
 	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -117,6 +118,7 @@ public class Contact extends CoreAdo {
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
+	private boolean overwriteFollowUpUntil;
 	private User contactOfficer;
 	private String description;
 	private String externalID;
@@ -463,6 +465,15 @@ public class Contact extends CoreAdo {
 
 	public void setCaseOrEventInformation(String caseOrEventInformation) {
 		this.caseOrEventInformation = caseOrEventInformation;
+	}
+
+	@Column
+	public boolean isOverwriteFollowUpUntil() {
+		return overwriteFollowUpUntil;
+	}
+
+	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
+		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
 	
 	@Column(length = 512)

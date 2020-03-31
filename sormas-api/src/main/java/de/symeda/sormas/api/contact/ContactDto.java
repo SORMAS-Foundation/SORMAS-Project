@@ -73,6 +73,7 @@ public class ContactDto extends EntityDto {
 	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String OVERWRITE_FOLLOW_UP_UTIL = "overwriteFollowUpUntil";
 
 	@Required
 	private Date reportDateTime;
@@ -97,6 +98,7 @@ public class ContactDto extends EntityDto {
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
+	private boolean overwriteFollowUpUntil;
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
@@ -378,6 +380,14 @@ public class ContactDto extends EntityDto {
 
 	public void setCaseOrEventInformation(String caseOrEventInformation) {
 		this.caseOrEventInformation = caseOrEventInformation;
+	}
+
+	public boolean isOverwriteFollowUpUntil() {
+		return overwriteFollowUpUntil;
+	}
+
+	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
+		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
 	
 	public String getContactProximityDetails() {

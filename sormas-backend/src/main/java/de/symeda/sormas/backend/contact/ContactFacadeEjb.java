@@ -641,6 +641,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpComment(source.getFollowUpComment());
 		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 		target.setContactOfficer(userService.getByReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 		target.setRelationToCase(source.getRelationToCase());
@@ -755,6 +756,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpComment(source.getFollowUpComment());
 		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
 		target.setDescription(source.getDescription());
 		target.setRelationToCase(source.getRelationToCase());
@@ -894,6 +896,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 		if (contact.getPerson() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
+		}
+		if (contact.isOverwriteFollowUpUntil() && contact.getFollowUpUntil() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.emptyOverwrittenFollowUpUntilDate));
 		}
 	}
 

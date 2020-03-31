@@ -4056,3 +4056,11 @@ ALTER TABLE contact_history ADD COLUMN contactproximitydetails varchar(512);
 UPDATE contact SET contactproximitydetails = 'Airplane' WHERE contactproximity = 'AIRPLANE';
 
 INSERT INTO schema_version (version_number, comment) VALUES (196, 'Add contact category and type of contact comment #1635');
+
+-- 2020-03-31 Make follow-up until editable #1680
+ALTER TABLE contact ADD COLUMN overwritefollowupuntil boolean;
+ALTER TABLE contact_history ADD COLUMN overwritefollowupuntil boolean;
+
+UPDATE contact SET overwritefollowupuntil = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (197, 'Make follow-up until editable #1680');

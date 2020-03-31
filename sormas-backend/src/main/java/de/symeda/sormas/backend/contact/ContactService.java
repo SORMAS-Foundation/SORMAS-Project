@@ -43,6 +43,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -210,7 +211,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = createActiveContactsFilter(cb, from);
 		filter = cb.and(filter, cb.isNotNull(from.get(Contact.FOLLOW_UP_UNTIL)));
 		filter = cb.and(filter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), fromDate));
-		filter = cb.and(filter, cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), toDate));
+		filter = cb.and(filter, cb.or(
+				cb.and(
+						cb.isNotNull(from.get(Contact.LAST_CONTACT_DATE)),
+						cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), toDate)),
+				cb.lessThan(from.get(Contact.REPORT_DATE_TIME), toDate)));
 
 		cq.where(filter);
 
@@ -367,10 +372,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact, user));
 
 		// Date filter
-		Predicate dateFilter = cb.and(
-				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to),
-				cb.greaterThanOrEqualTo(contact.get(Contact.FOLLOW_UP_UNTIL), from)
-				);
+		Predicate dateFilter = buildDateFilter(cb, contact, from, to);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -541,9 +543,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	/**
-	 * Calculates resultingCase and contact status based on: - existing disease
-	 * cases (and classification) of the person - the incubation period and - the
-	 * contact classification - the follow-up status
+	 * Calculates resultingCase and contact status based on: 
+	 * - existing disease cases (and classification) of the person 
+	 * - the incubation period
+	 * - the contact classification 
+	 * - the follow-up status
 	 */
 	public void udpateContactStatus(Contact contact) {
 		ContactClassification contactClassification = contact.getContactClassification();
@@ -590,6 +594,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	/**
 	 * Calculates and sets the follow-up until date and status of the contact.
+	 * If the date has been overwritten by a user, only the status changes
+	 * and extensions of the follow-up until date based on missed visits
+	 * are executed.
 	 * <ul>
 	 * <li>Disease with no follow-up: Leave empty and set follow-up status to "No
 	 * follow-up"</li>
@@ -613,10 +620,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 			}
 		} else {
-
 			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
-			LocalDate beginDate = DateHelper8.toLocalDate(contact.getReportDateTime());
-			LocalDate untilDate = beginDate.plusDays(followUpDuration);
+			LocalDate beginDate = DateHelper8.toLocalDate(ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()));
+			LocalDate untilDate = contact.isOverwriteFollowUpUntil() ? DateHelper8.toLocalDate(contact.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
 
 			Visit lastVisit = null;
 			boolean additionalVisitNeeded;
@@ -634,7 +640,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					}
 				}
 			} while (additionalVisitNeeded);
-
+			
 			contact.setFollowUpUntil(DateHelper8.toDate(untilDate));
 			if (changeStatus) {
 				// completed or still follow up?
@@ -878,6 +884,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));
+	}
+	
+	private Predicate buildDateFilter(CriteriaBuilder cb, Root<Contact> contact, Date from, Date to) {
+		return cb.and(
+				cb.greaterThanOrEqualTo(contact.get(Contact.FOLLOW_UP_UNTIL), from),
+				cb.or(
+						cb.and(
+								cb.isNotNull(contact.get(Contact.LAST_CONTACT_DATE)),
+								cb.lessThanOrEqualTo(contact.get(Contact.LAST_CONTACT_DATE), to)
+								),
+						cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)
+						)
+				);
 	}
 
 }
