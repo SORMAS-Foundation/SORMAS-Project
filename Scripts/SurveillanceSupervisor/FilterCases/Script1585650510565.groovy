@@ -35,7 +35,7 @@ not_run: WebUI.click(findTestObject('Object Repository/Page_SORMAS/div_Case IDEP
 //    'tbody')
 
 
-TestObject to = new TestObject().addProperty('xpath', ConditionType.EQUALS, './/div[@class="v-grid-tablewrapper"]')
+TestObject to = new TestObject().addProperty('xpath', ConditionType.EQUALS, '//div[@class="v-grid-tablewrapper"]')
 
 result = CustomKeywords.'com.hzi.Test.getHtmlTableRows'(to,
 	'tbody')
