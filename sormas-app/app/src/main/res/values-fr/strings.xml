@@ -219,12 +219,6 @@
     <string name="caption_visit_time">Date de visite</string>
     <string name="caption_year">Année</string>
     <string name="caption_latest_submission">Dernière soumission: %1$s</string>
-    <string name="caption_aggregate_new_cases">Nouveaux cas</string>
-    <string name="caption_aggregate_lab_confirmations">Confirmation de laboratoire</string>
-    <string name="caption_aggregate_deaths">Décès</string>
-    <string name="caption_aggregate_new_cases_abbr">C</string>
-    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
-    <string name="caption_aggregate_deaths_abbr">D</string>
     <string name="confirmation_action">Êtes-vous sûr de vouloir faire cela ?</string>
     <string name="confirmation_delete">Voulez-vous vraiment supprimer cet enregistrement ?</string>
     <string name="confirmation_pick_gps">Êtes-vous dans cet endroit maintenant?</string>
@@ -408,7 +402,6 @@
     <string name="info_user_report">Veuillez décrire brièvement le problème que vous avez rencontré. N\'entrez pas de données personnelles ou sensibles !</string>
     <string name="info_pick_or_create_case">Il y a au moins un cas existant dans la base de données qui semble très similaire à celui que vous êtes sur le point de créer. Veuillez faire l\'une des choses suivantes:\n\n\u2022Tapez sur un cas dont vous <b>êtes sûr</b> est le même cas que celui que vous étiez sur le point de créer\n\u2022 Faites défiler jusqu\'au bas de cette fenêtre et cochez la case si vous <b>êtes sûr</b>que votre cas est un nouveau cas\n\nCliquez sur le bouton en bas à droite pour confirmer votre choix.</string>
     <string name="info_case_creation_mark_check_box">Ce cas est un <b>nouveau cas</b> et <b>pas un double</b> d\'un des cas ci-dessus</string>
-    <string name="info_aggregate_report_legend">C = Nouveaux cas ; L = Confirmations de laboratoire ; D = Décès</string>
     <string name="main_menu_cases">Cas</string>
     <string name="main_menu_contacts">Contacts</string>
     <string name="main_menu_dashboard">Tableau de bord</string>
