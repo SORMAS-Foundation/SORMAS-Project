@@ -73,10 +73,12 @@ public class CaseSelectionGrid extends Grid {
 
 	public void setCases(List<CaseIndexDto> cases) {
 		this.cases = cases;
+		reload();
 	}
 
 	public void clearCases() {
 		cases.clear();
+		reload();
 	}
 
 }

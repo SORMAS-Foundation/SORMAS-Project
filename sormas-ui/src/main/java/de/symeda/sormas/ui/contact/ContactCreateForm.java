@@ -66,13 +66,13 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
+			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
 			LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
 			LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
-			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
-			LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+			LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
 			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
 			LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
+			LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +

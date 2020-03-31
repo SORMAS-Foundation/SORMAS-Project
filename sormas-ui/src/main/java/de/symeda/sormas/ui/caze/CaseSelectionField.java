@@ -79,7 +79,6 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 				criteria.setSourceCaseInfoLike(null);
 				grid.clearCases();
 			}
-			grid.reload();
 		});
 		filterLayout.addComponent(searchButton);
 
