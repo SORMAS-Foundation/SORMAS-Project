@@ -64,8 +64,8 @@ public enum ContactProximity {
 		if (disease != null && serverLocale != null && serverLocale.startsWith("de")) {
 			switch (disease) {
 			case CORONAVIRUS:
-				return new ContactProximity[] { TOUCHED_FLUID, FACE_TO_FACE_LONG, MEDICAL_UNSAVE, FACE_TO_FACE_SHORT,
-						MEDICAL_SAVE, SAME_ROOM, MEDICAL_SAME_ROOM, AEROSOL, MEDICAL_DISTANT };
+				return new ContactProximity[] { FACE_TO_FACE_LONG, TOUCHED_FLUID, AEROSOL, MEDICAL_UNSAVE, SAME_ROOM,
+						FACE_TO_FACE_SHORT, MEDICAL_SAME_ROOM, MEDICAL_SAVE, MEDICAL_DISTANT };
 			default:
 				break;
 			}
