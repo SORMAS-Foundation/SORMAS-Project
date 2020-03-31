@@ -140,7 +140,7 @@
 
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/caseData_disease"
                     app:value="@={data.disease}"
                     app:required="true"

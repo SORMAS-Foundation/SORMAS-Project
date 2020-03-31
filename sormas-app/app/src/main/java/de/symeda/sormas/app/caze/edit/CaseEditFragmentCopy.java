@@ -33,8 +33,8 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
-import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.person.Sex;
@@ -63,9 +63,9 @@ import de.symeda.sormas.app.util.InfrastructureHelper;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
+public class CaseEditFragmentCopy extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
-    public static final String TAG = CaseEditFragment.class.getSimpleName();
+    public static final String TAG = CaseEditFragmentCopy.class.getSimpleName();
 
     private Case record;
 
@@ -86,8 +86,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
     // Static methods
 
-    public static CaseEditFragment newInstance(Case activityRootData) {
-        return newInstance(CaseEditFragment.class, null, activityRootData);
+    public static CaseEditFragmentCopy newInstance(Case activityRootData) {
+        return newInstance(CaseEditFragmentCopy.class, null, activityRootData);
     }
 
     // Instance methods
@@ -155,7 +155,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private void setUpButtonListeners(FragmentCaseEditLayoutBinding contentBinding) {
 
         contentBinding.referCaseFromPoe.setOnClickListener(e -> {
-            final CaseEditActivity activity = (CaseEditActivity) CaseEditFragment.this.getActivity();
+            final CaseEditActivity activity = (CaseEditActivity) CaseEditFragmentCopy.this.getActivity();
             activity.saveData(caze -> {
                 final Case caseClone = (Case) caze.clone();
                 final ReferCaseFromPoeDialog referCaseFromPoeDialog = new ReferCaseFromPoeDialog(BaseActivity.getActiveActivity(), caze);
@@ -168,7 +168,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         });
 
         contentBinding.showClassificationRules.setOnClickListener(v -> {
-            final InfoDialog classificationDialog = new InfoDialog(CaseEditFragment.this.getContext(), R.layout.dialog_classification_rules_layout, null);
+            final InfoDialog classificationDialog = new InfoDialog(CaseEditFragmentCopy.this.getContext(), R.layout.dialog_classification_rules_layout, null);
             WebView classificationView = ((DialogClassificationRulesLayoutBinding) classificationDialog.getBinding()).content;
             classificationView.loadData(DiseaseClassificationAppHelper.buildDiseaseClassificationHtml(record.getDisease()), "text/html", "utf-8");
             classificationDialog.show();
@@ -280,7 +280,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         }
 
         // Initialize ControlSpinnerFields
-        contentBinding.caseDataDisease.initializeSpinner(diseaseList, getParentFragmentManager());
+//        contentBinding.caseDataDisease.initializeSpinner(diseaseList);
         contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
         contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
