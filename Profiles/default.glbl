@@ -4,4 +4,9 @@
    <name>default</name>
    <tag></tag>
    <defaultProfile>true</defaultProfile>
+   <GlobalVariableEntity>
+      <description>Sormas Testapplication</description>
+      <initValue>'https://sormas.symeda.de'</initValue>
+      <name>gUrl</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>
