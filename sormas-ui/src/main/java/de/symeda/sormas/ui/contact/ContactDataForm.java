@@ -278,7 +278,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
 	private void trySetContactProximityDetails(ContactProximity proximity) {
-		if (proximity != null && contactCategory.getValue() == null) {
+		if (proximity != null) {
 			switch (proximity) {
 			case FACE_TO_FACE_LONG:
 			case TOUCHED_FLUID:

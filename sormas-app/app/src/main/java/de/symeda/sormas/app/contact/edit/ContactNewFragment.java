@@ -131,7 +131,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
      * Only used for Systems in Germany. Follows specific rules for german systems.
      */
     private void trySetContactProximityDetails(FragmentContactNewLayoutBinding contentBinding, ContactProximity proximity) {
-        if (proximity != null && contentBinding.contactContactCategory.getValue() == null) {
+        if (proximity != null) {
             switch (proximity) {
                 case FACE_TO_FACE_LONG:
                 case TOUCHED_FLUID:

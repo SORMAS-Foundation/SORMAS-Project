@@ -209,7 +209,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
      * Only used for Systems in Germany. Follows specific rules for german systems.
      */
     private void trySetContactProximityDetails(FragmentContactEditLayoutBinding contentBinding, ContactProximity proximity) {
-        if (proximity != null && contentBinding.contactContactCategory.getValue() == null) {
+        if (proximity != null) {
             switch (proximity) {
                 case FACE_TO_FACE_LONG:
                 case TOUCHED_FLUID:
