@@ -203,7 +203,6 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 				editForm.setLabConfirmations(report.getLabConfirmations());
 				editForm.setDeaths(report.getDeaths());
 				editForms.add(editForm);
-				addComponent(editForm);
 				diseasesWithoutReport.remove(disease);
 			}
 		}
@@ -212,11 +211,6 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 			AggregateReportEditForm editForm = new AggregateReportEditForm(disease);
 			editForms.add(editForm);
-			addComponent(editForm);
-		}
-
-		if (!editForms.isEmpty()) {
-			editForms.get(0).addStyleName(CssStyles.VSPACE_TOP_1);
 		}
 
 		Label legend = new Label(String.format(I18nProperties.getString(Strings.aggregateReportLegend),
@@ -227,6 +221,16 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 				I18nProperties.getCaption(Captions.aggregateReportDeathsShort),
 				I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.DEATHS)));
 		addComponent(legend);
+		legend.addStyleName(CssStyles.VSPACE_TOP_1);
+
+		editForms.sort((e1, e2) -> e1.getDisease().compareTo(e2.getDisease()));
+		for (AggregateReportEditForm editForm : editForms) {
+			addComponent(editForm);
+		}
+
+		if (!editForms.isEmpty()) {
+			editForms.get(0).addStyleName(CssStyles.VSPACE_TOP_1);
+		}
 
 		HorizontalLayout buttonsPanel = new HorizontalLayout();
 		buttonsPanel.setMargin(false);
