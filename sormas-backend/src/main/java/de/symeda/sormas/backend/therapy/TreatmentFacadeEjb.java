@@ -105,8 +105,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date) {
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();
@@ -126,8 +126,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 	
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -137,7 +137,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 	
 	@Override
-	public List<TreatmentExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+	public List<TreatmentExportDto> getExportList(CaseCriteria criteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TreatmentExportDto> cq = cb.createQuery(TreatmentExportDto.class);
 		Root<Treatment> treatment = cq.from(Treatment.class);
@@ -159,7 +159,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				treatment.get(Treatment.ROUTE_DETAILS),
 				treatment.get(Treatment.ADDITIONAL_NOTES));
 		
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 		Predicate filter = service.createUserFilter(cb, cq, treatment, user);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
@@ -169,7 +169,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		
 		return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 	}
-	
+
+
 	public static TreatmentDto toDto(Treatment source) {
 		if (source == null) {
 			return null;

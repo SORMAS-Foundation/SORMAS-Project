@@ -1,24 +1,5 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
@@ -43,6 +24,24 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless(name = "ClinicalVisitFacade")
 public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
@@ -181,8 +180,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	@Override
-	public void deleteClinicalVisit(String clinicalVisitUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteClinicalVisit(String clinicalVisitUuid) {
+		User user = userService.getCurrentUser();
 		// TODO replace this with a proper right call #944
 		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
 			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete clinical visits");
@@ -193,8 +192,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 	
 	@Override
-	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date) {
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();
@@ -214,8 +213,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 	
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -225,7 +224,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 	
 	@Override
-	public List<ClinicalVisitExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+	public List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisitExportDto> cq = cb.createQuery(ClinicalVisitExportDto.class);
 		Root<ClinicalVisit> clinicalVisit = cq.from(ClinicalVisit.class);
@@ -244,7 +243,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 				clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
 				symptoms.get(Symptoms.ID));
 		
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit, user);
 		Join<Case, Case> casePath = clinicalCourse.join(ClinicalCourse.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);

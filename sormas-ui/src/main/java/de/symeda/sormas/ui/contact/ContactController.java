@@ -217,12 +217,9 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editComponent.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getContactFacade().deleteContact(contact.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
-					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
-				}
+			editComponent.addDeleteListener(() -> {
+				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
 		}
 
@@ -284,12 +281,7 @@ public class ContactController {
 			}
 		});
 
-		editView.addDiscardListener(new DiscardListener() {
-			@Override
-			public void onDiscard() {
-				popupWindow.close();
-			}
-		});
+		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
 	public void deleteAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
@@ -300,7 +292,7 @@ public class ContactController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (ContactIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid(), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingContactsDeleted), 

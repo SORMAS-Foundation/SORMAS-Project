@@ -69,7 +69,7 @@ public class DiseaseFacadeEjbTest extends AbstractBeanTest {
 
 		List<DiseaseBurdenDto> diseaseBurdenForDashboard = getDiseaseFacade().getDiseaseBurdenForDashboard(rdcf.region, rdcf.district, 
 				DateHelper.getStartOfDay(referenceDate), DateHelper.getEndOfDay(DateHelper.addDays(referenceDate, 10)),
-				DateHelper.getStartOfDay(DateHelper.subtractDays(referenceDate, 10)), DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)), user.getUuid());
+				DateHelper.getStartOfDay(DateHelper.subtractDays(referenceDate, 10)), DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)));
 		
 		DiseaseBurdenDto evdBurden = diseaseBurdenForDashboard.stream().filter(dto -> dto.getDisease() == Disease.EVD).findFirst().get();
 		assertEquals(new Long(3), evdBurden.getCaseCount());

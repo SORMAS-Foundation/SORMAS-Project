@@ -58,7 +58,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
 
 		List<DashboardEventDto> dashboardEventDtos = getEventFacade().getNewEventsForDashboard(new EventCriteria().region(event.getEventLocation().getRegion())
-				.district(event.getEventLocation().getDistrict()).disease(event.getDisease()).reportedBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1)), user.getUuid());
+				.district(event.getEventLocation().getDistrict()).disease(event.getDisease()).reportedBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1)));
 
 		// List should have one entry
 		assertEquals(1, dashboardEventDtos.size());
@@ -71,8 +71,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
-		String adminUuid = admin.getUuid();
-		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, 
+		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE,
 				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description");
@@ -81,10 +80,10 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getEventFacade().getEventByUuid(event.getUuid()));
 		assertNotNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 
-		getEventFacade().deleteEvent(event.getUuid(), adminUuid);
+		getEventFacade().deleteEvent(event.getUuid());
 
 		// Event should be marked as deleted; Event participant should be deleted
-		assertTrue(getEventFacade().getDeletedUuidsSince(user.getUuid(), since).contains(event.getUuid()));
+		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 	}
 	
@@ -96,7 +95,9 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE,
 				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
 
-		List<EventIndexDto> results = getEventFacade().getIndexList(user.getUuid(), null, 0, 100, null);
+		EventCriteria eventCriteria = new EventCriteria();
+		eventCriteria.eventStatus(EventStatus.POSSIBLE);
+		List<EventIndexDto> results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -113,32 +114,32 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		Date testStartDate = new Date();
 		
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
-		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null, user.getUuid()).size());
-		assertEquals(1, getEventFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null, user.getUuid()).size());
-		assertEquals(1, getEventParticipantFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(1, getEventFacade().getAllActiveUuids().size());
+		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 		
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
 		
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
-		assertEquals(0, getEventFacade().getAllActiveEventsAfter(null, user.getUuid()).size());
-		assertEquals(0, getEventFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(0, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null, user.getUuid()).size());
-		assertEquals(0, getEventParticipantFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(0, getEventFacade().getAllActiveUuids().size());
+		assertEquals(0, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(0, getEventParticipantFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 1
-		assertEquals(1, getEventFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
+		assertEquals(1, getEventFacade().getArchivedUuidsSince(testStartDate).size());
 
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
-		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null, user.getUuid()).size());
-		assertEquals(1, getEventFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null, user.getUuid()).size());
-		assertEquals(1, getEventParticipantFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(1, getEventFacade().getAllActiveUuids().size());
+		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
+		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 0
-		assertEquals(0, getEventFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
+		assertEquals(0, getEventFacade().getArchivedUuidsSince(testStartDate).size());
 	}
 
 	@Test

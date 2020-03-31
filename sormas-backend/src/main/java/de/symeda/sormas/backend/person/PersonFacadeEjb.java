@@ -106,9 +106,9 @@ public class PersonFacadeEjb implements PersonFacade {
 
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
+	public List<String> getAllUuids() {
 
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -158,8 +158,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	//	}
 	
 	@Override
-	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria) {
+		User user = userService.getCurrentUser();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
@@ -184,9 +184,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonDto> getPersonsAfter(Date date, String uuid) {
+	public List<PersonDto> getPersonsAfter(Date date) {
 
-		User user = userService.getByUuid(uuid);
+		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
@@ -206,8 +206,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String uuid) {
-		User user = userService.getByUuid(uuid);
+	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease) {
+		User user = userService.getCurrentUser();
 		District district = districtService.getByReferenceDto(districtRef);
 
 		if (user == null) {

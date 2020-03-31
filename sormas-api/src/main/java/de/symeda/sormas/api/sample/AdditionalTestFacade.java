@@ -14,12 +14,11 @@ public interface AdditionalTestFacade {
 	
 	AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest);
 	
-	void deleteAdditionalTest(String additionalTestUuid, String userUuid);
+	void deleteAdditionalTest(String additionalTestUuid);
 
-	List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date, String userUuid);
+	List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date);
 
 	List<AdditionalTestDto> getByUuids(List<String> uuids);
 
-	List<String> getAllActiveUuids(String userUuid);
-	
+	List<String> getAllActiveUuids();
 }

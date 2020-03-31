@@ -58,7 +58,7 @@ public interface OutbreakFacade {
 	 */
 	OutbreakDto endOutbreak(DistrictReferenceDto district, Disease disease);
 	
-	Map<Disease, Long> getOutbreakDistrictCountByDisease (OutbreakCriteria criteria, String userUuid);
+	Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria);
 	
-	Long getOutbreakDistrictCount (OutbreakCriteria criteria, String userUuid);
+	Long getOutbreakDistrictCount (OutbreakCriteria criteria);
 }

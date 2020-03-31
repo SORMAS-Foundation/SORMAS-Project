@@ -132,4 +132,9 @@ public class MockProducer {
 	public static UserTransaction getUserTransaction() {
 		return userTransaction;
 	}
+
+	@Produces
+	public static Principal getPrincipal() {
+		return principal;
+	}
 }

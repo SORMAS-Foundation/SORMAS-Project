@@ -45,12 +45,7 @@ public class ClinicalVisitResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<ClinicalVisitDto> getAllVisits(@Context SecurityContext sc, @PathParam("since") long since) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<ClinicalVisitDto> result = FacadeProvider.getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(new Date(since),
-				userDto.getUuid());
-		return result;
+		return FacadeProvider.getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(new Date(since));
 	}
 
 	@POST
@@ -72,11 +67,6 @@ public class ClinicalVisitResource extends EntityDtoResource {
 	@GET	
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getClinicalVisitFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getClinicalVisitFacade().getAllActiveUuids();
 	}
-	
 }

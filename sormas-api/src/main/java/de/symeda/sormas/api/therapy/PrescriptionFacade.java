@@ -24,6 +24,6 @@ public interface PrescriptionFacade {
 	
 	List<String> getAllActiveUuids(String userUuid);
 	
-	List<PrescriptionExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
+	List<PrescriptionExportDto> getExportList(CaseCriteria caseCriteria, int first, int max);
 
 }

@@ -28,9 +28,7 @@ public class AggregateReportResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<AggregateReportDto> getAllAggregateReports(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<AggregateReportDto> aggregateReports = FacadeProvider.getAggregateReportFacade().getAllAggregateReportsAfter(new Date(since), userDto.getUuid());
-		return aggregateReports;
+		return FacadeProvider.getAggregateReportFacade().getAllAggregateReportsAfter(new Date(since));
 	}
 
 	@POST
@@ -50,9 +48,6 @@ public class AggregateReportResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getAggregateReportFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getAggregateReportFacade().getAllUuids();
 	}
-	
 }
