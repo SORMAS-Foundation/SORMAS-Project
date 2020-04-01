@@ -22,7 +22,7 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/LoginAsContactSuperv
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/SwitchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
 'userName\n'
-WebUI.setText(findTestObject('Object Repository/Contacts/Page_SORMAS/input_Export_v-textfield v-widget v-has-wid_378d06'), 
+WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'), 
     findTestData('ContactTestData').getValue(2, 1))
 
 TestObject tableWrapper = new TestObject().addProperty('xpath', ConditionType.EQUALS, '//div[@class="v-grid-tablewrapper"]')

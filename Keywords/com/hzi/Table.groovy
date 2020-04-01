@@ -56,7 +56,7 @@ class Table {
 		List<WebElement> selectedRows = mailList.findElements(By.xpath("//" + outerTagName + "/tr"))
 		return selectedRows
 	}
-	
+
 	/**
 	 * Get number of Rows by attribute.
 	 * @param table
@@ -65,9 +65,9 @@ class Table {
 	@Keyword
 	def Integer getTableRowsByAttribute(TestObject table) {
 		WebElement tableElement = WebUiBuiltInKeywords.findWebElement(table)
-		
+
 		String attribute = tableElement.getAttribute("aria-rowcount")
-		
-		return attribute.toInteger() - 1		
+
+		return attribute.toInteger() - 1
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>input_Export_v-textfield v-widget v-has-wid_378d06</name>
+   <name>contact_search_field_name</name>
    <tag></tag>
    <elementGuidId>dedd04a8-c21c-4243-bd2b-72f217c1c4d8</elementGuidId>
    <selectorCollection>
