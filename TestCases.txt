@@ -1,0 +1,16 @@
+Test cases "Cases" view:
+
+(positive)
+
+- Filter "Case classification" mit "Not yet classified" (ok)
+- "Reset Filter" Button (ok)
+- "more filters" button
+-- date filter
+-- "only cases without geo coordinates"
+- click on first case in list -> open case
+- test tabs -> verify: specific field in view
+- "New case" button -> some selection
+
+
+
+(negative)

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description></description>
-   <name>LoginAsSuveillanceSupervisor</name>
+   <name>SwitchToCases</name>
    <tag></tag>
    <comment></comment>
-   <testCaseGuid>c5b51d7e-4962-4afa-877e-41b51da6d507</testCaseGuid>
+   <testCaseGuid>4427b710-aa84-484d-83b0-a4eb929713ec</testCaseGuid>
 </TestCaseEntity>

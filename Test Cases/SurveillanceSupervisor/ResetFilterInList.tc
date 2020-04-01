@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Tests the &quot;reset filter&quot; button in the list view of the cases view</description>
+   <name>ResetFilterInList</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>176a6ba5-5513-4b18-a83d-e0bffe71c480</testCaseGuid>
+</TestCaseEntity>

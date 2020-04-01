@@ -14,37 +14,7 @@ import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
-
-import org.openqa.selenium.By
 import org.openqa.selenium.Keys as Keys
 
-import com.kms.katalon.core.testobject.ConditionType
-import com.kms.katalon.core.testobject.TestObject
-
-WebUI.callTestCase(findTestCase('SurveillanceSupervisor/LoginAsSuveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
-
-WebUI.click(findTestObject('Page_SORMAS/span_Cases'))
-
-WebUI.click(findTestObject('Object Repository/Page_SORMAS/div_New case_v-filterselect-button'))
-
-WebUI.click(findTestObject('Object Repository/Page_SORMAS/span_Not yet classified'))
-
-not_run: WebUI.click(findTestObject('Object Repository/Page_SORMAS/div_Case IDEPID numberDiseaseCase classific_28592f'))
-
-//result = CustomKeywords.'com.hzi.Test.getHtmlTableRows'(findTestObject('Page_SORMAS/div_Case IDEPID numberDiseaseCase classific_28592f'), 
-//    'tbody')
-
-
-TestObject to = new TestObject().addProperty('xpath', ConditionType.EQUALS, '//div[@class="v-grid-tablewrapper"]')
-
-result = CustomKeywords.'com.hzi.Test.getHtmlTableRows'(to,
-	'tbody')
-println(result.size())
-
-if (result.size() == 11) {
-    WebUI.closeBrowser()
-} else {
-    throw new com.kms.katalon.core.exception.StepFailedException('Result number does not equal expected number')
-}
-
+WebUI.click(findTestObject('Surveillance/span_Cases'))
 

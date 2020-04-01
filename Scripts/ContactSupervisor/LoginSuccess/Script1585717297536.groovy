@@ -18,7 +18,7 @@ import internal.GlobalVariable as GlobalVariable
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/LoginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 try {
-    WebUI.verifyElementPresent(findTestObject('Page_SORMAS/span_Logout (Surveillance Supervisor)'), 2)
+    WebUI.verifyElementPresent(findTestObject('Surveillance/span_Logout (Surveillance Supervisor)'), 2)
 }
 finally { 
     WebUI.closeBrowser()

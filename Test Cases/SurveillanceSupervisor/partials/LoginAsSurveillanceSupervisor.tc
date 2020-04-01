@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description></description>
-   <name>FilterCases</name>
+   <name>LoginAsSurveillanceSupervisor</name>
    <tag></tag>
    <comment></comment>
-   <testCaseGuid>555c2034-0ca0-4cda-9958-c810760080f2</testCaseGuid>
+   <testCaseGuid>469cfaa8-4885-4f11-9282-45a4200e298e</testCaseGuid>
 </TestCaseEntity>

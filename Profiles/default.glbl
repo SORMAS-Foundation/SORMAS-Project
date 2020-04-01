@@ -9,4 +9,14 @@
       <initValue>'https://sormas.symeda.de'</initValue>
       <name>gUrl</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Username for user in Surveillance Supervisor section</description>
+      <initValue>'SurvSup'</initValue>
+      <name>gUsernameSurveillanceSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Password for user in Surveillance Supervisor section</description>
+      <initValue>'FfcXptN5bgPq'</initValue>
+      <name>gPasswordSurveillanceSupervisor</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>

@@ -14,13 +14,14 @@ import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
-import org.openqa.selenium.Keys as Keys
 
-WebUI.openBrowser(GlobalVariable.gUrl)
+WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : GlobalVariable.gPasswordSurveillanceSupervisor
+        , ('Username') : GlobalVariable.gUsernameSurveillanceSupervisor], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.setText(findTestObject('Login/input_username_username'), Username)
-
-WebUI.setText(findTestObject('Login/input_password_password'), Password)
-
-WebUI.click(findTestObject('Login/div_Log in'))
+try {
+    WebUI.verifyElementPresent(findTestObject('Surveillance/span_Logout (Surveillance Supervisor)'), 2)
+}
+finally { 
+    WebUI.closeBrowser()
+}
 

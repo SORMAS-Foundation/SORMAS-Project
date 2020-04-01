@@ -5,3 +5,12 @@
 /.classpath
 .svn/
 .DS_Store*
+.project
+/settings/
+
+# Exclude folder content (except .gitkeep)
+Reports/*
+!Reports/.gitkeep 
+
+Checkpoints/*
+!Checkpoints/.gitkeep 
