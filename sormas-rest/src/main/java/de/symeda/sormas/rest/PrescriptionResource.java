@@ -63,9 +63,7 @@ public class PrescriptionResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());	
-		return FacadeProvider.getPrescriptionFacade().getAllActiveUuids(userDto.getUuid());
+		return FacadeProvider.getPrescriptionFacade().getAllActiveUuids();
 	}
 
 }

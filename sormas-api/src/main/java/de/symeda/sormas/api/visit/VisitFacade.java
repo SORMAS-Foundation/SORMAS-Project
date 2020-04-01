@@ -40,7 +40,7 @@ public interface VisitFacade {
 
 	List<VisitDto> getByUuids(List<String> uuids);
 	
-	void deleteVisit(String visitUuid, String userUuid);
+	void deleteVisit(String visitUuid);
 	
 	int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus);
 	

@@ -95,8 +95,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	public void deletePrescription(String prescriptionUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deletePrescription(String prescriptionUuid) {
+		User user = userService.getCurrentUser();
 		// TODO replace this with a proper user right call #944
 		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
 			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete prescriptions");
@@ -128,8 +128,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 	
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();

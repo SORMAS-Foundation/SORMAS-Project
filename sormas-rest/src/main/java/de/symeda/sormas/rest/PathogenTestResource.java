@@ -45,11 +45,8 @@ public class PathogenTestResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<PathogenTestDto> getAllPathogenTests(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<PathogenTestDto> sampleTests = FacadeProvider.getPathogenTestFacade()
-				.getAllActivePathogenTestsAfter(new Date(since), userDto.getUuid());
-		return sampleTests;
+		return FacadeProvider.getPathogenTestFacade()
+				.getAllActivePathogenTestsAfter(new Date(since));
 	}
 
 	@POST
@@ -69,10 +66,7 @@ public class PathogenTestResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getPathogenTestFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getPathogenTestFacade().getAllActiveUuids();
 	}
 	
 	@GET

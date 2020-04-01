@@ -100,8 +100,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -111,8 +111,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}	
 
 	@Override
-	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if(user == null) {
 			return Collections.emptyList();
@@ -184,10 +184,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public void deletePathogenTest(String pathogenTestUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deletePathogenTest(String pathogenTestUuid) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.PATHOGEN_TEST_DELETE)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete pathogen tests.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete pathogen tests.");
 		}
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
