@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestSuiteEntity>
-   <description>Everything which is related to the filter view</description>
-   <name>Filter View</name>
+   <description></description>
+   <name>Case CRU(D)</name>
    <tag></tag>
    <isRerun>false</isRerun>
    <mailRecipient></mailRecipient>
@@ -9,21 +9,9 @@
    <pageLoadTimeout>30</pageLoadTimeout>
    <pageLoadTimeoutDefault>true</pageLoadTimeoutDefault>
    <rerunFailedTestCasesOnly>false</rerunFailedTestCasesOnly>
-   <testSuiteGuid>23c51a4a-fdb0-4ad2-b46e-aaf96cd39b9d</testSuiteGuid>
+   <testSuiteGuid>51c27e1b-cf99-4f41-be5a-8c2ce154b413</testSuiteGuid>
    <testCaseLink>
-      <guid>6bdd9f02-4167-4eeb-aa9c-ee531e6cdf0e</guid>
-      <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
-      <testCaseId>Test Cases/SurveillanceSupervisor/FilterCasesNotYetClasifiedInSearchView</testCaseId>
-      <variableLink>
-         <testDataLinkId></testDataLinkId>
-         <type>DEFAULT</type>
-         <value></value>
-         <variableId>d8128a1b-46b1-439c-ad80-7a186301977a</variableId>
-      </variableLink>
-   </testCaseLink>
-   <testCaseLink>
-      <guid>7e24f4e7-26e0-4619-9891-8305951e0784</guid>
+      <guid>eacb5920-a386-46e7-9f5c-e581cb5c3731</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
       <testCaseId>Test Cases/SurveillanceSupervisor/CreateNewCaseInSearchView</testCaseId>

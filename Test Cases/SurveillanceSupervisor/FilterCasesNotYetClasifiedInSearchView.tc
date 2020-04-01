@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description></description>
-   <name>FilterCasesNotYetClasified</name>
+   <name>FilterCasesNotYetClasifiedInSearchView</name>
    <tag></tag>
    <comment></comment>
    <testCaseGuid>555c2034-0ca0-4cda-9958-c810760080f2</testCaseGuid>

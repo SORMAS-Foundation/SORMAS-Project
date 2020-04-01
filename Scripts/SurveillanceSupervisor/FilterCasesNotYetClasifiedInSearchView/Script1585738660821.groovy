@@ -22,11 +22,11 @@ WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/LoginAsSurveill
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Surveillance/div_New case_v-filterselect-button'))
+WebUI.click(findTestObject('Surveillance/SearchView/div_New case_v-filterselect-button'))
 
-WebUI.click(findTestObject('Surveillance/span_Not yet classified'))
+WebUI.click(findTestObject('Surveillance/SearchView/span_Not yet classified'))
 
-def attribute = WebUI.getAttribute(findTestObject('Surveillance/result_table'), 'aria-rowcount')
+def attribute = WebUI.getAttribute(findTestObject('Surveillance/SearchView/result_table'), 'aria-rowcount')
 
 attribute = (attribute.toInteger() - 1).toString()
 
