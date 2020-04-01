@@ -14,24 +14,15 @@ import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
-import org.openqa.selenium.By as By
-import org.openqa.selenium.Keys as Keys
-import com.kms.katalon.core.testobject.ConditionType as ConditionType
 
-WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/LoginAsSurveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('SurveillanceSupervisor/FilterCasesNotYetClasified'), [('isStandalone') : false], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
-
-WebUI.click(findTestObject('Surveillance/div_New case_v-filterselect-button'))
-
-WebUI.click(findTestObject('Surveillance/span_Not yet classified'))
+WebUI.click(findTestObject('Surveillance/div_Reset filters'))
 
 def attribute = WebUI.getAttribute(findTestObject('Surveillance/result_table'), 'aria-rowcount')
 
 attribute = (attribute.toInteger() - 1).toString()
 
-WebUI.verifyMatch(attribute, '12', false, FailureHandling.OPTIONAL)
+WebUI.verifyNotMatch(attribute, '12', false, FailureHandling.OPTIONAL)
 
-if(isStandalone) {
-	WebUI.closeBrowser()
-}
+WebUI.closeBrowser()

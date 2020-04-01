@@ -7,3 +7,6 @@
 .DS_Store*
 .project
 /settings/
+
+Reports/*
+!Reports/.gitkeep 
