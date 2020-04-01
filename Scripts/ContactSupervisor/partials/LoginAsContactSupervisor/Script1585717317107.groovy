@@ -15,4 +15,6 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 
-WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : 'uLJnrJxHaLmj', ('Username') : 'ContSup'], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : GlobalVariable.gPasswordContactSupervisor
+        , ('Username') : GlobalVariable.gUsernameContactSupervisor], FailureHandling.STOP_ON_FAILURE)
+

@@ -19,4 +19,14 @@
       <initValue>'FfcXptN5bgPq'</initValue>
       <name>gPasswordSurveillanceSupervisor</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Username for ContactSupervisor</description>
+      <initValue>'ContSup'</initValue>
+      <name>gUsernameContactSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Password for Contact Supervisor</description>
+      <initValue>'uLJnrJxHaLmj'</initValue>
+      <name>gPasswordContactSupervisor</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>
