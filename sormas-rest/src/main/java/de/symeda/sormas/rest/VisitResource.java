@@ -54,11 +54,7 @@ public class VisitResource extends EntityDtoResource {
 	@Path("/all/{since}")
 	public List<VisitDto> getAllVisits(@Context SecurityContext sc, @PathParam("since") long since) {
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<VisitDto> result = FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since),
-				userDto.getUuid());
-		return result;
+		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since));
 	}
 
 	@POST
@@ -80,11 +76,7 @@ public class VisitResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getVisitFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getVisitFacade().getAllActiveUuids();
 	}
 	
 }

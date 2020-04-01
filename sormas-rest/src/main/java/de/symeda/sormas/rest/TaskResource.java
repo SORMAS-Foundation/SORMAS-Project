@@ -53,12 +53,7 @@ public class TaskResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<TaskDto> getAll(@Context SecurityContext sc, @PathParam("since") long since) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<TaskDto> result = FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since),
-				userDto.getUuid());
-		return result;
+		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since));
 	}
 
 	@POST
@@ -80,10 +75,6 @@ public class TaskResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getTaskFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getTaskFacade().getAllActiveUuids();
 	}
 }

@@ -107,8 +107,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 	
 	@Override
-	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date) {
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();

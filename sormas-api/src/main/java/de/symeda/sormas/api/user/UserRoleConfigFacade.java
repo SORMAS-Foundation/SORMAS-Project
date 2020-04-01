@@ -30,7 +30,7 @@ public interface UserRoleConfigFacade {
 
     List<UserRoleConfigDto> getAll();
     
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 
 	List<String> getDeletedUuids(Date date);
 

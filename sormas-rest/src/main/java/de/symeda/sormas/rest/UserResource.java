@@ -61,8 +61,6 @@ public class UserResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getUserFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getUserFacade().getAllUuids();
 	}
 }
