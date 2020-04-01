@@ -20,7 +20,7 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : 
 	FailureHandling.STOP_ON_FAILURE)
 
 try {
-    WebUI.verifyElementNotPresent(findTestObject('Page_SORMAS/span_Logout (Surveillance Supervisor)'), 2)
+    WebUI.verifyElementNotPresent(findTestObject('Surveillance/span_Logout (Surveillance Supervisor)'), 2)
 }
 finally { 
     WebUI.closeBrowser()

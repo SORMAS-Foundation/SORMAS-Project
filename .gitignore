@@ -5,3 +5,5 @@
 /.classpath
 .svn/
 .DS_Store*
+.project
+/settings/
