@@ -644,7 +644,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			contact.setFollowUpUntil(DateHelper8.toDate(untilDate));
 			if (changeStatus) {
 				// completed or still follow up?
-				if (lastVisit != null && DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
+				if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), DateHelper8.toDate(untilDate))) {
 					contact.setFollowUpStatus(FollowUpStatus.COMPLETED);
 				} else {
 					contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
