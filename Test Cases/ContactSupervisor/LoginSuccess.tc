@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description></description>
-   <name>LoginAsContactSupervisor</name>
+   <name>LoginSuccess</name>
    <tag></tag>
    <comment></comment>
    <testCaseGuid>763d72d2-c1f6-4006-968b-dd2bda501767</testCaseGuid>
