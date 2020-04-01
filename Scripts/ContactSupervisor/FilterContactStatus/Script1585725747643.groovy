@@ -6,11 +6,13 @@ import com.kms.katalon.core.testobject.ConditionType as ConditionType
 import com.kms.katalon.core.testobject.TestObject as TestObject
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
+import com.hzi.Helper
+
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/LoginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/SwitchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
-TestObject tableObject = new TestObject().addProperty('xpath', ConditionType.EQUALS, '//table[@aria-rowcount]')
+TestObject tableObject = Helper.createTestObjectWithXPath('//table[@aria-rowcount]')
 
 allCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('All Cases:' + allCases)

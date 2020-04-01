@@ -16,6 +16,7 @@ import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 import org.openqa.selenium.Keys as Keys
 import com.kms.katalon.core.testobject.ConditionType as ConditionType
+import com.hzi.Helper
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/LoginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
@@ -25,9 +26,7 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/SwitchToContacts'), 
 WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'), 
     findTestData('ContactTestData').getValue(2, 1))
 
-TestObject tableWrapper = new TestObject().addProperty('xpath', ConditionType.EQUALS, '//div[@class="v-grid-tablewrapper"]')
-
-rows = CustomKeywords.'com.hzi.Table.getHtmlTableRows'(tableWrapper, 'tbody')
+rows = CustomKeywords.'com.hzi.Table.getHtmlTableRows'(Helper.createTestObjectWithXPath('//div[@class="v-grid-tablewrapper"]'), 'tbody')
 
 if (rows.size() == 1) {
     WebUI.closeBrowser()
