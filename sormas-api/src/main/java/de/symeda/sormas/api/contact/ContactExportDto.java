@@ -66,13 +66,16 @@ public class ContactExportDto implements Serializable {
 	private YesNoUnknown lastCooperativeVisitSymptomatic;
 	private Date lastCooperativeVisitDate;
 	private String lastCooperativeVisitSymptoms;
+	private String region;
+	private String district;
 
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 			ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
 			Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
 			ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil, PresentCondition presentCondition, Date deathDate,
 			String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
-			String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails) {
+			String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
+			String region, String district) {
 		this.id = id;
 		this.personId = personId;
 		this.uuid = uuid;
@@ -95,6 +98,8 @@ public class ContactExportDto implements Serializable {
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails,
 				FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
+		this.region = region;
+		this.district = district;
 	}
 	
 	public ContactReferenceDto toReference() {
@@ -143,87 +148,97 @@ public class ContactExportDto implements Serializable {
 		return lastContactDate;
 	}
 
-	@Order(6)
+	@Order(10)
 	public String getPerson() {
 		return person;
 	}
 
-	@Order(7)
+	@Order(11)
 	public Sex getSex() {
 		return sex;
 	}
 
-	@Order(8)
+	@Order(12)
 	public String getApproximateAge() {
 		return approximateAge;
 	}
 
-	@Order(9)
+	@Order(13)
 	public Date getReportDate() {
 		return reportDate;
 	}
+	
+	@Order(14)
+	public String getRegion() {
+		return region;
+	}
+	
+	@Order(15)
+	public String getDistrict() {
+		return district;
+	}
 
-	@Order(10)
+	@Order(20)
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
 
-	@Order(11)
+	@Order(21)
 	public ContactStatus getContactStatus() {
 		return contactStatus;
 	}
 
-	@Order(12)
+	@Order(22)
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
 
-	@Order(13)
+	@Order(23)
 	public Date getFollowUpUntil() {
 		return followUpUntil;
 	}
 
-	@Order(14)
+	@Order(24)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(15)
+	@Order(25)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(16)
+	@Order(30)
 	public String getAddress() {
 		return address;
 	}
 
-	@Order(17)
+	@Order(31)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(18)
+	@Order(32)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(19)
+	@Order(33)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(20)
+	@Order(34)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(21)
+	@Order(35)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(22)
+	@Order(36)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
@@ -326,6 +341,14 @@ public class ContactExportDto implements Serializable {
 
 	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
 		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
 	}
 	
 }

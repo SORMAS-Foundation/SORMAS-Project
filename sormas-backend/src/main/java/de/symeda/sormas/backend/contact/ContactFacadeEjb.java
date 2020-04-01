@@ -264,6 +264,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		Root<Contact> contact = cq.from(Contact.class);
 		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Contact, Person> contactPerson = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Contact, Region> contactRegion = contact.join(Contact.REGION, JoinType.LEFT);
+		Join<Contact, District> contactDistrict = contact.join(Contact.DISTRICT, JoinType.LEFT);
 		Join<Person, Facility> occupationFacility = contactPerson.join(Person.OCCUPATION_FACILITY, JoinType.LEFT);
 
 		cq.multiselect(
@@ -294,7 +296,9 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactPerson.get(Person.OCCUPATION_DETAILS),
 				occupationFacility.get(Facility.NAME),
 				occupationFacility.get(Facility.UUID),
-				contactPerson.get(Person.OCCUPATION_FACILITY_DETAILS));
+				contactPerson.get(Person.OCCUPATION_FACILITY_DETAILS),
+				contactRegion.get(Region.NAME),
+				contactDistrict.get(District.NAME));
 
 		Predicate filter = null;
 
