@@ -1,0 +1,41 @@
+import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
+import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
+
+import com.kms.katalon.core.model.FailureHandling as FailureHandling
+import com.kms.katalon.core.testobject.ConditionType as ConditionType
+import com.kms.katalon.core.testobject.TestObject as TestObject
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+
+WebUI.callTestCase(findTestCase('ContactSupervisor/partials/LoginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
+
+WebUI.callTestCase(findTestCase('ContactSupervisor/partials/SwitchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
+
+TestObject tableObject = new TestObject().addProperty('xpath', ConditionType.EQUALS, '//table[@aria-rowcount]')
+
+allCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
+println('All Cases:' + allCases)
+
+WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Active contact'))
+activeContacts = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
+println('activeContacts:' + activeContacts)
+
+WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Converted to case'))
+convertedToCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
+println('convertedToCases:' + convertedToCases)
+
+WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Dropped'))
+droppedCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
+println('droppedCases:' + droppedCases)
+
+
+sumFilter = activeContacts + convertedToCases + droppedCases
+println('Sum of all Filters:' + sumFilter)
+if (allCases == sumFilter) {
+	WebUI.closeBrowser()
+} else {
+	WebUI.closeBrowser()
+	throw new com.kms.katalon.core.exception.StepFailedException('Expected sum of different filter rows to be equal to all-filter rows: ' + allCases +  ' != ' + sumFilter)
+}
+
+
+

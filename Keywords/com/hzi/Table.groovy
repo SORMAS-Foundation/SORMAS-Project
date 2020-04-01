@@ -45,7 +45,7 @@ import com.kms.katalon.core.webui.exception.WebElementNotFoundException
 class Table {
 
 	/**
-	 * Get all rows of HTML table
+	 * Get all rows of HTML table !!! returns only visible rows !!!
 	 * @param table Katalon test object represent for HTML table
 	 * @param outerTagName outer tag name of TR tag, usually is TBODY
 	 * @return All rows inside HTML table
@@ -55,5 +55,19 @@ class Table {
 		WebElement mailList = WebUiBuiltInKeywords.findWebElement(table)
 		List<WebElement> selectedRows = mailList.findElements(By.xpath("//" + outerTagName + "/tr"))
 		return selectedRows
+	}
+
+	/**
+	 * Get number of Rows by attribute.
+	 * @param table
+	 * @return
+	 */
+	@Keyword
+	def Integer getTableRowsByAttribute(TestObject table) {
+		WebElement tableElement = WebUiBuiltInKeywords.findWebElement(table)
+
+		String attribute = tableElement.getAttribute("aria-rowcount")
+
+		return attribute.toInteger() - 1
 	}
 }
