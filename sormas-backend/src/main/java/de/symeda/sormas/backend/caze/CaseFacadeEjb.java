@@ -1085,7 +1085,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				surveillanceOfficer.get(User.UUID), root.get(Case.OUTCOME), person.get(Person.APPROXIMATE_AGE),
 				person.get(Person.APPROXIMATE_AGE_TYPE), person.get(Person.BIRTHDATE_DD),
 				person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY), person.get(Person.SEX),
-				root.get(Case.COMPLETENESS));
+				root.get(Case.QUARANTINE_TO), root.get(Case.COMPLETENESS));
 	}
 
 	private void setIndexDtoSortingOrder(CriteriaBuilder cb, CriteriaQuery<CaseIndexDto> cq, Root<Case> root,
@@ -1113,6 +1113,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				case CaseIndexDto.REPORT_DATE:
 				case CaseIndexDto.CREATION_DATE:
 				case CaseIndexDto.OUTCOME:
+				case CaseIndexDto.QUARANTINE_TO:
 				case CaseIndexDto.COMPLETENESS:
 					expression = root.get(sortProperty.propertyName);
 					break;
@@ -1330,6 +1331,21 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		updateCaseAge(existingCase, newCase);
 
+		// Change the disease of all contacts if the case disease or disease details have changed
+		if (existingCase != null && 
+				(newCase.getDisease() != existingCase.getDisease() ||
+				!StringUtils.equals(newCase.getDiseaseDetails(), existingCase.getDiseaseDetails()))) {
+			for (Contact contact : contactService.findBy(new ContactCriteria().caze(newCase.toReference()), null)) {
+				if (contact.getDisease() != newCase.getDisease() || 
+						!StringUtils.equals(contact.getDiseaseDetails(), newCase.getDiseaseDetails())) {
+					// Only do the change if it hasn't been done in the mobile app before
+					contact.setDisease(newCase.getDisease());
+					contact.setDiseaseDetails(newCase.getDiseaseDetails());
+					contactService.ensurePersisted(contact);
+				}
+			}
+		}
+		
 		if (existingCase == null || newCase.getDisease() != existingCase.getDisease()
 				|| newCase.getReportDate() != existingCase.getReportDate()
 				|| newCase.getSymptoms().getOnsetDate() != existingCase.getSymptoms().getOnsetDate()) {
@@ -1737,6 +1753,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTo(source.getQuarantineTo());
+		target.setQuarantineFrom(source.getQuarantineFrom());
 
 		return target;
 	}
@@ -1831,6 +1850,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTo(source.getQuarantineTo());
+		target.setQuarantineFrom(source.getQuarantineFrom());
 
 		return target;
 	}
@@ -2192,7 +2214,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Contact> contacts = contactService.findBy(new ContactCriteria().caze(otherCase.toReference()), null);
 		for (Contact contact : contacts) {
 			if (cloning) {
-				ContactDto newContact = ContactDto.build(leadCase.toReference());
+				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
 				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false);
 

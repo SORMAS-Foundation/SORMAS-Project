@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,23 +47,28 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class EventDataForm extends AbstractEditForm<EventDto> {
+
+	private static final long serialVersionUID = 1L;
 
 	private static final String STATUS_CHANGE = "statusChange";
 
-	private static final String HTML_LAYOUT = LayoutUtil.h3(I18nProperties.getString(Strings.headingEventData))
-			+ LayoutUtil.fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER)
-			+ LayoutUtil.fluidRowLocs(4, EventDto.EVENT_DATE, 8, EventDto.EVENT_STATUS)
-			+ LayoutUtil.fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS)
-			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_DESC) + LayoutUtil.h3(I18nProperties.getString(Strings.headingInformationSource))
-			+ LayoutUtil.fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME)
-			+ LayoutUtil.fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) + LayoutUtil.h3(I18nProperties.getString(Strings.headingLocation))
-			+ LayoutUtil.fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT)
-			+ LayoutUtil.fluidRowLocs(EventDto.EVENT_LOCATION)
-			+ LayoutUtil.fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
+	private static final String HTML_LAYOUT = 
+			h3(I18nProperties.getString(Strings.headingEventData)) +
+			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
+			fluidRowLocs(4, EventDto.EVENT_DATE, 8, EventDto.EVENT_STATUS) +
+			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
+			fluidRowLocs(EventDto.EVENT_DESC) + 
+			
+			h3(I18nProperties.getString(Strings.headingInformationSource)) +
+			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
+			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) + 
+			
+			h3(I18nProperties.getString(Strings.headingLocation)) +
+			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
+			fluidRowLocs(EventDto.EVENT_LOCATION) +
+			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;

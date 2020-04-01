@@ -18,7 +18,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
@@ -53,8 +52,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		// Successful import of 5 case contacts
 		File csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").getFile());
-		CaseContactImporter caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(),
-				caze.toReference(), caze.getDisease());
+		CaseContactImporter caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze);
 		ImportResultStatus importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -65,8 +63,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 				.getNameDtos(user.toReference());
 		csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
-		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze.toReference(),
-				caze.getDisease()) {
+		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze) {
 			@Override
 			protected void handleSimilarity(PersonDto newPerson,
 					Consumer<ContactImportSimilarityResult> resultConsumer) {
@@ -93,8 +90,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		// Person Similarity: skip
 		csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
-		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze.toReference(),
-				caze.getDisease()) {
+		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze) {
 			@Override
 			protected void handleSimilarity(PersonDto newPerson,
 					Consumer<ContactImportSimilarityResult> resultConsumer) {
@@ -110,8 +106,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		// Person Similarity: create
 		csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
-		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze.toReference(),
-				caze.getDisease()) {
+		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze) {
 			@Override
 			protected void handleSimilarity(PersonDto newPerson,
 					Consumer<ContactImportSimilarityResult> resultConsumer) {
@@ -127,8 +122,8 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 
 	private static class CaseContactImporterExtension extends CaseContactImporter {
 		private CaseContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser,
-				CaseReferenceDto caseReference, Disease caseDisease) {
-			super(inputFile, hasEntityClassRow, currentUser, caseReference, caseDisease);
+				CaseDataDto caze) {
+			super(inputFile, hasEntityClassRow, currentUser, caze);
 		}
 
 		protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {

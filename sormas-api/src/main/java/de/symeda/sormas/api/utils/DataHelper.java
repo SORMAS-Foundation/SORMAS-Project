@@ -277,4 +277,13 @@ public final class DataHelper {
 		className = className.replaceAll("Dto$", "");
 		return className;
 	}
+
+	public static boolean tryParseInt(String value) {
+		try {
+			Integer.parseInt(value);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 }

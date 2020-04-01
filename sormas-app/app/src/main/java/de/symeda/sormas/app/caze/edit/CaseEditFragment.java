@@ -33,10 +33,11 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
-import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -83,6 +84,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> initialDistricts;
     private List<Item> initialCommunities;
     private List<Item> initialFacilities;
+    private List<Item> quarantineList;
 
     // Static methods
 
@@ -204,6 +206,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         dengueFeverTypeList = DataUtils.getEnumItems(DengueFeverType.class, true);
         humanRabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
         hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
+        quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
 
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
@@ -288,12 +291,15 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.caseDataRabiesType.initializeSpinner(humanRabiesTypeList);
         contentBinding.caseDataNotifyingClinic.initializeSpinner(hospitalWardTypeList);
         contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
+        contentBinding.caseDataQuarantine.initializeSpinner(quarantineList);
 
         // Initialize ControlDateFields
         contentBinding.caseDataReportDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataOutcomeDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataVaccinationDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataDistrictLevelDate.initializeDateField(getFragmentManager());
+        contentBinding.caseDataQuarantineFrom.initializeDateField(getFragmentManager());
+        contentBinding.caseDataQuarantineTo.initializeDateField(getFragmentManager());
 
         // Replace classification user field with classified by field when case has been classified automatically
         if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {

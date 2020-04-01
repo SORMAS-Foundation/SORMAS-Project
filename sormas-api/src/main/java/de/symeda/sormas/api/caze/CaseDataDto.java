@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -113,7 +114,10 @@ public class CaseDataDto extends EntityDto {
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
-	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
+	public static final String SHARED_TO_COUNTRY = "sharedToCountry";	
+	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_FROM = "quarantineFrom";
+	public static final String QUARANTINE_TO = "quarantineTo";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -229,6 +233,9 @@ public class CaseDataDto extends EntityDto {
 	private String additionalDetails;
 	private String externalID;
 	private boolean sharedToCountry;
+	private QuarantineType quarantine;
+	private Date quarantineFrom;
+	private Date quarantineTo;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -250,7 +257,7 @@ public class CaseDataDto extends EntityDto {
 	}
 	
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
-		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getCaseDisease());
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
 			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
@@ -767,6 +774,30 @@ public class CaseDataDto extends EntityDto {
 
 	public void setSharedToCountry(boolean sharedToCountry) {
 		this.sharedToCountry = sharedToCountry;
+	}
+
+	public QuarantineType getQuarantine() {
+		return quarantine;
+	}
+
+	public void setQuarantine(QuarantineType quarantine) {
+		this.quarantine = quarantine;
+	}
+
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 	}
 
 }

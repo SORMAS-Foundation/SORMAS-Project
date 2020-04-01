@@ -100,7 +100,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         where.and(
                 where.eq(AbstractDomainObject.SNAPSHOT, false),
                 where.eq(Visit.PERSON + "_id", contact.getPerson()),
-                where.eq(Visit.DISEASE, contact.getCaseDisease())
+                where.eq(Visit.DISEASE, contact.getDisease())
         );
 
         if (visitStatus != null) {
@@ -156,7 +156,7 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         Visit visit = super.build();
         visit.setSymptoms(DatabaseHelper.getSymptomsDao().build());
         visit.setPerson(contact.getPerson());
-        visit.setDisease(contact.getCaseDisease());
+        visit.setDisease(contact.getDisease());
         visit.setVisitDateTime(new Date());
         visit.setVisitUser(ConfigProvider.getUser());
         return visit;

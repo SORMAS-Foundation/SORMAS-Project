@@ -43,6 +43,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -132,8 +133,6 @@ public class CasesView extends AbstractView {
 	private HorizontalLayout thirdFilterRowLayout;
 	private HorizontalLayout dateFilterRowLayout;
 
-	private String originalViewTitle;
-
 	// Filters
 	private ComboBox caseOriginFilter;
 	private ComboBox outcomeFilter;
@@ -148,6 +147,7 @@ public class CasesView extends AbstractView {
 	private ComboBox officerFilter;
 	private ComboBox reportedByFilter;
 	private TextField reportingUserFilter;
+	private PopupDateField quarantineToFilter;
 	private CheckBox casesWithoutGeoCoordsFilter;
 	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private CheckBox casesWithCaseManagementData;
@@ -157,7 +157,6 @@ public class CasesView extends AbstractView {
 
 	// Bulk operations
 	private MenuBar bulkOperationsDropdown;
-	private MenuItem archiveItem;
 	private MenuItem dearchiveItem;
 	private Button btnEnterBulkEditMode;
 	private Button btnLeaveBulkEditMode;
@@ -168,7 +167,6 @@ public class CasesView extends AbstractView {
 
 	public CasesView() {
 		super(VIEW_NAME);
-		originalViewTitle = getViewTitleLabel().getValue();
 
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
@@ -700,6 +698,15 @@ public class CasesView extends AbstractView {
 				grid.reload();
 			});
 			secondFilterRowLayout.addComponent(reportingUserFilter);
+			
+			quarantineToFilter = new PopupDateField();
+			quarantineToFilter.setWidth(200, Unit.PIXELS);
+			quarantineToFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.QUARANTINE_TO));
+			quarantineToFilter.addValueChangeListener(e -> {
+				criteria.quarantineTo((Date) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			secondFilterRowLayout.addComponent(quarantineToFilter);
 		}
 		filterLayout.addComponent(secondFilterRowLayout);
 		secondFilterRowLayout.setVisible(false);
@@ -885,7 +892,8 @@ public class CasesView extends AbstractView {
 						}
 					});
 				};
-				archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, archiveCommand);
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE,
+						archiveCommand);
 
 				Command dearchiveCommand = selectedItem -> {
 					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
@@ -1002,6 +1010,7 @@ public class CasesView extends AbstractView {
 		officerFilter.setValue(criteria.getSurveillanceOfficer());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
 		reportingUserFilter.setValue(criteria.getReportingUserLike());
+		quarantineToFilter.setValue(criteria.getQuarantineTo());
 		casesWithoutGeoCoordsFilter.setValue(criteria.isMustHaveNoGeoCoordinates());
 		if (portHealthCasesWithoutFacilityFilter != null) {
 			portHealthCasesWithoutFacilityFilter.setValue(criteria.isMustBePortHealthCaseWithoutFacility());

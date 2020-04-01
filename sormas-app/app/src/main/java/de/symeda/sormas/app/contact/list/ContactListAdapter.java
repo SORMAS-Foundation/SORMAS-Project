@@ -72,7 +72,7 @@ public class ContactListAdapter extends BindingPagedListAdapter<Contact, RowRead
                 pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
             }
 
-            if (DiseaseConfigurationCache.getInstance().hasFollowUp(item.getCaseDisease())
+            if (DiseaseConfigurationCache.getInstance().hasFollowUp(item.getDisease())
                     && (currentListFilter == null || currentListFilter != FollowUpStatus.NO_FOLLOW_UP)) {
                 int numberOfVisits = DatabaseHelper.getVisitDao().getVisitCount(item, null);
                 int numberOfCooperativeVisits = DatabaseHelper.getVisitDao().getVisitCount(item, VisitStatus.COOPERATIVE);

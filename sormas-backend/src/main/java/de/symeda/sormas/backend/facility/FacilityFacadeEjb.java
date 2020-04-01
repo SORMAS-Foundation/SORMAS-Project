@@ -97,7 +97,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherLaboratory) {
 		List<Facility> laboratories = facilityService.getAllActiveLaboratories(includeOtherLaboratory);
@@ -366,6 +366,14 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	@Override
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 		Facility facility = facilityService.getByUuid(dto.getUuid());
+		
+		if (facility == null) {
+			if (FacilityType.LABORATORY.equals(dto.getType()) && !getLaboratoriesByName(dto.getName()).isEmpty()) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importLaboratoryAlreadyExists));
+			} else if (!getByName(dto.getName(), dto.getDistrict(), dto.getCommunity()).isEmpty()) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
+			}
+		}
 
 		if (!FacilityType.LABORATORY.equals(dto.getType())) {
 			if (dto.getRegion() == null) {

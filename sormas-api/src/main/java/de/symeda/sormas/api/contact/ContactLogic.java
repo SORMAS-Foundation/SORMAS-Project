@@ -35,4 +35,13 @@ public class ContactLogic {
 			return DateHelper.getDaysBetween(DateHelper.addDays(contactReportDate, 1), contactFollowUpUntil);
 		}
 	}
+	
+	public static Date getStartDate(Date lastContactDate, Date reportDate) {
+		if (lastContactDate != null) {
+			return lastContactDate;
+		} else {
+			return reportDate;
+		}
+	}
+	
 }

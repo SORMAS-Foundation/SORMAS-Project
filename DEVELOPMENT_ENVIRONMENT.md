@@ -16,7 +16,7 @@
 	- If you're using Eclipse to clone, choose "File -> Import -> Git -> Projects from Git" and continue until you're asked to create a new project from the cloned repository; click cancel instead and use "File -> Import -> Maven -> Existing Maven Projects" to import the separate projects into your workspace
 	- If you've cloned the repository from the command line or a Git client, you obviously only need to perform the last step
 - Install [Payara Tools](https://marketplace.eclipse.org/content/payara-tools)
-- Install the [Vaadin Plugin for Eclipise](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse) (no need to install the commercial UI designer)
+- Install the [Vaadin Plugin for Eclipse](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse) (no need to install the commercial UI designer)
 - Add a Payara server to Eclipse and enter the credentials you specified when setting up the server
 
 ### Additional Steps

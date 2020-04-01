@@ -114,7 +114,8 @@ public class TestEntityCreator {
         Contact contact = DatabaseHelper.getContactDao().build();
         contact.setPerson(person);
         contact.setCaseUuid(caze.getUuid());
-        contact.setCaseDisease(caze.getDisease());
+        contact.setDisease(caze.getDisease());
+        contact.setDiseaseDetails(caze.getDiseaseDetails());
 
         try {
             DatabaseHelper.getContactDao().saveAndSnapshot(contact);

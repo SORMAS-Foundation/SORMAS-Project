@@ -23,11 +23,8 @@ public class GeoLatLon implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 6016397482506424761L;
 
-	private double lat;
-    private double lon;
-
-    public GeoLatLon() {
-    }
+	private final double lat;
+    private final double lon;
 
     public GeoLatLon(double lat, double lon) {
         this.lat = lat;
@@ -38,16 +35,8 @@ public class GeoLatLon implements Serializable, Cloneable {
         return lat;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
     public double getLon() {
         return lon;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
     }
 
     @Override
@@ -84,5 +73,13 @@ public class GeoLatLon implements Serializable, Cloneable {
         }
         return true;
     }
-
+    
+    @Override
+    public GeoLatLon clone() {
+    	try {
+			return (GeoLatLon) super.clone();
+		} catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone failed", e);
+		}
+    }
 }

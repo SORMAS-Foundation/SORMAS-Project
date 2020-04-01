@@ -7,6 +7,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class AggregateReportDto extends EntityDto {
 
@@ -124,6 +125,12 @@ public class AggregateReportDto extends EntityDto {
 	
 	public void setDeaths(Integer deaths) {
 		this.deaths = deaths;
+	}
+
+	public static AggregateReportDto build() {
+		AggregateReportDto aggregateReport = new AggregateReportDto();
+		aggregateReport.setUuid(DataHelper.createUuid());
+		return aggregateReport;
 	}
 	
 }

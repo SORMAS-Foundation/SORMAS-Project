@@ -22,7 +22,6 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -38,7 +37,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 	private ContactReferenceDto contactRef;
 
 	public static final String ROOT_VIEW_NAME = ContactsView.VIEW_NAME;
-	
+
 	protected AbstractContactView(String viewName) {
 		super(viewName);
 	}
@@ -48,29 +47,30 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 		if (params.endsWith("/")) {
 			params = params.substring(0, params.length() - 1);
 		}
-		
+
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(params);
 		contactRef = FacadeProvider.getContactFacade().getReferenceByUuid(contact.getUuid());
-		
+
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));
-		menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactCaseContacts), contact.getCaze().getUuid(), true);
+		if (contact.getCaze() != null) {
+			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactCaseContacts), contact.getCaze().getUuid(), true);
+		}
 		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getCaption(ContactDto.I18N_PREFIX), params);
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
-		
+
 		infoLabel.setValue(contactRef.getCaption());
-		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
 		infoLabelSub.setValue(
-				caseData.getDisease() != Disease.OTHER 
-				? caseData.getDisease().toShortString()
-				: DataHelper.toStringNullable(caseData.getDiseaseDetails()));
-    }
-	
+				contact.getDisease() != Disease.OTHER 
+				? contact.getDisease().toShortString()
+						: DataHelper.toStringNullable(contact.getDiseaseDetails()));
+	}
+
 	@Override
 	protected void setSubComponent(Component newComponent) {
 		super.setSubComponent(newComponent);
-		
+
 		if (FacadeProvider.getContactFacade().isDeleted(contactRef.getUuid())) {
 			newComponent.setEnabled(false);
 		}

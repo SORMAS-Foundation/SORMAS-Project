@@ -110,7 +110,7 @@ public class CaseContactsView extends AbstractCaseView {
 		districtFilter.setWidth(240, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> {
-			criteria.caseDistrict((DistrictReferenceDto) e.getProperty().getValue());
+			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
 		topLayout.addComponent(districtFilter);
@@ -217,7 +217,8 @@ public class CaseContactsView extends AbstractCaseView {
 
 			importButton.addClickListener(e -> {
 				Window popupWindow = VaadinUiUtil
-						.showPopupWindow(new CaseContactsImportLayout(criteria.getCaze(), criteria.getCaseDisease()));
+						.showPopupWindow(new CaseContactsImportLayout(
+								FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCaseContacts));
 				popupWindow.addCloseListener(c -> {
 					grid.reload();
@@ -308,7 +309,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		districtFilter.removeAllItems();
 		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(caseDto.getRegion().getUuid()));
-		districtFilter.setValue(criteria.getCaseDistrict());
+		districtFilter.setValue(criteria.getDistrict());
 
 		officerFilter.removeAllItems();
 		officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(caseDto.getRegion(), UserRole.CONTACT_OFFICER));

@@ -123,7 +123,7 @@ public class VisitController {
     private VisitDto createNewVisit(ContactReferenceDto contactRef) {
     	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
     	
-    	VisitDto visit = VisitDto.build(contact.getPerson(), contact.getCaseDisease());
+    	VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease());
     	UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
     	visit.setVisitUser(userReference);
     	

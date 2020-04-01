@@ -20,10 +20,7 @@ package de.symeda.sormas.app.person.read;
 
 import android.os.Bundle;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
@@ -35,9 +32,6 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.InfrastructureHelper;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayoutBinding, Person, AbstractDomainObject> {
 
@@ -61,7 +55,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
         if (rootData instanceof Case) {
             rootDisease = ((Case) rootData).getDisease();
         } else if (rootData instanceof Contact) {
-            rootDisease = ((Contact) rootData).getCaseDisease();
+            rootDisease = ((Contact) rootData).getDisease();
         } else if (rootData instanceof Event) {
             rootDisease = ((Event) rootData).getDisease();
         }

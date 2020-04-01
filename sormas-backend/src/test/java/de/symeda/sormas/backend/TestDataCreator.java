@@ -179,7 +179,7 @@ public class TestDataCreator {
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
+			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate) {
 		ContactDto contact = ContactDto.build(caze);
 		contact.setReportingUser(reportingUser);
 		contact.setContactOfficer(contactOfficer);

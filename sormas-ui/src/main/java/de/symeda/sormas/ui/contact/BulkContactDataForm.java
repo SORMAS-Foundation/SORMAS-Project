@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,21 +36,21 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String CLASSIFICATION_CHECKBOX = "classificationCheckbox";
 	private static final String CONTACT_OFFICER_CHECKBOX = "contactOfficerCheckbox";
 	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, CLASSIFICATION_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(ContactBulkEditData.CONTACT_CLASSIFICATION) +
-			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, CONTACT_OFFICER_CHECKBOX) +
-			LayoutUtil.fluidRowLocs(ContactBulkEditData.CONTACT_OFFICER, "");
+			fluidRowLocsCss(VSPACE_4, CLASSIFICATION_CHECKBOX) +
+			fluidRowLocs(ContactBulkEditData.CONTACT_CLASSIFICATION) +
+			fluidRowLocsCss(VSPACE_4, CONTACT_OFFICER_CHECKBOX) +
+			fluidRowLocs(ContactBulkEditData.CONTACT_OFFICER, "");
 
 	private final DistrictReferenceDto singleSelectedDistrict;
 	

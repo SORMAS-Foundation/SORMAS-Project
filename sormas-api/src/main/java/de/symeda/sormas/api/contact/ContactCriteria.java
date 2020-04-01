@@ -36,10 +36,10 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = 5114202107622217837L;
 
 	private UserRole reportingUserRole;
-	private Disease caseDisease;
+	private Disease disease;
 	private CaseReferenceDto caze;
-	private RegionReferenceDto caseRegion;
-	private DistrictReferenceDto caseDistrict;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
 	private FacilityReferenceDto caseFacility;
 	private UserReferenceDto contactOfficer;
 	private ContactClassification contactClassification;
@@ -55,6 +55,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String nameUuidCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
+	private Date quarantineTo;
+	private ContactCategory contactCategory;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -65,12 +67,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public ContactCriteria caseDisease(Disease disease) {
-		this.caseDisease = disease;
+	public ContactCriteria disease(Disease disease) {
+		this.disease = disease;
 		return this;
 	}
 
@@ -83,21 +85,21 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public RegionReferenceDto getCaseRegion() {
-		return caseRegion;
+	public RegionReferenceDto getRegion() {
+		return region;
 	}
 
-	public ContactCriteria caseRegion(RegionReferenceDto caseRegion) {
-		this.caseRegion = caseRegion;
+	public ContactCriteria region(RegionReferenceDto region) {
+		this.region = region;
 		return this;
 	}
 
-	public DistrictReferenceDto getCaseDistrict() {
-		return caseDistrict;
+	public DistrictReferenceDto getDistrict() {
+		return district;
 	}
 
-	public ContactCriteria caseDistrict(DistrictReferenceDto caseDistrict) {
-		this.caseDistrict = caseDistrict;
+	public ContactCriteria district(DistrictReferenceDto district) {
+		this.district = district;
 		return this;
 	}
 
@@ -255,8 +257,26 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return onlyHighPriorityContacts;
 	}
 
+	public ContactCriteria contactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+		return this;
+	}
+
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
 	public ContactCriteria onlyHighPriorityContacts(Boolean onlyHighPriorityContacts) {
 		this.onlyHighPriorityContacts = onlyHighPriorityContacts;
+		return this;
+	}
+	
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+	
+	public ContactCriteria quarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 		return this;
 	}
 	

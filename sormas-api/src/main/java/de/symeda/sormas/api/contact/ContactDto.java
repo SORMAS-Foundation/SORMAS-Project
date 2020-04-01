@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -38,7 +39,6 @@ public class ContactDto extends EntityDto {
 	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
-	public static final String CASE_DISEASE = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -67,7 +67,14 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
-	
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
+	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
+	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
+	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String OVERWRITE_FOLLOW_UP_UTIL = "overwriteFollowUpUntil";
+
 	@Required
 	private Date reportDateTime;
 	@Required
@@ -82,7 +89,8 @@ public class ContactDto extends EntityDto {
 	private PersonReferenceDto person;
 	@Required
 	private CaseReferenceDto caze;
-	private Disease caseDisease;
+	private Disease disease;
+	private String diseaseDetails;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -90,6 +98,7 @@ public class ContactDto extends EntityDto {
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
+	private boolean overwriteFollowUpUntil;
 	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
@@ -107,13 +116,28 @@ public class ContactDto extends EntityDto {
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	
+	private String caseIdExternalSystem;
+	private String caseOrEventInformation;
+	
+	private String contactProximityDetails;
+	private ContactCategory contactCategory;
 
-	public static ContactDto build(CaseReferenceDto caze) {
+	public static ContactDto build() {
+		return build(null, null, null);
+	}
+	
+	public static ContactDto build(CaseDataDto caze) {
+		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+	}
+	
+	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 
 		contact.setCaze(caze);
-
+		contact.setDisease(disease);
+		contact.setDiseaseDetails(diseaseDetails);
 		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
 
 		contact.setReportDateTime(new Date());
@@ -247,14 +271,19 @@ public class ContactDto extends EntityDto {
 	public void setResultingCaseUser(UserReferenceDto resultingCaseUser) {
 		this.resultingCaseUser = resultingCaseUser;
 	}
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
-	/**
-	 * Read-only
-	 */
-	public void setCaseDisease(Disease caseDisease) {
-		this.caseDisease = caseDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public String getExternalID() {
@@ -335,5 +364,45 @@ public class ContactDto extends EntityDto {
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+
+	public boolean isOverwriteFollowUpUntil() {
+		return overwriteFollowUpUntil;
+	}
+
+	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
+		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+	
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
+	}
+
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
 	}
 }

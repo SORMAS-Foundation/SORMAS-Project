@@ -17,11 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -30,18 +32,15 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 
 	private static final long serialVersionUID = 6726008587163831260L;
 	
-	private static final String REGION_LOC = Captions.region;
-	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.loc(CommunityDto.NAME)
-					+ LayoutUtil.fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT)
-					+ LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID);
+			loc(CommunityDto.NAME) +
+			fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT) +
+			fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private boolean create;
 	

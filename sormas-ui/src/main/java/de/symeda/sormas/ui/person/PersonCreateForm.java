@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -24,16 +27,16 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class PersonCreateForm extends AbstractEditForm<PersonDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 	
     private static final String HTML_LAYOUT = 
-	    		LayoutUtil.h3(I18nProperties.getString(Strings.headingCreateNewPerson)) +
-			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
-			LayoutUtil.fluidRowLocs(PersonDto.UUID, "")
-			;
+    		h3(I18nProperties.getString(Strings.headingCreateNewPerson)) +
+			fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+			fluidRowLocs(PersonDto.UUID, "");
 
     public PersonCreateForm(UserRight editOrCreateUserRight) {
     	// TODO add user right parameter

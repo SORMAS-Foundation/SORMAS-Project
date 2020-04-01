@@ -49,10 +49,14 @@ public class ContactReferenceDto extends ReferenceDto {
 	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(DataHelper.toStringNullable(contactFirstName))
-			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase())
-			.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""))
+			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase());
+		
+		if (caseFirstName != null || caseLastName != null) {
+			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""))
 			.append(DataHelper.toStringNullable(caseFirstName))
 			.append(" ").append(DataHelper.toStringNullable(caseLastName));
+		}
+		
 		return builder.toString();
 	}
 }

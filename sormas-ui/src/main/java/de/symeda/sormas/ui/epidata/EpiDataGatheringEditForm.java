@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
 
@@ -25,16 +27,15 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringDto> {
 
+	private static final long serialVersionUID = 1L;
+	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocs(EpiDataGatheringDto.GATHERING_DATE, "") +
-			LayoutUtil.fluidRowLocs(EpiDataGatheringDto.DESCRIPTION) +
-			LayoutUtil.fluidRowLocs(EpiDataGatheringDto.GATHERING_ADDRESS)
-	;
+			fluidRowLocs(EpiDataGatheringDto.GATHERING_DATE, "") +
+			fluidRowLocs(EpiDataGatheringDto.DESCRIPTION) +
+			fluidRowLocs(EpiDataGatheringDto.GATHERING_ADDRESS);
 	
 	public EpiDataGatheringEditForm(UserRight editOrCreateUserRight) {
 		super(EpiDataGatheringDto.class, EpiDataGatheringDto.I18N_PREFIX, editOrCreateUserRight);
