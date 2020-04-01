@@ -165,10 +165,12 @@ public enum UserRight {
 			EVENT_OFFICER
 			),
 	CASE_DELETE(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER
 			),
 	CASE_IMPORT(
-			ADMIN, IMPORT_USER
+			ADMIN, 
+			IMPORT_USER
 			),
 	CASE_EXPORT(
 			ADMIN,
@@ -264,7 +266,8 @@ public enum UserRight {
 			SURVEILLANCE_SUPERVISOR
 			),
 	SAMPLE_DELETE(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER
 			),
 	SAMPLE_TRANSFER(
 			ADMIN,
@@ -318,7 +321,8 @@ public enum UserRight {
 			EXTERNAL_LAB_USER
 			),
 	PATHOGEN_TEST_DELETE(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER
 			),
 	ADDITIONAL_TEST_VIEW(
 			ADMIN,
@@ -345,7 +349,8 @@ public enum UserRight {
 			EXTERNAL_LAB_USER
 			),
 	ADDITIONAL_TEST_DELETE(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER
 			),
 	CONTACT_CREATE(
 			ADMIN,
@@ -384,7 +389,8 @@ public enum UserRight {
 			CONTACT_OFFICER
 			),
 	CONTACT_DELETE(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER
 			),
 	CONTACT_CLASSIFY(
 			ADMIN,
@@ -445,7 +451,8 @@ public enum UserRight {
 			CONTACT_OFFICER
 			),
 	VISIT_DELETE(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER
 			),
 	TASK_CREATE(
 			ADMIN,
@@ -525,7 +532,8 @@ public enum UserRight {
 			POE_SUPERVISOR
 			),
 	TASK_DELETE(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER
 			),
 	EVENT_CREATE(
 			ADMIN,
@@ -578,7 +586,8 @@ public enum UserRight {
 			ADMIN
 			),
 	EVENT_DELETE(
-			ADMIN
+			ADMIN,
+			NATIONAL_USER
 			),
 	EVENT_VIEW_ARCHIVED(
 			ADMIN,
