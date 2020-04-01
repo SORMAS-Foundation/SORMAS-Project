@@ -21,4 +21,6 @@ public interface AggregateReportFacade {
 	List<AggregateReportDto> getList(AggregateReportCriteria criteria, String userUuid);
 
 	void deleteReport(String reportUuid, String userUuid);
+
+	long countWithCriteria(AggregateReportCriteria criteria, String userUuid);
 }

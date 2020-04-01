@@ -205,6 +205,29 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		service.delete(aggregateReport);
 	}
 
+	@Override
+	public long countWithCriteria(AggregateReportCriteria criteria, String userUuid) {
+		User user = userService.getByUuid(userUuid);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<AggregateReport> root = cq.from(AggregateReport.class);
+
+		Predicate filter = service.createUserFilter(cb, cq, root, user);
+		if (criteria != null) {
+			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(root));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
 	@LocalBean
 	@Stateless
 	public static class AggregateReportFacadeEjbLocal extends AggregateReportFacadeEjb {

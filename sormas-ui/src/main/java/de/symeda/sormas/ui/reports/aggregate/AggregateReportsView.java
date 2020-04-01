@@ -67,6 +67,8 @@ public class AggregateReportsView extends AbstractView {
 	public AggregateReportsView() {
 		super(VIEW_NAME);
 
+		UserDto user = UserProvider.getCurrent().getUser();
+
 		boolean criteriaUninitialized = !ViewModelProviders.of(AggregateReportsView.class).has(AggregateReportCriteria.class);
 		criteria = ViewModelProviders.of(AggregateReportsView.class).get(AggregateReportCriteria.class);
 		if (criteriaUninitialized) {
@@ -76,7 +78,7 @@ public class AggregateReportsView extends AbstractView {
 		grid = new AggregateReportsGrid();
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createFilterBar(user));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -127,10 +129,21 @@ public class AggregateReportsView extends AbstractView {
 				// No validation needed
 			}
 		});
+
+		if (user.getRegion() != null) {
+			cbRegionFilter.setValue(user.getRegion());
+			if (user.getDistrict() != null) {
+				cbDistrictFilter.setValue(user.getDistrict());
+				if (user.getHealthFacility() != null) {
+					cbFacilityFilter.setValue(user.getHealthFacility());
+				} else if (user.getPointOfEntry() != null) {
+					cbPoeFilter.setValue(user.getPointOfEntry());
+				}
+			}
+		}
 	}
 
-	private VerticalLayout createFilterBar() {
-		UserDto user = UserProvider.getCurrent().getUser();
+	private VerticalLayout createFilterBar(UserDto user) {
 
 		VerticalLayout filterLayout = new VerticalLayout();
 		filterLayout.setSpacing(false);
@@ -144,21 +157,22 @@ public class AggregateReportsView extends AbstractView {
 		{
 			cbRegionFilter = new ComboBox<>();
 			cbRegionFilter.addValueChangeListener(e -> updateButtonVisibility());
+			cbRegionFilter.addValueChangeListener(e -> {
+				RegionReferenceDto region = e.getValue();
+				cbDistrictFilter.clear();
+				if (region != null) {
+					cbDistrictFilter
+							.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+					cbDistrictFilter.setEnabled(true);
+				} else {
+					cbDistrictFilter.setEnabled(false);
+				}
+			});
 			if (user.getRegion() == null) {
 				cbRegionFilter.setWidth(200, Unit.PIXELS);
 				cbRegionFilter.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 				cbRegionFilter.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				binder.bind(cbRegionFilter, AggregateReportCriteria.REGION);
-				cbRegionFilter.addValueChangeListener(e -> {
-					RegionReferenceDto region = e.getValue();
-					cbDistrictFilter.clear();
-					if (region != null) {
-						cbDistrictFilter.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-						cbDistrictFilter.setEnabled(true);
-					} else {
-						cbDistrictFilter.setEnabled(false);
-					}
-				});
 				hlFirstFilterRow.addComponent(cbRegionFilter);
 			}
 
@@ -192,8 +206,8 @@ public class AggregateReportsView extends AbstractView {
 			cbDistrictFilter.setEnabled(false);
 			hlFirstFilterRow.addComponent(cbDistrictFilter);
 
+			cbFacilityFilter = new ComboBox<>();
 			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
-				cbFacilityFilter = new ComboBox<>();
 				cbFacilityFilter.addValueChangeListener(e -> updateButtonVisibility());
 				cbFacilityFilter.addValueChangeListener(e -> clearFilterIfNotEmpty(cbFacilityFilter, cbPoeFilter));
 				cbFacilityFilter.setWidth(200, Unit.PIXELS);
@@ -203,8 +217,8 @@ public class AggregateReportsView extends AbstractView {
 				hlFirstFilterRow.addComponent(cbFacilityFilter);
 			}
 
+			cbPoeFilter = new ComboBox<>();
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
-				cbPoeFilter = new ComboBox<>();
 				cbPoeFilter.addValueChangeListener(e -> updateButtonVisibility());
 				cbPoeFilter.addValueChangeListener(e -> clearFilterIfNotEmpty(cbPoeFilter, cbFacilityFilter));
 				cbPoeFilter.setWidth(200, Unit.PIXELS);
@@ -301,8 +315,16 @@ public class AggregateReportsView extends AbstractView {
 					&& (cbFacilityFilter.getValue() != null || cbPoeFilter.getValue() != null)
 					&& cbFromEpiWeekFilter.getValue() != null
 					&& cbFromEpiWeekFilter.getValue().equals(cbToEpiWeekFilter.getValue())) {
-				btnCreate.setVisible(false);
-				btnEdit.setVisible(true);
+				criteria.healthFacility(cbFacilityFilter.getValue());
+				criteria.pointOfEntry(cbPoeFilter.getValue());
+				if (FacadeProvider.getAggregateReportFacade().countWithCriteria(criteria,
+						UserProvider.getCurrent().getUuid()) > 0) {
+					btnCreate.setVisible(false);
+					btnEdit.setVisible(true);
+				} else {
+					btnCreate.setVisible(true);
+					btnEdit.setVisible(false);
+				}
 			} else {
 				btnCreate.setVisible(true);
 				btnEdit.setVisible(false);
