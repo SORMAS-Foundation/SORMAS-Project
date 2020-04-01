@@ -59,8 +59,6 @@ public class RegionResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getRegionFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getRegionFacade().getAllUuids();
 	}
 }

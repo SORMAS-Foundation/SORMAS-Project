@@ -45,8 +45,7 @@ public class PrescriptionResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<PrescriptionDto> getAllPrescriptions(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		return FacadeProvider.getPrescriptionFacade().getAllActivePrescriptionsAfter(new Date(since), userDto.getUuid());
+		return FacadeProvider.getPrescriptionFacade().getAllActivePrescriptionsAfter(new Date(since));
 	}
 
 	@POST

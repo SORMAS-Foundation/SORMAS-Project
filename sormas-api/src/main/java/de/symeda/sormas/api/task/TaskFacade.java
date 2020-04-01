@@ -32,7 +32,7 @@ public interface TaskFacade {
 
     TaskDto saveTask(TaskDto dto);
 	
-	List<TaskDto> getAllActiveTasksAfter(Date date, String userUuid);
+	List<TaskDto> getAllActiveTasksAfter(Date date);
 	
 	List<TaskDto> getAllByCase(CaseReferenceDto caseRef);
 	
@@ -44,7 +44,7 @@ public interface TaskFacade {
 
 	List<TaskDto> getByUuids(List<String> uuids);
 	
-	List<DashboardTaskDto> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, String userUuid);
+	List<DashboardTaskDto> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, String userUUID);
 	
 	long getPendingTaskCountByCase(CaseReferenceDto caseDto);
 	
@@ -56,13 +56,13 @@ public interface TaskFacade {
 
 	TaskDto getByUuid(String uuid);
 
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 	
-	void deleteTask(TaskDto taskDto, String userUuid);
+	void deleteTask(TaskDto taskDto);
 
-	long count(String userUuid, TaskCriteria criteria);
+	long count(TaskCriteria criteria);
 	
-	List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<TaskIndexDto> getIndexList(TaskCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	void sendNewAndDueTaskMessages();
 }

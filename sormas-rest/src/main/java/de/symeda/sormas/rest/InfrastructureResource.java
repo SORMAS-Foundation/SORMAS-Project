@@ -20,8 +20,7 @@ public class InfrastructureResource {
 
 	@POST @Path("/sync")
 	public InfrastructureSyncDto getInfrastructureSyncData(@Context SecurityContext sc, InfrastructureChangeDatesDto changeDates) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		return FacadeProvider.getInfrastructureFacade().getInfrastructureSyncData(changeDates, userDto.getUuid());
+		return FacadeProvider.getInfrastructureFacade().getInfrastructureSyncData(changeDates);
 	}
 	
 }

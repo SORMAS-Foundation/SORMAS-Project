@@ -24,11 +24,10 @@ public class CaseExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 	public static final String COLUMN_ACTIONS = "actions";
 	
-	private final String userUuid;
+//	private final String userUuid;
 	private Consumer<ExportConfigurationDto> exportCallback;
 	
-	public CaseExportConfigurationsGrid(String userUuid) {
-		this.userUuid = userUuid;
+	public CaseExportConfigurationsGrid() {
 		buildGrid();
 		reload();
 	}
@@ -47,7 +46,7 @@ public class CaseExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 	}
 	
 	public void reload() {
-		List<ExportConfigurationDto> configs = FacadeProvider.getExportFacade().getExportConfigurations(userUuid);
+		List<ExportConfigurationDto> configs = FacadeProvider.getExportFacade().getExportConfigurations();
 		setItems(configs);
 		setHeightByRows(configs.size() > 0 ? (configs.size() <= 10 ? configs.size() : 10) : 1);
 	}
