@@ -88,8 +88,12 @@ public class ControlSearchableSpinnerAdapter extends ArrayAdapter<Item> implemen
     }
 
     public void setSelection(int position){
-//        if(spinnerData.size()<position)
             selectedItem=position!=-1?spinnerData.get(position): null;
+    }
+
+    public void resetList(){
+        if(mOriginalValues!=null)
+            spinnerData = mOriginalValues;
     }
 
     public Item getSelectedItem(){

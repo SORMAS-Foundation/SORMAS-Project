@@ -235,8 +235,6 @@ public class ControlSearchableSpinnerField extends ControlPropertyEditField {
         super.onFinishInflate();
 
         input = (Button) this.findViewById(R.id.spinner_input);
-
-
         dialog = ControlSearchableSpinnerDialogFragment.newInstance();
 
         spinnerFieldListeners.registerListener(new ValueChangeListener() {

@@ -31,12 +31,25 @@
         android:layout_height="wrap_content"
         android:background="@color/whiteOpaque"
         android:padding="10dp"
-        android:layout_marginTop="16dp" >
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
         <de.symeda.sormas.app.component.controls.ControlTextEditFieldWithClear
-            android:id="@+id/txtSearch"
+            android:id="@+id/txt_search"
             app:value=""
             app:hint="Search here"
-            style="@style/ControlSingleColumnStyle"/>
+            style="@style/ControlSingleColumnStyle"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:text="@string/action_cancel"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:textColor="@color/primaryButton"
+            android:background="@android:color/transparent"
+            />
     </LinearLayout>
 
     <ListView

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.fragment.app.DialogFragment;
@@ -20,6 +21,7 @@ public class ControlSearchableSpinnerDialogFragment extends DialogFragment {
 
     protected ControlTextEditFieldWithClear txtSearch;
     protected ListView listView;
+    protected Button btnCancel;
 
     // Other fields
 
@@ -44,27 +46,50 @@ public class ControlSearchableSpinnerDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.control_searchable_spinner_dialog_fragment_layout, container, false);
-        txtSearch = v.findViewById(R.id.txtSearch);
-        txtSearch.setAsListSearch();
+        txtSearch = v.findViewById(R.id.txt_search);
+        btnCancel = v.findViewById(R.id.btn_cancel);
         listView = v.findViewById(R.id.lvItems);
+
+        txtSearch.setAsListSearch();
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setAdapter(adapter);
+
+        txtSearch.addValueChangedListener(new ValueChangeListener() {
+            @Override
+            public void onChange(ControlPropertyField field) {
+                adapter.getFilter().filter(txtSearch.getValue());
+            }
+        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Log.e("TEST", "posotion: " + position + ", l: " + l);
                 setSelection(position);
                 itemSelectedListener.onItemSelected(adapterView, view, position, l);
+
+                //reset dialog
                 txtSearch.setFieldValue("");
+                selectedPosition = -1;
+                adapter.resetList();
+
+                //close dialog
                 if (txtSearch.getInput().isFocused())
                     txtSearch.clearFocus();
                 ControlSearchableSpinnerDialogFragment.this.dismiss();
             }
         });
-        txtSearch.addValueChangedListener(new ValueChangeListener() {
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChange(ControlPropertyField field) {
-                adapter.getFilter().filter(txtSearch.getValue());
+            public void onClick(View v) {
+                //reset dialog
+                txtSearch.setFieldValue("");
+                selectedPosition = -1;
+                adapter.resetList();
+
+                //close dialog
+                if (txtSearch.getInput().isFocused())
+                    txtSearch.clearFocus();
+                ControlSearchableSpinnerDialogFragment.this.dismiss();
             }
         });
         if (selectedPosition > -1)
@@ -89,7 +114,7 @@ public class ControlSearchableSpinnerDialogFragment extends DialogFragment {
     }
 
     public void setSelection(int position) {
-        selectedPosition = position;
+            selectedPosition = position;
         if (adapter != null)
             adapter.setSelection(position);
     }
