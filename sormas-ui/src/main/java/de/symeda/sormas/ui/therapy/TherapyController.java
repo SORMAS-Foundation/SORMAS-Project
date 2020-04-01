@@ -88,7 +88,7 @@ public class TherapyController {
 			view.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid());
 					popupWindow.close();
 					if (callback != null) {
 						callback.run();
@@ -199,7 +199,7 @@ public class TherapyController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeletePrescriptions), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getPrescriptionFacade().deletePrescription(((PrescriptionIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getPrescriptionFacade().deletePrescription(((PrescriptionIndexDto) selectedRow).getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingPrescriptionsDeleted),

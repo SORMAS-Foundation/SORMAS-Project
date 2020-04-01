@@ -142,8 +142,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 	
 	@Override
-	public List<AggregateReportDto> getList(AggregateReportCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<AggregateReportDto> getList(AggregateReportCriteria criteria) {
+		User user = userService.getCurrentUser();
 		
 		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
@@ -194,12 +194,12 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 	
 	@Override
-	public void deleteReport(String reportUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteReport(String reportUuid) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade
 				.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
 				.contains(UserRight.AGGREGATE_REPORT_EDIT)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to edit aggregate reports.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to edit aggregate reports.");
 		}
 
 		AggregateReport aggregateReport = service.getByUuid(reportUuid);

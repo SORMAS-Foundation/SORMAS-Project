@@ -130,24 +130,24 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 		
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
 		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(0, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(0, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
 		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 	}
 
 	@Test
