@@ -24,6 +24,11 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -52,9 +57,24 @@ public class UserService extends AbstractAdoService<User> {
 
 	@Resource
 	private SessionContext sessionContext;
-	
+
+	@Inject
+	@CurrentUser
+	private User currentUser;
+
 	public UserService() {
 		super(User.class);
+	}
+
+	public User getCurrentUser() {
+		return currentUser;
+	}
+
+	@Produces
+	@RequestScoped
+	@CurrentUser
+	public User produceCurrentUser() {
+		return getByUserName(sessionContext.getCallerPrincipal().getName());
 	}
 	
 	public User createUser() {
@@ -215,11 +235,7 @@ public class UserService extends AbstractAdoService<User> {
 
 		return password;
 	}
-	
-	public User getCurrentUser() {
-		return getByUserName(sessionContext.getCallerPrincipal().getName());
-	}
-	
+
 	public Predicate buildCriteriaFilter(UserCriteria userCriteria, CriteriaBuilder cb, Root<User> from) {
 		Predicate filter = null;
 		if (userCriteria.getActive() != null) {
