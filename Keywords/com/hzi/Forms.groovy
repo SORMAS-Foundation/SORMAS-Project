@@ -10,12 +10,12 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
 public class Forms {
-	
+
 	@Keyword
-	def String generateString(String prefix, int length) {		
+	def String generateString(String prefix, int length) {
 		String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()
 		String randomString = RandomStringUtils.random(length, charset.toCharArray())
-		
+
 		return prefix + '-' + randomString
 	}
 }

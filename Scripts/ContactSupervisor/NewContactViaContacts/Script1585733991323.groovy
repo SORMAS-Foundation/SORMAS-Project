@@ -20,18 +20,18 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/LoginAsContactSuperv
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/SwitchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'), 'Bat Man')
+WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'), findTestData('ContactTestData').getValue(
+        2, 1))
 
 Thread.sleep(1000)
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/a_UDJS6V'))
+TestObject linkObject = new TestObject().addProperty('xpath', ConditionType.EQUALS, '//table[@aria-rowcount]//a')
+WebUI.click(linkObject)
 
 WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/span_Case contacts'))
 
 TestObject tableObject = new TestObject().addProperty('xpath', ConditionType.EQUALS, '//table[@aria-rowcount]')
-
 int numberOfCaseContactsBefore = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
-
 println(numberOfCaseContactsBefore)
 
 // create new contact
