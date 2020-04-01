@@ -86,7 +86,6 @@ public interface Strings {
 	public static String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	public static String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	public static String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
-	public static String confirmationRemoveCaseFromContact = "confirmationRemoveCaseFromContact";
 	public static String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	public static String day = "day";
 	public static String done = "done";

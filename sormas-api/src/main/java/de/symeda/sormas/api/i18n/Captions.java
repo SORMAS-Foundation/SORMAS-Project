@@ -71,8 +71,10 @@ public interface Captions {
 	public static String additionalTestNewTest = "additionalTestNewTest";
 	public static String AggregateReport_deaths = "AggregateReport.deaths";
 	public static String AggregateReport_disease = "AggregateReport.disease";
+	public static String AggregateReport_healthFacility = "AggregateReport.healthFacility";
 	public static String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
 	public static String AggregateReport_newCases = "AggregateReport.newCases";
+	public static String AggregateReport_pointOfEntry = "AggregateReport.pointOfEntry";
 	public static String aggregateReportDeathsShort = "aggregateReportDeathsShort";
 	public static String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	public static String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
@@ -153,6 +155,9 @@ public interface Captions {
 	public static String CaseData_pointOfEntryName = "CaseData.pointOfEntryName";
 	public static String CaseData_portHealthInfo = "CaseData.portHealthInfo";
 	public static String CaseData_pregnant = "CaseData.pregnant";
+	public static String CaseData_quarantine = "CaseData.quarantine";
+	public static String CaseData_quarantineFrom = "CaseData.quarantineFrom";
+	public static String CaseData_quarantineTo = "CaseData.quarantineTo";
 	public static String CaseData_rabiesType = "CaseData.rabiesType";
 	public static String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	public static String CaseData_reportDate = "CaseData.reportDate";
@@ -287,10 +292,12 @@ public interface Captions {
 	public static String Contact_caze_uuid = "Contact.caze.uuid";
 	public static String Contact_cazeDisease = "Contact.cazeDisease";
 	public static String Contact_cazeDistrict = "Contact.cazeDistrict";
+	public static String Contact_contactCategory = "Contact.contactCategory";
 	public static String Contact_contactClassification = "Contact.contactClassification";
 	public static String Contact_contactOfficer = "Contact.contactOfficer";
 	public static String Contact_contactOfficerUuid = "Contact.contactOfficerUuid";
 	public static String Contact_contactProximity = "Contact.contactProximity";
+	public static String Contact_contactProximityDetails = "Contact.contactProximityDetails";
 	public static String Contact_contactStatus = "Contact.contactStatus";
 	public static String Contact_description = "Contact.description";
 	public static String Contact_disease = "Contact.disease";
@@ -307,6 +314,7 @@ public interface Captions {
 	public static String Contact_lastContactDate = "Contact.lastContactDate";
 	public static String Contact_lastName = "Contact.lastName";
 	public static String Contact_numberOfVisits = "Contact.numberOfVisits";
+	public static String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	public static String Contact_person = "Contact.person";
 	public static String Contact_quarantine = "Contact.quarantine";
 	public static String Contact_quarantineFrom = "Contact.quarantineFrom";
@@ -800,6 +808,7 @@ public interface Captions {
 	public static String Person_districtName = "Person.districtName";
 	public static String Person_educationDetails = "Person.educationDetails";
 	public static String Person_educationType = "Person.educationType";
+	public static String Person_emailAddress = "Person.emailAddress";
 	public static String Person_fathersName = "Person.fathersName";
 	public static String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	public static String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
@@ -808,6 +817,7 @@ public interface Captions {
 	public static String Person_matchingCase = "Person.matchingCase";
 	public static String Person_mothersMaidenName = "Person.mothersMaidenName";
 	public static String Person_mothersName = "Person.mothersName";
+	public static String Person_nationalHealthId = "Person.nationalHealthId";
 	public static String Person_nickname = "Person.nickname";
 	public static String Person_occupationCommunity = "Person.occupationCommunity";
 	public static String Person_occupationDetails = "Person.occupationDetails";
@@ -817,6 +827,7 @@ public interface Captions {
 	public static String Person_occupationRegion = "Person.occupationRegion";
 	public static String Person_occupationType = "Person.occupationType";
 	public static String Person_other_occupationDetails = "Person.other.occupationDetails";
+	public static String Person_passportNumber = "Person.passportNumber";
 	public static String Person_phone = "Person.phone";
 	public static String Person_phoneOwner = "Person.phoneOwner";
 	public static String Person_placeOfBirthCommunity = "Person.placeOfBirthCommunity";
