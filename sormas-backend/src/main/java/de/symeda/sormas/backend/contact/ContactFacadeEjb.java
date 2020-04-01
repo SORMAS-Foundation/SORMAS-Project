@@ -802,6 +802,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<Contact> contacts = contactService.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
 
 		for (Contact contact : contacts) {
+			// Only generate tasks for contacts that are under follow-up
+			if (!(contact.getFollowUpStatus().equals(FollowUpStatus.FOLLOW_UP) || contact.getFollowUpStatus().equals(FollowUpStatus.LOST))) {
+				continue;
+			}
+			
 			User assignee = null;
 			if (contact.getContactOfficer() != null) {
 				// 1) The contact officer that is responsible for the contact
