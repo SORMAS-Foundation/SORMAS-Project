@@ -15,7 +15,9 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 
-WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : '', ('Username') : ''], FailureHandling.STOP_ON_FAILURE)
+
+WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : 'noPassword', ('Username') : 'nonExistingUser'],
+	FailureHandling.STOP_ON_FAILURE)
 
 try {
     WebUI.verifyElementNotPresent(findTestObject('Page_SORMAS/span_Logout (Surveillance Supervisor)'), 2)

@@ -14,13 +14,6 @@ import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
+import org.openqa.selenium.Keys as Keys
 
-WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : '', ('Username') : ''], FailureHandling.STOP_ON_FAILURE)
-
-try {
-    WebUI.verifyElementNotPresent(findTestObject('Page_SORMAS/span_Logout (Surveillance Supervisor)'), 2)
-}
-finally { 
-    WebUI.closeBrowser()
-}
-
+WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/span_Contacts'))
