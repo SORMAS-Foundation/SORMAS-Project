@@ -9,15 +9,16 @@
    <dataSourceUrl></dataSourceUrl>
    <driver>InternalData</driver>
    <data>userName Bat+Man</data>
+   <data>caseName Hildegard+von+Bingen</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>Key</name>
-      <size>1</size>
+      <size>2</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>1</columnIndex>
       <name>Value</name>
-      <size>1</size>
+      <size>2</size>
    </internalDataColumns>
    <isInternalPath>false</isInternalPath>
    <query></query>
