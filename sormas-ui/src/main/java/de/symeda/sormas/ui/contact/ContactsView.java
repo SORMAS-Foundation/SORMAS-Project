@@ -241,7 +241,7 @@ public class ContactsView extends AbstractView {
 					},
 					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
-			
+
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
 			warningLabel.setWidth(100, Unit.PERCENTAGE);
@@ -285,7 +285,7 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 		}
-		
+
 		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
 			Button btnNewContact = new Button(I18nProperties.getCaption(Captions.contactNewContact));
 			btnNewContact.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -469,7 +469,7 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
-			
+
 			quarantineToFilter = new PopupDateField();
 			quarantineToFilter.setWidth(200, Unit.PIXELS);
 			quarantineToFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO));
@@ -478,7 +478,7 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(quarantineToFilter);
-			
+
 			onlyHighPriorityContacts = new CheckBox();
 			onlyHighPriorityContacts.setCaption(I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts));
 			CssStyles.style(onlyHighPriorityContacts, CssStyles.CHECKBOX_FILTER_INLINE);
@@ -645,47 +645,47 @@ public class ContactsView extends AbstractView {
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
-			
+
 			// Follow-up overview scrolling
 			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
-				
+
 				HorizontalLayout scrollLayout = new HorizontalLayout();
 				scrollLayout.setMargin(false);
 
 				DateField followUpReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactFollowUpOverviewReferenceDate), LocalDate.now());
-				
+
 				Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
 				CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 				minusDaysButton.addClickListener(e -> {
 					followUpReferenceDate.setValue(followUpReferenceDate.getValue().minusDays(8));
 				});
 				scrollLayout.addComponent(minusDaysButton);
-				
+
 				followUpReferenceDate.addValueChangeListener(e -> {
 					Date newDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
-					
+
 					applyingCriteria = true;
-					
+
 					((ContactFollowUpGrid) grid).setReferenceDate(newDate);
 					criteria.reportDateTo(DateHelper.getEndOfDay(newDate));
 					criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(newDate, 7)));
-					
+
 					applyingCriteria = false;
-					
+
 					((ContactFollowUpGrid) grid).reload();
 				});
 				scrollLayout.addComponent(followUpReferenceDate);
-				
+
 				Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
 				CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 				plusDaysButton.addClickListener(e -> {
 					followUpReferenceDate.setValue(followUpReferenceDate.getValue().plusDays(8));
 				});
 				scrollLayout.addComponent(plusDaysButton);
-				
+
 				actionButtonsLayout.addComponent(scrollLayout);
-				
+
 			}
 		}
 		statusFilterLayout.addComponent(actionButtonsLayout);
@@ -694,55 +694,55 @@ public class ContactsView extends AbstractView {
 
 		return statusFilterLayout;
 	}
-	
+
 	private HorizontalLayout createFollowUpLegend() {
 		HorizontalLayout legendLayout = new HorizontalLayout();
 		legendLayout.setSpacing(false);
 		CssStyles.style(legendLayout, CssStyles.VSPACE_TOP_4);
-		
+
 		Label notSymptomaticColor = new Label("");
 		styleLegendEntry(notSymptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC, true);
 		legendLayout.addComponent(notSymptomaticColor);
-		
+
 		Label notSymptomaticLabel = new Label(VisitResult.NOT_SYMPTOMATIC.toString());
 		legendLayout.addComponent(notSymptomaticLabel);
-		
+
 		Label symptomaticColor = new Label("");
 		styleLegendEntry(symptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC, false);
 		legendLayout.addComponent(symptomaticColor);
-		
+
 		Label symptomaticLabel = new Label(VisitResult.SYMPTOMATIC.toString());
 		legendLayout.addComponent(symptomaticLabel);
-		
+
 		Label unavailableColor = new Label("");
 		styleLegendEntry(unavailableColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE, false);
 		legendLayout.addComponent(unavailableColor);
-		
+
 		Label unavailableLabel = new Label(VisitResult.UNAVAILABLE.toString());
 		legendLayout.addComponent(unavailableLabel);
-		
+
 		Label uncooperativeColor = new Label("");
 		styleLegendEntry(uncooperativeColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNCOOPERATIVE, false);
 		legendLayout.addComponent(uncooperativeColor);
-		
+
 		Label uncooperativeLabel = new Label(VisitResult.UNCOOPERATIVE.toString());
 		legendLayout.addComponent(uncooperativeLabel);
-		
+
 		Label notPerformedColor = new Label("");
 		styleLegendEntry(notPerformedColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED, false);
 		legendLayout.addComponent(notPerformedColor);
-		
+
 		Label notPerformedLabel = new Label(VisitResult.NOT_PERFORMED.toString());
 		legendLayout.addComponent(notPerformedLabel);
-		
+
 		return legendLayout;
 	}
-	
+
 	private void styleLegendEntry(Label label, String style, boolean first) {
 		label.setHeight(18, Unit.PIXELS);
 		label.setWidth(12, Unit.PIXELS);
 		CssStyles.style(label, style, CssStyles.HSPACE_RIGHT_4);
-		
+
 		if (!first) {
 			CssStyles.style(label, CssStyles.HSPACE_LEFT_3);
 		}
@@ -783,7 +783,7 @@ public class ContactsView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-		
+
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			((ContactFollowUpGrid) grid).reload();
 		} else {
@@ -812,7 +812,9 @@ public class ContactsView extends AbstractView {
 		quarantineToFilter.setValue(criteria.getQuarantineTo());
 		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
 		searchField.setValue(criteria.getNameUuidCaseLike());
-		categoryFilter.setValue(criteria.getContactCategory());
+		if (categoryFilter != null) {
+			categoryFilter.setValue(criteria.getContactCategory());
+		}
 
 		ContactDateType contactDateType = criteria.getReportDateFrom() != null ? ContactDateType.REPORT_DATE 
 				: criteria.getLastContactDateFrom() != null ? ContactDateType.LAST_CONTACT_DATE : null;
