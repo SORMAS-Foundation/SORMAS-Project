@@ -184,7 +184,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale()))));
 
         if (ConfigProvider.isGermanServer()){
-            contentBinding.contactContactProximity.addValueChangedListener(e -> trySetContactProximityDetails(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
+            contentBinding.contactContactProximity.addValueChangedListener(e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
         } else {
             contentBinding.contactContactProximityDetails.setVisibility(GONE);
             contentBinding.contactContactCategory.setVisibility(GONE);
@@ -208,7 +208,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     /*
      * Only used for Systems in Germany. Follows specific rules for german systems.
      */
-    private void trySetContactProximityDetails(FragmentContactEditLayoutBinding contentBinding, ContactProximity proximity) {
+    private void updateContactCategory(FragmentContactEditLayoutBinding contentBinding, ContactProximity proximity) {
         if (proximity != null) {
             switch (proximity) {
                 case FACE_TO_FACE_LONG:
@@ -227,7 +227,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
                     contentBinding.contactContactCategory.setValue(ContactCategory.NO_RISK);
                     break;
                 default:
-                    throw new IllegalArgumentException(proximity.toString());
             }
         }
     }

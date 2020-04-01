@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 
 import org.joda.time.LocalDate;
@@ -38,6 +40,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -74,6 +77,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
 			LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
 			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) + fluidRowLocs(ContactDto.CONTACT_CATEGORY)
+					+
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
@@ -82,6 +87,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private Disease disease;
 	private Boolean hasCaseRelation;
 	private CaseReferenceDto selectedCase;
+	private OptionGroup contactCategory;
 
 	public ContactCreateForm(UserRight editOrCreateUserRight, Disease disease, boolean hasCaseRelation) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -112,6 +118,12 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		if (isGermanServer()) {
+			contactProximity
+					.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
+			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
+			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
+		}
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
@@ -133,7 +145,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
-			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY);
+			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY, ContactDto.CONTACT_PROXIMITY_DETAILS,
+					ContactDto.CONTACT_CATEGORY);
 			updateContactProximity();
 		});
 
@@ -183,15 +196,43 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addValueChangeListener(e -> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);
 			if (!hasCaseRelation && disease == null) {
-				setVisible(false, ContactDto.CONTACT_PROXIMITY);
+				setVisible(false, ContactDto.CONTACT_PROXIMITY, ContactDto.CONTACT_PROXIMITY_DETAILS,
+						ContactDto.CONTACT_CATEGORY);
 			}
 
 			updateContactProximity();
 		});
 	}
 
+	/*
+	 * Only used for Systems in Germany. Follows specific rules for german systems.
+	 */
+	private void updateContactCategory(ContactProximity proximity) {
+		if (proximity != null) {
+			switch (proximity) {
+			case FACE_TO_FACE_LONG:
+			case TOUCHED_FLUID:
+			case AEROSOL:
+			case MEDICAL_UNSAVE:
+				contactCategory.setValue(ContactCategory.HIGH_RISK);
+				break;
+			case SAME_ROOM:
+			case FACE_TO_FACE_SHORT:
+			case MEDICAL_SAME_ROOM:
+				contactCategory.setValue(ContactCategory.LOW_RISK);
+				break;
+			case MEDICAL_DISTANT:
+			case MEDICAL_SAVE:
+				contactCategory.setValue(ContactCategory.NO_RISK);
+				break;
+			default:
+			}
+		}
+	}
+
 	private void updateFieldVisibilitiesByCase(boolean caseSelected) {
-		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION);
+		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM,
+				ContactDto.CASE_OR_EVENT_INFORMATION);
 		setRequired(!caseSelected, ContactDto.DISEASE, ContactDto.REGION, ContactDto.DISTRICT);
 	}
 

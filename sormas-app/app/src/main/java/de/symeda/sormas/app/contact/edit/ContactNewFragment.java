@@ -31,15 +31,12 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
-import de.symeda.sormas.app.visit.edit.VisitValidator;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -103,7 +100,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
         String germanyLocale = "de";
         if (germanyLocale.equals(ConfigProvider.getServerLocale())){
-            contentBinding.contactContactProximity.addValueChangedListener(e -> trySetContactProximityDetails(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
+            contentBinding.contactContactProximity.addValueChangedListener(e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
         } else {
             contentBinding.contactContactProximityDetails.setVisibility(GONE);
             contentBinding.contactContactCategory.setVisibility(GONE);
@@ -130,7 +127,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     /*
      * Only used for Systems in Germany. Follows specific rules for german systems.
      */
-    private void trySetContactProximityDetails(FragmentContactNewLayoutBinding contentBinding, ContactProximity proximity) {
+    private void updateContactCategory(FragmentContactNewLayoutBinding contentBinding, ContactProximity proximity) {
         if (proximity != null) {
             switch (proximity) {
                 case FACE_TO_FACE_LONG:
@@ -149,7 +146,6 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
                     contentBinding.contactContactCategory.setValue(ContactCategory.NO_RISK);
                     break;
                 default:
-                    throw new IllegalArgumentException(proximity.toString());
             }
         }
     }
