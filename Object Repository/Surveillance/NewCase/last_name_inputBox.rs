@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>div_Einloggen als Surveillance Supervisor</name>
+   <name>last_name_inputBox</name>
    <tag></tag>
-   <elementGuidId>d4687891-c24e-4179-8a56-c9e93ea9c5d7</elementGuidId>
+   <elementGuidId>9b065b4c-9292-4c10-b4b6-6eb0092b80f3</elementGuidId>
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='logInAsSurveillanceSupervisor']</value>
+         <value>//input[@id='gwt-uid-14']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -17,21 +17,42 @@
       <matchCondition>equals</matchCondition>
       <name>tag</name>
       <type>Main</type>
-      <value>div</value>
+      <value>input</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
-      <name>id</name>
+      <name>type</name>
       <type>Main</type>
-      <value>logInAsSurveillanceSupervisor</value>
+      <value>text</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>
-      <value>v-button v-widget primary v-button-primary vspace-3</value>
+      <value>v-textfield v-widget v-required v-textfield-required v-has-width v-textfield-focus</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>id</name>
+      <type>Main</type>
+      <value>gwt-uid-14</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>aria-labelledby</name>
+      <type>Main</type>
+      <value>gwt-uid-13</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>aria-required</name>
+      <type>Main</type>
+      <value>true</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -43,68 +64,29 @@
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
-      <name>role</name>
-      <type>Main</type>
-      <value>button</value>
-   </webElementProperties>
-   <webElementProperties>
-      <isSelected>true</isSelected>
-      <matchCondition>equals</matchCondition>
-      <name>text</name>
-      <type>Main</type>
-      <value>
-							
-								Einloggen als Surveillance Supervisor
-							
-						</value>
-   </webElementProperties>
-   <webElementProperties>
-      <isSelected>false</isSelected>
-      <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;logInAsSurveillanceSupervisor&quot;)</value>
+      <value>id(&quot;gwt-uid-14&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>//div[@id='logInAsSurveillanceSupervisor']</value>
+      <value>//input[@id='gwt-uid-14']</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasuilogin-1969194708']/div/div[2]/div/div/div[2]/div/table/tbody/tr/td/div/div</value>
-   </webElementXpaths>
-   <webElementXpaths>
-      <isSelected>false</isSelected>
-      <matchCondition>equals</matchCondition>
-      <name>xpath:neighbor</name>
-      <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Loggen Sie sich als beliebiger Standardbenutzer ein, um auf die SORMAS-Demoversion zuzugreifen.'])[1]/following::div[4]</value>
-   </webElementXpaths>
-   <webElementXpaths>
-      <isSelected>false</isSelected>
-      <matchCondition>equals</matchCondition>
-      <name>xpath:neighbor</name>
-      <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Dieser Server enthält nur Beispieldaten. Es sind keine Daten von echten Fällen enthalten.'])[1]/following::div[4]</value>
-   </webElementXpaths>
-   <webElementXpaths>
-      <isSelected>false</isSelected>
-      <matchCondition>equals</matchCondition>
-      <name>xpath:neighbor</name>
-      <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Einloggen als Clinician'])[1]/preceding::div[1]</value>
+      <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div/div/div[2]/div/div/div[8]/div[2]/div/input</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//td/div/div</value>
+      <value>//div[8]/div[2]/div/input</value>
    </webElementXpaths>
 </WebElementEntity>

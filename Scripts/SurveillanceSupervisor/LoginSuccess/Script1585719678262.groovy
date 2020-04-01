@@ -19,7 +19,7 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : 
         , ('Username') : GlobalVariable.gUsernameSurveillanceSupervisor], FailureHandling.STOP_ON_FAILURE)
 
 try {
-    WebUI.verifyElementPresent(findTestObject('Surveillance/span_Logout (Surveillance Supervisor)'), 2)
+    WebUI.verifyElementPresent(findTestObject('Surveillance/MainView/span_Logout (Surveillance Supervisor)'), 2)
 }
 finally { 
     WebUI.closeBrowser()
