@@ -251,8 +251,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -262,8 +262,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<TaskDto> getAllActiveTasksAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<TaskDto> getAllActiveTasksAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -275,15 +275,14 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public long count(String userUuid, TaskCriteria taskCriteria) {
+	public long count(TaskCriteria taskCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> task = cq.from(Task.class);
 
+		User user = userService.getCurrentUser();
 		Predicate filter = null;
-		if (userUuid != null 
-				&& (taskCriteria == null || !taskCriteria.hasContextCriteria())) {
-			User user = userService.getByUuid(userUuid);		
+		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task, user);
 		}
 
@@ -301,7 +300,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 	
 	@Override
-	public List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<TaskIndexDto> getIndexList(TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
@@ -327,9 +326,8 @@ public class TaskFacadeEjb implements TaskFacade {
 				);
 
 		Predicate filter = null;
-		if (userUuid != null 
-				&& (taskCriteria == null || !taskCriteria.hasContextCriteria())) {
-			User user = userService.getByUuid(userUuid);		
+		User user = userService.getCurrentUser();
+		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task, user);
 		}
 
@@ -520,10 +518,10 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public void deleteTask(TaskDto taskDto, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteTask(TaskDto taskDto) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.TASK_DELETE)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete tasks.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete tasks.");
 		}
 
 		Task task = taskService.getByUuid(taskDto.getUuid());

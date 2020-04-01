@@ -54,8 +54,8 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	}	
 	
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllUuids() {
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();

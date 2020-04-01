@@ -39,7 +39,7 @@ public class CaseExportConfigurationsLayout extends VerticalLayout {
 			ControllerProvider.getCaseController().openEditExportConfigurationWindow(grid, null);
 		});
 
-		grid = new CaseExportConfigurationsGrid(UserProvider.getCurrent().getUuid());
+		grid = new CaseExportConfigurationsGrid();
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
 

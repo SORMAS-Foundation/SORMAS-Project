@@ -21,12 +21,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.backend.MockProducer;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
@@ -254,27 +256,29 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 		creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
-		
+
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+
 		// getAllActiveContacts and getAllUuids should return length 1
 		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null).size());
 		assertEquals(1, getContactFacade().getAllActiveUuids().size());
-		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null, user.getUuid()).size());
-		assertEquals(1, getVisitFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
+		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 		
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		
 		// getAllActiveContacts and getAllUuids should return length 0
 		assertEquals(0, getContactFacade().getAllActiveContactsAfter(null).size());
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());
-		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null, user.getUuid()).size());
-		assertEquals(0, getVisitFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null).size());
+		assertEquals(0, getVisitFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 		
 		// getAllActiveContacts and getAllUuids should return length 1
 		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null).size());
 		assertEquals(1, getContactFacade().getAllActiveUuids().size());
-		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null, user.getUuid()).size());
-		assertEquals(1, getVisitFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
+		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 	}
 }

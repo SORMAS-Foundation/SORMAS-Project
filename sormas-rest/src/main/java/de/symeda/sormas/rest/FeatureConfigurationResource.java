@@ -27,8 +27,7 @@ public class FeatureConfigurationResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<FeatureConfigurationDto> getAllFeatureConfigurations(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		return FacadeProvider.getFeatureConfigurationFacade().getAllAfter(new Date(since), userDto.getUuid());
+		return FacadeProvider.getFeatureConfigurationFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
@@ -40,15 +39,13 @@ public class FeatureConfigurationResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		return FacadeProvider.getFeatureConfigurationFacade().getAllUuids(userDto.getUuid());
+		return FacadeProvider.getFeatureConfigurationFacade().getAllUuids();
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuids(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		return FacadeProvider.getFeatureConfigurationFacade().getDeletedUuids(new Date(since), userDto.getUuid());
+		return FacadeProvider.getFeatureConfigurationFacade().getDeletedUuids(new Date(since));
 	}
 	
 }

@@ -18,7 +18,7 @@ public interface PrescriptionFacade {
 	
 	void deletePrescription(String prescriptionUuid, String userUuid);
 	
-	List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, String userUuid);
+	List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date);
 	
 	List<PrescriptionDto> getByUuids(List<String> uuids);
 	

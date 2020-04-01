@@ -61,9 +61,7 @@ public class PointOfEntryResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getPointOfEntryFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getPointOfEntryFacade().getAllUuids();
 	}
 	
 }
