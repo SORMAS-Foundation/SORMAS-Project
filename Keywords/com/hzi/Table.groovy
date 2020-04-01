@@ -42,35 +42,7 @@ import com.kms.katalon.core.util.KeywordUtil
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException
 
 
-class Test {
-	/**
-	 * Refresh browser
-	 */
-	@Keyword
-	def refreshBrowser() {
-		KeywordUtil.logInfo("Refreshing")
-		WebDriver webDriver = DriverFactory.getWebDriver()
-		webDriver.navigate().refresh()
-		KeywordUtil.markPassed("Refresh successfully")
-	}
-
-	/**
-	 * Click element
-	 * @param to Katalon test object
-	 */
-	@Keyword
-	def clickElement(TestObject to) {
-		try {
-			WebElement element = WebUiBuiltInKeywords.findWebElement(to);
-			KeywordUtil.logInfo("Clicking element")
-			element.click()
-			KeywordUtil.markPassed("Element has been clicked")
-		} catch (WebElementNotFoundException e) {
-			KeywordUtil.markFailed("Element not found")
-		} catch (Exception e) {
-			KeywordUtil.markFailed("Fail to click on element")
-		}
-	}
+class Table {
 
 	/**
 	 * Get all rows of HTML table
@@ -81,7 +53,7 @@ class Test {
 	@Keyword
 	def List<WebElement> getHtmlTableRows(TestObject table, String outerTagName) {
 		WebElement mailList = WebUiBuiltInKeywords.findWebElement(table)
-		List<WebElement> selectedRows = mailList.findElements(By.xpath("/" + outerTagName + "/tr"))
+		List<WebElement> selectedRows = mailList.findElements(By.xpath("//" + outerTagName + "/tr"))
 		return selectedRows
 	}
 }
