@@ -39,6 +39,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -279,7 +281,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = createActiveContactsFilter(cb, contact);
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact, user));
 
-		if (caseUuids != null) {
+		if (!CollectionUtils.isEmpty(caseUuids)) {
 			Path<Object> contactCaseUuid = contact.get(Contact.CAZE).get(Case.UUID);
 			Predicate caseFilter = cb.or(
 					cb.isNull(contact.get(Contact.CAZE)),
@@ -289,6 +291,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				filter = cb.and(filter, caseFilter);
 			} else {
 				filter = caseFilter;
+			}
+		} else {
+			Predicate contactWithoutCaseFilter = cb.isNull(contact.get(Contact.CAZE));
+			if (filter != null) {
+				filter = cb.and(filter, contactWithoutCaseFilter);
+			} else {
+				filter = contactWithoutCaseFilter;
 			}
 		}
 
