@@ -26,25 +26,25 @@ public class FeatureConfigurationResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<FeatureConfigurationDto> getAllFeatureConfigurations(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<FeatureConfigurationDto> getAllFeatureConfigurations(@PathParam("since") long since) {
 		return FacadeProvider.getFeatureConfigurationFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<FeatureConfigurationDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<FeatureConfigurationDto> getByUuids(List<String> uuids) {
 		return FacadeProvider.getFeatureConfigurationFacade().getByUuids(uuids);
 	}
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getFeatureConfigurationFacade().getAllUuids();
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuids(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<String> getDeletedUuids(@PathParam("since") long since) {
 		return FacadeProvider.getFeatureConfigurationFacade().getDeletedUuids(new Date(since));
 	}
 	

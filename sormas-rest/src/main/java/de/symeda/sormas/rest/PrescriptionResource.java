@@ -44,13 +44,13 @@ public class PrescriptionResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<PrescriptionDto> getAllPrescriptions(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<PrescriptionDto> getAllPrescriptions(@PathParam("since") long since) {
 		return FacadeProvider.getPrescriptionFacade().getAllActivePrescriptionsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<PrescriptionDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<PrescriptionDto> getByUuids(List<String> uuids) {
 		return FacadeProvider.getPrescriptionFacade().getByUuids(uuids);
 	}
 
@@ -62,7 +62,7 @@ public class PrescriptionResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getPrescriptionFacade().getAllActiveUuids();
 	}
 

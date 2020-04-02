@@ -49,13 +49,13 @@ public class EventParticipantResource extends EntityDtoResource {
 
     @GET
     @Path("/all/{since}")
-    public List<EventParticipantDto> getAllEventParticipantsAfter(@Context SecurityContext sc, @PathParam("since") long since) {
+    public List<EventParticipantDto> getAllEventParticipantsAfter(@PathParam("since") long since) {
         return FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since));
     }
 
     @POST
     @Path("/query")
-    public List<EventParticipantDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+    public List<EventParticipantDto> getByUuids(List<String> uuids) {
 
         List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
         return result;
@@ -71,7 +71,7 @@ public class EventParticipantResource extends EntityDtoResource {
 
     @GET
     @Path("/uuids")
-    public List<String> getAllActiveUuids(@Context SecurityContext sc) {
+    public List<String> getAllActiveUuids() {
         return FacadeProvider.getEventParticipantFacade().getAllActiveUuids();
     }
 }

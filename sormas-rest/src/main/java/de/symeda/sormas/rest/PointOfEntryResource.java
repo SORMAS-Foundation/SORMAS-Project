@@ -53,14 +53,14 @@ public class PointOfEntryResource {
 	
 	@POST
 	@Path("/query")
-	public List<PointOfEntryDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
 		List<PointOfEntryDto> result = FacadeProvider.getPointOfEntryFacade().getByUuids(uuids); 
 		return result;
 	}
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getPointOfEntryFacade().getAllUuids();
 	}
 	

@@ -51,7 +51,7 @@ public class DistrictResource {
 	
 	@POST
 	@Path("/query")
-	public List<DistrictDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<DistrictDto> getByUuids(List<String> uuids) {
 
 		List<DistrictDto> result = FacadeProvider.getDistrictFacade().getByUuids(uuids); 
 		return result;
@@ -59,7 +59,7 @@ public class DistrictResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getDistrictFacade().getAllUuids();
 	}
 }

@@ -19,7 +19,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 public class InfrastructureResource {
 
 	@POST @Path("/sync")
-	public InfrastructureSyncDto getInfrastructureSyncData(@Context SecurityContext sc, InfrastructureChangeDatesDto changeDates) {
+	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
 		return FacadeProvider.getInfrastructureFacade().getInfrastructureSyncData(changeDates);
 	}
 	

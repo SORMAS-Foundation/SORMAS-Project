@@ -44,14 +44,14 @@ public class PathogenTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<PathogenTestDto> getAllPathogenTests(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<PathogenTestDto> getAllPathogenTests(@PathParam("since") long since) {
 		return FacadeProvider.getPathogenTestFacade()
 				.getAllActivePathogenTestsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<PathogenTestDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<PathogenTestDto> getByUuids(List<String> uuids) {
 		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getByUuids(uuids);
 		return result;
 	}
@@ -65,13 +65,13 @@ public class PathogenTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getPathogenTestFacade().getAllActiveUuids();
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getPathogenTestFacade().getDeletedUuidsSince(new Date(since));
 	}
 }
