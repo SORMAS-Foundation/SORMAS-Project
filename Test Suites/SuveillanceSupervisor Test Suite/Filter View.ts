@@ -23,15 +23,9 @@
       </variableLink>
    </testCaseLink>
    <testCaseLink>
-      <guid>7e24f4e7-26e0-4619-9891-8305951e0784</guid>
+      <guid>fff5fb0c-e24c-494d-8a5d-42228f59d442</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
-      <testCaseId>Test Cases/SurveillanceSupervisor/CreateNewCaseInSearchView</testCaseId>
-      <variableLink>
-         <testDataLinkId></testDataLinkId>
-         <type>DEFAULT</type>
-         <value></value>
-         <variableId>dbb88abf-5ce4-49ec-8e3f-8adb5ff39a41</variableId>
-      </variableLink>
+      <testCaseId>Test Cases/SurveillanceSupervisor/ResetFilterInSearchView</testCaseId>
    </testCaseLink>
 </TestSuiteEntity>

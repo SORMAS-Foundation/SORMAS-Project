@@ -9,6 +9,8 @@
 .idea
 /settings/
 Sormas-Testing.prj
+.gradle
+gradle*
 
 # Exclude folder content (except .gitkeep)
 Reports/*

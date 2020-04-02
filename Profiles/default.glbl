@@ -29,4 +29,14 @@
       <initValue>'uLJnrJxHaLmj'</initValue>
       <name>gPasswordContactSupervisor</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Testuser first name for Creating cases</description>
+      <initValue>'Jane'</initValue>
+      <name>gSurveillanceTestUserFirstname</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Testuser last name for Creating cases</description>
+      <initValue>'Doe'</initValue>
+      <name>gSurveillanceTestUserLastname</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>

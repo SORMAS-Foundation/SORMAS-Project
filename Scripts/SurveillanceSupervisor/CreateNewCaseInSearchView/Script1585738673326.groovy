@@ -34,9 +34,9 @@ WebUI.click(findTestObject('Surveillance/NewCase/div_HealthFacility_DDBox'))
 
 WebUI.click(findTestObject('Surveillance/NewCase/div_HealthFacility_BerlinNationHospital_DDItem'))
 
-WebUI.setText(findTestObject('Surveillance/NewCase/first_name_inputBox'), 'Doe')
+WebUI.setText(findTestObject('Surveillance/NewCase/first_name_inputBox'), GlobalVariable.gSurveillanceTestUserFirstname)
 
-WebUI.setText(findTestObject('Surveillance/NewCase/last_name_inputBox'), 'Jane')
+WebUI.setText(findTestObject('Surveillance/NewCase/last_name_inputBox'), GlobalVariable.gSurveillanceTestUserLastname)
 
 WebUI.setText(findTestObject('Surveillance/NewCase/dateOfReport_inputBox'), '01/04/2020')
 
@@ -59,6 +59,15 @@ WebUI.click(findTestObject('Surveillance/NewCase/div_PresentConditionOfPerson_al
 WebUI.click(findTestObject('Surveillance/NewCase/div_Save_btn'))
 
 WebUI.delay(3)
+
+if (WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/NewCase/Comfirmation/div_check_confimation_lbl'), 
+    5)) {
+    WebUI.click(findTestObject('Object Repository/Surveillance/NewCase/Comfirmation/chooseExistingCase_radio'))
+
+    WebUI.click(findTestObject('Object Repository/Surveillance/NewCase/Comfirmation/div_confirm_btn'))
+
+    WebUI.delay(3)
+}
 
 if (isStandalone) {
     WebUI.closeBrowser()
