@@ -26,13 +26,15 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/SwitchToContacts'), 
 WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'), 
     findTestData('ContactTestData').getValue(2, 1))
 
-rows = CustomKeywords.'com.hzi.Table.getHtmlTableRows'(Helper.createTestObjectWithXPath('//div[@class="v-grid-tablewrapper"]'), 'tbody')
+WebUI.delay(1)
 
-if (rows.size() == 1) {
+int rows = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(Helper.createTestObjectWithXPath('//table[@aria-rowcount]'))
+
+if (rows == 1) {
     WebUI.closeBrowser()
 } else {
     WebUI.closeBrowser()
 
-    throw new com.kms.katalon.core.exception.StepFailedException('Expected one row but found ' + rows.size())
+    throw new com.kms.katalon.core.exception.StepFailedException('Expected one row but found ' + rows)
 }
 

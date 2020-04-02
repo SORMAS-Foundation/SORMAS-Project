@@ -25,7 +25,7 @@ WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Converted
 convertedToCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('convertedToCases:' + convertedToCases)
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Dropped'))
+WebUI.click(findTestObject('Contacts/Page_SORMAS/dropped_contacts_filter'))
 droppedCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('droppedCases:' + droppedCases)
 
