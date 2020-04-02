@@ -50,13 +50,13 @@ public class PersonResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<PersonDto> getAllPersons(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<PersonDto> getAllPersons(@PathParam("since") long since) {
 		return FacadeProvider.getPersonFacade().getPersonsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<PersonDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<PersonDto> getByUuids(List<String> uuids) {
 		return FacadeProvider.getPersonFacade().getByUuids(uuids);
 	}
 
@@ -68,7 +68,7 @@ public class PersonResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getPersonFacade().getAllUuids();
 	}
 }

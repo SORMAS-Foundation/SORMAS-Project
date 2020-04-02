@@ -43,13 +43,13 @@ public class CaseResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<CaseDataDto> getAllCases(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<CaseDataDto> getAllCases(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<CaseDataDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<CaseDataDto> getByUuids(List<String> uuids) {
 		return FacadeProvider.getCaseFacade().getByUuids(uuids);
 	}
 
@@ -61,19 +61,19 @@ public class CaseResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getCaseFacade().getAllActiveUuids();
 	}
 
 	@GET
 	@Path("/archived/{since}")
-	public List<String> getArchivedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getArchivedUuidsSince(new Date(since));
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getDeletedUuidsSince(new Date(since));
 	}
 }
