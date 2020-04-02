@@ -7,10 +7,11 @@
 .DS_Store*
 .project
 /settings/
+Sormas-Testing.prj
 
 # Exclude folder content (except .gitkeep)
 Reports/*
-!Reports/.gitkeep 
+!Reports/.gitkeep
 
 Checkpoints/*
-!Checkpoints/.gitkeep 
+!Checkpoints/.gitkeep
