@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 
@@ -48,6 +49,7 @@ public class ContactIndexDto implements Serializable {
 	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
 
 	private String uuid;
 	private PersonReferenceDto person;
@@ -67,13 +69,15 @@ public class ContactIndexDto implements Serializable {
 	private Date reportDateTime;
 	private Date quarantineTo;
 	private ContactCategory contactCategory;
+	private CaseClassification caseClassification;
 	
 	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
 			Disease disease, String diseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String caseRegionUuid,
 			String caseDistrictUuid, String caseHealthFacilityUuid, Date lastContactDate,
 			ContactCategory contactCategory, ContactProximity contactProximity,
 			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, 
-			Date followUpUntil, String contactOfficerUuid, Date reportDateTime, Date quarantineTo) {
+			Date followUpUntil, String contactOfficerUuid, Date reportDateTime, Date quarantineTo,
+			CaseClassification caseClassification) {
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
@@ -92,6 +96,7 @@ public class ContactIndexDto implements Serializable {
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
 		this.quarantineTo = quarantineTo;
+		this.setCaseClassification(caseClassification);
 	}
 	
 	public String getUuid() {
@@ -196,16 +201,20 @@ public class ContactIndexDto implements Serializable {
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}
-
 	public ContactCategory getContactCategory() {
 		return contactCategory;
 	}
 	public void setContactCategory(ContactCategory contactCategory) {
 		this.contactCategory = contactCategory;
 	}
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
 
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(uuid);
 	}
-	
 }

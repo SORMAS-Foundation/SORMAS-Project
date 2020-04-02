@@ -851,6 +851,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = and(cb, filter,
 					cb.equal(from.get(Contact.CONTACT_CATEGORY), contactCriteria.getContactCategory()));
 		}
+		if (contactCriteria.getCaseClassification() != null) {
+			filter = and(cb, filter,
+					cb.equal(caze.get(Case.CASE_CLASSIFICATION), contactCriteria.getCaseClassification()));
+		}
 
 		return filter;
 	}

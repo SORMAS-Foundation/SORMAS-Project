@@ -495,7 +495,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.CONTACT_CATEGORY), contact.get(Contact.CONTACT_PROXIMITY),
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS),
 				contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
-				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.QUARANTINE_TO));
+				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME),
+				contact.get(Contact.QUARANTINE_TO), contactCase.get(Case.CASE_CLASSIFICATION));
 
 		Predicate filter = null;		
 		// Only use user filter if no restricting case is specified
@@ -529,6 +530,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				case ContactIndexDto.REPORT_DATE_TIME:
 				case ContactIndexDto.DISEASE:
 				case ContactIndexDto.QUARANTINE_TO:
+				case ContactIndexDto.CASE_CLASSIFICATION:
 					expression = contact.get(sortProperty.propertyName);
 					break;
 				case ContactIndexDto.PERSON:

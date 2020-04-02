@@ -49,6 +49,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -120,6 +121,7 @@ public class ContactsView extends AbstractView {
 	private HorizontalLayout dateFilterRowLayout;
 	private ComboBox classificationFilter;
 	private ComboBox diseaseFilter;
+	private ComboBox caseClassificationFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox facilityFilter;
@@ -327,6 +329,17 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
+			
+			caseClassificationFilter = new ComboBox();
+			caseClassificationFilter.setWidth(140, Unit.PIXELS);
+			caseClassificationFilter.setInputPrompt(
+					I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
+			caseClassificationFilter.addItems((Object[]) CaseClassification.values());
+			caseClassificationFilter.addValueChangeListener(e -> {
+				criteria.caseClassification(((CaseClassification) e.getProperty().getValue()));
+				navigateTo(criteria);
+			});
+			firstFilterRowLayout.addComponent(caseClassificationFilter);
 
 			if (isGermanServer()) {
 				categoryFilter = new ComboBox();
@@ -815,6 +828,7 @@ public class ContactsView extends AbstractView {
 		if (categoryFilter != null) {
 			categoryFilter.setValue(criteria.getContactCategory());
 		}
+		caseClassificationFilter.setValue(criteria.getCaseClassification());
 
 		ContactDateType contactDateType = criteria.getReportDateFrom() != null ? ContactDateType.REPORT_DATE 
 				: criteria.getLastContactDateFrom() != null ? ContactDateType.LAST_CONTACT_DATE : null;
