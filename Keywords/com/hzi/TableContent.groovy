@@ -9,11 +9,18 @@ public class TableContent {
 		getTableRows().add(rowData)
 	}
 	
+	def int getNumberOfColumns() {
+		return getTableHeaders().size()
+	}
+	
 	def String getRowData(int rowIndex, int columnIndex) {
 		return tableRows.get(rowIndex).get(columnIndex)
 	}
 	
 	def List<String> getTableHeaders() {
+		if (tableHeaders == null) {
+			tableHeaders = new ArrayList<String>()
+		}
 		return tableHeaders;
 	}
 	

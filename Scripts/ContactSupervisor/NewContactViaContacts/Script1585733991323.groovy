@@ -16,14 +16,14 @@ import com.kms.katalon.core.testdata.TestData as TestData
 import com.kms.katalon.core.checkpoint.Checkpoint as Checkpoint
 import internal.GlobalVariable as GlobalVariable
 
-WebUI.callTestCase(findTestCase('ContactSupervisor/partials/LoginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.callTestCase(findTestCase('ContactSupervisor/partials/SwitchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('ContactSupervisor/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'), findTestData('ContactTestData').getValue(
         2, 1))
 
-Thread.sleep(1000)
+WebUI.delay(1)
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
