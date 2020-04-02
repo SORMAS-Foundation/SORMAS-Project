@@ -88,6 +88,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private Boolean hasCaseRelation;
 	private CaseReferenceDto selectedCase;
 	private OptionGroup contactCategory;
+	private TextField contactProximityDetails;
 
 	public ContactCreateForm(UserRight editOrCreateUserRight, Disease disease, boolean hasCaseRelation) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -121,7 +122,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		if (isGermanServer()) {
 			contactProximity
 					.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
-			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
+			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 		}
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(2);
@@ -145,8 +146,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
-			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY, ContactDto.CONTACT_PROXIMITY_DETAILS,
-					ContactDto.CONTACT_CATEGORY);
+			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY);
+			if (isGermanServer()) {
+				contactCategory.setVisible(disease != null);
+				contactProximityDetails.setVisible(disease != null);
+			}
 			updateContactProximity();
 		});
 
@@ -196,8 +200,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addValueChangeListener(e -> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);
 			if (!hasCaseRelation && disease == null) {
-				setVisible(false, ContactDto.CONTACT_PROXIMITY, ContactDto.CONTACT_PROXIMITY_DETAILS,
-						ContactDto.CONTACT_CATEGORY);
+				setVisible(false, ContactDto.CONTACT_PROXIMITY);
+				if (isGermanServer()) {
+					contactCategory.setVisible(false);
+					contactProximityDetails.setVisible(false);
+				}
 			}
 
 			updateContactProximity();

@@ -94,12 +94,15 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
         contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
         contentBinding.contactDisease.addValueChangedListener(e -> {
             contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+            if (ConfigProvider.isGermanServer()) {
+                contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+                contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+            }
             contentBinding.contactContactProximity.clear();
             contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
         });
 
-        String germanyLocale = "de";
-        if (germanyLocale.equals(ConfigProvider.getServerLocale())){
+        if (ConfigProvider.isGermanServer()) {
             contentBinding.contactContactProximity.addValueChangedListener(e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
         } else {
             contentBinding.contactContactProximityDetails.setVisibility(GONE);
@@ -119,6 +122,8 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
         if (getPrimaryData().getDisease() == null) {
             contentBinding.contactContactProximity.setVisibility(GONE);
+            contentBinding.contactContactProximityDetails.setVisibility(GONE);
+            contentBinding.contactContactCategory.setVisibility(GONE);
         }
 
         ContactValidator.initializeValidation(record, contentBinding);
