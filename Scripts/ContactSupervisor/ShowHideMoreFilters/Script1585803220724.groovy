@@ -8,20 +8,37 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/LoginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/SwitchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
-WebUI.delay(1)
+
 
 WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Show More Filters'))
+WebUI.delay(1)
 
-if (!WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Apply date filter'), 1)){
+if (!WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Apply date filter'), 1) 
+	|| !WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_EinrichtungLandkreis'), 1)
+	|| !WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_gemeldetVon'), 1)
+	|| !WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_KontaktDatum'), 1)
+	|| !WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_KontakteBis'), 1)
+	|| !WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_KontakteVon'), 1)	
+	|| !WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_nachDatum'), 1)
+	|| !WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_quarantine_end'), 1)
+	|| !WebUI.verifyElementPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_Verantwortliche'), 1)){
 	WebUI.closeBrowser()
-	throw new StepFailedException('"Apply Filter" button is not present after "More Filters" is clicked.')	
+	throw new StepFailedException('Missing expected input field(s) in "More Filters" view')	
 }
 
 WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Show Less Filters'))
-
-if (!WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Apply date filter'), 1)){
+WebUI.delay(1)
+if (!WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Apply date filter'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_EinrichtungLandkreis'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_gemeldetVon'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_KontaktDatum'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_KontakteBis'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_KontakteVon'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_nachDatum'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_quarantine_end'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Object Repository/Contacts/Page_SORMAS/input_moreFilter_Verantwortliche'), 1)){
 	WebUI.closeBrowser()
-	throw new StepFailedException('"Apply Filter" button is still present after "Less Filters" is clicked.')
+	throw new StepFailedException('Unexpected input fields from "More Filters" are present')
 }
 
 WebUI.closeBrowser()
