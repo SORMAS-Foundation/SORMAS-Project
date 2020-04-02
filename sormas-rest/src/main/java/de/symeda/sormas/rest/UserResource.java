@@ -53,14 +53,14 @@ public class UserResource {
 	
 	@POST
 	@Path("/query")
-	public List<UserDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<UserDto> getByUuids(List<String> uuids) {
 		List<UserDto> result = FacadeProvider.getUserFacade().getByUuids(uuids); 
 		return result;
 	}
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getUserFacade().getAllUuids();
 	}
 }
