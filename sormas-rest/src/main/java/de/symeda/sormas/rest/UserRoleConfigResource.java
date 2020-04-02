@@ -56,7 +56,7 @@ public class UserRoleConfigResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getUserRoleConfigFacade().getAllUuids();
 	}
 	

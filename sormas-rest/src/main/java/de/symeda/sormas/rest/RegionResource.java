@@ -51,14 +51,14 @@ public class RegionResource {
 	
 	@POST
 	@Path("/query")
-	public List<RegionDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<RegionDto> getByUuids(List<String> uuids) {
 		List<RegionDto> result = FacadeProvider.getRegionFacade().getByUuids(uuids); 
 		return result;
 	}
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getRegionFacade().getAllUuids();
 	}
 }
