@@ -19,13 +19,13 @@ package de.symeda.sormas.backend.user;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -59,22 +59,28 @@ public class UserService extends AbstractAdoService<User> {
 	private SessionContext sessionContext;
 
 	@Inject
-	@CurrentUser
-	private User currentUser;
+	@CurrentUserQualifier
+	private Instance<CurrentUser> currentUser;
 
 	public UserService() {
 		super(User.class);
 	}
 
 	public User getCurrentUser() {
-		return currentUser;
+		return currentUser.get().getUser();
 	}
 
 	@Produces
 	@RequestScoped
-	@CurrentUser
-	public User produceCurrentUser() {
-		return getByUserName(sessionContext.getCallerPrincipal().getName());
+	@CurrentUserQualifier
+	public CurrentUser produceCurrentUser() {
+		String name = sessionContext.getCallerPrincipal().getName();
+		if (name.equalsIgnoreCase("ANONYMOUS")) {
+			return new CurrentUser(null);
+		}
+		final User user = getByUserName(name);
+		user.getUserRoles().size(); // user roles within the current user should be fetched as injected current user would not have session to fetch later
+		return new CurrentUser(user);
 	}
 	
 	public User createUser() {
