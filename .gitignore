@@ -6,6 +6,7 @@
 .svn/
 .DS_Store*
 .project
+.idea
 /settings/
 Sormas-Testing.prj
 
