@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description>Tabellen Filter zurücksetzen</description>
-   <name>ResetFilter</name>
+   <name>ResetFilterAfterDropped</name>
    <tag></tag>
    <comment></comment>
    <testCaseGuid>5cce88ce-ba09-4143-8e75-d8299947fa59</testCaseGuid>

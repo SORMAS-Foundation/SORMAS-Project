@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>(//input[@type='text'])[5]</value>
+         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[2]/div/div/div/input</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
