@@ -368,7 +368,7 @@
     <string name="hint_no_records_found_add_new">Aucun enregistrement trouvé. Pour ajouter un nouvel enregistrement, appuyez sur le symbole \"+\" en haut à droite de la barre d\'outils.</string>
     <string name="hint_no_sync_errors">Il n\'y a aucun conflit de synchronisation à afficher.</string>
     <string name="hint_report_message">Votre Message</string>
-    <string name="hint_report_not_submitted">Aucun rapport <i></i> soumis</string>
+    <string name="hint_report_not_submitted">Aucun rapport <i/> soumis</string>
     <string name="hint_select_a_date">Choisir une date</string>
     <string name="hint_select_a_time">Choisir une date</string>
     <string name="hint_select_day">Sélectionnez le jour</string>
