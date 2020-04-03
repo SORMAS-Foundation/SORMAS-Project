@@ -52,4 +52,10 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/Login/LoginPoeSupervisorTest</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>443e6c41-08e5-40ee-8aae-3def0fdd31c3</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Login/LoginSurveillanceSupervisorTest</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>

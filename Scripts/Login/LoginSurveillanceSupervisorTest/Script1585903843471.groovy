@@ -15,11 +15,32 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 
-WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : GlobalVariable.gPasswordSurveillanceSupervisor
-        , ('Username') : GlobalVariable.gUsernameSurveillanceSupervisor], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
+
+WebUI.callTestCase(findTestCase('Login/partials/ChangeLanguageToEnglish'), [:], FailureHandling.STOP_ON_FAILURE)
 
 try {
-    WebUI.verifyElementPresent(findTestObject('Surveillance/MainView/span_Logout (Surveillance Supervisor)'), 2)
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Dashboard'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Tasks'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Cases'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_mSERS'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Contacts'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Events'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Samples'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Reports'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Statistics'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_About'), 2)
+
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Logout'), 2)
 }
 finally { 
     WebUI.closeBrowser()

@@ -14,24 +14,35 @@ import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
-import org.openqa.selenium.By as By
-import org.openqa.selenium.Keys as Keys
-import com.kms.katalon.core.testobject.ConditionType as ConditionType
 
 WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Surveillance/SearchView/div_New case_v-filterselect-button'))
+WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/a_Search_Entry_link'))
 
-WebUI.click(findTestObject('Surveillance/SearchView/span_Not yet classified'))
+WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/input_Case_CaseIdUuid_inputBox'), 3)
 
-def attribute = WebUI.getAttribute(findTestObject('Surveillance/SearchView/result_table'), 'aria-rowcount')
+WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_CasePerson_tab'))
 
-attribute = (attribute.toInteger() - 1).toString()
+WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/input_Person_PassportNumber_inputBox'), 3)
 
-WebUI.verifyMatch(attribute, '12', false, FailureHandling.OPTIONAL)
+WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Hospitalization_tab'))
 
-if(isStandalone) {
+WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/div_Hospitation_Accommodation_selectBox'), 3)
+
+WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Symptoms_tab'))
+
+WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/div_Symptoms_Comments_inputBox'), 3)
+
+WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_EpidemiologicalData_tab'))
+
+WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/i_EpidemiologicalData_description_text'), 3)
+
+WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Contacts_tab'))
+
+WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/div_Contacts_NewContact_btn'), 3)
+
+if (isStandalone) {
 	WebUI.closeBrowser()
 }

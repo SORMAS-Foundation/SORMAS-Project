@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>OpenCaseFromListAndValidateTheTabs</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>3ebcf2b6-bc7a-45f9-99a9-e44818bc203c</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description></description>
+      <id>2e33901e-e4af-4806-af50-1876ebe297bf</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>

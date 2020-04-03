@@ -16,7 +16,7 @@ import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 import org.openqa.selenium.Keys as Keys
 
-WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/LoginAsSurveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
@@ -34,9 +34,9 @@ WebUI.click(findTestObject('Surveillance/NewCase/div_HealthFacility_DDBox'))
 
 WebUI.click(findTestObject('Surveillance/NewCase/div_HealthFacility_BerlinNationHospital_DDItem'))
 
-WebUI.setText(findTestObject('Surveillance/NewCase/first_name_inputBox'), GlobalVariable.gSurveillanceTestUserFirstname)
+WebUI.setText(findTestObject('Surveillance/NewCase/first_name_inputBox'), findTestData('GenericUsers').getValue(4, 1))
 
-WebUI.setText(findTestObject('Surveillance/NewCase/last_name_inputBox'), GlobalVariable.gSurveillanceTestUserLastname)
+WebUI.setText(findTestObject('Surveillance/NewCase/last_name_inputBox'), findTestData('GenericUsers').getValue(5, 1))
 
 WebUI.setText(findTestObject('Surveillance/NewCase/dateOfReport_inputBox'), '01/04/2020')
 
