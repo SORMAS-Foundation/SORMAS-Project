@@ -207,8 +207,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public long countWithCriteria(AggregateReportCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public long countWithCriteria(AggregateReportCriteria criteria) {
+		User user = userService.getCurrentUser();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
