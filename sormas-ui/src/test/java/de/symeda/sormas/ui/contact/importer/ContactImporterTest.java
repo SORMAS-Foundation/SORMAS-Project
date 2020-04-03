@@ -35,7 +35,7 @@ import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 
-public class CaseContactImporterTest extends AbstractBeanTest {
+public class ContactImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportCaseContacts() throws IOException, InvalidColumnException, InterruptedException {
@@ -52,7 +52,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		// Successful import of 5 case contacts
 		File csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").getFile());
-		CaseContactImporter caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze);
+		ContactImporter caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze);
 		ImportResultStatus importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -120,7 +120,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		assertEquals(7, getPersonFacade().getAllUuids(user.getUuid()).size());
 	}
 
-	private static class CaseContactImporterExtension extends CaseContactImporter {
+	private static class CaseContactImporterExtension extends ContactImporter {
 		private CaseContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser,
 				CaseDataDto caze) {
 			super(inputFile, hasEntityClassRow, currentUser, caze);

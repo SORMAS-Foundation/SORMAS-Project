@@ -189,9 +189,11 @@ public interface Captions {
 	public static String CaseExport_contactWithRodent = "CaseExport.contactWithRodent";
 	public static String CaseExport_country = "CaseExport.country";
 	public static String CaseExport_diseaseFormatted = "CaseExport.diseaseFormatted";
+	public static String CaseExport_firstName = "CaseExport.firstName";
 	public static String CaseExport_id = "CaseExport.id";
 	public static String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	public static String CaseExport_labResults = "CaseExport.labResults";
+	public static String CaseExport_lastName = "CaseExport.lastName";
 	public static String CaseExport_maxSourceCaseClassification = "CaseExport.maxSourceCaseClassification";
 	public static String CaseExport_numberOfClinicalVisits = "CaseExport.numberOfClinicalVisits";
 	public static String CaseExport_numberOfPrescriptions = "CaseExport.numberOfPrescriptions";
@@ -279,6 +281,7 @@ public interface Captions {
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
 	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
+	public static String Contact_caseClassification = "Contact.caseClassification";
 	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
 	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
 	public static String Contact_caseIdExternalSystem = "Contact.caseIdExternalSystem";
@@ -339,9 +342,11 @@ public interface Captions {
 	public static String contactContactsList = "contactContactsList";
 	public static String contactContactsOverview = "contactContactsOverview";
 	public static String contactCreateContactCase = "contactCreateContactCase";
+	public static String ContactExport_firstName = "ContactExport.firstName";
 	public static String ContactExport_lastCooperativeVisitDate = "ContactExport.lastCooperativeVisitDate";
 	public static String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	public static String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
+	public static String ContactExport_lastName = "ContactExport.lastName";
 	public static String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	public static String contactFollowUpOverviewReferenceDate = "contactFollowUpOverviewReferenceDate";
 	public static String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
