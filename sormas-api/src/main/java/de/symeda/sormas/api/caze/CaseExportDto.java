@@ -90,7 +90,8 @@ public class CaseExportDto implements Serializable {
 	private String epidNumber;
 	private String diseaseFormatted;
 	private Disease disease;
-	private String person;
+	private String firstName;
+	private String lastName;
 	private Sex sex;
 	private YesNoUnknown pregnant;
 	private String approximateAge;
@@ -175,7 +176,8 @@ public class CaseExportDto implements Serializable {
 		this.epidNumber = epidNumber;
 		this.diseaseFormatted = DiseaseHelper.toString(disease, diseaseDetails);
 		this.disease = disease;
-		this.person = PersonDto.buildCaption(firstName, lastName);
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.sex = sex;
 		this.pregnant = pregnant;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
@@ -213,7 +215,7 @@ public class CaseExportDto implements Serializable {
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, person);
+		return new CaseReferenceDto(uuid, PersonDto.buildCaption(firstName, lastName));
 	}
 	
 	@Order(0)
@@ -286,13 +288,21 @@ public class CaseExportDto implements Serializable {
 
 	@Order(10)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
-	@ExportProperty(CaseDataDto.PERSON)
+	@ExportProperty(PersonDto.FIRST_NAME)
 	@ExportGroup(ExportGroupType.SENSITIVE)
-	public String getPerson() {
-		return person;
+	public String getFirstName() {
+		return firstName;
 	}
 
 	@Order(11)
+	@ExportTarget(exportTypes = { CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(PersonDto.LAST_NAME)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getLastName() {
+		return lastName;
+	}
+
+	@Order(12)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(PersonDto.SEX)
 	@ExportGroup(ExportGroupType.SENSITIVE)
@@ -300,7 +310,7 @@ public class CaseExportDto implements Serializable {
 		return sex;
 	}
 
-	@Order(12)
+	@Order(13)
 	@ExportTarget(exportTypes = { CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.PREGNANT)
 	@ExportGroup(ExportGroupType.SENSITIVE)
@@ -308,7 +318,7 @@ public class CaseExportDto implements Serializable {
 		return pregnant;
 	}
 
-	@Order(13)
+	@Order(14)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(PersonDto.APPROXIMATE_AGE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
@@ -316,7 +326,7 @@ public class CaseExportDto implements Serializable {
 		return approximateAge;
 	}
 	
-	@Order(14)
+	@Order(15)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(AGE_GROUP)
 	@ExportGroup(ExportGroupType.PERSON)
@@ -324,7 +334,7 @@ public class CaseExportDto implements Serializable {
 		return ageGroup;
 	}
 
-	@Order(15)
+	@Order(16)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(PersonDto.BIRTH_DATE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
@@ -806,8 +816,12 @@ public class CaseExportDto implements Serializable {
 		this.diseaseFormatted = diseaseFormatted;
 	}
 
-	public void setPerson(String person) {
-		this.person = person;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public void setSex(Sex sex) {

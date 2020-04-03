@@ -27,7 +27,6 @@ import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -49,7 +48,8 @@ public class ContactExportDto implements Serializable {
 	private String disease;
 	private ContactClassification contactClassification;
 	private Date lastContactDate;
-	private String person;
+	private String firstName;
+	private String lastName;
 	private Sex sex;
 	private String approximateAge;
 	private Date reportDate;
@@ -85,7 +85,8 @@ public class ContactExportDto implements Serializable {
 		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
 		this.contactClassification = contactClassification;
 		this.lastContactDate = lastContactDate;
-		this.person = PersonDto.buildCaption(firstName, lastName);
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.reportDate = reportDate;
@@ -149,31 +150,36 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(10)
-	public String getPerson() {
-		return person;
+	public String getFirstName() {
+		return firstName;
 	}
 
 	@Order(11)
+	public String getLastName() {
+		return lastName;
+	}
+
+	@Order(12)
 	public Sex getSex() {
 		return sex;
 	}
 
-	@Order(12)
+	@Order(13)
 	public String getApproximateAge() {
 		return approximateAge;
 	}
 
-	@Order(13)
+	@Order(14)
 	public Date getReportDate() {
 		return reportDate;
 	}
 	
-	@Order(14)
+	@Order(15)
 	public String getRegion() {
 		return region;
 	}
 	
-	@Order(15)
+	@Order(16)
 	public String getDistrict() {
 		return district;
 	}
@@ -275,8 +281,12 @@ public class ContactExportDto implements Serializable {
 		this.lastContactDate = lastContactDate;
 	}
 
-	public void setPerson(String person) {
-		this.person = person;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public void setSex(Sex sex) {
