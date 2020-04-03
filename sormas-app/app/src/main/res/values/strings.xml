@@ -391,6 +391,7 @@
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
     <string name="hint_case_numbers_not_submitted">Case numbers not submitted yet</string>
+    <string name="hint_contact_text_filter">Contact ID or contact person name</string>
 
     <string name="indicator_error">ERROR</string>
     <string name="indicator_required">*</string>
