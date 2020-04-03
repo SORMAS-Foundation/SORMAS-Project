@@ -39,4 +39,24 @@
       <initValue>'Doe'</initValue>
       <name>gSurveillanceTestUserLastname</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'CliNic'</initValue>
+      <name>gUsernameClinician</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'m5QZWdMiUXSJ'</initValue>
+      <name>gPasswordClinician</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'EveOff'</initValue>
+      <name>gUsernameEventOfficer</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'AKp5X2RmpLKM'</initValue>
+      <name>gPasswordEventOfficer</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>
