@@ -17,15 +17,15 @@ TestObject tableObject = Helper.createTestObjectWithXPath('//table[@aria-rowcoun
 allCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('All Cases:' + allCases)
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Active contact'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Active contact'))
 activeContacts = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('activeContacts:' + activeContacts)
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Converted to case'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Converted to case'))
 convertedToCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('convertedToCases:' + convertedToCases)
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/dropped_contacts_filter'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/dropped_contacts_filter'))
 droppedCases = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println('droppedCases:' + droppedCases)
 

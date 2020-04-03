@@ -18,7 +18,7 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/switchToContacts'), 
 WebUI.delay(1)
 
 'userName\n'
-WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'),
+WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'),
 	findTestData('ContactTestData').getValue(2, 1))
 
 WebUI.delay(1)

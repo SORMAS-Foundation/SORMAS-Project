@@ -15,45 +15,45 @@ WebUI.delay(1)
 
 
 // TESTCASE
-WebUI.click(findTestObject('Contacts/Page_SORMAS/conctactView_newContact_button'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/conctactView_newContact_button'))
 
-WebUI.setText(findTestObject('Object Repository/Contacts/Page_SORMAS/input_First name of contact person_gwt-uid-22'), 'Aurelius')
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_First name of contact person_gwt-uid-22'), 'Aurelius')
 
 // generate name because contacts cannot be deleted
 String newContactLastName = Helper.generateString('Aurelius', 6)
 println('generated lastname:' + newContactLastName)
-WebUI.setText(findTestObject('Object Repository/Contacts/Page_SORMAS/input_Last name of contact person_gwt-uid-10'), newContactLastName)
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_Last name of contact person_gwt-uid-10'), newContactLastName)
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Disease of source case_v-filterselect-button'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Disease of source case_v-filterselect-button'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/span_COVID-19'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/span_COVID-19'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Choose Case'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Choose Case'))
 
-WebUI.setText(findTestObject('Object Repository/Contacts/Page_SORMAS/input_Select Source Case_v-textfield v-widg_1dfb0a'),
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_Select Source Case_v-textfield v-widg_1dfb0a'),
 	'Hildegard von Bingen')
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Search case'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Search case'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/td_Nachos Hospital'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/td_Nachos Hospital'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Confirm'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Confirm'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Save'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Save'))
 
 // 'check if "Pick or create person" dialog is shown' ans select create-new-person
-boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/Page_SORMAS/button_Find_matching_persons'), 2)
+boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/button_Find_matching_persons'), 2)
 if (checkDialog) {
-	WebUI.click(findTestObject('Contacts/Page_SORMAS/label_Create a new person'))
+	WebUI.click(findTestObject('Contacts/CasesView/NewContact/label_Create a new person'))
 
-	WebUI.click(findTestObject('Contacts/Page_SORMAS/pick_persion_save'))
+	WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/pick_persion_save'))
 }
 WebUI.delay(1)
 
 // CHECK
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/span_Contacts list'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/span_Contacts list'))
 
-WebUI.setText(findTestObject('Object Repository/Contacts/Page_SORMAS/input_New contact_v-textfield v-widget v-ha_73324d'), 
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_New contact_v-textfield v-widget v-ha_73324d'), 
     newContactLastName)
 WebUI.delay(1)
 

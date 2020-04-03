@@ -20,14 +20,14 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSuperv
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'), findTestData('ContactTestData').getValue(
+WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), findTestData('ContactTestData').getValue(
         2, 1))
 
 WebUI.delay(1)
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/span_Case contacts'))
+WebUI.click(findTestObject('Contacts/CasesView/span_Case contacts'))
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/createAndCheckNewContactFromCaseContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 

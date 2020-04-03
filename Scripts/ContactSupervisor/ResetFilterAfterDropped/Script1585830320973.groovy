@@ -13,7 +13,7 @@ WebUI.delay(1)
 
 int unfilteredRows = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/dropped_contacts_filter'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/dropped_contacts_filter'))
 WebUI.delay(1)
 
 int droppedRows = Table.getNumberOfTableRows()
@@ -21,7 +21,7 @@ if (droppedRows >= unfilteredRows) {
 	throw new StepFailedException('Please consider other testdata - the number of unfiltered and dropped contacts is the same.')
 }
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Reset filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 WebUI.delay(1)
 
 int rowsAfterReset = Table.getNumberOfTableRows()

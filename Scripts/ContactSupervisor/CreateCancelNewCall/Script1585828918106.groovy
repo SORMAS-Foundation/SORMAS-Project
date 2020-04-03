@@ -15,7 +15,7 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/switchToContacts'), 
 WebUI.delay(1)
 
 'userName\n'
-WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'),
+WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'),
 	findTestData('ContactTestData').getValue(2, 1))
 WebUI.delay(1)
 
@@ -23,23 +23,23 @@ WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
 
 // TESTCASE CREATE
-WebUI.click(findTestObject('Contacts/Page_SORMAS/contact_view_followUpCalls'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_followUpCalls'))
 WebUI.delay(1)
 int numberOfCalls = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/contact_view_followUpCalls_newCall'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_followUpCalls_newCall'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/newCall_dlg_label_nichtKooperativ'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/newCall_dlg_label_nichtKooperativ'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/newCall_dlg_save_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/newCall_dlg_save_button'))
 int numberOfCallsAfterSave = Table.getNumberOfTableRows()
 
 // TESTCASE CANCEL
-WebUI.click(findTestObject('Contacts/Page_SORMAS/contact_view_followUpCalls_newCall'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_followUpCalls_newCall'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/newCall_dlg_label_nichtKooperativ'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/newCall_dlg_label_nichtKooperativ'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/newCall_dlg_cancel_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/newCall_dlg_cancel_button'))
 
 
 // CHECK

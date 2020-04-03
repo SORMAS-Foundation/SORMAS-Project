@@ -16,4 +16,4 @@ import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 import org.openqa.selenium.Keys as Keys
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/menu_Contacts'))
+WebUI.click(findTestObject('Contacts/MainView/menu_Contacts'))

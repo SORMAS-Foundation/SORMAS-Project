@@ -18,16 +18,16 @@ import internal.GlobalVariable as GlobalVariable
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/menu_Cases'))
+WebUI.click(findTestObject('Contacts/MainView/menu_Cases'))
 
-WebUI.setText(findTestObject('Object Repository/Contacts/Page_SORMAS/input_New case_search'), findTestData('ContactTestData').getValue(
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_New case_search'), findTestData('ContactTestData').getValue(
         2, 2))
 
 WebUI.delay(1)
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/caseInfo_Contacts'))
+WebUI.click(findTestObject('Contacts/CasesView/caseInfo_Contacts'))
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/createAndCheckNewContactFromCaseContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 

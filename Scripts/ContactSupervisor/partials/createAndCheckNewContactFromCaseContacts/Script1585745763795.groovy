@@ -21,7 +21,7 @@ tableObject = Helper.createTestObjectWithXPath('//table[@aria-rowcount]')
 int numberOfCaseContactsBefore = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println(numberOfCaseContactsBefore)
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/div_New contact'))
+WebUI.click(findTestObject('Contacts/CasesView/NewContact/div_New contact'))
 
 // from here - identical with NewContactViaContacts
 WebUI.setText(Helper.createTestObjectWithXPath('//div[@location="firstName"]//input'), 'Aurelius')
@@ -31,26 +31,26 @@ String newContactLastName = Helper.generateString('Aurelius', 6)
 
 WebUI.setText(Helper.createTestObjectWithXPath('//div[@location="lastName"]//input'), newContactLastName)
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/button_Date_last_contact'))
+WebUI.click(findTestObject('Contacts/CasesView/NewContact/button_Date_last_contact'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/calendar_back_month_button'))
+WebUI.click(findTestObject('Contacts/CasesView/NewContact/calendar_back_month_button'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/calendar_select_30'))
+WebUI.click(findTestObject('Contacts/CasesView/NewContact/calendar_select_30'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/label_selection_direct_physical_contact'))
+WebUI.click(findTestObject('Contacts/CasesView/NewContact/label_selection_direct_physical_contact'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/new_contact_dialog_save'))
+WebUI.click(findTestObject('Contacts/CasesView/NewContact/new_contact_dialog_save'))
 
 // 'check if "Pick or create person" dialog is shown' ans select create-new-person
-boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/Page_SORMAS/button_Find_matching_persons'), 2)
+boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/button_Find_matching_persons'), 2)
 if (checkDialog) {
-	WebUI.click(findTestObject('Contacts/Page_SORMAS/label_Create a new person'))
+	WebUI.click(findTestObject('Contacts/CasesView/NewContact/label_Create a new person'))
 
-	WebUI.click(findTestObject('Contacts/Page_SORMAS/pick_persion_save'))
+	WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/pick_persion_save'))
 }
 
 // check if new contact exists in case-contacts and contacts itself
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/span_Case contacts'))
+WebUI.click(findTestObject('Contacts/CasesView/span_Case contacts'))
 
 int numberOfCaseContactsAfter = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)
 println(numberOfCaseContactsAfter)
@@ -59,9 +59,9 @@ if (numberOfCaseContactsBefore != (numberOfCaseContactsAfter - 1)) {
 	numberOfCaseContactsBefore) + ' == ') + numberOfCaseContactsAfter) + ' + 1')
 }
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/menu_Contacts'))
+WebUI.click(findTestObject('Contacts/MainView/menu_Contacts'))
 
-WebUI.setText(findTestObject('Contacts/Page_SORMAS/contact_search_field_name'), newContactLastName)
+WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), newContactLastName)
 WebUI.delay(1)
 
 int numberOfFilteredContacts = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)

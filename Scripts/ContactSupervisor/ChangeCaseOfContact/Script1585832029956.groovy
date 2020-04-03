@@ -20,7 +20,7 @@ String epidNumberA = findTestData('ContactTestData').getValue(2, 3)
 String epidNumberB = findTestData('ContactTestData').getValue(2, 4)
 
 
-String savedEpidNumber = WebUI.getText(findTestObject('Contacts/Page_SORMAS/contact_view_epidNumber'))
+String savedEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
 println('saved epid-number:' + savedEpidNumber)
 
 'determine the future epidNumber based on the saved one'
@@ -28,22 +28,22 @@ String futureEpidNumber = (savedEpidNumber == epidNumberA)? epidNumberB : epidNu
 println('future epid-number:' + futureEpidNumber)
 
 // TESTCASE - change case
-WebUI.click(findTestObject('Contacts/Page_SORMAS/contactView_changeCase_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_button'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/contactView_changeCase_confirmationDlg_yes'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_confirmationDlg_yes'))
 
-WebUI.setText(findTestObject('Contacts/Page_SORMAS/changeCaseDlg_input_field'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_input_field'), 
     futureEpidNumber)
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/changeCaseDlg_search_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_search_button'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/changeCaseDlg_selectRow_action'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_selectRow_action'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/changeCaseDlg_confirm_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_confirm_button'))
 WebUI.delay(1)
 
 // CHECK
-String epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/Page_SORMAS/contact_view_epidNumber'))
+String epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
 println('displayed epidnumber after change: ' + epidNumberAfterChange )
 if (epidNumberAfterChange != futureEpidNumber){
 	WebUI.closeBrowser()
@@ -51,22 +51,21 @@ if (epidNumberAfterChange != futureEpidNumber){
 }
 
 // TESTCASE - discard changes in caseChange Dialog
-WebUI.click(findTestObject('Contacts/Page_SORMAS/contactView_changeCase_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_button'))
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/contactView_changeCase_confirmationDlg_yes'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_confirmationDlg_yes'))
 
-WebUI.setText(findTestObject('Contacts/Page_SORMAS/changeCaseDlg_input_field'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_input_field'), 
     savedEpidNumber)
 
-WebUI.click(findTestObject('Contacts/Page_SORMAS/changeCaseDlg_search_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_search_button'))
 
-//WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/td_Berlin'))
-WebUI.click(findTestObject('Contacts/Page_SORMAS/changeCaseDlg_selectRow_action'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_selectRow_action'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_Discard'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/div_Discard'))
 
 // CHECK
-epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/Page_SORMAS/contact_view_epidNumber'))
+epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
 println('displayed epidnumber after discard of changes: ' + epidNumberAfterChange )
 if (epidNumberAfterChange != futureEpidNumber){
 	WebUI.closeBrowser()
@@ -74,12 +73,12 @@ if (epidNumberAfterChange != futureEpidNumber){
 }
 
 // TESTCASE - discard after first confirmation dialog
-WebUI.click(findTestObject('Contacts/Page_SORMAS/contactView_changeCase_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_button'))
 
-WebUI.click(findTestObject('Object Repository/Contacts/Page_SORMAS/div_No'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/div_No'))
 
 // CHECK
-epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/Page_SORMAS/contact_view_epidNumber'))
+epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
 println('displayed epidnumber after discard of confirm dialog: ' + epidNumberAfterChange )
 if (epidNumberAfterChange != futureEpidNumber){
 	WebUI.closeBrowser()
