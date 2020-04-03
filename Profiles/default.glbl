@@ -59,4 +59,44 @@
       <initValue>'AKp5X2RmpLKM'</initValue>
       <name>gPasswordEventOfficer</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'PoeSup'</initValue>
+      <name>gUsernamePoeSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'ZmM5ewAXCNun'</initValue>
+      <name>gPasswordPoeSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'LabOff'</initValue>
+      <name>gUsernameLabOfficer</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'WbdPpgQw5c6o'</initValue>
+      <name>gPasswordLabOfficer</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'NatUser'</initValue>
+      <name>gUsernameNationalUser</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'zhkYjnayoCKz'</initValue>
+      <name>gPasswordNationUser</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'NatClin'</initValue>
+      <name>gUsernameNationalClinician</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'GotYWyb9M8Ww'</initValue>
+      <name>gPasswordNationalClinician</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>

@@ -15,7 +15,7 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 
-WebUI.callTestCase(findTestCase('Login/partials/LoginAsClinician'), [:], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.callTestCase(findTestCase('Login/partials/ChangeLanguageToEnglish'), [:], FailureHandling.STOP_ON_FAILURE)
 
@@ -40,7 +40,7 @@ try {
 
     WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_About'), 2)
 
-    WebUI.verifyElementPresent(findTestObject('Surveillance/MainView/span_Logout (Surveillance Supervisor)'), 2)
+    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Logout'), 2)
 }
 finally { 
     WebUI.closeBrowser()
