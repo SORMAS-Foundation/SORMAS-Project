@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
    <description></description>
-   <name>NewContactViaContacts</name>
+   <name>dummy</name>
    <tag></tag>
    <comment></comment>
-   <testCaseGuid>3de027d8-4c40-4f49-ae2a-22a041ed1333</testCaseGuid>
+   <testCaseGuid>e48d5cf2-dde3-437b-a329-26171b5bdab7</testCaseGuid>
 </TestCaseEntity>

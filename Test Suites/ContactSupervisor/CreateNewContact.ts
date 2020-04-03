@@ -20,6 +20,6 @@
       <guid>b1f94911-22ae-4129-80ec-bbb8ea47f9d4</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
-      <testCaseId>Test Cases/ContactSupervisor/NewContactViaContacts</testCaseId>
+      <testCaseId>Test Cases/ContactSupervisor/NewContactViaCaseContacts</testCaseId>
    </testCaseLink>
 </TestSuiteEntity>
