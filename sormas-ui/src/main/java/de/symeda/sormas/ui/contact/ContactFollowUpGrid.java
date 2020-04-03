@@ -13,6 +13,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -58,7 +59,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 					new StyleGenerator<ContactFollowUpDto>() {
 						@Override
 						public String apply(ContactFollowUpDto item) {
-							return getVisitResultCssStyle(item.getVisitResults()[index], dates[index], item.getReportDateTime(), item.getFollowUpUntil());
+							return getVisitResultCssStyle(item.getVisitResults()[index], dates[index], ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()), item.getFollowUpUntil());
 						}
 					});
 		}
@@ -81,8 +82,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		});
 	}
 
-	private String getVisitResultCssStyle(VisitResult result, Date date, Date reportDateTime, Date followUpUntil) {
-		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(reportDateTime), DateHelper.getEndOfDay(followUpUntil))) {
+	private String getVisitResultCssStyle(VisitResult result, Date date, Date contactDate, Date followUpUntil) {
+		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
 			return "";
 		}
 		
