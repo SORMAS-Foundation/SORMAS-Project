@@ -10,15 +10,17 @@
    <driver>InternalData</driver>
    <data>userName Bat+Man</data>
    <data>caseName Hildegard+von+Bingen</data>
+   <data>epid-number-1 BER-BER-20-372</data>
+   <data>epid-number-2 BER-BER-20-373</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>Key</name>
-      <size>2</size>
+      <size>4</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>1</columnIndex>
       <name>Value</name>
-      <size>2</size>
+      <size>4</size>
    </internalDataColumns>
    <isInternalPath>false</isInternalPath>
    <query></query>

@@ -23,7 +23,7 @@ WebUI.click(findTestObject('Contacts/Page_SORMAS/menu_Cases'))
 WebUI.setText(findTestObject('Object Repository/Contacts/Page_SORMAS/input_New case_search'), findTestData('ContactTestData').getValue(
         2, 2))
 
-Thread.sleep(1000)
+WebUI.delay(1)
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
