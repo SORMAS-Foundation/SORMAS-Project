@@ -380,6 +380,7 @@
     <string name="hint_weekly_report_confirmation_required">Sie müssen den Bericht für die letzte Woche bestätigen.</string>
     <string name="hint_weekly_report_no_data">Keine Daten für diese Epi-Woche verfügbar.</string>
     <string name="hint_case_numbers_not_submitted">Fallnummern noch nicht übermittelt</string>
+    <string name="hint_contact_text_filter">Contact ID or contact person name</string>
     <string name="indicator_error">FEHLER</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
