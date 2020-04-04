@@ -60,7 +60,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 
 		// Person Similarity: pick
 		List<PersonNameDto> persons = FacadeProvider.getPersonFacade()
-				.getNameDtos(user.toReference());
+				.getRelevantNameDtos(user.toReference());
 		csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
 		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze) {

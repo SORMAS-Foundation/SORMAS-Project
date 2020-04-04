@@ -279,6 +279,7 @@ public interface Captions {
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
 	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
+	public static String Contact_caseClassification = "Contact.caseClassification";
 	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
 	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
 	public static String Contact_caseIdExternalSystem = "Contact.caseIdExternalSystem";

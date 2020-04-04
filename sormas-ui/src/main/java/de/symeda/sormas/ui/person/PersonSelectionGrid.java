@@ -17,13 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
-import com.vaadin.v7.data.util.MethodProperty;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
 
@@ -31,25 +29,15 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
-import de.symeda.sormas.api.person.PersonNameDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
-public class PersonGrid extends Grid {
-
-	private final List<PersonNameDto> persons;
-
-	private UserReferenceDto currentUser;
-
-	/**
-	 * Initializes the person grid with variable first and last names, dynamically retrieving
-	 * the list of person names.
-	 */
-	public PersonGrid(String firstName, String lastName) {
-		persons = FacadeProvider.getPersonFacade().getNameDtos(UserProvider.getCurrent().getUserReference());
+public class PersonSelectionGrid extends Grid {
+	
+	public PersonSelectionGrid(PersonSimilarityCriteria criteria) {
 		buildGrid();
-		reload(firstName, lastName);
+		loadData(criteria);
 	}
 
 	private void buildGrid() {
@@ -80,39 +68,17 @@ public class PersonGrid extends Grid {
 		return (BeanItemContainer<PersonIndexDto>) container.getWrappedContainer();
 	}
 
-	public void reload(String firstName, String lastName) {
-		List<PersonIndexDto> entries = new ArrayList<>();
-		for (PersonNameDto person : persons) {
-			if (PersonHelper.areNamesSimilar(firstName + " " + lastName, person.getFirstName() + " " + person.getLastName())) {
-				PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getUuid());
-				entries.add(indexDto);
-			}
-		}
-
+	private void loadData(PersonSimilarityCriteria criteria) {
+		List<String> similarPersonUuids = FacadeProvider.getPersonFacade().getRelevantNameDtos(UserProvider.getCurrent().getUserReference()).stream()
+				.filter(dto -> PersonHelper.areNamesSimilar(criteria.getFirstName() + " " + criteria.getLastName(), dto.getFirstName() + " " + dto.getLastName()))
+				.map(dto -> dto.getUuid())
+				.collect(Collectors.toList());
+		
+		List<PersonIndexDto> similarPersons = FacadeProvider.getPersonFacade().getMatchingPersons(similarPersonUuids, criteria);
+		
 		getContainer().removeAllItems();
-		getContainer().addAll(entries);    
-		setHeightByRows(entries.size() > 0 ? (entries.size() <= 10 ? entries.size() : 10) : 1);
-	}
-
-	public void refresh(PersonIndexDto entry) {
-		// We avoid updating the whole table through the backend here so we can
-		// get a partial update for the grid
-		BeanItem<PersonIndexDto> item = getContainer().getItem(entry);
-		if (item != null) {
-			// Updated product
-			@SuppressWarnings("rawtypes")
-			MethodProperty p = (MethodProperty) item.getItemProperty(PersonIndexDto.UUID);
-			p.fireValueChange();
-		} else {
-			// New product
-			getContainer().addBean(entry);
-		}
-	}
-
-	public void remove(PersonIndexDto entry) {
-		getContainer().removeItem(entry);
+		getContainer().addAll(similarPersons);    
+		setHeightByRows(similarPersons.size() > 0 ? (similarPersons.size() <= 10 ? similarPersons.size() : 10) : 1);
 	}
 
 }
-
-
