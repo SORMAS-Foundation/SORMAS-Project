@@ -277,8 +277,30 @@ public final class DataHelper {
 		className = className.replaceAll("Dto$", "");
 		return className;
 	}
+	
+	/**
+	 * @return null when NumberFormatException is thrown
+	 */
+	public static Integer tryParseInt(String value) {
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * @return null when NumberFormatException is thrown
+	 */
+	public static Long tryParseLong(String value) {
+		try {
+			return Long.parseLong(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
 
-	public static boolean tryParseInt(String value) {
+	public static boolean isParseableInt(String value) {
 		try {
 			Integer.parseInt(value);
 			return true;

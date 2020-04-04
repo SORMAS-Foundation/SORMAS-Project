@@ -569,7 +569,7 @@ public final class ConfigProvider {
                 if (instance.currentAppDownloadId == null) {
                     Config config = DatabaseHelper.getConfigDao().queryForId(CURRENT_APP_DOWNLOAD_ID);
                     if (config != null) {
-                        instance.currentAppDownloadId = Long.parseLong(config.getValue());
+                        instance.currentAppDownloadId = DataHelper.tryParseLong(config.getValue());
                     }
                 }
             }
@@ -583,7 +583,7 @@ public final class ConfigProvider {
         }
 
         instance.currentAppDownloadId = currentAppDownloadId;
-        saveConfigEntry(CURRENT_APP_DOWNLOAD_ID, String.valueOf(currentAppDownloadId));
+        saveConfigEntry(CURRENT_APP_DOWNLOAD_ID, currentAppDownloadId != null ? String.valueOf(currentAppDownloadId) : null);
     }
 
     public static Boolean isAccessGranted() {
