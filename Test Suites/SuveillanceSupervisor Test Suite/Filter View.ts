@@ -28,4 +28,10 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/SurveillanceSupervisor/ResetFilterInSearchView</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>f29c2dc9-fd22-413f-aad4-f03668787fd9</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/SurveillanceSupervisor/ShowHideMoreFiltersInSearchView</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>

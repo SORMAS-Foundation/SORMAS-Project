@@ -8,8 +8,8 @@
    <dataFileGUID>46d2f8ab-2950-4d29-8545-e84b6857c653</dataFileGUID>
    <dataSourceUrl></dataSourceUrl>
    <driver>InternalData</driver>
-   <data>case create Jane Doe</data>
-   <data>case search Jane+Doe null</data>
+   <data>case first_name Jane</data>
+   <data>case last_name Doe</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>section</name>
@@ -17,17 +17,12 @@
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>1</columnIndex>
-      <name>view</name>
+      <name>key</name>
       <size>2</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>2</columnIndex>
-      <name>first_name</name>
-      <size>2</size>
-   </internalDataColumns>
-   <internalDataColumns>
-      <columnIndex>3</columnIndex>
-      <name>last_name</name>
+      <name>value</name>
       <size>2</size>
    </internalDataColumns>
    <isInternalPath>false</isInternalPath>
