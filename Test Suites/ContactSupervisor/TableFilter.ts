@@ -22,4 +22,22 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/ContactSupervisor/FilterContactStatus</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>0ca78b56-0655-4b71-854f-a944042c39de</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/ContactSupervisor/ResetFilterAfterDropped</testCaseId>
+   </testCaseLink>
+   <testCaseLink>
+      <guid>886250c0-94f5-41bb-bdaa-8604bbb7526a</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/ContactSupervisor/ResetFilterAfterMoreFilter</testCaseId>
+   </testCaseLink>
+   <testCaseLink>
+      <guid>49c84cfc-ae50-4c07-ade5-858523172837</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/ContactSupervisor/ShowHideMoreFilters</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>

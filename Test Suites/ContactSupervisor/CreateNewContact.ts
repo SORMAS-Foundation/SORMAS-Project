@@ -22,4 +22,10 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/ContactSupervisor/NewContactViaCaseContacts</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>c848144d-035e-4320-a1f7-14d3942fd268</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/ContactSupervisor/NewContactViaContactsView</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>

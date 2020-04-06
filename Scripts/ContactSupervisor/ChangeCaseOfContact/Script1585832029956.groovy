@@ -27,15 +27,13 @@ String caseNameA = findTestData('ContactTestData').getValue(2, 3)
 String caseNameB = findTestData('ContactTestData').getValue(2, 4)
 
 String savedEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
-println('saved epid-number:' + savedEpidNumber)
-
-//boolean currentIsUnchangeable = savedEpidNumber =~ '\\w{3}-\\w{3}-\\w{3}-\\w{2}-\\d{3}'
+println('saved epid-number in contact:' + savedEpidNumber)
 
 'determine the future epidNumber based on the saved one'
 String caseSearchString = 'none'
 if (checkChangeableEpid) {
 	String savedCasePerson = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_casePerson'))
-	println('saved case-person: ' + savedCasePerson)
+	println('saved case-person in contact: ' + savedCasePerson)
 	caseSearchString = (savedCasePerson.equalsIgnoreCase(caseNameA))? caseNameB : caseNameA
 } else {
 	caseSearchString = (savedEpidNumber == unchangeableEpidNumberA)? unchangeableEpidNumberB : unchangeableEpidNumberA
@@ -54,6 +52,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_search
 WebUI.delay(0.5)
 
 String oldCaseEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_epidNumber_field'))
+println('new case - old-epid-number (from case search):' + oldCaseEpidNumber)
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_selectRow_action'))
 
@@ -63,7 +62,7 @@ WebUI.delay(1)
 
 // CHECK
 String epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
-println('displayed epidnumber after change: ' + epidNumberAfterChange)
+println('displayed epidnumber after change in contact: ' + epidNumberAfterChange)
 
 if (epidNumberAfterChange == savedEpidNumber) {
 	WebUI.closeBrowser()
