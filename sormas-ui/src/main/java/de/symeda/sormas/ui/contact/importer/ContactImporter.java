@@ -87,12 +87,7 @@ public class ContactImporter extends DataImporter {
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
-		final ContactDto newContact = ContactDto.build();
-		if (caze != null) {
-			newContact.setCaze(caze.toReference());
-			newContact.setDisease(caze.getDisease());
-			newContact.setDiseaseDetails(caze.getDiseaseDetails());
-		}
+		final ContactDto newContact = caze != null ? ContactDto.build(caze) : ContactDto.build();
 		newContact.setReportingUser(currentUser);
 
 		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true,
