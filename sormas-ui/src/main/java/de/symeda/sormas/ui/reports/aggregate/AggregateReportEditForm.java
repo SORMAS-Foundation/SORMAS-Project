@@ -77,9 +77,9 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 	}
 
 	public boolean isValid() {
-		return (caseField.getValue().isEmpty() || DataHelper.tryParseInt(caseField.getValue()))
-				&& (labField.getValue().isEmpty() || DataHelper.tryParseInt(labField.getValue()))
-				&& (deathField.getValue().isEmpty() || DataHelper.tryParseInt(deathField.getValue()));
+		return (caseField.getValue().isEmpty() || DataHelper.isParseableInt(caseField.getValue()))
+				&& (labField.getValue().isEmpty() || DataHelper.isParseableInt(labField.getValue()))
+				&& (deathField.getValue().isEmpty() || DataHelper.isParseableInt(deathField.getValue()));
 	}
 
 	public String getDisease() {

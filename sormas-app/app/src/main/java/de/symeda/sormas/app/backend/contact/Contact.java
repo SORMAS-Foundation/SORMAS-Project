@@ -56,7 +56,7 @@ public class Contact extends AbstractDomainObject {
 
 	public static final String PERSON = "person_id";
 	public static final String CASE_UUID = "caseUuid";
-	public static final String CASE_DISEASE = "disease";
+	public static final String DISEASE = "disease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";

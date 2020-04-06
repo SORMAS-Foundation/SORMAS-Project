@@ -303,6 +303,11 @@
         <item name="android:layout_marginBottom">0dp</item>
     </style>
 
+    <style name="FilterDateFieldStyle" parent="ControlDateOrTimePickerInputStyle">
+        <item name="android:background">@drawable/selector_text_filter</item>
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
     <style name="ControlSpinnerSlimStyle" parent="ControlSpinnerStyle">
         <item name="android:layout_height">@dimen/dropdownListSlimItemHeight</item>
         <item name="android:minHeight">@dimen/dropdownListSlimItemHeight</item>

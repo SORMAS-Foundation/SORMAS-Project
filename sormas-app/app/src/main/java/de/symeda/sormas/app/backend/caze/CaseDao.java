@@ -626,9 +626,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
         if (!StringUtils.isEmpty(criteria.getTextFilter())) {
             String[] textFilters = criteria.getTextFilter().split("\\s+");
-            for (int i = 0; i < textFilters.length; i++) {
+            for (String filter : textFilters) {
                 where.and();
-                String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+                String textFilter = "%" + filter.toLowerCase() + "%";
                 if (!StringUtils.isEmpty(textFilter)) {
                     where.or(
                             where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter + "'"),
