@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>CreateNewTaskInCaseView</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>7855bdf4-483b-49f0-8475-fd9336d1c01b</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description></description>
+      <id>24fd743a-01a0-495c-93a0-cb58d0408653</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>

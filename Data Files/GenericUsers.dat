@@ -9,25 +9,26 @@
    <dataSourceUrl></dataSourceUrl>
    <driver>InternalData</driver>
    <data>case create Jane Doe</data>
+   <data>case search Jane+Doe null</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>section</name>
-      <size>1</size>
+      <size>2</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>1</columnIndex>
       <name>view</name>
-      <size>1</size>
+      <size>2</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>2</columnIndex>
       <name>first_name</name>
-      <size>1</size>
+      <size>2</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>3</columnIndex>
       <name>last_name</name>
-      <size>1</size>
+      <size>2</size>
    </internalDataColumns>
    <isInternalPath>false</isInternalPath>
    <query></query>
