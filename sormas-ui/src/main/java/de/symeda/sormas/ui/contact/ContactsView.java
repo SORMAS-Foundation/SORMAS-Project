@@ -39,6 +39,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -82,6 +83,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
+import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -92,6 +94,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -197,6 +200,24 @@ public class ContactsView extends AbstractView {
 			}
 		});
 		addHeaderComponent(contactsViewSwitcher);
+
+		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType())
+				&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
+			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
+			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			importButton.setIcon(VaadinIcons.UPLOAD);
+
+			importButton.addClickListener(e -> {
+				Window popupWindow = VaadinUiUtil.showPopupWindow(new ContactsImportLayout());
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportContacts));
+				popupWindow.addCloseListener(c -> {
+					ContactGrid grid = (ContactGrid) this.grid;
+					grid.reload();
+				});
+			});
+
+			addHeaderComponent(importButton);
+		}
 
 		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 

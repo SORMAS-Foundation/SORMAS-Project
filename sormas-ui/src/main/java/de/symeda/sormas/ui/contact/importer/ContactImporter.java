@@ -47,21 +47,23 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
- * Data importer that is used to import contacts for a specific case.
+ * Data importer that is used to import contacts for a specific case, or just
+ * contacts with or without a related case.
+ * 
  * This importer adds the following logic:
  * 
- * -  Check the database for persons that are similar to the imported contact person and, 
- *    if at least one is found, let the user resolve the conflict.
- * -  Based on the results of the conflict resolve, an existing person might be picked
- *    for the contact.
- * -  Save the person and contact to the database (unless the import was skipped or otherwise canceled).
+ * - Check the database for persons that are similar to the imported contact
+ * person and, if at least one is found, let the user resolve the conflict. -
+ * Based on the results of the conflict resolve, an existing person might be
+ * picked for the contact. - Save the person and contact to the database (unless
+ * the import was skipped or otherwise canceled).
  */
-public class CaseContactImporter extends DataImporter {
+public class ContactImporter extends DataImporter {
 
 	CaseDataDto caze;
 	UI currentUI;
 
-	public CaseContactImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser,
+	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser,
 			CaseDataDto caze) {
 		super(inputFile, hasEntityClassRow, currentUser);
 		this.caze = caze;
@@ -85,7 +87,7 @@ public class CaseContactImporter extends DataImporter {
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
-		final ContactDto newContact = ContactDto.build(caze);
+		final ContactDto newContact = caze != null ? ContactDto.build(caze) : ContactDto.build();
 		newContact.setReportingUser(currentUser);
 
 		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true,
@@ -104,6 +106,17 @@ public class CaseContactImporter extends DataImporter {
 						return null;
 					}
 				});
+
+				if (newContact.getCaseIdExternalSystem() != null) {
+					CaseDataDto existingCase = FacadeProvider.getCaseFacade()
+							.getCaseDataByUuid(newContact.getCaseIdExternalSystem());
+					if (existingCase != null) {
+						newContact.setCaze(existingCase.toReference());
+						newContact.setDisease(existingCase.getDisease());
+						newContact.setDiseaseDetails(existingCase.getDiseaseDetails());
+						newContact.setCaseIdExternalSystem(null);
+					}
+				}
 
 		// If the row does not have any import errors, call the backend validation of all associated entities
 		if (!contactHasImportError) {

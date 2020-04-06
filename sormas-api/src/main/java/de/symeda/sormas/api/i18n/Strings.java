@@ -227,6 +227,7 @@ public interface Strings {
 	public static String headingImportCaseContacts = "headingImportCaseContacts";
 	public static String headingImportCases = "headingImportCases";
 	public static String headingImportCommunities = "headingImportCommunities";
+	public static String headingImportContacts = "headingImportContacts";
 	public static String headingImportCsvFile = "headingImportCsvFile";
 	public static String headingImportDistricts = "headingImportDistricts";
 	public static String headingImportedCaseInfo = "headingImportedCaseInfo";
