@@ -232,7 +232,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 		
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			Region recipientRegion = ado.getContact().getRegion() != null ? ado.getContact().getRegion() : ado.getCaze().getRegion();
+			Region recipientRegion = ado.getContact().getRegion() != null ? ado.getContact().getRegion() : ado.getContact().getCaze().getRegion();
 			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(recipientRegion, 
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
