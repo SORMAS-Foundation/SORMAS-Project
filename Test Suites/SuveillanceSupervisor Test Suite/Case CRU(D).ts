@@ -34,4 +34,16 @@
          <variableId>dbb88abf-5ce4-49ec-8e3f-8adb5ff39a41</variableId>
       </variableLink>
    </testCaseLink>
+   <testCaseLink>
+      <guid>23f950e2-e437-439a-b954-94069276b6c9</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/SurveillanceSupervisor/OpenCaseFromListAndEditField</testCaseId>
+      <variableLink>
+         <testDataLinkId></testDataLinkId>
+         <type>DEFAULT</type>
+         <value></value>
+         <variableId>b11b8249-34e0-4232-9d13-874af26613c6</variableId>
+      </variableLink>
+   </testCaseLink>
 </TestSuiteEntity>

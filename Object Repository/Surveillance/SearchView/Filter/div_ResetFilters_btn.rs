@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>div_Reset filters</name>
+   <name>div_ResetFilters_btn</name>
    <tag></tag>
    <elementGuidId>cfd26ced-dcd7-40a2-9e6f-19fca33abbcb</elementGuidId>
    <selectorCollection>

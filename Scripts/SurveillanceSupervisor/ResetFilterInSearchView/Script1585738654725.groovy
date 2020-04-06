@@ -5,9 +5,9 @@ import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/FilterCasesNotYetClasifiedInSearchView'), [('isStandalone') : false], FailureHandling.STOP_ON_FAILURE)
  
-WebUI.click(findTestObject('Surveillance/SearchView/div_Reset filters'))
+WebUI.click(findTestObject('Surveillance/SearchView/Filter/div_ResetFilters_btn'))
  
-def attribute = WebUI.getAttribute(findTestObject('Surveillance/SearchView/result_table'), 'aria-rowcount')
+def attribute = WebUI.getAttribute(findTestObject('Surveillance/SearchView/table_SearchResult_table'), 'aria-rowcount')
  
 attribute = (attribute.toInteger() - 1).toString()
  

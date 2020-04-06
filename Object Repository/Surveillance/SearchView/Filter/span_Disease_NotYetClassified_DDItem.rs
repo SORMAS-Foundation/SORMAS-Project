@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>span_Not yet classified</name>
+   <name>span_Disease_NotYetClassified_DDItem</name>
    <tag></tag>
    <elementGuidId>6b0525ce-7662-4c61-93ee-cfd76c4add1f</elementGuidId>
    <selectorCollection>

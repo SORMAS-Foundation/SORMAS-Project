@@ -20,51 +20,51 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'),
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_NewCase_btn'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_NewCase_btn'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_Region_DDBox'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_Region_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_Region_Berlin_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_Region_Berlin_DDItem'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_District_DDBox'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_District_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_District_Berlin_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_District_Berlin_DDItem'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_HealthFacility_DDBox'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_HealthFacility_BerlinNationHospital_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_BerlinNationHospital_DDItem'))
 
-WebUI.setText(findTestObject('Surveillance/NewCase/first_name_inputBox'), findTestData('GenericUsers').getValue(4, 1))
+WebUI.setText(findTestObject('Surveillance/NewCaseView/first_name_inputBox'), findTestData('GenericUsers').getValue(3, 1))
 
-WebUI.setText(findTestObject('Surveillance/NewCase/last_name_inputBox'), findTestData('GenericUsers').getValue(5, 1))
+WebUI.setText(findTestObject('Surveillance/NewCaseView/last_name_inputBox'), findTestData('GenericUsers').getValue(4, 1))
 
-WebUI.setText(findTestObject('Surveillance/NewCase/dateOfReport_inputBox'), '01/04/2020')
+WebUI.setText(findTestObject('Surveillance/NewCaseView/dateOfReport_inputBox'), '01/04/2020')
 
-WebUI.setText(findTestObject('Surveillance/NewCase/dateOfSymptomOnset_inputBox'), '26/03/2020')
+WebUI.setText(findTestObject('Surveillance/NewCaseView/dateOfSymptomOnset_inputBox'), '26/03/2020')
 
-WebUI.setText(findTestObject('Surveillance/NewCase/div_DateOfBirthYear_inputBox'), '2000')
+WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthYear_inputBox'), '2000')
 
-WebUI.setText(findTestObject('Surveillance/NewCase/div_DateOfBirthMonth_inputBox'), 'June')
+WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthMonth_inputBox'), 'June')
 
-WebUI.setText(findTestObject('Surveillance/NewCase/div_DateOfBirthDay_inputBox'), '7')
+WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthDay_inputBox'), '7')
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_Sex_DDBox'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_Sex_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_Sex_Female_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_Sex_Female_DDItem'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_PresentConditionOfPerson_DDBox'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_PresentConditionOfPerson_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_PresentConditionOfPerson_alive_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_PresentConditionOfPerson_alive_DDItem'))
 
-WebUI.click(findTestObject('Surveillance/NewCase/div_Save_btn'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_Save_btn'))
 
 WebUI.delay(3)
 
-if (WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/NewCase/Comfirmation/div_check_confimation_lbl'), 
+if (WebUI.verifyElementPresent(findTestObject('Surveillance/NewCaseView/Comfirmation/div_check_confimation_lbl'), 
     5)) {
-    WebUI.click(findTestObject('Object Repository/Surveillance/NewCase/Comfirmation/chooseExistingCase_radio'))
+    WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/chooseExistingCase_radio'))
 
-    WebUI.click(findTestObject('Object Repository/Surveillance/NewCase/Comfirmation/div_confirm_btn'))
+    WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_confirm_btn'))
 
     WebUI.delay(3)
 }

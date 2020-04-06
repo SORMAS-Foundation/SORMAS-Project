@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <WebElementEntity>
    <description></description>
-   <name>result_table</name>
+   <name>table_SearchResult_table</name>
    <tag></tag>
    <elementGuidId>d94725cf-a573-4dc2-9ed4-5c81599a3499</elementGuidId>
    <selectorCollection>

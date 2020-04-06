@@ -19,29 +19,29 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'),
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/a_Search_Entry_link'))
+WebUI.click(findTestObject('Surveillance/SearchView/a_Search_Entry_link'))
 
-WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/input_Case_CaseIdUuid_inputBox'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Case/input_Case_CaseIdUuid_inputBox'), 3)
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_CasePerson_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/input_Person_PassportNumber_inputBox'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Person/input_Person_PassportNumber_inputBox'), 3)
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Hospitalization_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/div_Hospitation_Accommodation_selectBox'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Hospitatation/div_Hospitation_Accommodation_selectBox'), 3)
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Symptoms_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/div_Symptoms_Comments_inputBox'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/SymptomsTab/div_Symptoms_Comments_inputBox'), 3)
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_EpidemiologicalData_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/i_EpidemiologicalData_description_text'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/i_EpidemiologicalData_description_text'), 3)
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Contacts_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Object Repository/Surveillance/CaseView/div_Contacts_NewContact_btn'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Contacts/div_Contacts_NewContact_btn'), 3)
 
 if (isStandalone) {
 	WebUI.closeBrowser()
