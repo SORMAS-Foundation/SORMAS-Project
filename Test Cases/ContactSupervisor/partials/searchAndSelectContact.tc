@@ -6,17 +6,10 @@
    <comment></comment>
    <testCaseGuid>52457c0f-6458-421a-96f2-f1d490db4951</testCaseGuid>
    <variable>
-      <defaultValue>2</defaultValue>
+      <defaultValue>''</defaultValue>
       <description></description>
       <id>8f32b8ce-3030-47de-899e-403c1a5f0081</id>
       <masked>false</masked>
-      <name>column</name>
-   </variable>
-   <variable>
-      <defaultValue>1</defaultValue>
-      <description></description>
-      <id>83c7e372-45a2-41f4-8cef-ffba01fb00fa</id>
-      <masked>false</masked>
-      <name>row</name>
+      <name>key</name>
    </variable>
 </TestCaseEntity>

@@ -1,12 +1,10 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testdata.TestDataFactory.findTestData
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
 import com.kms.katalon.core.exception.StepFailedException as StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
-
-import com.hzi.TestDataConnector
+import com.hzi.TestDataConnector as TestDataConnector
 
 // PREPARE
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
@@ -14,32 +12,38 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSuperv
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
 if (checkChangeableEpid) {
-	WebUI.callTestCase(findTestCase('ContactSupervisor/partials/searchAndSelectContact'), [('column') : 2, ('row') : 1], FailureHandling.STOP_ON_FAILURE)
+    WebUI.callTestCase(findTestCase('ContactSupervisor/partials/searchAndSelectContact'), [('key') : 'userName-A'], FailureHandling.STOP_ON_FAILURE)
 } else {
-	WebUI.callTestCase(findTestCase('ContactSupervisor/partials/searchAndSelectContact'), [('column') : 2, ('row') : 7],
-		FailureHandling.STOP_ON_FAILURE)
+    WebUI.callTestCase(findTestCase('ContactSupervisor/partials/searchAndSelectContact'), [('key') : 'userName-B'], FailureHandling.STOP_ON_FAILURE)
 }
 
 WebUI.delay(1)
 
-String unchangeableEpidNumberA = TestDataConnector.getValueByKey("ContactTestData", "unchangable-epid-number-A")
-String unchangeableEpidNumberB = TestDataConnector.getValueByKey("ContactTestData", "unchangable-epid-number-B")
+String unchangeableEpidNumberA = TestDataConnector.getValueByKey('ContactTestData', 'unchangable-epid-number-A')
 
-String caseNameA = TestDataConnector.getValueByKey("ContactTestData", "caseName-A")
-String caseNameB = TestDataConnector.getValueByKey("ContactTestData", "caseName-B")
+String unchangeableEpidNumberB = TestDataConnector.getValueByKey('ContactTestData', 'unchangable-epid-number-B')
+
+String caseNameA = TestDataConnector.getValueByKey('ContactTestData', 'caseName-A')
+
+String caseNameB = TestDataConnector.getValueByKey('ContactTestData', 'caseName-B')
 
 String savedEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
+
 println('saved epid-number in contact:' + savedEpidNumber)
 
 'determine the future epidNumber based on the saved one'
 String caseSearchString = 'none'
+
 if (checkChangeableEpid) {
-	String savedCasePerson = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_casePerson'))
-	println('saved case-person in contact: ' + savedCasePerson)
-	caseSearchString = (savedCasePerson.equalsIgnoreCase(caseNameA))? caseNameB : caseNameA
+    String savedCasePerson = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_casePerson'))
+
+    println('saved case-person in contact: ' + savedCasePerson)
+
+    caseSearchString = savedCasePerson.equalsIgnoreCase(caseNameA) ? caseNameB : caseNameA
 } else {
-	caseSearchString = (savedEpidNumber == unchangeableEpidNumberA)? unchangeableEpidNumberB : unchangeableEpidNumberA
+    caseSearchString = savedEpidNumber == unchangeableEpidNumberA ? unchangeableEpidNumberB : unchangeableEpidNumberA
 }
+
 println('case search string:' + caseSearchString)
 
 // TESTCASE - change case
@@ -54,6 +58,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_search
 WebUI.delay(0.5)
 
 String oldCaseEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_epidNumber_field'))
+
 println('new case - old-epid-number (from case search):' + oldCaseEpidNumber)
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_selectRow_action'))
@@ -64,33 +69,36 @@ WebUI.delay(1)
 
 // CHECK
 String epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
+
 println('displayed epidnumber after change in contact: ' + epidNumberAfterChange)
 
 if (epidNumberAfterChange == savedEpidNumber) {
-	WebUI.closeBrowser()
+    WebUI.closeBrowser()
 
-	throw new StepFailedException((('The displayed EpidNumber should not be equal. displayed: ' + epidNumberAfterChange) +
-	' changed:') + caseSearchString)
+    throw new StepFailedException((('The displayed EpidNumber should not be equal. displayed: ' + epidNumberAfterChange) + 
+    ' changed:') + caseSearchString)
 }
 
 if (checkChangeableEpid) {
-	// nothing to check, because the epid-number can increase 
-	int oldCaseSequence = oldCaseEpidNumber.reverse().take(3).reverse().toInteger()
-	int newCaseSequence = epidNumberAfterChange.reverse().take(3).reverse().toInteger()
-	println('old-sequence: ' + oldCaseSequence + ' new-sequence: '+ newCaseSequence)
-	if (newCaseSequence <= oldCaseSequence) {
-		throw new StepFailedException((('The Epidnumber end sequence should have increased. displayed: ' + epidNumberAfterChange) +
-			' oldCaseEpidNumber:') + oldCaseEpidNumber)
-	}
-} else {
-	if (epidNumberAfterChange != caseSearchString) {
-		WebUI.closeBrowser()
-	
-		throw new StepFailedException((('The displayed EpidNumber does not equal the changed EpidNumber. displayed: ' + epidNumberAfterChange) +
-		' changed:') + caseSearchString)
-	}
-}
+    // nothing to check, because the epid-number can increase 
+    int oldCaseSequence = oldCaseEpidNumber.reverse().take(3).reverse().toInteger()
 
+    int newCaseSequence = epidNumberAfterChange.reverse().take(3).reverse().toInteger()
+
+    println((('old-sequence: ' + oldCaseSequence) + ' new-sequence: ') + newCaseSequence)
+
+    if (newCaseSequence <= oldCaseSequence) {
+        throw new StepFailedException((('The Epidnumber end sequence should have increased. displayed: ' + epidNumberAfterChange) + 
+        ' oldCaseEpidNumber:') + oldCaseEpidNumber)
+    }
+} else {
+    if (epidNumberAfterChange != caseSearchString) {
+        WebUI.closeBrowser()
+
+        throw new StepFailedException((('The displayed EpidNumber does not equal the changed EpidNumber. displayed: ' + 
+        epidNumberAfterChange) + ' changed:') + caseSearchString)
+    }
+}
 
 // TESTCASE - discard changes in caseChange Dialog
 WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_button'))
