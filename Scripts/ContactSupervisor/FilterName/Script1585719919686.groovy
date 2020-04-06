@@ -17,14 +17,16 @@ import internal.GlobalVariable as GlobalVariable
 import org.openqa.selenium.Keys as Keys
 import com.kms.katalon.core.testobject.ConditionType as ConditionType
 import com.hzi.Helper
+import com.hzi.TestDataConnector
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
 'userName\n'
-WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), 
-    findTestData('ContactTestData').getValue(2, 1))
+//WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), 
+//    findTestData('ContactTestData').getValue(2, 1))
+WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), TestDataConnector.getValueByKey("ContactTestData", "userName-A"))
 
 WebUI.delay(1)
 
