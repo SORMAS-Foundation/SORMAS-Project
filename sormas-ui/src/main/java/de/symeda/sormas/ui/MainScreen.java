@@ -19,11 +19,11 @@ package de.symeda.sormas.ui;
 
 import java.util.Collection;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -44,7 +44,6 @@ import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
-import de.symeda.sormas.ui.configuration.userrights.UserRightsView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
@@ -91,7 +90,7 @@ public class MainScreen extends HorizontalLayout {
 							|| viewName.equals(OutbreaksView.VIEW_NAME) || viewName.equals(RegionsView.VIEW_NAME) 
 							|| viewName.equals(DistrictsView.VIEW_NAME) || viewName.equals(CommunitiesView.VIEW_NAME) 
 							|| viewName.equals(HealthFacilitiesView.VIEW_NAME) || viewName.equals(LaboratoriesView.VIEW_NAME)
-							|| viewName.equals(PointsOfEntryView.VIEW_NAME) || viewName.equals(UserRightsView.VIEW_NAME)) {
+							|| viewName.equals(PointsOfEntryView.VIEW_NAME)) {
 						return AccessDeniedView.class.newInstance();
 					} else {
 						return ErrorView.class.newInstance();
