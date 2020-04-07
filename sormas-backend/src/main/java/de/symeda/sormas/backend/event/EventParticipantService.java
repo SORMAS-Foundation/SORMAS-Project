@@ -123,6 +123,13 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 
 		return filter;
 	}
+	
+	public Predicate createActiveEventParticipantsFilter(CriteriaBuilder cb, Root<EventParticipant> root) {
+		Join<EventParticipant, Event> event = root.join(EventParticipant.EVENT, JoinType.LEFT);
+		return cb.and(
+				cb.isFalse(event.get(Event.ARCHIVED)),
+				cb.isFalse(event.get(Event.DELETED)));
+	}
 
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md

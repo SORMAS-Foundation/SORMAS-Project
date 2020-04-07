@@ -11,31 +11,29 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
-public class CaseContactsImportLayout extends AbstractImportLayout {
+public class ContactsImportLayout extends AbstractImportLayout {
 
-	private static final long serialVersionUID = 5037303173480715542L;
+	private static final long serialVersionUID = -5604794287598407322L;
 
-	public CaseContactsImportLayout(CaseDataDto caze) {
+	public ContactsImportLayout() {
 		super();
-		
+
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
 				new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		addDownloadImportTemplateComponent(2,
-				FacadeProvider.getImportFacade().getCaseContactImportTemplateFilePath(),
-				"sormas_import_case_contact_template.csv");
-		addImportCsvComponent(3, new ImportReceiver("_case_contact_import_", new Consumer<File>() {
+		addDownloadImportTemplateComponent(2, FacadeProvider.getImportFacade()
+				.getContactImportTemplateFilePath(), "sormas_import_contact_template.csv");
+		addImportCsvComponent(3, new ImportReceiver("_contact_import_", new Consumer<File>() {
 			@Override
 			public void accept(File file) {
 				resetDownloadErrorReportButton();
-				
+			
 				try {
-					ContactImporter importer = new ContactImporter(file, false, currentUser, caze);
+					ContactImporter importer = new ContactImporter(file, false, currentUser, null);
 					importer.startImport(new Consumer<StreamResource>() {
 						@Override
 						public void accept(StreamResource resource) {
@@ -43,11 +41,12 @@ public class CaseContactsImportLayout extends AbstractImportLayout {
 						}
 					}, currentUI, false);
 				} catch (IOException e) {
-					new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					new Notification(I18nProperties.getString(Strings.headingImportFailed),
+							I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false)
+									.show(Page.getCurrent());
 				}
 			}
 		}));
 		addDownloadErrorReportComponent(4);
 	}
-
 }

@@ -63,6 +63,9 @@ public class Person extends AbstractDomainObject {
 	public static final String SEX = "sex";
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_DD = "birthdateDD";
 
 	@Column(nullable = false)
 	private String firstName;

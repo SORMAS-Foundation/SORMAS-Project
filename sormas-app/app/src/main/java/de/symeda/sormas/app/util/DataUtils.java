@@ -37,21 +37,19 @@ import de.symeda.sormas.app.component.Item;
 public class DataUtils {
 
     public static <E> List<Item> getEnumItems(Class<E> clazz) {
-        E[] enumConstants = clazz.getEnumConstants();
-        List<Item> list = new ArrayList<Item>();
-        list.add(new Item<E>("",null));
-        for (int i = 0; i < enumConstants.length; i++) {
-            list.add(new Item<E>(enumConstants[i].toString(),enumConstants[i]));
-        }
-        return list;
+        return getEnumItems(clazz, true);
     }
 
     public static <E> List<Item> getEnumItems(Class<E> clazz, boolean withNull) {
         E[] enumConstants = clazz.getEnumConstants();
+        if (!clazz.isEnum()) {
+            throw new IllegalArgumentException(clazz.toString() + " is not an enum");
+        }
         List<Item> list = new ArrayList<Item>();
 
-        if (withNull)
-            list.add(new Item<E>("",null));
+        if (withNull) {
+            list.add(new Item<E>("", null));
+        }
 
         for (int i = 0; i < enumConstants.length; i++) {
             list.add(new Item<E>(enumConstants[i].toString(),enumConstants[i]));

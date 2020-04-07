@@ -41,6 +41,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.person.PersonNameDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -76,7 +77,6 @@ public class PersonService extends AbstractAdoService<Person> {
 
 	@Override
 	public List<String> getAllUuids(User user) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
 		// persons by LGA
@@ -130,7 +130,6 @@ public class PersonService extends AbstractAdoService<Person> {
 
 	@Override
 	public List<Person> getAllAfter(Date date, User user) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
 		// persons by LGA
@@ -211,23 +210,11 @@ public class PersonService extends AbstractAdoService<Person> {
 				.collect(Collectors.toList());
 	}
 
-	public Set<PersonNameDto> getNameDtos(User user) {
+	public Set<PersonNameDto> getMatchingNameDtos(User user, PersonSimilarityCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
 		Set<PersonNameDto> persons = new HashSet<>();
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-
-		// persons by LGA
-		CriteriaQuery<PersonNameDto> lgaQuery = cb.createQuery(PersonNameDto.class);
-		Root<Person> lgaRoot = lgaQuery.from(Person.class);
-		Join<Person, Location> address = lgaRoot.join(Person.ADDRESS);
-
-		lgaQuery.multiselect(lgaRoot.get(Person.FIRST_NAME), lgaRoot.get(Person.LAST_NAME), lgaRoot.get(Person.UUID));
-
-		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
-		lgaQuery.where(lgaFilter);
-		persons.addAll(em.createQuery(lgaQuery).getResultList());
-
-		// persons by case
+		// Persons of active cases
 		CriteriaQuery<PersonNameDto> casePersonsQuery = cb.createQuery(PersonNameDto.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Join<Case, Person> casePersonsJoin = casePersonsRoot.join(Case.PERSON, JoinType.LEFT);
@@ -235,6 +222,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		casePersonsQuery.multiselect(casePersonsJoin.get(Person.FIRST_NAME), casePersonsJoin.get(Person.LAST_NAME),
 				casePersonsJoin.get(Person.UUID));
 
+		Predicate casePersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, casePersonsRoot.join(Case.PERSON, JoinType.LEFT));
+		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, casePersonsRoot);
+		Predicate caseUserFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
+		casePersonsQuery.where(and(cb, casePersonsFilter, activeCasesFilter, caseUserFilter));
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
 		if (casePersonsFilter != null) {
 			casePersonsQuery.where(casePersonsFilter);
@@ -242,7 +233,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		casePersonsQuery.distinct(true);
 		persons.addAll(em.createQuery(casePersonsQuery).getResultList());
 
-		// persons by contact
+		// Persons of active contacts
 		CriteriaQuery<PersonNameDto> contactPersonsQuery = cb.createQuery(PersonNameDto.class);
 		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
 		Join<Contact, Person> contactPersonsJoin = contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT);
@@ -250,6 +241,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		contactPersonsQuery.multiselect(contactPersonsJoin.get(Person.FIRST_NAME),
 				contactPersonsJoin.get(Person.LAST_NAME), contactPersonsJoin.get(Person.UUID));
 
+		Predicate contactPersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT));
+		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, contactPersonsRoot);
+		Predicate contactUserFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot, user);
+		contactPersonsQuery.where(and(cb, contactPersonsFilter, activeContactsFilter, contactUserFilter));
 		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot
         );
 		if (contactPersonsFilter != null) {
@@ -258,7 +253,7 @@ public class PersonService extends AbstractAdoService<Person> {
 		contactPersonsQuery.distinct(true);
 		persons.addAll(em.createQuery(contactPersonsQuery).getResultList());
 
-		// persons by event participant
+		// Persons of event participants in active events
 		CriteriaQuery<PersonNameDto> eventPersonsQuery = cb.createQuery(PersonNameDto.class);
 		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
 		Join<EventParticipant, Person> eventPersonsJoin = eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT);
@@ -266,6 +261,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		eventPersonsQuery.multiselect(eventPersonsJoin.get(Person.FIRST_NAME), eventPersonsJoin.get(Person.LAST_NAME),
 				eventPersonsJoin.get(Person.UUID));
 
+		Predicate eventParticipantPersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT));
+		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, eventPersonsRoot);
+		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot, user);
+		eventPersonsQuery.where(and(cb, eventParticipantPersonsFilter, activeEventParticipantsFilter, eventParticipantUserFilter));
 		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot
         );
 		if (eventPersonsFilter != null) {
@@ -333,6 +332,33 @@ public class PersonService extends AbstractAdoService<Person> {
 		cq.select(root.get(Person.ADDRESS));
 		Location result = em.createQuery(cq).getSingleResult();
 		return result;
+	}
+
+	public Predicate buildSimilarityCriteriaFilter(PersonSimilarityCriteria criteria, CriteriaBuilder cb, From<Person, Person> personFrom) {
+		Predicate filter = null;
+
+		if (criteria.getSex() != null) {
+			filter = and(cb, filter, cb.or(
+					cb.isNull(personFrom.get(Person.SEX)),
+					cb.equal(personFrom.get(Person.SEX), criteria.getSex())));
+		}
+		if (criteria.getBirthdateYYYY() != null) {
+			filter = and(cb, filter, cb.or(
+					cb.isNull(personFrom.get(Person.BIRTHDATE_YYYY)),
+					cb.equal(personFrom.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY())));
+		}
+		if (criteria.getBirthdateMM() != null) {
+			filter = and(cb, filter, cb.or(
+					cb.isNull(personFrom.get(Person.BIRTHDATE_MM)),
+					cb.equal(personFrom.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM())));
+		}
+		if (criteria.getBirthdateDD() != null) {
+			filter = and(cb, filter, cb.or(
+					cb.isNull(personFrom.get(Person.BIRTHDATE_DD)),
+					cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
+		}
+
+		return filter;
 	}
 
 	@SuppressWarnings("rawtypes")

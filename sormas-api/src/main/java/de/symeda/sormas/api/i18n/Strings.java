@@ -227,6 +227,7 @@ public interface Strings {
 	public static String headingImportCaseContacts = "headingImportCaseContacts";
 	public static String headingImportCases = "headingImportCases";
 	public static String headingImportCommunities = "headingImportCommunities";
+	public static String headingImportContacts = "headingImportContacts";
 	public static String headingImportCsvFile = "headingImportCsvFile";
 	public static String headingImportDistricts = "headingImportDistricts";
 	public static String headingImportedCaseInfo = "headingImportedCaseInfo";
@@ -365,6 +366,9 @@ public interface Strings {
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	public static String infoSearchCaseForContact = "infoSearchCaseForContact";
+	public static String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
+	public static String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
+	public static String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
 	public static String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";

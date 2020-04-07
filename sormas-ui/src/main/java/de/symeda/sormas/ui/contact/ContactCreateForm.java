@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.time.Month;
 import java.util.Arrays;
 
 import org.joda.time.LocalDate;
@@ -30,6 +32,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
@@ -49,9 +53,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -62,14 +68,14 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String FIRST_NAME = PersonDto.FIRST_NAME;
-	private static final String LAST_NAME = PersonDto.LAST_NAME; 
 	private static final String CASE_INFO_LOC = "caseInfoLoc";
 	private static final String CHOOSE_CASE_LOC = "chooseCaseLoc";
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME) +
+			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+			LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+					fluidRowLocs(PersonDto.SEX)) +
 			LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
 			LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 			LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
@@ -89,6 +95,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private CaseReferenceDto selectedCase;
 	private OptionGroup contactCategory;
 	private TextField contactProximityDetails;
+	private ComboBox birthDateDay;
 
 	public ContactCreateForm(UserRight editOrCreateUserRight, Disease disease, boolean hasCaseRelation) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -111,8 +118,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
-		TextField firstName = addCustomField(FIRST_NAME, String.class, TextField.class);
-		TextField lastName = addCustomField(LAST_NAME, String.class, TextField.class);
+		TextField firstName = addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
+		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
 
@@ -131,6 +138,31 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(2);
 
+		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
+		birthDateDay.addStyleName(FORCE_CAPTION);
+		birthDateDay.setInputPrompt(I18nProperties.getString(Strings.day));
+		ComboBox birthDateMonth = addCustomField(PersonDto.BIRTH_DATE_MM, Integer.class, ComboBox.class);
+		birthDateMonth.addItems(DateHelper.getMonthsInYear());
+		birthDateMonth.setPageLength(12);
+		birthDateMonth.addStyleName(FORCE_CAPTION);
+		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
+		setItemCaptionsForMonths(birthDateMonth);
+		ComboBox birthDateYear = addCustomField(PersonDto.BIRTH_DATE_YYYY, Integer.class, ComboBox.class);
+		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
+		birthDateYear.addItems(DateHelper.getYearsToNow());
+		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
+		// Update the list of days according to the selected month and year
+		birthDateYear.addValueChangeListener(e -> {
+			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
+		});
+		birthDateMonth.addValueChangeListener(e -> {
+			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
+		});
+
+		ComboBox sex = addCustomField(PersonDto.SEX, Sex.class, ComboBox.class);
+		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
+		
 		CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, lastContactDate, contactProximity, relationToCase);
 
 		region.addValueChangeListener(e -> {
@@ -139,7 +171,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		setRequired(true, FIRST_NAME, LAST_NAME);
+		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.RELATION_DESCRIPTION, ContactDto.RELATION_TO_CASE, Arrays.asList(ContactRelation.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
@@ -269,12 +301,52 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		contactProximity.setValue(value);
 	}
 
+	private void setItemCaptionsForMonths(AbstractSelect months) {
+		months.setItemCaption(1, I18nProperties.getEnumCaption(Month.JANUARY));
+		months.setItemCaption(2, I18nProperties.getEnumCaption(Month.FEBRUARY));
+		months.setItemCaption(3, I18nProperties.getEnumCaption(Month.MARCH));
+		months.setItemCaption(4, I18nProperties.getEnumCaption(Month.APRIL));
+		months.setItemCaption(5, I18nProperties.getEnumCaption(Month.MAY));
+		months.setItemCaption(6, I18nProperties.getEnumCaption(Month.JUNE));
+		months.setItemCaption(7, I18nProperties.getEnumCaption(Month.JULY));
+		months.setItemCaption(8, I18nProperties.getEnumCaption(Month.AUGUST));
+		months.setItemCaption(9, I18nProperties.getEnumCaption(Month.SEPTEMBER));
+		months.setItemCaption(10, I18nProperties.getEnumCaption(Month.OCTOBER));
+		months.setItemCaption(11, I18nProperties.getEnumCaption(Month.NOVEMBER));
+		months.setItemCaption(12, I18nProperties.getEnumCaption(Month.DECEMBER));
+	}
+
+	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
+		Integer currentlySelected = (Integer) birthDateDay.getValue();
+		birthDateDay.removeAllItems();
+		birthDateDay.addItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
+		if (birthDateDay.containsId(currentlySelected)) {
+			birthDateDay.setValue(currentlySelected);
+		}
+	}
+
 	public String getPersonFirstName() {
-		return (String) getField(FIRST_NAME).getValue();
+		return (String) getField(PersonDto.FIRST_NAME).getValue();
 	}
 
 	public String getPersonLastName() {
-		return (String) getField(LAST_NAME).getValue();
+		return (String) getField(PersonDto.LAST_NAME).getValue();
+	}
+	
+	public Integer getBirthdateDD() {
+		return (Integer) getField(PersonDto.BIRTH_DATE_DD).getValue();
+	}
+
+	public Integer getBirthdateMM() {
+		return (Integer) getField(PersonDto.BIRTH_DATE_MM).getValue();
+	}
+
+	public Integer getBirthdateYYYY() {
+		return (Integer) getField(PersonDto.BIRTH_DATE_YYYY).getValue();
+	}
+
+	public Sex getSex() {
+		return (Sex) getField(PersonDto.SEX).getValue();
 	}
 
 	@Override

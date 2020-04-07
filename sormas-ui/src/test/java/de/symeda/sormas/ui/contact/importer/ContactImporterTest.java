@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.contact.importer;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.ui.MockProducer;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -27,6 +24,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -38,9 +36,7 @@ import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 
-import javax.enterprise.inject.spi.CDI;
-
-public class CaseContactImporterTest extends AbstractBeanTest {
+public class ContactImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportCaseContacts() throws IOException, InvalidColumnException, InterruptedException {
@@ -57,15 +53,14 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		// Successful import of 5 case contacts
 		File csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").getFile());
-		CaseContactImporter caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze);
+		ContactImporter caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze);
 		ImportResultStatus importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, contactFacade.count(null));
 
 		// Person Similarity: pick
-		List<PersonNameDto> persons = FacadeProvider.getPersonFacade()
-				.getNameDtos(user.toReference());
+		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
 		csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
 		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze) {
@@ -125,7 +120,7 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		assertEquals(7, getPersonFacade().getAllUuids().size());
 	}
 
-	private static class CaseContactImporterExtension extends CaseContactImporter {
+	private static class CaseContactImporterExtension extends ContactImporter {
 		private CaseContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser,
 				CaseDataDto caze) {
 			super(inputFile, hasEntityClassRow, currentUser, caze);
