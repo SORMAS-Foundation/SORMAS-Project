@@ -244,7 +244,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 				symptoms.get(Symptoms.ID));
 		
 		User user = userService.getCurrentUser();
-		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit, user);
+		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit);
 		Join<Case, Case> casePath = clinicalCourse.join(ClinicalCourse.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);

@@ -162,8 +162,8 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public UserDto getByUuid(String uuid) {
-		return toDto(userService.getByUuid(uuid));
+	public UserDto getByUuid() {
+		return toDto(userService.getCurrentUser());
 	}
 
 	@Override

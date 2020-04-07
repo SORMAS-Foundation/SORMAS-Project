@@ -12,7 +12,6 @@ import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -48,7 +47,7 @@ public class PopulationDataService extends AbstractAdoService<PopulationData> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PopulationData, PopulationData> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PopulationData, PopulationData> from) {
 		return null;
 	}
 

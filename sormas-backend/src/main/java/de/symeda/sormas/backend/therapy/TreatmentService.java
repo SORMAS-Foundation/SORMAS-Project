@@ -83,7 +83,7 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 				cb.isNull(caze.get(Case.ARCHIVED)));
 		
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
@@ -111,7 +111,7 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 				cb.isNull(caze.get(Case.ARCHIVED)));
 		
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
@@ -153,9 +153,9 @@ public class TreatmentService extends AbstractAdoService<Treatment> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Treatment, Treatment> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Treatment, Treatment> from) {
 		Join<Treatment, Therapy> therapy = from.join(Treatment.THERAPY, JoinType.LEFT);
-		return caseService.createUserFilter(cb, cq, therapy.join(Therapy.CASE, JoinType.LEFT), user);
+		return caseService.createUserFilter(cb, cq, therapy.join(Therapy.CASE, JoinType.LEFT));
 	}
 	
 }

@@ -165,7 +165,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				prescription.get(Prescription.ADDITIONAL_NOTES));
 		
 		User user = userService.getCurrentUser();
-		Predicate filter = service.createUserFilter(cb, cq, prescription, user);
+		Predicate filter = service.createUserFilter(cb, cq, prescription);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);

@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.ui.MockProducer;
 import org.junit.Test;
 
@@ -37,6 +38,8 @@ import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 
+import javax.enterprise.inject.spi.CDI;
+
 public class CaseContactImporterTest extends AbstractBeanTest {
 
 	@Test
@@ -50,8 +53,6 @@ public class CaseContactImporterTest extends AbstractBeanTest {
 		PersonDto casePerson = creator.createPerson("John", "Smith");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), Disease.CORONAVIRUS,
 				CaseClassification.CONFIRMED, InvestigationStatus.PENDING, new Date(), rdcf);
-
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
 
 		// Successful import of 5 case contacts
 		File csvFile = new File(

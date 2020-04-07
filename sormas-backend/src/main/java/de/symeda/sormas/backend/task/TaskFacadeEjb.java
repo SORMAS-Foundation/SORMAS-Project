@@ -48,7 +48,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -283,7 +282,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		User user = userService.getCurrentUser();
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(cb, cq, task, user);
+			filter = taskService.createUserFilter(cb, cq, task);
 		}
 
 		if (taskCriteria != null) {
@@ -328,7 +327,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		Predicate filter = null;
 		User user = userService.getCurrentUser();
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(cb, cq, task, user);
+			filter = taskService.createUserFilter(cb, cq, task);
 		}
 
 		if (taskCriteria != null) {
@@ -445,48 +444,6 @@ public class TaskFacadeEjb implements TaskFacade {
 				.stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<DashboardTaskDto> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, String userUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardTaskDto> cq = cb.createQuery(DashboardTaskDto.class);
-		Root<Task> task = cq.from(Task.class);
-
-		TaskCriteria taskCriteria = new TaskCriteria().assigneeUser(new UserReferenceDto(userUuid));
-		if (taskStatus != null) {
-			taskCriteria.taskStatus(taskStatus);
-		}
-		if (from != null || to != null) {
-			taskCriteria.statusChangeDateBetween(from, to);
-		}
-
-		Predicate filter = taskService.buildCriteriaFilter(taskCriteria, cb, task);
-
-		List<DashboardTaskDto> result;
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-					task.get(Task.PRIORITY),
-					task.get(Task.TASK_STATUS)
-					);
-
-			result = em.createQuery(cq).getResultList();
-		} else {
-			result = Collections.emptyList();
-		}
-
-		return result;
-	}
-
-	@Override
-	public long getPendingTaskCountByCase(CaseReferenceDto caseRef) {
-		if(caseRef == null) {
-			return 0;
-		}
-
-		return taskService.getCount(new TaskCriteria().caze(caseRef).taskStatus(TaskStatus.PENDING));
 	}
 
 	@Override

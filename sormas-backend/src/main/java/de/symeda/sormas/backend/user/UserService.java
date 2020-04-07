@@ -55,34 +55,10 @@ import de.symeda.sormas.backend.util.PasswordHelper;
 @LocalBean
 public class UserService extends AbstractAdoService<User> {
 
-	@Resource
-	private SessionContext sessionContext;
-
-	@Inject
-	@CurrentUserQualifier
-	private Instance<CurrentUser> currentUser;
-
 	public UserService() {
 		super(User.class);
 	}
 
-	public User getCurrentUser() {
-		return currentUser.get().getUser();
-	}
-
-	@Produces
-	@RequestScoped
-	@CurrentUserQualifier
-	public CurrentUser produceCurrentUser() {
-		String name = sessionContext.getCallerPrincipal().getName();
-		if (name.equalsIgnoreCase("ANONYMOUS")) {
-			return new CurrentUser(null);
-		}
-		final User user = getByUserName(name);
-		user.getUserRoles().size(); // user roles within the current user should be fetched as injected current user would not have session to fetch later
-		return new CurrentUser(user);
-	}
-	
 	public User createUser() {
 		User user = new User();
 		// dummy password to make sure no one can login with this user
@@ -280,7 +256,7 @@ public class UserService extends AbstractAdoService<User> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<User, User> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<User, User> from) {
 		// a user can read all other users
 		return null;
 	}

@@ -165,7 +165,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Root<Case> root = cq.from(Case.class);
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		
-		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
+		Predicate filter = caseService.createUserFilter(cb, cq, root);
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 		

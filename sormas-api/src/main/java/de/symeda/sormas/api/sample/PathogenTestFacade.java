@@ -42,8 +42,6 @@ public interface PathogenTestFacade {
 
 	List<PathogenTestDto> getByUuids(List<String> uuids);
 	
-	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
-	
 	void deletePathogenTest(String pathogenTestUuid);
 	
 	boolean hasPathogenTest(SampleReferenceDto sample);

@@ -49,19 +49,6 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 public class TaskFacadeEjbTest extends AbstractBeanTest {
 	
 	@Test
-	public void testDashboardTaskListCreation() {
-		
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
-		
-		List<DashboardTaskDto> dashboardTaskDtos = getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, user.getUuid());
-		
-		// List should have one entry
-		assertEquals(1, dashboardTaskDtos.size());
-	}
-	
-	@Test
 	public void testSampleDeletion() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");

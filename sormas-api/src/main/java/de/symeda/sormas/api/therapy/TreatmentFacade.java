@@ -16,7 +16,7 @@ public interface TreatmentFacade {
 	
 	TreatmentDto saveTreatment(TreatmentDto treatment);
 	
-	void deleteTreatment(String treatmentUuid, String userUuid);
+	void deleteTreatment(String treatmentUuid);
 	
 	List<TreatmentDto> getAllActiveTreatmentsAfter(Date date);
 	

@@ -87,7 +87,6 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -303,7 +302,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		// Only use user filter if no restricting case is specified
 		User user = userService.getCurrentUser();
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			filter = contactService.createUserFilter(cb, cq, contact, user);
+			filter = contactService.createUserFilter(cb, cq, contact);
 		}
 
 		if (contactCriteria != null) {
@@ -346,7 +345,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		// Only use user filter if no restricting case is specified
 		User user = userService.getCurrentUser();
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			filter = contactService.createUserFilter(cb, cq, root, user);
+			filter = contactService.createUserFilter(cb, cq, root);
 		}
 
 		if (contactCriteria != null) {
@@ -381,7 +380,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		// Only use user filter if no restricting case is specified
 		Predicate filter = null;
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			filter = contactService.createUserFilter(cb, cq, contact, user);
+			filter = contactService.createUserFilter(cb, cq, contact);
 		}
 
 		if (contactCriteria != null) {
@@ -498,7 +497,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			filter = contactService.createUserFilter(cb, cq, contact, user);
+			filter = contactService.createUserFilter(cb, cq, contact);
 		}
 
 		if (contactCriteria != null) {

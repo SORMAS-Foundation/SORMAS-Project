@@ -112,13 +112,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public List<VisitDto> getAllActiveVisitsAfter(Date date) {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return visitService.getAllActiveVisitsAfter(date, user).stream().map(c -> toDto(c))
+		return visitService.getAllActiveVisitsAfter(date).stream().map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
 

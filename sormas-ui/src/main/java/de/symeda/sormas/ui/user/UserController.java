@@ -96,7 +96,7 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
 		UserEditForm userEditForm = new UserEditForm(false, UserRight.USER_EDIT);
-		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
+		UserDto userDto = FacadeProvider.getUserFacade().getByUuid();
 		userEditForm.setValue(userDto);
 		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
 
@@ -159,7 +159,7 @@ public class UserController {
 	public List<UserReferenceDto> filterByDistrict(List<UserReferenceDto> users, DistrictReferenceDto district) {
 		List<UserDto> userDtos = new ArrayList<>();
 		for(UserReferenceDto userRef : users) {
-			userDtos.add(FacadeProvider.getUserFacade().getByUuid(userRef.getUuid()));
+			userDtos.add(FacadeProvider.getUserFacade().getByUuid());
 		}
 
 		userDtos.removeIf(user -> user.getDistrict() == null || !user.getDistrict().equals(district));
@@ -228,9 +228,9 @@ public class UserController {
 		return resetPasswordConfirmationComponent;
 	}
 
-	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(final String userUuid, Runnable commitOrDiscardCallback) {
+	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
 		UserSettingsForm form = new UserSettingsForm();
-		UserDto user = FacadeProvider.getUserFacade().getByUuid(userUuid);
+		UserDto user = FacadeProvider.getUserFacade().getByUuid();
 		form.setValue(user);
 		
 		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<UserSettingsForm>(form, form.getFieldGroup());

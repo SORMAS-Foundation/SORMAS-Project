@@ -109,7 +109,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
 		
-		Predicate filter = service.createUserFilter(cb, cq, root, user);
+		Predicate filter = service.createUserFilter(cb, cq, root);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
@@ -214,7 +214,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
 
-		Predicate filter = service.createUserFilter(cb, cq, root, user);
+		Predicate filter = service.createUserFilter(cb, cq, root);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);

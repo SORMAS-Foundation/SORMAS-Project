@@ -156,15 +156,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-
-		return pathogenTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
-	}
-
-	@Override
 	public PathogenTestDto getByUuid(String uuid) {
 		return toDto(pathogenTestService.getByUuid(uuid));
 	}

@@ -93,8 +93,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public void deleteTreatment(String treatmentUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteTreatment(String treatmentUuid) {
+		User user = userService.getCurrentUser();
 		// TODO replace this with a proper user right call #944
 		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
 			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete treatments");
@@ -160,7 +160,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				treatment.get(Treatment.ADDITIONAL_NOTES));
 		
 		User user = userService.getCurrentUser();
-		Predicate filter = service.createUserFilter(cb, cq, treatment, user);
+		Predicate filter = service.createUserFilter(cb, cq, treatment);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);

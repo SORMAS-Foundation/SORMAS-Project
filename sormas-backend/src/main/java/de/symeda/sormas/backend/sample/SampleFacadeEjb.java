@@ -74,18 +74,13 @@ import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
@@ -231,7 +226,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
 
 		User user = userService.getCurrentUser();
-		Predicate filter = sampleService.createUserFilter(cb, cq, sample, user);
+		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
@@ -381,7 +376,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				);
 
 		User user = userService.getCurrentUser();
-		Predicate filter = sampleService.createUserFilter(cb, cq, sample, user);
+		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
@@ -488,7 +483,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Sample> root = cq.from(Sample.class);
 		User user = userService.getCurrentUser();
-		Predicate filter = sampleService.createUserFilter(cb, cq, root, user);
+		Predicate filter = sampleService.createUserFilter(cb, cq, root);
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
