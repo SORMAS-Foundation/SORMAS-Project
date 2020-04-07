@@ -104,24 +104,27 @@ public class CaseController {
 	}
 
 	public void registerViews(Navigator navigator) {
+		UserProvider userProvider = UserProvider.getCurrent();
 		navigator.addView(CasesView.VIEW_NAME, CasesView.class);
-		navigator.addView(MergeCasesView.VIEW_NAME, MergeCasesView.class);
+		if (userProvider.hasUserRight(UserRight.CASE_MERGE)) {
+			navigator.addView(MergeCasesView.VIEW_NAME, MergeCasesView.class);
+		}
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 		navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
 		navigator.addView(MaternalHistoryView.VIEW_NAME, MaternalHistoryView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (userProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			navigator.addView(PortHealthInfoView.VIEW_NAME, PortHealthInfoView.class);
 		}
 		navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (userProvider.hasUserRight(UserRight.CONTACT_VIEW)) {
 			navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
 		}
 		navigator.addView(HospitalizationView.VIEW_NAME, HospitalizationView.class);
 		navigator.addView(EpiDataView.VIEW_NAME, EpiDataView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
+		if (userProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
 			navigator.addView(TherapyView.VIEW_NAME, TherapyView.class);
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
+		if (userProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
 			navigator.addView(ClinicalCourseView.VIEW_NAME, ClinicalCourseView.class);
 		}
 	}
