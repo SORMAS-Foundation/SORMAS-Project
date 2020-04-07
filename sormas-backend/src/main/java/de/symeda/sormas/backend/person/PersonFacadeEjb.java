@@ -39,8 +39,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -68,16 +66,13 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
@@ -123,59 +118,21 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonNameDto> getRelevantNameDtos(UserReferenceDto userRef) {
+	public List<PersonNameDto> getMatchingNameDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
 		User user = userService.getByReferenceDto(userRef);
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return new ArrayList<PersonNameDto>(personService.getRelevantNameDtos(user));
+		return new ArrayList<PersonNameDto>(personService.getMatchingNameDtos(user, criteria));
 	}
 
 	@Override
-	public List<PersonIndexDto> getMatchingPersons(List<String> uuids, PersonSimilarityCriteria criteria) {
-		if (CollectionUtils.isEmpty(uuids)) {
-			return new ArrayList<>();
-		}
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-		Root<Person> personRoot = cq.from(Person.class);
-		Join<Person, Location> addressJoin = personRoot.join(Person.ADDRESS, JoinType.LEFT);
-		Join<Location, Region> addressRegionJoin = addressJoin.join(Location.REGION, JoinType.LEFT);
-		Join<Location, District> addressDistrictJoin = addressJoin.join(Location.DISTRICT, JoinType.LEFT);
-		Join<Location, Community> addressCommunityJoin = addressJoin.join(Location.COMMUNITY, JoinType.LEFT);
-
-		Predicate filter = personService.buildSimilarityCriteriaFilter(criteria, cb, personRoot);
-		Predicate inFilter = personRoot.get(Person.UUID).in(uuids);
-
-		if (filter != null) {
-			filter = cb.and(filter, inFilter);
-		} else {
-			filter = inFilter;
-		}
-
-		cq.where(filter);
-		cq.multiselect(
-				personRoot.get(Person.UUID),
-				personRoot.get(Person.SEX),
-				personRoot.get(Person.FIRST_NAME),
-				personRoot.get(Person.LAST_NAME),
-				personRoot.get(Person.PRESENT_CONDITION),
-				personRoot.get(Person.BIRTHDATE_DD),
-				personRoot.get(Person.BIRTHDATE_MM),
-				personRoot.get(Person.BIRTHDATE_YYYY),
-				personRoot.get(Person.APPROXIMATE_AGE),
-				personRoot.get(Person.APPROXIMATE_AGE_TYPE),
-				personRoot.get(Person.DEATH_DATE),
-				personRoot.get(Person.NICKNAME),
-				addressRegionJoin.get(Region.NAME),
-				addressDistrictJoin.get(District.NAME),
-				addressCommunityJoin.get(Community.NAME),
-				addressJoin.get(Location.CITY));
-		cq.orderBy(cb.asc(personRoot.get(Person.LAST_NAME)), cb.asc(personRoot.get(Person.FIRST_NAME)), cb.asc(personRoot.get(Person.UUID)));
-		
-		return em.createQuery(cq).getResultList();
+	public List<PersonIndexDto> getIndexDtosByUuids(List<String> uuids) {
+		return personService.getByUuids(uuids)
+				.stream()
+				.map(c -> toIndexDto(c))
+				.collect(Collectors.toList());
 	}
 
 	// multiselect does not work for person, because getting all persons requires multiple querries and we currently don't have an abstraction for this

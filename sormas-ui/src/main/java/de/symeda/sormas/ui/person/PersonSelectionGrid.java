@@ -69,12 +69,11 @@ public class PersonSelectionGrid extends Grid {
 	}
 
 	private void loadData(PersonSimilarityCriteria criteria) {
-		List<String> similarPersonUuids = FacadeProvider.getPersonFacade().getRelevantNameDtos(UserProvider.getCurrent().getUserReference()).stream()
+		List<String> similarPersonUuids = FacadeProvider.getPersonFacade().getMatchingNameDtos(UserProvider.getCurrent().getUserReference(), criteria).stream()
 				.filter(dto -> PersonHelper.areNamesSimilar(criteria.getFirstName() + " " + criteria.getLastName(), dto.getFirstName() + " " + dto.getLastName()))
 				.map(dto -> dto.getUuid())
 				.collect(Collectors.toList());
-		
-		List<PersonIndexDto> similarPersons = FacadeProvider.getPersonFacade().getMatchingPersons(similarPersonUuids, criteria);
+		List<PersonIndexDto> similarPersons = FacadeProvider.getPersonFacade().getIndexDtosByUuids(similarPersonUuids);
 		
 		getContainer().removeAllItems();
 		getContainer().addAll(similarPersons);    

@@ -315,7 +315,7 @@
     <string name="heading_outbreak_response">Outbreak Response</string>
     <string name="heading_person_involved">Person Involved</string>
     <string name="heading_person_involved_new">New Person Involved</string>
-    <string name="heading_pick_or_create_person">Pick or create person</string>
+    <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Pick or Create a Case</string>
     <string name="heading_prescription">Prescription</string>
     <string name="heading_prescription_edit">Edit Prescription</string>
@@ -400,17 +400,17 @@
 
     <string name="info_add_cases_before_report_submit">Are you sure you want to submit these case numbers for the selected epi week?</string>
     <string name="info_app_download">Downloading new SORMAS version... Depending on your internet connection, this may take a while.</string>
-    <string name="info_create_person">If the person you have created is <b>not</b> among the suggested list of existing persons, click the \"Create\" button.</string>
+    <string name="info_create_person">If you could <b>not</b> find a person that matches the personal details you have entered, click the \"Create\" button.</string>
     <string name="info_epidemiological_info">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
     <string name="info_initial_synchronization">Initial synchronizing with SORMAS server.\nPulling infrastructure data will take a few minutes.</string>
     <string name="info_no_additional_test">No additional tests performed on this sample yet</string>
     <string name="info_no_sample_test">Sample has not been tested yet</string>
-    <string name="info_pick_person">If applicable, select a matching person by tapping on them and then clicking the \"Select\" button below. <b>Do this only if you are absolutely sure that the person you have specified is the same as one of the persons in this list.</b></string>
+    <string name="info_pick_person">Please look through this list of persons. <b>If you feel certain</b> that the personal details you have entered belong to one of these persons, select that person by tapping on them and then click the \"Select\" button below.</string>
     <string name="info_reset_pin">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="info_resync_duration">Re-sync will probably take several minutes.</string>
     <string name="info_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="info_sign_in">Sign into SORMAS to continue the journey of saving lives.</string>
-    <string name="info_similar_persons_found">The name of at least one person already existing in SORMAS is similar to the name you entered.</string>
+    <string name="info_similar_persons_found">SORMAS already contains at least one person that seems to be very similar to the personal details you have entered.</string>
     <string name="info_symptoms">Please select an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
     <string name="info_synchronizing">Synchronizing with SORMAS server...</string>
     <string name="info_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>

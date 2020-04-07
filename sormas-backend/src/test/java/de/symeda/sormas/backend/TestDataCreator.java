@@ -105,15 +105,6 @@ public class TestDataCreator {
 
 		return user;
 	}
-
-	public PersonDto[] createPersons(int count) {
-		PersonDto[] persons = new PersonDto[count];
-		for (int i = 0; i < count; i++) {
-			persons[i] = createPerson();
-		}
-		
-		return persons;
-	}
 	
 	public PersonDto createPerson() {
 		return createPerson("FirstName", "LastName");

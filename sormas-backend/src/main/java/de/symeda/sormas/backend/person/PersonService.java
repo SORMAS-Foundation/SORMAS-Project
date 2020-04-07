@@ -209,7 +209,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				.collect(Collectors.toList());
 	}
 
-	public Set<PersonNameDto> getRelevantNameDtos(User user) {
+	public Set<PersonNameDto> getMatchingNameDtos(User user, PersonSimilarityCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		Set<PersonNameDto> persons = new HashSet<>();
 
@@ -221,12 +221,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		casePersonsQuery.multiselect(casePersonsJoin.get(Person.FIRST_NAME), casePersonsJoin.get(Person.LAST_NAME),
 				casePersonsJoin.get(Person.UUID));
 
+		Predicate casePersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, casePersonsRoot.join(Case.PERSON, JoinType.LEFT));
 		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, casePersonsRoot);
 		Predicate caseUserFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
-		if (caseUserFilter != null) {
-			activeCasesFilter = cb.and(activeCasesFilter, caseUserFilter);
-		}
-		casePersonsQuery.where(activeCasesFilter);
+		casePersonsQuery.where(and(cb, casePersonsFilter, activeCasesFilter, caseUserFilter));
 		casePersonsQuery.distinct(true);
 		persons.addAll(em.createQuery(casePersonsQuery).getResultList());
 
@@ -238,12 +236,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		contactPersonsQuery.multiselect(contactPersonsJoin.get(Person.FIRST_NAME),
 				contactPersonsJoin.get(Person.LAST_NAME), contactPersonsJoin.get(Person.UUID));
 
+		Predicate contactPersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT));
 		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, contactPersonsRoot);
 		Predicate contactUserFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot, user);
-		if (contactUserFilter != null) {
-			activeContactsFilter = cb.and(activeContactsFilter, contactUserFilter);
-		}
-		contactPersonsQuery.where(activeContactsFilter);
+		contactPersonsQuery.where(and(cb, contactPersonsFilter, activeContactsFilter, contactUserFilter));
 		contactPersonsQuery.distinct(true);
 		persons.addAll(em.createQuery(contactPersonsQuery).getResultList());
 
@@ -255,12 +251,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		eventPersonsQuery.multiselect(eventPersonsJoin.get(Person.FIRST_NAME), eventPersonsJoin.get(Person.LAST_NAME),
 				eventPersonsJoin.get(Person.UUID));
 
+		Predicate eventParticipantPersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT));
 		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, eventPersonsRoot);
 		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot, user);
-		if (eventParticipantUserFilter != null) {
-			activeEventParticipantsFilter = cb.and(activeEventParticipantsFilter, eventParticipantUserFilter);
-		}
-		eventPersonsQuery.where(activeEventParticipantsFilter);
+		eventPersonsQuery.where(and(cb, eventParticipantPersonsFilter, activeEventParticipantsFilter, eventParticipantUserFilter));
 		eventPersonsQuery.distinct(true);
 		persons.addAll(em.createQuery(eventPersonsQuery).getResultList());
 
@@ -324,31 +318,31 @@ public class PersonService extends AbstractAdoService<Person> {
 		Location result = em.createQuery(cq).getSingleResult();
 		return result;
 	}
-	
-	public Predicate buildSimilarityCriteriaFilter(PersonSimilarityCriteria criteria, CriteriaBuilder cb, Root<Person> personRoot) {
+
+	public Predicate buildSimilarityCriteriaFilter(PersonSimilarityCriteria criteria, CriteriaBuilder cb, From<Person, Person> personFrom) {
 		Predicate filter = null;
-		
+
 		if (criteria.getSex() != null) {
 			filter = and(cb, filter, cb.or(
-					cb.isNull(personRoot.get(Person.SEX)), 
-					cb.equal(personRoot.get(Person.SEX), criteria.getSex())));
+					cb.isNull(personFrom.get(Person.SEX)), 
+					cb.equal(personFrom.get(Person.SEX), criteria.getSex())));
 		}
 		if (criteria.getBirthdateYYYY() != null) {
 			filter = and(cb, filter, cb.or(
-					cb.isNull(personRoot.get(Person.BIRTHDATE_YYYY)), 
-					cb.equal(personRoot.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY())));
+					cb.isNull(personFrom.get(Person.BIRTHDATE_YYYY)), 
+					cb.equal(personFrom.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY())));
 		}
 		if (criteria.getBirthdateMM() != null) {
 			filter = and(cb, filter, cb.or(
-					cb.isNull(personRoot.get(Person.BIRTHDATE_MM)), 
-					cb.equal(personRoot.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM())));
+					cb.isNull(personFrom.get(Person.BIRTHDATE_MM)), 
+					cb.equal(personFrom.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM())));
 		}
 		if (criteria.getBirthdateDD() != null) {
 			filter = and(cb, filter, cb.or(
-					cb.isNull(personRoot.get(Person.BIRTHDATE_DD)),
-					cb.equal(personRoot.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
+					cb.isNull(personFrom.get(Person.BIRTHDATE_DD)),
+					cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
 		}
-		
+
 		return filter;
 	}
 
