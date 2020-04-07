@@ -1,18 +1,17 @@
 package de.symeda.sormas.app.backend.config;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class ConfigProviderTest {
-
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void setCurrentAppDownloadId() {
@@ -24,25 +23,34 @@ public class ConfigProviderTest {
 
     @Test
     public void setUsernameAndPassword() {
-        exceptionRule.expect(NullPointerException.class);
-        ConfigProvider.setUsernameAndPassword(null, "pw");
-        exceptionRule.expect(NullPointerException.class);
-        ConfigProvider.setUsernameAndPassword("user", null);
-
         ConfigProvider.setUsernameAndPassword("user", "pw");
         assertThat(ConfigProvider.getUsername(), is("user"));
         assertThat(ConfigProvider.getPassword(), is("pw"));
     }
 
+
+    @Test(expected = NullPointerException.class)
+    public void setUsernameAndPasswordNullPointerUsername() {
+        ConfigProvider.setUsernameAndPassword(null, "pw");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void setUsernameAndPasswordNullPointerPassword() {
+        ConfigProvider.setUsernameAndPassword(null, "pw");
+    }
+
     @Test
     public void setPin() {
-        exceptionRule.expect(NullPointerException.class);
-        ConfigProvider.setPin(null);
         assertNull(ConfigProvider.getPin());
         ConfigProvider.setPin("");
         assertNull(ConfigProvider.getPin());
         ConfigProvider.setPin("122334");
         assertThat(ConfigProvider.getPin(), is("122334"));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void setPinNullPointer() {
+        ConfigProvider.setPin(null);
     }
 
     @Test
@@ -84,10 +92,14 @@ public class ConfigProviderTest {
         assertThat(ConfigProvider.getLastDeletedSyncDate(), is(date));
     }
 
+
+    @Test(expected = NullPointerException.class)
+    public void setAccessGrantedNullPointer() {
+        ConfigProvider.setAccessGranted(null);
+    }
+
     @Test
     public void setAccessGranted() {
-        exceptionRule.expect(NullPointerException.class);
-        ConfigProvider.setAccessGranted(null);
         assertNull(ConfigProvider.isAccessGranted());
         ConfigProvider.setAccessGranted(true);
         assertThat(ConfigProvider.isAccessGranted(), is(true));

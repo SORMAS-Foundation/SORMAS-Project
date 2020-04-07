@@ -1,9 +1,7 @@
 
 package de.symeda.sormas.app.util;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.List;
 
@@ -11,12 +9,9 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.component.Item;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class DataUtilsTest {
-
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void getEnumItems() {
@@ -26,11 +21,14 @@ public class DataUtilsTest {
 
         enumItems = DataUtils.getEnumItems(YesNoUnknown.class, false);
         assertThat(enumItems.size(), is(YesNoUnknown.values().length));
+    }
 
-        exceptionRule.expect(IllegalArgumentException.class);
+    @Test(expected = IllegalArgumentException.class)
+    public void getEnumItemsIllegalArgument() {
         DataUtils.getEnumItems(Object.class, false);
-
-        exceptionRule.expect(NullPointerException.class);
+    }
+    @Test(expected = NullPointerException.class)
+    public void getEnumItemsNullPointer() {
         DataUtils.getEnumItems(null, false);
     }
 }
