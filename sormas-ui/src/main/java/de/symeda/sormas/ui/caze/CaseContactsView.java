@@ -108,7 +108,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(240, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> {
 			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);

@@ -328,6 +328,7 @@ public interface Strings {
 	public static String infoCompletenessMerge = "infoCompletenessMerge";
 	public static String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	public static String infoContactDashboard = "infoContactDashboard";
+	public static String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
 	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
 	public static String infoDatabaseExportTables = "infoDatabaseExportTables";

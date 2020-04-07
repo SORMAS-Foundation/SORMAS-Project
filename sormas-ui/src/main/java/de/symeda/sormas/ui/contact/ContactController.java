@@ -248,8 +248,8 @@ public class ContactController {
 		String districtUuid = null;
 		for (ContactIndexDto selectedContact : selectedContacts) {
 			if (districtUuid == null) {
-				districtUuid = selectedContact.getCaseDistrictUuid();
-			} else if (!districtUuid.equals(selectedContact.getCaseDistrictUuid())) {
+				districtUuid = selectedContact.getDistrictUuid();
+			} else if (!districtUuid.equals(selectedContact.getDistrictUuid())) {
 				districtUuid = null;
 				break;
 			}
