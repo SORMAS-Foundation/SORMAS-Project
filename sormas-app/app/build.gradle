@@ -158,5 +158,6 @@ sonarqube {
         property "sonar.projectName", "sormas-app"
 
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacocoUnitTestReport/jacocoUnitTestReport.xml"
+        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/" 
     }
 }
