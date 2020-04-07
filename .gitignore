@@ -11,6 +11,7 @@
 Sormas-Testing.prj
 .gradle
 gradle*
+.project
 
 # Exclude folder content (except .gitkeep)
 Reports/*
