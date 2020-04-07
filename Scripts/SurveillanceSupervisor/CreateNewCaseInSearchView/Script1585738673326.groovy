@@ -1,7 +1,6 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
-import com.hzi.TestDataConnector
+import com.hzi.TestDataConnector as TestDataConnector
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
@@ -23,10 +22,12 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_DDBox'))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_BerlinNationHospital_DDItem'))
 
-String firstName = TestDataConnector.getValueByKey("GenericUsers", "first_name")
+String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_case')
+
 WebUI.setText(findTestObject('Surveillance/NewCaseView/first_name_inputBox'), firstName)
 
-String lastName = TestDataConnector.getValueByKey("GenericUsers", "last_name")
+String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_case')
+
 WebUI.setText(findTestObject('Surveillance/NewCaseView/last_name_inputBox'), lastName)
 
 WebUI.setText(findTestObject('Surveillance/NewCaseView/dateOfReport_inputBox'), '01/04/2020')
@@ -51,8 +52,7 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/div_Save_btn'))
 
 WebUI.delay(3)
 
-if (WebUI.verifyElementPresent(findTestObject('Surveillance/NewCaseView/Comfirmation/div_check_confimation_lbl'), 
-    5)) {
+if (WebUI.verifyElementPresent(findTestObject('Surveillance/NewCaseView/Comfirmation/div_check_confimation_lbl'), 5)) {
     WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/chooseExistingCase_radio'))
 
     WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_confirm_btn'))

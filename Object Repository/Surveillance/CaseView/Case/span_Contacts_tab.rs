@@ -3,11 +3,11 @@
    <description></description>
    <name>span_Contacts_tab</name>
    <tag></tag>
-   <elementGuidId>cc4cb2d6-2574-49c3-8c87-6f3de37f249a</elementGuidId>
+   <elementGuidId>570060af-e107-4f80-af07-c3d0861622c4</elementGuidId>
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[7]/div/div/a/span</value>
+         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div[2]/div/div/div[7]/div/div/a/span</value>
       </entry>
       <entry>
          <key>BASIC</key>

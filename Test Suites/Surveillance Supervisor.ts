@@ -3,7 +3,7 @@
    <description>Test everything in section &quot;Surveillance Supervisor&quot;</description>
    <name>Surveillance Supervisor</name>
    <tag></tag>
-   <executionMode>PARALLEL</executionMode>
+   <executionMode>SEQUENTIAL</executionMode>
    <maxConcurrentInstances>2</maxConcurrentInstances>
    <testSuiteRunConfigurations>
       <TestSuiteRunConfiguration>

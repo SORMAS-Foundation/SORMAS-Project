@@ -70,4 +70,16 @@
          <variableId>24fd743a-01a0-495c-93a0-cb58d0408653</variableId>
       </variableLink>
    </testCaseLink>
+   <testCaseLink>
+      <guid>f7d35a55-1e56-431e-bbc2-40306cd58474</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/SurveillanceSupervisor/CreateContactForCase</testCaseId>
+      <variableLink>
+         <testDataLinkId></testDataLinkId>
+         <type>DEFAULT</type>
+         <value></value>
+         <variableId>5a78a083-bb40-479c-b5d6-782720dd0530</variableId>
+      </variableLink>
+   </testCaseLink>
 </TestSuiteEntity>

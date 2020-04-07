@@ -18,3 +18,4 @@ import internal.GlobalVariable as GlobalVariable
 WebUI.callTestCase(findTestCase('Login/partials/LoginActions'), [('Password') : GlobalVariable.gPasswordSurveillanceSupervisor
         , ('Username') : GlobalVariable.gUsernameSurveillanceSupervisor], FailureHandling.STOP_ON_FAILURE)
 
+WebUI.callTestCase(findTestCase('Login/partials/ChangeLanguageToEnglish'), [:], FailureHandling.STOP_ON_FAILURE)

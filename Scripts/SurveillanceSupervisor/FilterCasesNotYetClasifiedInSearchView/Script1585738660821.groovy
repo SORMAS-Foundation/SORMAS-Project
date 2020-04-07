@@ -32,6 +32,7 @@ attribute = (attribute.toInteger() - 1).toString()
 
 WebUI.verifyMatch(attribute, '12', false, FailureHandling.OPTIONAL)
 
-if(isStandalone) {
-	WebUI.closeBrowser()
+if (isStandalone) {
+    WebUI.closeBrowser()
 }
+

@@ -29,7 +29,8 @@ WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Person/input_Pe
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Hospitalization_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Hospitatation/div_Hospitation_Accommodation_selectBox'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Hospitatation/div_Hospitation_Accommodation_selectBox'), 
+    3)
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Symptoms_tab'))
 
@@ -37,12 +38,14 @@ WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/SymptomsTab/div
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_EpidemiologicalData_tab'))
 
-WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/i_EpidemiologicalData_description_text'), 3)
+WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Epidemiological data/i_EpidemiologicalData_description_text'), 
+    3)
 
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Contacts_tab'))
 
 WebUI.verifyElementPresent(findTestObject('Surveillance/CaseView/Contacts/div_Contacts_NewContact_btn'), 3)
 
 if (isStandalone) {
-	WebUI.closeBrowser()
+    WebUI.closeBrowser()
 }
+

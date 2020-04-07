@@ -8,22 +8,25 @@
    <dataFileGUID>46d2f8ab-2950-4d29-8545-e84b6857c653</dataFileGUID>
    <dataSourceUrl></dataSourceUrl>
    <driver>InternalData</driver>
-   <data>case first_name Jane</data>
-   <data>case last_name Doe</data>
+   <data>surveillance first_name_case Jane</data>
+   <data>surveillance last_name_case Doe</data>
+   <data>surveillance first_name_contact John</data>
+   <data>surveillance last_name_contact Doe</data>
+   <data>null null null</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>section</name>
-      <size>2</size>
+      <size>5</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>1</columnIndex>
       <name>key</name>
-      <size>2</size>
+      <size>5</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>2</columnIndex>
       <name>value</name>
-      <size>2</size>
+      <size>5</size>
    </internalDataColumns>
    <isInternalPath>false</isInternalPath>
    <query></query>
