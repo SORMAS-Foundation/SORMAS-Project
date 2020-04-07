@@ -19,11 +19,11 @@
 package de.symeda.sormas.app.person;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableArrayList;
@@ -33,6 +33,7 @@ import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -55,7 +56,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     private DialogSelectOrCreatePersonLayoutBinding contentBinding;
 
     private Person person;
-    private List<PersonNameDto> existingPersons;
+    private PersonSimilarityCriteria similarityCriteria;
     private List<Person> similarPersons;
 
     private IEntryItemOnClickListener availablePersonItemClickCallback;
@@ -82,14 +83,8 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
         });
 
         personDialog.createCallback = () -> {
-            if (personDialog.contentBinding.personFirstName.getValue().isEmpty() || personDialog.contentBinding.personLastName.getValue().isEmpty()) {
-                NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.message_enter_person_name);
-            } else {
-                person.setFirstName(personDialog.contentBinding.personFirstName.getValue());
-                person.setLastName(personDialog.contentBinding.personLastName.getValue());
-                personDialog.dismiss();
-                resultConsumer.accept(person);
-            }
+            personDialog.dismiss();
+            resultConsumer.accept(person);
         };
 
         personDialog.show();
@@ -103,6 +98,11 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
                 R.string.heading_pick_or_create_person, -1);
 
         this.person = person;
+        this.similarityCriteria = new PersonSimilarityCriteria()
+                .sex(person.getSex())
+                .birthdateYYYY(person.getBirthdateYYYY())
+                .birthdateMM(person.getBirthdateMM())
+                .birthdateDD(person.getBirthdateDD());
         this.setSelectedPerson(null);
     }
 
@@ -117,36 +117,25 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     }
 
     private void updateSimilarPersons() {
-        if (existingPersons == null) {
-            existingPersons = DatabaseHelper.getPersonDao().getPersonNameDtos();
-        }
+        List<String> similarNameUuids = DatabaseHelper.getPersonDao().getRelevantPersonNames(similarityCriteria).stream()
+                .filter(name -> PersonHelper.areNamesSimilar(person.getFirstName() + " " + person.getLastName(), name.getFirstName() + " " + name.getLastName()))
+                .map(PersonNameDto::getUuid)
+                .collect(Collectors.toList());
 
-        similarPersons = new ArrayList<>();
-        for (PersonNameDto existingPerson : existingPersons) {
-            if (PersonHelper.areNamesSimilar(person.getFirstName() + " " + person.getLastName(),
-                    existingPerson.getFirstName() + " " + existingPerson.getLastName())) {
-                Person similarPerson = DatabaseHelper.getPersonDao().queryUuid(existingPerson.getUuid());
-                similarPersons.add(similarPerson);
-            }
+        if (!similarNameUuids.isEmpty()) {
+            similarPersons = DatabaseHelper.getPersonDao().queryUuids(similarNameUuids);
+        } else {
+            similarPersons = new ArrayList<>();
         }
     }
 
-    private void setupControlListeners() {
-        contentBinding.updateSearch.setOnClickListener(v -> {
-            person.setFirstName(contentBinding.personFirstName.getValue());
-            person.setLastName(contentBinding.personLastName.getValue());
-
-            updateSimilarPersons();
-            contentBinding.setAvailablePersons(makeObservable(similarPersons)); // why observable?
-            setSelectedPerson(null);
-        });
-
+    private void setUpControlListeners() {
         availablePersonItemClickCallback = (v, item) -> {
             if (item == null) {
                 return;
             }
 
-            Person personItem = (Person)item;
+            Person personItem = (Person) item;
             String tag = getActivity().getResources().getString(R.string.tag_row_item_select_or_create_person);
             ArrayList<View> views = ViewHelper.getViewsByTag(contentBinding.existingPersonsList, tag);
             setSelectedPerson(null);
@@ -173,16 +162,8 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     }
 
     private ObservableArrayList makeObservable(List<Person> persons) {
-        ObservableArrayList newList = new ObservableArrayList();
-        if (persons == null || persons.size() <= 0) {
-            contentBinding.pickPersonDescription.setVisibility(View.GONE);
-            contentBinding.noRecordsDescription.setVisibility(View.VISIBLE);
-            newList.addAll(new ArrayList<Person>());
-        } else {
-            contentBinding.pickPersonDescription.setVisibility(View.VISIBLE);
-            contentBinding.noRecordsDescription.setVisibility(View.GONE);
-            newList.addAll(persons);
-        }
+        ObservableArrayList<Person> newList = new ObservableArrayList<>();
+        newList.addAll(persons);
         return newList;
     }
 
@@ -192,19 +173,10 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
     protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
         this.contentBinding = (DialogSelectOrCreatePersonLayoutBinding) binding;
         // Needs to be done here because callback needs to be initialized before being bound to the layout
-        setupControlListeners();
-
-        if (!binding.setVariable(BR.data, person)) {
-            Log.e(TAG, "There is no variable 'data' in layout " + layoutName);
-        }
-
-        if (!binding.setVariable(BR.availablePersons, makeObservable(similarPersons))) {
-            Log.e(TAG, "There is no variable 'availablePersons' in layout " + layoutName);
-        }
-
-        if (!binding.setVariable(BR.availablePersonItemClickCallback, availablePersonItemClickCallback)) {
-            Log.e(TAG, "There is no variable 'availablePersonItemClickCallback' in layout " + layoutName);
-        }
+        setUpControlListeners();
+        binding.setVariable(BR.data, person);
+        binding.setVariable(BR.availablePersons, makeObservable(similarPersons));
+        binding.setVariable(BR.availablePersonItemClickCallback, availablePersonItemClickCallback);
     }
 
     @Override
@@ -216,29 +188,18 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
                 ControlButton btnSelect = getPositiveButton();
 
                 if (getSelectedPerson() == null) {
-                    if (btnCreate != null)
-                        btnCreate.setVisibility(View.VISIBLE);
-
-                    if (btnSelect != null)
-                        btnSelect.setVisibility(View.GONE);
+                    btnCreate.setVisibility(View.VISIBLE);
+                    btnSelect.setVisibility(View.GONE);
                 } else {
-                    if (btnCreate != null)
-                        btnCreate.setVisibility(View.GONE);
-
-                    if (btnSelect != null)
-                        btnSelect.setVisibility(View.VISIBLE);
+                    btnCreate.setVisibility(View.GONE);
+                    btnSelect.setVisibility(View.VISIBLE);
                 }
             }
         });
 
         this.selectedPerson.notifyChange();
 
-        ((DialogRootCancelCreateSelectButtonPanelLayoutBinding) buttonPanelBinding).buttonCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createCallback.call();
-            }
-        });
+        ((DialogRootCancelCreateSelectButtonPanelLayoutBinding) buttonPanelBinding).buttonCreate.setOnClickListener(v -> createCallback.call());
     }
 
     @Override

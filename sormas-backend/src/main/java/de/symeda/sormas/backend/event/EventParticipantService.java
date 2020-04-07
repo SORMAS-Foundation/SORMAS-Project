@@ -32,7 +32,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
@@ -123,6 +122,13 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		}
 
 		return filter;
+	}
+	
+	public Predicate createActiveEventParticipantsFilter(CriteriaBuilder cb, Root<EventParticipant> root) {
+		Join<EventParticipant, Event> event = root.join(EventParticipant.EVENT, JoinType.LEFT);
+		return cb.and(
+				cb.isFalse(event.get(Event.ARCHIVED)),
+				cb.isFalse(event.get(Event.DELETED)));
 	}
 
 	/**

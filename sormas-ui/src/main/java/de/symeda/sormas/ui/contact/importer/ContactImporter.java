@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.data.Property.ValueChangeListener;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -40,7 +39,7 @@ import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
-import de.symeda.sormas.ui.person.PersonSelectField;
+import de.symeda.sormas.ui.person.PersonSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -198,39 +197,16 @@ public class ContactImporter extends DataImporter {
 	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate persons.
 	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
 	 */
-	protected void handleSimilarity(PersonDto newPerson,
-			Consumer<ContactImportSimilarityResult> resultConsumer) {
+	protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
 		currentUI.accessSynchronously(new Runnable() {
 			@Override
 			public void run() {
-				PersonSelectField personSelect = new PersonSelectField(true);
-				personSelect.setFirstName(newPerson.getFirstName());
-				personSelect.setLastName(newPerson.getLastName());
-				personSelect.setNickname(newPerson.getNickname());
-				personSelect.setApproximateAge(newPerson.getApproximateAge());
-				personSelect.setSex(newPerson.getSex());
-				personSelect.setPresentCondition(newPerson.getPresentCondition());
-				personSelect.setDistrict(newPerson.getAddress().getDistrict());
-				personSelect.setCommunity(newPerson.getAddress().getCommunity());
-				personSelect.setCity(newPerson.getAddress().getCity());
+				PersonSelectionField personSelect = new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContactImport));
 				personSelect.setWidth(1024, Unit.PIXELS);
 
 				if (personSelect.hasMatches()) {
-					personSelect.selectBestMatch();
-					final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = new CommitDiscardWrapperComponent<>(
-							personSelect);
-
-					ValueChangeListener nameChangeListener = e -> {
-						selectOrCreateComponent.getCommitButton()
-								.setEnabled(!(personSelect.getFirstName() == null
-										|| personSelect.getFirstName().isEmpty() || personSelect.getLastName() == null
-										|| personSelect.getLastName().isEmpty()));
-
-					};
-					personSelect.getFirstNameField().addValueChangeListener(nameChangeListener);
-					personSelect.getLastNameField().addValueChangeListener(nameChangeListener);
-
-					selectOrCreateComponent.addCommitListener(new CommitListener() {
+					final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
+					component.addCommitListener(new CommitListener() {
 						@Override
 						public void onCommit() {
 							PersonIndexDto person = personSelect.getValue();
@@ -244,7 +220,7 @@ public class ContactImporter extends DataImporter {
 						}
 					});
 
-					selectOrCreateComponent.addDiscardListener(new DiscardListener() {
+					component.addDiscardListener(new DiscardListener() {
 						@Override
 						public void onDiscard() {
 							resultConsumer.accept(
@@ -253,11 +229,12 @@ public class ContactImporter extends DataImporter {
 					});
 
 					personSelect.setSelectionChangeCallback((commitAllowed) -> {
-						selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
+						component.getCommitButton().setEnabled(commitAllowed);
 					});
 
-					VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent,
-							I18nProperties.getString(Strings.headingPickOrCreatePerson));
+					VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
+					
+					personSelect.selectBestMatch();
 				} else {
 					resultConsumer.accept(new ContactImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 				}

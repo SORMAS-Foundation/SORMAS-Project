@@ -42,6 +42,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -104,7 +105,11 @@ public class TestDataCreator {
 
 		return user;
 	}
-
+	
+	public PersonDto createPerson() {
+		return createPerson("FirstName", "LastName");
+	}
+	
 	public PersonDto createPerson(String firstName, String lastName) {
 		PersonDto cazePerson = PersonDto.build();
 		cazePerson.setFirstName(firstName);
@@ -112,6 +117,19 @@ public class TestDataCreator {
 		cazePerson = beanTest.getPersonFacade().savePerson(cazePerson);
 
 		return cazePerson;
+	}
+	
+	public PersonDto createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
+		PersonDto person = PersonDto.build();
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		person.setSex(sex);
+		person.setBirthdateYYYY(birthdateYYYY);
+		person.setBirthdateMM(birthdateMM);
+		person.setBirthdateDD(birthdateDD);
+		person = beanTest.getPersonFacade().savePerson(person);
+		
+		return person;
 	}
 
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
@@ -178,6 +196,10 @@ public class TestDataCreator {
 		return treatment;
 	}
 
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze) {
+		return createContact(reportingUser, null, contactPerson, caze, new Date(), null);
+	}
+	
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
 			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate) {
 		ContactDto contact = ContactDto.build(caze);
@@ -233,6 +255,10 @@ public class TestDataCreator {
 
 		return visit;
 	}
+	
+	public EventDto createEvent(UserReferenceDto reportingUser) {
+		return createEvent(EventStatus.POSSIBLE, "Description", "FirstName", "LastName", null, null, new Date(), new Date(), reportingUser, null, null, null);
+	}
 
 	public EventDto createEvent(EventStatus eventStatus, String eventDesc, String srcFirstName,
 			String srcLastName, String srcTelNo, TypeOfPlace typeOfPlace, Date eventDate, Date reportDateTime,
@@ -256,6 +282,10 @@ public class TestDataCreator {
 		return event;
 	}
 
+	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson) {
+		return createEventParticipant(event, eventPerson, "Description");
+	}
+	
 	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson,
 			String involvementDescription) {
 		EventParticipantDto eventParticipant = EventParticipantDto.build(event);
