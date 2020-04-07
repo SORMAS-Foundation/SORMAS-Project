@@ -224,12 +224,8 @@ public class PersonService extends AbstractAdoService<Person> {
 
 		Predicate casePersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, casePersonsRoot.join(Case.PERSON, JoinType.LEFT));
 		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, casePersonsRoot);
-		Predicate caseUserFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot, user);
-		casePersonsQuery.where(and(cb, casePersonsFilter, activeCasesFilter, caseUserFilter));
-		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
-		if (casePersonsFilter != null) {
-			casePersonsQuery.where(casePersonsFilter);
-		}
+		Predicate caseUserFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
+		casePersonsQuery.where(caseUserFilter != null ? and(cb, casePersonsFilter, activeCasesFilter, caseUserFilter) : and(cb, casePersonsFilter, activeCasesFilter));
 		casePersonsQuery.distinct(true);
 		persons.addAll(em.createQuery(casePersonsQuery).getResultList());
 
@@ -243,13 +239,8 @@ public class PersonService extends AbstractAdoService<Person> {
 
 		Predicate contactPersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, contactPersonsRoot.join(Contact.PERSON, JoinType.LEFT));
 		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, contactPersonsRoot);
-		Predicate contactUserFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot, user);
-		contactPersonsQuery.where(and(cb, contactPersonsFilter, activeContactsFilter, contactUserFilter));
-		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot
-        );
-		if (contactPersonsFilter != null) {
-			contactPersonsQuery.where(contactPersonsFilter);
-		}
+		Predicate contactUserFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot);
+		contactPersonsQuery.where(contactPersonsFilter != null ? and(cb, contactPersonsFilter, activeContactsFilter, contactUserFilter) : and(cb, contactPersonsFilter, activeContactsFilter));
 		contactPersonsQuery.distinct(true);
 		persons.addAll(em.createQuery(contactPersonsQuery).getResultList());
 
@@ -263,13 +254,8 @@ public class PersonService extends AbstractAdoService<Person> {
 
 		Predicate eventParticipantPersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, eventPersonsRoot.join(EventParticipant.PERSON, JoinType.LEFT));
 		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, eventPersonsRoot);
-		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot, user);
-		eventPersonsQuery.where(and(cb, eventParticipantPersonsFilter, activeEventParticipantsFilter, eventParticipantUserFilter));
-		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot
-        );
-		if (eventPersonsFilter != null) {
-			eventPersonsQuery.where(eventPersonsFilter);
-		}
+		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot);
+		eventPersonsQuery.where(eventParticipantUserFilter != null ? and(cb, eventParticipantPersonsFilter, activeEventParticipantsFilter, eventParticipantUserFilter) : and(cb, eventParticipantPersonsFilter, activeEventParticipantsFilter));
 		eventPersonsQuery.distinct(true);
 		persons.addAll(em.createQuery(eventPersonsQuery).getResultList());
 
