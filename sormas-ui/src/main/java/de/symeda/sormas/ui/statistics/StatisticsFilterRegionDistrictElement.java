@@ -24,8 +24,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttributeEnum;
+import de.symeda.sormas.api.statistics.StatisticsAttributesContainer;
+import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -33,16 +36,20 @@ public class StatisticsFilterRegionDistrictElement extends StatisticsFilterEleme
 
 	StatisticsFilterValuesElement regionElement;
 	StatisticsFilterValuesElement districtElement;
+	
+	private final StatisticsAttributesContainer statisticsAttributes;
 
-	public StatisticsFilterRegionDistrictElement() {
+	public StatisticsFilterRegionDistrictElement(StatisticsAttributesContainer statisticsAttributes) {
+		this.statisticsAttributes = statisticsAttributes;
+		
 		setSpacing(true);
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 
 		regionElement = new StatisticsFilterValuesElement(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION),
-				StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, this);
+				statisticsAttributes.get(StatisticsAttributeEnum.REGION_DISTRICT), statisticsAttributes.get(StatisticsSubAttributeEnum.REGION), this);
 		districtElement = new StatisticsFilterValuesElement(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT),
-				StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, this);
+				statisticsAttributes.get(StatisticsAttributeEnum.REGION_DISTRICT), statisticsAttributes.get(StatisticsSubAttributeEnum.DISTRICT), this);
 
 		addComponent(regionElement);
 		addComponent(districtElement);

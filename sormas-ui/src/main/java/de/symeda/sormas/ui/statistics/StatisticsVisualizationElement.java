@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
+import java.util.List;
+
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -24,9 +26,12 @@ import com.vaadin.ui.MenuBar.MenuItem;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttributeGroup;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttributesContainer;
+import de.symeda.sormas.api.statistics.StatisticsAttributeEnum;
+import de.symeda.sormas.api.statistics.StatisticsAttributeGroup;
+import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -40,10 +45,13 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 
 	private StatisticsVisualizationElementType type;
 	private StatisticsVisualizationType visualizationType;
-	private StatisticsCaseAttribute attribute;
-	private StatisticsCaseSubAttribute subAttribute;
+	private StatisticsAttribute attribute;
+	private StatisticsSubAttribute subAttribute;
 	
-	public StatisticsVisualizationElement(StatisticsVisualizationElementType type, StatisticsVisualizationType visualizationType) {
+	private StatisticsAttributesContainer statisticsAttributes;
+	
+	public StatisticsVisualizationElement(StatisticsAttributesContainer statisticsAttributes, StatisticsVisualizationElementType type, StatisticsVisualizationType visualizationType) {
+		this.statisticsAttributes = statisticsAttributes;
 		this.type = type;
 		this.visualizationType = visualizationType;
 		
@@ -74,12 +82,12 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 		emptySelectionItem = displayedAttributeItem.addItem(type.getEmptySelectionString(visualizationType), emptyItemCommand);
 		
 		// Add attribute groups
-		for (StatisticsCaseAttributeGroup attributeGroup : StatisticsCaseAttributeGroup.values()) {
+		for (StatisticsAttributeGroup attributeGroup : this.statisticsAttributes.values()) {
 			MenuItem attributeGroupItem = displayedAttributeItem.addItem(attributeGroup.toString(), null);
 			attributeGroupItem.setEnabled(false);
 			
 			// Add attributes belonging to the current group
-			for (StatisticsCaseAttribute attribute : attributeGroup.getAttributes()) {
+			for (StatisticsAttribute attribute : attributeGroup.getAttributes()) {
 				Command attributeCommand = selectedItem -> {
 					resetSubAttributeDropdown();
 					this.attribute = attribute;
@@ -89,8 +97,8 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 					selectedItem.setStyleName("selected-filter");
 					
 					// Build sub attribute dropdown
-					if (attribute.getSubAttributes().length > 0) {
-						for (StatisticsCaseSubAttribute subAttribute : attribute.getSubAttributes()) {
+					if (attribute.getSubAttributes().size() > 0) {
+						for (StatisticsSubAttribute subAttribute : attribute.getSubAttributes()) {
 							if (subAttribute.isUsedForGrouping()) {
 								Command subAttributeCommand = selectedSubItem -> {
 									this.subAttribute = subAttribute;
@@ -126,12 +134,20 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 		removeComponent(displayedSubAttributeDropdown);
 	}
 
-	public StatisticsCaseAttribute getAttribute() {
+	public StatisticsAttribute getAttribute() {
 		return attribute;
 	}
 
-	public StatisticsCaseSubAttribute getSubAttribute() {
+	public StatisticsAttributeEnum getAttributeEnum() {
+		return attribute == null ? null : attribute.getBaseEnum();
+	}
+
+	public StatisticsSubAttribute getSubAttribute() {
 		return subAttribute;
+	}
+
+	public StatisticsSubAttributeEnum getSubAttributeEnum() {
+		return subAttribute == null ? null : subAttribute.getBaseEnum();
 	}
 
 	public StatisticsVisualizationElementType getType() {

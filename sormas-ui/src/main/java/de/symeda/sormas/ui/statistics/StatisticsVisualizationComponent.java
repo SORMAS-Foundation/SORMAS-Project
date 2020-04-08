@@ -35,8 +35,12 @@ import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttributesContainer;
+import de.symeda.sormas.api.statistics.StatisticsAttributeEnum;
+import de.symeda.sormas.api.statistics.StatisticsAttributeGroup;
+import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationMapType;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -55,8 +59,12 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 	private StatisticsVisualizationElement columnsElement;
 	private Button switchRowsAndColumnsButton;
 	private final List<Consumer<StatisticsVisualizationType>> visualizationTypeChangedListeners = new ArrayList<Consumer<StatisticsVisualizationType>>();
+	
+	private StatisticsAttributesContainer statisticsAttributes;
 
-	public StatisticsVisualizationComponent() {
+	public StatisticsVisualizationComponent(StatisticsAttributesContainer statisticsAttributes) {
+		this.statisticsAttributes = statisticsAttributes;
+		
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 
@@ -112,7 +120,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		addComponent(visualizationChartSelect);
 		setExpandRatio(visualizationChartSelect, 0);
 
-		rowsElement = new StatisticsVisualizationElement(StatisticsVisualizationElementType.ROWS, visualizationType);
+		rowsElement = new StatisticsVisualizationElement(this.statisticsAttributes, StatisticsVisualizationElementType.ROWS, visualizationType);
 		addComponent(rowsElement);
 		setExpandRatio(rowsElement, 0);
 
@@ -140,7 +148,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		addComponent(switchRowsAndColumnsButton);
 		setExpandRatio(switchRowsAndColumnsButton, 0);
 
-		columnsElement = new StatisticsVisualizationElement(StatisticsVisualizationElementType.COLUMNS, visualizationType);
+		columnsElement = new StatisticsVisualizationElement(this.statisticsAttributes, StatisticsVisualizationElementType.COLUMNS, visualizationType);
 		addComponent(columnsElement);
 		setExpandRatio(columnsElement, 0);
 
@@ -169,24 +177,24 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 				&& visualizationChartType != StatisticsVisualizationChartType.PIE));
 	}
 
-	public StatisticsCaseAttribute getRowsAttribute() {
+	public StatisticsAttribute getRowsAttribute() {
 		switch (visualizationType) {
 		case MAP:
-			return StatisticsCaseAttribute.REGION_DISTRICT;
+			return statisticsAttributes.get(StatisticsAttributeEnum.REGION_DISTRICT);
 		default:
 			break;
 		}
 		return rowsElement.getAttribute();
 	}
 
-	public StatisticsCaseSubAttribute getRowsSubAttribute() {
+	public StatisticsSubAttribute getRowsSubAttribute() {
 		switch (visualizationType) {
 		case MAP:
 			switch (visualizationMapType) {
 			case REGIONS:
-				return StatisticsCaseSubAttribute.REGION;
+				return statisticsAttributes.get(StatisticsSubAttributeEnum.REGION);
 			case DISTRICTS:
-				return StatisticsCaseSubAttribute.DISTRICT;
+				return statisticsAttributes.get(StatisticsSubAttributeEnum.DISTRICT);
 			default:
 				throw new IllegalArgumentException(visualizationMapType.toString());
 			}
@@ -196,7 +204,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		return rowsElement.getSubAttribute();
 	}
 
-	public StatisticsCaseAttribute getColumnsAttribute() {
+	public StatisticsAttribute getColumnsAttribute() {
 		switch (visualizationType) {
 		case MAP:
 			return null;
@@ -213,7 +221,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		return columnsElement.getAttribute();
 	}
 
-	public StatisticsCaseSubAttribute getColumnsSubAttribute() {
+	public StatisticsSubAttribute getColumnsSubAttribute() {
 		switch (visualizationType) {
 		case MAP:
 			return null;
@@ -246,7 +254,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		switch (visualizationType) {
 		case TABLE:
 		case CHART:
-			return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.REGION;
+			return rowsElement.getSubAttributeEnum() == StatisticsSubAttributeEnum.REGION || columnsElement.getSubAttributeEnum() == StatisticsSubAttributeEnum.REGION;
 		case MAP:
 			return visualizationMapType == StatisticsVisualizationMapType.REGIONS;
 		default:
@@ -258,7 +266,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		switch (visualizationType) {
 		case TABLE:
 		case CHART:
-			return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.DISTRICT;
+			return rowsElement.getSubAttributeEnum() == StatisticsSubAttributeEnum.DISTRICT || columnsElement.getSubAttributeEnum() == StatisticsSubAttributeEnum.DISTRICT;
 		case MAP:
 			return visualizationMapType == StatisticsVisualizationMapType.DISTRICTS;
 		default:
@@ -270,7 +278,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		switch (visualizationType) {
 		case TABLE:
 		case CHART:
-			return rowsElement.getAttribute() == StatisticsCaseAttribute.SEX || columnsElement.getAttribute() == StatisticsCaseAttribute.SEX;
+			return rowsElement.getAttributeEnum() == StatisticsAttributeEnum.SEX || columnsElement.getAttributeEnum() == StatisticsAttributeEnum.SEX;
 		case MAP:
 			return false;
 		default:
@@ -282,7 +290,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		switch (visualizationType) {
 		case TABLE:
 		case CHART:
-			return rowsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS || columnsElement.getAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS;
+			return rowsElement.getAttributeEnum() == StatisticsAttributeEnum.AGE_INTERVAL_5_YEARS || columnsElement.getAttributeEnum() == StatisticsAttributeEnum.AGE_INTERVAL_5_YEARS;
 		case MAP:
 			return false;
 		default:
@@ -294,8 +302,8 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		switch (visualizationType) {
 		case TABLE:
 		case CHART:
-			return (rowsElement.getAttribute() != null && rowsElement.getAttribute().isAgeGroup() && rowsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS)
-					|| (columnsElement.getAttribute() != null && columnsElement.getAttribute().isAgeGroup() && columnsElement.getAttribute() != StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS);
+			return (rowsElement.getAttribute() != null && rowsElement.getAttribute().isAgeGroup() && rowsElement.getAttributeEnum() != StatisticsAttributeEnum.AGE_INTERVAL_5_YEARS)
+					|| (columnsElement.getAttribute() != null && columnsElement.getAttribute().isAgeGroup() && columnsElement.getAttributeEnum() != StatisticsAttributeEnum.AGE_INTERVAL_5_YEARS);
 		case MAP:
 			return false;
 		default:

@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.statistics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -36,14 +37,17 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttributeEnum;
+import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.user.UserRole;
@@ -52,8 +56,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 
-	private final StatisticsCaseAttribute attribute;
-	private final StatisticsCaseSubAttribute subAttribute;
+	private final StatisticsAttribute attribute;
+	private final StatisticsSubAttribute subAttribute;
 
 	private Registration valueChangeListenerRegistration;
 	private ExtTokenField tokenField;
@@ -64,7 +68,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 	 */
 	private StatisticsFilterRegionDistrictElement regionDistrictElement;
 
-	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+	public StatisticsFilterValuesElement(String caption, StatisticsAttribute attribute, StatisticsSubAttribute subAttribute) {
 		setSpacing(true);
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
@@ -81,7 +85,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		setComponentAlignment(utilityButtonsLayout, Alignment.MIDDLE_RIGHT);
 	}
 
-	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, StatisticsFilterRegionDistrictElement regionDistrictElement) {
+	public StatisticsFilterValuesElement(String caption, StatisticsAttribute attribute, StatisticsSubAttribute subAttribute, StatisticsFilterRegionDistrictElement regionDistrictElement) {
 		this(caption, attribute, subAttribute);
 		this.regionDistrictElement = regionDistrictElement;
 	}
@@ -141,63 +145,31 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 
 	private List<TokenizableValue> getFilterValues() {
 		if (subAttribute != null) {
-			switch (subAttribute) {
-			case YEAR:
-			case QUARTER:
-			case MONTH:
-			case EPI_WEEK:
-			case QUARTER_OF_YEAR:
-			case MONTH_OF_YEAR:
-			case EPI_WEEK_OF_YEAR:
-				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
-				return createTokens(dateValues);
-			case REGION:
-				return createTokens(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-			case DISTRICT:
-				if (regionDistrictElement == null) {
-					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
-				}
-				
-				List<TokenizableValue> selectedRegionTokenizables = regionDistrictElement.getSelectedRegions();
-				if (CollectionUtils.isNotEmpty(selectedRegionTokenizables)) {
-					List<DistrictReferenceDto> districts = new ArrayList<>();
-					for (TokenizableValue selectedRegionTokenizable : selectedRegionTokenizables) {
-						RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
-						districts.addAll(FacadeProvider.getDistrictFacade().getAllActiveByRegion(selectedRegion.getUuid()));
+			switch (StatisticsSubAttribute.getBaseEnum(subAttribute)) {
+				case REGION:
+					return createTokens(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				case DISTRICT:
+					if (regionDistrictElement == null) {
+						return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 					}
-					return createTokens(districts);
-				} else {
-					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
-				}
-			default:
-				throw new IllegalArgumentException(this.toString());
-			}
-		} else {
-			switch (attribute) {
-			case SEX:
-				List<TokenizableValue> tokens = createTokens(Sex.values());
-				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.unknown), tokens.size()));
-				return tokens;
-			case AGE_INTERVAL_1_YEAR:
-			case AGE_INTERVAL_5_YEARS:
-			case AGE_INTERVAL_CHILDREN_COARSE:
-			case AGE_INTERVAL_CHILDREN_FINE:
-			case AGE_INTERVAL_CHILDREN_MEDIUM:
-			case AGE_INTERVAL_BASIC:
-				List<StatisticsGroupingKey> ageIntervalValues = StatisticsHelper.getAgeIntervalGroupingKeys(attribute);
-				return createTokens(ageIntervalValues);
-			case DISEASE:
-				return createTokens(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
-			case CLASSIFICATION:
-				return createTokens(CaseClassification.values());
-			case OUTCOME:
-				return createTokens(CaseOutcome.values());
-			case REPORTING_USER_ROLE:
-				return createTokens(UserRole.values());
-			default:
-				throw new IllegalArgumentException(this.toString());
+					
+					List<TokenizableValue> selectedRegionTokenizables = regionDistrictElement.getSelectedRegions();
+					if (CollectionUtils.isNotEmpty(selectedRegionTokenizables)) {
+						List<DistrictReferenceDto> districts = new ArrayList<>();
+						for (TokenizableValue selectedRegionTokenizable : selectedRegionTokenizables) {
+							RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
+							districts.addAll(FacadeProvider.getDistrictFacade().getAllActiveByRegion(selectedRegion.getUuid()));
+						}
+						return createTokens(districts);
+					} else {
+						return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
+					}
+				default:
+					return createTokens(subAttribute.getValues(attribute));
 			}
 		}
+		else
+			return createTokens(attribute.getValues());
 	}
 
 	public void setValueChangeListener(ValueChangeListener<List<Tokenizable>> valueChangeListener) {
