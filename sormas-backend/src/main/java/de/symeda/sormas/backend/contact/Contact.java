@@ -89,6 +89,7 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String CONTACT_AGE = "contactAge";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -124,6 +125,8 @@ public class Contact extends CoreAdo {
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
 	
+	private Integer contactAge;
+	
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
@@ -138,6 +141,14 @@ public class Contact extends CoreAdo {
 	
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+	
+	public Integer getContactAge() {
+		return contactAge;
+	}
+
+	public void setContactAge(Integer contactAge) {
+		this.contactAge = contactAge;
 	}
 	
 	@ManyToOne(cascade = {})

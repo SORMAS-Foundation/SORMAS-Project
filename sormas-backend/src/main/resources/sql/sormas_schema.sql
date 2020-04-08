@@ -4015,3 +4015,13 @@ UPDATE contact SET disease = cases.disease FROM cases WHERE contact.caze_id = ca
 UPDATE contact SET diseasedetails = cases.diseasedetails FROM cases WHERE contact.caze_id = cases.id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (192, 'Add disease to contact #1643');
+
+
+-- 2020-04-07 Contact age field #1281
+ALTER TABLE contact ADD COLUMN contactage integer;
+ALTER TABLE contact_history ADD COLUMN contactage integer;
+
+UPDATE contact SET contactage = p.approximateage FROM person p WHERE contact.person_id = p.id AND p.approximateage IS NOT NULL AND p.approximateagetype = 'YEARS';
+UPDATE contact SET contactage = 0 FROM person p WHERE contact.person_id = p.id AND p.approximateage IS NOT NULL AND p.approximateagetype = 'MONTHS';
+
+INSERT INTO schema_version (version_number, comment) VALUES (193, 'Contact age field #1281');
