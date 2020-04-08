@@ -35,7 +35,7 @@
 ### Postgres Database
 
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
-* set **max_prepared_transactions = 64** (at least) in postgresql.conf (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``)
+* set **max_prepared_transactions = 64** (at least) in postgresql.conf (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
 * Install the "temporal tables" extension for Postgres (https://github.com/arkhipov/temporal_tables)
     * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
     * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
