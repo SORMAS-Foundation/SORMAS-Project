@@ -22,10 +22,10 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.caze.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCountDto;
+import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
+import de.symeda.sormas.api.statistics.caze.StatisticsCaseCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -54,17 +54,17 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
 		
-		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, null, null, null, null, false, false, null);
+		List<StatisticsCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, null, null, null, null, false, false, null);
 		// List should have one entry
 		assertEquals(1, results.size());
 		
 		// try all groupings
 		for (StatisticsCaseAttribute groupingAttribute : StatisticsCaseAttribute.values()) {
-			StatisticsCaseSubAttribute[] subAttributes = groupingAttribute.getSubAttributes();
+			StatisticsSubAttributeEnum[] subAttributes = groupingAttribute.getSubAttributes();
 			if (subAttributes.length == 0) {
 				 getCaseStatisticsFacade().queryCaseCount(criteria, groupingAttribute, null, null, null, false, false, null);
 			} else {
-				for (StatisticsCaseSubAttribute subGroupingAttribute : groupingAttribute.getSubAttributes()) {
+				for (StatisticsSubAttributeEnum subGroupingAttribute : groupingAttribute.getSubAttributes()) {
 					if (subGroupingAttribute.isUsedForGrouping()) {
 						getCaseStatisticsFacade().queryCaseCount(criteria, groupingAttribute, subGroupingAttribute, null, null, false, false, null);
 					}
@@ -94,7 +94,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid())));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
 		
-		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.SEX, null, null, null, false, true, null);
+		List<StatisticsCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.SEX, null, null, null, false, true, null);
 
 		// List should have one entry per sex and also unknown
 		assertEquals(Sex.values().length + 1, results.size());
@@ -117,7 +117,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
 		criteria.regions(Arrays.asList(rdcf.region));
 
-		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, null);
+		List<StatisticsCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsSubAttributeEnum.REGION, null, null, true, false, null);
 		assertNull(results.get(0).getPopulation());
 		
 		PopulationDataDto populationData = PopulationDataDto.build(new Date());
@@ -128,7 +128,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		populationData.setPopulation(new Integer(10000));
 		getPopulationDataFacade().savePopulationData(Arrays.asList(populationData));
 
-		results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, LocalDate.now().getYear() + 2);
+		results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsSubAttributeEnum.REGION, null, null, true, false, LocalDate.now().getYear() + 2);
 		// List should have one entry
 		assertEquals(Integer.valueOf(12214), results.get(0).getPopulation());
 

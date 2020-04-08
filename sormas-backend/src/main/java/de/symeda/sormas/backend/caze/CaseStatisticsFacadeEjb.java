@@ -43,12 +43,14 @@ import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.caze.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttribute;
+import de.symeda.sormas.api.statistics.StatisticsCountDto;
+import de.symeda.sormas.api.statistics.caze.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
-import de.symeda.sormas.api.statistics.StatisticsHelper;
+import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
+import de.symeda.sormas.api.statistics.caze.StatisticsHelper;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.infrastructure.PopulationData;
@@ -81,11 +83,11 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<StatisticsCaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, 
-			StatisticsCaseAttribute rowGrouping, StatisticsCaseSubAttribute rowSubGrouping,
-			StatisticsCaseAttribute columnGrouping, StatisticsCaseSubAttribute columnSubGrouping,
+	public List<StatisticsCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, 
+			StatisticsCaseAttribute rowGrouping, StatisticsSubAttributeEnum rowSubGrouping,
+			StatisticsCaseAttribute columnGrouping, StatisticsSubAttributeEnum columnSubGrouping,
 			boolean includePopulation, boolean includeZeroValues, Integer populationReferenceYear) {
-
+		
 		// case counts
 		Pair<String, List<Object>> caseCountQueryAndParams = buildCaseCountQuery(caseCriteria, rowGrouping, rowSubGrouping, columnGrouping, columnSubGrouping);
 
@@ -97,11 +99,11 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		Function<Integer, RegionReferenceDto> regionProvider = id -> regionFacade.getRegionReferenceById(id);
 		Function<Integer, DistrictReferenceDto> districtProvider = id -> districtFacade.getDistrictReferenceById(id);
 		
-		List<StatisticsCaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream())
+		List<StatisticsCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream())
 				.map(result -> {
 					Object rowKey = "".equals(result[1]) ? null : result[1];
 					Object columnKey = "".equals(result[2]) ? null : result[2];
-					return new StatisticsCaseCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, null,
+					return new StatisticsCountDto(result[0] != null ? ((Number)result[0]).intValue() : null, null,
 						StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping, regionProvider, districtProvider),
 						StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping, regionProvider, districtProvider));
 				})
@@ -129,7 +131,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			
 			for (StatisticsGroupingKey rowKey : allRowKeys) {
 				for (StatisticsGroupingKey columnKey : allColumnKeys) {
-					StatisticsCaseCountDto zeroDto = new StatisticsCaseCountDto(0, null, rowKey, columnKey);
+					StatisticsCountDto zeroDto = new StatisticsCountDto(0, null, rowKey, columnKey);
 					if (!caseCountResults.contains(zeroDto)) {
 						caseCountResults.add(zeroDto);
 					}
@@ -146,11 +148,11 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				populationQuery.setParameter(i + 1, populationQueryAndParams.getValue().get(i));
 			}
 			
-			List<StatisticsCaseCountDto> populationResults = ((Stream<Object[]>) populationQuery.getResultStream())
+			List<StatisticsCountDto> populationResults = ((Stream<Object[]>) populationQuery.getResultStream())
 					.map(result -> {
 						Object rowKey = "".equals(result[1]) ? null : result[1];
 						Object columnKey = "".equals(result[2]) ? null : result[2];
-						return new StatisticsCaseCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null,
+						return new StatisticsCountDto(null, result[0] != null ? ((Number)result[0]).intValue() : null,
 							StatisticsHelper.buildGroupingKey(rowKey, rowGrouping, rowSubGrouping, regionProvider, districtProvider),
 							StatisticsHelper.buildGroupingKey(columnKey, columnGrouping, columnSubGrouping, regionProvider, districtProvider));
 					})
@@ -165,8 +167,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			
 			// add the population data to the case counts
 			// when a key is not a population data key, we use null instead
-			StatisticsCaseCountDto searchDto = new StatisticsCaseCountDto(null, null, null, null);
-			for (StatisticsCaseCountDto caseCountResult : caseCountResults) {
+			StatisticsCountDto searchDto = new StatisticsCountDto(null, null, null, null);
+			for (StatisticsCountDto caseCountResult : caseCountResults) {
 				
 				if (rowIsPopulation) {
 					searchDto.setRowKey(caseCountResult.getRowKey());
@@ -191,8 +193,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	 * Builds SQL query string and list of parameters (for filters)
 	 */
 	public Pair<String, List<Object>> buildCaseCountQuery(StatisticsCaseCriteria caseCriteria, 
-				StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA, 
-				StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB) {
+				StatisticsCaseAttribute groupingA, StatisticsSubAttributeEnum subGroupingA, 
+				StatisticsCaseAttribute groupingB, StatisticsSubAttributeEnum subGroupingB) {
 	
 			// Steps to build the query:
 			// 1. Join the required tables
@@ -206,7 +208,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	
 			StringBuilder caseJoinBuilder = new StringBuilder();
 	
-			if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
+			if (subGroupingA == StatisticsSubAttributeEnum.DISTRICT || subGroupingB == StatisticsSubAttributeEnum.DISTRICT) {
 				caseJoinBuilder.append(" LEFT JOIN ").append(District.TABLE_NAME).append(" ON ").append(Case.TABLE_NAME)
 				.append(".").append(Case.DISTRICT).append("_id").append(" = ").append(District.TABLE_NAME)
 				.append(".").append(District.ID);
@@ -525,8 +527,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	 * Builds SQL query string and list of parameters (for filters)
 	 */
 	public Pair<String, List<Object>> buildPopulationQuery(StatisticsCaseCriteria caseCriteria, 
-			StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA, 
-			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB,
+			StatisticsCaseAttribute groupingA, StatisticsSubAttributeEnum subGroupingA, 
+			StatisticsCaseAttribute groupingB, StatisticsSubAttributeEnum subGroupingB,
 			Integer populationReferenceYear) {
 
 		////////
@@ -591,7 +593,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			// limit either to entries with district our to entries without district
 			
 			districtIds = null;
-			usesDistricts = subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT;
+			usesDistricts = subGroupingA == StatisticsSubAttributeEnum.DISTRICT || subGroupingB == StatisticsSubAttributeEnum.DISTRICT;
 			
 			if (whereBuilder.length() > 0) {
 				whereBuilder.append(" AND ");
@@ -679,7 +681,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		
 		// growth rates to calculate the population
 		selectBuilder.append(" LEFT JOIN ");
-		if (districtIds != null || subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
+		if (districtIds != null || subGroupingA == StatisticsSubAttributeEnum.DISTRICT || subGroupingB == StatisticsSubAttributeEnum.DISTRICT) {
 			selectBuilder.append(District.TABLE_NAME).append(" AS growthsource ON growthsource.").append(District.ID)
 				.append(" = ").append(PopulationData.DISTRICT).append("_id");
 		} else {
@@ -707,7 +709,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	}
 
 	private String buildPopulationGroupingSelect(StatisticsCaseAttribute grouping,
-			StatisticsCaseSubAttribute subGrouping) {
+			StatisticsSubAttributeEnum subGrouping) {
 		if (grouping != null) {
 			switch (grouping) {
 			case REGION_DISTRICT: {
@@ -831,7 +833,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		return AbstractAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
-	private String buildCaseGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping, String groupAlias) {
+	private String buildCaseGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsSubAttributeEnum subGrouping, String groupAlias) {
 		StringBuilder groupingSelectPartBuilder = new StringBuilder();
 		switch (grouping) {
 		case SEX:

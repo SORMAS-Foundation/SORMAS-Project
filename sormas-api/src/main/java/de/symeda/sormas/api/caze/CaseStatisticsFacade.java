@@ -21,15 +21,17 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
-import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
-import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsAttribute;
+import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
+import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
+import de.symeda.sormas.api.statistics.caze.StatisticsCaseAttribute;
+import de.symeda.sormas.api.statistics.caze.StatisticsCaseCriteria;
+import de.symeda.sormas.api.statistics.StatisticsCountDto;
 
 @Remote
 public interface CaseStatisticsFacade {
 
-	List<StatisticsCaseCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsCaseSubAttribute subGroupingA,
-			StatisticsCaseAttribute groupingB, StatisticsCaseSubAttribute subGroupingB, boolean includePopulation, boolean includeZeroValues, Integer populationReferenceYear);
+	List<StatisticsCountDto> queryCaseCount(StatisticsCaseCriteria caseCriteria, StatisticsCaseAttribute groupingA, StatisticsSubAttributeEnum subGroupingA,
+			StatisticsCaseAttribute groupingB, StatisticsSubAttributeEnum subGroupingB, boolean includePopulation, boolean includeZeroValues, Integer populationReferenceYear);
 
 }
