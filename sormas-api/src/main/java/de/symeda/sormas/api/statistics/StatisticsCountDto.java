@@ -6,28 +6,28 @@ import java.math.BigDecimal;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class StatisticsCaseCountDto implements Serializable {
+public class StatisticsCountDto implements Serializable {
 	
 	private static final long serialVersionUID = 8900419282951754875L;
 
-	private Integer caseCount;
+	private Integer count;
 	private Integer population;
 	private StatisticsGroupingKey rowKey;
 	private StatisticsGroupingKey columnKey;
 	
-	public StatisticsCaseCountDto(Integer caseCount, Integer population, StatisticsGroupingKey rowKey, StatisticsGroupingKey columnKey) {
+	public StatisticsCountDto(Integer caseCount, Integer population, StatisticsGroupingKey rowKey, StatisticsGroupingKey columnKey) {
 		super();
-		this.caseCount = caseCount;
+		this.count = caseCount;
 		this.population = population;
 		this.rowKey = rowKey;
 		this.columnKey = columnKey;
 	}
 	
-	public Integer getCaseCount() {
-		return caseCount;
+	public Integer getCount() {
+		return count;
 	}
-	public void setCaseCount(Integer caseCount) {
-		this.caseCount = caseCount;
+	public void setCount(Integer caseCount) {
+		this.count = caseCount;
 	}
 	public Integer getPopulation() {
 		return population;
@@ -52,17 +52,17 @@ public class StatisticsCaseCountDto implements Serializable {
 		if (population == null) {
 			return null;
 		}
-		if (caseCount == null || caseCount.intValue() == 0) {
+		if (count == null || count.intValue() == 0) {
 			return BigDecimal.ZERO;
 		}
 		
-		return InfrastructureHelper.getCaseIncidence(caseCount.intValue(), population.intValue(), divisor);
+		return InfrastructureHelper.getCaseIncidence(count.intValue(), population.intValue(), divisor);
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof StatisticsCaseCountDto) {
-			StatisticsCaseCountDto other = (StatisticsCaseCountDto)obj;
+		if (obj instanceof StatisticsCountDto) {
+			StatisticsCountDto other = (StatisticsCountDto)obj;
 			return DataHelper.equal(rowKey, other.rowKey) && DataHelper.equal(columnKey, other.columnKey);
 		}		
 		
