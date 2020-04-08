@@ -27,9 +27,10 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
+import de.symeda.sormas.api.infrastructure.PopulationStatisticsCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
+//import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -187,7 +188,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Long> getMissingPopulationDataForStatistics(StatisticsCaseCriteria criteria, boolean groupByRegion, boolean groupByDistrict,
+	public List<Long> getMissingPopulationDataForStatistics(PopulationStatisticsCriteria criteria, boolean groupByRegion, boolean groupByDistrict,
 			boolean groupBySex, boolean groupByAgeGroup) {
 		StringBuilder regionsIn = new StringBuilder();
 		StringBuilder districtsIn = new StringBuilder();
