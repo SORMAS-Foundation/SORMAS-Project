@@ -215,15 +215,23 @@ public class ContactFacadeEjb implements ContactFacade {
 		contactService.ensurePersisted(entity);
 		
 		if (handleChanges) {
-			contactService.updateFollowUpUntilAndStatus(entity);
-			contactService.udpateContactStatus(entity);
-			
-			updateContactAge(dto, entity);
-			
-			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
+			onContactChanged(dto, entity);
 		}
 		
 		return toDto(entity);
+	}
+	
+	/**
+	 * Handles potential changes, processes and backend logic that needs to be done
+	 * after a case has been created/saved
+	 */
+	public void onContactChanged(ContactDto existingContact, Contact newContact) {
+		contactService.updateFollowUpUntilAndStatus(newContact);
+		contactService.udpateContactStatus(newContact);
+		
+		updateContactAge(existingContact, newContact);
+		
+		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newContact.getCaze()), newContact.getCaze());
 	}
 	
 	@Override
