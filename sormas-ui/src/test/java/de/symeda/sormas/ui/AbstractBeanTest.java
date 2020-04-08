@@ -64,7 +64,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 
 		UserDto user = creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
-		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName()	);
 	}
 
 	private void initH2Functions() {
