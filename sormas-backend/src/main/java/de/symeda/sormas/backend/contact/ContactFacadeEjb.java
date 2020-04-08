@@ -478,15 +478,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		Join<Case, Person> contactCasePerson = contactCase.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> contactCaseRegion = contactCase.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> contactCaseDistrict = contactCase.join(Case.DISTRICT, JoinType.LEFT);
-		Join<Case, Facility> contactCaseFacility = contactCase.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Join<Contact, User> contactOfficer = contact.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
 
 		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME),
 				contactPerson.get(Person.LAST_NAME), contactCase.get(Case.UUID), contact.get(Contact.DISEASE),
 				contact.get(Contact.DISEASE_DETAILS), contactCasePerson.get(Person.UUID),
 				contactCasePerson.get(Person.FIRST_NAME), contactCasePerson.get(Person.LAST_NAME),
-				contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID),
-				contactCaseFacility.get(Facility.UUID), contact.get(Contact.LAST_CONTACT_DATE),
+				contactCaseRegion.get(Region.UUID), contactCaseDistrict.get(District.UUID), contact.get(Contact.LAST_CONTACT_DATE),
 				contact.get(Contact.CONTACT_CATEGORY), contact.get(Contact.CONTACT_PROXIMITY),
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS),
 				contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
@@ -538,14 +536,11 @@ public class ContactFacadeEjb implements ContactFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = contactCasePerson.get(Person.LAST_NAME);
 					break;
-				case ContactIndexDto.CASE_REGION_UUID:
+				case ContactIndexDto.REGION_UUID:
 					expression = contactCaseRegion.get(Region.NAME);
 					break;
-				case ContactIndexDto.CASE_DISTRICT_UUID:
+				case ContactIndexDto.DISTRICT_UUID:
 					expression = contactCaseDistrict.get(District.NAME);
-					break;
-				case ContactIndexDto.CASE_HEALTH_FACILITY_UUID:
-					expression = contactCaseFacility.get(Facility.NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

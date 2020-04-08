@@ -25,7 +25,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -41,7 +40,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private CaseReferenceDto caze;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
-	private FacilityReferenceDto caseFacility;
 	private UserReferenceDto contactOfficer;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
@@ -102,15 +100,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria district(DistrictReferenceDto district) {
 		this.district = district;
-		return this;
-	}
-
-	public FacilityReferenceDto getCaseFacility() {
-		return caseFacility;
-	}
-
-	public ContactCriteria caseFacility(FacilityReferenceDto caseFacility) {
-		this.caseFacility = caseFacility;
 		return this;
 	}
 
