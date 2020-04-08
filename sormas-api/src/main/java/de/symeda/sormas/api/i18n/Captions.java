@@ -1005,7 +1005,9 @@ public interface Captions {
 	public static String statisticsAttribute = "statisticsAttribute";
 	public static String statisticsAttributeSelect = "statisticsAttributeSelect";
 	public static String statisticsAttributeSpecification = "statisticsAttributeSpecification";
+	public static String statisticsCase = "statisticsCase";
 	public static String statisticsChartType = "statisticsChartType";
+	public static String statisticsContact = "statisticsContact";
 	public static String statisticsDatabaseExport = "statisticsDatabaseExport";
 	public static String statisticsDataDisplayed = "statisticsDataDisplayed";
 	public static String statisticsDontGroupColumns = "statisticsDontGroupColumns";
@@ -1259,6 +1261,7 @@ public interface Captions {
 	public static String View_cases_sub = "View.cases.sub";
 	public static String View_cases_symptoms = "View.cases.symptoms";
 	public static String View_cases_therapy = "View.cases.therapy";
+	public static String View_caseStatistics = "View.caseStatistics";
 	public static String View_configuration_communities = "View.configuration.communities";
 	public static String View_configuration_communities_short = "View.configuration.communities.short";
 	public static String View_configuration_devMode = "View.configuration.devMode";
@@ -1287,6 +1290,7 @@ public interface Captions {
 	public static String View_contacts_person = "View.contacts.person";
 	public static String View_contacts_sub = "View.contacts.sub";
 	public static String View_contacts_visits = "View.contacts.visits";
+	public static String View_contactStatistics = "View.contactStatistics";
 	public static String View_dashboard_contacts = "View.dashboard.contacts";
 	public static String View_dashboard_surveillance = "View.dashboard.surveillance";
 	public static String View_events = "View.events";
