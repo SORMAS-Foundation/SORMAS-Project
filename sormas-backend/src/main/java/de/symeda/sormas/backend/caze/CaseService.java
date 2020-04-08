@@ -277,24 +277,26 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Case> caze = cq.from(Case.class);
 
-			Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
+			Predicate filter = cb.and(
+					cb.equal(caze.get(Case.DELETED), false),
+					cb.equal(caze.get(Case.DISEASE), caseDisease));
 			if (!DataHelper.isNullOrEmpty(caseUuid)) {
 				filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
 			}
 			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), epidNumberPrefix + "%"));
 			cq.where(filter);
 
-			ParameterExpression<String> regexParam2 = cb.parameter(String.class);
-			ParameterExpression<String> regexParam3 = cb.parameter(String.class);
-			ParameterExpression<String> regexParam4 = cb.parameter(String.class);
+			ParameterExpression<String> regexPattern = cb.parameter(String.class);
+			ParameterExpression<String> regexReplacement = cb.parameter(String.class);
+			ParameterExpression<String> regexFlags = cb.parameter(String.class);
 			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, 
-					cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length()+1), regexParam2, regexParam3, regexParam4);
+					cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length() + 1), regexPattern, regexReplacement, regexFlags);
 			cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
 			cq.select(caze.get(Case.EPID_NUMBER));
 			TypedQuery<String> query = em.createQuery(cq);
-			query.setParameter(regexParam2, "\\D");
-			query.setParameter(regexParam3, "");
-			query.setParameter(regexParam4, "g");
+			query.setParameter(regexPattern, "\\D"); // Non-digits
+			query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
+			query.setParameter(regexFlags, "g"); // Global search
 			query.setMaxResults(1);
 			return query.getSingleResult();
 

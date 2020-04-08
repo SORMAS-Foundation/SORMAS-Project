@@ -80,8 +80,8 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		Root<District> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-				cb.equal(from.get(District.NAME), name),
-				cb.equal(cb.lower(from.get(District.NAME)), name.toLowerCase())
+				cb.equal(cb.trim(from.get(District.NAME)), name.trim()),
+				cb.equal(cb.lower(cb.trim(from.get(District.NAME))), name.trim().toLowerCase())
 				);
 		if (region != null) {
 			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));

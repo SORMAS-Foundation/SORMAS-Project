@@ -48,8 +48,8 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		Root<Community> from = cq.from(getElementClass());
 		
 		Predicate filter = cb.or(
-				cb.equal(from.get(Community.NAME), name),
-				cb.equal(cb.lower(from.get(Community.NAME)), name.toLowerCase())
+				cb.equal(cb.trim(from.get(Community.NAME)), name.trim()),
+				cb.equal(cb.lower(cb.trim(from.get(Community.NAME))), name.trim().toLowerCase())
 				);
 		if (district != null) {
 			filter = cb.and(filter, cb.equal(from.get(Community.DISTRICT), district));

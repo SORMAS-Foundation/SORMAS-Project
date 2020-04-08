@@ -177,7 +177,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testDashboardCaseListCreation() {
-
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -197,7 +196,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testMapCaseListCreation() {
-
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -214,7 +212,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexList() {
-
 		String districtName = "District";
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", districtName, "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
@@ -282,7 +279,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	 */
 	@Test
 	public void testGetExportListNoDuplicates() {
-
 		CaseFacade cut = getCaseFacade();
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -374,7 +370,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testOutcomePersonConditionUpdate() {
-
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -500,7 +495,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testGenerateEpidNumber() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 
@@ -532,7 +527,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		fourthCaze = getCaseFacade().getCaseDataByUuid(fourthCaze.getUuid());
 
 		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
-
+		
+		// Make sure that deleted cases are ignored when searching for the highest existing epid nummber
+		getCaseFacade().deleteCase(fourthCaze.getUuid(), user.getUuid());
+		
+		CaseDataDto fifthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+		
+		assertEquals("COU-REG-DIS-" + year + "-005", fifthCaze.getEpidNumber());
+		
 	}
 
 	@Test

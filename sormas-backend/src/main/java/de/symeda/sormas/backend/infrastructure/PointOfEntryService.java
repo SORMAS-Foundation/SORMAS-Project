@@ -62,8 +62,11 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
 		Root<PointOfEntry> from = cq.from(getElementClass());
 		
-		Predicate filter = cb.equal(from.get(PointOfEntry.NAME), name);
-		if (!PointOfEntryDto.isNameOtherPointOfEntry(name)) {
+		Predicate filter = cb.or(
+				cb.equal(cb.trim(from.get(PointOfEntry.NAME)), name.trim()),
+				cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.NAME))), name.trim().toLowerCase())
+				);
+		if (!PointOfEntryDto.isNameOtherPointOfEntry(name.trim())) {
 			filter = cb.and(filter, cb.equal(from.get(PointOfEntry.DISTRICT), district));
 		}
 		

@@ -97,6 +97,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private TextField contactProximityDetails;
 	private ComboBox birthDateDay;
 
+	/**
+	 * TODO use disease and case relation information given in ContactDto
+	 */
 	public ContactCreateForm(UserRight editOrCreateUserRight, Disease disease, boolean hasCaseRelation) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
 
