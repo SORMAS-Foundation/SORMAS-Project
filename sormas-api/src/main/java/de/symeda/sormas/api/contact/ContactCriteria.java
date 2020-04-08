@@ -25,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -55,6 +56,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String nameUuidCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
+	private PersonReferenceDto person;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -258,6 +260,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria onlyHighPriorityContacts(Boolean onlyHighPriorityContacts) {
 		this.onlyHighPriorityContacts = onlyHighPriorityContacts;
 		return this;
+	}	
+	
+	public ContactCriteria person(PersonReferenceDto person) {
+		this.person = person;
+		return this;
 	}
 	
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
 }

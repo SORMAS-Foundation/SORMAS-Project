@@ -736,6 +736,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getDisease() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.DISEASE), contactCriteria.getDisease()));
 		}
+		if (contactCriteria.getPerson() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Contact.PERSON, JoinType.LEFT).get(Person.UUID), contactCriteria.getPerson().getUuid()));
+		}
 		if (contactCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), contactCriteria.getCaze().getUuid()));
 		}
