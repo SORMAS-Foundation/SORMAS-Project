@@ -240,6 +240,25 @@ public class ContactFacadeEjb implements ContactFacade {
 		return contactService.getContactsForMap(region, district, disease, fromDate, toDate, user, caseUuids);
 	}
 	
+	private void updateContactAge (ContactDto existingContact, Contact newContact) {
+		if (newContact.getPerson().getApproximateAge() != null) {
+			if (existingContact == null || existingContact.getReportDateTime() != newContact.getReportDateTime()) {
+				if (newContact.getPerson().getApproximateAgeType() == ApproximateAgeType.MONTHS) {
+					newContact.setContactAge(0);
+				} else {
+					Date personChangeDate = newContact.getPerson().getChangeDate();
+					Date referenceDate = newContact.getReportDateTime();
+					newContact.setContactAge(newContact.getPerson().getApproximateAge()
+							- DateHelper.getYearsBetween(referenceDate, personChangeDate));
+					if (newContact.getContactAge() < 0) {
+						newContact.setContactAge(0);
+					}
+				}
+
+			}
+		}
+	}
+	
 	@Override
 	public void deleteContact(String contactUuid, String userUuid) {
 		User user = userService.getByUuid(userUuid);
