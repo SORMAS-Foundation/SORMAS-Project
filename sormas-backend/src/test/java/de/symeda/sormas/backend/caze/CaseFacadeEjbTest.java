@@ -529,7 +529,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
 		
 		// Make sure that deleted cases are ignored when searching for the highest existing epid nummber
-		getCaseFacade().deleteCase(fourthCaze.getUuid(), user.getUuid());
+		getCaseFacade().deleteCase(fourthCaze.getUuid());
 		
 		CaseDataDto fifthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 		

@@ -2,9 +2,6 @@ package de.symeda.sormas.backend.user;
 
 import javax.enterprise.context.RequestScoped;
 
-/**
- * The class getCurrentUser().
- */
 @RequestScoped
 public class CurrentUser {
     private User user;

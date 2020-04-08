@@ -44,6 +44,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
@@ -96,7 +97,7 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
 		UserEditForm userEditForm = new UserEditForm(false, UserRight.USER_EDIT);
-		UserDto userDto = FacadeProvider.getUserFacade().getByUuid();
+		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
 		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
 
@@ -159,7 +160,7 @@ public class UserController {
 	public List<UserReferenceDto> filterByDistrict(List<UserReferenceDto> users, DistrictReferenceDto district) {
 		List<UserDto> userDtos = new ArrayList<>();
 		for(UserReferenceDto userRef : users) {
-			userDtos.add(FacadeProvider.getUserFacade().getByUuid());
+			userDtos.add(FacadeProvider.getUserFacade().getByUuid(userRef.getUuid()));
 		}
 
 		userDtos.removeIf(user -> user.getDistrict() == null || !user.getDistrict().equals(district));
@@ -230,7 +231,7 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
 		UserSettingsForm form = new UserSettingsForm();
-		UserDto user = FacadeProvider.getUserFacade().getByUuid();
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
 		form.setValue(user);
 		
 		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<UserSettingsForm>(form, form.getFieldGroup());

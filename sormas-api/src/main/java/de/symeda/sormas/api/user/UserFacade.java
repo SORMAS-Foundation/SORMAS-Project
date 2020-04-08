@@ -32,7 +32,7 @@ public interface UserFacade {
 
     List<UserDto> getAll(UserRole... roles);
     
-    UserDto getByUuid();
+    UserDto getByUuid(String uuid);
     
     UserDto saveUser(UserDto dto);
 
