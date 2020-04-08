@@ -230,19 +230,21 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION && ado.getCaze() != null) {
 			caseFacade.updateInvestigationByTask(ado.getCaze());
 		}
-		
+
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			Region recipientRegion = ado.getContact().getRegion() != null ? ado.getContact().getRegion() : ado.getContact().getCaze().getRegion();
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(recipientRegion, 
-					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_VISIT_COMPLETED), 
-							String.format(I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED), DataHelper.getShortUuid(ado.getContact().getUuid()), DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())), 
-							MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+			Region recipientRegion = ado.getContact().getRegion() != null ? ado.getContact().getRegion() : ado.getContact().getCaze() != null ? ado.getContact().getCaze().getRegion() : null;
+			if (recipientRegion != null) {
+				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(recipientRegion, 
+						UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+				for (User recipient : messageRecipients) {
+					try {
+						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_VISIT_COMPLETED), 
+								String.format(I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED), DataHelper.getShortUuid(ado.getContact().getUuid()), DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())), 
+								MessageType.EMAIL, MessageType.SMS);
+					} catch (NotificationDeliveryFailedException e) {
+						logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
+								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+					}
 				}
 			}
 		}
@@ -295,11 +297,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.select(cb.count(task));
 		return em.createQuery(cq).getSingleResult();
 	}
-	
+
 	@Override
 	public List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
@@ -543,48 +545,48 @@ public class TaskFacadeEjb implements TaskFacade {
 		for (Task task : startingTasks) {
 			TaskContext context = task.getTaskContext();
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 
-					context == TaskContext.CONTACT ? task.getContact() : 
+				context == TaskContext.CONTACT ? task.getContact() : 
 					context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
-				try {
-					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_START);
-					String content = context == TaskContext.GENERAL ? 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString()) :
-								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC), task.getTaskType().toString(), 
-								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
+					if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
+						try {
+							String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_START);
+							String content = context == TaskContext.GENERAL ? 
+									String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString()) :
+										String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC), task.getTaskType().toString(), 
+												context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
-					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
-				}
-			}
+									messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
+						} catch (NotificationDeliveryFailedException e) {
+							logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
+						}
+					}
 		}
 
 		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now));
 		for (Task task : dueTasks) {
 			TaskContext context = task.getTaskContext();
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 
-					context == TaskContext.CONTACT ? task.getContact() : 
+				context == TaskContext.CONTACT ? task.getContact() : 
 					context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null && (task.getAssigneeUser().isSupervisor() 
-					|| task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER))) {
-				try {
-					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_DUE);
-					String content = context == TaskContext.GENERAL ? 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString()) :
-								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
-								context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
+					if (task.getAssigneeUser() != null && (task.getAssigneeUser().isSupervisor() 
+							|| task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER))) {
+						try {
+							String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_DUE);
+							String content = context == TaskContext.GENERAL ? 
+									String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString()) :
+										String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
+												context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
 
-					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-						logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
-				}
-			}
+									messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
+						} catch (NotificationDeliveryFailedException e) {
+							logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
+						}
+					}
 		}
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class TaskFacadeEjbLocal extends TaskFacadeEjb {
