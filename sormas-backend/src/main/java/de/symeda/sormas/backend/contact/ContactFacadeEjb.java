@@ -876,6 +876,17 @@ public class ContactFacadeEjb implements ContactFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
 		}
 	}
+	
+	@Override
+	public Date getOldestContactReportDate() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
+		Root<Contact> from = cq.from(Contact.class);
+
+		cq.select(cb.least(from.<Timestamp>get(Contact.REPORT_DATE_TIME)));
+		cq.where(cb.greaterThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.getDateZero(2000, 1, 1)));
+		return em.createQuery(cq).getSingleResult();
+	}
 
 	@LocalBean
 	@Stateless

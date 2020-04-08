@@ -80,4 +80,6 @@ public interface ContactFacade {
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 
 	void validate(ContactDto contact) throws ValidationRuntimeException;
+	
+	Date getOldestContactReportDate();
 }
