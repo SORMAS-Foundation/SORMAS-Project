@@ -65,6 +65,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -216,6 +217,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (handleChanges) {
 			contactService.updateFollowUpUntilAndStatus(entity);
 			contactService.udpateContactStatus(entity);
+			
+			updateContactAge(dto, entity);
 			
 			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
 		}
