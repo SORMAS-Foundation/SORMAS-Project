@@ -45,6 +45,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -63,6 +65,9 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -91,6 +96,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CaseService caseService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -315,6 +324,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 				if (newPerson.getApproximateAge() == null) {
 					personCase.setCaseAge(null);
+					
 				} else if (newPerson.getApproximateAgeType() == ApproximateAgeType.MONTHS) {
 					personCase.setCaseAge(0);
 				} else {
@@ -327,6 +337,29 @@ public class PersonFacadeEjb implements PersonFacade {
 				caseFacade.onCaseChanged(existingCase, personCase);
 			}
 		}
+
+		// Update contactAge of all associated contacts when approximateAge has changed
+		if ((existingPerson == null && newPerson.getApproximateAge() != null) || 
+				(existingPerson != null && existingPerson.getApproximateAge() != newPerson.getApproximateAge())) {
+			// Update contact list after previous onContactChanged
+			List<Contact> personContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
+			for (Contact personContact : personContacts) {
+				ContactDto existingContact = ContactFacadeEjbLocal.toDto(personContact);
+				if (newPerson.getApproximateAge() == null) {
+					personContact.setContactAge(null);
+					
+				} else if (newPerson.getApproximateAgeType() == ApproximateAgeType.MONTHS) {
+					personContact.setContactAge(0);
+				} else {
+					Date now = new Date();
+					personContact.setContactAge(newPerson.getApproximateAge() - DateHelper.getYearsBetween(personContact.getReportDateTime(), now));
+					if (personContact.getContactAge() < 0) {
+						personContact.setContactAge(0);
+					}
+				}
+				contactFacade.onContactChanged(existingContact, personContact);
+			}
+		}	
 	}
 
 	@Override
