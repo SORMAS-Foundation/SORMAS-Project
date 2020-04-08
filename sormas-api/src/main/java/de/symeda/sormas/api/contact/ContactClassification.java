@@ -18,8 +18,9 @@
 package de.symeda.sormas.api.contact;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public enum ContactClassification {
+public enum ContactClassification implements StatisticsGroupingKey {
 	UNCONFIRMED,
 	CONFIRMED,
 	NO_CONTACT
@@ -31,5 +32,17 @@ public enum ContactClassification {
 	
 	public String toShortString() {
 		return I18nProperties.getEnumCaptionShort(this);
+	}
+	
+	@Override
+	public int keyCompareTo(StatisticsGroupingKey o) {
+		if (o == null) {
+			throw new NullPointerException("Can't compare to null.");
+		}
+		if (o.getClass() != this.getClass()) {
+			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
+		}
+		
+		return this.toString().compareTo(o.toString());
 	}
 }

@@ -18,8 +18,9 @@
 package de.symeda.sormas.api.contact;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public enum FollowUpStatus {
+public enum FollowUpStatus implements StatisticsGroupingKey {
 	FOLLOW_UP,
 	COMPLETED,
 	CANCELED,
@@ -37,5 +38,17 @@ public enum FollowUpStatus {
 	
 	public String getDescription() {
 		return I18nProperties.getEnumDescription(this);
+	}
+	
+	@Override
+	public int keyCompareTo(StatisticsGroupingKey o) {
+		if (o == null) {
+			throw new NullPointerException("Can't compare to null.");
+		}
+		if (o.getClass() != this.getClass()) {
+			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
+		}
+		
+		return this.toString().compareTo(o.toString());
 	}
 }
