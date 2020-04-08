@@ -148,6 +148,8 @@ public class ImportFacadeEjb implements ImportFacade {
 			+ "_import_community_template.csv";
 	private static final String FACILITY_LABORATORY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
 			+ "_import_facility_laboratory_template.csv";
+	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
+			+ "_import_contact_template.csv";
 
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {				
@@ -173,9 +175,27 @@ public class ImportFacadeEjb implements ImportFacade {
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
 		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
-		columnNames.removeAll(Arrays.asList(ContactDto.CAZE, ContactDto.CASE_DISEASE, ContactDto.RESULTING_CASE));
+		columnNames.removeAll(Arrays.asList(ContactDto.CAZE, ContactDto.DISEASE, ContactDto.DISEASE_DETAILS,
+				ContactDto.RESULTING_CASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION));
 		Path filePath = Paths.get(getCaseContactImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
+			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.flush();
+		}
+	}
+
+	@Override
+	public void generateContactImportTemplateFile() throws IOException {
+		createExportDirectoryIfNessecary();
+
+		List<String> columnNames = new ArrayList<>();
+		List<String> entityNames = new ArrayList<>();
+		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
+		columnNames.removeAll(Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE));
+
+		Path filePath = Paths.get(getContactImportTemplateFilePath());
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()),
+				configFacade.getCsvSeparator())) {
 			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
 			writer.flush();
 		}
@@ -347,6 +367,13 @@ public class ImportFacadeEjb implements ImportFacade {
 	public String getFacilityLaboratoryImportTemplateFilePath() {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(FACILITY_LABORATORY_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getContactImportTemplateFilePath() {
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(CONTACT_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 

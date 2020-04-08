@@ -52,6 +52,8 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -66,6 +68,8 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -132,6 +136,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
 			fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
 			locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
+			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
 			fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 			fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
 			loc(MEDICAL_INFORMATION_LOC) +
@@ -150,6 +155,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private final PersonDto person;
 	private final Disease disease;
 	private final ViewMode viewMode;
+	private Field<?> quarantine;
+	private DateField quarantineFrom;
+	private DateField quarantineTo;
 	
 	public CaseDataForm(PersonDto person, Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
@@ -203,6 +211,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
+
+		quarantine = addField(ContactDto.QUARANTINE);
+		quarantine.addValueChangeListener(e -> updateQuarantineFields());
+		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
+		quarantineFrom.setVisible(false);
+		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
+		quarantineTo.setVisible(false);
 		
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
@@ -244,7 +259,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			CheckBox cbSharedToCountry = addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
-			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT), CaseDataDto.SHARED_TO_COUNTRY);
+			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 		
 		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
@@ -268,7 +283,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.OUTCOME, CaseDataDto.DISEASE, CaseDataDto.REGION, CaseDataDto.DISTRICT);
 		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
-		FieldHelper.setReadOnlyWhen(getFieldGroup(), CaseDataDto.INVESTIGATED_DATE, CaseDataDto.INVESTIGATION_STATUS, Arrays.asList(InvestigationStatus.PENDING), false);
+		FieldHelper.setReadOnlyWhen(getFieldGroup(), CaseDataDto.INVESTIGATED_DATE, CaseDataDto.INVESTIGATION_STATUS, Arrays.asList(InvestigationStatus.PENDING), false, true);
 		setReadOnly(true, CaseDataDto.UUID, CaseDataDto.REPORTING_USER, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.POINT_OF_ENTRY, 
 				CaseDataDto.POINT_OF_ENTRY_DETAILS, CaseDataDto.CASE_ORIGIN);
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
@@ -458,6 +473,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 	}
 
+	private void updateQuarantineFields() {
+		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
+		boolean visible;
+		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+			visible = true;
+		} else {
+			visible = false;
+			quarantineFrom.clear();
+			quarantineTo.clear();
+		}
+
+		quarantineFrom.setVisible(visible);
+		quarantineTo.setVisible(visible);
+	}
+
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
 		if (cbFacility.getValue() != null) {
 			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
@@ -490,7 +520,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel,
 			String fieldValue) {
-		if (FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(),
+		if (!isGermanServer() && FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(),
 				getValue().getDisease())) {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);
@@ -499,7 +529,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		} else {
 			epidField.setComponentError(null);
 			getContent().removeComponent(epidNumberWarningLabel);
-			assignNewEpidNumberButton.setVisible(
+			assignNewEpidNumberButton.setVisible(!isGermanServer() && 
 					!CaseLogic.isEpidNumberPrefix(fieldValue) && !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}
 	}

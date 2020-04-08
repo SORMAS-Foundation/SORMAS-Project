@@ -101,28 +101,23 @@ public class DownloadUtil {
 
 	}
 
-	@SuppressWarnings("serial")
 	public static StreamResource createDatabaseExportStreamResource(DatabaseExportView databaseExportView, String fileName, String mimeType) {
-		StreamResource streamResource = new StreamResource(new StreamSource() {
-			@Override
-			public InputStream getStream() {
-				try {
-					Map<CheckBox, DatabaseTable> databaseToggles = databaseExportView.getDatabaseTableToggles();
-					List<DatabaseTable> tablesToExport = new ArrayList<>();
-					for (CheckBox checkBox : databaseToggles.keySet()) {
-						if (checkBox.getValue() == true) {
-							tablesToExport.add(databaseToggles.get(checkBox));
-						}
-					}
-
-					String zipPath = FacadeProvider.getExportFacade().generateDatabaseExportArchive(tablesToExport);
-					return new BufferedInputStream(Files.newInputStream(new File(zipPath).toPath()));
-				} catch (IOException | ExportErrorException e) {
-					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					databaseExportView.showExportErrorNotification();
-					return null;
+		StreamResource streamResource = new StreamResource(() -> {
+			Map<CheckBox, DatabaseTable> databaseToggles = databaseExportView.getDatabaseTableToggles();
+			List<DatabaseTable> tablesToExport = new ArrayList<>();
+			for (CheckBox checkBox : databaseToggles.keySet()) {
+				if (checkBox.getValue() == true) {
+					tablesToExport.add(databaseToggles.get(checkBox));
 				}
+			}
+			try {
+				String zipPath = FacadeProvider.getExportFacade().generateDatabaseExportArchive(tablesToExport);
+				return new BufferedInputStream(Files.newInputStream(new File(zipPath).toPath()));
+			} catch (IOException | ExportErrorException e) {
+				// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
+				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+				databaseExportView.showExportErrorNotification();
+				return null;
 			}
 		}, fileName);
 		streamResource.setMIMEType(mimeType);
@@ -134,19 +129,16 @@ public class DownloadUtil {
 		return new V7GridExportStreamResource(container, columns, tempFilePrefix, fileName, ignoredPropertyIds);
 	}
 
-	@SuppressWarnings("serial")
 	public static StreamResource createFileStreamResource(String filePath, String fileName, String mimeType, String errorTitle, String errorText) {
-		StreamResource streamResource = new StreamResource(new StreamSource() {
-			@Override
-			public InputStream getStream() {
-				try {
-					return new BufferedInputStream(Files.newInputStream(new File(filePath).toPath()));
-				} catch (IOException e) {
-					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					new Notification(errorTitle, errorText, Type.ERROR_MESSAGE, false).show(Page.getCurrent());
-					return null;
-				}
+		
+		StreamResource streamResource = new StreamResource(() -> {
+			try {
+				return new BufferedInputStream(Files.newInputStream(new File(filePath).toPath()));
+			} catch (IOException e) {
+				// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
+				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+				new Notification(errorTitle, errorText, Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				return null;
 			}
 		}, fileName);
 		streamResource.setMIMEType(mimeType);
@@ -154,14 +146,8 @@ public class DownloadUtil {
 		return streamResource;
 	}
 
-	@SuppressWarnings("serial")
 	public static StreamResource createStringStreamResource(String content, String fileName, String mimeType) {
-		StreamResource streamResource = new StreamResource(new StreamSource() {
-			@Override
-			public InputStream getStream() {
-				return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-			}
-		}, fileName);
+		StreamResource streamResource = new StreamResource(() -> new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), fileName);
 		streamResource.setMIMEType(mimeType);
 		return streamResource;
 	}
@@ -245,7 +231,7 @@ public class DownloadUtil {
 						writer.writeNext(exportLine);
 						writer.flush();
 					}
-					return new BufferedInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
+					return new ByteArrayInputStream(byteStream.toByteArray());
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
@@ -260,7 +246,6 @@ public class DownloadUtil {
 		return populationDataStreamResource;
 	}
 
-	@SuppressWarnings("serial")
 	public static StreamResource createCaseManagementExportResource(String userUuid, CaseCriteria criteria, String exportFileName) {
 		StreamResource casesResource = createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_MANAGEMENT,
 				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, userUuid, null),
@@ -316,9 +301,7 @@ public class DownloadUtil {
 				},
 				"sormas_clinical_assessments_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 
-		StreamResource caseManagementStreamResource = new StreamResource(new StreamSource() {
-			@Override
-			public InputStream getStream() {
+		StreamResource caseManagementStreamResource = new StreamResource(() -> {
 				String zipFile = FacadeProvider.getExportFacade().generateZipArchive(DateHelper.formatDateForExport(new Date()), new Random().nextInt(Integer.MAX_VALUE));
 				try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)))) {
 					writeCsvToZip(zos, casesResource.getStreamSource(), "cases.csv");
@@ -326,12 +309,11 @@ public class DownloadUtil {
 					writeCsvToZip(zos, treatmentsResource.getStreamSource(), "treatments.csv");
 					writeCsvToZip(zos, clinicalVisitsResource.getStreamSource(), "clinical_assessments.csv");
 					zos.close();
-					return new FileInputStream(new File(zipFile));
+					return new BufferedInputStream(new FileInputStream(new File(zipFile)));
 				} catch (IOException e) {
 					logger.error("Failed to generate a zip file for case management export.");
 					return null;
 				}
-			}
 		}, exportFileName);
 		caseManagementStreamResource.setMIMEType("application/zip");
 		caseManagementStreamResource.setCacheTime(0);
@@ -351,121 +333,118 @@ public class DownloadUtil {
 		zos.closeEntry();
 	}
 
-	@SuppressWarnings("serial")
 	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, CaseExportType exportType, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, 
 			BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName, ExportConfigurationDto exportConfiguration) {
-		StreamResource extendedStreamResource = new StreamResource(new StreamSource() {
-			@Override
-			public InputStream getStream() {
-				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
-					try (CSVWriter writer = CSVUtils.createCSVWriter(
-							new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
+		StreamResource extendedStreamResource = new StreamResource(() -> {
+			
+			try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+				try (CSVWriter writer = CSVUtils.createCSVWriter(
+						new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
 
-						// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
-						List<Method> readMethods = new ArrayList<Method>();
-						readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
-								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) 
-										&& m.isAnnotationPresent(Order.class)
-										&& (exportType == null || (m.isAnnotationPresent(ExportTarget.class) && Arrays.asList(m.getAnnotation(ExportTarget.class).exportTypes()).contains(exportType)))
-										&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
-								.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
-										b.getAnnotationsByType(Order.class)[0].value()))
-								.collect(Collectors.toList()));
+					// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
+					List<Method> readMethods = new ArrayList<Method>();
+					readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
+							.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) 
+									&& m.isAnnotationPresent(Order.class)
+									&& (exportType == null || (m.isAnnotationPresent(ExportTarget.class) && Arrays.asList(m.getAnnotation(ExportTarget.class).exportTypes()).contains(exportType)))
+									&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
+							.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
+									b.getAnnotationsByType(Order.class)[0].value()))
+							.collect(Collectors.toList()));
 
-						// 2. replace entity fields with all the columns of the entity 
-						Map<Method, Function<T,?>> subEntityProviders = new HashMap<Method, Function<T,?>>();
-						for (int i = 0; i < readMethods.size(); i++) {
-							Method method = readMethods.get(i);
-							if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
+					// 2. replace entity fields with all the columns of the entity 
+					Map<Method, Function<T,?>> subEntityProviders = new HashMap<Method, Function<T,?>>();
+					for (int i = 0; i < readMethods.size(); i++) {
+						Method method = readMethods.get(i);
+						if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
 
-								// allows us to access the sub entity
-								Function<T, ?> subEntityProvider = (o) -> {
-									try {
-										return method.invoke(o);
-									} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-										throw new RuntimeException(e);
-									}
-								};
-
-								// remove entity field
-								readMethods.remove(i);
-
-								// add columns of the entity
-								List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
-										.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
-										.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
-												b.getAnnotationsByType(Order.class)[0].value()))
-										.collect(Collectors.toList());
-								readMethods.addAll(i, subReadMethods);
-								i--;
-
-								for (Method subReadMethod : subReadMethods) {
-									subEntityProviders.put(subReadMethod, subEntityProvider);
+							// allows us to access the sub entity
+							Function<T, ?> subEntityProvider = o -> {
+								try {
+									return method.invoke(o);
+								} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+									throw new RuntimeException(e);
 								}
-							}							
-						}
+							};
 
-						String[] fieldValues = new String[readMethods.size()];
-						for (int i = 0; i < readMethods.size(); i++) {
-							Method method = readMethods.get(i);
-							// field caption
-							String propertyId = method.getName().startsWith("get") 
-									? method.getName().substring(3)
-											: method.getName().substring(2); 
-									propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-									fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
-						}
-						writer.writeNext(fieldValues);
+							// remove entity field
+							readMethods.remove(i);
 
-						int startIndex = 0;
-						List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
-						while (!exportRows.isEmpty()) {						
-							try {
-								for (T exportRow : exportRows) {
-									for (int i=0; i<readMethods.size(); i++) {
-										Method method = readMethods.get(i);
-										Function<T,?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
-										Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
-										// Sub entity might be null
-										Object value = entity != null ? method.invoke(entity) : null;
-										if (value == null) {
-											fieldValues[i] = "";
-										} else if (value instanceof Date) {
-											fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
-										} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
-											fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
-										} else if (value instanceof Set) {
-											StringBuilder sb = new StringBuilder();
-											for (Object o : (Set<?>) value) {
-												if (sb.length() != 0) {
-													sb.append(", ");
-												}
-												sb.append(o);
-											}
-											fieldValues[i] = sb.toString();
-										} else {
-											fieldValues[i] = value.toString();
-										}
-									}
-									writer.writeNext(fieldValues);
-								};
-							} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-								throw new RuntimeException(e);
+							// add columns of the entity
+							List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
+									.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
+									.sorted((a2,b2) -> Integer.compare(a2.getAnnotationsByType(Order.class)[0].value(), 
+											b2.getAnnotationsByType(Order.class)[0].value()))
+									.collect(Collectors.toList());
+							readMethods.addAll(i, subReadMethods);
+							i--;
+
+							for (Method subReadMethod : subReadMethods) {
+								subEntityProviders.put(subReadMethod, subEntityProvider);
 							}
-
-							writer.flush();
-							startIndex += DETAILED_EXPORT_STEP_SIZE;
-							exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
-						}
+						}							
 					}
-					return new BufferedInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
-				} catch (IOException e) {
-					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed), 
-							Type.ERROR_MESSAGE, false).show(Page.getCurrent());
-					return null;
+
+					String[] fieldValues = new String[readMethods.size()];
+					for (int i = 0; i < readMethods.size(); i++) {
+						Method method = readMethods.get(i);
+						// field caption
+						String propertyId = method.getName().startsWith("get") 
+								? method.getName().substring(3)
+										: method.getName().substring(2); 
+								propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
+								fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
+					}
+					writer.writeNext(fieldValues);
+
+					int startIndex = 0;
+					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+					while (!exportRows.isEmpty()) {						
+						try {
+							for (T exportRow : exportRows) {
+								for (int i = 0; i < readMethods.size(); i++) {
+									Method method = readMethods.get(i);
+									Function<T,?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
+									Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
+									// Sub entity might be null
+									Object value = entity != null ? method.invoke(entity) : null;
+									if (value == null) {
+										fieldValues[i] = "";
+									} else if (value instanceof Date) {
+										fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
+									} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
+										fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
+									} else if (value instanceof Set) {
+										StringBuilder sb = new StringBuilder();
+										for (Object o : (Set<?>) value) {
+											if (sb.length() != 0) {
+												sb.append(", ");
+											}
+											sb.append(o);
+										}
+										fieldValues[i] = sb.toString();
+									} else {
+										fieldValues[i] = value.toString();
+									}
+								}
+								writer.writeNext(fieldValues);
+							};
+						} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+							throw new RuntimeException(e);
+						}
+
+						writer.flush();
+						startIndex += DETAILED_EXPORT_STEP_SIZE;
+						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+					}
 				}
+				return new ByteArrayInputStream(byteStream.toByteArray());
+			} catch (IOException e) {
+				// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
+				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+				new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed), 
+							Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+				return null;
 			}
 		}, exportFileName);
 		extendedStreamResource.setMIMEType("text/csv");

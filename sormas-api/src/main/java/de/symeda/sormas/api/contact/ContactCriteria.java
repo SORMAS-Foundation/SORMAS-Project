@@ -23,8 +23,8 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -39,9 +39,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private UserRole reportingUserRole;
 	private Disease disease;
 	private CaseReferenceDto caze;
-	private RegionReferenceDto caseRegion;
-	private DistrictReferenceDto caseDistrict;
-	private FacilityReferenceDto caseFacility;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
 	private UserReferenceDto contactOfficer;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
@@ -57,6 +56,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
 	private PersonReferenceDto person;
+	private Date quarantineTo;
+	private ContactCategory contactCategory;
+	private CaseClassification caseClassification;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -85,30 +87,21 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public RegionReferenceDto getCaseRegion() {
-		return caseRegion;
+	public RegionReferenceDto getRegion() {
+		return region;
 	}
 
-	public ContactCriteria caseRegion(RegionReferenceDto caseRegion) {
-		this.caseRegion = caseRegion;
+	public ContactCriteria region(RegionReferenceDto region) {
+		this.region = region;
 		return this;
 	}
 
-	public DistrictReferenceDto getCaseDistrict() {
-		return caseDistrict;
+	public DistrictReferenceDto getDistrict() {
+		return district;
 	}
 
-	public ContactCriteria caseDistrict(DistrictReferenceDto caseDistrict) {
-		this.caseDistrict = caseDistrict;
-		return this;
-	}
-
-	public FacilityReferenceDto getCaseFacility() {
-		return caseFacility;
-	}
-
-	public ContactCriteria caseFacility(FacilityReferenceDto caseFacility) {
-		this.caseFacility = caseFacility;
+	public ContactCriteria district(DistrictReferenceDto district) {
+		this.district = district;
 		return this;
 	}
 
@@ -257,6 +250,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return onlyHighPriorityContacts;
 	}
 
+	public ContactCriteria contactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+		return this;
+	}
+
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
 	public ContactCriteria onlyHighPriorityContacts(Boolean onlyHighPriorityContacts) {
 		this.onlyHighPriorityContacts = onlyHighPriorityContacts;
 		return this;
@@ -270,4 +272,22 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+	
+	public ContactCriteria quarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+		return this;
+	}
+
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+
+	public ContactCriteria caseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+		return this;
+	}
+	
 }

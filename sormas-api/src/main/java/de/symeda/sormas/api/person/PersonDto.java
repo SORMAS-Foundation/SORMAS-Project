@@ -90,6 +90,9 @@ public class PersonDto extends EntityDto {
 	public static final String BIRTH_WEIGHT = "birthWeight";
 	
 	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPractitionerDetails";
+	public static final String PASSPORT_NUMBER = "passportNumber";
+	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
+	public static final String EMAIL_ADDRESS = "emailAddress";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -156,6 +159,7 @@ public class PersonDto extends EntityDto {
 	private String phone;
 	private String phoneOwner;
 	private LocationDto address;
+	private String emailAddress;
 
 	private EducationType educationType;
 	private String educationDetails;
@@ -168,6 +172,8 @@ public class PersonDto extends EntityDto {
 	private FacilityReferenceDto occupationFacility;
 	private String occupationFacilityDetails;
 	private String generalPractitionerDetails;
+	private String passportNumber;
+	private String nationalHealthId;
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -509,6 +515,30 @@ public class PersonDto extends EntityDto {
 
 	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
 		this.generalPractitionerDetails = generalPractitionerDetails;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+
+	public void setPassportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
+	}
+
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
 	}
 
 	@Override

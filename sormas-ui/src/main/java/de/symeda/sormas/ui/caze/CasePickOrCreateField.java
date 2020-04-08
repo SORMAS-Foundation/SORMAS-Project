@@ -26,7 +26,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 	public static final String PICK_CASE = "pickCase";
 
 	protected List<CaseIndexDto> similarCases;
-	protected CasePickOrCreateGrid grid;
+	protected CaseSelectionGrid grid;
 	protected OptionGroup pickCase;
 	protected OptionGroup createCase;
 	protected Consumer<Boolean> selectionChangeCallback;
@@ -116,7 +116,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 	
 	@Override
 	protected Component initContent() {
-		addInfoComponent();
+		addInfoComponent();	
 		addPickCaseComponent();
 		addAndConfigureGrid();
 		addCreateCaseComponent();
@@ -128,7 +128,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 
 	private void initGrid() {
 		if (grid == null) {
-			grid = new CasePickOrCreateGrid(similarCases);
+			grid = new CaseSelectionGrid(similarCases);
 		}
 	}
 	

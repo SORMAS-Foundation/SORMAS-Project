@@ -17,12 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -34,6 +37,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -101,10 +105,14 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 		pendingTasksColumn.setSortable(false);
 
 		setColumns(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
-				ContactIndexDto.PERSON, ContactIndexDto.CONTACT_PROXIMITY,
-				ContactIndexDto.FOLLOW_UP_STATUS, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
+				ContactIndexDto.PERSON, ContactIndexDto.CONTACT_CATEGORY, ContactIndexDto.CONTACT_PROXIMITY,
+				ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.QUARANTINE_TO, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
+		if (!FacadeProvider.getConfigFacade().isGermanServer()) {
+			getColumn(ContactIndexDto.CONTACT_CATEGORY).setHidden(true);
+		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>)getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
@@ -112,7 +120,7 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 		}
 		
 		addItemClickListener(e ->  {
-			if ((e.getColumn() != null && CaseIndexDto.UUID.equals(e.getColumn().getId()))
+			if ((e.getColumn() != null && ContactIndexDto.UUID.equals(e.getColumn().getId()))
 					|| e.getMouseEventDetails().isDoubleClick()) {
 				ControllerProvider.getContactController().navigateToData(e.getItem().getUuid());
 			}

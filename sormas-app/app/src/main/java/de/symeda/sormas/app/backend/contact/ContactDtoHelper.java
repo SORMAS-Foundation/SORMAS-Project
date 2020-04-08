@@ -111,6 +111,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setQuarantine(source.getQuarantine());
         target.setQuarantineFrom(source.getQuarantineFrom());
         target.setQuarantineTo(source.getQuarantineTo());
+
+        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
     }
 
     @Override
@@ -186,6 +189,9 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setQuarantine(source.getQuarantine());
         target.setQuarantineFrom(source.getQuarantineFrom());
         target.setQuarantineTo(source.getQuarantineTo());
+
+        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

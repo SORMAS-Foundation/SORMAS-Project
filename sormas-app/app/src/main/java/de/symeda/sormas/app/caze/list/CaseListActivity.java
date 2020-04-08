@@ -221,7 +221,6 @@ public class CaseListActivity extends PagedBaseListActivity {
             filterBinding.executePendingBindings();
             model.notifyCriteriaUpdated();
         });
-
     }
 
 }

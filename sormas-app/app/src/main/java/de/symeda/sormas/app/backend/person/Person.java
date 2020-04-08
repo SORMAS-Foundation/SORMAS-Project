@@ -63,6 +63,9 @@ public class Person extends AbstractDomainObject {
 	public static final String SEX = "sex";
 	public static final String NICKNAME = "nickname";
 	public static final String MOTHERS_MAIDEN_NAME = "mothersMaidenName";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_DD = "birthdateDD";
 
 	@Column(nullable = false)
 	private String firstName;
@@ -111,6 +114,8 @@ public class Person extends AbstractDomainObject {
 	private String phone;
 	@Column(length = 255)
 	private String phoneOwner;
+	@Column
+	private String emailAddress;
 
 	@Enumerated(EnumType.STRING)
 	private Sex sex;
@@ -160,6 +165,10 @@ public class Person extends AbstractDomainObject {
 
 	@Column(length=512)
 	private String generalPractitionerDetails;
+	@Column
+	private String passportNumber;
+	@Column
+	private String nationalHealthId;
 
 	@Bindable
 	public String getFirstName() {
@@ -497,5 +506,29 @@ public class Person extends AbstractDomainObject {
 
 	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
 		this.generalPractitionerDetails = generalPractitionerDetails;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+
+	public void setPassportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
+	}
+
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
 	}
 }

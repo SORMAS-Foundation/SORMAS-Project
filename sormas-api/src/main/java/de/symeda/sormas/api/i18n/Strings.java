@@ -4,6 +4,7 @@ public interface Strings {
 
 	public static String active = "active";
 	public static String address = "address";
+	public static String aggregateReportLegend = "aggregateReportLegend";
 	public static String and = "and";
 	public static String at = "at";
 	public static String average = "average";
@@ -51,6 +52,7 @@ public interface Strings {
 	public static String confirmationArchiveRegions = "confirmationArchiveRegions";
 	public static String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	public static String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
+	public static String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
 	public static String confirmationDearchiveCase = "confirmationDearchiveCase";
 	public static String confirmationDearchiveCases = "confirmationDearchiveCases";
 	public static String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
@@ -119,6 +121,7 @@ public interface Strings {
 	public static String errorCaseMerging = "errorCaseMerging";
 	public static String errorEntityOutdated = "errorEntityOutdated";
 	public static String errorFieldValidationFailed = "errorFieldValidationFailed";
+	public static String errorIntegerFieldValidationFailed = "errorIntegerFieldValidationFailed";
 	public static String errorInvalidValue = "errorInvalidValue";
 	public static String errorNoAccessToWeb = "errorNoAccessToWeb";
 	public static String errorNotRequiredRights = "errorNotRequiredRights";
@@ -164,6 +167,7 @@ public interface Strings {
 	public static String headingContactsPerCase = "headingContactsPerCase";
 	public static String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	public static String headingCreateEntry = "headingCreateEntry";
+	public static String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
 	public static String headingCreateNewCase = "headingCreateNewCase";
 	public static String headingCreateNewClinicalVisit = "headingCreateNewClinicalVisit";
 	public static String headingCreateNewContact = "headingCreateNewContact";
@@ -185,10 +189,12 @@ public interface Strings {
 	public static String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	public static String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	public static String headingDisableLineListing = "headingDisableLineListing";
+	public static String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
 	public static String headingDownloadErrorReport = "headingDownloadErrorReport";
 	public static String headingDownloadImportGuide = "headingDownloadImportGuide";
 	public static String headingDownloadImportTemplate = "headingDownloadImportTemplate";
 	public static String headingEditAdditionalTest = "headingEditAdditionalTest";
+	public static String headingEditAggregateReport = "headingEditAggregateReport";
 	public static String headingEditCases = "headingEditCases";
 	public static String headingEditClinicalVisit = "headingEditClinicalVisit";
 	public static String headingEditContacts = "headingEditContacts";
@@ -221,6 +227,7 @@ public interface Strings {
 	public static String headingImportCaseContacts = "headingImportCaseContacts";
 	public static String headingImportCases = "headingImportCases";
 	public static String headingImportCommunities = "headingImportCommunities";
+	public static String headingImportContacts = "headingImportContacts";
 	public static String headingImportCsvFile = "headingImportCsvFile";
 	public static String headingImportDistricts = "headingImportDistricts";
 	public static String headingImportedCaseInfo = "headingImportedCaseInfo";
@@ -278,11 +285,13 @@ public interface Strings {
 	public static String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
 	public static String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	public static String headingReferSample = "headingReferSample";
+	public static String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
 	public static String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	public static String headingRequestedPathogenTests = "headingRequestedPathogenTests";
 	public static String headingResults = "headingResults";
 	public static String headingSamplesDeleted = "headingSamplesDeleted";
 	public static String headingSaveNotification = "headingSaveNotification";
+	public static String headingSelectSourceCase = "headingSelectSourceCase";
 	public static String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	public static String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	public static String headingStoppedFollowUp = "headingStoppedFollowUp";
@@ -317,7 +326,9 @@ public interface Strings {
 	public static String infoCaseManagementExport = "infoCaseManagementExport";
 	public static String infoCaseMap = "infoCaseMap";
 	public static String infoCompletenessMerge = "infoCompletenessMerge";
+	public static String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	public static String infoContactDashboard = "infoContactDashboard";
+	public static String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
 	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
 	public static String infoDatabaseExportTables = "infoDatabaseExportTables";
@@ -347,6 +358,7 @@ public interface Strings {
 	public static String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	public static String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	public static String infoNoPathogenTests = "infoNoPathogenTests";
+	public static String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	public static String infoPickOrCreateCase = "infoPickOrCreateCase";
 	public static String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	public static String infoPopulationDataView = "infoPopulationDataView";
@@ -354,6 +366,10 @@ public interface Strings {
 	public static String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
+	public static String infoSearchCaseForContact = "infoSearchCaseForContact";
+	public static String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
+	public static String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
+	public static String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
 	public static String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";
@@ -370,6 +386,7 @@ public interface Strings {
 	public static String max = "max";
 	public static String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	public static String messageAdditionalTestSaved = "messageAdditionalTestSaved";
+	public static String messageAggregateReportFound = "messageAggregateReportFound";
 	public static String messageAnimalContactsHint = "messageAnimalContactsHint";
 	public static String messageCaseArchived = "messageCaseArchived";
 	public static String messageCaseCreated = "messageCaseCreated";
@@ -402,6 +419,8 @@ public interface Strings {
 	public static String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	public static String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	public static String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
+	public static String messageContactCaseChanged = "messageContactCaseChanged";
+	public static String messageContactCaseRemoved = "messageContactCaseRemoved";
 	public static String messageContactCreated = "messageContactCreated";
 	public static String messageContactSaved = "messageContactSaved";
 	public static String messageContactsDeleted = "messageContactsDeleted";
@@ -534,6 +553,7 @@ public interface Strings {
 	public static String notificationCaseInvestigationDoneSubject = "notificationCaseInvestigationDoneSubject";
 	public static String notificationContactSymptomatic = "notificationContactSymptomatic";
 	public static String notificationContactSymptomaticSubject = "notificationContactSymptomaticSubject";
+	public static String notificationContactWithoutCaseSymptomatic = "notificationContactWithoutCaseSymptomatic";
 	public static String notificationDiseaseChanged = "notificationDiseaseChanged";
 	public static String notificationDiseaseChangedSubject = "notificationDiseaseChangedSubject";
 	public static String notificationLabResultArrived = "notificationLabResultArrived";

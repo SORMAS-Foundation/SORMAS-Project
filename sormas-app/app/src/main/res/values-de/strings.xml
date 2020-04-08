@@ -100,7 +100,7 @@
     <string name="action_save_visit">Follow-up/Nachverfolgungs-Anruf speichern</string>
     <string name="action_select">Auswählen</string>
     <string name="action_send">Senden</string>
-    <string name="action_set_cleared_to_no">Auf Nein gesetzt</string>
+    <string name="action_set_cleared_to_no">Auf Nein setzen</string>
     <string name="action_show_classification_rules">Definitionskategorien ansehen</string>
     <string name="action_submit_report">Wöchentlichen Bericht absenden</string>
     <string name="action_sync">Synchronisiere</string>
@@ -411,7 +411,7 @@
     <string name="info_aggregate_report_legend">C = Neue Fälle; L = Laborbestätigungen; D = Tod</string>
     <string name="main_menu_cases">Fälle</string>
     <string name="main_menu_contacts">Kontakte</string>
-    <string name="main_menu_dashboard">Dashboard</string>
+    <string name="main_menu_dashboard">Übersicht</string>
     <string name="main_menu_events">Ereignisse</string>
     <string name="main_menu_reports">Meldungen</string>
     <string name="main_menu_samples">Proben</string>

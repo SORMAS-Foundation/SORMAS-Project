@@ -24,6 +24,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -34,6 +35,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -53,7 +55,9 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.contact.ContactFollowUpGrid;
 import de.symeda.sormas.ui.contact.ContactGrid;
+import de.symeda.sormas.ui.contact.ContactsViewType;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -76,6 +80,7 @@ public class CaseContactsView extends AbstractCaseView {
 	private ComboBox classificationFilter;
 	private ComboBox districtFilter;
 	private ComboBox officerFilter;
+	private TextField searchField;
 	private Button resetButton;
 	
 	private Button newButton;
@@ -108,9 +113,9 @@ public class CaseContactsView extends AbstractCaseView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(240, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> {
-			criteria.caseDistrict((DistrictReferenceDto) e.getProperty().getValue());
+			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
 		topLayout.addComponent(districtFilter);
@@ -123,7 +128,17 @@ public class CaseContactsView extends AbstractCaseView {
 			navigateTo(criteria);
 		});
 		topLayout.addComponent(officerFilter);
-
+		
+		searchField = new TextField();
+ 		searchField.setWidth(200, Unit.PIXELS);
+		searchField.setNullRepresentation("");
+		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
+		searchField.addTextChangeListener(e -> {
+			criteria.nameUuidCaseLike(e.getText());
+			((ContactGrid) grid).reload();
+		});
+		topLayout.addComponent(searchField);
+			
 		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
@@ -252,7 +267,7 @@ public class CaseContactsView extends AbstractCaseView {
 			newButton = new Button(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact));
 			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			newButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaze()));
+			newButton.addClickListener(e -> ControllerProvider.getContactController().create(this.getCaseRef()));
 			statusFilterLayout.addComponent(newButton);
 			statusFilterLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
 		}
@@ -309,7 +324,9 @@ public class CaseContactsView extends AbstractCaseView {
 
 		districtFilter.removeAllItems();
 		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(caseDto.getRegion().getUuid()));
-		districtFilter.setValue(criteria.getCaseDistrict());
+		districtFilter.setValue(criteria.getDistrict());
+		
+		searchField.setValue(criteria.getNameUuidCaseLike());
 
 		officerFilter.removeAllItems();
 		officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(caseDto.getRegion(), UserRole.CONTACT_OFFICER));

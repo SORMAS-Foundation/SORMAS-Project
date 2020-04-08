@@ -47,8 +47,6 @@ public interface CommunityFacade {
 	
 	void saveCommunity(CommunityDto dto) throws ValidationRuntimeException;
 	
-	void saveCommunity(CommunityDto dto, boolean allowExistingName) throws ValidationRuntimeException;
-	
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef);
 	
 	void archive(String communityUuid);

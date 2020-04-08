@@ -39,7 +39,6 @@ public class ContactDto extends EntityDto {
 	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
-	public static final String CASE_DISEASE = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -70,7 +69,18 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	
+	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
+	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
+	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
+	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String OVERWRITE_FOLLOW_UP_UTIL = "overwriteFollowUpUntil";
+
+	private CaseReferenceDto caze;
+	private String caseIdExternalSystem;
+	private String caseOrEventInformation;
+	private Disease disease;
+	private String diseaseDetails;
+
 	@Required
 	private Date reportDateTime;
 	@Required
@@ -82,26 +92,20 @@ public class ContactDto extends EntityDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	@Required
-	private PersonReferenceDto person;
-	@Required
-	private CaseReferenceDto caze;
-	private Disease disease;
-	private String diseaseDetails;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
+	private String contactProximityDetails;
+	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
-	private UserReferenceDto contactOfficer;
+	private boolean overwriteFollowUpUntil;
 	private String description;
 	private ContactRelation relationToCase;
 	private String relationDescription;
 	private String externalID;
-	
-	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
-	private UserReferenceDto resultingCaseUser;
 	
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
@@ -111,7 +115,20 @@ public class ContactDto extends EntityDto {
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	
 
+	@Required
+	private PersonReferenceDto person;
+
+	private UserReferenceDto contactOfficer;
+
+	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
+	private UserReferenceDto resultingCaseUser;
+
+	public static ContactDto build() {
+		return build(null, null, null);
+	}
+	
 	public static ContactDto build(CaseDataDto caze) {
 		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
 	}
@@ -349,5 +366,45 @@ public class ContactDto extends EntityDto {
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+
+	public boolean isOverwriteFollowUpUntil() {
+		return overwriteFollowUpUntil;
+	}
+
+	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
+		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+	
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
+	}
+
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
 	}
 }

@@ -161,6 +161,10 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setAdditionalDetails(source.getAdditionalDetails());
         target.setExternalID(source.getExternalID());
+
+        target.setQuarantine(source.getQuarantine());
+        target.setQuarantineFrom(source.getQuarantineFrom());
+        target.setQuarantineTo(source.getQuarantineTo());
     }
 
     @Override
@@ -322,6 +326,10 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
         target.setAdditionalDetails(source.getAdditionalDetails());
         target.setExternalID(source.getExternalID());
+
+        target.setQuarantine(source.getQuarantine());
+        target.setQuarantineFrom(source.getQuarantineFrom());
+        target.setQuarantineTo(source.getQuarantineTo());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

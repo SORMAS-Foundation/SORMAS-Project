@@ -96,7 +96,10 @@ public class Person extends AbstractDomainObject {
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
 	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPractitionerDetails";
-
+	public static final String PASSPORT_NUMBER = "passportNumber";
+	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
+	public static final String EMAIL_ADDRESS = "emailAddress";
+	
 	private String firstName;
 	private String lastName;
 	private String nickname;
@@ -120,6 +123,7 @@ public class Person extends AbstractDomainObject {
 	private Location address;
 	private String phone;
 	private String phoneOwner;
+	private String emailAddress;
 	
 	private Sex sex;
 	
@@ -147,6 +151,8 @@ public class Person extends AbstractDomainObject {
 	private Facility occupationFacility;
 	private String occupationFacilityDetails;
 	private String generalPractitionerDetails;
+	private String passportNumber;
+	private String nationalHealthId;
 	
 	@Column(nullable = false)
 	public String getFirstName() {
@@ -483,6 +489,31 @@ public class Person extends AbstractDomainObject {
 	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
 		this.generalPractitionerDetails = generalPractitionerDetails;
 	}
+
+	@Column
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	@Column
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+	public void setPassportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
+	}
+
+	@Column
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+	public void setNationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
+	}
+	
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);

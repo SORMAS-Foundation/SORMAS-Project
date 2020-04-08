@@ -49,8 +49,6 @@ public interface RegionFacade {
 	
 	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
 	
-	void saveRegion(RegionDto dto, boolean allowExistingName) throws ValidationRuntimeException;
-	
 	List<RegionReferenceDto> getByName(String name);
 	
 	List<String> getNamesByIds(List<Long> regionIds);

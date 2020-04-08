@@ -21,6 +21,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ContactProximity {
+	
 	TOUCHED_FLUID,		
 	PHYSICAL_CONTACT,
 	CLOTHES_OR_OTHER,
@@ -30,8 +31,7 @@ public enum ContactProximity {
 	SAME_ROOM,
 	AIRPLANE,
 	FACE_TO_FACE_SHORT,
-	MEDICAL_SAVE,
-	;
+	MEDICAL_SAVE, MEDICAL_SAME_ROOM, AEROSOL, MEDICAL_DISTANT;
 	
 	public boolean hasFollowUp() {
 		switch (this) {
@@ -43,10 +43,13 @@ public enum ContactProximity {
 		case PHYSICAL_CONTACT:
 		case SAME_ROOM:
 		case TOUCHED_FLUID:
+		case MEDICAL_SAME_ROOM:
+		case AEROSOL:
 			return true;
 
 		case FACE_TO_FACE_SHORT:
 		case MEDICAL_SAVE:
+		case MEDICAL_DISTANT:
 			return false;
 			
 		default:
@@ -58,10 +61,11 @@ public enum ContactProximity {
 	 * TODO Replace locale with customizable solution or whatever is needed based on #1503
 	 */
 	public static ContactProximity[] getValues(Disease disease, String serverLocale) {
-		if (serverLocale != null && serverLocale.startsWith("de")) {
+		if (disease != null && serverLocale != null && serverLocale.startsWith("de")) {
 			switch (disease) {
 			case CORONAVIRUS:
-				return new ContactProximity[] { TOUCHED_FLUID, FACE_TO_FACE_LONG, MEDICAL_UNSAVE, AIRPLANE, FACE_TO_FACE_SHORT, MEDICAL_SAVE };
+				return new ContactProximity[] { FACE_TO_FACE_LONG, TOUCHED_FLUID, AEROSOL, MEDICAL_UNSAVE, SAME_ROOM,
+						FACE_TO_FACE_SHORT, MEDICAL_SAME_ROOM, MEDICAL_SAVE, MEDICAL_DISTANT };
 			default:
 				break;
 			}

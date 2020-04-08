@@ -6,7 +6,9 @@ public interface Validations {
 	public static String afterDateSoft = "afterDateSoft";
 	public static String beforeDate = "beforeDate";
 	public static String beforeDateSoft = "beforeDateSoft";
+	public static String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	public static String duplicateEpidNumber = "duplicateEpidNumber";
+	public static String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	public static String exportNoNameSpecified = "exportNoNameSpecified";
 	public static String futureDate = "futureDate";
 	public static String futureDateStrict = "futureDateStrict";

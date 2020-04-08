@@ -152,8 +152,8 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 
 				ContactCriteria contactCriteria = new ContactCriteria()
 						.disease(dashboardDataProvider.getDisease())
-						.caseRegion(dashboardDataProvider.getRegion())
-						.caseDistrict(dashboardDataProvider.getDistrict());
+						.region(dashboardDataProvider.getRegion())
+						.district(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					contactCriteria.reportDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
@@ -200,8 +200,8 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 
 				ContactCriteria contactCriteria = new ContactCriteria()
 						.disease(dashboardDataProvider.getDisease())
-						.caseRegion(dashboardDataProvider.getRegion())
-						.caseDistrict(dashboardDataProvider.getDistrict());
+						.region(dashboardDataProvider.getRegion())
+						.district(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					contactCriteria.reportDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
@@ -277,8 +277,8 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 
 				ContactCriteria contactCriteria = new ContactCriteria()
 						.disease(dashboardDataProvider.getDisease())
-						.caseRegion(dashboardDataProvider.getRegion())
-						.caseDistrict(dashboardDataProvider.getDistrict());
+						.region(dashboardDataProvider.getRegion())
+						.district(dashboardDataProvider.getDistrict());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					contactCriteria.followUpUntilBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {

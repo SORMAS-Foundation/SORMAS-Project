@@ -77,9 +77,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by Mate Strysewske on 14.06.2017.
- */
 @RunWith(AndroidJUnit4.class)
 public class CaseBackendTest {
 

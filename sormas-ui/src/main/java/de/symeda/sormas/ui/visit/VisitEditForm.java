@@ -28,6 +28,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
@@ -101,7 +102,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	    		@Override
 	    		public void validate(Object value) throws InvalidValueException {
 	    			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
-	    			Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
+	    			Date contactReferenceDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 	    			if (visitDateTime.before(contactReferenceDate) && DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
 	    				if (contact.getLastContactDate() != null) {
 	    					throw new InvalidValueException(I18nProperties.getValidationError(Validations.visitBeforeLastContactDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));

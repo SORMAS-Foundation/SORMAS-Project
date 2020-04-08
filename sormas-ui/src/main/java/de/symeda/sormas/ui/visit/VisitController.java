@@ -138,7 +138,7 @@ public class VisitController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteVisits), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getVisitFacade().deleteVisit(((VisitDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getVisitFacade().deleteVisit(((VisitIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingVisitsDeleted), 

@@ -30,6 +30,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -55,7 +56,7 @@ public class Contact extends AbstractDomainObject {
 
 	public static final String PERSON = "person_id";
 	public static final String CASE_UUID = "caseUuid";
-	public static final String CASE_DISEASE = "disease";
+	public static final String DISEASE = "disease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -140,6 +141,16 @@ public class Contact extends AbstractDomainObject {
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date quarantineTo;
+
+	@Column
+	private String caseIdExternalSystem;
+	@Column(length = 512)
+	private String caseOrEventInformation;
+
+	@Enumerated(EnumType.STRING)
+	private ContactCategory contactCategory;
+	@Column(length = 512)
+	private String contactProximityDetails;
 
 	public Person getPerson() {
 		return person;
@@ -405,5 +416,36 @@ public class Contact extends AbstractDomainObject {
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
+
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
 	}
 }

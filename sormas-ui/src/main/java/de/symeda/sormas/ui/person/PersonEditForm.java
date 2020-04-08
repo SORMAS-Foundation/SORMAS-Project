@@ -119,6 +119,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
 					oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
 			) +
+			fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
 			
 			loc( OCCUPATION_HEADER) +
 			divsCss(VSPACE_3, 
@@ -137,6 +138,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 					fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
 					fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
+					fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
 					loc(PersonDto.GENERAL_PRACTITIONER_DETAILS))
 			;
 
@@ -212,11 +214,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
-		addField(PersonDto.PHONE, TextField.class);
-		addField(PersonDto.PHONE_OWNER, TextField.class);
 
 		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS,
-				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
+				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS, 
+				PersonDto.PHONE, PersonDto.PHONE_OWNER, PersonDto.EMAIL_ADDRESS, 
+				PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID);
 
 		ComboBox cbPlaceOfBirthRegion = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_REGION);
 		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);

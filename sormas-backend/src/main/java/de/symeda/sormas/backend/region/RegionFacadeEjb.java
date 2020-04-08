@@ -263,19 +263,15 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		return dto;
 	}
-	
-	@Override
-	public void saveRegion(RegionDto dto) throws ValidationRuntimeException {
-		saveRegion(dto, true);
-	}
 
 	@Override
-	public void saveRegion(RegionDto dto, boolean allowExistingName) throws ValidationRuntimeException {
-		if (!allowExistingName && !regionService.getByName(dto.getName()).isEmpty()) {
+	public void saveRegion(RegionDto dto) throws ValidationRuntimeException {
+		Region region = regionService.getByUuid(dto.getUuid());
+		
+		if (region == null && !regionService.getByName(dto.getName()).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
 		}
 		
-		Region region = regionService.getByUuid(dto.getUuid());
 		region = fillOrBuildEntity(dto, region);
 		regionService.ensurePersisted(region);
 	}

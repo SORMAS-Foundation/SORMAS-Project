@@ -78,6 +78,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -231,7 +232,8 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 		
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(ado.getContact().getCaze().getRegion(), 
+			Region recipientRegion = ado.getContact().getRegion() != null ? ado.getContact().getRegion() : ado.getContact().getCaze().getRegion();
+			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(recipientRegion, 
 					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
 			for (User recipient : messageRecipients) {
 				try {

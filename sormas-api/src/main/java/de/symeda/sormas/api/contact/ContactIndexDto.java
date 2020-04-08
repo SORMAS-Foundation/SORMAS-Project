@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 
@@ -36,9 +37,8 @@ public class ContactIndexDto implements Serializable {
 	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
 	public static final String CASE_PERSON = "casePerson";
-	public static final String CASE_REGION_UUID = "caseRegionUuid";
-	public static final String CASE_DISTRICT_UUID = "caseDistrictUuid";
-	public static final String CASE_HEALTH_FACILITY_UUID = "caseHealthFacilityUuid";
+	public static final String REGION_UUID = "regionUuid";
+	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
@@ -46,15 +46,17 @@ public class ContactIndexDto implements Serializable {
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
+	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
 
 	private String uuid;
 	private PersonReferenceDto person;
 	private CaseReferenceDto caze;
 	private Disease disease;
 	private String diseaseDetails;
-	private String caseRegionUuid;
-	private String caseDistrictUuid;
-	private String caseHealthFacilityUuid;
+	private String regionUuid;
+	private String districtUuid;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -63,21 +65,25 @@ public class ContactIndexDto implements Serializable {
 	private Date followUpUntil;
 	private String contactOfficerUuid;
 	private Date reportDateTime;
+	private Date quarantineTo;
+	private ContactCategory contactCategory;
+	private CaseClassification caseClassification;
 	
 	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
-			Disease disease, String diseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String caseRegionUuid,
-			String caseDistrictUuid, String caseHealthFacilityUuid, Date lastContactDate, ContactProximity contactProximity,
+			Disease disease, String diseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String regionUuid,
+			String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, 
-			Date followUpUntil, String contactOfficerUuid, Date reportDateTime) {
+			Date followUpUntil, String contactOfficerUuid, Date reportDateTime, Date quarantineTo,
+			CaseClassification caseClassification) {
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.caseRegionUuid = caseRegionUuid;
-		this.caseDistrictUuid = caseDistrictUuid;
-		this.caseHealthFacilityUuid = caseHealthFacilityUuid;
+		this.regionUuid = regionUuid;
+		this.districtUuid = districtUuid;
 		this.lastContactDate = lastContactDate;
+		this.contactCategory = contactCategory;
 		this.contactProximity = contactProximity;
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
@@ -85,6 +91,8 @@ public class ContactIndexDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
+		this.quarantineTo = quarantineTo;
+		this.setCaseClassification(caseClassification);
 	}
 	
 	public String getUuid() {
@@ -153,23 +161,17 @@ public class ContactIndexDto implements Serializable {
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
 	}
-	public String getCaseRegionUuid() {
-		return caseRegionUuid;
+	public String getRegionUuid() {
+		return regionUuid;
 	}
-	public void setCaseRegionUuid(String caseRegionUuid) {
-		this.caseRegionUuid = caseRegionUuid;
+	public void setRegionUuid(String regionUuid) {
+		this.regionUuid = regionUuid;
 	}
-	public String getCaseDistrictUuid() {
-		return caseDistrictUuid;
+	public String getDistrictUuid() {
+		return districtUuid;
 	}
-	public void setCaseDistrictUuid(String caseDistrictUuid) {
-		this.caseDistrictUuid = caseDistrictUuid;
-	}
-	public String getCaseHealthFacilityUuid() {
-		return caseHealthFacilityUuid;
-	}
-	public void setCaseHealthFacilityUuid(String caseHealthFacilityUuid) {
-		this.caseHealthFacilityUuid = caseHealthFacilityUuid;
+	public void setDistrictUuid(String districtUuid) {
+		this.districtUuid = districtUuid;
 	}
 	public String getContactOfficerUuid() {
 		return contactOfficerUuid;
@@ -183,9 +185,26 @@ public class ContactIndexDto implements Serializable {
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+	}
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
 
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(uuid);
 	}
-	
 }

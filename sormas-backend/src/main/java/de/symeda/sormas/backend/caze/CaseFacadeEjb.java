@@ -1085,7 +1085,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				surveillanceOfficer.get(User.UUID), root.get(Case.OUTCOME), person.get(Person.APPROXIMATE_AGE),
 				person.get(Person.APPROXIMATE_AGE_TYPE), person.get(Person.BIRTHDATE_DD),
 				person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY), person.get(Person.SEX),
-				root.get(Case.COMPLETENESS));
+				root.get(Case.QUARANTINE_TO), root.get(Case.COMPLETENESS));
 	}
 
 	private void setIndexDtoSortingOrder(CriteriaBuilder cb, CriteriaQuery<CaseIndexDto> cq, Root<Case> root,
@@ -1113,6 +1113,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				case CaseIndexDto.REPORT_DATE:
 				case CaseIndexDto.CREATION_DATE:
 				case CaseIndexDto.OUTCOME:
+				case CaseIndexDto.QUARANTINE_TO:
 				case CaseIndexDto.COMPLETENESS:
 					expression = root.get(sortProperty.propertyName);
 					break;
@@ -1532,9 +1533,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		String newEpidNumber = caze.getEpidNumber();
 
 		if (!CaseLogic.isEpidNumberPrefix(caze.getEpidNumber())) {
-			// Generate a completely new epid number if the prefix is not complete or
-			// doesn't match the pattern
+			// Generate a completely new epid number if the prefix is not complete or doesn't match the pattern
 			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(caze.getReportDate());
 			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
 			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(caze.getDistrict().getUuid()) + "-" + year + "-";
 		}
@@ -1542,12 +1543,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Generate a suffix number
 		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caze.getUuid(), caze.getDisease());
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
-			// If there is not yet a case with a suffix for this epid number in the
-			// database, use 01
+			// If there is not yet a case with a suffix for this epid number in the database, use 001
 			newEpidNumber = newEpidNumber + "001";
 		} else {
-			// Otherwise, extract the suffix from the highest existing epid number and
-			// increase it by 1
+			// Otherwise, extract the suffix from the highest existing epid number and increase it by 1
 			String suffixString = highestEpidNumber.substring(highestEpidNumber.lastIndexOf('-'));
 			// Remove all non-digits from the suffix to ignore earlier input errors
 			suffixString = suffixString.replaceAll("[^\\d]", "");
@@ -1752,6 +1751,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTo(source.getQuarantineTo());
+		target.setQuarantineFrom(source.getQuarantineFrom());
 
 		return target;
 	}
@@ -1846,6 +1848,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTo(source.getQuarantineTo());
+		target.setQuarantineFrom(source.getQuarantineFrom());
 
 		return target;
 	}
@@ -2000,7 +2005,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease caseDisease) {
-
 		int suffixSeperatorIndex = epidNumber.lastIndexOf('-');
 		if (suffixSeperatorIndex == -1) {
 			// no suffix - use the whole string as prefix
@@ -2014,23 +2018,25 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
 
-		Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
+		Predicate filter = cb.and(
+				cb.equal(caze.get(Case.DELETED), false),
+				cb.equal(caze.get(Case.DISEASE), caseDisease));
 		if (!DataHelper.isNullOrEmpty(caseUuid)) {
 			filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
 		}
 
-		ParameterExpression<String> regexParam2 = null, regexParam3 = null, regexParam4 = null;
+		ParameterExpression<String> regexPattern = null, regexReplacement = null, regexFlags = null;
 		if (suffixString.length() > 0) {
 			// has to start with prefix
 			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
 
 			// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
 			int suffixNumber = Integer.parseInt(suffixString);
-			regexParam2 = cb.parameter(String.class);
-			regexParam3 = cb.parameter(String.class);
-			regexParam4 = cb.parameter(String.class);
+			regexPattern = cb.parameter(String.class);
+			regexReplacement = cb.parameter(String.class);
+			regexFlags = cb.parameter(String.class);
 			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class,
-					cb.substring(caze.get(Case.EPID_NUMBER), suffixSeperatorIndex+2), regexParam2, regexParam3, regexParam4);
+					cb.substring(caze.get(Case.EPID_NUMBER), suffixSeperatorIndex+2), regexPattern, regexReplacement, regexFlags);
 			filter = cb.and(filter, cb.equal(cb.concat("0", epidNumberSuffixClean).as(Integer.class), suffixNumber));
 		}
 		else {
@@ -2040,10 +2046,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.select(caze.get(Case.EPID_NUMBER));
 		TypedQuery<String> query = em.createQuery(cq);
-		if (regexParam2 != null) {
-			query.setParameter(regexParam2, "\\D");
-			query.setParameter(regexParam3, "");
-			query.setParameter(regexParam4, "g");
+		if (regexPattern != null) {
+			query.setParameter(regexPattern, "\\D"); // Non-digits
+			query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
+			query.setParameter(regexFlags, "g"); // Global search
 		}
 		query.setMaxResults(1);
 		return !query.getResultList().isEmpty();

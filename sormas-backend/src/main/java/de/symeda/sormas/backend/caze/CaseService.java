@@ -277,24 +277,26 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Case> caze = cq.from(Case.class);
 
-			Predicate filter = cb.equal(caze.get(Case.DISEASE), caseDisease);
+			Predicate filter = cb.and(
+					cb.equal(caze.get(Case.DELETED), false),
+					cb.equal(caze.get(Case.DISEASE), caseDisease));
 			if (!DataHelper.isNullOrEmpty(caseUuid)) {
 				filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
 			}
 			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), epidNumberPrefix + "%"));
 			cq.where(filter);
 
-			ParameterExpression<String> regexParam2 = cb.parameter(String.class);
-			ParameterExpression<String> regexParam3 = cb.parameter(String.class);
-			ParameterExpression<String> regexParam4 = cb.parameter(String.class);
+			ParameterExpression<String> regexPattern = cb.parameter(String.class);
+			ParameterExpression<String> regexReplacement = cb.parameter(String.class);
+			ParameterExpression<String> regexFlags = cb.parameter(String.class);
 			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, 
-					cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length()+1), regexParam2, regexParam3, regexParam4);
+					cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length() + 1), regexPattern, regexReplacement, regexFlags);
 			cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
 			cq.select(caze.get(Case.EPID_NUMBER));
 			TypedQuery<String> query = em.createQuery(cq);
-			query.setParameter(regexParam2, "\\D");
-			query.setParameter(regexParam3, "");
-			query.setParameter(regexParam4, "g");
+			query.setParameter(regexPattern, "\\D"); // Non-digits
+			query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
+			query.setParameter(regexFlags, "g"); // Global search
 			query.setMaxResults(1);
 			return query.getSingleResult();
 
@@ -470,6 +472,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getCreationDateTo() != null) {
 			filter = and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(caseCriteria.getCreationDateTo())));
 		}
+		if (caseCriteria.getQuarantineTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Case.QUARANTINE_TO), DateHelper.getStartOfDay(caseCriteria.getQuarantineTo()), DateHelper.getEndOfDay(caseCriteria.getQuarantineTo())));
+		}
 		if (caseCriteria.getPerson() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
@@ -545,6 +550,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
 							cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
 							cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		if (caseCriteria.getSourceCaseInfoLike() != null) {
+			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
+							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
+							cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

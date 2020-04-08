@@ -4016,6 +4016,55 @@ UPDATE contact SET diseasedetails = cases.diseasedetails FROM cases WHERE contac
 
 INSERT INTO schema_version (version_number, comment) VALUES (192, 'Add disease to contact #1643');
 
+-- 2020-03-25 Allow creation of contacts without a case #1599
+ALTER TABLE contact ALTER COLUMN caze_id DROP NOT NULL;
+ALTER TABLE contact_history ALTER COLUMN caze_id DROP NOT NULL;
+
+ALTER TABLE contact ADD COLUMN caseidexternalsystem varchar(255);
+ALTER TABLE contact ADD COLUMN caseoreventinformation varchar(512);
+ALTER TABLE contact_history ADD COLUMN caseidexternalsystem varchar(255);
+ALTER TABLE contact_history ADD COLUMN caseoreventinformation varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (193, 'Allow creation of contacts without a case #1599');
+
+-- 2020-03-30 Add email address, passport number and national health id to person #1639 & #1681
+ALTER TABLE person ADD COLUMN emailaddress varchar(255);
+ALTER TABLE person ADD COLUMN passportnumber varchar(255);
+ALTER TABLE person ADD COLUMN nationalhealthid varchar(255);
+ALTER TABLE person_history ADD COLUMN emailaddress varchar(255);
+ALTER TABLE person_history ADD COLUMN passportnumber varchar(255);
+ALTER TABLE person_history ADD COLUMN nationalhealthid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (194, 'Add email address, passport number and national health id to person #1639 & #1681');
+
+-- 2020-03-30 Add quarantine information to case #1675
+ALTER TABLE cases ADD COLUMN quarantine varchar(255);
+ALTER TABLE cases ADD COLUMN quarantinefrom timestamp;
+ALTER TABLE cases ADD COLUMN quarantineto timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantine varchar(255);
+ALTER TABLE cases_history ADD COLUMN quarantinefrom timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineto timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (195, 'Add quarantine information to case #1675');
+
+-- 2020-03-27 Add contact category and type of contact comment #1635
+ALTER TABLE contact ADD COLUMN contactcategory varchar(255);
+ALTER TABLE contact ADD COLUMN contactproximitydetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN contactcategory varchar(255);
+ALTER TABLE contact_history ADD COLUMN contactproximitydetails varchar(512);
+-- Compromise solution for international systems (non-synchronized data from mobile devices are neglected):
+UPDATE contact SET contactproximitydetails = 'Airplane' WHERE contactproximity = 'AIRPLANE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (196, 'Add contact category and type of contact comment #1635');
+
+-- 2020-03-31 Make follow-up until editable #1680
+ALTER TABLE contact ADD COLUMN overwritefollowupuntil boolean;
+ALTER TABLE contact_history ADD COLUMN overwritefollowupuntil boolean;
+
+UPDATE contact SET overwritefollowupuntil = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (197, 'Make follow-up until editable #1680');
+
 
 -- 2020-04-07 Contact age field #1281
 ALTER TABLE contact ADD COLUMN contactage integer;
@@ -4024,4 +4073,4 @@ ALTER TABLE contact_history ADD COLUMN contactage integer;
 UPDATE contact SET contactage = p.approximateage FROM person p WHERE contact.person_id = p.id AND p.approximateage IS NOT NULL AND p.approximateagetype = 'YEARS';
 UPDATE contact SET contactage = 0 FROM person p WHERE contact.person_id = p.id AND p.approximateage IS NOT NULL AND p.approximateagetype = 'MONTHS';
 
-INSERT INTO schema_version (version_number, comment) VALUES (193, 'Contact age field #1281');
+INSERT INTO schema_version (version_number, comment) VALUES (198, 'Contact age field #1281');
