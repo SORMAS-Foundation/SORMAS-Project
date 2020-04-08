@@ -221,18 +221,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto cazePerson = creator.createPerson("Case", lastName);
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
+		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf, "abc");
+		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf, "xyz");
 
-		List<CaseIndexDto> results = getCaseFacade().getIndexList(null, 0, 100, user.getUuid(), 
+		List<CaseIndexDto> results = getCaseFacade().getIndexList(null, 0, 100, user.getUuid(),
 				Arrays.asList(new SortProperty(CaseIndexDto.DISEASE), new SortProperty(CaseIndexDto.PERSON_FIRST_NAME),
 						new SortProperty(CaseIndexDto.DISTRICT_NAME),
-						new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME),
+						new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME, false),
 						new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
 
 		// List should have one entry
-		assertEquals(1, results.size());
+		assertEquals(3, results.size());
 		
 		assertEquals(districtName, results.get(0).getDistrictName());
 		assertEquals(lastName, results.get(0).getPersonLastName());
+		assertEquals("Facility - xyz", results.get(0).getHealthFacilityName());
+		assertEquals("Facility - abc", results.get(1).getHealthFacilityName());
+		assertEquals("Facility", results.get(2).getHealthFacilityName());
 	}
 
 	@Test
