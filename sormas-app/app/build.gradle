@@ -114,6 +114,41 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'io.fabric'
+
+apply plugin: "jacoco"
+
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/reports")
+}
+task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+    def coverageSourceDirs = [
+        "src/main/java"
+    ]
+    def fileFilter = [
+        '**/R.class',
+        '**/R$*.class',
+        '**/*$ViewInjector*.*',
+        '**/*$ViewBinder*.*',
+        '**/BuildConfig.*',
+        '**/Manifest*.*'
+    ]
+    def javaClasses = fileTree(
+        dir: "$buildDir/intermediates/javac/debug/classes/de/symeda/sormas/app",
+        excludes: fileFilter
+    )
+    classDirectories = files([ javaClasses ])
+    additionalSourceDirs = files(coverageSourceDirs)
+    sourceDirectories = files(coverageSourceDirs)
+    executionData = fileTree(dir: "$buildDir", includes: [
+            "jacoco/testDebugUnitTest.exec"
+    ])
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
 apply plugin: 'org.sonarqube'
 
 sonarqube {
@@ -121,5 +156,8 @@ sonarqube {
         property "sonar.projectKey", "de.symeda.sormas:sormas-app"
         property "sonar.projectVersion", "$sormasVersion"
         property "sonar.projectName", "sormas-app"
+
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacocoUnitTestReport/jacocoUnitTestReport.xml"
+        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/" 
     }
 }

@@ -24,6 +24,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -59,8 +60,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(5, contactFacade.count(null, null));
 
 		// Person Similarity: pick
-		List<PersonNameDto> persons = FacadeProvider.getPersonFacade()
-				.getNameDtos(user.toReference());
+		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
 		csvFile = new File(
 				getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").getFile());
 		caseContactImporter = new CaseContactImporterExtension(csvFile, false, user.toReference(), caze) {

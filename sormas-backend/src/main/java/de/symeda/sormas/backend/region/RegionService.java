@@ -49,8 +49,8 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		Root<Region> from = cq.from(getElementClass());
 
 		cq.where(cb.or(
-				cb.equal(from.get(Region.NAME), name),
-				cb.equal(cb.lower(from.get(Region.NAME)), name.toLowerCase())
+				cb.equal(cb.trim(from.get(Region.NAME)), name.trim()),
+				cb.equal(cb.lower(cb.trim(from.get(Region.NAME))), name.trim().toLowerCase())
 				));
 
 		return em.createQuery(cq).getResultList();

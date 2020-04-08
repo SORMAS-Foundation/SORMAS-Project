@@ -21,15 +21,17 @@ import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
@@ -264,6 +266,23 @@ public class VaadinUiUtil {
 		requestTaskComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.yes));
 		requestTaskComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.no));
 		return requestTaskComponent;
+	}
+	
+	public static HorizontalLayout createInfoComponent(String text) {
+		HorizontalLayout infoLayout = new HorizontalLayout();
+		infoLayout.setWidth(100, Unit.PERCENTAGE);
+		infoLayout.setSpacing(true);
+		Image icon = new Image(null, new ThemeResource("img/info-icon.png"));
+		icon.setHeight(35, Unit.PIXELS);
+		icon.setWidth(35, Unit.PIXELS);
+		infoLayout.addComponent(icon);
+		infoLayout.setComponentAlignment(icon, Alignment.MIDDLE_LEFT);
+		Label infoLabel = new Label(text, ContentMode.HTML);
+		infoLabel.setWidth(100, Unit.PERCENTAGE);
+		infoLayout.addComponent(infoLabel);
+		infoLayout.setExpandRatio(infoLabel, 1);
+		CssStyles.style(infoLayout, CssStyles.VSPACE_3);
+		return infoLayout;
 	}
 
 }

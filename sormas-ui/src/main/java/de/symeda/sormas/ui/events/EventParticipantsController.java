@@ -36,6 +36,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -63,12 +64,16 @@ public class EventParticipantsController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					final EventParticipantDto dto = createForm.getValue();
+					final PersonDto person = PersonDto.build();
+					person.setFirstName(createForm.getPersonFirstName());
+					person.setLastName(createForm.getPersonLastName());
 					
 					ControllerProvider.getPersonController().selectOrCreatePerson(
-							createForm.getPersonFirstName(), createForm.getPersonLastName(),
-							person -> {
-								if (person != null) {
-									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
+							person,
+							I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
+							selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
 									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 									Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 				        			ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid());

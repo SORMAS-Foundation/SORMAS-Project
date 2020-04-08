@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,8 +27,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.opencsv.CSVWriter;
+import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -53,43 +55,55 @@ public class GridExportStreamResource extends StreamResource {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public InputStream getStream() {
-				List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
-				List<Column> columns = new ArrayList<>(grid.getColumns());
-				columns.removeIf(c -> c.isHidden());
-				columns.removeIf(c -> ignoredPropertyIdsList.contains(c.getId()));
+				
+				ValueProvider[] columnValueProviders;
+				String[] headerRow;
+				{
+					List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
+					List<Column> columns = grid.getColumns().stream()
+					.filter(c -> !c.isHidden())
+					.filter(c -> !ignoredPropertyIdsList.contains(c.getId()))
+					.collect(Collectors.toList());
+					
+					columnValueProviders = columns.stream()
+							.map(Column::getValueProvider)
+							.toArray(ValueProvider[]::new);
+	
+					headerRow = columns.stream()
+						.map(c -> c.getCaption())
+						.toArray(String[]::new);
+				}
+
+				DataProvider<?, ?> dataProvider = grid.getDataProvider();
+				
+				List<?> sortOrder = new ArrayList<>(grid.getSortOrder());
 
 				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
 		
-						List<String> headerRow = new ArrayList<>();
-						columns.forEach(c -> {
-							headerRow.add(c.getCaption());
-						});
-						writer.writeNext(headerRow.toArray(new String[headerRow.size()]));
+						writer.writeNext(headerRow);
 						
-						String[] rowValues = new String[columns.size()];
-
-						int totalRowCount = grid.getDataProvider().size(new Query());
-						for (int i=0; i<totalRowCount; i+=100) {
-							grid.getDataProvider().fetch(new Query(i, 100, grid.getSortOrder(), null, null))
+						String[] rowValues = new String[columnValueProviders.length];
+						
+						int totalRowCount = dataProvider.size(new Query());
+						for (int i = 0; i < totalRowCount; i += 100) {
+							dataProvider.fetch(new Query(i, 100, sortOrder, null, null))
 							.forEach(row -> {
-								for (int c=0; c<columns.size(); c++) {
-									Column column = columns.get(c);
-									Object value = column.getValueProvider().apply(row);
-									String valueString;
-									if (value != null) {
-										if (value instanceof Date) {
-											valueString = DateHelper.formatLocalDateTime((Date) value);
-										} else if (value instanceof Boolean) {
-											if ((Boolean) value == true) {
-												valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
-											} else
-												valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
-										} else {
-											valueString = value.toString();
-										}
-									} else {
+								for (int c = 0; c < columnValueProviders.length; c++) {
+									Object value = columnValueProviders[c].apply(row);
+									
+									final String valueString;
+									if (value == null) {
 										valueString = "";
+									} else if (value instanceof Date) {
+										valueString = DateHelper.formatLocalDateTime((Date) value);
+									} else if (value instanceof Boolean) {
+										if ((Boolean) value == true) {
+											valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
+										} else
+											valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
+									} else {
+										valueString = value.toString();
 									}
 									rowValues[c] = valueString;
 								}
@@ -97,8 +111,8 @@ public class GridExportStreamResource extends StreamResource {
 							});
 							writer.flush();
 						}		
-					}					
-					return new BufferedInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
+					}
+					return new ByteArrayInputStream(byteStream.toByteArray());
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)

@@ -28,6 +28,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
@@ -61,7 +62,6 @@ import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -127,7 +127,6 @@ public class ContactsView extends AbstractView {
 	private ComboBox caseClassificationFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
-	private ComboBox facilityFilter;
 	private ComboBox officerFilter;
 	private ComboBox followUpStatusFilter;
 	private ComboBox reportedByFilter;
@@ -419,8 +418,8 @@ public class ContactsView extends AbstractView {
 			UserDto user = UserProvider.getCurrent().getUser();
 			regionFilter = new ComboBox();
 			if (user.getRegion() == null) {
-				regionFilter.setWidth(140, Unit.PIXELS);
-				regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_REGION_UUID));
+				regionFilter.setWidth(240, Unit.PIXELS);
+				regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
 				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -431,8 +430,8 @@ public class ContactsView extends AbstractView {
 			}
 
 			districtFilter = new ComboBox();
-			districtFilter.setWidth(140, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_DISTRICT_UUID));
+			districtFilter.setWidth(240, Unit.PIXELS);
+			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
 			districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 			districtFilter.addValueChangeListener(e -> {
 				DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
@@ -457,30 +456,13 @@ public class ContactsView extends AbstractView {
 				districtFilter.setEnabled(false);
 			}
 			secondFilterRowLayout.addComponent(districtFilter);
-
-			facilityFilter = new ComboBox();
-			facilityFilter.setWidth(140, Unit.PIXELS);
-			facilityFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_HEALTH_FACILITY_UUID));
-			facilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
-			facilityFilter.addValueChangeListener(e -> {
-				FacilityReferenceDto facility = (FacilityReferenceDto) e.getProperty().getValue();
-				criteria.caseFacility(facility);
-				navigateTo(criteria);
-			});
-			facilityFilter.setEnabled(false);
-			secondFilterRowLayout.addComponent(facilityFilter);
-
-			districtFilter.addValueChangeListener(e-> {
-				facilityFilter.removeAllItems();
-				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
-				if (district != null) {
-					facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(district, true));
-					facilityFilter.setEnabled(true);
-				} else {
-					facilityFilter.setEnabled(false);
-				}
-			});
-
+			
+			Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			infoLabel.setSizeUndefined();
+			infoLabel.setDescription(I18nProperties.getString(Strings.infoContactsViewRegionDistrictFilter), ContentMode.HTML);
+			CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+			secondFilterRowLayout.addComponent(infoLabel);
+			
 			officerFilter = new ComboBox();
 			officerFilter.setWidth(140, Unit.PIXELS);
 			officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
@@ -839,7 +821,6 @@ public class ContactsView extends AbstractView {
 		diseaseFilter.setValue(criteria.getDisease());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
-		facilityFilter.setValue(criteria.getCaseFacility());
 		officerFilter.setValue(criteria.getContactOfficer());
 		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
 		reportedByFilter.setValue(criteria.getReportingUserRole());

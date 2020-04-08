@@ -32,8 +32,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface PersonFacade {
 
-	List<PersonNameDto> getNameDtos(UserReferenceDto user);
-
 	List<PersonDto> getPersonsAfter(Date date, String uuid);
 
 	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
@@ -53,4 +51,13 @@ public interface PersonFacade {
 	PersonIndexDto getIndexDto(String uuid);
 	
 	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid);
+
+	/**
+	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
+	 * This only includes persons that are associated with an active case, contact or event participant.
+	 */
+	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
+	
+	List<PersonIndexDto> getIndexDtosByUuids(List<String> uuids);
+	
 }

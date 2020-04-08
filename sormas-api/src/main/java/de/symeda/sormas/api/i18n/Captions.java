@@ -282,11 +282,8 @@ public interface Captions {
 	public static String Contact = "Contact";
 	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
 	public static String Contact_caseClassification = "Contact.caseClassification";
-	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
-	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
 	public static String Contact_caseIdExternalSystem = "Contact.caseIdExternalSystem";
 	public static String Contact_caseOrEventInformation = "Contact.caseOrEventInformation";
-	public static String Contact_caseRegionUuid = "Contact.caseRegionUuid";
 	public static String Contact_caze = "Contact.caze";
 	public static String Contact_caze_ageSex = "Contact.caze.ageSex";
 	public static String Contact_caze_caseClassification = "Contact.caze.caseClassification";
@@ -306,6 +303,7 @@ public interface Captions {
 	public static String Contact_disease = "Contact.disease";
 	public static String Contact_diseaseDetails = "Contact.diseaseDetails";
 	public static String Contact_district = "Contact.district";
+	public static String Contact_districtUuid = "Contact.districtUuid";
 	public static String Contact_externalID = "Contact.externalID";
 	public static String Contact_firstName = "Contact.firstName";
 	public static String Contact_followUpComment = "Contact.followUpComment";
@@ -323,6 +321,7 @@ public interface Captions {
 	public static String Contact_quarantineFrom = "Contact.quarantineFrom";
 	public static String Contact_quarantineTo = "Contact.quarantineTo";
 	public static String Contact_region = "Contact.region";
+	public static String Contact_regionUuid = "Contact.regionUuid";
 	public static String Contact_relationDescription = "Contact.relationDescription";
 	public static String Contact_relationToCase = "Contact.relationToCase";
 	public static String Contact_reportDateTime = "Contact.reportDateTime";

@@ -125,8 +125,8 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		Root<Facility> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-				cb.equal(from.get(Facility.NAME), name),
-				cb.equal(cb.lower(from.get(Facility.NAME)), name.toLowerCase())
+				cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
+				cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase())
 				);
 		// Additional null check is required because notEqual returns true if one of the
 		// values is null
@@ -134,7 +134,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 				cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
 
 		// Don't check for district and community equality when searching for constant facilities
-		if (!FacilityDto.OTHER_FACILITY.equals(name) && !FacilityDto.NO_FACILITY.equals(name)) {
+		if (!FacilityDto.OTHER_FACILITY.equals(name.trim()) && !FacilityDto.NO_FACILITY.equals(name.trim())) {
 			if (community != null) {
 				filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
 			} else if (district != null) {
@@ -153,8 +153,8 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		Root<Facility> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-				cb.equal(from.get(Facility.NAME), name),
-				cb.equal(cb.lower(from.get(Facility.NAME)), name.toLowerCase())
+				cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
+				cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase())
 				);
 		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
 

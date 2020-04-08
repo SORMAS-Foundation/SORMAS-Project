@@ -328,6 +328,7 @@ public interface Strings {
 	public static String infoCompletenessMerge = "infoCompletenessMerge";
 	public static String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	public static String infoContactDashboard = "infoContactDashboard";
+	public static String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
 	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
 	public static String infoDatabaseExportTables = "infoDatabaseExportTables";
@@ -366,6 +367,9 @@ public interface Strings {
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	public static String infoSearchCaseForContact = "infoSearchCaseForContact";
+	public static String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
+	public static String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
+	public static String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
 	public static String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";

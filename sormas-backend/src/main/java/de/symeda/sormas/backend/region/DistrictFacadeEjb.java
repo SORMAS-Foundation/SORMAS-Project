@@ -354,7 +354,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public String getFullEpidCodeForDistrict(String districtUuid) {
-
 		District district = districtService.getByUuid(districtUuid);
 		String fullEpidCode = (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "")
 				+ "-" + (district.getEpidCode() != null ? district.getEpidCode() : "");
