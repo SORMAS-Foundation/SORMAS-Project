@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import org.junit.Before;
 
@@ -62,8 +63,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		MockProducer.resetMocks();
 		initH2Functions();
 
-		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
-		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+		UserDto user = creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 	}
 
 	private void initH2Functions() {
