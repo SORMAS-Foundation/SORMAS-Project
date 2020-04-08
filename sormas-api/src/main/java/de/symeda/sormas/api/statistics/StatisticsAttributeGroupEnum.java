@@ -27,8 +27,7 @@ public enum StatisticsAttributeGroupEnum {
 	TIME,
 	PLACE,
 	PERSON,
-	CASE,
-	CONTACT;
+	ENTITY;
 	
 	private List<StatisticsAttributeEnum> attributes;
 	

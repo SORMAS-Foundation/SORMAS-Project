@@ -35,8 +35,8 @@ public enum StatisticsAttributeEnum {
 	AGE_INTERVAL_CHILDREN_MEDIUM(StatisticsAttributeGroupEnum.PERSON, false, true),
 	AGE_INTERVAL_BASIC(StatisticsAttributeGroupEnum.PERSON, false, true),
 	
-	DISEASE(StatisticsAttributeGroupEnum.CASE, true, false),
-	USER_ROLE(StatisticsAttributeGroupEnum.CASE, true, false);
+	DISEASE(StatisticsAttributeGroupEnum.ENTITY, true, false),
+	USER_ROLE(StatisticsAttributeGroupEnum.ENTITY, true, false);
 	
 	private final StatisticsAttributeGroupEnum attributeGroup;
 	private final boolean sortByCaption;
