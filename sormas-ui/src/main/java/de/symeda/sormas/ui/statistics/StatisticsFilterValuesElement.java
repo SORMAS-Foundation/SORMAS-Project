@@ -168,8 +168,14 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 					return createTokens(subAttribute.getValues(attribute));
 			}
 		}
-		else
-			return createTokens(attribute.getValues());
+		else {
+			List<TokenizableValue> tokens = createTokens(attribute.getValues());
+			
+			if (attribute.getBaseEnum() == StatisticsAttributeEnum.SEX)
+				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.unknown), tokens.size()));
+			
+			return tokens;
+		}
 	}
 
 	public void setValueChangeListener(ValueChangeListener<List<Tokenizable>> valueChangeListener) {
