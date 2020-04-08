@@ -24,7 +24,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.statistics.caze.CaseStatisticsView;
+import de.symeda.sormas.ui.statistics.contact.ContactStatisticsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
+
 
 @SuppressWarnings("serial")
 public class AbstractStatisticsView extends AbstractSubNavigationView {
@@ -38,7 +41,8 @@ public class AbstractStatisticsView extends AbstractSubNavigationView {
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
-		menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsStatistics), params);
+		menu.addView(CaseStatisticsView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsCase), params);
+		menu.addView(ContactStatisticsView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsContact), params);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
 			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsDatabaseExport), params);
 		}
