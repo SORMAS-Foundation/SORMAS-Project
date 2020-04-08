@@ -17,10 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.statistics;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class StatisticsAttributesContainer {
 	

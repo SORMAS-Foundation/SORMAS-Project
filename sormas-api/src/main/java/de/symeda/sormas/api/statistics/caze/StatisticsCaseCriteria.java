@@ -32,8 +32,6 @@ import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.infrastructure.PopulationStatisticsCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;

@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
-import java.util.List;
-
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;

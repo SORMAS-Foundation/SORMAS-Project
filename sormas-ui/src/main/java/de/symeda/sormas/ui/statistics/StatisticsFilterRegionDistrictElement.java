@@ -24,10 +24,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsAttribute;
 import de.symeda.sormas.api.statistics.StatisticsAttributeEnum;
 import de.symeda.sormas.api.statistics.StatisticsAttributesContainer;
-import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
 import de.symeda.sormas.ui.utils.CssStyles;
 

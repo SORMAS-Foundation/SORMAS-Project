@@ -21,8 +21,6 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.statistics.StatisticsAttribute;
-import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
 import de.symeda.sormas.api.statistics.caze.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.caze.StatisticsCaseCriteria;

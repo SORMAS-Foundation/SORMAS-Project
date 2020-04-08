@@ -21,19 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.user.UserRole;
-//import de.symeda.sormas.ui.statistics.StatisticsFilterElement.TokenizableValue;
 
 @SuppressWarnings("hiding")
 public class StatisticsAttribute {

@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.statistics;
 
-import java.util.Collection;
-
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum StatisticsAttributeEnum {

@@ -21,9 +21,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.statistics.StatisticsAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCountDto;
-import de.symeda.sormas.api.statistics.StatisticsSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
 import de.symeda.sormas.api.statistics.contact.StatisticsContactAttribute;
 import de.symeda.sormas.api.statistics.contact.StatisticsContactCriteria;
