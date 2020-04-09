@@ -77,9 +77,9 @@ public class CaseContactsView extends AbstractCaseView {
 
 	private ContactCriteria criteria;
 	private ViewConfiguration viewConfiguration;
-	
+
 	private ContactGrid grid;  
-	
+
 	//Filters
 	private ComboBox classificationFilter;
 	private ComboBox regionFilter;
@@ -87,7 +87,7 @@ public class CaseContactsView extends AbstractCaseView {
 	private ComboBox officerFilter;
 	private TextField searchField;
 	private Button resetButton;
-	
+
 	private Button newButton;
 	private VerticalLayout gridLayout;
 	private HashMap<Button, String> statusButtons;
@@ -124,12 +124,17 @@ public class CaseContactsView extends AbstractCaseView {
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+				if (region != null) {
+					officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.CONTACT_OFFICER));
+				} else {
+					officerFilter.removeAllItems();
+				}
 				criteria.region(region);
 				navigateTo(criteria);
 			});
 			topLayout.addComponent(regionFilter);
 		}
-		
+
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(240, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
@@ -137,7 +142,7 @@ public class CaseContactsView extends AbstractCaseView {
 			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
-		
+
 		if (user.getRegion() != null && user.getDistrict() == null) {	
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
@@ -161,7 +166,7 @@ public class CaseContactsView extends AbstractCaseView {
 		infoLabel.setDescription(I18nProperties.getString(Strings.infoContactsViewRegionDistrictFilter), ContentMode.HTML);
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		topLayout.addComponent(infoLabel);
-		
+
 		officerFilter = new ComboBox();
 		officerFilter.setWidth(240, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
@@ -169,10 +174,13 @@ public class CaseContactsView extends AbstractCaseView {
 			criteria.contactOfficer((UserReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
+		if (user.getRegion() != null) {
+			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
+		}
 		topLayout.addComponent(officerFilter);
-		
+
 		searchField = new TextField();
- 		searchField.setWidth(200, Unit.PIXELS);
+		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
 		searchField.addTextChangeListener(e -> {
@@ -180,7 +188,7 @@ public class CaseContactsView extends AbstractCaseView {
 			((ContactGrid) grid).reload();
 		});
 		topLayout.addComponent(searchField);
-			
+
 		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
@@ -288,7 +296,7 @@ public class CaseContactsView extends AbstractCaseView {
 				statusFilterLayout.setExpandRatio(importButton, 1);
 			}
 		}
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -324,7 +332,7 @@ public class CaseContactsView extends AbstractCaseView {
 		super.enter(event);
 
 		criteria.caze(getCaseRef());
-		
+
 		if (grid == null) {
 			grid = new ContactGrid(criteria, getClass());
 			gridLayout = new VerticalLayout();
@@ -346,36 +354,32 @@ public class CaseContactsView extends AbstractCaseView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-		
+
 		grid.reload();
 	}
 
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
-		
+
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
+
 		updateStatusButtons();
-		
+
 		classificationFilter.removeAllItems();
 		classificationFilter.addItems((Object[]) ContactClassification.values());
 		classificationFilter.setValue(criteria.getContactClassification());
 
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-		
+
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
-		
 		searchField.setValue(criteria.getNameUuidCaseLike());
-
-		officerFilter.removeAllItems();
-		officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(caseDto.getRegion(), UserRole.CONTACT_OFFICER));
 		officerFilter.setValue(criteria.getContactOfficer());
-		
+
 		applyingCriteria = false;
 	}
-	
+
 	private void updateStatusButtons() {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
