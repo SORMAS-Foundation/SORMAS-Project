@@ -87,7 +87,6 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -135,15 +134,13 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private DistrictService districtService;
 	@EJB
-	private LocationService locationService;
-	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -153,8 +150,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	}	
 
 	@Override
-	public List<ContactDto> getAllActiveContactsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<ContactDto> getAllActiveContactsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -174,8 +171,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<String> getDeletedUuidsSince(String userUuid, Date since) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getDeletedUuidsSince(Date since) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -226,8 +223,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos) {
-		User user = userService.getByUuid(userUuid);
+	public List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, List<MapCaseDto> mapCaseDtos) {
+		User user = userService.getCurrentUser();
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		List<String> caseUuids = new ArrayList<>();
@@ -243,10 +240,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public void deleteContact(String contactUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteContact(String contactUuid) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.CONTACT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete contacts.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete contacts.");
 		}
 
 		Contact contact = contactService.getByUuid(contactUuid);
@@ -258,7 +255,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria, int first, int max) {
+	public List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -303,10 +300,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		Predicate filter = null;
 
 		// Only use user filter if no restricting case is specified
-		if (userUuid != null 
-				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
-			User user = userService.getByUuid(userUuid);
-			filter = contactService.createUserFilter(cb, cq, contact, user);
+		User user = userService.getCurrentUser();
+		if (contactCriteria == null || contactCriteria.getCaze() == null) {
+			filter = contactService.createUserFilter(cb, cq, contact);
 		}
 
 		if (contactCriteria != null) {
@@ -340,17 +336,16 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public long count(String userUuid, ContactCriteria contactCriteria) {
+	public long count(ContactCriteria contactCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> root = cq.from(Contact.class);
 
-		Predicate filter = null;		
+		Predicate filter = null;
 		// Only use user filter if no restricting case is specified
-		if (userUuid != null 
-				&& (contactCriteria == null || contactCriteria.getCaze() == null)) {
-			User user = userService.getByUuid(userUuid);
-			filter = contactService.createUserFilter(cb, cq, root, user);
+		User user = userService.getCurrentUser();
+		if (contactCriteria == null || contactCriteria.getCaze() == null) {
+			filter = contactService.createUserFilter(cb, cq, root);
 		}
 
 		if (contactCriteria != null) {
@@ -367,7 +362,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max, List<SortProperty> sortProperties) {
 		Date end = DateHelper.getEndOfDay(referenceDate);
 		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, 7));
 
@@ -381,11 +376,11 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactOfficer.get(User.UUID), contactOfficer.get(User.FIRST_NAME), contactOfficer.get(User.LAST_NAME), contact.get(Contact.LAST_CONTACT_DATE),
 				contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.FOLLOW_UP_UNTIL), contact.get(Contact.DISEASE));
 
-		Predicate filter = null;		
+		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
-		if (userUuid != null && (contactCriteria == null || contactCriteria.getCaze() == null)) {
-			User user = userService.getByUuid(userUuid);
-			filter = contactService.createUserFilter(cb, cq, contact, user);
+		Predicate filter = null;
+		if (contactCriteria == null || contactCriteria.getCaze() == null) {
+			filter = contactService.createUserFilter(cb, cq, contact);
 		}
 
 		if (contactCriteria != null) {
@@ -474,7 +469,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactIndexDto> cq = cb.createQuery(ContactIndexDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -496,11 +491,11 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME),
 				contact.get(Contact.QUARANTINE_TO), contactCase.get(Case.CASE_CLASSIFICATION));
 
-		Predicate filter = null;		
+		Predicate filter = null;
+		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
-		if (userUuid != null && (contactCriteria == null || contactCriteria.getCaze() == null)) {
-			User user = userService.getByUuid(userUuid);
-			filter = contactService.createUserFilter(cb, cq, contact, user);
+		if (contactCriteria == null || contactCriteria.getCaze() == null) {
+			filter = contactService.createUserFilter(cb, cq, contact);
 		}
 
 		if (contactCriteria != null) {
@@ -691,38 +686,38 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+			DistrictReferenceDto districtRef, Disease disease, Date from, Date to) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 
 		return contactService.getContactsForDashboard(region, district, disease, from, to, user);
 	}
 
 	@Override
-	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria) {
+		User user = userService.getCurrentUser();
 
 		return contactService.getNewContactCountPerStatus(contactCriteria, user);
 	}
 
 	@Override
-	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
+		User user = userService.getCurrentUser();
 
 		return contactService.getNewContactCountPerClassification(contactCriteria, user);
 	}
 
 	@Override
-	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
+		User user = userService.getCurrentUser();
 
 		return contactService.getNewContactCountPerFollowUpStatus(contactCriteria, user);
 	}
 
 	@Override
-	public int getFollowUpUntilCount(ContactCriteria contactCriteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public int getFollowUpUntilCount(ContactCriteria contactCriteria) {
+		User user = userService.getCurrentUser();
 
 		return contactService.getFollowUpUntilCount(contactCriteria, user);
 	}

@@ -18,7 +18,6 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -57,7 +56,7 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 		searchButton.addClickListener(e -> {
 			if (StringUtils.isNotEmpty(searchField.getValue())) {
 				criteria.setSourceCaseInfoLike(searchField.getValue());
-				grid.setCases(FacadeProvider.getCaseFacade().getIndexList(criteria, null, null, UserProvider.getCurrent().getUuid(), null));
+				grid.setCases(FacadeProvider.getCaseFacade().getIndexList(criteria, null, null, null));
 			} else {
 				criteria.setSourceCaseInfoLike(null);
 				grid.clearCases();

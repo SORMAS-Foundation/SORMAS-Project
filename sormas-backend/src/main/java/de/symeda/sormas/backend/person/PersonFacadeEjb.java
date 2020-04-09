@@ -107,8 +107,9 @@ public class PersonFacadeEjb implements PersonFacade {
 
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllUuids() {
+
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -170,14 +171,14 @@ public class PersonFacadeEjb implements PersonFacade {
 	//	}
 
 	@Override
-	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria) {
+		User user = userService.getCurrentUser();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
-
-		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
+		
+		Predicate filter = caseService.createUserFilter(cb, cq, root);
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
@@ -196,8 +197,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonDto> getPersonsAfter(Date date, String uuid) {
-		User user = userService.getByUuid(uuid);
+	public List<PersonDto> getPersonsAfter(Date date) {
+
+		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
@@ -217,8 +219,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String uuid) {
-		User user = userService.getByUuid(uuid);
+	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease) {
+		User user = userService.getCurrentUser();
 		District district = districtService.getByReferenceDto(districtRef);
 
 		if (user == null) {
@@ -427,8 +429,8 @@ public class PersonFacadeEjb implements PersonFacade {
 				entity.getPresentCondition(), entity.getBirthdateDD(), entity.getBirthdateMM(), entity.getBirthdateYYYY(),
 				entity.getApproximateAge(), entity.getApproximateAgeType(), entity.getDeathDate(), entity.getNickname(),
 				entity.getAddress().getRegion() != null ? entity.getAddress().getRegion().getName() : null,
-						entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null, 
-								entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null, 
+						entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
+								entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
 										entity.getAddress().getCity());
 		return dto;
 	}

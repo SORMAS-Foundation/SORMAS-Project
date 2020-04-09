@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.report;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -67,8 +68,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	@Override
-	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -90,8 +91,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -101,14 +102,14 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 	
 	@Override
-	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
+		User user = userService.getCurrentUser();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
 		
-		Predicate filter = service.createUserFilter(cb, cq, root, user);
+		Predicate filter = service.createUserFilter(cb, cq, root);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
@@ -136,13 +137,13 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 		
 		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet.values());
-		reportList.sort((r1, r2) -> r1.getDisease().toString().compareTo(r2.getDisease().toString()));
+		reportList.sort(Comparator.comparing(r -> r.getDisease().toString()));
 		return reportList;
 	}
 	
 	@Override
-	public List<AggregateReportDto> getList(AggregateReportCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<AggregateReportDto> getList(AggregateReportCriteria criteria) {
+		User user = userService.getCurrentUser();
 		
 		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
@@ -193,12 +194,12 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 	
 	@Override
-	public void deleteReport(String reportUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteReport(String reportUuid) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade
 				.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
 				.contains(UserRight.AGGREGATE_REPORT_EDIT)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to edit aggregate reports.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to edit aggregate reports.");
 		}
 
 		AggregateReport aggregateReport = service.getByUuid(reportUuid);
@@ -206,14 +207,14 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public long countWithCriteria(AggregateReportCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public long countWithCriteria(AggregateReportCriteria criteria) {
+		User user = userService.getCurrentUser();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
 
-		Predicate filter = service.createUserFilter(cb, cq, root, user);
+		Predicate filter = service.createUserFilter(cb, cq, root);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);

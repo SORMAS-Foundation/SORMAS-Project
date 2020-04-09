@@ -29,13 +29,13 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface EventFacade {
 	
-	List<EventDto> getAllActiveEventsAfter(Date date, String userUuid);
+	List<EventDto> getAllActiveEventsAfter(Date date);
 	
-	List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria, String userUuid);
+	List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria);
 	
-	Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria, String userUuid);
+	Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria);
 	
-	Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria, String userUuid);
+	Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria);
 	
 	EventDto getEventByUuid(String uuid);
 	
@@ -43,15 +43,15 @@ public interface EventFacade {
 	
 	EventReferenceDto getReferenceByUuid(String uuid);
 
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 
 	List<EventDto> getByUuids(List<String> uuids);
 
-	void deleteEvent(String eventUuid, String userUuid);
+	void deleteEvent(String eventUuid);
 
-	long count(String userUuid, EventCriteria eventCriteria);
+	long count(EventCriteria eventCriteria);
 
-	List<EventIndexDto> getIndexList(String userUuid, EventCriteria eventCriteria, Integer first, Integer max,
+	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
 	boolean isArchived(String caseUuid);
@@ -60,9 +60,9 @@ public interface EventFacade {
 	
 	void archiveOrDearchiveEvent(String eventUuid, boolean archive);
 	
-	List<String> getArchivedUuidsSince(String userUuid, Date since);
+	List<String> getArchivedUuidsSince(Date since);
 	
-	List<String> getDeletedUuidsSince(String userUuid, Date since);
+	List<String> getDeletedUuidsSince(Date since);
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 	

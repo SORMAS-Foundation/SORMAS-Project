@@ -52,18 +52,13 @@ public class ContactResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<ContactDto> getAllContacts(@Context SecurityContext sc, @PathParam("since") long since) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<ContactDto> contacts = FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since),
-				userDto.getUuid());
-		return contacts;
+	public List<ContactDto> getAllContacts(@PathParam("since") long since) {
+		return FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since));
 	} 
 
 	@POST
 	@Path("/query")
-	public List<ContactDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<ContactDto> getByUuids(List<String> uuids) {
 
 		List<ContactDto> result = FacadeProvider.getContactFacade().getByUuids(uuids);
 		return result;
@@ -79,21 +74,14 @@ public class ContactResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getContactFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllActiveUuids() {
+		return FacadeProvider.getContactFacade().getAllActiveUuids();
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getContactFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
-		return uuids;
+	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getContactFacade().getDeletedUuidsSince(new Date(since));
 	}
 	
 }

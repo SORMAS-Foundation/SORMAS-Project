@@ -48,7 +48,7 @@ public interface FacilityFacade {
 	
 	List<FacilityDto> getByUuids(List<String> uuids);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 
 	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
 	

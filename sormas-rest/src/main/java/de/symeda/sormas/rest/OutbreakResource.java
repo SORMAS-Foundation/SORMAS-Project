@@ -53,13 +53,13 @@ public class OutbreakResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getActiveUuids(@Context SecurityContext sc) {
+	public List<String> getActiveUuids() {
 		return FacadeProvider.getOutbreakFacade().getActiveUuidsAfter(null);
 	}
 
 	@GET
 	@Path("/inactive/{since}")
-	public List<String> getInactiveUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<String> getInactiveUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getOutbreakFacade().getInactiveUuidsAfter(new Date(since));
 	}
 

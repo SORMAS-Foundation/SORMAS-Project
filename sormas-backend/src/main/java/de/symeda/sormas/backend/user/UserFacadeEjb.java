@@ -150,9 +150,9 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
+	public List<String> getAllUuids() {
 
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();

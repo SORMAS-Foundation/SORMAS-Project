@@ -76,15 +76,12 @@ public class AdditionalTestController {
 		});
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_DELETE)) {
-			component.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getAdditionalTestFacade().deleteAdditionalTest(dto.getUuid(), UserProvider.getCurrent().getUuid());
-					window.close();
-					Notification.show(I18nProperties.getString(Strings.messageAdditionalTestDeleted), Type.TRAY_NOTIFICATION);
-					if (callback != null) {
-						callback.run();
-					}
+			component.addDeleteListener(() -> {
+				FacadeProvider.getAdditionalTestFacade().deleteAdditionalTest(dto.getUuid());
+				window.close();
+				Notification.show(I18nProperties.getString(Strings.messageAdditionalTestDeleted), Type.TRAY_NOTIFICATION);
+				if (callback != null) {
+					callback.run();
 				}
 			}, I18nProperties.getString(Strings.entityAdditionalTest));
 		}

@@ -57,7 +57,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, contactFacade.count(null, null));
+		assertEquals(5, contactFacade.count(null));
 
 		// Person Similarity: pick
 		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
@@ -84,8 +84,8 @@ public class ContactImporterTest extends AbstractBeanTest {
 		importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(6, contactFacade.count(null, null));
-		assertEquals(6, getPersonFacade().getAllUuids(user.getUuid()).size());
+		assertEquals(6, contactFacade.count( null));
+		assertEquals(6, getPersonFacade().getAllUuids().size());
 
 		// Person Similarity: skip
 		csvFile = new File(
@@ -100,8 +100,8 @@ public class ContactImporterTest extends AbstractBeanTest {
 		importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(6, contactFacade.count(null, null));
-		assertEquals(6, getPersonFacade().getAllUuids(user.getUuid()).size());
+		assertEquals(6, contactFacade.count(null));
+		assertEquals(6, getPersonFacade().getAllUuids().size());
 
 		// Person Similarity: create
 		csvFile = new File(
@@ -116,8 +116,8 @@ public class ContactImporterTest extends AbstractBeanTest {
 		importResult = caseContactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(7, contactFacade.count(null, null));
-		assertEquals(7, getPersonFacade().getAllUuids(user.getUuid()).size());
+		assertEquals(7, contactFacade.count(null));
+		assertEquals(7, getPersonFacade().getAllUuids().size());
 	}
 
 	private static class CaseContactImporterExtension extends ContactImporter {

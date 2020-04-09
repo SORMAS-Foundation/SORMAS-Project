@@ -286,7 +286,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(extendedExportButton);
 
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, UserProvider.getCurrent().getUuid(), null), 
+					(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null),
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
@@ -311,7 +311,7 @@ public class CasesView extends AbstractView {
 				caseManagementExportButton.setWidth(100, Unit.PERCENTAGE);
 				exportLayout.addComponent(caseManagementExportButton);
 
-				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(UserProvider.getCurrent().getUuid(), grid.getCriteria(),
+				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(grid.getCriteria(),
 						"sormas_case_management_" + DateHelper.formatDateForExport(new Date()) + ".zip");
 				new FileDownloader(caseManagementExportStreamResource).extend(caseManagementExportButton);
 			}
@@ -325,7 +325,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(sampleExportButton);
 
 			StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class, null,
-					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(UserProvider.getCurrent().getUuid(), grid.getCriteria(), start, max), 
+					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(grid.getCriteria(), start, max),
 					(propertyId,type) -> {
 						String caption = I18nProperties.getPrefixCaption(SampleExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, propertyId,
@@ -356,7 +356,7 @@ public class CasesView extends AbstractView {
 				customExportsLayout.setExportCallback(
 						(exportConfig) -> {
 							Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null, 
-									(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, UserProvider.getCurrent().getUuid(), exportConfig), 
+									(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, exportConfig),
 									(propertyId,type) -> {
 										String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 												I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,

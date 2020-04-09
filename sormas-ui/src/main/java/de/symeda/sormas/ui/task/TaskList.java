@@ -66,7 +66,7 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 	@Override
 	public void reload() {
 		List<TaskIndexDto> tasks = FacadeProvider.getTaskFacade()
-				.getIndexList(UserProvider.getCurrent().getUuid(), taskCriteria, 0, maxDisplayedEntries * 20, null);
+				.getIndexList(taskCriteria, 0, maxDisplayedEntries * 20, null);
 
 		setEntries(tasks);
 		if (!tasks.isEmpty()) {

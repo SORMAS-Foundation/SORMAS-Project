@@ -254,8 +254,8 @@ public class ExportFacadeEjb implements ExportFacade {
 	}
 	
 	@Override
-	public List<ExportConfigurationDto> getExportConfigurations(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<ExportConfigurationDto> getExportConfigurations() {
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();
