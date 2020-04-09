@@ -78,7 +78,7 @@ import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisu
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
-public class StatisticsView extends AbstractStatisticsView {
+public abstract class StatisticsView extends AbstractStatisticsView {
 
 	private static final long serialVersionUID = -4440568319850399685L;
 
@@ -153,7 +153,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		addComponent(statisticsLayout);
 	}
 	
-	protected void populateStatisticsAttributes () { }
+	protected abstract void populateStatisticsAttributes ();
 
 	private void addFiltersLayout(VerticalLayout statisticsLayout) {
 		Label filtersLayoutTitle = new Label(I18nProperties.getString(Strings.headingFilters));
@@ -235,9 +235,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		statisticsLayout.addComponent(resultsLayout);
 	}
 
-	protected void addOptionsLayout(VerticalLayout statisticsLayout) {
-		
-	}
+	protected abstract void addOptionsLayout(VerticalLayout statisticsLayout);
 
 	private void addGenerateButton(VerticalLayout statisticsLayout) {
 		Button generateButton = new Button(I18nProperties.getCaption(Captions.actionGenerate));
@@ -846,9 +844,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 	}
 
-	protected List<StatisticsCountDto> generateStatistics() {
-		return null;
-	}
+	protected abstract List<StatisticsCountDto> generateStatistics();
 	
 	protected abstract String getDataLabel(boolean prefersShortLabel, boolean prefersPlural);
 
