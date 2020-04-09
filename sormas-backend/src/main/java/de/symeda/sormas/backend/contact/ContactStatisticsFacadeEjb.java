@@ -43,7 +43,6 @@ import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.contact.ContactStatisticsFacade;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.statistics.contact.ContactDefaultStatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.contact.StatisticsContactAttribute;
 import de.symeda.sormas.api.statistics.contact.StatisticsContactCriteria;
 import de.symeda.sormas.api.statistics.StatisticsSubAttributeEnum;
@@ -180,13 +179,6 @@ public class ContactStatisticsFacadeEjb implements ContactStatisticsFacade {
 					caseCountResult.setPopulation(populationResults.get(index).getPopulation());
 				}
 			}
-		}
-		
-		//used for naming the caseCount label in visualization components
-		for (StatisticsCountDto result : caseCountResults)
-		{
-			if (result.getColumnKey() == null)
-				result.setColumnKey(ContactDefaultStatisticsGroupingKey.CONTACT_COUNT);
 		}
 		
 		return caseCountResults;
