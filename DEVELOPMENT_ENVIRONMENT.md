@@ -33,7 +33,7 @@
 - Install the latest Ultimate edition IntelliJ
 - Set the project SDK to use the installed Zulu Java SDK
 - Clone the SORMAS-Project repository and open the project in IntelliJ
-	- make sure the under "File -> Project Structure -> Modules" all the modules are recognized, if not add the modules with +
+	- make sure the under "File -> Project Structure -> Modules" all the modules (except the android app - this should not be added) are recognized, if not add the modules with +
 - Make sure under "File -> Settings -> Plugins" Glassfish & Ant integrations are enabled
 - Install the Vaadin Designer plugin
 - Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
