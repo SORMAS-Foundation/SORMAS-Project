@@ -106,16 +106,15 @@ public class ContactImporter extends DataImporter {
 					}
 				});
 
-				if (newContact.getCaseIdExternalSystem() != null) {
-					CaseDataDto existingCase = FacadeProvider.getCaseFacade()
-							.getCaseDataByUuid(newContact.getCaseIdExternalSystem());
-					if (existingCase != null) {
-						newContact.setCaze(existingCase.toReference());
-						newContact.setDisease(existingCase.getDisease());
-						newContact.setDiseaseDetails(existingCase.getDiseaseDetails());
-						newContact.setCaseIdExternalSystem(null);
-					}
-				}
+		// try to assign the contact to an existing case
+		if (caze == null && newContact.getCaseIdExternalSystem() != null) {
+			CaseDataDto existingCase = FacadeProvider.getCaseFacade()
+					.getCaseDataByUuid(newContact.getCaseIdExternalSystem().trim().toUpperCase());
+			if (existingCase != null) {
+				newContact.assignCase(existingCase);
+				newContact.setCaseIdExternalSystem(null);
+			}
+		}
 
 		// If the row does not have any import errors, call the backend validation of all associated entities
 		if (!contactHasImportError) {

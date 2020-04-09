@@ -137,9 +137,7 @@ public class ContactDto extends EntityDto {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 
-		contact.setCaze(caze);
-		contact.setDisease(disease);
-		contact.setDiseaseDetails(diseaseDetails);
+		contact.assignCase(caze, disease, diseaseDetails);
 		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
 
 		contact.setReportDateTime(new Date());
@@ -147,6 +145,17 @@ public class ContactDto extends EntityDto {
 		contact.setContactStatus(ContactStatus.ACTIVE);
 
 		return contact;
+	}
+	
+	public void assignCase(CaseDataDto caze) {
+		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+	}
+	
+	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails)
+	{
+		setCaze(caze);
+		setDisease(disease);
+		setDiseaseDetails(diseaseDetails);
 	}
 	
 	public PersonReferenceDto getPerson() {
