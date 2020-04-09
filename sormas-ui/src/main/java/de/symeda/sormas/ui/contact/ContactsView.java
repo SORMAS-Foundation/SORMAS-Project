@@ -349,7 +349,7 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			firstFilterRowLayout.addComponent(diseaseFilter);
-			
+
 			caseClassificationFilter = new ComboBox();
 			caseClassificationFilter.setWidth(140, Unit.PIXELS);
 			caseClassificationFilter.setInputPrompt(
@@ -423,6 +423,11 @@ public class ContactsView extends AbstractView {
 				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+					if (region != null) {
+						officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.CONTACT_OFFICER));
+					} else {
+						officerFilter.removeAllItems();
+					}
 					criteria.region(region);
 					navigateTo(criteria);
 				});
@@ -456,24 +461,24 @@ public class ContactsView extends AbstractView {
 				districtFilter.setEnabled(false);
 			}
 			secondFilterRowLayout.addComponent(districtFilter);
-			
+
 			Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 			infoLabel.setSizeUndefined();
 			infoLabel.setDescription(I18nProperties.getString(Strings.infoContactsViewRegionDistrictFilter), ContentMode.HTML);
 			CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 			secondFilterRowLayout.addComponent(infoLabel);
-			
+
 			officerFilter = new ComboBox();
 			officerFilter.setWidth(140, Unit.PIXELS);
 			officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
-			if (user.getRegion() != null) {
-				officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
-			}
 			officerFilter.addValueChangeListener(e -> {
 				UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
 				criteria.contactOfficer(officer);
 				navigateTo(criteria);
 			});
+			if (user.getRegion() != null) {
+				officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
+			}
 			secondFilterRowLayout.addComponent(officerFilter);
 
 			reportedByFilter = new ComboBox();
