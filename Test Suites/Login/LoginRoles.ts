@@ -58,4 +58,10 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/Login/LoginSurveillanceSupervisorTest</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>41f24d93-a2a4-47ab-8081-867de7f5a61a</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Login/CheckMainViews</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>
