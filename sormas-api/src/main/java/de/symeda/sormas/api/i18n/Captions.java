@@ -213,6 +213,7 @@ public interface Captions {
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
 	public static String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
+	public static String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	public static String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	public static String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";

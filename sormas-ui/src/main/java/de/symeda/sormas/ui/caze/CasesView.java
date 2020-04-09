@@ -151,6 +151,7 @@ public class CasesView extends AbstractView {
 	private CheckBox casesWithoutGeoCoordsFilter;
 	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private CheckBox casesWithCaseManagementData;
+	private CheckBox excludeSharedCases;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
@@ -749,6 +750,17 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(casesWithCaseManagementData);
 			}
+			if (UserProvider.getCurrent().getUser().getRegion() != null || UserProvider.getCurrent().getUser().getDistrict() != null) {
+				excludeSharedCases = new CheckBox();
+				CssStyles.style(excludeSharedCases, CssStyles.CHECKBOX_FILTER_INLINE);
+				excludeSharedCases.setCaption(I18nProperties.getCaption(Captions.caseFilterExcludeSharedCases));
+				excludeSharedCases.setDescription(I18nProperties.getDescription(Descriptions.descCaseFilterExcludeSharedCasesString));
+				excludeSharedCases.addValueChangeListener(e -> {
+					criteria.excludeSharedCases((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(excludeSharedCases);
+			}
 		}
 		filterLayout.addComponent(thirdFilterRowLayout);
 		thirdFilterRowLayout.setVisible(false);
@@ -1017,6 +1029,9 @@ public class CasesView extends AbstractView {
 		}
 		if (casesWithCaseManagementData != null) {
 			casesWithCaseManagementData.setValue(criteria.isMustHaveCaseManagementData());
+		}
+		if (excludeSharedCases != null) {
+			excludeSharedCases.setValue(criteria.getExcludeSharedCases());
 		}
 		
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());

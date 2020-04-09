@@ -146,7 +146,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getCaseCountPerClassification(caseCriteria, UserProvider.getCurrent().getUuid());
+						.getCaseCountPerClassification(caseCriteria, UserProvider.getCurrent().getUuid(), false);
 
 				Long confirmedCount = caseCounts.get(CaseClassification.CONFIRMED);
 				Long probableCount = caseCounts.get(CaseClassification.PROBABLE);
@@ -212,7 +212,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getCaseCountPerPersonCondition(caseCriteria, UserProvider.getCurrent().getUuid());
+						.getCaseCountPerPersonCondition(caseCriteria, UserProvider.getCurrent().getUuid(), false);
 
 				Long aliveCount = caseCounts.get(PresentCondition.ALIVE);
 				Long deadCount = caseCounts.get(PresentCondition.DEAD);
