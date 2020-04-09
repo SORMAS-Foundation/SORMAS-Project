@@ -52,4 +52,16 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/ContactSupervisor/CreateNewTaskForContact</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>a499b915-7484-4c13-a9fd-9b3ca05d80f8</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/ContactSupervisor/ChangeContactData</testCaseId>
+   </testCaseLink>
+   <testCaseLink>
+      <guid>482dabca-a06c-486e-8ab2-3a4fa02ae3e8</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/ContactSupervisor/ChangeContactPersonData</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>
