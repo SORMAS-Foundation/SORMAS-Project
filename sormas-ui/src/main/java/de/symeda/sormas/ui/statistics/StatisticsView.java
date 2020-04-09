@@ -330,7 +330,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		statisticsCaseGrid = new StatisticsGrid(
 				visualizationComponent.getRowsAttribute(), visualizationComponent.getRowsSubAttribute(),
 				visualizationComponent.getColumnsAttribute(), visualizationComponent.getColumnsSubAttribute(), 
-				showCaseIncidence && caseIncidencePossible, incidenceDivisor, resultData);
+				showCaseIncidence && caseIncidencePossible, incidenceDivisor, resultData, getDataLabel(false, true));
 		resultsLayout.addComponent(statisticsCaseGrid);
 		resultsLayout.setExpandRatio(statisticsCaseGrid, 1);
 
@@ -401,7 +401,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				+ " enabled: true," + " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }" + "},"
 				+ "title:{ text: '' },");
 		
-		CaseCountOrIncidence dataStyle = showCaseIncidence && caseIncidencePossible ?CaseCountOrIncidence.CASE_INCIDENCE : CaseCountOrIncidence.CASE_COUNT;
+		String defaultAxisLabel = getDataLabel(false, true);
 
 		TreeMap<StatisticsGroupingKey, String> xAxisCaptions = new TreeMap<>(new StatisticsKeyComparator());
 		TreeMap<StatisticsGroupingKey, String> seriesCaptions = new TreeMap<>(new StatisticsKeyComparator());
@@ -446,7 +446,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			int numberOfCategories = xAxisAttribute != null ? appendUnknownXAxisCaption ? xAxisCaptions.size() + 1 : xAxisCaptions.size() : 1;
 			hcjs.append("], min: 0, max: " + (numberOfCategories - 1) + "},");
 
-			hcjs.append("yAxis: { min: 0, title: { text: '").append(dataStyle)
+			hcjs.append("yAxis: { min: 0, title: { text: '").append(defaultAxisLabel)
 			.append("' },").append("allowDecimals: false, softMax: ").append(showCaseIncidence && caseIncidencePossible ? 1 : 10).append(", stackLabels: { enabled: true, ")
 			.append("style: {fontWeight: 'normal', textOutline: '0', gridLineColor: '#000000', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } } },");
 
@@ -476,9 +476,9 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		hcjs.append("series: [");
 		if (seriesAttribute == null && xAxisAttribute == null) {
-			hcjs.append("{ name: '").append(dataStyle)
+			hcjs.append("{ name: '").append(defaultAxisLabel)
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [['")
-			.append(dataStyle).append("',");
+			.append(defaultAxisLabel).append("',");
 			if (!showCaseIncidence || !caseIncidencePossible) {
 				hcjs.append(resultData.get(0).getCount().toString());
 			} else {
@@ -486,7 +486,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			}
 			hcjs.append("]]}");
 		} else if (visualizationComponent.getVisualizationChartType() == StatisticsVisualizationChartType.PIE) {
-			hcjs.append("{ name: '").append(dataStyle)
+			hcjs.append("{ name: '").append(defaultAxisLabel)
 			.append("', dataLabels: { allowOverlap: false }").append(", data: [");
 			TreeMap<StatisticsGroupingKey, StatisticsCountDto> seriesElements = new TreeMap<>(new StatisticsKeyComparator());
 			StatisticsCountDto unknownSeriesElement = null;
@@ -516,7 +516,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				} else {
 					seriesValue = unknownSeriesElement.getIncidence(incidenceDivisor);
 				}
-				hcjs.append("['").append(dataStyle).append("',")
+				hcjs.append("['").append(defaultAxisLabel).append("',")
 				.append(seriesValue).append("],");
 			}
 			hcjs.append("]}");
@@ -848,6 +848,8 @@ public class StatisticsView extends AbstractStatisticsView {
 	protected List<StatisticsCountDto> generateStatistics() {
 		return null;
 	}
+	
+	protected abstract String getDataLabel(boolean prefersShortLabel, boolean prefersPlural);
 
 	protected boolean hasPopulationFilterUnknownValue() {
 		for (StatisticsFilterComponent filterComponent : filterComponents) {

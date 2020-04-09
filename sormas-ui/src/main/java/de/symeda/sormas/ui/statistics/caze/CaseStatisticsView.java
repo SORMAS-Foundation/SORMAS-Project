@@ -434,4 +434,10 @@ public class CaseStatisticsView extends StatisticsView {
 			}
 		}
 	}
+
+	protected String getDataLabel (boolean prefersShortLabel, boolean prefersPlural) {
+		return prefersShortLabel ? 
+			I18nProperties.getString(prefersPlural ? Strings.entityCases : Strings.entityCase)
+			: (showCaseIncidence && caseIncidencePossible ? CaseCountOrIncidence.CASE_INCIDENCE : CaseCountOrIncidence.CASE_COUNT).toString();
+	}
 }

@@ -401,4 +401,7 @@ public class ContactStatisticsView extends StatisticsView {
 		}
 	}
 
+	protected String getDataLabel (boolean prefersShortLabel, boolean prefersPlural) {
+		return I18nProperties.getString(prefersPlural ? Strings.entityContacts : Strings.entityContact);
+	}
 }
