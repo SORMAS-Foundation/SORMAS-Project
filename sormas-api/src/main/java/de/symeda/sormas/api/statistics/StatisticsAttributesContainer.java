@@ -18,6 +18,9 @@
 package de.symeda.sormas.api.statistics;
 
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class StatisticsAttributesContainer {
 	
@@ -33,16 +36,41 @@ public class StatisticsAttributesContainer {
 	
 	public StatisticsAttribute get (StatisticsAttributeEnum _enum) {
 		return groups.stream()
-					 .flatMap(n -> n.getAttributes().stream())
-					 .filter(n -> n.getBaseEnum() == _enum)
-					 .findFirst().orElse(null);
+					.flatMap(new Function<StatisticsAttributeGroup, Stream<StatisticsAttribute>>() {
+					    @Override
+					    public Stream<StatisticsAttribute> apply(StatisticsAttributeGroup n) {
+					        return n.getAttributes().stream();
+					    }
+					})
+					.filter(new Predicate<StatisticsAttribute>() {
+					    @Override
+					    public boolean test(StatisticsAttribute n) {
+					        return n.getBaseEnum() == _enum;
+					    }
+					})
+					.findFirst().orElse(null);
 	}
 	
 	public StatisticsSubAttribute get (StatisticsSubAttributeEnum _enum) {
 		return groups.stream()
-					 .flatMap(n -> n.getAttributes().stream())
-					 .flatMap(n -> n.getSubAttributes().stream())
-					 .filter(n -> n.getBaseEnum() == _enum)
-					 .findFirst().orElse(null);
+					.flatMap(new Function<StatisticsAttributeGroup, Stream<StatisticsAttribute>>() {
+					    @Override
+					    public Stream<StatisticsAttribute> apply(StatisticsAttributeGroup n) {
+					        return n.getAttributes().stream();
+					    }
+					})
+					.flatMap(new Function<StatisticsAttribute, Stream<StatisticsSubAttribute>>() {
+					    @Override
+					    public Stream<StatisticsSubAttribute> apply(StatisticsAttribute n) {
+					        return n.getSubAttributes().stream();
+					    }
+					})
+					.filter(new Predicate<StatisticsSubAttribute>() {
+					    @Override
+					    public boolean test(StatisticsSubAttribute n) {
+					        return n.getBaseEnum() == _enum;
+					    }
+					})
+					.findFirst().orElse(null);
 	}
 }
