@@ -64,13 +64,13 @@ public interface CaseFacade {
 
 	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 	
-	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria);
+	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, boolean includeSharedCases);
 	
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria);
+	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, boolean includeSharedCases);
 	
-	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria);
+	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean includeSharedCases);
 	
-	String getLastReportedDistrictName(CaseCriteria caseCriteria);
+	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean includeSharedCases);
 	
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 

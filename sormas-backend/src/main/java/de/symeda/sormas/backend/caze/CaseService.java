@@ -214,7 +214,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Person, Location> casePersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 
 		Predicate filter = createActiveCasesFilter(cb, caze);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, caze));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, caze, false));
 		filter = AbstractAdoService.and(cb, filter, createCaseRelevanceFilter(cb, caze, from, to));
 
 		if (region != null) {
@@ -309,7 +309,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (StringUtils.isEmpty(searchTerm)) {
 			return null;
 		}
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> root = cq.from(Case.class);
@@ -422,6 +422,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<Case, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
+		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
@@ -436,10 +438,26 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Case.REGION, JoinType.LEFT).get(Region.UUID), caseCriteria.getRegion().getUuid()));
+			filter = and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), caseCriteria.getDistrict().getUuid()));
+			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
+			User currentUser = userService.getCurrentUser();
+			if (currentUser != null) {
+				if (currentUser.getDistrict() != null) {
+					filter = and(cb, filter, cb.not(cb.and(
+							cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
+							cb.notEqual(region.get(District.UUID), currentUser.getDistrict().getUuid())
+							)));
+				} else if (currentUser.getRegion() != null) {
+					filter = and(cb, filter, cb.not(cb.and(
+							cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
+							cb.notEqual(region.get(Region.UUID), currentUser.getRegion().getUuid())
+							)));
+				}
+			}
 		}
 		if (caseCriteria.getCaseOrigin() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
@@ -692,9 +710,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return dateFilter;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case, Case> casePath) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, boolean includeSharedCases) {
 		// National users can access all cases in the system
 		if (getCurrentUser() == null
 				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_USER)
@@ -779,7 +795,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 
 		// all users (without specific restrictions) get access to cases that have been made available to the whole country
-		if (!featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
+		if (includeSharedCases && !featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			filter = or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
 		}
 
@@ -800,6 +816,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return filter;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
+		return createUserFilter(cb, cq, casePath, user, true);
 	}
 
 	/**

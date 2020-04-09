@@ -76,7 +76,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 				.region(regionRef)
 				.district(districtRef);
 		
-		Map<Disease, Long> newCases = caseFacade.getCaseCountByDisease(caseCriteria);
+		Map<Disease, Long> newCases = caseFacade.getCaseCountByDisease(caseCriteria, false);
 		
 		//events
 		Map<Disease, Long> events = eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
@@ -85,14 +85,14 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
 				
 		//last report district
-		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria);
+		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, false);
 		
 		//case fatalities
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria);
 		
 		//previous cases
 		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);		
-		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria);
+		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, false);
 		
 		//build diseasesBurden
 		List<DiseaseBurdenDto> diseasesBurden = diseases.stream().map(disease -> {

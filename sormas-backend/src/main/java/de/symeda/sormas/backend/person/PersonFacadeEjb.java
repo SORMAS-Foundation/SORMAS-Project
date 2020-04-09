@@ -129,11 +129,16 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonIndexDto> getIndexDtosByUuids(List<String> uuids) {
-		return personService.getByUuids(uuids)
-				.stream()
-				.map(c -> toIndexDto(c))
-				.collect(Collectors.toList());
+	public List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids) {
+		List<Person> persons = personService.getByUuids(personUuids);
+
+		if (persons == null) {
+			return new ArrayList<>();
+		} else {
+			return persons.stream()
+					.map(c -> toIndexDto(c))
+					.collect(Collectors.toList());
+		}
 	}
 
 	// multiselect does not work for person, because getting all persons requires multiple querries and we currently don't have an abstraction for this

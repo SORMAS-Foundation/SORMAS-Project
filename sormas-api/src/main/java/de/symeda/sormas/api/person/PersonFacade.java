@@ -57,7 +57,7 @@ public interface PersonFacade {
 	 * This only includes persons that are associated with an active case, contact or event participant.
 	 */
 	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
-
-	List<PersonIndexDto> getIndexDtosByUuids(List<String> uuids);
-
+	
+	List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids);
+	
 }

@@ -14,5 +14,6 @@ public interface Descriptions {
 	public static String descPointOfEntryFilter = "descPointOfEntryFilter";
 	public static String descCaseFilterPortHealthWithoutFacility = "descCaseFilterPortHealthWithoutFacility";
 	public static String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
+	public static String descCaseFilterExcludeSharedCasesString = "descCaseFilterExcludeSharedCases";
 
 }

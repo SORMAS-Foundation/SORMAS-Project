@@ -206,7 +206,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 	
 	public List<ADO> getByUuids(List<String> uuids) {
-		
 		if (uuids == null || uuids.isEmpty()) {
 			return null;
 		}
