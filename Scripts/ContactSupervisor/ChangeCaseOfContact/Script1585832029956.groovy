@@ -29,7 +29,7 @@ String caseNameB = TestDataConnector.getValueByKey('ContactTestData', 'caseName-
 
 String savedEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
 
-println('saved epid-number in contact:' + savedEpidNumber)
+println('saved epid-number in contact: ' + savedEpidNumber)
 
 'determine the future epidNumber based on the saved one'
 String caseSearchString = 'none'
@@ -44,14 +44,18 @@ if (checkChangeableEpid) {
     caseSearchString = savedEpidNumber == unchangeableEpidNumberA ? unchangeableEpidNumberB : unchangeableEpidNumberA
 }
 
-println('case search string:' + caseSearchString)
+println('case search string: ' + caseSearchString)
 
 // TESTCASE - change case
 WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_button'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_confirmationDlg_yes'))
 
+// WebUI.waitForElementPresent(findTestObject('Contacts/ContactInformationView/changeCaseDlg_input_field'), 2)
+WebUI.delay(1)
+// WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_input_field'))
 WebUI.setText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_input_field'), caseSearchString)
+
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_search_button'))
 
@@ -141,4 +145,5 @@ if (epidNumberAfterDiscard != epidNumberAfterChange) {
     throw new StepFailedException((('The displayed EpidNumber does not equal the changed EpidNumber. displayed: ' + epidNumberAfterDiscard) + 
     ' after-first-change:') + epidNumberAfterChange)
 }
+
 
