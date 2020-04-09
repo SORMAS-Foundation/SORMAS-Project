@@ -25,9 +25,11 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -48,6 +50,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -78,6 +82,7 @@ public class CaseContactsView extends AbstractCaseView {
 	
 	//Filters
 	private ComboBox classificationFilter;
+	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox officerFilter;
 	private TextField searchField;
@@ -111,6 +116,20 @@ public class CaseContactsView extends AbstractCaseView {
 		});
 		topLayout.addComponent(classificationFilter);
 
+		UserDto user = UserProvider.getCurrent().getUser();
+		regionFilter = new ComboBox();
+		if (user.getRegion() == null) {
+			regionFilter.setWidth(240, Unit.PIXELS);
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionFilter.addValueChangeListener(e -> {
+				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+				criteria.region(region);
+				navigateTo(criteria);
+			});
+			topLayout.addComponent(regionFilter);
+		}
+		
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(240, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
@@ -118,8 +137,31 @@ public class CaseContactsView extends AbstractCaseView {
 			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
+		
+		if (user.getRegion() != null && user.getDistrict() == null) {	
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else {
+			regionFilter.addValueChangeListener(e -> {
+				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
+				districtFilter.removeAllItems();
+				if (region != null) {
+					districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+					districtFilter.setEnabled(true);
+				} else {
+					districtFilter.setEnabled(false);
+				}
+			});
+			districtFilter.setEnabled(false);
+		}
 		topLayout.addComponent(districtFilter);
 
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+		infoLabel.setDescription(I18nProperties.getString(Strings.infoContactsViewRegionDistrictFilter), ContentMode.HTML);
+		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+		topLayout.addComponent(infoLabel);
+		
 		officerFilter = new ComboBox();
 		officerFilter.setWidth(240, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
@@ -321,9 +363,8 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter.setValue(criteria.getContactClassification());
 
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-
-		districtFilter.removeAllItems();
-		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(caseDto.getRegion().getUuid()));
+		
+		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		
 		searchField.setValue(criteria.getNameUuidCaseLike());
