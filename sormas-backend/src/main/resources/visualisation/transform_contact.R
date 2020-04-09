@@ -237,3 +237,10 @@ g = plot(sormas_contact, node_color = "status", node_shape = "sex",
 library(visNetwork)
 library(dplyr)
 visNetwork::visSave(g, OUTFILE, selfcontained = FALSE)
+
+
+
+
+
+
+
