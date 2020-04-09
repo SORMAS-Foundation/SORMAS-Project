@@ -34,7 +34,7 @@ public class StatisticsAttributesContainer {
 		return groups;
 	}
 	
-	public StatisticsAttribute get (StatisticsAttributeEnum _enum) {
+	public StatisticsAttribute get (final StatisticsAttributeEnum _enum) {
 		return groups.stream()
 					.flatMap(new Function<StatisticsAttributeGroup, Stream<StatisticsAttribute>>() {
 					    @Override
@@ -51,7 +51,7 @@ public class StatisticsAttributesContainer {
 					.findFirst().orElse(null);
 	}
 	
-	public StatisticsSubAttribute get (StatisticsSubAttributeEnum _enum) {
+	public StatisticsSubAttribute get (final StatisticsSubAttributeEnum _enum) {
 		return groups.stream()
 					.flatMap(new Function<StatisticsAttributeGroup, Stream<StatisticsAttribute>>() {
 					    @Override
