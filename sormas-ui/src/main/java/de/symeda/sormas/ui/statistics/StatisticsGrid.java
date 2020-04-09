@@ -63,7 +63,7 @@ public class StatisticsGrid extends Grid {
 	@SuppressWarnings("unchecked")
 	public StatisticsGrid(StatisticsAttribute rowsAttribute, StatisticsSubAttribute rowsSubAttribute,
 			StatisticsAttribute columnsAttribute, StatisticsSubAttribute columnsSubAttribute, 
-			boolean showIncidence, int incidenceDivisor, List<StatisticsCountDto> cellValues) {
+			boolean showIncidence, int incidenceDivisor, List<StatisticsCountDto> cellValues, String defaultColumnCaption) {
 
 		super();
 
@@ -76,13 +76,10 @@ public class StatisticsGrid extends Grid {
 			return;
 		}
 		
-		CaseCountOrIncidence dataStyle = showIncidence ? CaseCountOrIncidence.CASE_INCIDENCE : CaseCountOrIncidence.CASE_COUNT;
-		String defaultColumnHeaderCaption = cellValues.get(0).getColumnKey() != null ? cellValues.get(0).getColumnKey().toString() : dataStyle.toString();
-
 		// If no displayed attributes are selected, simply show the total number or incidence of cases
 		if (rowsAttribute == null && columnsAttribute == null) {
 			addColumn(COUNT_OR_INCIDENCE_COLUMN);
-			getColumn(COUNT_OR_INCIDENCE_COLUMN).setHeaderCaption(defaultColumnHeaderCaption);
+			getColumn(COUNT_OR_INCIDENCE_COLUMN).setHeaderCaption(defaultColumnCaption);
 			if (!showIncidence) {
 				addRow(new Object[]{String.valueOf(cellValues.get(0).getCount())});
 			} else {
@@ -106,7 +103,7 @@ public class StatisticsGrid extends Grid {
 			// When no column grouping has been selected, simply display the number of cases or case incidence for the respective row
 			totalColumnIndex = getColumns().size();
 			addColumn(COUNT_OR_INCIDENCE_COLUMN)
-			.setHeaderCaption(defaultColumnHeaderCaption);
+			.setHeaderCaption(defaultColumnCaption);
 		} else {
 			boolean addColumnUnknown = false;
 			// Iterate over content and add new columns to the list
