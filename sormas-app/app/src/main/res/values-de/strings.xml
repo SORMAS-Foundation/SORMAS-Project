@@ -305,7 +305,7 @@
     <string name="heading_outbreak_response">Ausbruchsantwort</string>
     <string name="heading_person_involved">Beteiligte Person</string>
     <string name="heading_person_involved_new">Neue Person beteiligt</string>
-    <string name="heading_pick_or_create_person">Pick or Create Person</string>
+    <string name="heading_pick_or_create_person">Person auswählen oder erstellen</string>
     <string name="heading_pick_or_create_case">Fall auswählen oder erstellen</string>
     <string name="heading_prescription">Verschreibung</string>
     <string name="heading_prescription_edit">Verschreibung bearbeiten</string>
@@ -380,7 +380,7 @@
     <string name="hint_weekly_report_confirmation_required">Sie müssen den Bericht für die letzte Woche bestätigen.</string>
     <string name="hint_weekly_report_no_data">Keine Daten für diese Epi-Woche verfügbar.</string>
     <string name="hint_case_numbers_not_submitted">Fallnummern noch nicht übermittelt</string>
-    <string name="hint_contact_text_filter">Contact ID or contact person name</string>
+    <string name="hint_contact_text_filter">Kontakt-ID oder Name der Kontaktperson</string>
     <string name="indicator_error">FEHLER</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
@@ -392,12 +392,12 @@
     <string name="info_initial_synchronization">Initialisiere Synchronisierung mit SORMAS Server.\nDas Laden der Infrastrukturdaten wird einige Minuten dauern.</string>
     <string name="info_no_additional_test">Es wurden noch keine zusätzlichen Tests an dieser Probe durchgeführt</string>
     <string name="info_no_sample_test">Probe wurde noch nicht getestet</string>
-    <string name="info_pick_person">Please look through this list of persons. <b>If you feel certain</b> that the personal details you have entered belong to one of these persons, select that person by tapping on them and then click the \"Select\" button below.</string>
+    <string name="info_pick_person">Bitte schauen Sie sich die Liste der Personen an.<b>Wenn Sie sich sicher sind</b>, dass die von Ihnen eingebenen persönlichen Daten zu dieser Person gehören, wählen Sie die Person aus und klicken Sie anschließend auf \"Auswählen\".</string>
     <string name="info_reset_pin">Um Ihre PIN zurücksetzen zu können, benötigen Sie <b>Ihr SORMAS Benutzerpasswort</b></string>
     <string name="info_resync_duration">Eine erneute Synchronisierung wird wahrscheinlich mehrere Minuten dauern.</string>
     <string name="info_select_create_person">Bitte wählen Sie eine Person oder klicken Sie auf \"Erstellen\", um eine neue zu erstellen.</string>
     <string name="info_sign_in">Melden Sie sich bei SORMAS an, um die Reise der Lebensrettung fortzusetzen.</string>
-    <string name="info_similar_persons_found">SORMAS already contains at least one person that seems to be very similar to the personal details you have entered.</string>
+    <string name="info_similar_persons_found">SORMAS enthält bereits mindestens eine Person, die den von Ihnen eingegebenen persönlichen Daten sehr ähnlich zu sein scheint.</string>
     <string name="info_symptoms">Bitte wählen Sie eine Antwort für ALLE Symptome aus, um anzugeben, ob sie während dieser Krankheit zwischen Symptombeginn und Fallerkennung aufgetreten sind:</string>
     <string name="info_synchronizing">Synchronisiere mit SORMAS Server...</string>
     <string name="info_user_report">Bitte beschreiben Sie kurz das aufgetretene Problem. Geben Sie keine persönlichen oder anderweitig sensiblen Daten ein!</string>
