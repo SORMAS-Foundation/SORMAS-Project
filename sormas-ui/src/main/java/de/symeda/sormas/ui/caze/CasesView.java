@@ -214,44 +214,44 @@ public class CasesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-			PopupButton importButton = new PopupButton(I18nProperties.getCaption(Captions.actionImport));
-			importButton.setId("import");
-			importButton.setIcon(VaadinIcons.UPLOAD);
 			VerticalLayout importLayout = new VerticalLayout();
-			importLayout.setSpacing(true);
-			importLayout.setMargin(true);
-			importLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			importLayout.setWidth(250, Unit.PIXELS);
-			importButton.setContent(importLayout);
-			addHeaderComponent(importButton);
-
-			Button lineListingImportButton = new Button(I18nProperties.getCaption(Captions.importLineListing));
-			lineListingImportButton.setId("lineListingImport");
-			lineListingImportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			lineListingImportButton.setIcon(VaadinIcons.UPLOAD);
-			lineListingImportButton.setWidth(100, Unit.PERCENTAGE);
-			lineListingImportButton.addClickListener(e -> {
-				Window popupWindow = VaadinUiUtil.showPopupWindow(new LineListingImportLayout());
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingLineListingImport));
-				popupWindow.addCloseListener(c -> {
-					grid.reload();
+			{
+				PopupButton importButton = new PopupButton(I18nProperties.getCaption(Captions.actionImport));
+				importButton.setId("import");
+				importButton.setIcon(VaadinIcons.UPLOAD);
+				importLayout.setSpacing(true);
+				importLayout.setMargin(true);
+				importLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+				importLayout.setWidth(250, Unit.PIXELS);
+				importButton.setContent(importLayout);
+				addHeaderComponent(importButton);
+			}
+			{
+				Button lineListingImportButton = new Button(I18nProperties.getCaption(Captions.importLineListing));
+				lineListingImportButton.setId("lineListingImport");
+				lineListingImportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				lineListingImportButton.setIcon(VaadinIcons.UPLOAD);
+				lineListingImportButton.setWidth(100, Unit.PERCENTAGE);
+				lineListingImportButton.addClickListener(e -> {
+					Window popupWindow = VaadinUiUtil.showPopupWindow(new LineListingImportLayout());
+					popupWindow.setCaption(I18nProperties.getString(Strings.headingLineListingImport));
+					popupWindow.addCloseListener(c -> grid.reload());
 				});
-			});
-			importLayout.addComponent(lineListingImportButton);
-
-			Button extendedImportButton = new Button(I18nProperties.getCaption(Captions.importDetailed));
-			extendedImportButton.setId("extendedImport");
-			extendedImportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			extendedImportButton.setIcon(VaadinIcons.UPLOAD);
-			extendedImportButton.setWidth(100, Unit.PERCENTAGE);
-			extendedImportButton.addClickListener(e -> {
-				Window popupWindow = VaadinUiUtil.showPopupWindow(new CaseImportLayout());
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCases));
-				popupWindow.addCloseListener(c -> {
-					grid.reload();
+				importLayout.addComponent(lineListingImportButton);
+			}
+			{
+				Button extendedImportButton = new Button(I18nProperties.getCaption(Captions.importDetailed));
+				extendedImportButton.setId("extendedImport");
+				extendedImportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				extendedImportButton.setIcon(VaadinIcons.UPLOAD);
+				extendedImportButton.setWidth(100, Unit.PERCENTAGE);
+				extendedImportButton.addClickListener(e -> {
+					Window popupWindow = VaadinUiUtil.showPopupWindow(new CaseImportLayout());
+					popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCases));
+					popupWindow.addCloseListener(c -> grid.reload());
 				});
-			});
-			importLayout.addComponent(extendedImportButton);
+				importLayout.addComponent(extendedImportButton);
+			}
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
@@ -352,9 +352,7 @@ public class CasesView extends AbstractView {
 			btnCustomCaseExport.addClickListener(e -> {
 				Window customExportWindow = VaadinUiUtil.createPopupWindow();
 				CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(
-						() -> {
-							customExportWindow.close();
-						});
+						customExportWindow::close);
 				customExportsLayout.setExportCallback(
 						(exportConfig) -> {
 							Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null, 
@@ -385,9 +383,7 @@ public class CasesView extends AbstractView {
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);
 
-			exportButton.addClickListener(e -> {
-				warningLabel.setVisible(!criteria.hasAnyFilterActive());
-			});
+			exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -885,37 +881,16 @@ public class CasesView extends AbstractView {
 				bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
-				Command changeCommand = selectedItem -> {
-					ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.asMultiSelect().getSelectedItems());
-				};
+				Command changeCommand = mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.asMultiSelect().getSelectedItems());
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
-				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getCaseController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
-				};
+				Command deleteCommand = selectedItem -> ControllerProvider.getCaseController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
-				Command archiveCommand = selectedItem -> {
-					ControllerProvider.getCaseController().archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
-				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE,
-						archiveCommand);
+				Command archiveCommand = mi -> ControllerProvider.getCaseController().archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, archiveCommand);
 
-				Command dearchiveCommand = selectedItem -> {
-					ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
-				};
+				Command dearchiveCommand = mi -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, dearchiveCommand);
 				dearchiveItem.setVisible(false);
 
@@ -936,13 +911,9 @@ public class CasesView extends AbstractView {
 		collapseFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), VaadinIcons.CHEVRON_UP);
 		CssStyles.style(collapseFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
-		expandFiltersButton.addClickListener(e -> {
-			setFiltersExpanded(true);
-		});
+		expandFiltersButton.addClickListener(e -> setFiltersExpanded(true));
 
-		collapseFiltersButton.addClickListener(e -> {
-			setFiltersExpanded(false);
-		});
+		collapseFiltersButton.addClickListener(e -> setFiltersExpanded(false));
 
 		parentLayout.addComponent(expandFiltersButton);
 		parentLayout.addComponent(collapseFiltersButton);
