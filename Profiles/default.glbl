@@ -20,6 +20,16 @@
       <name>gPasswordSurveillanceSupervisor</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
+      <description>Username for second user in Surveillance Supervisor section</description>
+      <initValue>'SStest'</initValue>
+      <name>gUsernameSecondSurveillanceSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Password for second user in Surveillance Supervisor section</description>
+      <initValue>'4sdEk2C9snbg'</initValue>
+      <name>gPasswordSecondSurveillanceSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
       <description>Username for ContactSupervisor</description>
       <initValue>'ContSup'</initValue>
       <name>gUsernameContactSupervisor</name>

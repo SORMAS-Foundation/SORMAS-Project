@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description></description>
+   <description>checks that the filter by name in the contacts view works correctly</description>
    <name>FilterName</name>
    <tag></tag>
    <comment></comment>

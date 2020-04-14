@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description>Creating a new call within the contacts-view</description>
+   <description>checks the creation and cancellation of new calls within the contacts-view</description>
    <name>CreateCancelNewCall</name>
    <tag></tag>
    <comment></comment>

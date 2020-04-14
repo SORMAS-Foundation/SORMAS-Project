@@ -45,50 +45,50 @@ class Table {
 		TestObject testObject = Helper.createTestObjectWithXPath('//table[@aria-rowcount]')
 		return table.getTableRowsByAttribute(testObject)
 	}
-	
+
 	static TableContent getVisibleTableContent() {
 		TestObject tableObject = Helper.createTestObjectWithXPath('//table')
-		
+
 		WebElement tableElement = WebUiBuiltInKeywords.findWebElement(tableObject)
-		
+
 		// WebElement headElement = tableElement.findElements(By.tagName("thead"))
 		WebElement bodyElement = tableElement.findElement(By.tagName("tbody"))
-		
+
 		List<String> headers = Table.getTableColumnNames()
-		
+
 		List<WebElement> rowElements = bodyElement.findElements(By.tagName("tr"))
 		println('rows:' + rowElements.size())
-		
+
 		TableContent tc = new TableContent()
 		tc.setTableHeaders(headers)
 		for (int row = 0; row < rowElements.size(); row++) {
 			List<String> tableData = new ArrayList<String>()
 			List<WebElement> columnElements = rowElements.get(row).findElements(By.tagName('td'))
-			 
+
 			println('columns:' + columnElements.size())
-			 
+
 			for (int column = 0; column < columnElements.size(); column++) {
 				String celltext = columnElements.get(column).getText()
 				tableData.add(celltext)
 			}
 			tc.addRowData(tableData)
 		}
-		
+
 		return tc
 	}
-		
+
 	static String[] getTableColumnNames() {
 		TestObject tableObject = Helper.createTestObjectWithXPath('//table')
-		
+
 		WebElement tableElement = WebUiBuiltInKeywords.findWebElement(tableObject)
 		WebElement headElement = tableElement.findElement(By.tagName("thead"))
-		
+
 		List<WebElement> rowElements = headElement.findElements(By.tagName("tr"))
-		
+
 		List<String> columnNames = []
 		for (int row = 0; row < rowElements.size(); row++) {
 			List<WebElement> headerElements = rowElements.get(row).findElements(By.tagName('th'))
-			 
+
 			println('columns:' + headerElements.size())
 			for (int column = 0; column < headerElements.size(); column++) {
 				String headerText = headerElements.get(column).getText()
@@ -96,5 +96,5 @@ class Table {
 			}
 		}
 		return columnNames
-	}	
+	}
 }

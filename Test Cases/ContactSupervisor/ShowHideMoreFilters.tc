@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description></description>
+   <description>checks that more filter options are hidden again</description>
    <name>ShowHideMoreFilters</name>
    <tag></tag>
    <comment></comment>

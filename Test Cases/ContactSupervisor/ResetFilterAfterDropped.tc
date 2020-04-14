@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description>Tabellen Filter zurücksetzen</description>
+   <description>checks if resetting the filter shows all rows again</description>
    <name>ResetFilterAfterDropped</name>
    <tag></tag>
    <comment></comment>

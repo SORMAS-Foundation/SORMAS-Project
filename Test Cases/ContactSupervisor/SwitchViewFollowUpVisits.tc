@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description>switching between Contacts and FollowUpVisits</description>
+   <description>checks the ui after switching between Contacts and FollowUpVisits</description>
    <name>SwitchViewFollowUpVisits</name>
    <tag></tag>
    <comment></comment>

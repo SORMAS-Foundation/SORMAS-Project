@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description></description>
+   <description>checks if changes to a contact person are saved</description>
    <name>ChangeContactPersonData</name>
    <tag></tag>
    <comment></comment>

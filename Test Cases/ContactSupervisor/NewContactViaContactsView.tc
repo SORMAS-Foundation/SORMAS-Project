@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description></description>
+   <description>checks the creation of a new contact in the contacts view</description>
    <name>NewContactViaContactsView</name>
    <tag></tag>
    <comment></comment>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description>Create new contact through an existing case</description>
+   <description>checks the creation of a new contact through an existing case</description>
    <name>NewContactViaCases</name>
    <tag></tag>
    <comment></comment>

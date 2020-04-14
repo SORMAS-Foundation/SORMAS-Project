@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description></description>
+   <description>checks that if a new task dialog is cancelled the task is not created</description>
    <name>CancelNewTaskForContact</name>
    <tag></tag>
    <comment></comment>

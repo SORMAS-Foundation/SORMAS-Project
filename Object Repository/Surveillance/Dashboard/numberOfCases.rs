@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebElementEntity>
+   <description></description>
+   <name>numberOfCases</name>
+   <tag></tag>
+   <elementGuidId>18d03dde-389f-4c41-826a-8720b94b9f44</elementGuidId>
+   <selectorCollection>
+      <entry>
+         <key>XPATH</key>
+         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[2]/div/div/div/div/div/div/div/div/div/div</value>
+      </entry>
+   </selectorCollection>
+   <selectorMethod>XPATH</selectorMethod>
+   <useRalativeImagePath>false</useRalativeImagePath>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>tag</name>
+      <type>Main</type>
+      <value>div</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>class</name>
+      <type>Main</type>
+      <value>v-label v-widget v-label-undef-w primary v-label-primary xxxlarge v-label-xxxlarge bold v-label-bold vspace-4 v-label-vspace-4 vspace-top-none v-label-vspace-top-none</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>text</name>
+      <type>Main</type>
+      <value>6</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath</name>
+      <type>Main</type>
+      <value>id(&quot;sormasui-1655777373&quot;)/div[@class=&quot;v-ui valo-menu-responsive v-scrollable&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-sormas-content&quot;]/div[@class=&quot;v-csslayout v-layout v-widget sormas-content v-csslayout-sormas-content v-has-width v-has-height&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget dashboard-screen v-verticallayout-dashboard-screen v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-crud-main-layout&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget crud-main-layout v-verticallayout-crud-main-layout v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-curve-and-map-layout&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget curve-and-map-layout v-verticallayout-curve-and-map-layout v-has-width&quot;]/div[@class=&quot;v-slot v-slot-highlighted-statistics-component&quot;]/div[@class=&quot;v-customlayout v-layout v-widget highlighted-statistics-component v-customlayout-highlighted-statistics-component v-has-width&quot;]/div[@class=&quot;row&quot;]/div[@class=&quot;col-lg-6 col-xs-12&quot;]/div[@class=&quot;row&quot;]/div[@class=&quot;col-xs-6 col-md-6&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-margin-right v-margin-left&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget&quot;]/div[@class=&quot;v-slot v-slot-primary v-slot-xxxlarge v-slot-bold v-slot-vspace-4 v-slot-vspace-top-none&quot;]/div[@class=&quot;v-label v-widget v-label-undef-w primary v-label-primary xxxlarge v-label-xxxlarge bold v-label-bold vspace-4 v-label-vspace-4 vspace-top-none v-label-vspace-top-none&quot;]</value>
+   </webElementProperties>
+   <webElementXpaths>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:idRelative</name>
+      <type>Main</type>
+      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[2]/div/div/div/div/div/div/div/div/div/div</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:neighbor</name>
+      <type>Main</type>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='COVID-19'])[3]/following::div[11]</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:neighbor</name>
+      <type>Main</type>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='slide show'])[1]/following::div[18]</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:neighbor</name>
+      <type>Main</type>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='New Cases'])[1]/preceding::div[1]</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:neighbor</name>
+      <type>Main</type>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Confirmed'])[1]/preceding::div[5]</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:position</name>
+      <type>Main</type>
+      <value>//div[3]/div/div[2]/div/div/div/div/div/div/div/div/div/div</value>
+   </webElementXpaths>
+</WebElementEntity>
