@@ -17,41 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.DashboardVisitDto;
+import de.symeda.sormas.api.visit.ExternalVisitDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
@@ -75,6 +52,31 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
@@ -148,6 +150,26 @@ public class VisitFacadeEjb implements VisitFacade {
 		onVisitChanged(existingVisit, entity);
 
 		return toDto(entity);
+	}
+
+	@Override
+	public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
+
+		final String contactUuid = dto.getContactUuid();
+		final Contact contact = contactService.getByUuid(contactUuid);
+		final PersonReferenceDto contactPerson = new PersonReferenceDto(contact.getPerson().getUuid());
+		final Disease disease = contact.getDisease();
+		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
+
+		final VisitDto visitDto = new VisitDto(contactPerson, disease, dto.getVisitDateTime(), currentUser, dto.getVisitStatus(), dto.getVisitRemarks(), dto.getSymptoms(), dto
+		.getReportLat(), dto.getReportLon(), dto.getReportLatLonAccuracy());
+
+		final VisitDto savedVisit = this.saveVisit(visitDto);
+
+		final ExternalVisitDto savedDto = new ExternalVisitDto(contactUuid, savedVisit.getVisitDateTime(), savedVisit.getVisitStatus(), savedVisit.getVisitRemarks(), savedVisit
+		.getSymptoms(), savedVisit.getReportLat(), savedVisit.getReportLon(), savedVisit.getReportLatLonAccuracy());
+
+		return savedDto;
 	}
 
 	@Override

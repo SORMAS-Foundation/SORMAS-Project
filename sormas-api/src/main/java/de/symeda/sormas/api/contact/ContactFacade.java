@@ -36,7 +36,9 @@ public interface ContactFacade {
 	List<ContactDto> getAllActiveContactsAfter(Date date);
 	
 	ContactDto getContactByUuid(String uuid);
-    
+
+	Boolean isValidContactUuid(String uuid);
+
 	ContactDto saveContact(ContactDto dto);
 	
 	ContactReferenceDto getReferenceByUuid(String uuid);

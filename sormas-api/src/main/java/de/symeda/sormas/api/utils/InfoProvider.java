@@ -43,7 +43,10 @@ public class InfoProvider {
 		return instance;
 	}
 
-	
+	/**
+	 * When changing this make sure to check also EXTERNAL_VISITS_MINIMUM_REQUIRED_VERSION.
+	 * @return
+	 */
 	public String getMinimumRequiredVersion() {
 		return "1.37.0";
 	}
@@ -70,17 +73,29 @@ public class InfoProvider {
 	public CompatibilityCheckResponse isCompatibleToApi(String appVersionInput) {
 		return isCompatibleToApi(VersionHelper.extractVersion(appVersionInput));
 	}
+
+	/**
+	 * Checks if the app version is compatible with the given min api version. This is true when the version is at least as high as the
+	 * minVersion and lower or equal to the version returned by getVersion().
+	 */
+	public CompatibilityCheckResponse isCompatibleToApiForMinVersion(String appVersionInput, String minVersion) {
+		return areVersionsCompatible(VersionHelper.extractVersion(appVersionInput), VersionHelper.extractVersion(minVersion));
+	}
 	
 	/**
 	 * Checks if the app version is compatible with the api version. This is true when the version is at least as high as the
 	 * MINIMUM_REQUIRED_VERSION and lower or equal to the version returned by getVersion().
 	 */
 	public CompatibilityCheckResponse isCompatibleToApi(int[] appVersion) {
-		if (!VersionHelper.isVersion(appVersion)) {
+		int[] minVersion = VersionHelper.extractVersion(getMinimumRequiredVersion());
+
+		return areVersionsCompatible(appVersion, minVersion);
+	}
+
+	private CompatibilityCheckResponse areVersionsCompatible(int[] appVersion, int[] minVersion) {
+		if (!VersionHelper.isVersion(appVersion) || !VersionHelper.isVersion(minVersion)) {
 			throw new IllegalArgumentException("No proper app version provided");
 		}
-		
-		int[] minVersion = VersionHelper.extractVersion(getMinimumRequiredVersion());
 
 		if (VersionHelper.isBefore(appVersion, minVersion)) {
 			return CompatibilityCheckResponse.TOO_OLD;
