@@ -603,7 +603,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link CaseCriteria}.
 	 * This essentially removes {@link CoreAdo#deleted} cases from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Case> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Case> root) {
 		return cb.isFalse(root.get(Case.DELETED));
 	}
 

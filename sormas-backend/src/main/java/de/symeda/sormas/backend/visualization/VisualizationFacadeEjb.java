@@ -25,12 +25,9 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -38,8 +35,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
@@ -49,8 +50,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "VisualizationFacade")
@@ -63,14 +72,20 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 	
+
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
 	
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(VisualizationFacadeEjb.class);
 
 	@Override
-	public String buildTransmissionChainJson(LocalDate fromDate, LocalDate toDate, Collection<Disease> diseases) {
+	public String buildTransmissionChainJson(Collection<Disease> diseases) {
 		
 		String rExecutable = configFacade.getRScriptExecutable();
 		if (StringUtils.isBlank(rExecutable)) {
@@ -78,20 +93,38 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		}
 		Path tempBasePath = new File(configFacade.getTempFilesPath()).toPath();
 		
-		Collection<Disease> d;
-		if (CollectionUtils.isEmpty(diseases)) {
-			d = EnumSet.allOf(Disease.class);
-		} else {
-			d = diseases;
+		Collection<Long> contactIds = getContactIds(diseases);
+		
+		if (contactIds.isEmpty()) {
+			return null;
 		}
-
-		LocalDate from = Optional.ofNullable(fromDate).orElse(LocalDate.MIN);
-		LocalDate to = Optional.ofNullable(toDate).orElse(LocalDate.MAX);
 		
 		//working dir is the config directory of the domain
 		Path domainXmlPath = Paths.get("domain.xml");
 		
-		return buildTransmissionChainJson(rExecutable, tempBasePath, domainXmlPath, from, to, d);
+		return buildTransmissionChainJson(rExecutable, tempBasePath, domainXmlPath, contactIds);
+	}
+	
+
+	private Collection<Long> getContactIds(Collection<Disease> diseases) {
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> root = cq.from(Contact.class);
+		Join<Contact, Case> caze = root.join(Contact.CAZE, JoinType.LEFT);
+
+		cq.where(AbstractAdoService.and(cb,
+				contactService.createUserFilter(cb, cq, root),
+				contactService.createActiveContactsFilter(cb, root),
+				contactService.createDefaultFilter(cb, root),
+				cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),
+				cb.notEqual(root.get(Contact.CONTACT_STATUS), ContactStatus.DROPPED),
+				cb.or(cb.isNull(caze), caseService.createDefaultFilter(cb, caze)),
+				root.get(Contact.DISEASE).in(diseases)
+		));
+		
+		cq.select(root.get(AbstractDomainObject.ID));
+		return em.createQuery(cq).getResultList();
 	}
 
 	enum EnvParam {
@@ -100,12 +133,8 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		DB_NAME("databaseName"),
 		DB_HOST("serverName"), 
 		DB_PORT("portNumber"), 
-		DATE_FROM,
-		DATE_TO,
-		/**
-		 * The Diseases, concatenated with ','
-		 */
-		DISEASES,
+		CONTACT_IDS,
+		HIERARCHICAL,
 		OUTFILE;
 		private final String propertyName;
 
@@ -133,7 +162,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		}
 	}
 	
-	static String buildTransmissionChainJson(String rScriptExecutable, Path tempBasePath, Path domainXmlPath, LocalDate from, LocalDate to, Collection<Disease> diseases) {
+	static String buildTransmissionChainJson(String rScriptExecutable, Path tempBasePath, Path domainXmlPath, Collection<Long> contactIds) {
 
 		Path tempDir;
 		try {
@@ -170,9 +199,19 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				EnvParam.DB_HOST.putFrom(env, poolProperties); 
 				EnvParam.DB_PORT.putFrom(env, poolProperties);
 
-				EnvParam.DATE_FROM.put(env, from.toString());
-				EnvParam.DATE_TO.put(env, to.toString());
-				EnvParam.DISEASES.put(env, diseases.stream().map(Enum::name).collect(Collectors.joining(",")));
+				String contactIdStr;
+				if (contactIds.isEmpty()) {
+					contactIdStr = "NULL";
+				} else {
+					StringBuilder sb = new StringBuilder(contactIds.size() * 6);
+					contactIds.forEach(l -> {
+						sb.append(l);
+						sb.append(',');
+					});
+					contactIdStr = sb.substring(0, sb.length() - 1);
+				}
+				
+				EnvParam.CONTACT_IDS.put(env, contactIdStr);
 				EnvParam.OUTFILE.put(env, outputFile.toString());
 				
 //				File outFile = tempDir.resolve("console.log").toFile();

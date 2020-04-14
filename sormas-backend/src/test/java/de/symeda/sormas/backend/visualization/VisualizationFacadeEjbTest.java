@@ -13,20 +13,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import de.symeda.sormas.api.Disease;
 
 public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 	
@@ -38,11 +34,9 @@ public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 	public void testStaticBuildTransmissionChainJson() throws Exception {
 		// FIXME depends on local database
 
-		LocalDate from = LocalDate.now().minusYears(1);
-		LocalDate to = LocalDate.now();
-		Set<Disease> diseases = Arrays.stream(Disease.values()).collect(Collectors.toSet());
+		List<Long> contactIds = Arrays.asList(30481L, 30478L);
 		
-		String[] rscriptExecutableLocs = { "C:\\Program Files\\R\\R-3.6.2\\bin\\Rscript", ""};
+		String[] rscriptExecutableLocs = { "C:\\Program Files\\R\\R-3.6.2\\bin\\Rscript.exe", "C:\\Program Files\\R\\R-3.6.3\\bin\\Rscript.exe"};
 		
 		Optional<String> rscriptExecutable = Arrays.stream(rscriptExecutableLocs)
 		.filter(p -> Files.isExecutable(Paths.get(p)))
@@ -52,7 +46,7 @@ public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 
 			Path domainXmlPath = writeDomainXml();
 
-			String result = VisualizationFacadeEjb.buildTransmissionChainJson(r, temp.getRoot().toPath(), domainXmlPath, from, to, diseases);
+			String result = VisualizationFacadeEjb.buildTransmissionChainJson(r, temp.getRoot().toPath(), domainXmlPath, contactIds);
 			assertThat(result, startsWith("{"));
 			assertThat(result, endsWith("}"));
 		});
