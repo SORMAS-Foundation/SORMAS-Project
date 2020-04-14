@@ -36,6 +36,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -240,23 +241,23 @@ public class CasesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
-			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
+			PopupButton exportPopupButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
-				exportButton.setId("export");
-				exportButton.setIcon(VaadinIcons.DOWNLOAD);
+				exportPopupButton.setId("export");
+				exportPopupButton.setIcon(VaadinIcons.DOWNLOAD);
 				exportLayout.setSpacing(true); 
 				exportLayout.setMargin(true);
 				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 				exportLayout.setWidth(250, Unit.PIXELS);
-				exportButton.setContent(exportLayout);
-				addHeaderComponent(exportButton);
+				exportPopupButton.setContent(exportLayout);
+				addHeaderComponent(exportPopupButton);
 			}
 
 			{
 				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 				
-				addExportButton(streamResource, exportLayout, "basicExport", VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
+				addExportButton(streamResource, exportPopupButton, exportLayout, "basicExport", VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
 			{
@@ -278,14 +279,14 @@ public class CasesView extends AbstractView {
 						},
 						"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 				
-				addExportButton(exportStreamResource, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
+				addExportButton(exportStreamResource, exportPopupButton, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
 				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(grid.getCriteria(),
 						"sormas_case_management_" + DateHelper.formatDateForExport(new Date()) + ".zip");
 				
-				addExportButton(caseManagementExportStreamResource, exportLayout, "caseManagementExport", VaadinIcons.FILE_TEXT, Captions.exportCaseManagement, Strings.infoCaseManagementExport);
+				addExportButton(caseManagementExportStreamResource, exportPopupButton, exportLayout, "caseManagementExport", VaadinIcons.FILE_TEXT, Captions.exportCaseManagement, Strings.infoCaseManagementExport);
 			}
 
 			{
@@ -305,7 +306,7 @@ public class CasesView extends AbstractView {
 						},
 						"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 				
-				addExportButton(sampleExportStreamResource, exportLayout, "sampleExport", VaadinIcons.FILE_TEXT, Captions.exportSamples, Strings.infoSampleExport);
+				addExportButton(sampleExportStreamResource, exportPopupButton, exportLayout, "sampleExport", VaadinIcons.FILE_TEXT, Captions.exportSamples, Strings.infoSampleExport);
 			}
 
 			{
@@ -353,7 +354,7 @@ public class CasesView extends AbstractView {
 				exportLayout.addComponent(warningLabel);
 				warningLabel.setVisible(false);
 	
-				exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
+				exportPopupButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
 			}
 		}
 
@@ -476,17 +477,47 @@ public class CasesView extends AbstractView {
 		importLayout.addComponent(lineListingImportButton);
 	}
 
-	private void addExportButton(StreamResource exportStreamResource, VerticalLayout exportLayout, String buttonId,
+	private void addExportButton(StreamResource exportStreamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, String buttonId,
 			Resource icon, String captionKey, String descriptionKey) {
-		Button extendedExportButton = new Button(I18nProperties.getCaption(captionKey));
-		extendedExportButton.setId(buttonId);
-		extendedExportButton.setDescription(I18nProperties.getString(descriptionKey));
-		extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		extendedExportButton.setIcon(icon);
-		extendedExportButton.setWidth(100, Unit.PERCENTAGE);
-		exportLayout.addComponent(extendedExportButton);
+		
+		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
+			
+			Button button = e.getButton();
+			int buttonPos = exportLayout.getComponentIndex(button);
+			
+			//the button has to remain in the UI for the download to succeed, but it should not be seen 
+			CustomLayout hidingLayout = new CustomLayout();
+			hidingLayout.setSizeUndefined();
+			hidingLayout.setTemplateContents("");
+			hidingLayout.addComponent(button);
+			
+			Label lbl = new Label(I18nProperties.getString(Strings.infoDownloadExport), ContentMode.HTML);
+			HorizontalLayout layout = new HorizontalLayout(lbl, hidingLayout);
+			layout.setMargin(true);
+			layout.setExpandRatio(lbl, 1);
+			Window window = VaadinUiUtil.showPopupWindow(layout);
+			window.setCaption(button.getCaption());
+			
+			exportPopupButton.setPopupVisible(false);
+			// Hide, but do not remove from view
+			
+			window.addCloseListener(f -> {
+				//restore the button
+				exportLayout.addComponent(button, buttonPos);
+				button.setEnabled(true);
+			});
+		});
+			
+		exportButton.setDisableOnClick(true);
+			
+		exportButton.setId(buttonId);
+		exportButton.setDescription(I18nProperties.getString(descriptionKey));
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(icon);
+		exportButton.setWidth(100, Unit.PERCENTAGE);
+		exportLayout.addComponent(exportButton);
 
-		new FileDownloader(exportStreamResource).extend(extendedExportButton);
+		new FileDownloader(exportStreamResource).extend(exportButton);
 	}
 
 	private void buildAndOpenCasesInstructions() {
