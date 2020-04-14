@@ -269,7 +269,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			}
 		});
 
-		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS);
+		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
 		FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
 	}
 
