@@ -57,8 +57,15 @@ import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
@@ -523,4 +530,34 @@ public class DownloadUtil {
 		return extendedStreamResource;
 	}
 
+	/**
+	 * <p>
+	 * When downloading a Resource via FileDownloader, 
+	 * the Component of the FileDownloader must remain visible in the UI.
+	 * Otherwise the Resource is unregistered and the download may fail.
+	 * </p><p>
+	 * This method display a modal dialog that includes the exportComponent without actually showing it to the user.
+	 * When the dialog is closed, it up to the closeListener to decide the fate of the exportComponent.
+	 * </p>
+	 *  
+	 * @param exportButton
+	 * @param closeListener
+	 */
+	public static void showExportWaitDialog(AbstractComponent exportComponent, CloseListener closeListener) {
+		
+		//the button has to remain in the UI for the download to succeed, but it should not be seen 
+		CustomLayout hidingLayout = new CustomLayout();
+		hidingLayout.setSizeUndefined();
+		hidingLayout.setTemplateContents("");
+		hidingLayout.addComponent(exportComponent);
+		
+		Label lbl = new Label(I18nProperties.getString(Strings.infoDownloadExport), ContentMode.HTML);
+		HorizontalLayout layout = new HorizontalLayout(lbl, hidingLayout);
+		layout.setMargin(true);
+		layout.setExpandRatio(lbl, 1);
+		Window dialog = VaadinUiUtil.showPopupWindow(layout);
+		dialog.setCaption(exportComponent.getCaption());
+		
+		dialog.addCloseListener(closeListener);
+	}
 }

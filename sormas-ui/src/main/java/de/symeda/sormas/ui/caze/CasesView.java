@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import de.symeda.sormas.api.location.LocationDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -36,7 +35,6 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -73,6 +71,7 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -485,27 +484,12 @@ public class CasesView extends AbstractView {
 			Button button = e.getButton();
 			int buttonPos = exportLayout.getComponentIndex(button);
 			
-			//the button has to remain in the UI for the download to succeed, but it should not be seen 
-			CustomLayout hidingLayout = new CustomLayout();
-			hidingLayout.setSizeUndefined();
-			hidingLayout.setTemplateContents("");
-			hidingLayout.addComponent(button);
-			
-			Label lbl = new Label(I18nProperties.getString(Strings.infoDownloadExport), ContentMode.HTML);
-			HorizontalLayout layout = new HorizontalLayout(lbl, hidingLayout);
-			layout.setMargin(true);
-			layout.setExpandRatio(lbl, 1);
-			Window window = VaadinUiUtil.showPopupWindow(layout);
-			window.setCaption(button.getCaption());
-			
-			exportPopupButton.setPopupVisible(false);
-			// Hide, but do not remove from view
-			
-			window.addCloseListener(f -> {
+			DownloadUtil.showExportWaitDialog(button, ce -> {
 				//restore the button
 				exportLayout.addComponent(button, buttonPos);
 				button.setEnabled(true);
 			});
+			exportPopupButton.setPopupVisible(false);
 		});
 			
 		exportButton.setDisableOnClick(true);
