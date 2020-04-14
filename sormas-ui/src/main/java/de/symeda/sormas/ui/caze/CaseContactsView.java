@@ -20,11 +20,12 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -44,13 +45,18 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -59,11 +65,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.contact.ContactFollowUpGrid;
 import de.symeda.sormas.ui.contact.ContactGrid;
-import de.symeda.sormas.ui.contact.ContactsViewType;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -298,19 +303,71 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
-			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export));
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
-
-			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true);
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(200, Unit.PIXELS);
+			exportButton.setContent(exportLayout);
 			statusFilterLayout.addComponent(exportButton);
 			statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
 			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
+
+			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
+			basicExportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			basicExportButton.setIcon(VaadinIcons.TABLE);
+			basicExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(basicExportButton);
+
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts",
+					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(basicExportButton);
+
+			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+			extendedExportButton.setDescription(I18nProperties.getDescription(Descriptions.descDetailedExportButton));
+			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
+			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(extendedExportButton);
+
+			StreamResource extendedExportStreamResource = DownloadUtil
+					.createCsvExportStreamResource(
+							ContactExportDto.class, null, (Integer start, Integer max) -> FacadeProvider
+									.getContactFacade().getExportList(grid.getCriteria(), start, max),
+							(propertyId, type) -> {
+								String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX,
+										propertyId,
+										I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX,
+																propertyId,
+																I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX,
+																		propertyId,
+																		I18nProperties.getPrefixCaption(
+																				HospitalizationDto.I18N_PREFIX,
+																				propertyId))))));
+								if (Date.class.isAssignableFrom(type)) {
+									caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								}
+								return caption;
+							}, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+
+			// Warning if no filters have been selected
+			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
+			warningLabel.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(warningLabel);
+			warningLabel.setVisible(false);
+
+			exportButton.addClickListener(e -> {
+				warningLabel.setVisible(!criteria.hasAnyFilterActive());
+			});
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
