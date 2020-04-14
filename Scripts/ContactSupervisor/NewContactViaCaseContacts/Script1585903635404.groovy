@@ -20,7 +20,7 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSuperv
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), findTestData('ContactTestData').getValue(
+WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), findTestData(GlobalVariable.gContactTestDataName).getValue(
         2, 1))
 
 WebUI.delay(1)

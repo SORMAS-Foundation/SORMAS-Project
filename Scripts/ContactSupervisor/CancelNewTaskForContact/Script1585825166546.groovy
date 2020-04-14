@@ -12,13 +12,15 @@ import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
+import internal.GlobalVariable
+
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.callTestCase(findTestCase('ContactSupervisor/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
 'userName\n'
 WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), 
-    findTestData('ContactTestData').getValue(2, 1))
+    findTestData(GlobalVariable.gContactTestDataName).getValue(2, 1))
 
 WebUI.delay(1)
 

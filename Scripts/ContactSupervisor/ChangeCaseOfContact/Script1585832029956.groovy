@@ -4,6 +4,9 @@ import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 import com.kms.katalon.core.exception.StepFailedException as StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
+
+import internal.GlobalVariable
+
 import com.hzi.TestDataConnector as TestDataConnector
 
 // PREPARE
@@ -19,13 +22,13 @@ if (checkChangeableEpid) {
 
 WebUI.delay(1)
 
-String unchangeableEpidNumberA = TestDataConnector.getValueByKey('ContactTestData', 'unchangable-epid-number-A')
+String unchangeableEpidNumberA = TestDataConnector.getValueByKey(GlobalVariable.gContactTestDataName, 'unchangable-epid-number-A')
 
-String unchangeableEpidNumberB = TestDataConnector.getValueByKey('ContactTestData', 'unchangable-epid-number-B')
+String unchangeableEpidNumberB = TestDataConnector.getValueByKey(GlobalVariable.gContactTestDataName, 'unchangable-epid-number-B')
 
-String caseNameA = TestDataConnector.getValueByKey('ContactTestData', 'caseName-A')
+String caseNameA = TestDataConnector.getValueByKey(GlobalVariable.gContactTestDataName, 'caseName-A')
 
-String caseNameB = TestDataConnector.getValueByKey('ContactTestData', 'caseName-B')
+String caseNameB = TestDataConnector.getValueByKey(GlobalVariable.gContactTestDataName, 'caseName-B')
 
 String savedEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
 

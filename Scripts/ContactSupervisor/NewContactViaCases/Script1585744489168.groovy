@@ -20,7 +20,7 @@ WebUI.callTestCase(findTestCase('ContactSupervisor/partials/loginAsContactSuperv
 
 WebUI.click(findTestObject('Contacts/MainView/menu_Cases'))
 
-WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_New case_search'), findTestData('ContactTestData').getValue(
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_New case_search'), findTestData(GlobalVariable.gContactTestDataName).getValue(
         2, 2))
 
 WebUI.delay(1)
