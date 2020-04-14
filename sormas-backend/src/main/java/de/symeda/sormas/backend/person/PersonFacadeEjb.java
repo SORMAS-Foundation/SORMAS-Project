@@ -48,6 +48,8 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -55,10 +57,12 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -273,6 +277,26 @@ public class PersonFacadeEjb implements PersonFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
 	}
+	
+	/**
+	 * Makes sure that there is no invalid data associated with this person. For example, when the present condition
+	 * is set to "Alive", all fields depending on the status being "Dead" or "Buried" are cleared.
+	 */
+	private void cleanUp(Person person) {
+		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE) {
+			person.setDeathDate(null);
+			person.setCauseOfDeath(null);
+			person.setCauseOfDeathDisease(null);
+			person.setCauseOfDeathDetails(null);
+			person.setDeathPlaceType(null);
+			person.setDeathPlaceDescription(null);
+		}
+		if (!PresentCondition.BURIED.equals(person.getPresentCondition())) {
+			person.setBurialDate(null);
+			person.setBurialPlaceDescription(null);
+			person.setBurialConductor(null);
+		}
+	}
 
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
 		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
@@ -340,6 +364,8 @@ public class PersonFacadeEjb implements PersonFacade {
 				caseFacade.onCaseChanged(existingCase, personCase);
 			}
 		}
+		
+		cleanUp(newPerson);
 	}
 
 	@Override
