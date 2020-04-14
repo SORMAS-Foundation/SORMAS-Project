@@ -383,6 +383,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caseRoot = cq.from(Case.class);
 		Join<Case, Person> personJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
 		Join<Person, Location> personAddressJoin = personJoin.join(Person.ADDRESS, JoinType.LEFT);
+		Join<Person, Region> personAddressRegionJoin = personAddressJoin.join(Location.REGION, JoinType.LEFT);
+		Join<Person, District> personAddressDistrictJoin = personAddressJoin.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Person, Facility> occupationFacilityJoin = personJoin.join(Person.OCCUPATION_FACILITY, JoinType.LEFT);
 		Join<Case, Hospitalization> hospitalizationJoin = caseRoot.join(Case.HOSPITALIZATION, JoinType.LEFT);
 		Join<Case, EpiData> epiDataJoin = caseRoot.join(Case.EPI_DATA, JoinType.LEFT);
@@ -414,6 +416,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				hospitalizationJoin.get(Hospitalization.LEFT_AGAINST_ADVICE), personJoin.get(Person.PRESENT_CONDITION),
 				personJoin.get(Person.DEATH_DATE), personJoin.get(Person.BURIAL_DATE),
 				personJoin.get(Person.BURIAL_CONDUCTOR), personJoin.get(Person.BURIAL_PLACE_DESCRIPTION),
+				// address
+				personAddressRegionJoin.get(Region.NAME), personAddressDistrictJoin.get(District.NAME),
+				personAddressJoin.get(Location.CITY), personAddressJoin.get(Location.ADDRESS), personAddressJoin.get(Location.POSTAL_CODE),
+				// phone
 				personJoin.get(Person.PHONE), personJoin.get(Person.PHONE_OWNER), personJoin.get(Person.EDUCATION_TYPE),
 				personJoin.get(Person.EDUCATION_DETAILS), personJoin.get(Person.OCCUPATION_TYPE),
 				personJoin.get(Person.OCCUPATION_DETAILS), occupationFacilityJoin.get(Facility.NAME),
@@ -550,10 +556,6 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 				if (symptoms != null) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId())).ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
-				}
-				if (personAddresses != null || exportConfiguration.getProperties().contains(PersonDto.ADDRESS)) {
-					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
-					.ifPresent(personAddress -> exportDto.setAddress(personAddress.toString()));
 				}
 				if (personAddresses != null
 						|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {

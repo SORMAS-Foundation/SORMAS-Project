@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.api.location.LocationDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -291,9 +292,10 @@ public class CasesView extends AbstractView {
 						String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 								I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
 										I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+										I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, propertyId,
 												I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
 														I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId,
-																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId))))));
+																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
 						if (Date.class.isAssignableFrom(type)) {
 							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
 						}

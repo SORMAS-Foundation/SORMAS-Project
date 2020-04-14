@@ -46,6 +46,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.location.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -261,6 +262,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		Root<Contact> contact = cq.from(Contact.class);
 		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Contact, Person> contactPerson = contact.join(Contact.PERSON, JoinType.LEFT);
+		Join<Contact, Location> address = contactPerson.join(Person.ADDRESS, JoinType.LEFT);
+		Join<Contact, Region> addressRegion = address.join(Location.REGION, JoinType.LEFT);
+		Join<Contact, District> addressDistrict = address.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Contact, Region> contactRegion = contact.join(Contact.REGION, JoinType.LEFT);
 		Join<Contact, District> contactDistrict = contact.join(Contact.DISTRICT, JoinType.LEFT);
 		Join<Person, Facility> occupationFacility = contactPerson.join(Person.OCCUPATION_FACILITY, JoinType.LEFT);
@@ -287,6 +291,11 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.FOLLOW_UP_UNTIL),
 				contactPerson.get(Person.PRESENT_CONDITION),
 				contactPerson.get(Person.DEATH_DATE),
+				addressRegion.get(Region.NAME),
+				addressDistrict.get(District.NAME),
+				address.get(Location.CITY),
+				address.get(Location.ADDRESS),
+				address.get(Location.POSTAL_CODE),
 				contactPerson.get(Person.PHONE),
 				contactPerson.get(Person.PHONE_OWNER),
 				contactPerson.get(Person.OCCUPATION_TYPE),
@@ -319,9 +328,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<ContactExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		for (ContactExportDto exportDto : resultList) {
-			// TODO: Speed up this code, e.g. by persisting address as a String in the database
-			exportDto.setAddress(personService.getAddressByPersonId(exportDto.getPersonId()).toString());
-			exportDto.setNumberOfVisits(visitService.getVisitCountByContactId(exportDto.getPersonId(), 
+			exportDto.setNumberOfVisits(visitService.getVisitCountByContactId(exportDto.getPersonId(),
 					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease()));
 			Visit lastCooperativeVisit = visitService.getLastVisitByContactId(exportDto.getPersonId(), 
 					exportDto.getLastContactDate(), exportDto.getReportDate(), exportDto.getFollowUpUntil(), exportDto.getInternalDisease(), VisitStatus.COOPERATIVE);
