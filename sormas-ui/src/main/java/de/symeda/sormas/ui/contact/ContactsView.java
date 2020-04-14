@@ -21,13 +21,13 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
-import de.symeda.sormas.api.location.LocationDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -68,6 +68,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -141,12 +142,8 @@ public class ContactsView extends AbstractView {
 	private ComboBox relevanceStatusFilter;
 	private ComboBox categoryFilter;
 
-	private String originalViewTitle;
-
 	public ContactsView() {
 		super(VIEW_NAME);
-
-		originalViewTitle = getViewTitleLabel().getValue();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ContactsViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -221,75 +218,70 @@ public class ContactsView extends AbstractView {
 
 		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
-			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
-			exportLayout.setSpacing(true); 
-			exportLayout.setMargin(true);
-			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			exportLayout.setWidth(200, Unit.PIXELS);
-			exportButton.setContent(exportLayout);
-			addHeaderComponent(exportButton);
-
-			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
-			basicExportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			basicExportButton.setIcon(VaadinIcons.TABLE);
-			basicExportButton.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(basicExportButton);
-
-			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(basicExportButton);
-
-			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
-			extendedExportButton.setDescription(I18nProperties.getDescription(Descriptions.descDetailedExportButton));
-			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
-			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(extendedExportButton);
-
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
-					(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max),
-					(propertyId,type) -> {
-						String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
-								I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
-										I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
-												I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
-														I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, propertyId,
-														I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
-																I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
-						}
-						return caption;
-					},
-					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
-			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+			{
+				exportButton.setIcon(VaadinIcons.DOWNLOAD);
+				exportLayout.setSpacing(true); 
+				exportLayout.setMargin(true);
+				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+				exportLayout.setWidth(200, Unit.PIXELS);
+				exportButton.setContent(exportLayout);
+				addHeaderComponent(exportButton);
+			}
+			{
+				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				
+				addExportButton(streamResource, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
+			}
+			{
+				StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
+						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max),
+						(propertyId,type) -> {
+							String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
+									I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
+											I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+													I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+															I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, propertyId,
+																	I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+																			I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
+							if (Date.class.isAssignableFrom(type)) {
+								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+							}
+							return caption;
+						},
+						"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+				
+				addExportButton(extendedExportStreamResource, exportLayout, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+			}
 
 			// Warning if no filters have been selected
-			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
-			warningLabel.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(warningLabel);
-			warningLabel.setVisible(false);
-
-			exportButton.addClickListener(e -> {
-				warningLabel.setVisible(!criteria.hasAnyFilterActive());
-			});
+			{
+				Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
+				warningLabel.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(warningLabel);
+				warningLabel.setVisible(false);
+	
+				exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
+			}
 		}
 
 		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
-			btnEnterBulkEditMode.setId("enterBulkEditMode");
-			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
-			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-			addHeaderComponent(btnEnterBulkEditMode);
+			{
+				btnEnterBulkEditMode.setId("enterBulkEditMode");
+				btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+				addHeaderComponent(btnEnterBulkEditMode);
+			}
 
 			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
-			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
-			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
-			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
-			addHeaderComponent(btnLeaveBulkEditMode);
+			{
+				btnLeaveBulkEditMode.setId("leaveBulkEditMode");
+				btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+				btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+				addHeaderComponent(btnLeaveBulkEditMode);
+			}
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
@@ -319,6 +311,19 @@ public class ContactsView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private void addExportButton(StreamResource streamResource, VerticalLayout exportLayout, Resource icon,
+			String captionKey, String descriptionKey) {
+		Button basicExportButton = new Button(I18nProperties.getCaption(captionKey));
+		basicExportButton.setDescription(I18nProperties.getDescription(descriptionKey));
+		basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		basicExportButton.setIcon(icon);
+		basicExportButton.setWidth(100, Unit.PERCENTAGE);
+		exportLayout.addComponent(basicExportButton);
+
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(basicExportButton);
 	}
 
 	public VerticalLayout createFilterBar() {
@@ -633,36 +638,16 @@ public class ContactsView extends AbstractView {
 				bulkOperationsDropdown = new MenuBar();	
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
-				Command changeCommand = selectedItem -> {
-					ControllerProvider.getContactController().showBulkContactDataEditComponent(((ContactGrid) grid).asMultiSelect().getSelectedItems(), null);
-				};
+				Command changeCommand = mi -> ControllerProvider.getContactController().showBulkContactDataEditComponent(((ContactGrid) grid).asMultiSelect().getSelectedItems(), null);
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
 
-				Command cancelFollowUpCommand = selectedItem -> {
-					ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(((ContactGrid) grid).asMultiSelect().getSelectedItems(), new Runnable() {
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
-				};
+				Command cancelFollowUpCommand = mi -> ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(((ContactGrid) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, cancelFollowUpCommand);
 
-				Command lostToFollowUpCommand = selectedItem -> {
-					ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(((ContactGrid) grid).asMultiSelect().getSelectedItems(), new Runnable() {
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
-				};
+				Command lostToFollowUpCommand = mi -> ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(((ContactGrid) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, lostToFollowUpCommand);
 
-				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getContactController().deleteAllSelectedItems(((ContactGrid) grid).asMultiSelect().getSelectedItems(), new Runnable() {
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
-				};
+				Command deleteCommand = mi -> ControllerProvider.getContactController().deleteAllSelectedItems(((ContactGrid) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
@@ -777,13 +762,9 @@ public class ContactsView extends AbstractView {
 		collapseFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), VaadinIcons.CHEVRON_UP);
 		CssStyles.style(collapseFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
 
-		expandFiltersButton.addClickListener(e -> {
-			setFiltersExpanded(true);
-		});
+		expandFiltersButton.addClickListener(e -> setFiltersExpanded(true));
 
-		collapseFiltersButton.addClickListener(e -> {
-			setFiltersExpanded(false);
-		});
+		collapseFiltersButton.addClickListener(e -> setFiltersExpanded(false));
 
 		parentLayout.addComponent(expandFiltersButton);
 		parentLayout.addComponent(collapseFiltersButton);
