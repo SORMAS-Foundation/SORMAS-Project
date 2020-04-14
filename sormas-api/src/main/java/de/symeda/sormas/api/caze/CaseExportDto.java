@@ -125,6 +125,7 @@ public class CaseExportDto implements Serializable {
 	private YesNoUnknown traveled;
 	private YesNoUnknown burialAttended;
 	private YesNoUnknown directContactConfirmedCase;
+	private YesNoUnknown directContactProbableCase;
 	private YesNoUnknown contactWithRodent;
 	private SymptomsDto symptoms;
 //	private Date onsetDate;
@@ -161,7 +162,7 @@ public class CaseExportDto implements Serializable {
 			String phone, String phoneOwner, EducationType educationType, String educationDetails,
 			OccupationType occupationType, String occupationDetails, String occupationFacility,
 			String occupationFacilityUuid, String occupationFacilityDetails, YesNoUnknown traveled,
-			YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown contactWithRodent,
+			YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
 			//Date onsetDate, 
 			Vaccination vaccination, String vaccinationDoses, Date vaccinationDate, VaccinationInfoSource vaccinationInfoSource) {
 		this.id = id;
@@ -206,6 +207,7 @@ public class CaseExportDto implements Serializable {
 		this.traveled = traveled;
 		this.burialAttended = burialAttended;
 		this.directContactConfirmedCase = directContactConfirmedCase;
+		this.directContactProbableCase = directContactProbableCase;
 		this.contactWithRodent = contactWithRodent;
 //		this.onsetDate = onsetDate;
 		this.vaccination = vaccination;
@@ -599,6 +601,18 @@ public class CaseExportDto implements Serializable {
 	}
 
 	@Order(73)
+	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE})
+	@ExportProperty(EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE)
+	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
+	public YesNoUnknown getDirectContactProbableCase() {
+		return directContactProbableCase;
+	}
+
+	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
+		this.directContactProbableCase = directContactProbableCase;
+	}
+
+	@Order(74)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE})
 	@ExportProperty(EpiDataDto.RODENTS)
 	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
