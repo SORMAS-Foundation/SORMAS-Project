@@ -32,7 +32,7 @@
       <guid>6ed63c2c-c8e4-46d0-a9da-cf3c050452be</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
-      <testCaseId>Test Cases/ContactSupervisor/NewContactViaContactsView</testCaseId>
+      <testCaseId>Test Cases/Contacts/NewContactViaContactsView</testCaseId>
    </testCaseLink>
    <testCaseLink>
       <guid>e04e3fbf-405d-45f4-8355-bc3978c63c7c</guid>
@@ -50,6 +50,6 @@
       <guid>475581df-f58f-4a98-9265-05fba79a9c4c</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
-      <testCaseId>Test Cases/ContactSupervisor/FilterContactStatus</testCaseId>
+      <testCaseId>Test Cases/Contacts/FilterContactStatus</testCaseId>
    </testCaseLink>
 </TestSuiteEntity>

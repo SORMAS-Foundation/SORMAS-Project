@@ -14,35 +14,29 @@ import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
+import org.openqa.selenium.Keys as Keys
+import com.kms.katalon.core.testobject.ConditionType as ConditionType
+import com.hzi.Helper
+import com.hzi.TestDataConnector
 
 WebUI.callTestCase(findTestCase('Contacts/partials/loginAsContactSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.callTestCase(findTestCase('Login/partials/ChangeLanguageToEnglish'), [:], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('Contacts/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
-try {
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Dashboard'), 2)
+'userName\n'
+//WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), 
+//    findTestData('defaultContactTestData').getValue(2, 1))
+WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), TestDataConnector.getValueByKey(GlobalVariable.gContactTestDataName, "userName-A"))
 
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Tasks'), 2)
+WebUI.delay(1)
 
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Cases'), 2)
+int rows = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(Helper.createTestObjectWithXPath('//table[@aria-rowcount]'))
 
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_mSERS'), 2)
+if (rows == 1) {
+    //WebUI.closeBrowser()
+} else {
+    //WebUI.closeBrowser()
 
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Contacts'), 2)
-
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Events'), 2)
-
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Samples'), 2)
-
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Reports'), 2)
-
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Statistics'), 2)
-
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_About'), 2)
-
-    WebUI.verifyElementPresent(findTestObject('Login/MainView/menu_Logout'), 2)
-}
-finally { 
-    WebUI.closeBrowser()
+    throw new com.kms.katalon.core.exception.StepFailedException('Expected one row but found ' + rows)
 }
 

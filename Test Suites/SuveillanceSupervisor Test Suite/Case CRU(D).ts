@@ -47,18 +47,6 @@
       </variableLink>
    </testCaseLink>
    <testCaseLink>
-      <guid>83857845-cc6f-4d20-bad3-a6e264a6cd50</guid>
-      <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
-      <testCaseId>Test Cases/SurveillanceSupervisor/CreateNewSampleInCaseView</testCaseId>
-      <variableLink>
-         <testDataLinkId></testDataLinkId>
-         <type>DEFAULT</type>
-         <value></value>
-         <variableId>f6da25fe-6938-44f2-b3a4-243fe6e92324</variableId>
-      </variableLink>
-   </testCaseLink>
-   <testCaseLink>
       <guid>3c7c1f13-d469-4259-9de3-061520073a06</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
