@@ -1,5 +1,7 @@
 package com.hzi
 
+import java.text.SimpleDateFormat
+
 import org.apache.commons.lang.RandomStringUtils
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
@@ -24,7 +26,25 @@ public class Helper {
 	static WebElement findChildElement(TestObject object, String selector) {
 		WebElement webElement = WebUiBuiltInKeywords.findWebElement(object)
 		WebElement childElement = webElement.findElement(By.xpath(selector))
-				
+
 		return childElement
+	}
+	
+	static Date generateRandomDateFromPastToNow(long past) {
+		long now = new Date().getTime()
+		long difference = now-past
+		
+		int size = difference.toString().size()
+				
+		double random = Math.random()
+		long offset = (random * difference * Math.pow(1, 10)).trunc().toLong()
+		
+		Date d = new Date(past + offset) 
+		
+		return d
+	}
+	
+	static String formatDateToString(String format, Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat(format)
 	}
 }
