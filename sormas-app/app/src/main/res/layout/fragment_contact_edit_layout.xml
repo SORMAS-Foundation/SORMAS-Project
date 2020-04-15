@@ -202,6 +202,7 @@
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/contact_reportDateTime"
                         app:value="@={data.reportDateTime}"
+                        app:required="true"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

@@ -115,7 +115,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
 	private ComboBox cbDisease;
-
 	private OptionGroup contactCategory;
 
 	public ContactDataForm(UserRight editOrCreateUserRight) {
@@ -135,7 +134,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isGermanServer()) {
 			contactProximity.addValueChangeListener(
-					e -> trySetContactProximityDetails((ContactProximity) contactProximity.getValue()));
+					e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 		}
@@ -270,14 +269,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			}
 		});
 
-		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS);
+		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
 		FieldHelper.addSoftRequiredStyle(lastContactDate, contactProximity, relationToCase);
 	}
 
 	/*
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
-	private void trySetContactProximityDetails(ContactProximity proximity) {
+	private void updateContactCategory(ContactProximity proximity) {
 		if (proximity != null) {
 			switch (proximity) {
 			case FACE_TO_FACE_LONG:
@@ -296,7 +295,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				contactCategory.setValue(ContactCategory.NO_RISK);
 				break;
 			default:
-				throw new IllegalArgumentException(proximity.toString());
 			}
 		}
 	}

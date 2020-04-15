@@ -8,14 +8,19 @@ import javax.ejb.Remote;
 @Remote
 public interface AggregateReportFacade {
 
-	List<AggregateReportDto> getAllAggregateReportsAfter(Date date, String userUuid);
+	List<AggregateReportDto> getAllAggregateReportsAfter(Date date);
 	
 	List<AggregateReportDto> getByUuids(List<String> uuids);
 	
 	AggregateReportDto saveAggregateReport(AggregateReportDto report);
 	
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 	
-	List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria, String userUuid);
-	
+	List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria);
+
+	List<AggregateReportDto> getList(AggregateReportCriteria criteria);
+
+	void deleteReport(String reportUuid);
+
+	long countWithCriteria(AggregateReportCriteria criteria);
 }

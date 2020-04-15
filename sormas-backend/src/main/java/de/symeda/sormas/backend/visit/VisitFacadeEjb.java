@@ -100,8 +100,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
 
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -111,14 +111,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public List<VisitDto> getAllActiveVisitsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return visitService.getAllActiveVisitsAfter(date, user).stream().map(c -> toDto(c))
+	public List<VisitDto> getAllActiveVisitsAfter(Date date) {
+		return visitService.getAllActiveVisitsAfter(date).stream().map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
 
@@ -157,10 +151,10 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public void deleteVisit(String visitUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteVisit(String visitUuid) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.VISIT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete visits.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete visits.");
 		}
 
 		Visit visit = visitService.getByUuid(visitUuid);

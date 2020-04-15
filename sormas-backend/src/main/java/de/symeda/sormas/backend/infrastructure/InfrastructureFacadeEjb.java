@@ -54,7 +54,7 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 	protected UserService userService;
 	
 	@Override
-	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates, String userUuid) {
+	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
 		
 		if (facilityService.countAfter(changeDates.getFacilityChangeDate()) > configFacade.getInfrastructureSyncThreshold()
@@ -73,8 +73,8 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 		sync.setDiseaseConfigurations(diseaseConfigurationFacade.getAllAfter(changeDates.getDiseaseConfigurationChangeDate()));
 		sync.setUserRoleConfigurations(userRoleConfigurationFacade.getAllAfter(changeDates.getUserRoleConfigurationChangeDate()));
 		sync.setDeletedUserRoleConfigurationUuids(userRoleConfigurationFacade.getDeletedUuids(changeDates.getUserRoleConfigurationChangeDate()));
-		sync.setFeatureConfigurations(featureConfigurationFacade.getAllAfter(changeDates.getFeatureConfigurationChangeDate(), userUuid));
-		sync.setDeletedFeatureConfigurationUuids(featureConfigurationFacade.getDeletedUuids(changeDates.getFeatureConfigurationChangeDate(), userUuid));
+		sync.setFeatureConfigurations(featureConfigurationFacade.getAllAfter(changeDates.getFeatureConfigurationChangeDate()));
+		sync.setDeletedFeatureConfigurationUuids(featureConfigurationFacade.getDeletedUuids(changeDates.getFeatureConfigurationChangeDate()));
 		
 		return sync;
 	}

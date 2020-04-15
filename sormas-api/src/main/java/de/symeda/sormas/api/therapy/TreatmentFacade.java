@@ -16,14 +16,14 @@ public interface TreatmentFacade {
 	
 	TreatmentDto saveTreatment(TreatmentDto treatment);
 	
-	void deleteTreatment(String treatmentUuid, String userUuid);
+	void deleteTreatment(String treatmentUuid);
 	
-	List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, String userUuid);
+	List<TreatmentDto> getAllActiveTreatmentsAfter(Date date);
 	
 	List<TreatmentDto> getByUuids(List<String> uuids);
 	
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 	
-	List<TreatmentExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max);
+	List<TreatmentExportDto> getExportList(CaseCriteria criteria, int first, int max);
 
 }

@@ -116,7 +116,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 	
 	@Override
 	protected Component initContent() {
-		addInfoComponent();
+		addInfoComponent();	
 		addPickCaseComponent();
 		addAndConfigureGrid();
 		addCreateCaseComponent();

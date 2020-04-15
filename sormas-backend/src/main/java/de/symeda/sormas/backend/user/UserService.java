@@ -19,11 +19,16 @@ package de.symeda.sormas.backend.user;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -50,13 +55,10 @@ import de.symeda.sormas.backend.util.PasswordHelper;
 @LocalBean
 public class UserService extends AbstractAdoService<User> {
 
-	@Resource
-	private SessionContext sessionContext;
-	
 	public UserService() {
 		super(User.class);
 	}
-	
+
 	public User createUser() {
 		User user = new User();
 		// dummy password to make sure no one can login with this user
@@ -215,11 +217,7 @@ public class UserService extends AbstractAdoService<User> {
 
 		return password;
 	}
-	
-	public User getCurrentUser() {
-		return getByUserName(sessionContext.getCallerPrincipal().getName());
-	}
-	
+
 	public Predicate buildCriteriaFilter(UserCriteria userCriteria, CriteriaBuilder cb, Root<User> from) {
 		Predicate filter = null;
 		if (userCriteria.getActive() != null) {
@@ -258,7 +256,7 @@ public class UserService extends AbstractAdoService<User> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<User, User> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<User, User> from) {
 		// a user can read all other users
 		return null;
 	}

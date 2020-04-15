@@ -57,7 +57,6 @@
             android:layout_marginBottom="12dp"
             android:layout_marginTop="12dp"
             app:inputType="number"
-            app:hint="@string/caption_aggregate_new_cases_abbr"
             app:slim="true"
             app:value="@={data.newCases}"
             app:showCaption="false" />
@@ -72,7 +71,6 @@
             android:layout_marginBottom="12dp"
             android:layout_marginTop="12dp"
             app:inputType="number"
-            app:hint="@string/caption_aggregate_lab_confirmations_abbr"
             app:slim="true"
             app:value="@={data.labConfirmations}"
             app:showCaption="false" />
@@ -86,7 +84,6 @@
             android:layout_marginBottom="12dp"
             android:layout_marginTop="12dp"
             app:inputType="number"
-            app:hint="@string/caption_aggregate_deaths_abbr"
             app:slim="true"
             app:value="@={data.deaths}"
             app:showCaption="false" />

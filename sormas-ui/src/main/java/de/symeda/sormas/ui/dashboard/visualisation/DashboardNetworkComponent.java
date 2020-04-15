@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.visualisation;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
@@ -50,14 +49,12 @@ public class DashboardNetworkComponent extends VerticalLayout {
 	private Consumer<Boolean> externalExpandListener;
 	
 	private String getNetworkDiagramJson() {
-		LocalDate from = LocalDate.now().minusYears(1);
-		LocalDate to = LocalDate.now();
 		Set<Disease> diseases = Optional.of(dashboardDataProvider)
 				.map(DashboardDataProvider::getDisease)
 				.map(Collections::singleton)
 				.orElseGet(() -> EnumSet.allOf(Disease.class));
 		
-		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(from, to, diseases);
+		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(diseases);
 		return networkJson;
 	}
 

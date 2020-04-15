@@ -35,7 +35,7 @@ public class CaseContactsImportLayout extends AbstractImportLayout {
 				resetDownloadErrorReportButton();
 				
 				try {
-					CaseContactImporter importer = new CaseContactImporter(file, false, currentUser, caze);
+					ContactImporter importer = new ContactImporter(file, false, currentUser, caze);
 					importer.startImport(new Consumer<StreamResource>() {
 						@Override
 						public void accept(StreamResource resource) {

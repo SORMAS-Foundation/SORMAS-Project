@@ -48,8 +48,6 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	@EJB
 	private OutbreakService outbreakService;
 	@EJB
-	private RegionService regionService;
-	@EJB
 	private DistrictService districtService;
 	@EJB
 	private UserService userService;
@@ -190,15 +188,15 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		return target;
 	}
 	
-	public Map<Disease, Long> getOutbreakDistrictCountByDisease (OutbreakCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public Map<Disease, Long> getOutbreakDistrictCountByDisease (OutbreakCriteria criteria) {
+		User user = userService.getCurrentUser();
 
 		return outbreakService.getOutbreakDistrictCountByDisease(criteria, user);
 	}
 	
 	@Override
-	public Long getOutbreakDistrictCount (OutbreakCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public Long getOutbreakDistrictCount (OutbreakCriteria criteria) {
+		User user = userService.getCurrentUser();
 
 		return outbreakService.getOutbreakDistrictCount(criteria, user);
 	}

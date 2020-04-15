@@ -44,17 +44,14 @@ public class AdditionalTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<AdditionalTestDto> getAllAdditionalTests(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<AdditionalTestDto> additionalTests = FacadeProvider.getAdditionalTestFacade()
-				.getAllActiveAdditionalTestsAfter(new Date(since), userDto.getUuid());
-		return additionalTests;
+	public List<AdditionalTestDto> getAllAdditionalTests(@PathParam("since") long since) {
+		return FacadeProvider.getAdditionalTestFacade()
+				.getAllActiveAdditionalTestsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<AdditionalTestDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<AdditionalTestDto> getByUuids(List<String> uuids) {
 		List<AdditionalTestDto> result = FacadeProvider.getAdditionalTestFacade().getByUuids(uuids);
 		return result;
 	}
@@ -68,11 +65,7 @@ public class AdditionalTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getAdditionalTestFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllActiveUuids() {
+		return FacadeProvider.getAdditionalTestFacade().getAllActiveUuids();
 	}
-	
 }

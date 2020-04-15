@@ -55,22 +55,6 @@ import de.symeda.sormas.backend.facility.Facility;
 public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testDashboardTestResultListCreation() {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf);
-		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, caze.getDisease(), new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
-
-		List<DashboardTestResultDto> dashboardTestResultDtos = getSampleTestFacade().getNewTestResultsForDashboard(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
-
-		// List should have one entry
-		assertEquals(1, dashboardTestResultDtos.size());
-	}
-
-	@Test
 	public void testGetIndexList() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -83,7 +67,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 		
-		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), null, 0, 100, null);
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(null, 0, 100, null);
 		
 		// List should have one entry
 		assertEquals(2, sampleIndexDtos.size());
@@ -110,11 +94,11 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
 
-		getSampleFacade().deleteSample(sample.toReference(), adminUuid);
+		getSampleFacade().deleteSample(sample.toReference());
 
 		// Sample and pathogen test should be marked as deleted
-		assertTrue(getSampleFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sampleTest.getUuid()));
+		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
 	}
 	
 	@Test
@@ -128,26 +112,26 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, caze.getDisease(), new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
-		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
+		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 		
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
-		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(0, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(0, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(0, getSampleFacade().getAllActiveUuids().size());
+		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
-		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
+		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 	}
 
 	@Test

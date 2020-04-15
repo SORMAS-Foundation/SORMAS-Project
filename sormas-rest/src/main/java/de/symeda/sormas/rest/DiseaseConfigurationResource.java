@@ -42,19 +42,19 @@ public class DiseaseConfigurationResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<DiseaseConfigurationDto> getAllDiseaseConfigurations(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<DiseaseConfigurationDto> getAllDiseaseConfigurations(@PathParam("since") long since) {
 		return FacadeProvider.getDiseaseConfigurationFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<DiseaseConfigurationDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<DiseaseConfigurationDto> getByUuids(List<String> uuids) {
 		return FacadeProvider.getDiseaseConfigurationFacade().getByUuids(uuids);
 	}
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getDiseaseConfigurationFacade().getAllUuids();
 	}
 

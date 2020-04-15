@@ -17,38 +17,26 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.facility;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;
 
-import java.lang.annotation.Annotation;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.symeda.sormas.api.facility.FacilityDto;
-import info.novatec.beantest.api.BeanProviderHelper;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 
-public class FacilityServiceTest {
+public class FacilityServiceTest extends AbstractBeanTest {
 
-    private static BeanProviderHelper bm;
-    
-	@BeforeClass
-	public static void initialize() {
-		bm = BeanProviderHelper.getInstance();
-
-		FacilityService facilityService = getBean(FacilityService.class);
-
-		facilityService.createConstantFacilities();
+	@Override
+	public void init() {
+		getFacilityService().createConstantFacilities();
 	}
-
-    @AfterClass
-    public static void cleanUp() {
-        bm.shutdown();
-    }
-    
-    protected static <T> T getBean(Class<T> beanClass, Annotation... qualifiers) {
-        return bm.getBean(beanClass, qualifiers);
-    }
 
 	@Test
 	public void testSpecialFacilitiesExist() {
@@ -59,5 +47,36 @@ public class FacilityServiceTest {
 		assertNotNull(noneFacility);
 		Facility otherLaboratory = facilityService.getByUuid(FacilityDto.OTHER_LABORATORY_UUID);
 		assertNotNull(otherLaboratory);
+	}
+
+	@Test
+	public void testGetHealthFacilitiesByName() throws Exception {
+		Region region = creator.createRegion("Region");
+		District district = creator.createDistrict("District", region);
+		District otherDistrict = creator.createDistrict("Other District", region);
+		Community community = creator.createCommunity("Community", district);
+		Community otherCommunity = creator.createCommunity("Other Community", otherDistrict);
+		creator.createFacility("Facility", region, district, community);
+		
+		assertThat(getFacilityService().getHealthFacilitiesByName("Facility", district, community), hasSize(1));
+		assertThat(getFacilityService().getHealthFacilitiesByName(" Facility ", district, community), hasSize(1));
+		assertThat(getFacilityService().getHealthFacilitiesByName("facility", district, null), hasSize(1));
+		assertThat(getFacilityService().getHealthFacilitiesByName("FACILITY", district, null), hasSize(1));
+		assertThat(getFacilityService().getHealthFacilitiesByName("Facility", otherDistrict, otherCommunity), empty());
+		assertThat(getFacilityService().getHealthFacilitiesByName("Redcliffe Church", district, community), empty());
+	}
+
+	@Test
+	public void testGetLaboratoriesByName() throws Exception {
+		Region region = creator.createRegion("Region");
+		District district = creator.createDistrict("District", region);
+		Community community = creator.createCommunity("Community", district);
+		creator.createFacility("Laboratory", FacilityType.LABORATORY, region, district, community);
+		
+		assertThat(getFacilityService().getLaboratoriesByName("Laboratory"), hasSize(1));
+		assertThat(getFacilityService().getLaboratoriesByName(" Laboratory "), hasSize(1));
+		assertThat(getFacilityService().getLaboratoriesByName("laboratory"), hasSize(1));
+		assertThat(getFacilityService().getLaboratoriesByName("LABORATORY"), hasSize(1));
+		assertThat(getFacilityService().getLaboratoriesByName("Jowan's Chamber"), empty());
 	}
 }

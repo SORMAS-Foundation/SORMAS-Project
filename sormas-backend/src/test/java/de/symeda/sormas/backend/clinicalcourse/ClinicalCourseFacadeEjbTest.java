@@ -31,7 +31,7 @@ public class ClinicalCourseFacadeEjbTest extends AbstractBeanTest {
 		// Database should contain the created clinical visit
 		assertNotNull(getClinicalVisitFacade().getClinicalVisitByUuid(visit.getUuid()));
 		
-		getClinicalVisitFacade().deleteClinicalVisit(visit.getUuid(), admin.getUuid());
+		getClinicalVisitFacade().deleteClinicalVisit(visit.getUuid());
 		
 		// Database should not contain the deleted visit
 		assertNull(getClinicalVisitFacade().getClinicalVisitByUuid(visit.getUuid()));

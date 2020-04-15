@@ -23,27 +23,33 @@ import android.util.Log;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.person.PersonNameDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.util.LocationService;
 
-/**
- * Created by Martin Wahnschaffe on 22.07.2016.
- */
+import static de.symeda.sormas.api.i18n.Strings.and;
+
 public class PersonDao extends AbstractAdoDao<Person> {
 
-    public PersonDao(Dao<Person,Long> innerDao) throws SQLException {
+    public PersonDao(Dao<Person,Long> innerDao) {
         super(innerDao);
     }
 
@@ -57,22 +63,52 @@ public class PersonDao extends AbstractAdoDao<Person> {
         return Person.TABLE_NAME;
     }
 
-    public List<PersonNameDto> getPersonNameDtos() {
+    public List<PersonNameDto> getRelevantPersonNames(PersonSimilarityCriteria similarityCriteria) {
         try {
-            GenericRawResults<Object[]> rawResults = queryRaw("select " + Person.FIRST_NAME +
-                    ", " + Person.LAST_NAME + ", " + Person.UUID + " from " +
-                    Person.TABLE_NAME + " where " + Person.TABLE_NAME + "." + AbstractDomainObject.SNAPSHOT + " = 0;",
-                    new DataType[]{DataType.STRING, DataType.STRING, DataType.STRING});
-            List<Object[]> results = rawResults.getResults();
-            List<PersonNameDto> personNames = new ArrayList<>();
-            for (Object[] result : results) {
-                PersonNameDto personName = new PersonNameDto((String) result[0], (String) result[1], (String) result[2]);
-                personNames.add(personName);
+            QueryBuilder<Person, Long> builder = queryBuilder();
+            Where<Person, Long> where = builder.where();
+            where.eq(AbstractDomainObject.SNAPSHOT, false);
+
+            if (similarityCriteria.getSex() != null) {
+                where.and();
+                where.or(
+                        where.isNull(Person.SEX),
+                        where.eq(Person.SEX, similarityCriteria.getSex())
+                );
+            }
+            if (similarityCriteria.getBirthdateYYYY() != null) {
+                where.and();
+                where.or(
+                        where.isNull(Person.BIRTHDATE_YYYY),
+                        where.eq(Person.BIRTHDATE_YYYY, similarityCriteria.getBirthdateYYYY())
+                );
+            }
+            if (similarityCriteria.getBirthdateMM() != null) {
+                where.and();
+                where.or(
+                        where.isNull(Person.BIRTHDATE_MM),
+                        where.eq(Person.BIRTHDATE_MM, similarityCriteria.getBirthdateMM())
+                );
+            }
+            if (similarityCriteria.getBirthdateDD() != null) {
+                where.and();
+                where.or(
+                        where.isNull(Person.BIRTHDATE_DD),
+                        where.eq(Person.BIRTHDATE_DD, similarityCriteria.getBirthdateDD())
+                );
             }
 
-            return personNames;
+            builder.selectColumns(Person.FIRST_NAME, Person.LAST_NAME, Person.UUID);
+
+            return builder.orderBy(Person.LAST_NAME, true)
+                    .orderBy(Person.LAST_NAME, true)
+                    .orderBy(Person.UUID, true)
+                    .query()
+                    .stream()
+                    .map(person -> new PersonNameDto(person.getFirstName(), person.getLastName(), person.getUuid()))
+                    .collect(Collectors.toList());
         } catch (SQLException e) {
-            Log.e(getTableName(), "Could not perform getPersonNameDtos on Person");
+            Log.e(getTableName(), "Could not perform getRelevantPersonNames on Person");
             throw new RuntimeException(e);
         }
     }

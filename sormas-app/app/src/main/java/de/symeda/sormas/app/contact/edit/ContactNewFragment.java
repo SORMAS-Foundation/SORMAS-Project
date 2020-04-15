@@ -18,28 +18,30 @@
 
 package de.symeda.sormas.app.contact.edit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
-import de.symeda.sormas.app.visit.edit.VisitValidator;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -55,6 +57,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
     private List<Item> diseaseList;
+    private List<Item> sexList;
     private List<Item> categoryList;
 
     public static ContactNewFragment newInstance(Contact activityRootData) {
@@ -81,6 +84,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
         diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+        sexList = DataUtils.getEnumItems(Sex.class, true);
         categoryList = DataUtils.getEnumItems(ContactCategory.class,true);
     }
 
@@ -97,13 +101,16 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
         contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
         contentBinding.contactDisease.addValueChangedListener(e -> {
             contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+            if (ConfigProvider.isGermanServer()) {
+                contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+                contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+            }
             contentBinding.contactContactProximity.clear();
             contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
         });
 
-        String germanyLocale = "de";
-        if (germanyLocale.equals(ConfigProvider.getServerLocale())){
-            contentBinding.contactContactProximity.addValueChangedListener(e -> trySetContactProximityDetails(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
+        if (ConfigProvider.isGermanServer()) {
+            contentBinding.contactContactProximity.addValueChangedListener(e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
         } else {
             contentBinding.contactContactProximityDetails.setVisibility(GONE);
             contentBinding.contactContactCategory.setVisibility(GONE);
@@ -122,6 +129,8 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
         if (getPrimaryData().getDisease() == null) {
             contentBinding.contactContactProximity.setVisibility(GONE);
+            contentBinding.contactContactProximityDetails.setVisibility(GONE);
+            contentBinding.contactContactCategory.setVisibility(GONE);
         }
 
         ContactValidator.initializeValidation(record, contentBinding);
@@ -130,7 +139,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     /*
      * Only used for Systems in Germany. Follows specific rules for german systems.
      */
-    private void trySetContactProximityDetails(FragmentContactNewLayoutBinding contentBinding, ContactProximity proximity) {
+    private void updateContactCategory(FragmentContactNewLayoutBinding contentBinding, ContactProximity proximity) {
         if (proximity != null) {
             switch (proximity) {
                 case FACE_TO_FACE_LONG:
@@ -149,17 +158,29 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
                     contentBinding.contactContactCategory.setValue(ContactCategory.NO_RISK);
                     break;
                 default:
-                    throw new IllegalArgumentException(proximity.toString());
             }
         }
     }
 
     @Override
     public void onAfterLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
+        contentBinding.personSex.initializeSpinner(sexList);
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
         contentBinding.contactContactCategory.initializeSpinner(categoryList);
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
         contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
+
+        List<Item> monthList = DataUtils.getMonthItems(true);
+        List<Item> yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
+        contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
+        });
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
+        });
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
     }
 
     @Override

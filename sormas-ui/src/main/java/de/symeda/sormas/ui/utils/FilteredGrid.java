@@ -60,5 +60,4 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	public int getItemCount() {
 		return getDataProvider().size(new Query<>());
 	}
-
 }

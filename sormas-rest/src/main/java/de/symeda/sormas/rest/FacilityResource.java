@@ -56,16 +56,13 @@ public class FacilityResource {
 	
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
-		
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getFacilityFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllUuids() {
+		return FacadeProvider.getFacilityFacade().getAllUuids();
 	}
 	
 	@POST
 	@Path("/query")
-	public List<FacilityDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<FacilityDto> getByUuids(List<String> uuids) {
 
 		List<FacilityDto> result = FacadeProvider.getFacilityFacade().getByUuids(uuids); 
 		return result;

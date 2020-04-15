@@ -53,16 +53,14 @@ public class CommunityResource {
 	
 	@POST
 	@Path("/query")
-	public List<CommunityDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<CommunityDto> getByUuids(List<String> uuids) {
 		List<CommunityDto> result = FacadeProvider.getCommunityFacade().getByUuids(uuids); 
 		return result;
 	}
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getCommunityFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllUuids() {
+		return FacadeProvider.getCommunityFacade().getAllUuids();
 	}
 }

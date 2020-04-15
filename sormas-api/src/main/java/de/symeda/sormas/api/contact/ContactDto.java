@@ -75,6 +75,12 @@ public class ContactDto extends EntityDto {
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String OVERWRITE_FOLLOW_UP_UTIL = "overwriteFollowUpUntil";
 
+	private CaseReferenceDto caze;
+	private String caseIdExternalSystem;
+	private String caseOrEventInformation;
+	private Disease disease;
+	private String diseaseDetails;
+
 	@Required
 	private Date reportDateTime;
 	@Required
@@ -86,27 +92,20 @@ public class ContactDto extends EntityDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	@Required
-	private PersonReferenceDto person;
-	@Required
-	private CaseReferenceDto caze;
-	private Disease disease;
-	private String diseaseDetails;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
+	private String contactProximityDetails;
+	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
-	private UserReferenceDto contactOfficer;
 	private String description;
 	private ContactRelation relationToCase;
 	private String relationDescription;
 	private String externalID;
-	
-	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
-	private UserReferenceDto resultingCaseUser;
 	
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
@@ -117,11 +116,14 @@ public class ContactDto extends EntityDto {
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	
-	private String caseIdExternalSystem;
-	private String caseOrEventInformation;
-	
-	private String contactProximityDetails;
-	private ContactCategory contactCategory;
+
+	@Required
+	private PersonReferenceDto person;
+
+	private UserReferenceDto contactOfficer;
+
+	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
+	private UserReferenceDto resultingCaseUser;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -135,9 +137,7 @@ public class ContactDto extends EntityDto {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 
-		contact.setCaze(caze);
-		contact.setDisease(disease);
-		contact.setDiseaseDetails(diseaseDetails);
+		contact.assignCase(caze, disease, diseaseDetails);
 		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
 
 		contact.setReportDateTime(new Date());
@@ -145,6 +145,17 @@ public class ContactDto extends EntityDto {
 		contact.setContactStatus(ContactStatus.ACTIVE);
 
 		return contact;
+	}
+	
+	public void assignCase(CaseDataDto caze) {
+		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+	}
+	
+	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails)
+	{
+		setCaze(caze);
+		setDisease(disease);
+		setDiseaseDetails(diseaseDetails);
 	}
 	
 	public PersonReferenceDto getPerson() {

@@ -133,11 +133,11 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
         contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
             updateApproximateAgeField(contentBinding);
-            updateListOfDays(contentBinding, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
         });
         contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
             updateApproximateAgeField(contentBinding);
-            updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
         int year = Calendar.getInstance().get(Calendar.YEAR);
         contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
@@ -173,15 +173,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         // Initialize ControlDateFields
         contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
-    }
-
-    private static void updateListOfDays(FragmentPersonEditLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
-        Integer currentlySelected = (Integer) binding.personBirthdateDD.getValue();
-        List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
-        binding.personBirthdateDD.setSpinnerData(days);
-        if (currentlySelected != null) {
-            binding.personBirthdateDD.setValue(currentlySelected);
-        }
     }
 
     public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {

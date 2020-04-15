@@ -16,14 +16,14 @@ public interface PrescriptionFacade {
 	
 	PrescriptionDto savePrescription(PrescriptionDto prescription);
 	
-	void deletePrescription(String prescriptionUuid, String userUuid);
+	void deletePrescription(String prescriptionUuid);
 	
-	List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, String userUuid);
+	List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date);
 	
 	List<PrescriptionDto> getByUuids(List<String> uuids);
 	
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 	
-	List<PrescriptionExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
+	List<PrescriptionExportDto> getExportList(CaseCriteria caseCriteria, int first, int max);
 
 }

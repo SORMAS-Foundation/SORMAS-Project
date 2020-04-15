@@ -103,8 +103,11 @@ public class TestDataCreator {
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
 			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportDate,
-			RDCF rdcf) {
+			RDCF rdcf, String caseUuid) {
 		CaseDataDto caze = CaseDataDto.build(cazePerson, disease);
+		if (caseUuid != null) {
+			caze.setUuid(caseUuid);
+		}
 		caze.setReportDate(reportDate);
 		caze.setReportingUser(user);
 		caze.setCaseClassification(caseClassification);
@@ -117,6 +120,12 @@ public class TestDataCreator {
 		caze = FacadeProvider.getCaseFacade().saveCase(caze);
 
 		return caze;
+	}
+	
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportDate,
+			RDCF rdcf) {
+		return createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportDate, rdcf, null);
 	}
 
 	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseReferenceDto caze,
