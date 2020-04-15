@@ -27,7 +27,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -50,8 +55,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -264,9 +271,51 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		final Document doc = parser.parseInput(html, "");
 		
 		Element jsonScripElement = doc.select("script[type='application/json']").first();
+		
 		String json = jsonScripElement.html();
+		json = doI18n(json);
 		return json;
 	}
+	
+	private static final Map<String, Enum<?>> supportedEnums;
+	static {
+		Map<String, Enum<?>> map = new HashMap<>();
+		Arrays.stream(CaseClassification.values())
+		.forEach(e -> map.put("Classification." + e.name(), e));
+		supportedEnums = Collections.unmodifiableMap(map);
+	}
+
+	private static final Pattern ENUM_PATTERN = Pattern.compile("\"(([A-Za-z]+)\\.([A-Z_]+))\"");
+	
+	private static String doI18n(String json) {
+		
+		Matcher m = ENUM_PATTERN.matcher(json);
+		
+		StringBuffer sb = new StringBuffer(json.length());
+		 while (m.find()) {
+			String replacement = Optional.of(m.group(1))
+			.map(supportedEnums::get)
+			.map(I18nProperties::getEnumCaption)
+			//TODO real json escaping
+			.map(c -> "\"" + c.replace("\"", "\\\"") + "\"")
+			.orElseGet(() -> {
+				//TODO i18n of Classification.HEALTHY
+				if (m.group(2).equals("Classification")) {
+					String name = m.group(3);
+					return "\"" + name.charAt(0) + name.substring(1).toLowerCase() + "\"";
+				} else {
+					return m.group();
+				}
+			});
+			 
+		     m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+		 }
+		 m.appendTail(sb);
+		
+		 return sb.toString();
+		
+	}
+
 
 	static Map<String, String> getConnectionPoolProperties(Path domPath, String poolName) throws IOException {
 		final Parser parser = Parser.xmlParser();
