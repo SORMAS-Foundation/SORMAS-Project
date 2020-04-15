@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description></description>
+   <description>checks the quickfilter like 'shipped', 'not shipped' and so on.</description>
    <name>QuickFilter</name>
    <tag></tag>
    <comment></comment>

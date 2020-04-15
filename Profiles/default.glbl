@@ -104,4 +104,9 @@
       <initValue>'defaultContactTestData'</initValue>
       <name>gContactTestDataName</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'defaultSamplesTestData'</initValue>
+      <name>gSamplesTestDataName</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks if filtering by name shows the correct result</description>
+   <name>FilterByName</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>83e96f05-6d36-4026-b8a7-07e08508a4b1</testCaseGuid>
+</TestCaseEntity>
