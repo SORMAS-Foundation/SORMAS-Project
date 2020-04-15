@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.visit;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+
+import java.io.Serializable;
+import java.util.Date;
 
 public class VisitIndexDto implements Serializable {
 
@@ -27,12 +27,12 @@ public class VisitIndexDto implements Serializable {
 	private VisitStatus visitStatus;
 	private String visitRemarks;
 	private Disease disease;
-	private boolean symptomatic;
+	private Boolean symptomatic;
 	private Float temperature;
 	private TemperatureSource temperatureSource;
 	
 	public VisitIndexDto(String uuid, Date visitDateTime, VisitStatus visitStatus, String visitRemarks,
-			Disease disease, boolean symptomatic, Float temperature, TemperatureSource temperatureSource) {
+			Disease disease, Boolean symptomatic, Float temperature, TemperatureSource temperatureSource) {
 		this.uuid = uuid;
 		this.visitDateTime = visitDateTime;
 		this.visitStatus = visitStatus;
@@ -83,7 +83,7 @@ public class VisitIndexDto implements Serializable {
 		this.disease = disease;
 	}
 
-	public boolean isSymptomatic() {
+	public Boolean getSymptomatic() {
 		return symptomatic;
 	}
 

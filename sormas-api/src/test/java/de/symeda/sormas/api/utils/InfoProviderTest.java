@@ -17,15 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.spy;
-
-import java.lang.reflect.Field;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.spy;
 
 public class InfoProviderTest {
 
@@ -73,27 +73,5 @@ public class InfoProviderTest {
 			fail();
 		}
 		catch (IllegalArgumentException e) { }
-	}
-
-	@Test
-	public void testIsCompatibleToApiStringForMinVersion() throws Exception {
-
-		Mockito.when(InfoProvider.get().getVersion()).thenReturn("0.7.0");
-		final String minVersion = "0.5.0";
-		// testMatchingVersionCompatibility
-		assertEquals(CompatibilityCheckResponse.COMPATIBLE, InfoProvider.get().isCompatibleToApiForMinVersion("0.5.0", minVersion));
-		assertEquals(CompatibilityCheckResponse.COMPATIBLE, InfoProvider.get().isCompatibleToApiForMinVersion("0.7.0", minVersion));
-
-		// testHotfixVersionCompatibility
-		assertEquals(CompatibilityCheckResponse.COMPATIBLE, InfoProvider.get().isCompatibleToApiForMinVersion("0.5.99", minVersion));
-
-		// testTooOldVersionIncompatibility
-		assertEquals(CompatibilityCheckResponse.TOO_OLD, InfoProvider.get().isCompatibleToApiForMinVersion("0.4.0", minVersion));
-		assertEquals(CompatibilityCheckResponse.TOO_OLD, InfoProvider.get().isCompatibleToApiForMinVersion("0.0.7", minVersion));
-
-		// testTooNewVersionIncompatibility
-		assertEquals(CompatibilityCheckResponse.TOO_NEW, InfoProvider.get().isCompatibleToApiForMinVersion("0.7.1", minVersion));
-		assertEquals(CompatibilityCheckResponse.TOO_NEW, InfoProvider.get().isCompatibleToApiForMinVersion("0.8.0", minVersion));
-		assertEquals(CompatibilityCheckResponse.TOO_NEW, InfoProvider.get().isCompatibleToApiForMinVersion("1.0.0", minVersion));
 	}
 }

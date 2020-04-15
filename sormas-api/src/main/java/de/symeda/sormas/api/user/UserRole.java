@@ -17,15 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
-
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.utils.ValidationException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * These are also used as user groups in the server realm
@@ -264,7 +266,13 @@ public enum UserRole implements StatisticsGroupingKey {
 		case POE_NATIONAL_USER:
 			return Arrays.asList(IMPORT_USER);
 		case IMPORT_USER:
-			return Arrays.asList(UserRole.values());
+			final List<UserRole> userRoles = new ArrayList<>();
+			for (UserRole userRole: UserRole.values()) {
+				if (userRole != REST_EXTERNAL_VISITS_USER) {
+					userRoles.add(userRole);
+				}
+			}
+			return userRoles;
 		case REST_EXTERNAL_VISITS_USER:
 			return Arrays.asList(REST_EXTERNAL_VISITS_USER);
 		default:

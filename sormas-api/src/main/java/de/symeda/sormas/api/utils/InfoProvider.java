@@ -58,7 +58,7 @@ public class InfoProvider {
 	public String getVersion() {
 		return version;
 	}
-	
+
 	/**
 	 * Reads the version from the version.txt where it is written by maven and replaces the last version number with a 0.
 	 */
@@ -75,27 +75,15 @@ public class InfoProvider {
 	}
 
 	/**
-	 * Checks if the app version is compatible with the given min api version. This is true when the version is at least as high as the
-	 * minVersion and lower or equal to the version returned by getVersion().
-	 */
-	public CompatibilityCheckResponse isCompatibleToApiForMinVersion(String appVersionInput, String minVersion) {
-		return areVersionsCompatible(VersionHelper.extractVersion(appVersionInput), VersionHelper.extractVersion(minVersion));
-	}
-	
-	/**
 	 * Checks if the app version is compatible with the api version. This is true when the version is at least as high as the
 	 * MINIMUM_REQUIRED_VERSION and lower or equal to the version returned by getVersion().
 	 */
 	public CompatibilityCheckResponse isCompatibleToApi(int[] appVersion) {
-		int[] minVersion = VersionHelper.extractVersion(getMinimumRequiredVersion());
-
-		return areVersionsCompatible(appVersion, minVersion);
-	}
-
-	private CompatibilityCheckResponse areVersionsCompatible(int[] appVersion, int[] minVersion) {
-		if (!VersionHelper.isVersion(appVersion) || !VersionHelper.isVersion(minVersion)) {
+		if (!VersionHelper.isVersion(appVersion)) {
 			throw new IllegalArgumentException("No proper app version provided");
 		}
+
+		int[] minVersion = VersionHelper.extractVersion(getMinimumRequiredVersion());
 
 		if (VersionHelper.isBefore(appVersion, minVersion)) {
 			return CompatibilityCheckResponse.TOO_OLD;

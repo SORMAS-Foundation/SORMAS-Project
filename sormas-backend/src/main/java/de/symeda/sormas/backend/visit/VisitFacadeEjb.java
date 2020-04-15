@@ -141,7 +141,8 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public VisitDto saveVisit(VisitDto dto) {
-		VisitDto existingVisit = toDto(visitService.getByUuid(dto.getUuid()));
+		final String visitUuid = dto.getUuid();
+		final VisitDto existingVisit = toDto(visitUuid != null ? visitService.getByUuid(visitUuid) : null);
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 		Visit entity = fromDto(dto);
@@ -265,10 +266,11 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	public Visit fromDto(@NotNull VisitDto source) {
 
-		Visit target = visitService.getByUuid(source.getUuid());
+		final String visitUuid = source.getUuid();
+		Visit target = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
 		if (target == null) {
 			target = new Visit();
-			target.setUuid(source.getUuid());
+			target.setUuid(visitUuid);
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}

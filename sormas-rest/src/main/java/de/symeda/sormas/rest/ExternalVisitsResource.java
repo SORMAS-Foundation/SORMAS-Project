@@ -2,8 +2,6 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
-import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 
 import javax.annotation.security.RolesAllowed;
@@ -13,7 +11,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -23,7 +20,7 @@ import java.util.List;
 @RolesAllowed("REST_EXTERNAL_VISITS_USER")
 public class ExternalVisitsResource extends EntityDtoResource {
 
-    public final static String EXTERNAL_VISITS_MINIMUM_REQUIRED_VERSION = "1.37.0";
+    public final static String EXTERNAL_VISITS_API_VERSION = "1.37.0";
 
     @GET
     @Path("/contact/{contactUuid}/validity")
@@ -41,13 +38,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
     @GET
     @Path("/version")
     public String getVersion() {
-        return InfoProvider.get().getVersion();
-    }
-
-    @GET
-    @Path("/checkcompatibility")
-    public CompatibilityCheckResponse isCompatibleToApi(@QueryParam("appVersion") String appVersion) {
-        return InfoProvider.get().isCompatibleToApiForMinVersion(appVersion, EXTERNAL_VISITS_MINIMUM_REQUIRED_VERSION);
+        return EXTERNAL_VISITS_API_VERSION;
     }
 
     @Override

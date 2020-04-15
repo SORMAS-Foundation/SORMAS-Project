@@ -7,21 +7,15 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,5 +57,10 @@ public class VisitFacadeEjbTest  extends AbstractBeanTest {
         final VisitCriteria visitCriteria = new VisitCriteria();
         final List<VisitIndexDto> visitIndexList = visitFacade.getIndexList(visitCriteria.contact(new ContactReferenceDto(contact.getUuid())), 0, 100, null);
         Assert.assertNotNull(visitIndexList);
+        Assert.assertEquals(1, visitIndexList.size());
+        VisitIndexDto visitIndexDto = visitIndexList.get(0);
+        Assert.assertNotNull(visitIndexDto.getVisitDateTime());
+        Assert.assertEquals(VisitStatus.COOPERATIVE, visitIndexDto.getVisitStatus());
+        Assert.assertEquals(visitRemarks, visitIndexDto.getVisitRemarks());
     }
 }
