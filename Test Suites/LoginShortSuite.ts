@@ -17,16 +17,10 @@
       <testCaseId>Test Cases/Login/LoginLabOfficerTest</testCaseId>
    </testCaseLink>
    <testCaseLink>
-      <guid>ac03c47f-2595-410c-bea8-9889dfa5ca3d</guid>
+      <guid>9ebf2b6c-d423-49cd-b68d-940eb9eac344</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
-      <testCaseId>Test Cases/Login/LoginNationalClinicianTest</testCaseId>
-   </testCaseLink>
-   <testCaseLink>
-      <guid>a98f5b02-15c7-4dad-8034-cdf372927e72</guid>
-      <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
-      <testCaseId>Test Cases/Login/CheckMainViews</testCaseId>
+      <testCaseId>Test Cases/Login/LoginNationalUserTest</testCaseId>
    </testCaseLink>
    <testCaseLink>
       <guid>6ed63c2c-c8e4-46d0-a9da-cf3c050452be</guid>
@@ -51,5 +45,11 @@
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
       <testCaseId>Test Cases/Contacts/FilterContactStatus</testCaseId>
+   </testCaseLink>
+   <testCaseLink>
+      <guid>a98f5b02-15c7-4dad-8034-cdf372927e72</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Login/CheckMainViews</testCaseId>
    </testCaseLink>
 </TestSuiteEntity>
