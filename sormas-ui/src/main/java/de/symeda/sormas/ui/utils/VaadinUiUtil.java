@@ -268,7 +268,7 @@ public class VaadinUiUtil {
 		return requestTaskComponent;
 	}
 	
-	public static HorizontalLayout createInfoComponent(String text) {
+	public static HorizontalLayout createInfoComponent(String htmlContent) {
 		HorizontalLayout infoLayout = new HorizontalLayout();
 		infoLayout.setWidth(100, Unit.PERCENTAGE);
 		infoLayout.setSpacing(true);
@@ -277,7 +277,7 @@ public class VaadinUiUtil {
 		icon.setWidth(35, Unit.PIXELS);
 		infoLayout.addComponent(icon);
 		infoLayout.setComponentAlignment(icon, Alignment.MIDDLE_LEFT);
-		Label infoLabel = new Label(text, ContentMode.HTML);
+		Label infoLabel = new Label(htmlContent, ContentMode.HTML);
 		infoLabel.setWidth(100, Unit.PERCENTAGE);
 		infoLayout.addComponent(infoLabel);
 		infoLayout.setExpandRatio(infoLabel, 1);

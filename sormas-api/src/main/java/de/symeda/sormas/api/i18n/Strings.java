@@ -336,6 +336,7 @@ public interface Strings {
 	public static String infoDetailedExport = "infoDetailedExport";
 	public static String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	public static String infoDownloadErrorReport = "infoDownloadErrorReport";
+	public static String infoDownloadExport = "infoDownloadExport";
 	public static String infoDownloadImportGuide = "infoDownloadImportGuide";
 	public static String infoDownloadImportTemplate = "infoDownloadImportTemplate";
 	public static String infoEditExportConfiguration = "infoEditExportConfiguration";

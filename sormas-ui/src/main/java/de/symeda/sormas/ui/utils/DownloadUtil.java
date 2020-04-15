@@ -26,7 +26,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +42,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -52,8 +56,16 @@ import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
@@ -332,124 +344,220 @@ public class DownloadUtil {
 		result.writeTo(zos);
 		zos.closeEntry();
 	}
+	
+	public static interface OutputStreamConsumer {
+		void write(OutputStream os) throws IOException;
+	}
+	
+	public static class DelayedInputStream extends ByteArrayInputStream {
+		
+		private Supplier<byte[]> dataSupplier;
+		
+		protected DelayedInputStream(Supplier<byte[]> dataSupplier) {
+			super(new byte[0]);
+			this.dataSupplier = dataSupplier;
+		}
+		
+		protected DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
+			super(new byte[0]);
+			this.dataSupplier = () -> {
+				try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+					osConsumer.write(os);
+					return os.toByteArray();
+				} catch (IOException e) {
+					exceptionHandler.accept(e);
+					throw new UncheckedIOException(e);
+				}
+			};
+		}
+		
+		private void ensureInited() {
+			if (dataSupplier != null) {
+				buf = dataSupplier.get();
+				dataSupplier = null;
+		        this.count = buf.length;
+			}
+		}
+		
+		@Override
+		public int read() {
+			ensureInited();
+			return super.read();
+		}
+		@Override
+		public int read(byte[] b) throws IOException {
+			ensureInited();
+			return super.read(b);
+		}
+		@Override
+		public synchronized int read(byte[] b, int off, int len) {
+			ensureInited();
+			return super.read(b, off, len);
+		}
+		
+		@Override
+		public synchronized long skip(long n) {
+			ensureInited();
+			return super.skip(n);
+		}
+		@Override
+		public synchronized int available() {
+			ensureInited();
+			return super.available();
+		}
+		@Override
+		public void mark(int readAheadLimit) {
+			ensureInited();
+			super.mark(readAheadLimit);
+		}
+	}
 
 	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, CaseExportType exportType, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, 
 			BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName, ExportConfigurationDto exportConfiguration) {
 		StreamResource extendedStreamResource = new StreamResource(() -> {
-
-			try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
-				try (CSVWriter writer = CSVUtils.createCSVWriter(
-						new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
-
-					// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
-					List<Method> readMethods = new ArrayList<Method>();
-					readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
-							.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is"))
-									&& m.isAnnotationPresent(Order.class)
-									&& (exportType == null || (m.isAnnotationPresent(ExportTarget.class) && Arrays.asList(m.getAnnotation(ExportTarget.class).exportTypes()).contains(exportType)))
-									&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
-							.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(),
-									b.getAnnotationsByType(Order.class)[0].value()))
-							.collect(Collectors.toList()));
-
-					// 2. replace entity fields with all the columns of the entity
-					Map<Method, Function<T,?>> subEntityProviders = new HashMap<Method, Function<T,?>>();
-					for (int i = 0; i < readMethods.size(); i++) {
-						Method method = readMethods.get(i);
-						if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
-
-							// allows us to access the sub entity
-							Function<T, ?> subEntityProvider = o -> {
-								try {
-									return method.invoke(o);
-								} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-									throw new RuntimeException(e);
-								}
-							};
-
-							// remove entity field
-							readMethods.remove(i);
-
-							// add columns of the entity
-							List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
-									.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
-									.sorted((a2,b2) -> Integer.compare(a2.getAnnotationsByType(Order.class)[0].value(),
-											b2.getAnnotationsByType(Order.class)[0].value()))
-									.collect(Collectors.toList());
-							readMethods.addAll(i, subReadMethods);
-							i--;
-
-							for (Method subReadMethod : subReadMethods) {
-								subEntityProviders.put(subReadMethod, subEntityProvider);
-							}
-						}
-					}
-
-					String[] fieldValues = new String[readMethods.size()];
-					for (int i = 0; i < readMethods.size(); i++) {
-						Method method = readMethods.get(i);
-						// field caption
-						String propertyId = method.getName().startsWith("get")
-								? method.getName().substring(3)
-										: method.getName().substring(2);
-								propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-								fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
-					}
-					writer.writeNext(fieldValues);
-
-					int startIndex = 0;
-					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
-					while (!exportRows.isEmpty()) {
-						try {
-							for (T exportRow : exportRows) {
-								for (int i = 0; i < readMethods.size(); i++) {
-									Method method = readMethods.get(i);
-									Function<T,?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
-									Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
-									// Sub entity might be null
-									Object value = entity != null ? method.invoke(entity) : null;
-									if (value == null) {
-										fieldValues[i] = "";
-									} else if (value instanceof Date) {
-										fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
-									} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
-										fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
-									} else if (value instanceof Set) {
-										StringBuilder sb = new StringBuilder();
-										for (Object o : (Set<?>) value) {
-											if (sb.length() != 0) {
-												sb.append(", ");
-											}
-											sb.append(o);
-										}
-										fieldValues[i] = sb.toString();
-									} else {
-										fieldValues[i] = value.toString();
+			
+			return new DelayedInputStream((out) -> {
+					try (CSVWriter writer = CSVUtils.createCSVWriter(
+							new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
+	
+						// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
+						List<Method> readMethods = new ArrayList<Method>();
+						readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
+								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) 
+										&& m.isAnnotationPresent(Order.class)
+										&& (exportType == null || (m.isAnnotationPresent(ExportTarget.class) && Arrays.asList(m.getAnnotation(ExportTarget.class).exportTypes()).contains(exportType)))
+										&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
+								.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
+										b.getAnnotationsByType(Order.class)[0].value()))
+								.collect(Collectors.toList()));
+	
+						// 2. replace entity fields with all the columns of the entity 
+						Map<Method, Function<T,?>> subEntityProviders = new HashMap<Method, Function<T,?>>();
+						for (int i = 0; i < readMethods.size(); i++) {
+							Method method = readMethods.get(i);
+							if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
+	
+								// allows us to access the sub entity
+								Function<T, ?> subEntityProvider = o -> {
+									try {
+										return method.invoke(o);
+									} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+										throw new RuntimeException(e);
 									}
+								};
+	
+								// remove entity field
+								readMethods.remove(i);
+	
+								// add columns of the entity
+								List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
+										.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
+										.sorted((a2,b2) -> Integer.compare(a2.getAnnotationsByType(Order.class)[0].value(), 
+												b2.getAnnotationsByType(Order.class)[0].value()))
+										.collect(Collectors.toList());
+								readMethods.addAll(i, subReadMethods);
+								i--;
+	
+								for (Method subReadMethod : subReadMethods) {
+									subEntityProviders.put(subReadMethod, subEntityProvider);
 								}
-								writer.writeNext(fieldValues);
-							};
-						} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-							throw new RuntimeException(e);
+							}							
 						}
-
-						writer.flush();
-						startIndex += DETAILED_EXPORT_STEP_SIZE;
-						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+	
+						String[] fieldValues = new String[readMethods.size()];
+						for (int i = 0; i < readMethods.size(); i++) {
+							Method method = readMethods.get(i);
+							// field caption
+							String propertyId = method.getName().startsWith("get") 
+									? method.getName().substring(3)
+											: method.getName().substring(2); 
+									propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
+									fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
+						}
+						writer.writeNext(fieldValues);
+	
+						int startIndex = 0;
+						List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+						while (!exportRows.isEmpty()) {						
+							try {
+								for (T exportRow : exportRows) {
+									for (int i = 0; i < readMethods.size(); i++) {
+										Method method = readMethods.get(i);
+										Function<T,?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
+										Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
+										// Sub entity might be null
+										Object value = entity != null ? method.invoke(entity) : null;
+										if (value == null) {
+											fieldValues[i] = "";
+										} else if (value instanceof Date) {
+											fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
+										} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
+											fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
+										} else if (value instanceof Set) {
+											StringBuilder sb = new StringBuilder();
+											for (Object o : (Set<?>) value) {
+												if (sb.length() != 0) {
+													sb.append(", ");
+												}
+												sb.append(o);
+											}
+											fieldValues[i] = sb.toString();
+										} else {
+											fieldValues[i] = value.toString();
+										}
+									}
+									writer.writeNext(fieldValues);
+								};
+							} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+								throw new RuntimeException(e);
+							}
+	
+							writer.flush();
+							startIndex += DETAILED_EXPORT_STEP_SIZE;
+							exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+						}
 					}
-				}
-				return new ByteArrayInputStream(byteStream.toByteArray());
-			} catch (IOException e) {
-				// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-				new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed),
-							Type.ERROR_MESSAGE, false).show(Page.getCurrent());
-				return null;
-			}
+				},
+				e -> {
+					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
+					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+					VaadinSession.getCurrent().access(() -> new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed), 
+								Type.ERROR_MESSAGE, false).show(Page.getCurrent()));
+				});
 		}, exportFileName);
 		extendedStreamResource.setMIMEType("text/csv");
 		extendedStreamResource.setCacheTime(0);
 		return extendedStreamResource;
 	}
 
+	/**
+	 * <p>
+	 * When downloading a Resource via FileDownloader, 
+	 * the Component of the FileDownloader must remain visible in the UI.
+	 * Otherwise the Resource is unregistered and the download may fail.
+	 * </p><p>
+	 * This method display a modal dialog that includes the exportComponent without actually showing it to the user.
+	 * When the dialog is closed, it up to the closeListener to decide the fate of the exportComponent.
+	 * </p>
+	 *  
+	 * @param exportButton
+	 * @param closeListener
+	 */
+	public static void showExportWaitDialog(AbstractComponent exportComponent, CloseListener closeListener) {
+		
+		//the button has to remain in the UI for the download to succeed, but it should not be seen 
+		CustomLayout hidingLayout = new CustomLayout();
+		hidingLayout.setSizeUndefined();
+		hidingLayout.setTemplateContents("");
+		hidingLayout.addComponent(exportComponent);
+		
+		Label lbl = new Label(I18nProperties.getString(Strings.infoDownloadExport), ContentMode.HTML);
+		HorizontalLayout layout = new HorizontalLayout(lbl, hidingLayout);
+		layout.setMargin(true);
+		layout.setExpandRatio(lbl, 1);
+		Window dialog = VaadinUiUtil.showPopupWindow(layout);
+		dialog.setCaption(exportComponent.getCaption());
+		
+		dialog.addCloseListener(closeListener);
+	}
 }
