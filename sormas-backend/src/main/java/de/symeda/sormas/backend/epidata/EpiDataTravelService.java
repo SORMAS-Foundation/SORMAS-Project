@@ -25,7 +25,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -37,8 +36,7 @@ public class EpiDataTravelService extends AbstractAdoService<EpiDataTravel> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataTravel, EpiDataTravel> from,
-			User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EpiDataTravel, EpiDataTravel> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

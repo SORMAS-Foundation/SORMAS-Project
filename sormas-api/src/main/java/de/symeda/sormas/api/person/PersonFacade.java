@@ -32,9 +32,9 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface PersonFacade {
 
-	List<PersonDto> getPersonsAfter(Date date, String uuid);
+	List<PersonDto> getPersonsAfter(Date date);
 
-	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String userUuid);
+	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease);
 	
     PersonReferenceDto getReferenceByUuid(String uuid);
     
@@ -44,13 +44,13 @@ public interface PersonFacade {
     
     void validate(PersonDto dto) throws ValidationRuntimeException;
     
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 
 	List<PersonDto> getByUuids(List<String> uuids);
 	
 	PersonIndexDto getIndexDto(String uuid);
-	
-	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid);
+
+	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria);
 
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
@@ -58,6 +58,6 @@ public interface PersonFacade {
 	 */
 	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
 	
-	List<PersonIndexDto> getIndexDtosByUuids(List<String> uuids);
+	List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids);
 	
 }

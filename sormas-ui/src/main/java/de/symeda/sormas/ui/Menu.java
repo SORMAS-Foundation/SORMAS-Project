@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.vaadin.event.MouseEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
@@ -38,7 +35,6 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -48,6 +44,9 @@ import de.symeda.sormas.ui.user.UserSettingsForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
@@ -142,12 +141,8 @@ public class Menu extends CssLayout {
     	Window window = VaadinUiUtil.createPopupWindow();
     	window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
     	window.setModal(true);
-    	
-		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController().getUserSettingsComponent(
-				UserProvider.getCurrent().getUuid(), 
-				() -> {
-					window.close();
-				});
+
+        CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
 		
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);

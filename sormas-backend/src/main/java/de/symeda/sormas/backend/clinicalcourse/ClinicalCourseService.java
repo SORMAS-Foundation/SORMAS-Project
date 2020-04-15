@@ -8,7 +8,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -20,7 +19,7 @@ public class ClinicalCourseService extends AbstractAdoService<ClinicalCourse>  {
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ClinicalCourse, ClinicalCourse> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ClinicalCourse, ClinicalCourse> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}

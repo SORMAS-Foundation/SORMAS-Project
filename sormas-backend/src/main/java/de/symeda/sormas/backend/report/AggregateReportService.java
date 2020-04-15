@@ -62,27 +62,27 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AggregateReport, AggregateReport> from, User user) {
-		if (user == null || user.getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AggregateReport, AggregateReport> from) {
+		if (getCurrentUser() == null || getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
+				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
 
 		// Whoever created the weekly report is allowed to access it
 		Join<AggregateReport, User> reportingUser = from.join(AggregateReport.REPORTING_USER, JoinType.LEFT);
-		Predicate filter = cb.equal(reportingUser, user);
+		Predicate filter = cb.equal(reportingUser, getCurrentUser());
 
 		// Allow access based on user role
-		for (UserRole userRole : user.getUserRoles()) {
+		for (UserRole userRole : getCurrentUser().getUserRoles()) {
 			switch (userRole) {
 			case SURVEILLANCE_SUPERVISOR:
 			case CONTACT_SUPERVISOR:
 			case CASE_SUPERVISOR:
 			case STATE_OBSERVER:
 				// Supervisors see all reports from their region
-				if (user.getRegion() != null) {
-					filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), user.getRegion()));
+				if (getCurrentUser().getRegion() != null) {
+					filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), getCurrentUser().getRegion()));
 				}
 				break;
 			default:
@@ -101,7 +101,7 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 		Predicate filter = createCriteriaFilter(aggregateReportCriteria, cb, cq, from);
 
 		if (user != null) {
-			filter = and(cb, filter, createUserFilter(cb, cq, from, user));
+			filter = and(cb, filter, createUserFilter(cb, cq, from));
 		}
 		if (filter != null) {
 			cq.where(filter);

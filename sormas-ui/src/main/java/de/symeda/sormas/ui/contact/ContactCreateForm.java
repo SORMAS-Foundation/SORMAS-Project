@@ -97,6 +97,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private TextField contactProximityDetails;
 	private ComboBox birthDateDay;
 
+	/**
+	 * TODO use disease and case relation information given in ContactDto
+	 */
 	public ContactCreateForm(UserRight editOrCreateUserRight, Disease disease, boolean hasCaseRelation) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
 
@@ -171,7 +174,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
+		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, ContactDto.REPORT_DATE_TIME);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.RELATION_DESCRIPTION, ContactDto.RELATION_TO_CASE, Arrays.asList(ContactRelation.OTHER), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));

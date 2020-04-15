@@ -20,7 +20,6 @@ import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -114,7 +113,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PointOfEntry, PointOfEntry> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PointOfEntry, PointOfEntry> from) {
 		return null;
 	}
 

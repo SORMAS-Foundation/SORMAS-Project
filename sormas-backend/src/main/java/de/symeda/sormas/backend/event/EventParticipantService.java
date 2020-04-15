@@ -61,7 +61,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 				cb.isNull(event.get(Event.ARCHIVED)));
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -88,7 +88,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 				cb.isNull(event.get(Event.ARCHIVED)));
 		
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
@@ -136,9 +136,9 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EventParticipant, EventParticipant> eventParticipantPath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EventParticipant, EventParticipant> eventParticipantPath) {
 		// can see the participants of all accessible events
-		Predicate filter = eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), user);
+		Predicate filter = eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT));
 	
 		return filter;
 	}

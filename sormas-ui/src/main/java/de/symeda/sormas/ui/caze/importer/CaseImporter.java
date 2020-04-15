@@ -243,7 +243,7 @@ public class CaseImporter extends DataImporter {
 							.lastName(newPerson.getLastName())
 							.caseCriteria(caseCriteria)
 							.reportDate(newCase.getReportDate());
-					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria, currentUser.getUuid());
+					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
 					if (similarCases.size() > 0) {
 						// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified

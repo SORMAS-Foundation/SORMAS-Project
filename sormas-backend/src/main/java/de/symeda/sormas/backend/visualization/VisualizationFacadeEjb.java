@@ -159,7 +159,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				} else {
 					pb = new ProcessBuilder(new String[] {rScriptExecutable, "-f", scriptFile.toString()});
 				}
-				pb.directory(scriptFile.getParent().toFile());
+				pb.directory(tempDir.toFile());
 					
 				Map<String, String> poolProperties = getConnectionPoolProperties(domainXmlPath, "sormasDataPool");
 				Map<String, String> env = pb.environment();
@@ -175,6 +175,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				EnvParam.DISEASES.put(env, diseases.stream().map(Enum::name).collect(Collectors.joining(",")));
 				EnvParam.OUTFILE.put(env, outputFile.toString());
 				
+//				File outFile = tempDir.resolve("console.log").toFile();
+//				pb.redirectOutput(outFile );
+//				pb.redirectError(outFile);
 				
 				Process pr = pb.start();
 				int exitCode = pr.waitFor();
@@ -183,7 +186,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 					String html = new String(Files.readAllBytes(outputFile));
 					return extractJson(html);
 				} else {
-					logger.warn("R failed with code " + exitCode + ": " + pb.command().stream().collect(Collectors.joining(" ")));
+					logger.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
 					return null;
 				}
 				

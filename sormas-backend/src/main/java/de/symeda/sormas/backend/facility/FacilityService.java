@@ -39,7 +39,6 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -165,7 +164,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from) {
 		// no filter by user needed
 		return null;
 	}

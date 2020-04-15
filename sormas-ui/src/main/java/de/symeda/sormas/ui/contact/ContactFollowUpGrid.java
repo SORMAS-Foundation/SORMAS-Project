@@ -110,13 +110,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	public void setDataProvider() {
 		DataProvider<ContactFollowUpDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getContactFacade().getContactFollowUpList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), referenceDate, query.getOffset(), query.getLimit(), 
+						 query.getFilter().orElse(null), referenceDate, query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 						.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getContactFacade().count(
-							UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
+				query -> (int) FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}

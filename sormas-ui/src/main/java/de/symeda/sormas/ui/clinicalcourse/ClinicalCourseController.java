@@ -89,22 +89,14 @@ public class ClinicalCourseController {
 			}
 		});
 
-		view.addDiscardListener(new DiscardListener() {
-			@Override
-			public void onDiscard() {
-				popupWindow.close();
-			}
-		});
+		view.addDiscardListener(() -> popupWindow.close());
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_DELETE)) {
-			view.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(clinicalVisit.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
-					popupWindow.close();
-					if (callback != null) {
-						callback.run();
-					}
+			view.addDeleteListener(() -> {
+				FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(clinicalVisit.getUuid());
+				popupWindow.close();
+				if (callback != null) {
+					callback.run();
 				}
 			}, I18nProperties.getString(Strings.entityClinicalVisit));
 		}
@@ -115,15 +107,13 @@ public class ClinicalCourseController {
 			new Notification(I18nProperties.getString(Strings.headingNoClinicalVisitsSelected),
 					I18nProperties.getString(Strings.messageNoClinicalVisitsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(((ClinicalVisitIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
-					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingClinicalVisitsDeleted),
-							I18nProperties.getString(Strings.messageClinicalVisitsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), selectedRows.size()), () -> {
+				for (Object selectedRow : selectedRows) {
+					FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(((ClinicalVisitIndexDto) selectedRow).getUuid());
 				}
+				callback.run();
+				new Notification(I18nProperties.getString(Strings.headingClinicalVisitsDeleted),
+						I18nProperties.getString(Strings.messageClinicalVisitsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 			});
 		}
 	}

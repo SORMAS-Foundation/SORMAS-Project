@@ -72,24 +72,24 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<FeatureConfiguration, FeatureConfiguration> from, User user) {
-		if (user == null) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<FeatureConfiguration, FeatureConfiguration> from) {
+		if (getCurrentUser() == null) {
 			return null;
 		}
 
 		Predicate filter = null;
-		if (user.getRegion() != null) {
+		if (getCurrentUser().getRegion() != null) {
 			filter = and(cb, filter, 
 					cb.or(
 							cb.isNull(from.get(FeatureConfiguration.REGION)),
-							cb.equal(from.get(FeatureConfiguration.REGION), user.getRegion())
+							cb.equal(from.get(FeatureConfiguration.REGION), getCurrentUser().getRegion())
 							));
 		}
-		if (user.getDistrict() != null) {
+		if (getCurrentUser().getDistrict() != null) {
 			filter = and(cb, filter, 
 					cb.or(
 							cb.isNull(from.get(FeatureConfiguration.DISTRICT)),
-							cb.equal(from.get(FeatureConfiguration.DISTRICT), user.getDistrict())
+							cb.equal(from.get(FeatureConfiguration.DISTRICT), getCurrentUser().getDistrict())
 							));
 		}
 

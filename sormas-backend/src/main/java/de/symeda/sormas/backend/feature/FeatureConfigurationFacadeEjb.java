@@ -56,8 +56,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	private UserService userService;
 
 	@Override
-	public List<FeatureConfigurationDto> getAllAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<FeatureConfigurationDto> getAllAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		return service.getAllAfter(date, user)
 				.stream()
@@ -74,15 +74,15 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllUuids() {
+		User user = userService.getCurrentUser();
 
 		return service.getAllUuids(user);
 	}
 
 	@Override
-	public List<String> getDeletedUuids(Date since, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getDeletedUuids(Date since) {
+		User user = userService.getCurrentUser();
 
 		return service.getDeletedUuids(since, user);
 	}

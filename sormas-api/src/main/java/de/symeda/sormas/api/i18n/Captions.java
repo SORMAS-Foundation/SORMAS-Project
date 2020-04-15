@@ -181,6 +181,8 @@ public interface Captions {
 	public static String CaseData_vaccine = "CaseData.vaccine";
 	public static String caseEditData = "caseEditData";
 	public static String CaseExport_address = "CaseExport.address";
+	public static String CaseExport_addressRegion = "CaseExport.addressRegion";
+	public static String CaseExport_addressDistrict = "CaseExport.addressDistrict";
 	public static String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
 	public static String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";
@@ -213,6 +215,7 @@ public interface Captions {
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
 	public static String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
+	public static String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	public static String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	public static String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
@@ -347,6 +350,9 @@ public interface Captions {
 	public static String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	public static String ContactExport_lastName = "ContactExport.lastName";
 	public static String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
+	public static String ContactExport_address = "ContactExport.address";
+	public static String ContactExport_addressRegion = "ContactExport.addressRegion";
+	public static String ContactExport_addressDistrict = "ContactExport.addressDistrict";
 	public static String contactFollowUpOverviewReferenceDate = "contactFollowUpOverviewReferenceDate";
 	public static String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	public static String contactLostToFollowUp = "contactLostToFollowUp";

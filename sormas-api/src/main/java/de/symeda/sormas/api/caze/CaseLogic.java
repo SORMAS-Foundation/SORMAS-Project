@@ -61,14 +61,6 @@ public class CaseLogic {
 		return Pattern.matches(EPID_PATTERN_COMPLETE, s);
 	}
 
-	public static int getYearFromEpidNumber(String s) {
-		try {
-			return Integer.valueOf(s.substring(12, 14));
-		} catch (StringIndexOutOfBoundsException | NumberFormatException e) {
-			return 0;
-		}
-	}
-
 	public static void createPreviousHospitalizationAndUpdateHospitalization(CaseDataDto caze, CaseDataDto oldCase) {
 		PreviousHospitalizationDto prevHosp = PreviousHospitalizationDto.build(oldCase);
 		caze.getHospitalization().getPreviousHospitalizations().add(prevHosp);

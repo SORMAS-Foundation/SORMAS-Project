@@ -44,18 +44,13 @@ public class ClinicalVisitResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<ClinicalVisitDto> getAllVisits(@Context SecurityContext sc, @PathParam("since") long since) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<ClinicalVisitDto> result = FacadeProvider.getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(new Date(since),
-				userDto.getUuid());
-		return result;
+	public List<ClinicalVisitDto> getAllVisits(@PathParam("since") long since) {
+		return FacadeProvider.getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<ClinicalVisitDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<ClinicalVisitDto> getByUuids(List<String> uuids) {
 
 		List<ClinicalVisitDto> result = FacadeProvider.getClinicalVisitFacade().getByUuids(uuids);
 		return result;
@@ -71,12 +66,7 @@ public class ClinicalVisitResource extends EntityDtoResource {
 
 	@GET	
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getClinicalVisitFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllActiveUuids() {
+		return FacadeProvider.getClinicalVisitFacade().getAllActiveUuids();
 	}
-	
 }

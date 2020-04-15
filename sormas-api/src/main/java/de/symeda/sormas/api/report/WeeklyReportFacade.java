@@ -29,13 +29,13 @@ import de.symeda.sormas.api.utils.EpiWeek;
 @Remote
 public interface WeeklyReportFacade {
 
-	List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, String userUuid);
+	List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date);
 	
 	List<WeeklyReportDto> getByUuids(List<String> uuids);
 	
 	WeeklyReportDto saveWeeklyReport(WeeklyReportDto dto);
 	
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 	
 	/**
 	 * Returns only regions that do have surveillance officers

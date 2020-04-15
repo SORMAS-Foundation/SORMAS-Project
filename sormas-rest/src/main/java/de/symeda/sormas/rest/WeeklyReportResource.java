@@ -45,11 +45,8 @@ public class WeeklyReportResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<WeeklyReportDto> getAllWeeklyReports(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<WeeklyReportDto> weeklyReports = FacadeProvider.getWeeklyReportFacade()
-				.getAllWeeklyReportsAfter(new Date(since), userDto.getUuid());
-		return weeklyReports;
+		return FacadeProvider.getWeeklyReportFacade()
+				.getAllWeeklyReportsAfter(new Date(since));
 	}
 
 	@POST
@@ -69,10 +66,7 @@ public class WeeklyReportResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getWeeklyReportFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getWeeklyReportFacade().getAllUuids();
 	}
 
 }
