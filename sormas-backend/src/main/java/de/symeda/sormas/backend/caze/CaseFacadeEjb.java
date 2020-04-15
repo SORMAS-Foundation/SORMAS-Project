@@ -1064,7 +1064,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case CaseIndexDto.ID:
 				case CaseIndexDto.UUID:
@@ -1079,47 +1078,51 @@ public class CaseFacadeEjb implements CaseFacade {
 				case CaseIndexDto.OUTCOME:
 				case CaseIndexDto.QUARANTINE_TO:
 				case CaseIndexDto.COMPLETENESS:
-					expression = root.get(sortProperty.propertyName);
+					addSortExpression(cb, order, sortProperty, root.get(sortProperty.propertyName));
 					break;
 				case CaseIndexDto.PERSON_FIRST_NAME:
-					expression = person.get(Person.FIRST_NAME);
+					addSortExpression(cb, order, sortProperty, person.get(Person.FIRST_NAME));
 					break;
 				case CaseIndexDto.PERSON_LAST_NAME:
-					expression = person.get(Person.LAST_NAME);
+					addSortExpression(cb, order, sortProperty, person.get(Person.LAST_NAME));
 					break;
 				case CaseIndexDto.PRESENT_CONDITION:
-					expression = person.get(sortProperty.propertyName);
+					addSortExpression(cb, order, sortProperty, person.get(sortProperty.propertyName));
 					break;
 				case CaseIndexDto.REGION_UUID:
-					expression = region.get(Region.UUID);
+					addSortExpression(cb, order, sortProperty, region.get(Region.UUID));
 					break;
 				case CaseIndexDto.DISTRICT_UUID:
-					expression = district.get(District.UUID);
+					addSortExpression(cb, order, sortProperty, district.get(District.UUID));
 					break;
 				case CaseIndexDto.DISTRICT_NAME:
-					expression = district.get(District.NAME);
+					addSortExpression(cb, order, sortProperty, district.get(District.NAME));
 					break;
 				case CaseIndexDto.HEALTH_FACILITY_UUID:
-					expression = facility.get(Facility.UUID);
+					addSortExpression(cb, order, sortProperty, facility.get(Facility.UUID));
 					break;
 				case CaseIndexDto.HEALTH_FACILITY_NAME:
-					expression = facility.get(Facility.NAME);
+					addSortExpression(cb, order, sortProperty, facility.get(Facility.NAME));
+					addSortExpression(cb, order, sortProperty, root.get(Case.HEALTH_FACILITY_DETAILS));
 					break;
 				case CaseIndexDto.POINT_OF_ENTRY_NAME:
-					expression = pointOfEntry.get(PointOfEntry.NAME);
+					addSortExpression(cb, order, sortProperty, pointOfEntry.get(PointOfEntry.NAME));
 					break;
 				case CaseIndexDto.SURVEILLANCE_OFFICER_UUID:
-					expression = surveillanceOfficer.get(User.UUID);
+					addSortExpression(cb, order, sortProperty, surveillanceOfficer.get(User.UUID));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
 			cq.orderBy(order);
 		} else {
 			cq.orderBy(cb.desc(root.get(Case.CHANGE_DATE)));
 		}
+	}
+
+	private boolean addSortExpression(CriteriaBuilder cb, List<Order> order, SortProperty sortProperty, Expression<?> expression) {
+		return order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 	}
 
 	public String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean includeSharedCases) {

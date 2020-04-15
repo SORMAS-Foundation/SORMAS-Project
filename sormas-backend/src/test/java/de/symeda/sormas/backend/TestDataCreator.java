@@ -151,6 +151,14 @@ public class TestDataCreator {
 			RDCFEntities rdcf) {
 		return createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
 	}
+
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
+			RDCFEntities rdcf, String healthFacilityDetails) {
+		final CaseDataDto aCase = createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
+		aCase.setHealthFacilityDetails(healthFacilityDetails);
+		return beanTest.getCaseFacade().saveCase(aCase);
+	}
 	
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
 			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
