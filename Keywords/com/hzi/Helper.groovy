@@ -29,22 +29,24 @@ public class Helper {
 
 		return childElement
 	}
-	
+
 	static Date generateRandomDateFromPastToNow(long past) {
 		long now = new Date().getTime()
 		long difference = now-past
-		
+
 		int size = difference.toString().size()
-				
+
 		double random = Math.random()
 		long offset = (random * difference * Math.pow(1, 10)).trunc().toLong()
-		
-		Date d = new Date(past + offset) 
-		
+
+		Date d = new Date(past + offset)
+
 		return d
 	}
-	
+
 	static String formatDateToString(String format, Date date) {
 		SimpleDateFormat formatter = new SimpleDateFormat(format)
+		
+		return formatter.format(date)
 	}
 }
