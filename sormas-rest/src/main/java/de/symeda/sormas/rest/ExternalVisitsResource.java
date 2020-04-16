@@ -23,7 +23,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
     public final static String EXTERNAL_VISITS_API_VERSION = "1.37.0";
 
     @GET
-    @Path("/contact/{contactUuid}/validity")
+    @Path("/contact/{contactUuid}/isValid")
     public Boolean isValidContactUuid(@PathParam("contactUuid") String contactUuid) {
         return FacadeProvider.getContactFacade().isValidContactUuid(contactUuid);
     }
