@@ -4064,3 +4064,16 @@ ALTER TABLE contact_history ADD COLUMN overwritefollowupuntil boolean;
 UPDATE contact SET overwritefollowupuntil = false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (197, 'Make follow-up until editable #1680');
+
+-- 2020-04-15 Reworking of quarantine #1762
+UPDATE contact SET 	followupuntil = quarantineto WHERE quarantineto > followupuntil;
+ALTER TABLE contact DROP COLUMN quarantineto;
+ALTER TABLE contact_history DROP COLUMN quarantineto;
+
+ALTER TABLE contact ADD COLUMN quarantineordermeans varchar(255);
+ALTER TABLE contact_history ADD COLUMN quarantineordermeans varchar(255);
+
+ALTER TABLE contact ADD COLUMN quarantinehelpneeded varchar(512);
+ALTER TABLE contact_history ADD COLUMN quarantinehelpneeded varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (198, 'Reworking of quarantine #1762');

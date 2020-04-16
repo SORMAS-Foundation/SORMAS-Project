@@ -31,6 +31,7 @@ import org.joda.time.LocalDate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
@@ -82,6 +83,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
+	private static final String QUARANTINE_TO_LOC = "quarantineEndLoc";
 
 	private static final String HTML_LAYOUT = 
 			h3(I18nProperties.getString(Strings.headingContactData)) +
@@ -100,7 +102,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 					fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 			fluidRowLocs(ContactDto.DESCRIPTION) +
-			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+					fluidRowLocs(4, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM,
+							5,
+							QUARANTINE_TO_LOC)
+					+ fluidRowLocs(4, ContactDto.QUARANTINE_ORDER_MEANS,
+							8,
+							ContactDto.QUARANTINE_HELP_NEEDED)
+					+
 			locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 			fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
 			loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
@@ -113,9 +121,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private OptionGroup contactProximity;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
-	private DateField quarantineTo;
+	private Label quarantineTo;
 	private ComboBox cbDisease;
 	private OptionGroup contactCategory;
+	private ComboBox quarantineOrderMeans;
+	private TextField quarantineHelpNeeded;
 
 	public ContactDataForm(UserRight editOrCreateUserRight) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -148,8 +158,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		quarantine.addValueChangeListener(e -> updateQuarantineFields());
 		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
 		quarantineFrom.setVisible(false);
-		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
+		quarantineTo = new Label(I18nProperties.getString(Strings.quarantineEnd));
+		CssStyles.style(quarantineTo, CssStyles.VSPACE_TOP_2);
 		quarantineTo.setVisible(false);
+		getContent().addComponent(quarantineTo, QUARANTINE_TO_LOC);
+
+		if (isGermanServer()) {
+			quarantineOrderMeans = addField(ContactDto.QUARANTINE_ORDER_MEANS, ComboBox.class);
+			quarantineOrderMeans.setVisible(false);
+		}
+		quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
+		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+		quarantineHelpNeeded.setVisible(false);
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
@@ -307,11 +327,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		} else {
 			visible = false;
 			quarantineFrom.clear();
-			quarantineTo.clear();
 		}
 
 		quarantineFrom.setVisible(visible);
 		quarantineTo.setVisible(visible);
+		quarantineOrderMeans.setVisible(visible);
+		quarantineHelpNeeded.setVisible(visible);
 	}
 
 	private ValueChangeListener getHighPriorityValueChangeListener(CheckBox cbHighPriority) {
