@@ -587,6 +587,7 @@ public interface Strings {
 	public static String of = "of";
 	public static String on = "on";
 	public static String or = "or";
+	public static String pleaseSpecify = "pleaseSpecify";
 	public static String previousPeriod = "previousPeriod";
 	public static String promptCasesDateFrom = "promptCasesDateFrom";
 	public static String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
@@ -611,6 +612,7 @@ public interface Strings {
 	public static String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	public static String promptTypeToAdd = "promptTypeToAdd";
 	public static String promptUserSearch = "promptUserSearch";
+	public static String quarantineEnd = "quarantineEnd";
 	public static String quarterShort = "quarterShort";
 	public static String reportedBy = "reportedBy";
 	public static String reportedOn = "reportedOn";
