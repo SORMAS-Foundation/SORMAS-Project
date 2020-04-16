@@ -21,6 +21,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import org.junit.Test;
 
 public class PersonHelperTest {
@@ -29,47 +31,47 @@ public class PersonHelperTest {
 	public void nameSimilarityExceedsThreshold() {
 		String firstName = "Thomas Miller";
 		String secondName = "Tomas Miller";
-		
+
 		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-		
+
 		firstName = "Thomas Miller";
 		secondName = "Miller Thomas";
 
 		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-		
+
 		firstName = "Thomas Jake Miller";
 		secondName = "Thomas Miller";
 
 		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-		
+
 		firstName = "Thomas Jake Miller";
 		secondName = "Thomas Jacob Miller";
 
 		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-		
+
 		firstName = "Dan Brown";
 		secondName = "Dan Browning";
 
 		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-		
+
 		firstName = "Dan Van";
 		secondName = "Gan Van";
 
 		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 	}
-	
+
 	@Test
 	public void nameSimilarityDeceedsThreshold() {
 		String firstName = "Thomas Miller";
 		String secondName = "Tomislav Millerton";
 
 		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
-		
+
 		firstName = "Jonathan Lee Sterling";
 		secondName = "John Lee Langston";
 
 		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
-		
+
 		firstName = "Gan Zan";
 		secondName = "Don Van";
 
@@ -77,14 +79,28 @@ public class PersonHelperTest {
 	}
 
 	@Test
-		public void testFormatBirthdate() throws Exception {
-			assertEquals("", PersonHelper.formatBirthdate(null, null, null));
-			assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990));
-			assertEquals("7/1990", PersonHelper.formatBirthdate(null, 7, 1990));
-			assertEquals("7", PersonHelper.formatBirthdate(null, 7, null));
-			assertEquals("5/7", PersonHelper.formatBirthdate(5, 7, null));
-			assertEquals("5", PersonHelper.formatBirthdate(5, null, null));
-			assertEquals("5//1990", PersonHelper.formatBirthdate(5, null, 1990));
-			assertEquals("5/7/1990", PersonHelper.formatBirthdate(5, 7, 1990));
-		}	
+	public void testFormatBirthdateEN() throws Exception {
+		I18nProperties.setUserLanguage(Language.EN);
+		assertEquals("", PersonHelper.formatBirthdate(null, null, null));
+		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990));
+		assertEquals("7//1990", PersonHelper.formatBirthdate(null, 7, 1990));
+		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null));
+		assertEquals("7/5", PersonHelper.formatBirthdate(5, 7, null));
+		assertEquals("5", PersonHelper.formatBirthdate(5, null, null));
+		assertEquals("5/1990", PersonHelper.formatBirthdate(5, null, 1990));
+		assertEquals("7/5/1990", PersonHelper.formatBirthdate(5, 7, 1990));
+	}
+
+	@Test
+	public void testFormatBirthdateDE() throws Exception {
+		I18nProperties.setUserLanguage(Language.DE);
+		assertEquals("", PersonHelper.formatBirthdate(null, null, null));
+		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990));
+		assertEquals("7.1990", PersonHelper.formatBirthdate(null, 7, 1990));
+		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null));
+		assertEquals("5.7", PersonHelper.formatBirthdate(5, 7, null));
+		assertEquals("5", PersonHelper.formatBirthdate(5, null, null));
+		assertEquals("5..1990", PersonHelper.formatBirthdate(5, null, 1990));
+		assertEquals("5.7.1990", PersonHelper.formatBirthdate(5, 7, 1990));
+	}
 }
