@@ -1466,7 +1466,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactCategory varchar(255);");
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactProximityDetails varchar(512);");
 				case 193:
-					currentVersion = 193;,
+					currentVersion = 193;
 					// Fill report date if necessary; required because the report date was not a mandatory field before
 					getDao(Contact.class).executeRaw("UPDATE contacts SET reportDateTime = creationDate WHERE reportDateTime IS NULL;");
 				case 194:
