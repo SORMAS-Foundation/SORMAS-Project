@@ -22,4 +22,10 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/Samples/QuickFilter</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>086f704e-0301-4fa3-b5be-9e17b145a900</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Samples/ResettingFilter</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>
