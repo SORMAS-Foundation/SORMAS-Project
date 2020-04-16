@@ -27,9 +27,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
-import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -474,34 +472,6 @@ public class CasesView extends AbstractView {
 			popupWindow.addCloseListener(c -> grid.reload());
 		});
 		importLayout.addComponent(lineListingImportButton);
-	}
-
-	private void addExportButton(StreamResource exportStreamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, String buttonId,
-			Resource icon, String captionKey, String descriptionKey) {
-		
-		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
-			
-			Button button = e.getButton();
-			int buttonPos = exportLayout.getComponentIndex(button);
-			
-			DownloadUtil.showExportWaitDialog(button, ce -> {
-				//restore the button
-				exportLayout.addComponent(button, buttonPos);
-				button.setEnabled(true);
-			});
-			exportPopupButton.setPopupVisible(false);
-		});
-			
-		exportButton.setDisableOnClick(true);
-			
-		exportButton.setId(buttonId);
-		exportButton.setDescription(I18nProperties.getString(descriptionKey));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(icon);
-		exportButton.setWidth(100, Unit.PERCENTAGE);
-		exportLayout.addComponent(exportButton);
-
-		new FileDownloader(exportStreamResource).extend(exportButton);
 	}
 
 	private void buildAndOpenCasesInstructions() {

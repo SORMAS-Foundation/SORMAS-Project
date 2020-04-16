@@ -25,6 +25,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -316,25 +317,10 @@ public class CaseContactsView extends AbstractCaseView {
 			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
-
-			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
-			basicExportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			basicExportButton.setIcon(VaadinIcons.TABLE);
-			basicExportButton.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(basicExportButton);
-
+			
 			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts",
 					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(basicExportButton);
-
-			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
-			extendedExportButton.setDescription(I18nProperties.getDescription(Descriptions.descDetailedExportButton));
-			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
-			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(extendedExportButton);
+			addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
 			StreamResource extendedExportStreamResource = DownloadUtil
 					.createCsvExportStreamResource(
@@ -357,7 +343,7 @@ public class CaseContactsView extends AbstractCaseView {
 								}
 								return caption;
 							}, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
-			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+			addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
 
 			// Warning if no filters have been selected
 			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
@@ -450,5 +436,31 @@ public class CaseContactsView extends AbstractCaseView {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
+	}
+	
+	private void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, Resource icon,
+			String captionKey, String descriptionKey) {
+		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
+			
+			Button button = e.getButton();
+			int buttonPos = exportLayout.getComponentIndex(button);
+			
+			DownloadUtil.showExportWaitDialog(button, ce -> {
+				//restore the button
+				exportLayout.addComponent(button, buttonPos);
+				button.setEnabled(true);
+			});
+			exportPopupButton.setPopupVisible(false);
+		});
+		
+		exportButton.setDisableOnClick(true);
+		
+		exportButton.setDescription(I18nProperties.getDescription(descriptionKey));
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(icon);
+		exportButton.setWidth(100, Unit.PERCENTAGE);
+		exportLayout.addComponent(exportButton);
+
+		new FileDownloader(streamResource).extend(exportButton);
 	}
 }

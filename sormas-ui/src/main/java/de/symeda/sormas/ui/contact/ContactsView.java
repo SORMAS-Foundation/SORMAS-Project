@@ -231,7 +231,7 @@ public class ContactsView extends AbstractView {
 			{
 				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 				
-				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
+				addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
 				StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
@@ -251,7 +251,7 @@ public class ContactsView extends AbstractView {
 						},
 						"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 				
-				addExportButton(extendedExportStreamResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+				addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
 			}
 
 			// Warning if no filters have been selected
@@ -311,32 +311,6 @@ public class ContactsView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
-	}
-
-	private void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, Resource icon,
-			String captionKey, String descriptionKey) {
-		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
-			
-			Button button = e.getButton();
-			int buttonPos = exportLayout.getComponentIndex(button);
-			
-			DownloadUtil.showExportWaitDialog(button, ce -> {
-				//restore the button
-				exportLayout.addComponent(button, buttonPos);
-				button.setEnabled(true);
-			});
-			exportPopupButton.setPopupVisible(false);
-		});
-		
-		exportButton.setDisableOnClick(true);
-		
-		exportButton.setDescription(I18nProperties.getDescription(descriptionKey));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(icon);
-		exportButton.setWidth(100, Unit.PERCENTAGE);
-		exportLayout.addComponent(exportButton);
-
-		new FileDownloader(streamResource).extend(exportButton);
 	}
 
 	public VerticalLayout createFilterBar() {
