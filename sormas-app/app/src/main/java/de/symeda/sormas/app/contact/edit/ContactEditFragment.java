@@ -187,14 +187,18 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale()))));
 
         contentBinding.contactQuarantine.addValueChangedListener(e -> {
-            boolean visible =  contentBinding.contactQuarantine.getValue().equals(QuarantineType.HOME) ||  contentBinding.contactQuarantine.getValue().equals(QuarantineType.INSTITUTIONELL);
-            if (visible){
+            boolean visible = QuarantineType.HOME.equals(contentBinding.contactQuarantine.getValue()) || QuarantineType.INSTITUTIONELL.equals(contentBinding.contactQuarantine.getValue());
+            if (visible) {
                 contentBinding.contactQuarantineTo.setVisibility(VISIBLE);
+                if (ConfigProvider.isGermanServer()) {
+                    contentBinding.contactQuarantineOrderMeans.setVisibility(VISIBLE);
+                }
             } else {
                 contentBinding.contactQuarantineTo.setVisibility(GONE);
+                contentBinding.contactQuarantineOrderMeans.setVisibility(GONE);
             }
         });
-        if (ConfigProvider.isGermanServer()){
+        if (ConfigProvider.isGermanServer()) {
             contentBinding.contactContactProximity.addValueChangedListener(e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
         } else {
             contentBinding.contactContactProximityDetails.setVisibility(GONE);

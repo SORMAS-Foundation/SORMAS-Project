@@ -801,7 +801,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else if (contactCriteria.getFollowUpUntilFrom() != null) {
 			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom()));
 		} else if (contactCriteria.getFollowUpUntilTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
+			if (Boolean.FALSE.equals(contactCriteria.getFollowUpUntilToPrecise())) {
+				filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
+			} else {
+				filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), DateHelper.getStartOfDay(contactCriteria.getFollowUpUntilTo()), DateHelper.getEndOfDay(contactCriteria.getFollowUpUntilTo())));
+			}
+		}
+		if (contactCriteria.getQuarantineType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.QUARANTINE), contactCriteria.getQuarantineType()));
+		}
+		if (contactCriteria.getQuarantineOrderMeans() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.QUARANTINE_ORDER_MEANS), contactCriteria.getQuarantineOrderMeans()));
+		}
+		if (Boolean.TRUE.equals(contactCriteria.getOnlyQuarantineHelpNeeded())) {
+			filter = and(cb, filter, cb.and(cb.notEqual(from.get(Contact.QUARANTINE_HELP_NEEDED), ""), cb.isNotNull(from.get(Contact.QUARANTINE_HELP_NEEDED))));
 		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
