@@ -34,4 +34,10 @@
       <isRun>true</isRun>
       <testCaseId>Test Cases/Samples/CancelNewTestResult</testCaseId>
    </testCaseLink>
+   <testCaseLink>
+      <guid>e867eac6-cf03-47f0-8de5-6a00e8607d8f</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Samples/UpdateSample</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>

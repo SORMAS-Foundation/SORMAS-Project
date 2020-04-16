@@ -47,7 +47,7 @@ String typeOfSample = content.getRowData(0, sampleTypeColumnName)
 
 String futureTypeOfSample = typeOfSample.equalsIgnoreCase(typeBlood) ? typeNasalSwab : typeBlood
 
-println((('type of sample found: ' + typeOfSample) + ' will change to: ') + futureTypeOfSample)
+println('type of sample found: ' + typeOfSample + ' will change to: ' + futureTypeOfSample)
 
 'select sample to edit'
 WebUI.click(findTestObject('Samples/MainView/edit_sample_from_table'))
@@ -74,8 +74,10 @@ content = Table.getVisibleTableContent()
 String currentTypeOfSample = content.getRowData(0, sampleTypeColumnName)
 
 if (!(currentTypeOfSample.equals(futureTypeOfSample))) {
-    // WebUI.closeBrowser()
-    throw new StepFailedException((('Expected that the type of sample would have changed. expected: ' + futureTypeOfSample) + 
-    ' found: ') + currentTypeOfSample)
+    WebUI.closeBrowser()
+    throw new StepFailedException('Expected that the type of sample would have changed. expected: ' + futureTypeOfSample + 
+    ' found: ' + currentTypeOfSample)
 }
+
+WebUI.closeBrowser()
 
