@@ -117,6 +117,11 @@
         <item name="android:layout_marginStart">@dimen/control_spacing</item>
     </style>
 
+    <style name="TextViewSecondOfTwoColumnsStyle" parent="ControlSecondOfTwoColumnsStyle">
+        <item name="android:layout_marginStart">@dimen/control_spacing</item>
+        <item name="android:layout_marginTop">30dp</item>
+    </style>
+
     <style name="ControlLabelStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
         <item name="android:textSize">@dimen/controlLabelSize</item>

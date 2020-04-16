@@ -46,7 +46,6 @@ public class ContactIndexDto implements Serializable {
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
-	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 
@@ -65,7 +64,6 @@ public class ContactIndexDto implements Serializable {
 	private Date followUpUntil;
 	private String contactOfficerUuid;
 	private Date reportDateTime;
-	private Date quarantineTo;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	
@@ -73,7 +71,7 @@ public class ContactIndexDto implements Serializable {
 			Disease disease, String diseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String regionUuid,
 			String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, 
-			Date followUpUntil, String contactOfficerUuid, Date reportDateTime, Date quarantineTo,
+			Date followUpUntil, String contactOfficerUuid, Date reportDateTime,
 			CaseClassification caseClassification) {
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
@@ -91,7 +89,6 @@ public class ContactIndexDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
-		this.quarantineTo = quarantineTo;
 		this.setCaseClassification(caseClassification);
 	}
 	
@@ -184,12 +181,6 @@ public class ContactIndexDto implements Serializable {
 	}
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
-	}
-	public Date getQuarantineTo() {
-		return quarantineTo;
-	}
-	public void setQuarantineTo(Date quarantineTo) {
-		this.quarantineTo = quarantineTo;
 	}
 	public ContactCategory getContactCategory() {
 		return contactCategory;

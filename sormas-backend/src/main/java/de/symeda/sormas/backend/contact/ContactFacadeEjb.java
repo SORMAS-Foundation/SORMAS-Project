@@ -489,7 +489,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS),
 				contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
 				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME),
-				contact.get(Contact.QUARANTINE_TO), contactCase.get(Case.CASE_CLASSIFICATION));
+				contactCase.get(Case.CASE_CLASSIFICATION));
 
 		Predicate filter = null;
 		User user = userService.getCurrentUser();
@@ -522,7 +522,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				case ContactIndexDto.FOLLOW_UP_UNTIL:
 				case ContactIndexDto.REPORT_DATE_TIME:
 				case ContactIndexDto.DISEASE:
-				case ContactIndexDto.QUARANTINE_TO:
 				case ContactIndexDto.CASE_CLASSIFICATION:
 					expression = contact.get(sortProperty.propertyName);
 					break;
@@ -659,13 +658,15 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineFrom(source.getQuarantineFrom());
-		target.setQuarantineTo(source.getQuarantineTo());
 		
 		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
 		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
 		target.setContactProximityDetails(source.getContactProximityDetails());
 		target.setContactCategory(source.getContactCategory());
+
+		target.setQuarantineOrderMeans(source.getQuarantineOrderMeans());
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
 
 		return target;
 	}
@@ -774,13 +775,15 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineFrom(source.getQuarantineFrom());
-		target.setQuarantineTo(source.getQuarantineTo());
 		
 		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
 		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
 		target.setContactProximityDetails(source.getContactProximityDetails());
 		target.setContactCategory(source.getContactCategory());
+
+		target.setQuarantineOrderMeans(source.getQuarantineOrderMeans());
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
 
 		return target;
 	}

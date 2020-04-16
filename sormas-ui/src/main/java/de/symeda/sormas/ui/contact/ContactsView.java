@@ -130,7 +130,7 @@ public class ContactsView extends AbstractView {
 	private ComboBox officerFilter;
 	private ComboBox followUpStatusFilter;
 	private ComboBox reportedByFilter;
-	private PopupDateField quarantineToFilter;
+	private PopupDateField followUpUntilToFilter;
 	private CheckBox onlyHighPriorityContacts;
 	private TextField searchField;
 	private Button resetButton;
@@ -491,14 +491,15 @@ public class ContactsView extends AbstractView {
 			});
 			secondFilterRowLayout.addComponent(reportedByFilter);
 
-			quarantineToFilter = new PopupDateField();
-			quarantineToFilter.setWidth(200, Unit.PIXELS);
-			quarantineToFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO));
-			quarantineToFilter.addValueChangeListener(e -> {
-				criteria.quarantineTo((Date) e.getProperty().getValue());
+			followUpUntilToFilter = new PopupDateField();
+			followUpUntilToFilter.setWidth(200, Unit.PIXELS);
+			followUpUntilToFilter.setInputPrompt(
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL));
+			followUpUntilToFilter.addValueChangeListener(e -> {
+				criteria.followUpUntilTo((Date) e.getProperty().getValue());
 				navigateTo(criteria);
 			});
-			secondFilterRowLayout.addComponent(quarantineToFilter);
+			secondFilterRowLayout.addComponent(followUpUntilToFilter);
 
 			onlyHighPriorityContacts = new CheckBox();
 			onlyHighPriorityContacts.setCaption(I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts));
@@ -829,7 +830,7 @@ public class ContactsView extends AbstractView {
 		officerFilter.setValue(criteria.getContactOfficer());
 		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
 		reportedByFilter.setValue(criteria.getReportingUserRole());
-		quarantineToFilter.setValue(criteria.getQuarantineTo());
+		followUpUntilToFilter.setValue(criteria.getFollowUpUntilTo());
 		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
 		searchField.setValue(criteria.getNameUuidCaseLike());
 		if (categoryFilter != null) {
