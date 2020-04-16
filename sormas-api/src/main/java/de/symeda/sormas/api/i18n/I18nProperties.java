@@ -69,14 +69,18 @@ public class I18nProperties {
 			language = defaultLanguage;
 		}
 		userLanguage.set(language);
-		
+
 		return language;
+	}
+
+	public static Language getUserLanguage() {
+		return userLanguage.get();
 	}
 
 	public static void removeUserLanguage() {
 		userLanguage.remove();
 	}
-	
+
 	public static void setDefaultLanguage(Language language) {
 		if (language != null) {
 			defaultLanguage = language;
@@ -96,7 +100,7 @@ public class I18nProperties {
 	/**
 	 * Retrieves the property by adding an additional string in between the class name and the property name,
 	 * e.g. Disease.Short.EVD or FollowUpStatus.Desc.NO_FOLLOW_UP
-	 * 
+	 * <p>
 	 * Does fallback to enum caption without addition.
 	 */
 	public static String getEnumCaption(Enum<?> value, String addition) {
@@ -137,7 +141,7 @@ public class I18nProperties {
 	public static String getPrefixCaption(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance(userLanguage.get()).captionProperties.getString(prefix+"."+key);
+			result = getInstance(userLanguage.get()).captionProperties.getString(prefix + "." + key);
 		}
 		if (result == null) {
 			result = getCaption(key, defaultValue);
@@ -178,7 +182,7 @@ public class I18nProperties {
 	/**
 	 * Uses <param>key</param> as default value
 	 */
-	public static String getValidationError(String key, Object ...formatArgs) {
+	public static String getValidationError(String key, Object... formatArgs) {
 		String result = getInstance(userLanguage.get()).validationProperties.getString(key, null);
 		if (result != null) {
 			return String.format(result, formatArgs);
@@ -189,10 +193,10 @@ public class I18nProperties {
 		}
 	}
 
-	public static String getPrefixValidationError(String prefix, String key, Object ...formatArgs) {
+	public static String getPrefixValidationError(String prefix, String key, Object... formatArgs) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance(userLanguage.get()).validationProperties.getString(prefix+"."+key);
+			result = getInstance(userLanguage.get()).validationProperties.getString(prefix + "." + key);
 			if (result != null) {
 				return String.format(result, result);
 			}
@@ -229,9 +233,8 @@ public class I18nProperties {
 
 	public static class UTF8Control extends Control {
 		public java.util.ResourceBundle newBundle
-		(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-				throws IllegalAccessException, InstantiationException, IOException
-		{
+				(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
+				throws IllegalAccessException, InstantiationException, IOException {
 			// The below is a copy of the default implementation.
 			String bundleName = toBundleName(baseName, locale);
 			if (bundleName.contains("-")) {
@@ -265,5 +268,5 @@ public class I18nProperties {
 			return bundle;
 		}
 	}
-	
+
 }
