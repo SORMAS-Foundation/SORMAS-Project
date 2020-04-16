@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks if chanes to the sample are saved</description>
+   <name>UpdateSample</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>59afa6ea-ff22-4aad-9bcb-ba032f1fa279</testCaseGuid>
+</TestCaseEntity>
