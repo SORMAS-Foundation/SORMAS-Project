@@ -387,7 +387,7 @@
     <string name="indicator_warning">WARNUNG</string>
     <string name="info_add_cases_before_report_submit">Sind Sie sicher, dass Sie diese Fallnummern für die ausgewählte Epi-Woche einreichen möchten?</string>
     <string name="info_app_download">Lade neue SORMAS Version herunter... Abhängig von Ihrer Internetverbindung kann dies eine Weile dauern.</string>
-    <string name="info_create_person">If you could <b>not</b> find a person that matches the personal details you have entered, click the \"Create\" button.</string>
+    <string name="info_create_person">Wenn Sie <b>keine</b> Person finden konnten, die Ihren eingetragenen persönlichen Daten gleicht, klicken Sie auf den \"Erstellen\" Button.</string>
     <string name="info_epidemiological_info">Bitte geben Sie an, ob einer der folgenden Punkte für den/die Patient*in während des Inkubationszeitraums oder der Erkrankung relevant ist.</string>
     <string name="info_initial_synchronization">Initialisiere Synchronisierung mit SORMAS Server.\nDas Laden der Infrastrukturdaten wird einige Minuten dauern.</string>
     <string name="info_no_additional_test">Es wurden noch keine zusätzlichen Tests an dieser Probe durchgeführt</string>
