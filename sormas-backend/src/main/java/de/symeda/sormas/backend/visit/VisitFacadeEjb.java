@@ -158,7 +158,7 @@ public class VisitFacadeEjb implements VisitFacade {
     }
 
     @Override
-    public VisitDto saveExternalVisit(final ExternalVisitDto dto) {
+    public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
 
         final String contactUuid = dto.getContactUuid();
         final Contact contact = contactService.getByUuid(contactUuid);
@@ -169,7 +169,10 @@ public class VisitFacadeEjb implements VisitFacade {
         final VisitDto visitDto = VisitDto.build(contactPerson, disease, dto.getVisitDateTime(), currentUser, dto.getVisitStatus(), dto.getVisitRemarks(), dto.getSymptoms(), dto
                 .getReportLat(), dto.getReportLon(), dto.getReportLatLonAccuracy());
 
-        return this.saveVisit(visitDto);
+        saveVisit(visitDto);
+        
+        return ExternalVisitDto.build(contactUuid, visitDto.getVisitDateTime(), visitDto.getVisitStatus(), visitDto.getVisitRemarks(), visitDto.getSymptoms(), 
+        		visitDto.getReportLat(), visitDto.getReportLon(), visitDto.getReportLatLonAccuracy());
     }
 
     @Override

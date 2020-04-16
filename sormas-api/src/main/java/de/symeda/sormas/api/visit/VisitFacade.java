@@ -37,7 +37,7 @@ public interface VisitFacade {
 
 	void validate(VisitDto dto);
 
-	VisitDto saveExternalVisit(ExternalVisitDto dto);
+	ExternalVisitDto saveExternalVisit(ExternalVisitDto dto);
 
 	List<String> getAllActiveUuids();
 
