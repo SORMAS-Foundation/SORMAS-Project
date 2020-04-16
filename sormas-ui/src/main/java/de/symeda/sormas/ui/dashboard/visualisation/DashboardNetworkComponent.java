@@ -34,6 +34,8 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -53,8 +55,11 @@ public class DashboardNetworkComponent extends VerticalLayout {
 				.map(DashboardDataProvider::getDisease)
 				.map(Collections::singleton)
 				.orElseGet(() -> EnumSet.allOf(Disease.class));
+
+		RegionReferenceDto region = dashboardDataProvider.getRegion();
+		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 		
-		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(diseases);
+		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(region, district, diseases);
 		return networkJson;
 	}
 

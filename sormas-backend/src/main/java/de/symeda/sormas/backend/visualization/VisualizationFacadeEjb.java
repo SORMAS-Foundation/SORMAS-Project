@@ -59,6 +59,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -67,6 +69,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "VisualizationFacade")
@@ -92,7 +96,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	private static final Logger logger = LoggerFactory.getLogger(VisualizationFacadeEjb.class);
 
 	@Override
-	public String buildTransmissionChainJson(Collection<Disease> diseases) {
+	public String buildTransmissionChainJson(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
 		
 		String rExecutable = configFacade.getRScriptExecutable();
 		if (StringUtils.isBlank(rExecutable)) {
@@ -100,7 +104,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		}
 		Path tempBasePath = new File(configFacade.getTempFilesPath()).toPath();
 		
-		Collection<Long> contactIds = getContactIds(diseases);
+		Collection<Long> contactIds = getContactIds(region, district, diseases);
 		
 		if (contactIds.isEmpty()) {
 			return null;
@@ -113,7 +117,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	}
 	
 
-	private Collection<Long> getContactIds(Collection<Disease> diseases) {
+	private Collection<Long> getContactIds(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
 		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -127,7 +131,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),
 				cb.notEqual(root.get(Contact.CONTACT_STATUS), ContactStatus.DROPPED),
 				cb.or(cb.isNull(caze), caseService.createDefaultFilter(cb, caze)),
-				root.get(Contact.DISEASE).in(diseases)
+				root.get(Contact.DISEASE).in(diseases),
+				region == null ? null : cb.equal(root.join(Contact.REGION).get(Region.UUID), region.getUuid()),
+				district == null ? null : cb.equal(root.join(Contact.DISTRICT).get(District.UUID), district.getUuid())
 		));
 		
 		cq.select(root.get(AbstractDomainObject.ID));
