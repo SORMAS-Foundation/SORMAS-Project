@@ -175,7 +175,7 @@ public class StatisticsHelper {
 		if (attribute != StatisticsCaseAttribute.AGE_INTERVAL_BASIC) {
 			ageIntervalList.add(new IntegerRange(80, null));
 		}
-		ageIntervalList.add(null);//new IntegerRange(null, null));
+		ageIntervalList.add(new IntegerRange(null, null));//new IntegerRange(null, null));
 		return ageIntervalList;
 	}
 
