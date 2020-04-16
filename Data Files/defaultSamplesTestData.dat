@@ -9,20 +9,23 @@
    <dataSourceUrl></dataSourceUrl>
    <driver>InternalData</driver>
    <data>case-with-samples Hildegard+von+Bingen null</data>
+   <data>sample-type-blood Blood null</data>
+   <data>sample-type-nasal Nasal+swab null</data>
+   <data>sample-type-column Type+of+sample null</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>Key</name>
-      <size>1</size>
+      <size>4</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>1</columnIndex>
       <name>Value</name>
-      <size>1</size>
+      <size>4</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>2</columnIndex>
       <name>Description</name>
-      <size>1</size>
+      <size>4</size>
    </internalDataColumns>
    <isInternalPath>false</isInternalPath>
    <query></query>

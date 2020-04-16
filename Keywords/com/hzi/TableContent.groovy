@@ -17,6 +17,19 @@ public class TableContent {
 		return tableRows.get(rowIndex).get(columnIndex)
 	}
 	
+	def String getRowData(int rowIndex, String columnName) {
+		// int columnIndex = getTableHeaders().indexOf(columnName)
+		int columnIndex = -1
+		for (int i = 0; i < getNumberOfColumns(); i++) {
+			String name = getTableHeaders().get(i)
+			if (columnName.equalsIgnoreCase(name)) {
+				columnIndex = i
+				break
+			}
+		}
+		return tableRows.get(rowIndex).get(columnIndex)
+	}
+	
 	def List<String> getTableHeaders() {
 		if (tableHeaders == null) {
 			tableHeaders = new ArrayList<String>()
