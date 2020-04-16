@@ -372,8 +372,8 @@ public class ContactsView extends AbstractView {
 
 			caseClassificationFilter = new ComboBox();
 			caseClassificationFilter.setWidth(140, Unit.PIXELS);
-			caseClassificationFilter.setInputPrompt(
-					I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
+			caseClassificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
+			caseClassificationFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
 			caseClassificationFilter.addItems((Object[]) CaseClassification.values());
 			caseClassificationFilter.addValueChangeListener(e -> {
 				criteria.caseClassification(((CaseClassification) e.getProperty().getValue()));
