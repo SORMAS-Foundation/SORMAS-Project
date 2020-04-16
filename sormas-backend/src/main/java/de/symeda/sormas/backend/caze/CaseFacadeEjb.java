@@ -644,9 +644,11 @@ public class CaseFacadeEjb implements CaseFacade {
 								if (!exportDto.getOtherSamples().isEmpty()) {
 									sb.append(", ");
 								}
-								sb.append(DateHelper.formatDateForExport(sample.getSampleDateTime())).append(" (")
-								.append(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()))
-								.append(", ").append(sample.getPathogenTestResult()).append(")");
+								sb.append(DateHelper.formatDateForExport(sample.getSampleDateTime())).append(" (");
+								if (sample.getLab() != null) {
+									sb.append(FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails())).append(", ");
+								}
+								sb.append(sample.getPathogenTestResult()).append(")");
 								exportDto.setOtherSamples(exportDto.getOtherSamples() + sb.toString());
 								break;
 							}
