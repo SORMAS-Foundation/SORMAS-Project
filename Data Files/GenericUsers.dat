@@ -12,21 +12,24 @@
    <data>surveillance last_name_case Doe</data>
    <data>surveillance first_name_contact John</data>
    <data>surveillance last_name_contact Doe</data>
-   <data>null null null</data>
+   <data>event first_name_event_community Barak</data>
+   <data>event last_name_event_community Obama</data>
+   <data>event first_name_event_person Donald</data>
+   <data>event last_name_event_person Trump</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>section</name>
-      <size>5</size>
+      <size>8</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>1</columnIndex>
       <name>key</name>
-      <size>5</size>
+      <size>8</size>
    </internalDataColumns>
    <internalDataColumns>
       <columnIndex>2</columnIndex>
       <name>value</name>
-      <size>5</size>
+      <size>8</size>
    </internalDataColumns>
    <isInternalPath>false</isInternalPath>
    <query></query>

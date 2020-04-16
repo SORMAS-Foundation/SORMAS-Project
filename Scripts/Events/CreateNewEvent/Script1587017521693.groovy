@@ -64,8 +64,9 @@ WebUI.click(findTestObject('Events/NewEventView/span_Community_CharlottenburgWil
 
 WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
 
-WebUI.delay(2)
+WebUI.delay(1)
 
 if (isStandalone) {
-	WebUI.closeBrowser()
+    WebUI.closeBrowser()
 }
+
