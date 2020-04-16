@@ -48,12 +48,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -176,14 +174,16 @@ public class CaseImporter extends DataImporter {
 					if (firstPathogenTestColumnName == null) {
 						firstPathogenTestColumnName = String.join(".", cellData.getEntityPropertyPath());
 					}
-					SampleDto referenceSample = samples.get(samples.size() - 1);
-					if (String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
-						currentPathogenTestHasEntries = false;
-						pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUser));
-					}
-					if (!StringUtils.isEmpty(cellData.getValue())) {
-						currentPathogenTestHasEntries = true;					
-						insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
+					if (!samples.isEmpty()) {
+						SampleDto referenceSample = samples.get(samples.size() - 1);
+						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
+							currentPathogenTestHasEntries = false;
+							pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUser));
+						}
+						if (!StringUtils.isEmpty(cellData.getValue())) {
+							currentPathogenTestHasEntries = true;					
+							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
+						}
 					}
 				} else if (!StringUtils.isEmpty(cellData.getValue())) {
 					// If the cell entry is not empty, try to insert it into the current case or its person
@@ -243,7 +243,7 @@ public class CaseImporter extends DataImporter {
 							.lastName(newPerson.getLastName())
 							.caseCriteria(caseCriteria)
 							.reportDate(newCase.getReportDate());
-					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria, currentUser.getUuid());
+					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
 					if (similarCases.size() > 0) {
 						// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified

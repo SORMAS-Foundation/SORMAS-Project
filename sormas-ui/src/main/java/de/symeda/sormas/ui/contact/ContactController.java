@@ -151,17 +151,25 @@ public class ContactController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					final ContactDto dto = createForm.getValue();
+					final PersonDto person = PersonDto.build();
+					person.setFirstName(createForm.getPersonFirstName());
+					person.setLastName(createForm.getPersonLastName());
+					person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+					person.setBirthdateMM(createForm.getBirthdateMM());
+					person.setBirthdateDD(createForm.getBirthdateDD());
+					person.setSex(createForm.getSex());
 
 					ControllerProvider.getPersonController().selectOrCreatePerson(
-							createForm.getPersonFirstName(), createForm.getPersonLastName(), 
-							person -> {
-								if (person != null) {
-									dto.setPerson(person);
+							person,
+							I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact),
+							selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(selectedPerson);
 
 									// set the contact person's address to the one of the case when it is currently empty and
 									// the relationship with the case has been set to living in the same household
 									if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-										PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid());
+										PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
 										if (personDto.getAddress().isEmptyLocation()) {
 											CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
 											personDto.getAddress().setRegion(caseDto.getRegion());
@@ -217,12 +225,9 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editComponent.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getContactFacade().deleteContact(contact.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
-					UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
-				}
+			editComponent.addDeleteListener(() -> {
+				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
 		}
 
@@ -240,8 +245,8 @@ public class ContactController {
 		String districtUuid = null;
 		for (ContactIndexDto selectedContact : selectedContacts) {
 			if (districtUuid == null) {
-				districtUuid = selectedContact.getCaseDistrictUuid();
-			} else if (!districtUuid.equals(selectedContact.getCaseDistrictUuid())) {
+				districtUuid = selectedContact.getDistrictUuid();
+			} else if (!districtUuid.equals(selectedContact.getDistrictUuid())) {
 				districtUuid = null;
 				break;
 			}
@@ -284,12 +289,7 @@ public class ContactController {
 			}
 		});
 
-		editView.addDiscardListener(new DiscardListener() {
-			@Override
-			public void onDiscard() {
-				popupWindow.close();
-			}
-		});
+		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
 	public void deleteAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
@@ -300,7 +300,7 @@ public class ContactController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (ContactIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid(), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingContactsDeleted), 

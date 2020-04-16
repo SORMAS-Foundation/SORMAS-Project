@@ -33,6 +33,5 @@ public interface DiseaseFacade {
 			Date from, 
 			Date to, 
 			Date previousFromDate,
-			Date previousToDate,
-			String userUuid);
+			Date previousToDate);
 }

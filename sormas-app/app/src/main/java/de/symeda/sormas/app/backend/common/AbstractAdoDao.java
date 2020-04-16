@@ -91,6 +91,16 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
         }
     }
 
+    public List<ADO> queryUuids(List<String> uuids) {
+        try {
+            return queryBuilder().where().in(AbstractDomainObject.UUID, uuids)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryUuids");
+            throw new RuntimeException(e);
+        }
+    }
+
     public ADO queryUuidReference(String uuid) {
         try {
             List<ADO> results = queryBuilder()

@@ -17,15 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
-
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.utils.ValidationException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * These are also used as user groups in the server realm
@@ -52,8 +54,9 @@ public enum UserRole implements StatisticsGroupingKey {
 	POE_INFORMANT(false, false, true, true),
 	POE_SUPERVISOR(true, false, false, true),
 	POE_NATIONAL_USER(false, false, false, true),
-	IMPORT_USER(false,false,false,false);
-	
+	IMPORT_USER(false,false,false,false),
+	REST_EXTERNAL_VISITS_USER(false,false,false,false);
+
 	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
 	public static final String _ADMIN = ADMIN.name();
@@ -75,7 +78,8 @@ public enum UserRole implements StatisticsGroupingKey {
 	public static final String _POE_SUPERVISOR = POE_SUPERVISOR.name();
 	public static final String _POE_NATIONAL_USER = POE_NATIONAL_USER.name();
 	public static final String _IMPORT_USER = IMPORT_USER.name();
-	
+	public static final String _REST_EXTERNAL_VISITS_USER = REST_EXTERNAL_VISITS_USER.name();
+
 	private static final Set<UserRole> NATIONAL_ROLES = EnumSet.of(
 			UserRole.NATIONAL_OBSERVER,
 			UserRole.NATIONAL_USER,
@@ -206,6 +210,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		case IMPORT_USER:
 			collection.add(IMPORT_USER);
 			break;
+		case REST_EXTERNAL_VISITS_USER:
+			collection.add(REST_EXTERNAL_VISITS_USER);
+			break;
 		default:
 			break;
 		}
@@ -259,7 +266,15 @@ public enum UserRole implements StatisticsGroupingKey {
 		case POE_NATIONAL_USER:
 			return Arrays.asList(IMPORT_USER);
 		case IMPORT_USER:
-			return Arrays.asList(UserRole.values());
+			final List<UserRole> userRoles = new ArrayList<>();
+			for (UserRole userRole: UserRole.values()) {
+				if (userRole != REST_EXTERNAL_VISITS_USER) {
+					userRoles.add(userRole);
+				}
+			}
+			return userRoles;
+		case REST_EXTERNAL_VISITS_USER:
+			return Arrays.asList(REST_EXTERNAL_VISITS_USER);
 		default:
 			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
 		}

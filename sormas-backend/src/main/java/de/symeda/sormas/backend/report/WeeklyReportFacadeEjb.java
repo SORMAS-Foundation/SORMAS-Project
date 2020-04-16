@@ -102,9 +102,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	private static final Logger logger = LoggerFactory.getLogger(WeeklyReportFacadeEjb.class);
 	
 	@Override
-	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, String userUuid) {
+	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date) {
 
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -140,9 +140,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
+	public List<String> getAllUuids() {
 
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();

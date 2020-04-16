@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contact_list_filters">
+
+    <data>
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
+        <import type="de.symeda.sormas.api.contact.ContactDto" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
+
+        <variable name="criteria" type="de.symeda.sormas.app.backend.contact.ContactCriteria"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <de.symeda.sormas.app.component.controls.FilterTextField
+                android:id="@+id/text_filter"
+                app:hint="@string/hint_contact_text_filter"
+                app:showCaption="false"
+                app:value="@={criteria.textFilter}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterSpinnerField
+                android:id="@+id/contact_classification_filter"
+                app:hint="@{I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_CLASSIFICATION)}"
+                app:showCaption="false"
+                app:value="@={criteria.contactClassification}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterSpinnerField
+                android:id="@+id/disease_filter"
+                app:hint="@{I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE)}"
+                app:showCaption="false"
+                app:value="@={criteria.disease}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterDateField
+                android:id="@+id/report_date_from_filter"
+                app:hint="@{I18nProperties.getString(Strings.promptContactDateFrom)}"
+                app:showCaption="false"
+                app:value="@={criteria.reportDateFrom}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterDateField
+                android:id="@+id/report_date_to_filter"
+                app:hint="@{I18nProperties.getString(Strings.promptContactDateTo)}"
+                app:showCaption="false"
+                app:value="@={criteria.reportDateTo}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/apply_filters"
+                    android:text="@string/action_apply_filters"
+                    app:buttonType="@{ControlButtonType.FILTER_PRIMARY}"
+                    style="@style/ControlFirstOfTwoColumnsStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/reset_filters"
+                    android:text="@string/action_reset_filters"
+                    app:buttonType="@{ControlButtonType.FILTER_SECONDARY}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>

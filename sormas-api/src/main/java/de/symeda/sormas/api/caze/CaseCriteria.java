@@ -74,6 +74,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private EntityRelevanceStatus relevanceStatus;
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
+	public Boolean excludeSharedCases;
 	
 	@Override
 	public CaseCriteria clone() {
@@ -387,6 +388,19 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+	
+	public Boolean getExcludeSharedCases() {
+		return excludeSharedCases;
+	}
+	
+	public CaseCriteria excludeSharedCases(Boolean excludeSharedCases) {
+		this.excludeSharedCases = excludeSharedCases;
+		return this;
+	}
+	
+	public void setExcludeSharedCases(Boolean excludeSharedCases) {
+		this.excludeSharedCases = excludeSharedCases;
 	}
 	
 }

@@ -18,13 +18,17 @@
 
 package de.symeda.sormas.app.contact.edit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -34,6 +38,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -52,6 +57,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
     private List<Item> diseaseList;
+    private List<Item> sexList;
     private List<Item> categoryList;
 
     public static ContactNewFragment newInstance(Contact activityRootData) {
@@ -78,6 +84,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
         diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+        sexList = DataUtils.getEnumItems(Sex.class, true);
         categoryList = DataUtils.getEnumItems(ContactCategory.class,true);
     }
 
@@ -157,10 +164,23 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
     @Override
     public void onAfterLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
+        contentBinding.personSex.initializeSpinner(sexList);
         contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
         contentBinding.contactContactCategory.initializeSpinner(categoryList);
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
         contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
+
+        List<Item> monthList = DataUtils.getMonthItems(true);
+        List<Item> yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
+        contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
+        contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
+        });
+        contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
+        });
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
     }
 
     @Override

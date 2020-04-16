@@ -17,16 +17,21 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.user.CurrentUser;
+import de.symeda.sormas.backend.user.CurrentUserQualifier;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -40,16 +45,15 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.ModelConstants;
+import javax.persistence.criteria.Subquery;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public abstract class AbstractAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
@@ -60,11 +64,19 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 	private final Class<ADO> elementClass;
 
+	@Inject
+	@CurrentUserQualifier
+	private Instance<CurrentUser> currentUser;
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
 	public AbstractAdoService(Class<ADO> elementClass) {
 		this.elementClass = elementClass;
+	}
+
+	public User getCurrentUser() {
+		return currentUser.get().getUser();
 	}
 
 	protected Class<ADO> getElementClass() {
@@ -143,7 +155,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> root = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, root, user);	
+		Predicate filter = createUserFilter(cb, cq, root);
 		if (since != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, root, since);
 			if (filter != null) {
@@ -168,7 +180,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		Root<ADO> from = cq.from(getElementClass());
 
 		if (user != null) {
-			Predicate filter = createUserFilter(cb, cq, from, user);
+			Predicate filter = createUserFilter(cb, cq, from);
 			if (filter != null) {
 				cq.where(filter);
 			}
@@ -185,7 +197,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		Root<ADO> from = cq.from(getElementClass());
 
 		if (user != null) {
-			Predicate filter = createUserFilter(cb, cq, from, user);
+			Predicate filter = createUserFilter(cb, cq, from);
 			if (filter != null) {
 				cq.where(filter);
 			}
@@ -196,7 +208,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 	
 	public List<ADO> getByUuids(List<String> uuids) {
-		
 		if (uuids == null || uuids.isEmpty()) {
 			return null;
 		}
@@ -213,7 +224,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	 * Used by most getAll* and getAllUuids methods to filter by user 
 	 */
 	@SuppressWarnings("rawtypes")
-	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO,ADO> from, User user);
+	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO, ADO> from);
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Timestamp date) {		
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
@@ -259,6 +270,29 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 				.orElse(null);
 		
 		return entity;
+	}
+
+	@Override
+	public Boolean exists(@NotNull String uuid) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		final CriteriaQuery<Object> query = cb.createQuery(Object.class);
+		query.from(getElementClass());
+
+		final Subquery<ADO> subquery = query.subquery(getElementClass());
+		final Root<ADO> subRootEntity = subquery.from(getElementClass());
+		subquery.select(subRootEntity);
+		subquery.where(cb.equal(subRootEntity.get(AbstractDomainObject.UUID), uuid));
+
+		final Predicate exists = cb.exists(subquery);
+		final Expression<Boolean> trueExpression = cb.literal(true);
+		final Expression<Boolean> falseExpression = cb.literal(false);
+		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
+
+		final TypedQuery<Object> typedQuery = em.createQuery(query);
+
+		return (Boolean) typedQuery.getSingleResult();
 	}
 
 	@Override
@@ -402,7 +436,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 
 	public static <T> StringBuilder appendInFilterValues(StringBuilder filterBuilder, List<Object> filterBuilderParameters,
-			List<T> values, Function<T, ?> valueMapper) {
+														 List<T> values, Function<T, ?> valueMapper) {
 		filterBuilder.append("(");
 		boolean first = true;
 		for (T value : values) {

@@ -100,8 +100,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -111,8 +111,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}	
 
 	@Override
-	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if(user == null) {
 			return Collections.emptyList();
@@ -145,23 +145,14 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public List<String> getDeletedUuidsSince(String userUuid, Date since) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getDeletedUuidsSince(Date since) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
 		return pathogenTestService.getDeletedUuidsSince(user, since);
-	}
-
-	@Override
-	public List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-
-		return pathogenTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
 	}
 
 	@Override
@@ -184,10 +175,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public void deletePathogenTest(String pathogenTestUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deletePathogenTest(String pathogenTestUuid) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.PATHOGEN_TEST_DELETE)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete pathogen tests.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete pathogen tests.");
 		}
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);

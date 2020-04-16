@@ -227,6 +227,7 @@ public interface Strings {
 	public static String headingImportCaseContacts = "headingImportCaseContacts";
 	public static String headingImportCases = "headingImportCases";
 	public static String headingImportCommunities = "headingImportCommunities";
+	public static String headingImportContacts = "headingImportContacts";
 	public static String headingImportCsvFile = "headingImportCsvFile";
 	public static String headingImportDistricts = "headingImportDistricts";
 	public static String headingImportedCaseInfo = "headingImportedCaseInfo";
@@ -327,6 +328,7 @@ public interface Strings {
 	public static String infoCompletenessMerge = "infoCompletenessMerge";
 	public static String infoContactCreationSourceCase = "infoContactCreationSourceCase";
 	public static String infoContactDashboard = "infoContactDashboard";
+	public static String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
 	public static String infoCustomCaseExport = "infoCustomCaseExport";
 	public static String infoDashboardIncidence = "infoDashboardIncidence";
 	public static String infoDatabaseExportTables = "infoDatabaseExportTables";
@@ -334,6 +336,7 @@ public interface Strings {
 	public static String infoDetailedExport = "infoDetailedExport";
 	public static String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	public static String infoDownloadErrorReport = "infoDownloadErrorReport";
+	public static String infoDownloadExport = "infoDownloadExport";
 	public static String infoDownloadImportGuide = "infoDownloadImportGuide";
 	public static String infoDownloadImportTemplate = "infoDownloadImportTemplate";
 	public static String infoEditExportConfiguration = "infoEditExportConfiguration";
@@ -365,6 +368,9 @@ public interface Strings {
 	public static String infoSampleExport = "infoSampleExport";
 	public static String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	public static String infoSearchCaseForContact = "infoSearchCaseForContact";
+	public static String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
+	public static String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
+	public static String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
 	public static String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	public static String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	public static String infoStatisticsFilter = "infoStatisticsFilter";
@@ -581,6 +587,7 @@ public interface Strings {
 	public static String of = "of";
 	public static String on = "on";
 	public static String or = "or";
+	public static String pleaseSpecify = "pleaseSpecify";
 	public static String previousPeriod = "previousPeriod";
 	public static String promptCasesDateFrom = "promptCasesDateFrom";
 	public static String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
@@ -605,6 +612,7 @@ public interface Strings {
 	public static String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	public static String promptTypeToAdd = "promptTypeToAdd";
 	public static String promptUserSearch = "promptUserSearch";
+	public static String quarantineEnd = "quarantineEnd";
 	public static String quarterShort = "quarterShort";
 	public static String reportedBy = "reportedBy";
 	public static String reportedOn = "reportedOn";

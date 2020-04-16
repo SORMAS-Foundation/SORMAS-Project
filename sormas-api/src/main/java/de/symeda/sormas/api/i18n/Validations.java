@@ -69,4 +69,7 @@ public interface Validations {
 	public static String visitAfterFollowUp = "visitAfterFollowUp";
 	public static String visitBeforeContactReport = "visitBeforeContactReport";
 	public static String visitBeforeLastContactDate = "visitBeforeLastContactDate";
+	public static String visitDate = "visitDate";
+	public static String visitStatus = "visitStatus";
+	public static String visitSymptoms = "visitSymptoms";
  }

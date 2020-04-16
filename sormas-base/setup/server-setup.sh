@@ -304,20 +304,20 @@ done
 echo "Configuring domain..."
 
 # General domain settings
-"${ASADMIN}" delete-jvm-options -Xmx512m
-"${ASADMIN}" create-jvm-options -Xmx4096m
+${ASADMIN} delete-jvm-options -Xmx512m
+${ASADMIN} create-jvm-options -Xmx4096m
 
 # JDBC pool
-"${ASADMIN}" create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
-"${ASADMIN}" create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
+${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
 
 # Pool for audit log
-"${ASADMIN}" create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
-"${ASADMIN}" create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
+${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
 
-"${ASADMIN}" create-javamail-resource --mailhost localhost --mailuser user --fromaddress "${MAIL_FROM}" mail/MailSession
+${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --fromaddress "${MAIL_FROM}" mail/MailSession
 
-"${ASADMIN}" create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=\${com.sun.aas.instanceRoot}/sormas.properties" sormas/Properties
+${ASADMIN} create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=\${com.sun.aas.instanceRoot}/sormas.properties" sormas/Properties
 
 cp sormas.properties "${DOMAIN_DIR}"
 cp start-payara-sormas.sh "${DOMAIN_DIR}"
@@ -348,26 +348,26 @@ read -p "--- Press [Enter] to continue..."
 
 # Logging
 echo "Configuring logging..."
-"${ASADMIN}" create-jvm-options "-Dlogback.configurationFile=\${com.sun.aas.instanceRoot}/config/logback.xml"
-"${ASADMIN}" set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles=14
-"${ASADMIN}" set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes=0
-"${ASADMIN}" set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange=true
-#"${ASADMIN}" set-log-levels org.wamblee.glassfish.auth.HexEncoder=SEVERE
-#"${ASADMIN}" set-log-levels javax.enterprise.system.util=SEVERE
+${ASADMIN} create-jvm-options "-Dlogback.configurationFile=\${com.sun.aas.instanceRoot}/config/logback.xml"
+${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles=14
+${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes=0
+${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange=true
+#${ASADMIN} set-log-levels org.wamblee.glassfish.auth.HexEncoder=SEVERE
+#${ASADMIN} set-log-levels javax.enterprise.system.util=SEVERE
 
 if [[ ${DEV_SYSTEM} != true ]]; then
 	# Make the payara listen to localhost only
 	echo "Configuring security settings..."
-	"${ASADMIN}" set configs.config.server-config.http-service.virtual-server.server.network-listeners=http-listener-1
-	"${ASADMIN}" delete-network-listener --target=server-config http-listener-2
-	"${ASADMIN}" set configs.config.server-config.network-config.network-listeners.network-listener.admin-listener.address=127.0.0.1
-	"${ASADMIN}" set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.address=127.0.0.1
-	"${ASADMIN}" set configs.config.server-config.iiop-service.iiop-listener.orb-listener-1.address=127.0.0.1
-	"${ASADMIN}" set configs.config.server-config.iiop-service.iiop-listener.SSL.address=127.0.0.1
-	"${ASADMIN}" set configs.config.server-config.iiop-service.iiop-listener.SSL_MUTUALAUTH.address=127.0.0.1
-	"${ASADMIN}" set configs.config.server-config.jms-service.jms-host.default_JMS_host.host=127.0.0.1
-	"${ASADMIN}" set configs.config.server-config.admin-service.jmx-connector.system.address=127.0.0.1
-	"${ASADMIN}" set-hazelcast-configuration --enabled=false
+	${ASADMIN} set configs.config.server-config.http-service.virtual-server.server.network-listeners=http-listener-1
+	${ASADMIN} delete-network-listener --target=server-config http-listener-2
+	${ASADMIN} set configs.config.server-config.network-config.network-listeners.network-listener.admin-listener.address=127.0.0.1
+	${ASADMIN} set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.address=127.0.0.1
+	${ASADMIN} set configs.config.server-config.iiop-service.iiop-listener.orb-listener-1.address=127.0.0.1
+	${ASADMIN} set configs.config.server-config.iiop-service.iiop-listener.SSL.address=127.0.0.1
+	${ASADMIN} set configs.config.server-config.iiop-service.iiop-listener.SSL_MUTUALAUTH.address=127.0.0.1
+	${ASADMIN} set configs.config.server-config.jms-service.jms-host.default_JMS_host.host=127.0.0.1
+	${ASADMIN} set configs.config.server-config.admin-service.jmx-connector.system.address=127.0.0.1
+	${ASADMIN} set-hazelcast-configuration --enabled=false
 fi
 
 # don't stop the domain, because we need it running for the update script

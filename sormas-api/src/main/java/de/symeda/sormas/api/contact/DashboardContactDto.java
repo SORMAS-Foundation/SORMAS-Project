@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitStatus;
+
+import java.io.Serializable;
+import java.util.Date;
 
 public class DashboardContactDto implements Serializable {
 
@@ -31,7 +31,7 @@ public class DashboardContactDto implements Serializable {
 	
 	private String uuid;
 	private Date reportDate;
-	private boolean symptomatic;
+	private Boolean symptomatic;
 	private VisitStatus lastVisitStatus;
 	private Date lastVisitDateTime;
 	private ContactStatus contactStatus;
@@ -68,11 +68,11 @@ public class DashboardContactDto implements Serializable {
 		this.reportDate = reportDate;
 	}
 
-	public boolean isSymptomatic() {
+	public Boolean isSymptomatic() {
 		return symptomatic;
 	}
 
-	public void setSymptomatic(boolean symptomatic) {
+	public void setSymptomatic(Boolean symptomatic) {
 		this.symptomatic = symptomatic;
 	}
 

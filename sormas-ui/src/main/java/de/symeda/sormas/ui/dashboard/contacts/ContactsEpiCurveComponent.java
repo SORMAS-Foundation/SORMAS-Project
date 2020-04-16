@@ -163,7 +163,7 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<ContactClassification, Long> contactCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerClassification(contactCriteria, UserProvider.getCurrent().getUuid());
+						.getNewContactCountPerClassification(contactCriteria);
 
 				Long unconfirmedCount = contactCounts.get(ContactClassification.UNCONFIRMED);
 				Long confirmedCount = contactCounts.get(ContactClassification.CONFIRMED);
@@ -211,9 +211,9 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<FollowUpStatus, Long> contactCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerFollowUpStatus(contactCriteria, UserProvider.getCurrent().getUuid());
+						.getNewContactCountPerFollowUpStatus(contactCriteria);
 				Map<ContactStatus, Long> contactStatusCounts = FacadeProvider.getContactFacade()
-						.getNewContactCountPerStatus(contactCriteria, UserProvider.getCurrent().getUuid());
+						.getNewContactCountPerStatus(contactCriteria);
 
 				Long underFollowUpCount = contactCounts.get(FollowUpStatus.FOLLOW_UP);
 				Long lostToFollowUpCount = contactCounts.get(FollowUpStatus.LOST);
@@ -287,7 +287,7 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 					contactCriteria.followUpUntilBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
 				}
 
-				followUpUntilNumbers[i] = FacadeProvider.getContactFacade().getFollowUpUntilCount(contactCriteria, UserProvider.getCurrent().getUuid());
+				followUpUntilNumbers[i] = FacadeProvider.getContactFacade().getFollowUpUntilCount(contactCriteria);
 			}
 
 			hcjs.append("series: [");

@@ -37,11 +37,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		if (dto == null) {
 			return null;
 		}
-		
-		Symptoms symptoms = service.getByUuid(dto.getUuid());
+
+		final String uuid = dto.getUuid();
+		Symptoms symptoms = uuid != null ? service.getByUuid(uuid) : null;
 		if (symptoms == null) {
 			symptoms = new Symptoms();
-			symptoms.setUuid(dto.getUuid());
+			symptoms.setUuid(uuid);
 			if (dto.getCreationDate() != null) {
 				symptoms.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}

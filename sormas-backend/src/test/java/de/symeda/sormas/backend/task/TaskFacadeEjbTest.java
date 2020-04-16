@@ -49,19 +49,6 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 public class TaskFacadeEjbTest extends AbstractBeanTest {
 	
 	@Test
-	public void testDashboardTaskListCreation() {
-		
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
-		
-		List<DashboardTaskDto> dashboardTaskDtos = getTaskFacade().getAllByUserForDashboard(TaskStatus.PENDING, null, null, user.getUuid());
-		
-		// List should have one entry
-		assertEquals(1, dashboardTaskDtos.size());
-	}
-	
-	@Test
 	public void testSampleDeletion() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -73,7 +60,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 		
-		getTaskFacade().deleteTask(task, adminUuid);
+		getTaskFacade().deleteTask(task);
 		
 		// Database should not contain the created task
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
@@ -86,7 +73,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		
 		// Database should contain the created task
-		assertNotNull(getTaskFacade().getIndexList(user.getUuid(), null, 0, 100, null));
+		assertNotNull(getTaskFacade().getIndexList(null, 0, 100, null));
 	}
 	
 	@Test
@@ -108,21 +95,21 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		creator.createTask(TaskContext.EVENT, TaskType.OTHER, TaskStatus.PENDING, null, null, event.toReference(), DateHelper.addDays(new Date(), 1), user.toReference());
 		
 		// getAllActiveTasks and getAllUuids should return length 4+1 (case investigation)
-		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
-		assertEquals(5, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null).size());
+		assertEquals(5, getTaskFacade().getAllActiveUuids().size());
 		
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
 		
 		// getAllActiveTasks and getAllUuids should return length 1
-		assertEquals(1, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
-		assertEquals(1, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getTaskFacade().getAllActiveTasksAfter(null).size());
+		assertEquals(1, getTaskFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
 
 		// getAllActiveTasks and getAllUuids should return length 4
-		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null, user.getUuid()).size());
-		assertEquals(5, getTaskFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null).size());
+		assertEquals(5, getTaskFacade().getAllActiveUuids().size());
 	}
 }

@@ -39,6 +39,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
@@ -87,7 +88,6 @@ public class Contact extends CoreAdo {
 	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPracticionerDetails";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
-	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
@@ -95,6 +95,8 @@ public class Contact extends CoreAdo {
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
+	public static final String QUARANTINE_ORDER_MEANS = "quarantineOrderMeans";
+	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -133,13 +135,15 @@ public class Contact extends CoreAdo {
 	
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
-	private Date quarantineTo;
 	
 	private String caseIdExternalSystem;
 	private String caseOrEventInformation;
 
 	private String contactProximityDetails;
 	private ContactCategory contactCategory;
+
+	private OrderMeans quarantineOrderMeans;
+	private String quarantineHelpNeeded;
 
 	private List<Task> tasks;
 	
@@ -440,15 +444,6 @@ public class Contact extends CoreAdo {
 		this.quarantineFrom = quarantineFrom;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getQuarantineTo() {
-		return quarantineTo;
-	}
-
-	public void setQuarantineTo(Date quarantineTo) {
-		this.quarantineTo = quarantineTo;
-	}
-
 	@Column(length=255)
 	public String getCaseIdExternalSystem() {
 		return caseIdExternalSystem;
@@ -492,5 +487,23 @@ public class Contact extends CoreAdo {
 
 	public void setContactCategory(ContactCategory contactCategory) {
 		this.contactCategory = contactCategory;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public OrderMeans getQuarantineOrderMeans() {
+		return quarantineOrderMeans;
+	}
+
+	public void setQuarantineOrderMeans(OrderMeans quarantineOrderMeans) {
+		this.quarantineOrderMeans = quarantineOrderMeans;
+	}
+
+	@Column(length = 512)
+	public String getQuarantineHelpNeeded() {
+		return quarantineHelpNeeded;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
 	}
 }

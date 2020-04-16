@@ -64,7 +64,6 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -105,7 +104,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = buildCriteriaFilter(contactCriteria, cb, from);
 
 		if (user != null) {
-			filter = and(cb, filter, createUserFilter(cb, cq, from, user));
+			filter = and(cb, filter, createUserFilter(cb, cq, from));
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -124,7 +123,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = createActiveContactsFilter(cb, from);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -148,7 +147,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = createActiveContactsFilter(cb, from);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -244,7 +243,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Contact> contact = cq.from(Contact.class);
 
-		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate filter = createUserFilter(cb, cq, contact);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(contact.get(Contact.CHANGE_DATE), since);
 			if (filter != null) {
@@ -279,7 +278,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
 		Predicate filter = createActiveContactsFilter(cb, contact);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact, user));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
 
 		if (!CollectionUtils.isEmpty(caseUuids)) {
 			Path<Object> contactCaseUuid = contact.get(Contact.CAZE).get(Case.UUID);
@@ -378,7 +377,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
 
 		Predicate filter = createDefaultFilter(cb, contact);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact, user));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
 
 		// Date filter
 		Predicate dateFilter = buildDateFilter(cb, contact, from, to);
@@ -456,7 +455,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
@@ -482,7 +481,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
@@ -508,7 +507,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
@@ -534,7 +533,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(getElementClass());
 
-		Predicate filter = createUserFilter(cb, cq, contact, user);
+		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, cb, contact);
 		if (filter != null) {
 			filter = cb.and(filter, criteriaFilter);
@@ -704,42 +703,40 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath,
-			User user) {
-		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT),
-				user);
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath) {
+		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
 		Predicate filter;
 		if (userFilter != null) {
-			filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath, user), userFilter);
+			filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath), userFilter);
 		} else {
-			filter = createUserFilterWithoutCase(cb, cq, contactPath, user);
+			filter = createUserFilterWithoutCase(cb, cq, contactPath);
 		}
 		return filter;
 	}
 
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq,
-			From<Contact, Contact> contactPath, User user) {
+			From<Contact, Contact> contactPath) {
 		// National users can access all contacts in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
-			if (user.getLimitedDisease() != null) {
-				return cb.equal(contactPath.get(Contact.DISEASE), user.getLimitedDisease());
+		if (getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_USER)
+				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
+				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+			if (getCurrentUser().getLimitedDisease() != null) {
+				return cb.equal(contactPath.get(Contact.DISEASE), getCurrentUser().getLimitedDisease());
 			} else {
 				return null;
 			}
 		}
 
 		// whoever created it or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), user);
-		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), user));
+		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), getCurrentUser());
+		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), getCurrentUser()));
 
 		// users have access to all contacts in their region/district
-		if (user.getDistrict() != null) {
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), user.getDistrict()));
-		} else if (user.getRegion() != null) {
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), user.getRegion()));
+		if (getCurrentUser().getDistrict() != null) {
+			filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), getCurrentUser().getDistrict()));
+		} else if (getCurrentUser().getRegion() != null) {
+			filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), getCurrentUser().getRegion()));
 		}
 
 		return filter;
@@ -775,10 +772,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 							cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), contactCriteria.getDistrict().getUuid())
 					)));
 		}
-		if (contactCriteria.getCaseFacility() != null) {
-			filter = and(cb, filter, cb.equal(caze.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID),
-					contactCriteria.getCaseFacility().getUuid()));
-		}
 		if (contactCriteria.getContactOfficer() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Contact.CONTACT_OFFICER, JoinType.LEFT).get(User.UUID),
 					contactCriteria.getContactOfficer().getUuid()));
@@ -808,7 +801,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else if (contactCriteria.getFollowUpUntilFrom() != null) {
 			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom()));
 		} else if (contactCriteria.getFollowUpUntilTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
+			if (Boolean.FALSE.equals(contactCriteria.getFollowUpUntilToPrecise())) {
+				filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
+			} else {
+				filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), DateHelper.getStartOfDay(contactCriteria.getFollowUpUntilTo()), DateHelper.getEndOfDay(contactCriteria.getFollowUpUntilTo())));
+			}
+		}
+		if (contactCriteria.getQuarantineType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.QUARANTINE), contactCriteria.getQuarantineType()));
+		}
+		if (contactCriteria.getQuarantineOrderMeans() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Contact.QUARANTINE_ORDER_MEANS), contactCriteria.getQuarantineOrderMeans()));
+		}
+		if (Boolean.TRUE.equals(contactCriteria.getOnlyQuarantineHelpNeeded())) {
+			filter = and(cb, filter, cb.and(cb.notEqual(from.get(Contact.QUARANTINE_HELP_NEEDED), ""), cb.isNotNull(from.get(Contact.QUARANTINE_HELP_NEEDED))));
 		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
@@ -844,12 +850,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (Boolean.TRUE.equals(contactCriteria.getOnlyHighPriorityContacts())) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.HIGH_PRIORITY), true));
 		}
-		if (contactCriteria.getQuarantineTo() != null) {
-			filter = and(cb, filter, cb.between(from.get(Contact.QUARANTINE_TO), DateHelper.getStartOfDay(contactCriteria.getQuarantineTo()), DateHelper.getEndOfDay(contactCriteria.getQuarantineTo())));
-		}
 		if (contactCriteria.getContactCategory() != null) {
 			filter = and(cb, filter,
 					cb.equal(from.get(Contact.CONTACT_CATEGORY), contactCriteria.getContactCategory()));
+		}
+		if (contactCriteria.getCaseClassification() != null) {
+			filter = and(cb, filter,
+					cb.equal(caze.get(Case.CASE_CLASSIFICATION), contactCriteria.getCaseClassification()));
 		}
 
 		return filter;

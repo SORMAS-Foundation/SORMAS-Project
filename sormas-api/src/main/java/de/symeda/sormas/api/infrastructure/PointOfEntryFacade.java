@@ -31,7 +31,7 @@ public interface PointOfEntryFacade {
 
 	List<PointOfEntryDto> getAllAfter(Date date);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 	
 	List<PointOfEntryDto> getByUuids(List<String> uuids);
 	

@@ -181,7 +181,9 @@ public interface Captions {
 	public static String CaseData_vaccine = "CaseData.vaccine";
 	public static String caseEditData = "caseEditData";
 	public static String CaseExport_address = "CaseExport.address";
+	public static String CaseExport_addressDistrict = "CaseExport.addressDistrict";
 	public static String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
+	public static String CaseExport_addressRegion = "CaseExport.addressRegion";
 	public static String CaseExport_admittedToHealthFacility = "CaseExport.admittedToHealthFacility";
 	public static String CaseExport_ageGroup = "CaseExport.ageGroup";
 	public static String CaseExport_associatedWithOutbreak = "CaseExport.associatedWithOutbreak";
@@ -189,9 +191,11 @@ public interface Captions {
 	public static String CaseExport_contactWithRodent = "CaseExport.contactWithRodent";
 	public static String CaseExport_country = "CaseExport.country";
 	public static String CaseExport_diseaseFormatted = "CaseExport.diseaseFormatted";
+	public static String CaseExport_firstName = "CaseExport.firstName";
 	public static String CaseExport_id = "CaseExport.id";
 	public static String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	public static String CaseExport_labResults = "CaseExport.labResults";
+	public static String CaseExport_lastName = "CaseExport.lastName";
 	public static String CaseExport_maxSourceCaseClassification = "CaseExport.maxSourceCaseClassification";
 	public static String CaseExport_numberOfClinicalVisits = "CaseExport.numberOfClinicalVisits";
 	public static String CaseExport_numberOfPrescriptions = "CaseExport.numberOfPrescriptions";
@@ -211,6 +215,7 @@ public interface Captions {
 	public static String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	public static String CaseExport_travelHistory = "CaseExport.travelHistory";
 	public static String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
+	public static String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	public static String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	public static String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	public static String caseFilterWithoutGeo = "caseFilterWithoutGeo";
@@ -279,11 +284,9 @@ public interface Captions {
 	public static String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
 	public static String Contact = "Contact";
 	public static String Contact_careForPeopleOver60 = "Contact.careForPeopleOver60";
-	public static String Contact_caseDistrictUuid = "Contact.caseDistrictUuid";
-	public static String Contact_caseHealthFacilityUuid = "Contact.caseHealthFacilityUuid";
+	public static String Contact_caseClassification = "Contact.caseClassification";
 	public static String Contact_caseIdExternalSystem = "Contact.caseIdExternalSystem";
 	public static String Contact_caseOrEventInformation = "Contact.caseOrEventInformation";
-	public static String Contact_caseRegionUuid = "Contact.caseRegionUuid";
 	public static String Contact_caze = "Contact.caze";
 	public static String Contact_caze_ageSex = "Contact.caze.ageSex";
 	public static String Contact_caze_caseClassification = "Contact.caze.caseClassification";
@@ -303,6 +306,7 @@ public interface Captions {
 	public static String Contact_disease = "Contact.disease";
 	public static String Contact_diseaseDetails = "Contact.diseaseDetails";
 	public static String Contact_district = "Contact.district";
+	public static String Contact_districtUuid = "Contact.districtUuid";
 	public static String Contact_externalID = "Contact.externalID";
 	public static String Contact_firstName = "Contact.firstName";
 	public static String Contact_followUpComment = "Contact.followUpComment";
@@ -318,8 +322,11 @@ public interface Captions {
 	public static String Contact_person = "Contact.person";
 	public static String Contact_quarantine = "Contact.quarantine";
 	public static String Contact_quarantineFrom = "Contact.quarantineFrom";
+	public static String Contact_quarantineHelpNeeded = "Contact.quarantineHelpNeeded";
+	public static String Contact_quarantineOrderMeans = "Contact.quarantineOrderMeans";
 	public static String Contact_quarantineTo = "Contact.quarantineTo";
 	public static String Contact_region = "Contact.region";
+	public static String Contact_regionUuid = "Contact.regionUuid";
 	public static String Contact_relationDescription = "Contact.relationDescription";
 	public static String Contact_relationToCase = "Contact.relationToCase";
 	public static String Contact_reportDateTime = "Contact.reportDateTime";
@@ -339,9 +346,14 @@ public interface Captions {
 	public static String contactContactsList = "contactContactsList";
 	public static String contactContactsOverview = "contactContactsOverview";
 	public static String contactCreateContactCase = "contactCreateContactCase";
+	public static String ContactExport_address = "ContactExport.address";
+	public static String ContactExport_addressDistrict = "ContactExport.addressDistrict";
+	public static String ContactExport_addressRegion = "ContactExport.addressRegion";
+	public static String ContactExport_firstName = "ContactExport.firstName";
 	public static String ContactExport_lastCooperativeVisitDate = "ContactExport.lastCooperativeVisitDate";
 	public static String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	public static String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
+	public static String ContactExport_lastName = "ContactExport.lastName";
 	public static String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	public static String contactFollowUpOverviewReferenceDate = "contactFollowUpOverviewReferenceDate";
 	public static String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
@@ -349,6 +361,7 @@ public interface Captions {
 	public static String contactMinusDays = "contactMinusDays";
 	public static String contactNewContact = "contactNewContact";
 	public static String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
+	public static String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	public static String contactOpenContactCase = "contactOpenContactCase";
 	public static String contactPersonVisits = "contactPersonVisits";
 	public static String contactPlusDays = "contactPlusDays";

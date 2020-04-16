@@ -56,7 +56,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     // Views
 
-    private EditText input;
+    protected EditText input;
 
     // Listeners
 
@@ -239,6 +239,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     @Override
     public void setHint(String value) {
+        this.hint = value;
         input.setHint(value);
     }
 

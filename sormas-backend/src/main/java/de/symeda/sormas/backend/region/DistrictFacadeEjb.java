@@ -178,8 +178,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -354,7 +354,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public String getFullEpidCodeForDistrict(String districtUuid) {
-
 		District district = districtService.getByUuid(districtUuid);
 		String fullEpidCode = (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "")
 				+ "-" + (district.getEpidCode() != null ? district.getEpidCode() : "");
