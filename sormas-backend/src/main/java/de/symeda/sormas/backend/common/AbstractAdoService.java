@@ -45,6 +45,8 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
@@ -268,6 +270,29 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 				.orElse(null);
 		
 		return entity;
+	}
+
+	@Override
+	public Boolean exists(@NotNull String uuid) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		final CriteriaQuery<Object> query = cb.createQuery(Object.class);
+		query.from(getElementClass());
+
+		final Subquery<ADO> subquery = query.subquery(getElementClass());
+		final Root<ADO> subRootEntity = subquery.from(getElementClass());
+		subquery.select(subRootEntity);
+		subquery.where(cb.equal(subRootEntity.get(AbstractDomainObject.UUID), uuid));
+
+		final Predicate exists = cb.exists(subquery);
+		final Expression<Boolean> trueExpression = cb.literal(true);
+		final Expression<Boolean> falseExpression = cb.literal(false);
+		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
+
+		final TypedQuery<Object> typedQuery = em.createQuery(query);
+
+		return (Boolean) typedQuery.getSingleResult();
 	}
 
 	@Override

@@ -207,6 +207,22 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	}
 
 	@Test
+	public void testCreatedContactExistWhenValidatedByUUID() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+
+		// database contains the created contact
+		assertEquals(true, getContactFacade().isValidContactUuid(contact.getUuid()));
+		// database contains the created contact
+		assertEquals(false, getContactFacade().isValidContactUuid("nonExistingContactUUID"));
+	}
+
+	@Test
 	public void testGetExportList() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);

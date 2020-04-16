@@ -17,15 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.spy;
-
-import java.lang.reflect.Field;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.spy;
 
 public class InfoProviderTest {
 

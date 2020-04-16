@@ -188,6 +188,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
+	public Boolean isValidContactUuid(String uuid) {
+		return contactService.exists(uuid);
+	}
+
+	@Override
 	public ContactReferenceDto getReferenceByUuid(String uuid) {
 		return toReferenceDto(contactService.getByUuid(uuid));
 	}
