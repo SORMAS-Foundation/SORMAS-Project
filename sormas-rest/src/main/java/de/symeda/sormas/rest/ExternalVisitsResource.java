@@ -29,7 +29,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
     }
 
     @POST
-    @Path("/push")
+    @Path("/")
     public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
         List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
         return result;

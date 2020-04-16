@@ -1,10 +1,7 @@
 package de.symeda.sormas.api.visit;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Required;
 
 import java.io.Serializable;
@@ -24,25 +21,25 @@ public class ExternalVisitDto implements Serializable, Cloneable {
     private VisitStatus visitStatus;
 
     private String visitRemarks;
+
     private SymptomsDto symptoms;
 
     private Double reportLat;
     private Double reportLon;
     private Float reportLatLonAccuracy;
 
-    public ExternalVisitDto() {
-    }
-
-    public ExternalVisitDto(String contactUuid, Date visitDateTime, VisitStatus visitStatus, String visitRemarks, SymptomsDto symptoms, Double reportLat, Double reportLon,
-      Float reportLatLonAccuracy) {
-        this.contactUuid = contactUuid;
-        this.visitDateTime = visitDateTime;
-        this.visitStatus = visitStatus;
-        this.visitRemarks = visitRemarks;
-        this.symptoms = symptoms;
-        this.reportLat = reportLat;
-        this.reportLon = reportLon;
-        this.reportLatLonAccuracy = reportLatLonAccuracy;
+    public static ExternalVisitDto build(String contactUuid, Date visitDateTime, VisitStatus visitStatus, String visitRemarks, SymptomsDto symptoms, Double reportLat, Double reportLon,
+                                         Float reportLatLonAccuracy) {
+        final ExternalVisitDto externalVisitDto = new ExternalVisitDto();
+        externalVisitDto.setContactUuid(contactUuid);
+        externalVisitDto.setVisitDateTime(visitDateTime);
+        externalVisitDto.setVisitStatus(visitStatus);
+        externalVisitDto.setVisitRemarks(visitRemarks);
+        externalVisitDto.setSymptoms(symptoms);
+        externalVisitDto.setReportLat(reportLat);
+        externalVisitDto.setReportLon(reportLon);
+        externalVisitDto.setReportLatLonAccuracy(reportLatLonAccuracy);
+        return externalVisitDto;
     }
 
     public Date getVisitDateTime() {

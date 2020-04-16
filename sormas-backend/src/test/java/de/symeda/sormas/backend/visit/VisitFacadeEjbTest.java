@@ -7,6 +7,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
@@ -19,8 +20,10 @@ import de.symeda.sormas.backend.TestDataCreator;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * The class VisitFacadeEjbTest.
@@ -29,6 +32,14 @@ public class VisitFacadeEjbTest  extends AbstractBeanTest {
 
     @Test
     public void testCreateExternalVisit() {
+
+        String[] arr={"YES", "NO", "UNKNOWN"};
+        Random r=new Random();
+
+        Arrays.stream(SymptomsDto.class.getDeclaredFields()).filter(field -> field.getType().getSimpleName().equalsIgnoreCase("SymptomState")).forEach(field -> {
+            System.out.println("\"" + field.getName() + "\": \""+arr[r.nextInt(arr.length)]+ "\"," );
+        });
+
         TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
         UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ext", "Vis", UserRole.REST_EXTERNAL_VISITS_USER);
         PersonDto cazePerson = creator.createPerson("Case", "Person");

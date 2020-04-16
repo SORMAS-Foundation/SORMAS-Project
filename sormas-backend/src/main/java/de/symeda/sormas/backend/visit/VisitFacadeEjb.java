@@ -81,294 +81,301 @@ import java.util.stream.Collectors;
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+    @PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+    protected EntityManager em;
 
-	@EJB
-	private VisitService visitService;
-	@EJB
-	private ContactService contactService;
-	@EJB
-	private PersonService personService;
-	@EJB
-	private UserService userService;
-	@EJB
-	private SymptomsFacadeEjbLocal symptomsFacade;
-	@EJB
-	private MessagingService messagingService;
-	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+    @EJB
+    private VisitService visitService;
+    @EJB
+    private ContactService contactService;
+    @EJB
+    private PersonService personService;
+    @EJB
+    private UserService userService;
+    @EJB
+    private SymptomsFacadeEjbLocal symptomsFacade;
+    @EJB
+    private MessagingService messagingService;
+    @EJB
+    private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
-	private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
+    private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
 
-	@Override
-	public List<String> getAllActiveUuids() {
-		User user = userService.getCurrentUser();
+    @Override
+    public List<String> getAllActiveUuids() {
+        User user = userService.getCurrentUser();
 
-		if (user == null) {
-			return Collections.emptyList();
-		}
+        if (user == null) {
+            return Collections.emptyList();
+        }
 
-		return visitService.getAllActiveUuids(user);
-	}
+        return visitService.getAllActiveUuids(user);
+    }
 
-	@Override
-	public List<VisitDto> getAllActiveVisitsAfter(Date date) {
-		return visitService.getAllActiveVisitsAfter(date).stream().map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
+    @Override
+    public List<VisitDto> getAllActiveVisitsAfter(Date date) {
+        return visitService.getAllActiveVisitsAfter(date).stream().map(c -> toDto(c))
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public List<VisitDto> getByUuids(List<String> uuids) {
-		return visitService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
-	}
+    @Override
+    public List<VisitDto> getByUuids(List<String> uuids) {
+        return visitService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+    }
 
-	@Override
-	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
-		Contact contact = contactService.getByReferenceDto(contactRef);
-		return toDto(visitService.getLastVisitByContact(contact, null));
-	}
+    @Override
+    public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
+        Contact contact = contactService.getByReferenceDto(contactRef);
+        return toDto(visitService.getLastVisitByContact(contact, null));
+    }
 
-	@Override
-	public VisitDto getVisitByUuid(String uuid) {
-		return toDto(visitService.getByUuid(uuid));
-	}
+    @Override
+    public VisitDto getVisitByUuid(String uuid) {
+        return toDto(visitService.getByUuid(uuid));
+    }
 
-	@Override
-	public VisitReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(visitService.getByUuid(uuid));
-	}
+    @Override
+    public VisitReferenceDto getReferenceByUuid(String uuid) {
+        return toReferenceDto(visitService.getByUuid(uuid));
+    }
 
-	@Override
-	public VisitDto saveVisit(VisitDto dto) {
-		final String visitUuid = dto.getUuid();
-		final VisitDto existingVisit = toDto(visitUuid != null ? visitService.getByUuid(visitUuid) : null);
+    @Override
+    public VisitDto saveVisit(VisitDto dto) {
+        this.validate(dto);
 
-		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
-		Visit entity = fromDto(dto);
-		visitService.ensurePersisted(entity);
+        final String visitUuid = dto.getUuid();
+        final VisitDto existingVisit = toDto(visitUuid != null ? visitService.getByUuid(visitUuid) : null);
 
-		onVisitChanged(existingVisit, entity);
+        SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
+        Visit entity = fromDto(dto);
+        visitService.ensurePersisted(entity);
 
-		return toDto(entity);
-	}
+        onVisitChanged(existingVisit, entity);
 
-	@Override
-	public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
+        return toDto(entity);
+    }
 
-		final String contactUuid = dto.getContactUuid();
-		final Contact contact = contactService.getByUuid(contactUuid);
-		final PersonReferenceDto contactPerson = new PersonReferenceDto(contact.getPerson().getUuid());
-		final Disease disease = contact.getDisease();
-		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
+    @Override
+    public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
 
-		final VisitDto visitDto = new VisitDto(contactPerson, disease, dto.getVisitDateTime(), currentUser, dto.getVisitStatus(), dto.getVisitRemarks(), dto.getSymptoms(), dto
-		.getReportLat(), dto.getReportLon(), dto.getReportLatLonAccuracy());
+        final String contactUuid = dto.getContactUuid();
+        final Contact contact = contactService.getByUuid(contactUuid);
+        final PersonReferenceDto contactPerson = new PersonReferenceDto(contact.getPerson().getUuid());
+        final Disease disease = contact.getDisease();
+        final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
 
-		final VisitDto savedVisit = this.saveVisit(visitDto);
+        final VisitDto visitDto = VisitDto.build(contactPerson, disease, dto.getVisitDateTime(), currentUser, dto.getVisitStatus(), dto.getVisitRemarks(), dto.getSymptoms(), dto
+                .getReportLat(), dto.getReportLon(), dto.getReportLatLonAccuracy());
 
-		final ExternalVisitDto savedDto = new ExternalVisitDto(contactUuid, savedVisit.getVisitDateTime(), savedVisit.getVisitStatus(), savedVisit.getVisitRemarks(), savedVisit
-		.getSymptoms(), savedVisit.getReportLat(), savedVisit.getReportLon(), savedVisit.getReportLatLonAccuracy());
+        final VisitDto savedVisit = this.saveVisit(visitDto);
 
-		return savedDto;
-	}
+        final ExternalVisitDto savedDto = ExternalVisitDto.build(contactUuid, savedVisit.getVisitDateTime(), savedVisit.getVisitStatus(), savedVisit.getVisitRemarks(), savedVisit
+                .getSymptoms(), savedVisit.getReportLat(), savedVisit.getReportLon(), savedVisit.getReportLatLonAccuracy());
 
-	@Override
-	public void deleteVisit(String visitUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.VISIT_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete visits.");
-		}
+        return savedDto;
+    }
 
-		Visit visit = visitService.getByUuid(visitUuid);
-		visitService.delete(visit);
-	}
+    @Override
+    public void validate(VisitDto dto) {
 
-	@Override
-	public int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus) {
-		Contact contact = contactService.getByReferenceDto(contactRef);
+    }
 
-		return visitService.getVisitCount(contact, null);
-	}
+    @Override
+    public void deleteVisit(String visitUuid) {
+        User user = userService.getCurrentUser();
+        if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.VISIT_DELETE)) {
+            throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete visits.");
+        }
 
-	@Override
-	public List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to) {
-		Contact contact = contactService.getByReferenceDto(contactRef);
+        Visit visit = visitService.getByUuid(visitUuid);
+        visitService.delete(visit);
+    }
 
-		return visitService.getDashboardVisitsByContact(contact, from, to);
-	}
+    @Override
+    public int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus) {
+        Contact contact = contactService.getByReferenceDto(contactRef);
 
-	@Override
-	public List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		if (visitCriteria == null || visitCriteria.getContact() == null) {
-			return new ArrayList<>(); // Retrieving an index list independent of a contact is not possible
-		}
+        return visitService.getVisitCount(contact, null);
+    }
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
-		Root<Visit> visit = cq.from(Visit.class);
+    @Override
+    public List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to) {
+        Contact contact = contactService.getByReferenceDto(contactRef);
 
-		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
+        return visitService.getDashboardVisitsByContact(contact, from, to);
+    }
 
-		cq.multiselect(visit.get(Visit.UUID), visit.get(Visit.VISIT_DATE_TIME), visit.get(Visit.VISIT_STATUS),
-				visit.get(Visit.VISIT_REMARKS), visit.get(Visit.DISEASE), symptoms.get(Symptoms.SYMPTOMATIC),
-				symptoms.get(Symptoms.TEMPERATURE), symptoms.get(Symptoms.TEMPERATURE_SOURCE));
+    @Override
+    public List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+        if (visitCriteria == null || visitCriteria.getContact() == null) {
+            return new ArrayList<>(); // Retrieving an index list independent of a contact is not possible
+        }
 
-		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visit);
-		cq.where(filter);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
+        Root<Visit> visit = cq.from(Visit.class);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case VisitIndexDto.VISIT_DATE_TIME:
-				case VisitIndexDto.VISIT_STATUS:
-				case VisitIndexDto.VISIT_REMARKS:
-				case VisitIndexDto.DISEASE:
-					expression = visit.get(sortProperty.propertyName);
-					break;
-				case VisitIndexDto.SYMPTOMATIC:
-				case VisitIndexDto.TEMPERATURE:
-					expression = symptoms.get(sortProperty.propertyName);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-			cq.orderBy(order);
-		} else {
-			cq.orderBy(cb.desc(visit.get(Visit.VISIT_DATE_TIME)));
-		}
+        Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			return em.createQuery(cq).getResultList();
-		}
-	}
+        cq.multiselect(visit.get(Visit.UUID), visit.get(Visit.VISIT_DATE_TIME), visit.get(Visit.VISIT_STATUS),
+                visit.get(Visit.VISIT_REMARKS), visit.get(Visit.DISEASE), symptoms.get(Symptoms.SYMPTOMATIC),
+                symptoms.get(Symptoms.TEMPERATURE), symptoms.get(Symptoms.TEMPERATURE_SOURCE));
 
-	@Override
-	public long count(VisitCriteria visitCriteria) {
-		if (visitCriteria == null || visitCriteria.getContact() == null) {
-			return 0L; // Retrieving a list count independent of a contact is not possible
-		}
+        Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visit);
+        cq.where(filter);
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Visit> root = cq.from(Visit.class);
-		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, root);
-		cq.where(filter);
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
+        if (sortProperties != null && sortProperties.size() > 0) {
+            List<Order> order = new ArrayList<>(sortProperties.size());
+            for (SortProperty sortProperty : sortProperties) {
+                Expression<?> expression;
+                switch (sortProperty.propertyName) {
+                    case VisitIndexDto.VISIT_DATE_TIME:
+                    case VisitIndexDto.VISIT_STATUS:
+                    case VisitIndexDto.VISIT_REMARKS:
+                    case VisitIndexDto.DISEASE:
+                        expression = visit.get(sortProperty.propertyName);
+                        break;
+                    case VisitIndexDto.SYMPTOMATIC:
+                    case VisitIndexDto.TEMPERATURE:
+                        expression = symptoms.get(sortProperty.propertyName);
+                        break;
+                    default:
+                        throw new IllegalArgumentException(sortProperty.propertyName);
+                }
+                order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+            }
+            cq.orderBy(order);
+        } else {
+            cq.orderBy(cb.desc(visit.get(Visit.VISIT_DATE_TIME)));
+        }
 
-	public Visit fromDto(@NotNull VisitDto source) {
+        if (first != null && max != null) {
+            return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+        } else {
+            return em.createQuery(cq).getResultList();
+        }
+    }
 
-		final String visitUuid = source.getUuid();
-		Visit target = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
-		if (target == null) {
-			target = new Visit();
-			target.setUuid(visitUuid);
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+    @Override
+    public long count(VisitCriteria visitCriteria) {
+        if (visitCriteria == null || visitCriteria.getContact() == null) {
+            return 0L; // Retrieving a list count independent of a contact is not possible
+        }
 
-		target.setDisease(source.getDisease());
-		target.setPerson(personService.getByReferenceDto(source.getPerson()));
-		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
-		target.setVisitDateTime(source.getVisitDateTime());
-		target.setVisitRemarks(source.getVisitRemarks());
-		target.setVisitStatus(source.getVisitStatus());
-		target.setVisitUser(userService.getByReferenceDto(source.getVisitUser()));
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Visit> root = cq.from(Visit.class);
+        Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, root);
+        cq.where(filter);
+        cq.select(cb.count(root));
+        return em.createQuery(cq).getSingleResult();
+    }
 
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+    public Visit fromDto(@NotNull VisitDto source) {
 
-		return target;
-	}
+        final String visitUuid = source.getUuid();
+        Visit target = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
+        if (target == null) {
+            target = new Visit();
+            target.setUuid(visitUuid);
+            if (source.getCreationDate() != null) {
+                target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+            }
+        }
+        DtoHelper.validateDto(source, target);
 
-	public static VisitReferenceDto toReferenceDto(Visit source) {
-		if (source == null) {
-			return null;
-		}
-		VisitReferenceDto target = new VisitReferenceDto(source.getUuid(), source.toString());
-		return target;
-	}
+        target.setDisease(source.getDisease());
+        target.setPerson(personService.getByReferenceDto(source.getPerson()));
+        target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms()));
+        target.setVisitDateTime(source.getVisitDateTime());
+        target.setVisitRemarks(source.getVisitRemarks());
+        target.setVisitStatus(source.getVisitStatus());
+        target.setVisitUser(userService.getByReferenceDto(source.getVisitUser()));
 
-	public static VisitDto toDto(Visit source) {
-		if (source == null) {
-			return null;
-		}
-		VisitDto target = new VisitDto();
-		DtoHelper.fillDto(target, source);
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
-		target.setDisease(source.getDisease());
-		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
-		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
-		target.setVisitDateTime(source.getVisitDateTime());
-		target.setVisitRemarks(source.getVisitRemarks());
-		target.setVisitStatus(source.getVisitStatus());
-		target.setVisitUser(UserFacadeEjb.toReferenceDto(source.getVisitUser()));
+        return target;
+    }
 
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+    public static VisitReferenceDto toReferenceDto(Visit source) {
+        if (source == null) {
+            return null;
+        }
+        VisitReferenceDto target = new VisitReferenceDto(source.getUuid(), source.toString());
+        return target;
+    }
 
-		return target;
-	}
+    public static VisitDto toDto(Visit source) {
+        if (source == null) {
+            return null;
+        }
+        VisitDto target = new VisitDto();
+        DtoHelper.fillDto(target, source);
 
-	private void onVisitChanged(VisitDto existingVisit, Visit newVisit) {
-		// Send an email to all responsible supervisors when the contact has become
-		// symptomatic
-		boolean previousSymptomaticStatus = existingVisit != null
-				&& Boolean.TRUE.equals(existingVisit.getSymptoms().getSymptomatic());
-		if (previousSymptomaticStatus == false && Boolean.TRUE.equals(newVisit.getSymptoms().getSymptomatic())) {
-			Set<Contact> contacts = new HashSet<>(
-					contactService.getAllByVisit(visitService.getByUuid(newVisit.getUuid())));
-			for (Contact contact : contacts) {
-				// Skip if there is already a symptomatic visit for this contact
-				if (visitService.getSymptomaticCountByContact(contact) > 1) {
-					continue;
-				}
+        target.setDisease(source.getDisease());
+        target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
+        target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
+        target.setVisitDateTime(source.getVisitDateTime());
+        target.setVisitRemarks(source.getVisitRemarks());
+        target.setVisitStatus(source.getVisitStatus());
+        target.setVisitUser(UserFacadeEjb.toReferenceDto(source.getVisitUser()));
 
-				Case contactCase = contact.getCaze();
-				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contact.getRegion() != null ? 
-						contact.getRegion() : contactCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
-				for (User recipient : messageRecipients) {
-					try {
-						String messageContent;
-						if (contactCase != null) {
-							messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
-									DataHelper.getShortUuid(contact.getUuid()),
-									DataHelper.getShortUuid(contactCase.getUuid()));
-						} else {
-							messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC),
-									DataHelper.getShortUuid(contact.getUuid()));
-						}
-						
-						messagingService.sendMessage(recipient,
-								I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC),
-								messageContent, MessageType.EMAIL, MessageType.SMS);
-					} catch (NotificationDeliveryFailedException e) {
-						logger.error(String.format(
-								"EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
-										+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								recipient.getUuid()));
-					}
-				}
-			}
-		}
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
-		contactService.updateFollowUpUntilAndStatusByVisit(newVisit);
-	}
+        return target;
+    }
 
-	@LocalBean
-	@Stateless
-	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
-	}
+    private void onVisitChanged(VisitDto existingVisit, Visit newVisit) {
+        // Send an email to all responsible supervisors when the contact has become
+        // symptomatic
+        boolean previousSymptomaticStatus = existingVisit != null
+                && Boolean.TRUE.equals(existingVisit.getSymptoms().getSymptomatic());
+        if (previousSymptomaticStatus == false && Boolean.TRUE.equals(newVisit.getSymptoms().getSymptomatic())) {
+            Set<Contact> contacts = new HashSet<>(
+                    contactService.getAllByVisit(visitService.getByUuid(newVisit.getUuid())));
+            for (Contact contact : contacts) {
+                // Skip if there is already a symptomatic visit for this contact
+                if (visitService.getSymptomaticCountByContact(contact) > 1) {
+                    continue;
+                }
+
+                Case contactCase = contact.getCaze();
+                List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contact.getRegion() != null ?
+                        contact.getRegion() : contactCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+                for (User recipient : messageRecipients) {
+                    try {
+                        String messageContent;
+                        if (contactCase != null) {
+                            messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
+                                    DataHelper.getShortUuid(contact.getUuid()),
+                                    DataHelper.getShortUuid(contactCase.getUuid()));
+                        } else {
+                            messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC),
+                                    DataHelper.getShortUuid(contact.getUuid()));
+                        }
+
+                        messagingService.sendMessage(recipient,
+                                I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC),
+                                messageContent, MessageType.EMAIL, MessageType.SMS);
+                    } catch (NotificationDeliveryFailedException e) {
+                        logger.error(String.format(
+                                "EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
+                                        + "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+                                recipient.getUuid()));
+                    }
+                }
+            }
+        }
+
+        contactService.updateFollowUpUntilAndStatusByVisit(newVisit);
+    }
+
+    @LocalBean
+    @Stateless
+    public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
+    }
 }

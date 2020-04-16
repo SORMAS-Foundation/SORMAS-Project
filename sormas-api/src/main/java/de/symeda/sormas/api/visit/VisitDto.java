@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -26,6 +24,8 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+
+import java.util.Date;
 
 public class VisitDto extends EntityDto {
 
@@ -60,23 +60,6 @@ public class VisitDto extends EntityDto {
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 
-	public VisitDto() {
-	}
-
-	public VisitDto(PersonReferenceDto person, Disease disease, Date visitDateTime, UserReferenceDto visitUser, VisitStatus visitStatus, String visitRemarks, SymptomsDto symptoms,
-	Double reportLat, Double reportLon, Float reportLatLonAccuracy) {
-		this.person = person;
-		this.disease = disease;
-		this.visitDateTime = visitDateTime;
-		this.visitUser = visitUser;
-		this.visitStatus = visitStatus;
-		this.visitRemarks = visitRemarks;
-		this.symptoms = symptoms;
-		this.reportLat = reportLat;
-		this.reportLon = reportLon;
-		this.reportLatLonAccuracy = reportLatLonAccuracy;
-	}
-
 	public static VisitDto build(PersonReferenceDto contactPerson, Disease disease) {
 		VisitDto visit = new VisitDto();
     	visit.setUuid(DataHelper.createUuid());
@@ -90,6 +73,28 @@ public class VisitDto extends EntityDto {
     	visit.setVisitDateTime(new Date());
 
     	return visit;
+	}
+
+	public static VisitDto build(PersonReferenceDto person, Disease disease, Date visitDateTime, UserReferenceDto visitUser, VisitStatus visitStatus, String visitRemarks,
+								 SymptomsDto symptoms, Double reportLat, Double reportLon, Float reportLatLonAccuracy) {
+
+		final VisitDto visit = build(person, disease);
+
+		if (visitDateTime != null) {
+			visit.setVisitDateTime(visitDateTime);
+		}
+		visit.setVisitUser(visitUser);
+		visit.setVisitStatus(visitStatus);
+		visit.setVisitRemarks(visitRemarks);
+		visit.setVisitRemarks(visitRemarks);
+		if (visit.getSymptoms() != null) {
+			visit.setSymptoms(symptoms);
+		}
+		visit.setReportLat(reportLat);
+		visit.setReportLon(reportLon);
+		visit.setReportLatLonAccuracy(reportLatLonAccuracy);
+
+		return visit;
 	}
 	
 	public Date getVisitDateTime() {
