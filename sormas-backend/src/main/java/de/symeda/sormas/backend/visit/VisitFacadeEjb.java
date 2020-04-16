@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.visit;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.DashboardVisitDto;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -156,7 +158,7 @@ public class VisitFacadeEjb implements VisitFacade {
     }
 
     @Override
-    public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
+    public VisitDto saveExternalVisit(final ExternalVisitDto dto) {
 
         final String contactUuid = dto.getContactUuid();
         final Contact contact = contactService.getByUuid(contactUuid);
@@ -167,17 +169,26 @@ public class VisitFacadeEjb implements VisitFacade {
         final VisitDto visitDto = VisitDto.build(contactPerson, disease, dto.getVisitDateTime(), currentUser, dto.getVisitStatus(), dto.getVisitRemarks(), dto.getSymptoms(), dto
                 .getReportLat(), dto.getReportLon(), dto.getReportLatLonAccuracy());
 
-        final VisitDto savedVisit = this.saveVisit(visitDto);
-
-        final ExternalVisitDto savedDto = ExternalVisitDto.build(contactUuid, savedVisit.getVisitDateTime(), savedVisit.getVisitStatus(), savedVisit.getVisitRemarks(), savedVisit
-                .getSymptoms(), savedVisit.getReportLat(), savedVisit.getReportLon(), savedVisit.getReportLatLonAccuracy());
-
-        return savedDto;
+        return this.saveVisit(visitDto);
     }
 
     @Override
-    public void validate(VisitDto dto) {
-
+    public void validate(VisitDto visit) {
+        if (visit.getVisitStatus() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitSymptoms));
+        }
+        if (visit.getSymptoms() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitSymptoms));
+        }
+        if (visit.getVisitDateTime() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitDate));
+        }
+        if (visit.getDisease() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
+        }
+        if (visit.getPerson() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
+        }
     }
 
     @Override

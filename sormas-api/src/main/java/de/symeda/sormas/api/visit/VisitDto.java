@@ -87,7 +87,7 @@ public class VisitDto extends EntityDto {
 		visit.setVisitStatus(visitStatus);
 		visit.setVisitRemarks(visitRemarks);
 		visit.setVisitRemarks(visitRemarks);
-		if (visit.getSymptoms() != null) {
+		if (symptoms != null) {
 			visit.setSymptoms(symptoms);
 		}
 		visit.setReportLat(reportLat);
