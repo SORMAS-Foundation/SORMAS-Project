@@ -31,8 +31,8 @@ if (rows != 1) {
 }
 
 // resize window so all columns of the table are visible
-WebDriver driver = DriverFactory.getWebDriver()
-driver.manage().window().setSize(new Dimension(1920,1080))
+//WebDriver driver = DriverFactory.getWebDriver()
+//driver.manage().window().setSize(new Dimension(1920,1080))
 
 TableContent tableContent = Table.getVisibleTableContent()
 // JENKINS test can be deleted afterwards
