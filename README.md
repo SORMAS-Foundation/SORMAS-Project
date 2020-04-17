@@ -43,3 +43,12 @@ Archive: `Reports/**`
 JUnit-Tests: `Reports/**/*.xml`
 
 ![alt text](images/J_config_post_build.png "PostBuild config")
+
+## Getting the API-Key from Katalon Studio
+
+In Katalon-Studio open the dialog Window->Command Palette
+
+Select the option "Generate Command for Console Mode"
+
+Copy the String from the field "Katalon API Key" and insert it into the build step from jenkins. 
+
