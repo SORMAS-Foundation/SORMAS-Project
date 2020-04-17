@@ -322,6 +322,8 @@ public interface Captions {
 	public static String Contact_person = "Contact.person";
 	public static String Contact_quarantine = "Contact.quarantine";
 	public static String Contact_quarantineFrom = "Contact.quarantineFrom";
+	public static String Contact_quarantineHelpNeeded = "Contact.quarantineHelpNeeded";
+	public static String Contact_quarantineOrderMeans = "Contact.quarantineOrderMeans";
 	public static String Contact_quarantineTo = "Contact.quarantineTo";
 	public static String Contact_region = "Contact.region";
 	public static String Contact_regionUuid = "Contact.regionUuid";
@@ -359,6 +361,7 @@ public interface Captions {
 	public static String contactMinusDays = "contactMinusDays";
 	public static String contactNewContact = "contactNewContact";
 	public static String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
+	public static String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	public static String contactOpenContactCase = "contactOpenContactCase";
 	public static String contactPersonVisits = "contactPersonVisits";
 	public static String contactPlusDays = "contactPlusDays";
