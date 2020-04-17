@@ -8,7 +8,7 @@
 .project
 .idea
 /settings/
-Sormas-Testing.prj
+
 .gradle
 gradle*
 .project
