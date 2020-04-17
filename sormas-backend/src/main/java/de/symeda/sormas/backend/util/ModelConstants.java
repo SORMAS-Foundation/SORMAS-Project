@@ -21,6 +21,7 @@ public interface ModelConstants {
 
 	String PERSISTENCE_UNIT_NAME = "SormasPU";
 	String PERSISTENCE_UNIT_NAME_AUDITLOG = "auditlogPU";
+	String PERSISTENCE_UNIT_DATA_SOURCE = "jdbc/sormasDataPool";
 	String HINT_HIBERNATE_READ_ONLY = "org.hibernate.readOnly";
 
 }

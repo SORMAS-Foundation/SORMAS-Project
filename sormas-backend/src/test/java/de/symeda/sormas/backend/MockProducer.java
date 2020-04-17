@@ -32,6 +32,7 @@ import javax.enterprise.inject.Produces;
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
+import javax.sql.DataSource;
 import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -52,6 +53,7 @@ public class MockProducer {
 	private static final TimerService timerService = mock(TimerService.class);
 	public static final Properties properties = new Properties();
 	private static final UserTransaction userTransaction = mock(UserTransaction.class);
+	private static final DataSource dataSource = mock(DataSource.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -78,7 +80,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, dataSource);
 		wireMocks();
 	}
 
@@ -125,5 +127,10 @@ public class MockProducer {
 	@Produces
 	public static Principal getPrincipal() {
 		return principal;
+	}
+
+	@Produces
+	public static DataSource getDataSource() {
+		return dataSource;
 	}
 }
