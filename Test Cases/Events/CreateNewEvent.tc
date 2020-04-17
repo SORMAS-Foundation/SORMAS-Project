@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>CreateNewEvent</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>a8836974-6009-4d97-8b77-bc0763f5c804</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description></description>
+      <id>46e9a871-8436-45d1-820b-211a7da1b501</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>
