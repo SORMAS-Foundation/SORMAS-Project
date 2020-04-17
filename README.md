@@ -30,16 +30,16 @@ Repository URL: URL to Katalon Sormas tests
 
 ### Build config
 
-Command arguments: -browserType="Firefox" -retry=0 -statusDelay=15 -testSuitePath="Test Suites/Login/LoginRoles" -apiKey=1cbcd8d5-aed8-4d56-b9d8-cde66d4bdc2e
+Command arguments: `-browserType="Firefox" -retry=0 -statusDelay=15 -testSuitePath="Test Suites/Login/LoginRoles" -apiKey=<your api key>`
 
-Xvfb-run configuration (for Linux): -s "-screen 0 1024x768x24"
+Xvfb-run configuration (for Linux): `-s "-screen 0 1024x768x24"`
 
 ![alt text](images/J_config_build.png "Build config")
 
 ### Post build config
 
-Archive: Reports/**
+Archive: `Reports/**`
 
-JUnit-Tests: Reports/**/*.xml
+JUnit-Tests: `Reports/**/*.xml`
 
 ![alt text](images/J_config_post_build.png "PostBuild config")
