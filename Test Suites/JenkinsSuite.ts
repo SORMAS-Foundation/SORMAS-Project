@@ -10,4 +10,10 @@
    <pageLoadTimeoutDefault>true</pageLoadTimeoutDefault>
    <rerunFailedTestCasesOnly>false</rerunFailedTestCasesOnly>
    <testSuiteGuid>0f066089-9d51-49c7-b8aa-6c2c03776030</testSuiteGuid>
+   <testCaseLink>
+      <guid>45567dd0-bb4e-483a-8b42-1db756fbc433</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Contacts/CancelNewTaskForContact</testCaseId>
+   </testCaseLink>
 </TestSuiteEntity>
