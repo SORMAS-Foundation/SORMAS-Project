@@ -46,7 +46,7 @@
     <string name="action_create_treatment">Behandlung erstellen</string>
     <string name="action_edit_data">Daten bearbeiten</string>
     <string name="action_delete">Löschen</string>
-    <string name="action_dismiss">Verwerfen</string>
+    <string name="action_dismiss">Abbrechen</string>
     <string name="action_done">Erledigt</string>
     <string name="action_download">Herunterladen</string>
     <string name="action_download_background">Herunterladen im Hintergrund</string>
@@ -113,7 +113,7 @@
     <string name="action_submit_case_numbers">Fallnummern einreichen</string>
     <string name="caption_address">Adresse</string>
     <string name="caption_age">Alter</string>
-    <string name="caption_attended_by">Attended by</string>
+    <string name="caption_attended_by">Besucht von</string>
     <string name="caption_case_clinical_visits">Klinische Bewertungen</string>
     <string name="caption_case_contacts">Fallkontakte</string>
     <string name="caption_case_epidemiological_data">Epidemiologische Info</string>
@@ -157,7 +157,7 @@
     <string name="caption_inadequate_specimen">Unzureichende Probe</string>
     <string name="caption_indeterminate">Unbestimmt</string>
     <string name="caption_informant_reports">Informantenberichte</string>
-    <string name="caption_issued_on">Issued on </string>
+    <string name="caption_issued_on">Gemeldet am </string>
     <string name="caption_last_case">Letzter Fall</string>
     <string name="caption_last_name">Nachname</string>
     <string name="caption_lesions_locations">Lokalisierung der Läsionen</string>
@@ -464,6 +464,7 @@
     <string name="notification_channel_tasks_description">Erhalten Sie eine Benachrichtigung, wenn Ihnen eine neue Aufgabe zugewiesen wurde oder eine Ihnen zugewiesene Aufgabe geändert wurde</string>
     <string name="notification_channel_case_changes_name">Wichtige Falländerungen</string>
     <string name="notification_channel_case_changes_description">Erhalten Sie eine Benachrichtigung, wenn sich wichtige Details Ihrer Fälle geändert haben</string>
+    <string name="quarantine_to">Quarantäne endet mit dem Ende des Follow Ups</string>
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Yours: </string>
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
