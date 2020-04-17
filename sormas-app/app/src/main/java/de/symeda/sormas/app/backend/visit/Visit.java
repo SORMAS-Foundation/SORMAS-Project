@@ -159,7 +159,7 @@ public class Visit extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return super.toString() + " " + DateHelper.formatLocalShortDate(getVisitDateTime());
+		return super.toString() + " " + DateHelper.formatShortDate(getVisitDateTime());
 	}
 
 	public Float getReportLatLonAccuracy() {

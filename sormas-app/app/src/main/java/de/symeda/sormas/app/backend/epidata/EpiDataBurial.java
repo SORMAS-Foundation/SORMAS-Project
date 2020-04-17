@@ -148,7 +148,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatLocalShortDate(getBurialDateTo());
+        return super.toString() + " " + DateHelper.formatShortDate(getBurialDateTo());
     }
 
 }

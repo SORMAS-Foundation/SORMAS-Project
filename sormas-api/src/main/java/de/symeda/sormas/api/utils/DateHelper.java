@@ -35,6 +35,7 @@ import org.joda.time.Years;
 
 public final class DateHelper {
 
+	private static final SimpleDateFormat SHORT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yy");
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	private static final SimpleDateFormat DATE_FORMAT_DOTS = new SimpleDateFormat("dd.MM.yyyy");
 	private static final SimpleDateFormat DATE_FORMAT_HYPHEN = new SimpleDateFormat("dd-MM-yyyy");
@@ -85,6 +86,22 @@ public final class DateHelper {
 
 	// Date and time formatting
 
+	public static String formatLocalDate(Date date, SimpleDateFormat dateFormat) {
+		if (date != null && dateFormat != null) {
+			return dateFormat.format(date);
+		} else {
+			return "";
+		}
+	}
+
+	public static String formatShortDate(Date date) {
+		if (date != null) {
+			return clone(SHORT_DATE_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+
 	public static String formatLocalShortDate(Date date) {
 		if (date != null) {
 			return getLocalShortDateFormat().format(date);
@@ -117,12 +134,32 @@ public final class DateHelper {
 		}
 	}
 
+	public static String formatTime(Date date) {
+		if (date != null) {
+			return clone(TIME_FORMAT).format(date);
+		} else {
+			return "";
+		}
+	}
+
 	// Date and time parsing
 
 	public static Date parseTime(String date) {
 		if (date != null) {
 			try {
 				return clone(TIME_FORMAT).parse(date);
+			} catch (ParseException e) {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	public static Date parseDate(String date, SimpleDateFormat dateFormat) {
+		if (date != null && dateFormat != null) {
+			try {
+				return dateFormat.parse(date);
 			} catch (ParseException e) {
 				return null;
 			}
@@ -522,6 +559,26 @@ public final class DateHelper {
 		calendar.set(Calendar.MINUTE, 59);
 		calendar.set(Calendar.SECOND, 59);
 		return calendar.getTime();
+	}
+
+	/**
+	 * Calculates whether the second epi week starts on a later date than the first
+	 * one.
+	 *
+	 * @param epiWeek        The first epi week
+	 * @param anotherEpiWeek The second epi week to check for a later beginning
+	 * @return True if the second epi week is on a later date, false if not
+	 */
+	public static boolean isEpiWeekAfter(EpiWeek epiWeek, EpiWeek anotherEpiWeek) {
+		Calendar calendar = getEpiCalendar();
+		calendar.set(Calendar.YEAR, epiWeek.getYear());
+		calendar.set(Calendar.WEEK_OF_YEAR, epiWeek.getWeek());
+
+		Calendar secondCalendar = getEpiCalendar();
+		secondCalendar.set(Calendar.YEAR, anotherEpiWeek.getYear());
+		secondCalendar.set(Calendar.WEEK_OF_YEAR, anotherEpiWeek.getWeek());
+
+		return secondCalendar.getTime().after(calendar.getTime());
 	}
 
 	/**

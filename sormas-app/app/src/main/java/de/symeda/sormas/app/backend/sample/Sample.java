@@ -42,6 +42,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.LocaleManager;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -445,7 +446,7 @@ public class Sample extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + DateHelper.formatLocalShortDate(getSampleDateTime());
+        return super.toString() + DateHelper.formatShortDate(getSampleDateTime());
     }
 
     public Double getReportLat() {

@@ -217,6 +217,6 @@ public class PathogenTest extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + DateHelper.formatLocalShortDate(getTestDateTime());
+        return super.toString() + DateHelper.formatShortDate(getTestDateTime());
     }
 }
