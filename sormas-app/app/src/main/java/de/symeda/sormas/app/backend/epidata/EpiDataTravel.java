@@ -111,6 +111,6 @@ public class EpiDataTravel extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatLocalShortDate(getTravelDateTo());
+        return super.toString() + " " + DateHelper.formatShortDate(getTravelDateTo());
     }
 }
