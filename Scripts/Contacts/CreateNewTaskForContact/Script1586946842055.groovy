@@ -32,9 +32,13 @@ if (rows != 1) {
 }
 
 // resize window so all columns of the table are visible
-//WebDriver driver = DriverFactory.getWebDriver()
-//driver.manage().window().setSize(new Dimension(2500,2500))
 WebUI.maximizeWindow()
+
+// This is necessary for JENKINS or there will be no "oldTaskNumber" and the test fails
+WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
+WebUI.delay(1)
+WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_kontaktliste_link'))
+WebUI.delay(1)
 
 TableContent tableContent = Table.getVisibleTableContent()
 oldTaskNumber = tableContent.getRowData(0, tableContent.getNumberOfColumns() - 1)

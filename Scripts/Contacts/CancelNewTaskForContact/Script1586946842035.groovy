@@ -32,19 +32,15 @@ if (rows != 1) {
 }
 
 // resize window so all columns of the table are visible
-//WebDriver driver = DriverFactory.getWebDriver()
-//driver.manage().window().setSize(new Dimension(1920,1080))
 WebUI.maximizeWindow()
 
-// Test for Jenkins
+// This is necessary for JENKINS or there will be no "oldTaskNumber" and the test fails
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 WebUI.delay(1)
 WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_kontaktliste_link'))
 WebUI.delay(1)
 
 TableContent tableContent = Table.getVisibleTableContent()
-// JENKINS test can be deleted afterwards
-println(tableContent.tableRows[0])
 oldTaskNumber = tableContent.getRowData(0, tableContent.getNumberOfColumns() - 1)
 println('old task number:' + oldTaskNumber)
 
