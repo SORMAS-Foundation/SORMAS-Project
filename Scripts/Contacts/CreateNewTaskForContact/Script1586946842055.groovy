@@ -32,8 +32,8 @@ if (rows != 1) {
 }
 
 // resize window so all columns of the table are visible
-WebDriver driver = DriverFactory.getWebDriver()
-driver.manage().window().setSize(new Dimension(2500,2500))
+//WebDriver driver = DriverFactory.getWebDriver()
+//driver.manage().window().setSize(new Dimension(2500,2500))
 
 TableContent tableContent = Table.getVisibleTableContent()
 oldTaskNumber = tableContent.getRowData(0, tableContent.getNumberOfColumns() - 1)
@@ -56,7 +56,7 @@ println('new task number:' + newTaskNumber)
 if (Integer.parseInt(oldTaskNumber) != (Integer.parseInt(newTaskNumber) - 1)) {
     WebUI.closeBrowser()
 
-    throw new StepFailedException((('The new number of tasts does not equal the old number plus one. old:' + oldTaskNumber) + 
+    throw new StepFailedException((('The new number of tasts does not equal the old number plus one. old:' + oldTaskNumber) +
     ' new:') + newTaskNumber)
 }
 

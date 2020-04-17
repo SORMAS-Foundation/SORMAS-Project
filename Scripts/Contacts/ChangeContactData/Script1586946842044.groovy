@@ -19,8 +19,8 @@ WebUI.callTestCase(findTestCase('Contacts/partials/searchAndSelectContact'), [('
 String quarantineStart = '02/02/2020'
 String quarantineEnd = '03/05/2020'
 
-WebDriver driver = DriverFactory.getWebDriver()
-driver.manage().window().setSize(new Dimension(2500, 2500))
+//WebDriver driver = DriverFactory.getWebDriver()
+//driver.manage().window().setSize(new Dimension(2500, 2500))
 
 // TESTCASE
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible region_v-filterselect-button'))
@@ -35,7 +35,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/di
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/span_Live in the same household'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took pl_3ad3bd'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took pl_3ad3bd'),
     'this is a test')
 WebUI.delay(0.5)
 
@@ -47,7 +47,7 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/
 
 // WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Quarantine end_gwt-uid-226'), quarantineEnd)
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'),
     'this is a test')
 WebUI.delay(0.5)
 
@@ -59,7 +59,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/di
 
 // CHECK
 WebUI.refresh()
-driver.manage().window().setSize(new Dimension(2500, 2500))
+//driver.manage().window().setSize(new Dimension(2500, 2500))
 WebUI.delay(1)
 
 String region = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Responsible region_gwt-uid-207'), 'value')
@@ -115,14 +115,14 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/di
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took pl_3ad3bd'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Description of how contact took pl_3ad3bd'),
     '')
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Quarantine_v-filterselect-button'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'), 
+WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'),
     '')
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible contact officer_v-filtersel_edee33'))
