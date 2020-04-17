@@ -5,6 +5,7 @@ import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.WebDriver
 
+import com.hzi.Helper
 import com.hzi.Table
 import com.hzi.TableContent
 import com.kms.katalon.core.exception.StepFailedException as StepFailedException
@@ -34,6 +35,12 @@ if (rows != 1) {
 //WebDriver driver = DriverFactory.getWebDriver()
 //driver.manage().window().setSize(new Dimension(1920,1080))
 WebUI.maximizeWindow()
+
+// Test for Jenkins
+WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
+WebUI.delay(1)
+WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_kontaktliste_link'))
+WebUI.delay(1)
 
 TableContent tableContent = Table.getVisibleTableContent()
 // JENKINS test can be deleted afterwards
