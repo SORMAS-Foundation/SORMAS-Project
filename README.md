@@ -30,6 +30,8 @@ Repository URL: URL to Katalon Sormas tests
 
 ### Build config
 
+Download Katalon Studio Version: `e.g.: 7.2.6`
+
 Command arguments: `-browserType="Firefox" -retry=0 -statusDelay=15 -testSuitePath="Test Suites/Login/LoginRoles" -apiKey=<your api key>`
 
 Xvfb-run configuration (for Linux): `-s "-screen 0 1024x768x24"`
