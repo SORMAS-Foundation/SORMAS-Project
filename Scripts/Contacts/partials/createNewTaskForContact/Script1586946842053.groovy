@@ -19,6 +19,8 @@ WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 'Create new Task\n'
 WebUI.click(findTestObject('Contacts/ContactInformationView/button_kontakt_newTask'))
 
+WebUI.waitForElementPresent(findTestObject('Contacts/ContactInformationView/newTask_dlg_taskType'), 2)
+
 WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_taskType'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/div_Aufgabentyp_v-filterselect-button'))
