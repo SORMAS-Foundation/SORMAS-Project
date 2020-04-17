@@ -5,6 +5,7 @@ import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 import org.openqa.selenium.Dimension as Dimension
 import org.openqa.selenium.WebDriver as WebDriver
 
+import com.hzi.Helper
 import com.hzi.Table as Table
 import com.hzi.TableContent as TableContent
 import com.kms.katalon.core.exception.StepFailedException as StepFailedException
