@@ -11,9 +11,9 @@
    <rerunFailedTestCasesOnly>false</rerunFailedTestCasesOnly>
    <testSuiteGuid>0f066089-9d51-49c7-b8aa-6c2c03776030</testSuiteGuid>
    <testCaseLink>
-      <guid>054dc528-cac8-4dc7-9ff2-e34f2af320fa</guid>
+      <guid>22866596-e66d-4802-b236-5781b6794b40</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
-      <testCaseId>Test Cases/Contacts/ResetFilterAfterDropped</testCaseId>
+      <testCaseId>Test Cases/Contacts/CancelNewTaskForContact</testCaseId>
    </testCaseLink>
 </TestSuiteEntity>
