@@ -17,12 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.utils.SortProperty;
-
-import javax.ejb.Remote;
 import java.util.Date;
 import java.util.List;
+
+import javax.ejb.Remote;
+
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface VisitFacade {

@@ -18,11 +18,8 @@
 package de.symeda.sormas.backend.geocoding;
 
 import java.io.Serializable;
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 

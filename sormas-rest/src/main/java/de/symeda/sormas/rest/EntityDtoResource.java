@@ -1,17 +1,19 @@
 package de.symeda.sormas.rest;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.OutdatedEntityException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+import javax.ejb.EJB;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public abstract class EntityDtoResource {
 

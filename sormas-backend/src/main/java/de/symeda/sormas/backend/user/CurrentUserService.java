@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.user;
 
-import de.symeda.sormas.backend.util.ModelConstants;
-
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
@@ -16,6 +14,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+
+import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
  * The class CurrentUserService.
