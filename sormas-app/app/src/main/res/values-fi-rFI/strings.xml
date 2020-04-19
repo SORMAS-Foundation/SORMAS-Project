@@ -140,7 +140,7 @@
     <string name="caption_contact_information">Yhteystiedot</string>
     <string name="caption_contact_tasks">Contact Tasks</string>
     <string name="caption_contact_visits">Seurantatiedot</string>
-    <string name="caption_converted_to_case">Muutettu tapaukseksi</string>
+    <string name="caption_converted_to_case">Sairastunut seurannassa</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="caption_date_of_sampling">Date of Sampling</string>
     <string name="caption_drawer_close">Close navigation drawer</string>
@@ -405,7 +405,7 @@
     <string name="info_case_creation_mark_check_box">This case is a <b>new case</b> and <b>not a duplicate</b> of one of the cases above</string>
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Kontaktit</string>
-    <string name="main_menu_dashboard">Dashboard</string>
+    <string name="main_menu_dashboard">Hallintatyöpöytä</string>
     <string name="main_menu_events">Events</string>
     <string name="main_menu_reports">Reports</string>
     <string name="main_menu_samples">Samples</string>
