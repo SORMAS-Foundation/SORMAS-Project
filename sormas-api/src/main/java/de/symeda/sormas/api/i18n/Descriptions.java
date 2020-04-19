@@ -1,7 +1,12 @@
 package de.symeda.sormas.api.i18n;
 
 public interface Descriptions {
-	
+
+	/*
+	 * Hint for SonarQube issues:
+	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
+	 */
+
 	public static String descCaseFilterWithoutGeo = "descCaseFilterWithoutGeo";
 	public static String descDashboardConvertedToCase = "descDashboardConvertedToCase";
 	public static String descDashboardFatalityRateInfo = "descDashboardFatalityRateInfo";
@@ -15,5 +20,4 @@ public interface Descriptions {
 	public static String descCaseFilterPortHealthWithoutFacility = "descCaseFilterPortHealthWithoutFacility";
 	public static String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
 	public static String descCaseFilterExcludeSharedCasesString = "descCaseFilterExcludeSharedCases";
-
 }

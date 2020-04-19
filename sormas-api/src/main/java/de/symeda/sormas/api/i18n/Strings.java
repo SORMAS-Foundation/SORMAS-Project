@@ -2,6 +2,11 @@ package de.symeda.sormas.api.i18n;
 
 public interface Strings {
 
+	/*
+	 * Hint for SonarQube issues:
+	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
+	 */
+
 	public static String active = "active";
 	public static String address = "address";
 	public static String aggregateReportLegend = "aggregateReportLegend";
@@ -626,4 +631,4 @@ public interface Strings {
 	public static String years = "years";
 	public static String yes = "yes";
 	public static String yesterday = "yesterday";
- }
+}

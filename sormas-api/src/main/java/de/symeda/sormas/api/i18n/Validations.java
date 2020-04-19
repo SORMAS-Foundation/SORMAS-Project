@@ -2,6 +2,11 @@ package de.symeda.sormas.api.i18n;
 
 public interface Validations {
 
+	/*
+	 * Hint for SonarQube issues:
+	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
+	 */
+
 	public static String afterDate = "afterDate";
 	public static String afterDateSoft = "afterDateSoft";
 	public static String beforeDate = "beforeDate";
@@ -72,4 +77,4 @@ public interface Validations {
 	public static String visitDate = "visitDate";
 	public static String visitStatus = "visitStatus";
 	public static String visitSymptoms = "visitSymptoms";
- }
+}

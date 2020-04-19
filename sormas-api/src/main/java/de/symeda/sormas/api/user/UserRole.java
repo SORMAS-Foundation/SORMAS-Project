@@ -17,17 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
-import de.symeda.sormas.api.utils.ValidationException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.utils.ValidationException;
 
 /**
  * These are also used as user groups in the server realm
@@ -56,6 +56,11 @@ public enum UserRole implements StatisticsGroupingKey {
 	POE_NATIONAL_USER(false, false, false, true),
 	IMPORT_USER(false,false,false,false),
 	REST_EXTERNAL_VISITS_USER(false,false,false,false);
+
+	/*
+	 * Hint for SonarQube issues:
+	 * 1. java:S115: Violation of name convention for String constants of this class is accepted: Close as false positive.
+	 */
 
 	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";

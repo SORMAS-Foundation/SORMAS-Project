@@ -2,6 +2,11 @@ package de.symeda.sormas.api.i18n;
 
 public interface Captions {
 
+	/*
+	 * Hint for SonarQube issues:
+	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
+	 */
+
 	public static String aboutCaseClassificationRules = "aboutCaseClassificationRules";
 	public static String aboutChangelog = "aboutChangelog";
 	public static String aboutDataDictionary = "aboutDataDictionary";
@@ -1378,4 +1383,4 @@ public interface Captions {
 	public static String WeeklyReportRegionSummary_officers = "WeeklyReportRegionSummary.officers";
 	public static String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	public static String weeklyReportsInDistrict = "weeklyReportsInDistrict";
- }
+}
