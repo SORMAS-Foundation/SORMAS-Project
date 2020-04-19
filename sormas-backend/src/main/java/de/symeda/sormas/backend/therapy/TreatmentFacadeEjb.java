@@ -39,7 +39,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private TreatmentService service;

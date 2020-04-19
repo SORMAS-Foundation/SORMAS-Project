@@ -89,8 +89,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private TaskService taskService;
@@ -110,8 +112,6 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-
-	private static final Logger logger = LoggerFactory.getLogger(TaskFacadeEjb.class);
 
 	public Task fromDto(TaskDto source) {		
 		if (source == null) {

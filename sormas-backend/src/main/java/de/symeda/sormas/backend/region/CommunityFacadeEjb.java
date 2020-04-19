@@ -58,7 +58,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class CommunityFacadeEjb implements CommunityFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private CommunityService communityService;

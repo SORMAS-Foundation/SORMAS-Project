@@ -44,7 +44,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private FeatureConfigurationService service;

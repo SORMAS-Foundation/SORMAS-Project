@@ -61,7 +61,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class DistrictFacadeEjb implements DistrictFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private DistrictService districtService;
@@ -70,7 +70,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@EJB
 	private RegionService regionService;
 	@EJB
-	protected PopulationDataFacadeEjbLocal populationDataFacade;
+	private PopulationDataFacadeEjbLocal populationDataFacade;
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveAsReference() {

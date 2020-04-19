@@ -70,7 +70,7 @@ public class MessagingService {
 	public static final String CONTENT_VISIT_COMPLETED = "notificationVisitCompleted";
 	public static final String CONTENT_DISEASE_CHANGED = "notificationDiseaseChanged";
 	
-	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private UserService userService;

@@ -25,6 +25,10 @@ import java.util.Date;
 
 public final class DateHelper8 {
 
+	private DateHelper8() {
+		// Hide Utility Class Constructor
+	}
+
 	public static LocalDate toLocalDate(Date date) {
 		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 	}

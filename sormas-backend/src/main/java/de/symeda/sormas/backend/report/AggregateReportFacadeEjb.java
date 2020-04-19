@@ -48,8 +48,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-	
+	private EntityManager em;
+
 	@EJB
 	private AggregateReportService service;
 	@EJB

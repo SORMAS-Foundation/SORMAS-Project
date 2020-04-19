@@ -22,8 +22,12 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class DiseaseHelper {
-	
+public final class DiseaseHelper {
+
+	private DiseaseHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	/**
 	 * Checks whether the given symptoms match the clinical criteria of one of the three Plague types.
 	 */

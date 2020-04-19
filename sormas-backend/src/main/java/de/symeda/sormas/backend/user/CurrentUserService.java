@@ -24,8 +24,11 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @LocalBean
 public class CurrentUserService {
 
-    @Resource
-    private SessionContext context;
+	@Resource
+	private SessionContext context;
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
     /**
      * Returns the User entity corresponding to the current user.
@@ -62,8 +65,4 @@ public class CurrentUserService {
             return new CurrentUser(null);
         }
     }
-
-
-    @PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-    protected EntityManager em;
 }

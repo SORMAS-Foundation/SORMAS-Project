@@ -30,7 +30,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private DiseaseConfigurationService service;

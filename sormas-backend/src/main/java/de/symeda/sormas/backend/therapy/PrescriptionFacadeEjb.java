@@ -40,7 +40,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private PrescriptionService service;

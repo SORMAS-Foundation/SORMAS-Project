@@ -85,7 +85,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class PersonFacadeEjb implements PersonFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private PersonService personService;

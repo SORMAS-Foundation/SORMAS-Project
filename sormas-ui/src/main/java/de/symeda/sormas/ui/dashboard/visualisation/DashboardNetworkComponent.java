@@ -23,9 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -41,8 +38,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class DashboardNetworkComponent extends VerticalLayout {
-
-	final static Logger logger = LoggerFactory.getLogger(DashboardNetworkComponent.class);
 
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;

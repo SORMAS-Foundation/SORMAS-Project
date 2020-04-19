@@ -70,6 +70,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@CurrentUserQualifier
 	private Instance<CurrentUser> currentUser;
 
+	// protected to be used by implementations
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 

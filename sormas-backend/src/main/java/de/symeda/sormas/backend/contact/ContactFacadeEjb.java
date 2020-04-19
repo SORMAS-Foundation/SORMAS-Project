@@ -113,10 +113,10 @@ import de.symeda.sormas.backend.visit.VisitService;
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private ContactService contactService;	

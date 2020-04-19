@@ -85,8 +85,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-    protected EntityManager em;
+	private EntityManager em;
 
     @EJB
     private VisitService visitService;
@@ -102,8 +104,6 @@ public class VisitFacadeEjb implements VisitFacade {
     private MessagingService messagingService;
     @EJB
     private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-
-    private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
 
     @Override
     public List<String> getAllActiveUuids() {

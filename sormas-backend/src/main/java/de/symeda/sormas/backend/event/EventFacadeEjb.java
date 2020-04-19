@@ -75,7 +75,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class EventFacadeEjb implements EventFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private UserService userService;

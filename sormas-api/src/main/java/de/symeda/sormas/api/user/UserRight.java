@@ -947,7 +947,8 @@ public enum UserRight {
 
 	private final Set<UserRole> defaultUserRoles;
 
-	private UserRight(UserRole... defaultUserRoles) {
+	UserRight(UserRole... defaultUserRoles) {
+
 		this.defaultUserRoles = Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(defaultUserRoles)));
 	}
 
@@ -958,5 +959,4 @@ public enum UserRight {
 	public Set<UserRole> getDefaultUserRoles() {
 		return defaultUserRoles;
 	}
-	
 }

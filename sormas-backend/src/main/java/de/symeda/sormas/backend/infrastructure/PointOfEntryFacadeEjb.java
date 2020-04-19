@@ -51,7 +51,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private PointOfEntryService service;

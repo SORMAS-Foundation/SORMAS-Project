@@ -77,7 +77,7 @@ import de.symeda.sormas.backend.util.PasswordHelper;
 public class UserFacadeEjb implements UserFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private UserService userService;

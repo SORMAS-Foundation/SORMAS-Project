@@ -218,10 +218,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
 
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private CaseClassificationFacadeEjbLocal caseClassificationFacade;

@@ -20,7 +20,11 @@ package de.symeda.sormas.api.facility;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class FacilityHelper {
+public final class FacilityHelper {
+
+	private FacilityHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	public static String buildFacilityString(String facilityUuid, String facilityName, String facilityDetails) {
 		StringBuilder result = new StringBuilder();

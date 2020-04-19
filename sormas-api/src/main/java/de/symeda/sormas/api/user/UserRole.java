@@ -106,8 +106,9 @@ public enum UserRole implements StatisticsGroupingKey {
 	private static Set<UserRole> officerRoles = null;
 	private static Set<UserRole> informantRoles = null;
 	private static Set<UserRole> portHealthUserRoles = null;
-	
-	private UserRole(boolean supervisor, boolean officer, boolean informant, boolean portHealthUser) {
+
+	UserRole(boolean supervisor, boolean officer, boolean informant, boolean portHealthUser) {
+
 		this.supervisor = supervisor;
 		this.officer = officer;
 		this.informant = informant;
@@ -116,7 +117,7 @@ public enum UserRole implements StatisticsGroupingKey {
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
 	public String toShortString() {
 		return I18nProperties.getEnumCaptionShort(this);

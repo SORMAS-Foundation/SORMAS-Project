@@ -17,10 +17,10 @@ import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public abstract class EntityDtoResource {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@EJB
-	TransactionWrapper transactionWrapper;
-	
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private TransactionWrapper transactionWrapper;
 
 	protected <T extends Object> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
 

@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
@@ -104,14 +103,13 @@ import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
 
-public class DownloadUtil {
-
-	public static final int DETAILED_EXPORT_STEP_SIZE = 50;
-	private static final Logger logger = LoggerFactory.getLogger(DownloadUtil.class);
+public final class DownloadUtil {
 
 	private DownloadUtil() {
-
+		// Hide Utility Class Constructor
 	}
+
+	public static final int DETAILED_EXPORT_STEP_SIZE = 50;
 
 	public static StreamResource createDatabaseExportStreamResource(DatabaseExportView databaseExportView, String fileName, String mimeType) {
 		StreamResource streamResource = new StreamResource(() -> {
@@ -323,7 +321,7 @@ public class DownloadUtil {
 					zos.close();
 					return new BufferedInputStream(new FileInputStream(new File(zipFile)));
 				} catch (IOException e) {
-					logger.error("Failed to generate a zip file for case management export.");
+				LoggerFactory.getLogger(DownloadUtil.class).error("Failed to generate a zip file for case management export.");
 					return null;
 				}
 		}, exportFileName);

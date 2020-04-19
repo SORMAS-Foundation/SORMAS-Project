@@ -48,7 +48,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private ClinicalVisitService service;

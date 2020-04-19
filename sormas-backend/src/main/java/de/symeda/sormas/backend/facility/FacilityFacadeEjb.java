@@ -68,6 +68,9 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "FacilityFacade")
 public class FacilityFacadeEjb implements FacilityFacade {
 
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
+
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -78,9 +81,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	private DistrictService districtService;
 	@EJB
 	private RegionService regionService;
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
 
 	@Override
 	public List<FacilityReferenceDto> getActiveHealthFacilitiesByCommunity(CommunityReferenceDto communityRef, boolean includeStaticFacilities) {

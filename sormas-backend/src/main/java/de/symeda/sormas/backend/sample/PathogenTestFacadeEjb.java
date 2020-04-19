@@ -68,8 +68,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "PathogenTestFacade")
 public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
@@ -89,8 +91,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-
-	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
 	@Override
 	public List<String> getAllActiveUuids() {

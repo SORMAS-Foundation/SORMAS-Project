@@ -25,7 +25,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	ClinicalCourseService service;
