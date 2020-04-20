@@ -803,7 +803,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else if (contactCriteria.getFollowUpUntilFrom() != null) {
 			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilFrom()));
 		} else if (contactCriteria.getFollowUpUntilTo() != null) {
-			if (Boolean.FALSE.equals(contactCriteria.getFollowUpUntilToPrecise())) {
+			if (!Boolean.TRUE.equals(contactCriteria.getFollowUpUntilToPrecise())) {
 				filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), contactCriteria.getFollowUpUntilTo()));
 			} else {
 				filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), DateHelper.getStartOfDay(contactCriteria.getFollowUpUntilTo()), DateHelper.getEndOfDay(contactCriteria.getFollowUpUntilTo())));
