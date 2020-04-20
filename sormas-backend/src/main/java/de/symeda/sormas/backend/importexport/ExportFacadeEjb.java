@@ -18,9 +18,8 @@
 package de.symeda.sormas.backend.importexport;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
@@ -106,31 +104,32 @@ public class ExportFacadeEjb implements ExportFacade {
 	@Override
 	public String generateDatabaseExportArchive(List<DatabaseTable> databaseTables) throws ExportErrorException, IOException {
 
-		Path tempPath = Paths.get(configFacade.getTempFilesPath());
 		// Create the folder if it doesn't exist
 		try {	
-			Files.createDirectories(tempPath);
+			Files.createDirectories(Paths.get(configFacade.getTempFilesPath()));
 		} catch (IOException e) {
 			logger.error("Temp directory doesn't exist and creation failed.");
 			throw e;
 		}
 
 		long startTime = System.currentTimeMillis();
-		Path csvTempPath = Files.createTempDirectory(tempPath, ImportExportUtils.TEMP_FILE_PREFIX);
-		String zipFilePath;
-		try {
-			// Export all selected tables to .csv files
-			List<Path> exportedCsvs = databaseExportService.exportAsCsvFiles(csvTempPath, databaseTables);
-
-			String formattedDate = DateHelper.formatDateForExport(new Date());
-			int exportId = new Random().nextInt(Integer.MAX_VALUE);
-	
-			// Create a zip containing all created .csv files
-			zipFilePath =
-				createZipFromFiles(csvTempPath, exportedCsvs, formattedDate, exportId);
 		
-		} finally {
-			Files.delete(csvTempPath);
+		Path zipPath = generateZipArchivePath();
+		
+		if (Files.exists(zipPath)) {
+			throw new IOException("File already exists: " + zipPath);
+		}
+		
+		try (OutputStream fos = Files.newOutputStream(zipPath); ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream( fos))) {
+			// Export all selected tables to .csv files
+			 databaseExportService.exportAsCsvFiles(zos, databaseTables);
+		} catch (RuntimeException e) {
+			Files.deleteIfExists(zipPath);
+			throw e;
+		} catch (IOException e) {
+			Files.deleteIfExists(zipPath);
+			logger.error("Failed to generate a zip file for database export.");
+			throw new ExportErrorException();
 		}
 		logger
 			.debug(
@@ -138,16 +137,21 @@ public class ExportFacadeEjb implements ExportFacade {
 				databaseTables.size(),
 				(System.currentTimeMillis() - startTime) / 1_000);
 
-		return zipFilePath;
+		return zipPath.toString();
 	}
 
 	@Override
 	public String generateZipArchive(String date, int randomNumber) {
-		Path path = new File(configFacade.getTempFilesPath()).toPath();
+		//XXX parameters are not respected
+		Path filePath = generateZipArchivePath();
+		return filePath.toString();
+	}
+
+	private Path generateZipArchivePath() {
+		Path path = Paths.get(configFacade.getTempFilesPath());
 		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + DateHelper.formatDateForExport(new Date()) + "_" + new Random().nextInt(Integer.MAX_VALUE) + ".zip";
 		Path filePath = path.resolve(fileName);
-		String zipPath = filePath.toString();
-		return zipPath;
+		return filePath;
 	}
 	
 	@Override
@@ -182,42 +186,6 @@ public class ExportFacadeEjb implements ExportFacade {
 		exportConfigurationService.delete(exportConfiguration);
 	}
 	
-	/**
-	 * Creates a zip by collecting all .csv files that match the file names of the passed databaseTables plus
-	 * the date and randomNumber suffixes. The zip is stored in the same export folder that contains the .csv files
-	 * and its file path is returned.
-	 */
-	private String createZipFromFiles(Path basePath, List<Path> files, String date, int randomNumber) throws ExportErrorException {
-		String zipPath = generateZipArchive(date, randomNumber);
-		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream( new FileOutputStream(zipPath)))) {
-			for (Path file : files) {
-				Path filePath = basePath.resolve(file);
-				
-				if (! filePath.normalize().startsWith(basePath.normalize())) {
-					throw new IOException(filePath + " is not child of " + basePath);
-				}
-				
-				Path relativePath = basePath.relativize(file);
-				zos.putNextEntry(new ZipEntry(relativePath.toString().replace(File.separatorChar, '/')));
-				Files.copy(filePath, zos);
-				zos.closeEntry();
-			}
-			return zipPath;
-		} catch (IOException e) {
-			logger.error("Failed to generate a zip file for database export.");
-			throw new ExportErrorException();
-		} finally {
-			//get rid of csv files
-			files.forEach(f -> {
-				try {
-					Files.deleteIfExists(f);
-				} catch (IOException e) {
-					logger.warn(e.getMessage(), e);
-				}
-			});
-		}
-	}
-
 	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source) {
 		ExportConfiguration target = exportConfigurationService.getByUuid(source.getUuid());
 		if (target == null) {

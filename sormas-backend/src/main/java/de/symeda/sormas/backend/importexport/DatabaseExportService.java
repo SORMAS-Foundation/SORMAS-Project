@@ -1,16 +1,16 @@
 package de.symeda.sormas.backend.importexport;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -20,10 +20,7 @@ import javax.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
@@ -103,104 +100,63 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.CLINICAL_VISIT_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id"));
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	/*
-	 * Export the given {@code databaseTables} as separate .csv files to the temp directory.
-	 * 
-	 * @param basePath
-	 * @param databaseTables
-	 *            The tables to export as separate .csv files.
-	 * @return the paths of the exported .csv files
-	 * @throws IOException
-	 */
-	public List<Path> exportAsCsvFiles(Path basePath, List<DatabaseTable> databaseTables) throws IOException {
+	public void exportAsCsvFiles(ZipOutputStream zos, List<DatabaseTable> databaseTables) throws IOException {
 
-		List<Path> csvFiles = new ArrayList<>();
-		try {
-			for (DatabaseTable databaseTable : databaseTables) {
+		//Writer must not be closed so it does not close the zip too early
+		Writer writer = new OutputStreamWriter(zos, StandardCharsets.UTF_8);
+		
+		// Export all selected tables to .csv files
+		for (DatabaseTable databaseTable : databaseTables) {
+			
+			zos.putNextEntry(new ZipEntry(databaseTable.getFileName() + ".csv"));
 
-				DatabaseExportConfiguration config = getConfig(databaseTable);
-				final String sql;
-				if (config.isUseJoinTable()) {
-					sql = String
-							.format(
-								COPY_WITH_JOIN_TABLE,
-								config.getTableName(),
-								config.getJoinTableName(),
-								config.getColumnName(),
-								config.getJoinColumnName());
-					} else {
-						sql = String.format(COPY_SINGLE_TABLE, config.getTableName());
-				}
-				Path p = copyToCsvFile(basePath, databaseTable.getFileName(), sql);
-				csvFiles.add(p);
+			DatabaseExportConfiguration config = getConfig(databaseTable);
+			final String sql;
+			if (config.isUseJoinTable()) {
+				sql = String
+						.format(
+							COPY_WITH_JOIN_TABLE,
+							config.getTableName(),
+							config.getJoinTableName(),
+							config.getColumnName(),
+							config.getJoinColumnName());
+				} else {
+					sql = String.format(COPY_SINGLE_TABLE, config.getTableName());
 			}
-		} catch (IOException | RuntimeException e) {
-			csvFiles.forEach(t -> {
-				try {
-					Files.deleteIfExists(t);
-				} catch (IOException e1) {
-					logger.warn(e1.getMessage(), e);
-				}
-			});
-			throw e;
-		}
-		return csvFiles;
+			writeCsv(writer, sql, databaseTable.getFileName());
+			writer.flush();
+	
+			zos.closeEntry();
+		};
 	}
 
 	/**
-	 * Run an export command and store the result directly into a .csv file.
-	 * 
-	 * @param basePath
-	 * @param fileName
-	 *            Human readable file name similar to selected entry.
+	 * Run an export command and write the result directly into a Writer
+	 * @param writer
 	 * @param sql
 	 *            Actual native sql command to copy data to CSV.
-	 * @return The full filename to where the export is done in {@link ConfigFacade#getTempFilesPath()}.
-	 * @throws IOException
+	 * @param fileName for debugging purposes: Human readable file name similar to selected entry
 	 */
-	private Path copyToCsvFile(Path basePath, String fileName, String sql) throws IOException {
-
-		long startTime = System.currentTimeMillis();
-
-		String fullFilename = fileName + ".csv";
-		Path filePath = basePath.resolve(fullFilename);
-
-		if (Files.exists(filePath)) {
-			throw new IOException("File already exists: " + filePath);
-		}
-
-		try (Writer target = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
-
-			/*
-			 * Here happens the PostgreSQL specific magic, which is not covered by JPA and
-			 * therefore solved with org.postgresql implementations.
-			 */
-			Session session = em.unwrap(Session.class);
-			session.doWork(conn -> {
-				PGConnection pgConn = conn.unwrap(PGConnection.class);
-				CopyManager copyManager = pgConn.getCopyAPI();
-				try {
-					copyManager.copyOut(sql, target);
-				} catch (SQLException e) {
-					throw new RuntimeException(String.format("Failed to export '%s' with COPY operation", fileName), e);
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
-				}
-			});
-		} catch (RuntimeException e) {
-			Files.deleteIfExists(filePath);
-			throw e;
-		}
-
-		logger.trace("copyToCsvFile(): Exported '{}' in {} ms. fullFilename='{}', sql='{}'", fileName,
-				System.currentTimeMillis() - startTime, fullFilename, sql);
-
-		return filePath;
+	private void writeCsv(Writer writer, String sql, String fileName) {
+		/*
+		 * Here happens the PostgreSQL specific magic, which is not covered by JPA and
+		 * therefore solved with org.postgresql implementations.
+		 */
+		Session session = em.unwrap(Session.class);
+		session.doWork(conn -> {
+			PGConnection pgConn = conn.unwrap(PGConnection.class);
+			CopyManager copyManager = pgConn.getCopyAPI();
+			try {
+				copyManager.copyOut(sql, writer);
+			} catch (SQLException e) {
+				throw new RuntimeException(String.format("Failed to export '%s' with COPY operation", fileName), e);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		});
 	}
 
 	static DatabaseExportConfiguration getConfig(DatabaseTable databaseTable) {
