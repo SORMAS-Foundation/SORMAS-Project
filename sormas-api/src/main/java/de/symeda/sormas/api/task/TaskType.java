@@ -1,19 +1,16 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
@@ -49,17 +46,21 @@ public enum TaskType {
 	DAILY_REPORT_GENERATION(TaskContext.GENERAL),
 	SURVEILLANCE_REPORT_GENERATION(TaskContext.GENERAL),
 	WEEKLY_REPORT_GENERATION(TaskContext.GENERAL);
-	
+
 	private final boolean creatorCommentRequired;
 	private final TaskContext[] taskContexts;
 
-	private TaskType(TaskContext... _taskContexts) {
-		this(false, _taskContexts);
+	TaskType(TaskContext... taskContexts) {
+		this(false, taskContexts);
 	}
 
-	private TaskType(boolean _creatoreCommentRequired, TaskContext... _taskContexts) {
-		creatorCommentRequired = _creatoreCommentRequired;
-		taskContexts = _taskContexts;
+	TaskType(boolean creatorCommentRequired, TaskContext... taskContexts) {
+		this.creatorCommentRequired = creatorCommentRequired;
+		this.taskContexts = taskContexts;
+	}
+
+	public boolean isCreatorCommentRequired() {
+		return creatorCommentRequired;
 	}
 
 	public TaskContext[] getTaskContexts() {
@@ -69,35 +70,31 @@ public enum TaskType {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
-	private static final EnumMap<TaskContext, List<TaskType>> taskTypesByContext;
-	
+
+	private static final EnumMap<TaskContext, List<TaskType>> TASK_TYPES_BY_CONTEXT;
 	static {
-		taskTypesByContext = new EnumMap<TaskContext, List<TaskType>> (TaskContext.class);
+		TASK_TYPES_BY_CONTEXT = new EnumMap<TaskContext, List<TaskType>>(TaskContext.class);
 		for (TaskType taskType : TaskType.values()) {
 			TaskContext[] taskContexts = taskType.getTaskContexts();
 			for (TaskContext taskContext : taskContexts) {
-				if (!taskTypesByContext.containsKey(taskContext)) {
-					taskTypesByContext.put(taskContext, new ArrayList<TaskType>());
+				if (!TASK_TYPES_BY_CONTEXT.containsKey(taskContext)) {
+					TASK_TYPES_BY_CONTEXT.put(taskContext, new ArrayList<TaskType>());
 				}
-				taskTypesByContext.get(taskContext).add(taskType);
+				TASK_TYPES_BY_CONTEXT.get(taskContext).add(taskType);
 			}
 		}
-		
+
 		// make lists in the map unmodifiable
-		for (Map.Entry<TaskContext, List<TaskType>> taskContext : taskTypesByContext.entrySet()) {
-			taskTypesByContext.put(taskContext.getKey(), Collections.unmodifiableList(taskContext.getValue()));
+		for (Map.Entry<TaskContext, List<TaskType>> taskContext : TASK_TYPES_BY_CONTEXT.entrySet()) {
+			TASK_TYPES_BY_CONTEXT.put(taskContext.getKey(), Collections.unmodifiableList(taskContext.getValue()));
 		}
 	}
-	
+
 	public static List<TaskType> getTaskTypes(TaskContext taskContext) {
+
 		if (taskContext == null) {
 			return Arrays.asList(TaskType.values());
 		}
-		return taskTypesByContext.get(taskContext);
-	}
-
-	public boolean isCreatorCommentRequired() {
-		return creatorCommentRequired;
+		return TASK_TYPES_BY_CONTEXT.get(taskContext);
 	}
 }

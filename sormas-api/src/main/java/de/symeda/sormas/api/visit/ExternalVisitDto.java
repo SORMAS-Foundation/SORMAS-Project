@@ -1,11 +1,12 @@
 package de.symeda.sormas.api.visit;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.utils.Required;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.Required;
 
 /**
  * The class ExternalVisitDto.

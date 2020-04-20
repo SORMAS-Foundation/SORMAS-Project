@@ -70,7 +70,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 		"rawtypes" })
 public abstract class AbstractTableField<E> extends CustomField<Collection> {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractTableField.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public static final String EDIT_COLUMN_ID = "editColumn";
 

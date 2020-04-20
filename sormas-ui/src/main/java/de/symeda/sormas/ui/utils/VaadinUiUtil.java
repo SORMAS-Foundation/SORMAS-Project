@@ -42,7 +42,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 
-public class VaadinUiUtil {
+public final class VaadinUiUtil {
+
+	private VaadinUiUtil() {
+		// Hide Utility Class Constructor
+	}
 
 	public static Window createPopupWindow() {
 		Window window = new Window(null);
@@ -114,11 +118,12 @@ public class VaadinUiUtil {
 	}
 
 	@SuppressWarnings("serial")
-	public static void addIconColumn(GeneratedPropertyContainer container, String iconPropertyId, VaadinIcons VaadinIconsIcon) {
+	public static void addIconColumn(GeneratedPropertyContainer container, String iconPropertyId, VaadinIcons vaadinIconsIcon) {
+
 		container.addGeneratedProperty(iconPropertyId, new PropertyValueGenerator<String>() {
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
-				return VaadinIconsIcon.getHtml();
+				return vaadinIconsIcon.getHtml();
 			}
 			@Override
 			public Class<String> getType() {

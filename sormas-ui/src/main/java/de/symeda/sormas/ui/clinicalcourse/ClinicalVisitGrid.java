@@ -2,9 +2,9 @@ package de.symeda.sormas.ui.clinicalcourse;
 
 import java.util.List;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.v7.ui.renderers.DateRenderer;

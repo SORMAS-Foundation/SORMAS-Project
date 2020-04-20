@@ -19,9 +19,9 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.Collection;
 
+import com.vaadin.v7.data.Container.Filter;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.Container.Filter;
 
 import de.symeda.sormas.api.user.UserRole;
 

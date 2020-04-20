@@ -51,7 +51,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
@@ -81,19 +80,14 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	private static final String[] REQUIRED_SCRIPTS = {"encodeGraphic.R", "networkFunction.R"};
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-	
+	private EntityManager em;
 
 	@EJB
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
-	
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
-	
-
-	private static final Logger logger = LoggerFactory.getLogger(VisualizationFacadeEjb.class);
 
 	@Override
 	public String buildTransmissionChainJson(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
@@ -238,7 +232,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 					String html = new String(Files.readAllBytes(outputFile));
 					return extractJson(html);
 				} else {
-					logger.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
+					LoggerFactory
+						.getLogger(VisualizationFacadeEjb.class)
+						.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
 					return null;
 				}
 				

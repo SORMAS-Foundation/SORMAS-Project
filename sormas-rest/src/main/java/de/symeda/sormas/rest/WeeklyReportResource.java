@@ -34,7 +34,6 @@ import javax.ws.rs.core.SecurityContext;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.report.WeeklyReportDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/weeklyreports")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })

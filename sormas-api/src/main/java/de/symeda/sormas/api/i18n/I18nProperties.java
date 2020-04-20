@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ResourceBundle;
 
-public class I18nProperties {
+public final class I18nProperties {
 
 	private static Map<Language, I18nProperties> instances = new HashMap<>();
 	private static ThreadLocal<Language> userLanguage = new ThreadLocal<>();
@@ -214,12 +214,12 @@ public class I18nProperties {
 		return StringUtils.isEmpty(result) ? defaultValue : result;
 	}
 
-
 	private I18nProperties() {
 		this(defaultLanguage);
 	}
 
 	private I18nProperties(Language language) {
+
 		this.captionProperties = loadProperties("captions", language.getLocaleWithCountryCode());
 		this.descriptionProperties = loadProperties("descriptions", language.getLocaleWithCountryCode());
 		this.enumProperties = loadProperties("enum", language.getLocaleWithCountryCode());

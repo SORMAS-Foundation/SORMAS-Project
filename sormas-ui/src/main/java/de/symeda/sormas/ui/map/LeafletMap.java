@@ -22,9 +22,6 @@ import java.lang.reflect.Method;
 import java.util.EventObject;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractJavaScriptComponent;
@@ -45,17 +42,15 @@ import elemental.json.JsonArray;
 @StyleSheet({ "vaadin://map/leaflet.css", "vaadin://map/leaflet.fullscreen.css", "vaadin://map/MarkerCluster.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
 
-	final static Logger logger = LoggerFactory.getLogger(LeafletMap.class);
-
 	private static final long serialVersionUID = 1671451734103288729L;
 
-	protected static int currMapId = 0;
+	private static int currMapId = 0;
 
 	public static int nextMapId() {
 		return ++currMapId;
 	}
 
-	protected int mapId = nextMapId();
+	private int mapId = nextMapId();
 
 	/**
 	 * Creates the chart object.
@@ -142,11 +137,9 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 
 	public interface MarkerClickListener extends Serializable {
 
-		public static final Method MARKER_CLICK_METHOD = ReflectTools.findMethod(MarkerClickListener.class,
-				"markerClick", MarkerClickEvent.class);
+		Method MARKER_CLICK_METHOD = ReflectTools.findMethod(MarkerClickListener.class, "markerClick", MarkerClickEvent.class);
 
-		public void markerClick(MarkerClickEvent event);
-
+		void markerClick(MarkerClickEvent event);
 	}
 
 	public static class MarkerClickEvent extends EventObject {

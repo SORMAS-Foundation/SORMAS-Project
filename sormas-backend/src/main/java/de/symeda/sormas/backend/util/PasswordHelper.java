@@ -25,7 +25,11 @@ import java.security.SecureRandom;
 
 import javax.validation.ValidationException;
 
-public class PasswordHelper {
+public final class PasswordHelper {
+
+	private PasswordHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	private static final char[] PASSWORD_CHARS = new char[26-2 + 26-3 + 8];
 	static {

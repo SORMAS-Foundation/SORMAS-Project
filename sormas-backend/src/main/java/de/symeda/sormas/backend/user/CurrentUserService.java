@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.user;
 
-import de.symeda.sormas.backend.util.ModelConstants;
-
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
@@ -17,6 +15,8 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.backend.util.ModelConstants;
+
 /**
  * The class CurrentUserService.
  */
@@ -24,8 +24,11 @@ import javax.transaction.Transactional;
 @LocalBean
 public class CurrentUserService {
 
-    @Resource
-    private SessionContext context;
+	@Resource
+	private SessionContext context;
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
     /**
      * Returns the User entity corresponding to the current user.
@@ -62,8 +65,4 @@ public class CurrentUserService {
             return new CurrentUser(null);
         }
     }
-
-
-    @PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-    protected EntityManager em;
 }

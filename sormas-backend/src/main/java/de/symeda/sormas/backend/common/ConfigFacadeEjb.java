@@ -76,7 +76,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	
 	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
 
-	private static final Logger logger = LoggerFactory.getLogger(ConfigFacadeEjb.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup="sormas/Properties")
 	private Properties props;

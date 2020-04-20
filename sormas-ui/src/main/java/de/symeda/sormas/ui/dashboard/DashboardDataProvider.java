@@ -39,7 +39,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.ui.UserProvider;
 
 public class DashboardDataProvider {
 

@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Page;
@@ -59,6 +60,9 @@ public class LoginScreen extends CssLayout {
 
 	private static final String UTF_8 = "UTF-8";
 	private static final int LOGO_WIDTH = 250;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private LoginListener loginListener;
 
 	public LoginScreen(LoginListener loginListener) {
@@ -103,7 +107,7 @@ public class LoginScreen extends CssLayout {
 			loginDetailsLayout.addComponent(loginLayout, "login");
 			return loginDetailsLayout;
 		} else {
-			LoggerFactory.getLogger(LoginScreen.class).warn("Location for login is missing in loginmain.html");
+			logger.warn("Location for login is missing in loginmain.html");
 			return loginLayout;
 		}
 	}

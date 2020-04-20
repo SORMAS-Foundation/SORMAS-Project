@@ -59,11 +59,12 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class ContactImporter extends DataImporter {
 
-	CaseDataDto caze;
-	UI currentUI;
+	private CaseDataDto caze;
+	private UI currentUI;
 
 	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser,
 			CaseDataDto caze) {
+
 		super(inputFile, hasEntityClassRow, currentUser);
 		this.caze = caze;
 	}

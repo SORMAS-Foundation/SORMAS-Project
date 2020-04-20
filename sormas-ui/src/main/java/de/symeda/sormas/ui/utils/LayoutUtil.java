@@ -25,8 +25,11 @@ package de.symeda.sormas.ui.utils;
  * @author HReise
  *
  */
-public class LayoutUtil {
+public final class LayoutUtil {
 
+	private LayoutUtil() {
+		// Hide Utility Class Constructor
+	}
 
 	public static String locCss(String cssClasses, String location) {
 		StringBuilder sb = new StringBuilder();

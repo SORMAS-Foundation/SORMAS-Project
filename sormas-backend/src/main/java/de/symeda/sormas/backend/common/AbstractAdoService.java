@@ -17,16 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.user.CurrentUser;
-import de.symeda.sormas.backend.user.CurrentUserQualifier;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.ModelConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -47,13 +44,18 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.user.CurrentUser;
+import de.symeda.sormas.backend.user.CurrentUserQualifier;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 public abstract class AbstractAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
@@ -68,6 +70,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@CurrentUserQualifier
 	private Instance<CurrentUser> currentUser;
 
+	// protected to be used by implementations
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
@@ -75,7 +78,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		this.elementClass = elementClass;
 	}
 
-	public User getCurrentUser() {
+	protected User getCurrentUser() {
 		return currentUser.get().getUser();
 	}
 
@@ -174,16 +177,14 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return resultList;
 	}
 	
-	public List<String> getAllUuids(User user) {
+	public List<String> getAllUuids() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(getElementClass());
 
-		if (user != null) {
-			Predicate filter = createUserFilter(cb, cq, from);
-			if (filter != null) {
-				cq.where(filter);
-			}
+		Predicate filter = createUserFilter(cb, cq, from);
+		if (filter != null) {
+			cq.where(filter);
 		}
 		
 		cq.select(from.get(AbstractDomainObject.UUID));

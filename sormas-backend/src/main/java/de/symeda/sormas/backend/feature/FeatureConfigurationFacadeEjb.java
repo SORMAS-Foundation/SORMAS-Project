@@ -44,7 +44,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private FeatureConfigurationService service;
@@ -75,9 +75,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-
-		return service.getAllUuids(user);
+		return service.getAllUuids();
 	}
 
 	@Override

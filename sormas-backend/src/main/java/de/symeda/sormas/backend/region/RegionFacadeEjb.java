@@ -49,7 +49,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -58,18 +57,18 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class RegionFacadeEjb implements RegionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
-	protected RegionService regionService;
+	private RegionService regionService;
 	@EJB
-	protected UserService userService;
+	private UserService userService;
 	@EJB
-	protected DistrictService districtService;
+	private DistrictService districtService;
 	@EJB
-	protected CommunityService communityService;
+	private CommunityService communityService;
 	@EJB
-	protected PopulationDataFacadeEjbLocal populationDataFacade;
+	private PopulationDataFacadeEjbLocal populationDataFacade;
 	
 	@Override
 	public List<RegionReferenceDto> getAllActiveAsReference() {
@@ -162,13 +161,11 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return regionService.getAllUuids(user);
+		return regionService.getAllUuids();
 	}
 
 	@Override

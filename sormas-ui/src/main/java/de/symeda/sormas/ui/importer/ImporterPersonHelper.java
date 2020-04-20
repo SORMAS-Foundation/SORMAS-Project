@@ -9,7 +9,11 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 
-public abstract class ImporterPersonHelper {
+public final class ImporterPersonHelper {
+
+	private ImporterPersonHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	public static RegionReferenceDto getRegionBasedOnDistrict(String propertyName, CaseDataDto caze, ContactDto contact, PersonDto person, Object currentElement) {
 		if (currentElement instanceof CaseDataDto) {

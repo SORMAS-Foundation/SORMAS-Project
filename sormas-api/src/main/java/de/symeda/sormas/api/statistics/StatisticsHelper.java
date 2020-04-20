@@ -43,7 +43,11 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 
-public class StatisticsHelper {
+public final class StatisticsHelper {
+
+	private StatisticsHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	public static final String VALUE_UNKNOWN = "VALUE_UNKNOWN";
 	public static final String TOTAL = "total";

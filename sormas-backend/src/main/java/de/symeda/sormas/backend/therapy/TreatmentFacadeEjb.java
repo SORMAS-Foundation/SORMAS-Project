@@ -39,7 +39,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private TreatmentService service;
@@ -96,7 +96,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	public void deleteTreatment(String treatmentUuid) {
 		User user = userService.getCurrentUser();
 		// TODO replace this with a proper user right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
+		if (!user.hasAnyUserRole(UserRole.ADMIN, UserRole.CASE_SUPERVISOR)) {
 			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete treatments");
 		}
 		
@@ -159,7 +159,6 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				treatment.get(Treatment.ROUTE_DETAILS),
 				treatment.get(Treatment.ADDITIONAL_NOTES));
 		
-		User user = userService.getCurrentUser();
 		Predicate filter = service.createUserFilter(cb, cq, treatment);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);

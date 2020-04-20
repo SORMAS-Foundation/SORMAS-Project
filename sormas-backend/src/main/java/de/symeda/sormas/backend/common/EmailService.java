@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 @LocalBean
 public class EmailService {
 
-	private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Resource(name = "mail/MailSession")
 	private Session mailSession;

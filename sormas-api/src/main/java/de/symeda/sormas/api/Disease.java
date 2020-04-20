@@ -84,8 +84,9 @@ public enum Disease implements StatisticsGroupingKey {
 	private boolean defaultCaseBased;
 	private boolean defaultFollowUpEnabled;
 	private int defaultFollowUpDuration;
-	
-	private Disease(boolean defaultActive, boolean defaultPrimary, boolean defaultCaseBased, boolean defaultFollowUpEnabled, int defaultFollowUpDuration) {
+
+	Disease(boolean defaultActive, boolean defaultPrimary, boolean defaultCaseBased, boolean defaultFollowUpEnabled, int defaultFollowUpDuration) {
+
 		this.defaultActive = defaultActive;
 		this.defaultPrimary = defaultPrimary;
 		this.defaultCaseBased = defaultCaseBased;

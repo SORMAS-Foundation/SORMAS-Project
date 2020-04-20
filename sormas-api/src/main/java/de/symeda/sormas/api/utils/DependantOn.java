@@ -38,7 +38,11 @@ import java.util.List;
 public @interface DependantOn {
     String value();
 
-    public static class DependencyConfiguration {
+	public static final class DependencyConfiguration {
+
+		private DependencyConfiguration() {
+			// Hide Utility Class Constructor
+		}
 
     	// TODO thread safety, etc.?!
     	private static final HashMap<Class<?>,HashMap<String,String>> parentsCache = new HashMap<>();

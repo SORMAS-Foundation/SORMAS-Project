@@ -26,13 +26,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>

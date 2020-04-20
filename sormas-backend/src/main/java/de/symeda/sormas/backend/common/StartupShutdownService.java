@@ -104,9 +104,10 @@ public class StartupShutdownService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)
-	protected EntityManager emAudit;
+	private EntityManager emAudit;
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB

@@ -218,10 +218,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
 
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private CaseClassificationFacadeEjbLocal caseClassificationFacade;
@@ -302,13 +302,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
-		final User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllActiveCasesAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return caseService.getAllActiveCasesAfter(date).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -326,7 +324,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> root = cq.from(Case.class);
-		User user = userService.getCurrentUser();
 		Predicate filter = caseService.createUserFilter(cb, cq, root);
 
 		if (caseCriteria != null) {
@@ -351,7 +348,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		selectIndexDtoFields(cq, caze);
 		setIndexDtoSortingOrder(cb, cq, caze, sortProperties);
 
-		User user = userService.getCurrentUser();
 		Predicate filter = caseService.createUserFilter(cb, cq, caze);
 
 		if (caseCriteria != null) {
@@ -431,7 +427,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.distinct(true);
 
-		User user = userService.getCurrentUser();
 		Predicate filter = caseService.createUserFilter(cb, cq, caseRoot);
 
 		if (caseCriteria != null) {
@@ -668,19 +663,15 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<String> getAllActiveUuids() {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllActiveUuids(user);
+		return caseService.getAllActiveUuids();
 	}
 
 	@Override
 	public List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria) {
-		User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardCaseDto> cq = cb.createQuery(DashboardCaseDto.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -715,9 +706,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			Disease disease, Date from, Date to) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		User user = userService.getCurrentUser();
 
-		return caseService.getCasesForMap(region, district, disease, from, to, user);
+		return caseService.getCasesForMap(region, district, disease, from, to);
 	}
 
 	@Override
@@ -729,8 +719,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, boolean includeSharedCases) {
-		User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
@@ -754,8 +742,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, boolean includeSharedCases) {
-		User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
@@ -780,8 +766,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean includeSharedCases) {
-		User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
@@ -805,8 +789,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public Map<Disease, District> getLastReportedDistrictByDisease(CaseCriteria caseCriteria, boolean includeSharedCases) {
-			User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
@@ -841,7 +823,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria) {
-		User user = userService.getCurrentUser();
 		CaseCriteria caseCriteria = criteria.getCaseCriteria();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -883,8 +864,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion) {
-		User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
@@ -1128,8 +1107,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean includeSharedCases) {
-		User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
@@ -1609,24 +1586,20 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return caseService.getArchivedUuidsSince(user, since);
+		return caseService.getArchivedUuidsSince(since);
 	}
 
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return caseService.getDeletedUuidsSince(user, since);
+		return caseService.getDeletedUuidsSince(since);
 	}
 
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target) {

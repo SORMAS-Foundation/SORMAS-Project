@@ -48,8 +48,6 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.BurialConductor;
-import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -62,7 +60,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -88,7 +85,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class PersonFacadeEjb implements PersonFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private PersonService personService;
@@ -112,14 +109,11 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<String> getAllUuids() {
-
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return personService.getAllUuids(user);
+		return personService.getAllUuids();
 	}
 
 	@Override
@@ -176,7 +170,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria) {
-		User user = userService.getCurrentUser();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);

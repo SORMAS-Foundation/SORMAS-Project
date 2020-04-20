@@ -93,8 +93,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private SampleService sampleService;
@@ -120,8 +122,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
-
-	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -225,7 +225,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), sample.get(Sample.PATHOGEN_TEST_RESULT), 
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
 
-		User user = userService.getCurrentUser();
 		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
@@ -375,7 +374,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				caze.get(Case.HEALTH_FACILITY_DETAILS)
 				);
 
-		User user = userService.getCurrentUser();
 		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
@@ -482,7 +480,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Sample> root = cq.from(Sample.class);
-		User user = userService.getCurrentUser();
 		Predicate filter = sampleService.createUserFilter(cb, cq, root);
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, root);

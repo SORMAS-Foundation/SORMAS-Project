@@ -110,15 +110,17 @@ public class TaskService extends AbstractAdoService<Task> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task, Task> taskPath) {
 		// National users can access all tasks in the system
-		if (getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+		User currentUser = getCurrentUser();
+		if (currentUser.hasAnyUserRole(
+				UserRole.NATIONAL_USER,
+				UserRole.NATIONAL_CLINICIAN,
+				UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
 
 		// whoever created the task or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), getCurrentUser());
-		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), getCurrentUser()));
+		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), currentUser);
+		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), currentUser));
 
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
 		if (caseFilter != null) {
