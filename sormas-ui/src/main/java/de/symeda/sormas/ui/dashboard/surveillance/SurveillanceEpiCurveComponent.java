@@ -39,6 +39,7 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 
@@ -92,7 +93,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 		Calendar calendar = Calendar.getInstance();
 		for (Date date : filteredDates) {
 			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-				String label = DateHelper.formatLocalShortDate(date);
+				String label = DateFormatHelper.formatDate(date);
 				newLabels.add(label);
 			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
 				calendar.setTime(date);

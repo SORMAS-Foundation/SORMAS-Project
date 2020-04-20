@@ -26,6 +26,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -53,7 +54,7 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 	public PersonSelectionField(PersonDto referencePerson, String infoText) {
 		this.referencePerson = referencePerson;
 		this.infoText = infoText;
-		
+
 		initializeGrid();
 	}
 
@@ -81,8 +82,8 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 		personDetailsLayout.addComponent(lblNickname);
 
 		Label lblBirthDateAndAge = new Label(PersonHelper.getAgeAndBirthdateString(
-				referencePerson.getApproximateAge(), referencePerson.getApproximateAgeType(), 
-				referencePerson.getBirthdateDD(), referencePerson.getBirthdateMM(), referencePerson.getBirthdateYYYY()));
+				referencePerson.getApproximateAge(), referencePerson.getApproximateAgeType(),
+				referencePerson.getBirthdateDD(), referencePerson.getBirthdateMM(), referencePerson.getBirthdateYYYY(), FacadeProvider.getUserFacade().getCurrentUser().getLanguage()));
 		lblBirthDateAndAge.setWidthUndefined();
 		lblBirthDateAndAge.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
 		personDetailsLayout.addComponent(lblBirthDateAndAge);
@@ -190,7 +191,7 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 		addSelectPersonRadioGroup();
 		mainLayout.addComponent(personGrid);
 		addCreatePersonRadioGroup();
-		
+
 		rbSelectPerson.setValue(SELECT_PERSON);
 
 		//		setInternalValue(super.getInternalValue());

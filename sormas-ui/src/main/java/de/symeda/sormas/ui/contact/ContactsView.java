@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -87,16 +88,6 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -245,7 +236,7 @@ public class ContactsView extends AbstractView {
 																	I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
 																			I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
 							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 							}
 							return caption;
 						},

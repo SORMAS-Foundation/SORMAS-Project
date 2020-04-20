@@ -80,27 +80,25 @@ public class PersonHelperTest {
 
 	@Test
 	public void testFormatBirthdateEN() throws Exception {
-		I18nProperties.setUserLanguage(Language.EN);
-		assertEquals("", PersonHelper.formatBirthdate(null, null, null));
-		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990));
-		assertEquals("7//1990", PersonHelper.formatBirthdate(null, 7, 1990));
-		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null));
-		assertEquals("7/5", PersonHelper.formatBirthdate(5, 7, null));
-		assertEquals("5", PersonHelper.formatBirthdate(5, null, null));
-		assertEquals("5/1990", PersonHelper.formatBirthdate(5, null, 1990));
-		assertEquals("7/5/1990", PersonHelper.formatBirthdate(5, 7, 1990));
+		assertEquals("", PersonHelper.formatBirthdate(null, null, null, Language.EN));
+		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990, Language.EN));
+		assertEquals("7//1990", PersonHelper.formatBirthdate(null, 7, 1990, Language.EN));
+		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null, Language.EN));
+		assertEquals("7/5", PersonHelper.formatBirthdate(5, 7, null, Language.EN));
+		assertEquals("5", PersonHelper.formatBirthdate(5, null, null, Language.EN));
+		assertEquals("5/1990", PersonHelper.formatBirthdate(5, null, 1990, Language.EN));
+		assertEquals("7/5/1990", PersonHelper.formatBirthdate(5, 7, 1990, Language.EN));
 	}
 
 	@Test
 	public void testFormatBirthdateDE() throws Exception {
-		I18nProperties.setUserLanguage(Language.DE);
-		assertEquals("", PersonHelper.formatBirthdate(null, null, null));
-		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990));
-		assertEquals("7.1990", PersonHelper.formatBirthdate(null, 7, 1990));
-		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null));
-		assertEquals("5.7", PersonHelper.formatBirthdate(5, 7, null));
-		assertEquals("5", PersonHelper.formatBirthdate(5, null, null));
-		assertEquals("5..1990", PersonHelper.formatBirthdate(5, null, 1990));
-		assertEquals("5.7.1990", PersonHelper.formatBirthdate(5, 7, 1990));
+		assertEquals("", PersonHelper.formatBirthdate(null, null, null, Language.DE));
+		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990, Language.DE));
+		assertEquals("7.1990", PersonHelper.formatBirthdate(null, 7, 1990, Language.DE));
+		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null, Language.DE));
+		assertEquals("5.7", PersonHelper.formatBirthdate(5, 7, null, Language.DE));
+		assertEquals("5", PersonHelper.formatBirthdate(5, null, null, Language.DE));
+		assertEquals("5..1990", PersonHelper.formatBirthdate(5, null, 1990, Language.DE));
+		assertEquals("5.7.1990", PersonHelper.formatBirthdate(5, 7, 1990, Language.DE));
 	}
 }

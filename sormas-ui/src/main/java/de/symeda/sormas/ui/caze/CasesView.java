@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import de.symeda.sormas.ui.utils.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -92,15 +93,6 @@ import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsLayout;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -270,7 +262,7 @@ public class CasesView extends AbstractView {
 									EpiDataDto.I18N_PREFIX,
 									HospitalizationDto.I18N_PREFIX);
 							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 							}
 							return caption;
 						},
@@ -297,7 +289,7 @@ public class CasesView extends AbstractView {
 									PersonDto.I18N_PREFIX,
 									AdditionalTestDto.I18N_PREFIX);
 							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 							}
 							return caption;
 						},
@@ -331,7 +323,7 @@ public class CasesView extends AbstractView {
 													EpiDataDto.I18N_PREFIX,
 													HospitalizationDto.I18N_PREFIX);
 											if (Date.class.isAssignableFrom(type)) {
-												caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+												caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 											}
 											return caption;
 										},

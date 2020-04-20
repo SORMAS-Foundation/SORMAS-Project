@@ -11,6 +11,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Label;
 
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -22,6 +23,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.CasePickOrCreateField;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
 public class CasePickOrImportField extends CasePickOrCreateField {
@@ -72,7 +74,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 
 			Label reportDateField = new Label();
 			reportDateField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
-			reportDateField.setValue(DateHelper.formatLocalShortDate(importedCase.getReportDate()));
+			reportDateField.setValue(DateFormatHelper.formatDate(importedCase.getReportDate()));
 			reportDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(reportDateField);
 
@@ -89,12 +91,12 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			caseInfoLayout.addComponent(districtField);
 
 			Label facilityField = new Label();
-			facilityField.setValue(FacilityHelper.buildFacilityString(null, 
-					importedCase.getHealthFacility() != null ? importedCase.getHealthFacility().toString() : "", 
-							importedCase.getHealthFacilityDetails()));
+			facilityField.setValue(FacilityHelper.buildFacilityString(null,
+					importedCase.getHealthFacility() != null ? importedCase.getHealthFacility().toString() : "",
+					importedCase.getHealthFacilityDetails()));
 			facilityField.setWidthUndefined();
 			caseInfoLayout.addComponent(facilityField);
-			
+
 			Label firstNameField = new Label();
 			firstNameField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 			firstNameField.setValue(importedPerson.getFirstName());
@@ -109,8 +111,8 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 
 			Label ageAndBirthDateField = new Label();
 			ageAndBirthDateField.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
-			ageAndBirthDateField.setValue(PersonHelper.getAgeAndBirthdateString(importedPerson.getApproximateAge(), importedPerson.getApproximateAgeType(), 
-					importedPerson.getBirthdateDD(), importedPerson.getBirthdateMM(), importedPerson.getBirthdateYYYY()));
+			ageAndBirthDateField.setValue(PersonHelper.getAgeAndBirthdateString(importedPerson.getApproximateAge(), importedPerson.getApproximateAgeType(),
+					importedPerson.getBirthdateDD(), importedPerson.getBirthdateMM(), importedPerson.getBirthdateYYYY(), FacadeProvider.getUserFacade().getCurrentUser().getLanguage()));
 			ageAndBirthDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(ageAndBirthDateField);
 
@@ -124,7 +126,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 		caseInfoContainer.addComponent(caseInfoLayout);
 		mainLayout.addComponent(caseInfoContainer);
 	}
-	
+
 	@Override
 	protected Component initContent() {
 		addInfoComponent();
@@ -134,22 +136,22 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 		overrideCheckBox.setCaption(I18nProperties.getCaption(Captions.caseImportMergeCase));
 		CssStyles.style(overrideCheckBox, CssStyles.VSPACE_3);
 		mainLayout.addComponent(overrideCheckBox);
-		
+
 		addAndConfigureGrid();
 		addCreateCaseComponent();
-		
+
 		pickCase.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				overrideCheckBox.setEnabled(true);
 			}
 		});
-		
+
 		createCase.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				overrideCheckBox.setEnabled(false);
 			}
 		});
-		
+
 		setInternalValue(super.getInternalValue());
 		pickCase.setValue(PICK_CASE);
 
