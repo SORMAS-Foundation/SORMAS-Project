@@ -39,17 +39,15 @@ import com.vaadin.v7.data.Validator.InvalidValueException;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.sample.*;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -58,6 +56,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.lang3.time.DateUtils;
 
 public class SampleController {
 
@@ -110,7 +109,7 @@ public class SampleController {
 				}
 			}
 		});
-		
+
 		// Reload the page when the form is discarded because the sample has been saved before
 		createView.addDiscardListener(new DiscardListener() {
 			@Override
@@ -160,7 +159,7 @@ public class SampleController {
 		Button referOrLinkToOtherLabButton = new Button();
 		referOrLinkToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
 		if (dto.getReferredTo() == null) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
+			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
 				referOrLinkToOtherLabButton.setCaption(I18nProperties.getCaption(Captions.sampleRefer));
 				referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
 					private static final long serialVersionUID = 1L;
@@ -182,7 +181,11 @@ public class SampleController {
 			}
 		} else {
 			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
-			referOrLinkToOtherLabButton.setCaption(I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDto.getLab().toString());
+			FacilityReferenceDto referredDtoLab = referredDto.getLab();
+			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null
+					? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " " + DateHelper.formatLocalDateTime(referredDto.getSampleDateTime())
+					: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
+			referOrLinkToOtherLabButton.setCaption(referOrLinkToOtherLabButtonCaption);
 			referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
@@ -194,6 +197,8 @@ public class SampleController {
 			editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
 			editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 		}
+
+		editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(dto.getReferredTo() == null || dto.getSamplePurpose() != SamplePurpose.EXTERNAL);
 
 		return editView;
 	}
@@ -231,13 +236,13 @@ public class SampleController {
 			}
 		});
 	}
-	
+
 	public void showChangePathogenTestResultWindow(CommitDiscardWrapperComponent<SampleEditForm> editComponent, String sampleUuid, PathogenTestResultType newResult, Runnable callback) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
-		
+
 		ConfirmationComponent confirmationComponent = VaadinUiUtil.buildYesNoConfirmationComponent();
-		
+
 		Label description = new Label(String.format(I18nProperties.getString(Strings.messageChangePathogenTestResult), newResult.toString()));
 		description.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(description);
@@ -245,7 +250,7 @@ public class SampleController {
 		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
 		layout.setSizeUndefined();
 		layout.setSpacing(true);
-		
+
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setSizeUndefined();
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingChangePathogenTestResult));
@@ -274,7 +279,7 @@ public class SampleController {
 
 	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoSamplesSelected), 
+			new Notification(I18nProperties.getString(Strings.headingNoSamplesSelected),
 					I18nProperties.getString(Strings.messageNoSamplesSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()), () -> {
