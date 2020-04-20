@@ -33,10 +33,9 @@ WebUI.delay(1)
 int rows = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(Helper.createTestObjectWithXPath('//table[@aria-rowcount]'))
 
 if (rows == 1) {
-    //WebUI.closeBrowser()
+    WebUI.closeBrowser()
 } else {
-    //WebUI.closeBrowser()
-
+    WebUI.closeBrowser()
     throw new com.kms.katalon.core.exception.StepFailedException('Expected one row but found ' + rows)
 }
 

@@ -20,6 +20,7 @@ WebUI.delay(1)
 
 int droppedRows = Table.getNumberOfTableRows()
 if (droppedRows >= unfilteredRows) {
+	WebUI.closeBrowser()
 	throw new StepFailedException('Please consider other testdata - the number of unfiltered and dropped contacts is the same.')
 }
 
@@ -29,6 +30,7 @@ WebUI.delay(1)
 int rowsAfterReset = Table.getNumberOfTableRows()
 println('rows before filter: ' + unfilteredRows + ' rows after reset: ' + rowsAfterReset)
 if (unfilteredRows != rowsAfterReset) {
+	WebUI.closeBrowser()
 	throw new StepFailedException('Number of rows before filtering and after resetting the filter is not the same: ' + unfilteredRows + ' != ' + rowsAfterReset)
 }
 
