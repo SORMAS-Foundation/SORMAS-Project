@@ -22,6 +22,8 @@ public class TableContent {
 		int columnIndex = -1
 		for (int i = 0; i < getNumberOfColumns(); i++) {
 			String name = getTableHeaders().get(i)
+			println(name)
+			println(columnName)
 			if (columnName.equalsIgnoreCase(name)) {
 				columnIndex = i
 				break

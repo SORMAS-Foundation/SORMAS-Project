@@ -43,7 +43,7 @@ String typeBlood = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDa
 String typeNasalSwab = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'sample-type-nasal')
 
 TableContent content = Table.getVisibleTableContent()
-
+println(content.getTableRows())
 String typeOfSample = content.getRowData(0, sampleTypeColumnName)
 
 String futureTypeOfSample = typeOfSample.equalsIgnoreCase(typeBlood) ? typeNasalSwab : typeBlood
