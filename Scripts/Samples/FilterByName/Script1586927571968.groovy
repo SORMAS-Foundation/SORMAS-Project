@@ -13,7 +13,7 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'),
 
 WebUI.callTestCase(findTestCase('Samples/partials/switchToSamples'), [:], FailureHandling.STOP_ON_FAILURE)
 
-String caseName = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, "case-with-samples")
+String caseName = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'test-filter-by-name')
 println('searching for case: ' + caseName)
 WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_searchName'), caseName)
 
