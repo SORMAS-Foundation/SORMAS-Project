@@ -45,7 +45,6 @@ String typeNasalSwab = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTe
 WebUI.click(findTestObject('Samples/MainView/edit_sample_from_table'))
 
 String typeOfSample = WebUI.getAttribute(findTestObject('Object Repository/Samples/SampleInformation/input_TypeOfSample'), 'value')
-//String typeOfSample = WebUI.getText(findTestObject('Object Repository/Samples/SampleInformation/input_TypeOfSample'))
 
 String futureTypeOfSample = typeOfSample.equalsIgnoreCase(typeBlood) ? typeNasalSwab : typeBlood
 
@@ -69,7 +68,6 @@ WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/link_Sam
 
 // CHECK
 WebUI.click(findTestObject('Samples/MainView/edit_sample_from_table'))
-// content = Table.getVisibleTableContent()
 
 String currentTypeOfSample = WebUI.getAttribute(findTestObject('Object Repository/Samples/SampleInformation/input_TypeOfSample'), 'value')
 
