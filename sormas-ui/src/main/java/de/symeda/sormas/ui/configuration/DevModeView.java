@@ -59,6 +59,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -90,14 +91,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		DateField startDateField = new DateField();
 		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeStartDate));
-		startDateField.setDateFormat(DateHelper.getLocalDatePattern());
+		startDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		startDateField.setLenient(true);
 		caseGeneratorConfigBinder.bind(startDateField, CaseGenerationConfig::getStartDate, CaseGenerationConfig::setStartDate);
 		caseGeneratorLayout.addComponent(startDateField);
 
 		DateField endDateField = new DateField();
 		endDateField.setCaption(I18nProperties.getCaption(Captions.devModeEndDate));
-		endDateField.setDateFormat(DateHelper.getLocalDatePattern());
+		endDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		endDateField.setLenient(true);
 		caseGeneratorConfigBinder.bind(endDateField, CaseGenerationConfig::getEndDate, CaseGenerationConfig::setEndDate);
 		caseGeneratorLayout.addComponent(endDateField);

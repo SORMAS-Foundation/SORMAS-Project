@@ -90,7 +90,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} 
 		else if (DateField.class.isAssignableFrom(fieldType)) {
 			DateField field = super.createField(type, DateField.class);
-			field.setDateFormat(DateHelper.getLocalDatePattern());
+			field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 			field.setLenient(true);
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
@@ -111,7 +111,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {
 				DateField field = super.createField(type, DateField.class);
-				field.setDateFormat(DateHelper.getLocalDatePattern());
+				field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 				field.setLenient(true);
 				field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 				return (T) field;

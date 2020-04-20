@@ -47,32 +47,12 @@ public final class DateHelper {
 	private static final SimpleDateFormat EXPORT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final SimpleDateFormat DATE_WITH_MONTH_ABBREVIATION_FORMAT = new SimpleDateFormat("MMM yyyy");
 
-	// Methods to create pattern/date formats that use the system's locale.
-	// Taken from
-	// https://docs.oracle.com/javase/6/docs/api/java/text/DateFormat.html#getDateInstance%28int%29:
-	// "You can also set the time zone on the format if you wish. If you want even
-	// more control over the format or parsing,
-	// (or want to give your users more control), you can try casting the DateFormat
-	// you get from the factory methods to a SimpleDateFormat.
-	// This will work for the majority of countries; just remember to put it in a
-	// try block in case you encounter an unusual one."
-
-	public static SimpleDateFormat getLocalShortDateFormat() {
-		Language language = I18nProperties.getUserLanguage();
-
+	public static SimpleDateFormat getLocalDateFormat(Language language) {
 		return new SimpleDateFormat(language.getDateFormat());
 	}
 
-	public static String getLocalShortDatePattern() {
-		return getLocalShortDateFormat().toPattern();
-	}
-
-	public static SimpleDateFormat getLocalDateFormat() {
-		return getLocalShortDateFormat();
-	}
-
-	public static String getLocalDatePattern() {
-		return getLocalDateFormat().toPattern();
+	public static String getLocalDatePattern(Language language) {
+		return getLocalDateFormat(language).toPattern();
 	}
 
 	private static SimpleDateFormat getLocalShortDateTimeFormat() {
@@ -106,17 +86,9 @@ public final class DateHelper {
 		}
 	}
 
-	public static String formatLocalShortDate(Date date) {
+	public static String formatLocalDate(Date date, Language language) {
 		if (date != null) {
-			return getLocalShortDateFormat().format(date);
-		} else {
-			return "";
-		}
-	}
-
-	public static String formatLocalDate(Date date) {
-		if (date != null) {
-			return getLocalDateFormat().format(date);
+			return getLocalDateFormat(language).format(date);
 		} else {
 			return "";
 		}
@@ -914,18 +886,6 @@ public final class DateHelper {
 		}
 
 		return correctedValue;
-	}
-
-	public static String buildPeriodString(Date startDate, Date endDate) {
-		String startDateString = startDate != null ? formatLocalDate(startDate) : "?";
-		String endDateString = endDate != null ? formatLocalDate(endDate) : "?";
-		if (startDate == null && endDate == null) {
-			return "";
-		} else if (startDate != null && endDate != null && DateHelper.isSameDay(startDate, endDate)) {
-			return startDateString;
-		} else {
-			return startDateString + " - " + endDateString;
-		}
 	}
 
 	public static Timestamp toTimestampUpper(Date date) {

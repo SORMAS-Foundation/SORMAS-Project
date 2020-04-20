@@ -34,6 +34,7 @@ import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -62,9 +63,9 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
-					periodBuilder.append(burial.getBurialDateFrom() != null ? DateHelper.formatLocalDate(burial.getBurialDateFrom()) : "?");
+					periodBuilder.append(burial.getBurialDateFrom() != null ? DateFormatHelper.formatDate(burial.getBurialDateFrom()) : "?");
 					periodBuilder.append(" - ");
-					periodBuilder.append(burial.getBurialDateTo() != null ? DateHelper.formatLocalDate(burial.getBurialDateTo()) : "?");
+					periodBuilder.append(burial.getBurialDateTo() != null ? DateFormatHelper.formatDate(burial.getBurialDateTo()) : "?");
 					return periodBuilder.toString();
 				}
 			}

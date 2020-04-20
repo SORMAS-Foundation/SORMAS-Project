@@ -46,6 +46,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -339,7 +341,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			if (lastCooperativeVisit != null) {
 				exportDto.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				exportDto.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
-				exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true));
+
+				Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+				exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
 			}
 		}
 
