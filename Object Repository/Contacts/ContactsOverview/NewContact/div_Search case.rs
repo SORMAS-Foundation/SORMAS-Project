@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373-overlays']/div[5]/div/div/div[3]/div/div/div/div/div[2]/div/div/div[3]/div/div[3]/div</value>
+         <value>//div[3]/div/div[3]/div</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>

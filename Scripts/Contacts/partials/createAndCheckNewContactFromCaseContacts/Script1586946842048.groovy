@@ -42,7 +42,7 @@ WebUI.click(findTestObject('Contacts/CasesView/NewContact/label_selection_direct
 WebUI.click(findTestObject('Contacts/CasesView/NewContact/new_contact_dialog_save'))
 
 // 'check if "Pick or create person" dialog is shown' ans select create-new-person
-boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/button_Find_matching_persons'), 2)
+boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/label_Select a matching person'), 2)
 if (checkDialog) {
 	WebUI.click(findTestObject('Contacts/CasesView/NewContact/label_Create a new person'))
 

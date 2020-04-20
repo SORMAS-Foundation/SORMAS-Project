@@ -3,7 +3,7 @@
    <description></description>
    <name>label_Create a new person</name>
    <tag></tag>
-   <elementGuidId>8618b4eb-66ea-41a3-a9de-27541ad95c10</elementGuidId>
+   <elementGuidId>8cad8f64-e028-4d7c-bb48-7acb48b7a360</elementGuidId>
    <selectorCollection>
       <entry>
          <key>XPATH</key>

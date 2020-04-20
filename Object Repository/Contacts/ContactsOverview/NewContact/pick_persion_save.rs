@@ -94,6 +94,6 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[3]/div/div/div[3]/div/div/div[2]/div/div/div[3]/div</value>
+      <value>//div[3]/div/div/div[2]/div/div/div[3]/div</value>
    </webElementXpaths>
 </WebElementEntity>

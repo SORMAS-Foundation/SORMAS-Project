@@ -35,14 +35,14 @@ WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_Select 
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Search case'))
 
-WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/td_Nachos Hospital'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/td_selectRow'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Confirm'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Save'))
 
 // 'check if "Pick or create person" dialog is shown' ans select create-new-person
-boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/button_Find_matching_persons'), 2)
+boolean checkDialog = WebUI.verifyElementPresent(findTestObject('Contacts/CasesView/NewContact/label_Select a matching person'), 2)
 if (checkDialog) {
 	WebUI.click(findTestObject('Contacts/CasesView/NewContact/label_Create a new person'))
 
@@ -53,7 +53,7 @@ WebUI.delay(1)
 // CHECK
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/span_Contacts list'))
 
-WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_New contact_v-textfield v-widget v-ha_73324d'), 
+WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), 
     newContactLastName)
 WebUI.delay(1)
 
