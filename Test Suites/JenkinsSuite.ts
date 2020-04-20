@@ -11,9 +11,9 @@
    <rerunFailedTestCasesOnly>false</rerunFailedTestCasesOnly>
    <testSuiteGuid>0f066089-9d51-49c7-b8aa-6c2c03776030</testSuiteGuid>
    <testCaseLink>
-      <guid>22866596-e66d-4802-b236-5781b6794b40</guid>
+      <guid>8adaf861-d59b-41c6-b8f7-3af244b46cf7</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
-      <testCaseId>Test Cases/Contacts/CancelNewTaskForContact</testCaseId>
+      <testCaseId>Test Cases/Samples/CreateNewTestResult</testCaseId>
    </testCaseLink>
 </TestSuiteEntity>
