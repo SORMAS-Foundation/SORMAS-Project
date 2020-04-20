@@ -309,7 +309,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setArchived(entity.isArchived());
-		dto.setExternalID(dto.getExternalID());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}	
