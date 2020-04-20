@@ -46,11 +46,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.location.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -88,6 +89,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -113,10 +115,10 @@ import de.symeda.sormas.backend.visit.VisitService;
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private ContactService contactService;	
@@ -314,7 +316,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		Predicate filter = null;
 
 		// Only use user filter if no restricting case is specified
-		User user = userService.getCurrentUser();
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, contact);
 		}
@@ -340,7 +341,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			if (lastCooperativeVisit != null) {
 				exportDto.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				exportDto.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
-				exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true));
+
+				Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+				exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
 			}
 		}
 
@@ -355,7 +358,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		Predicate filter = null;
 		// Only use user filter if no restricting case is specified
-		User user = userService.getCurrentUser();
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, root);
 		}
@@ -388,7 +390,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactOfficer.get(User.UUID), contactOfficer.get(User.FIRST_NAME), contactOfficer.get(User.LAST_NAME), contact.get(Contact.LAST_CONTACT_DATE),
 				contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.FOLLOW_UP_UNTIL), contact.get(Contact.DISEASE));
 
-		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
 		Predicate filter = null;
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
@@ -501,10 +502,9 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS),
 				contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
 				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME),
-				contact.get(Contact.QUARANTINE_TO), contactCase.get(Case.CASE_CLASSIFICATION));
+				contactCase.get(Case.CASE_CLASSIFICATION));
 
 		Predicate filter = null;
-		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, contact);
@@ -534,7 +534,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				case ContactIndexDto.FOLLOW_UP_UNTIL:
 				case ContactIndexDto.REPORT_DATE_TIME:
 				case ContactIndexDto.DISEASE:
-				case ContactIndexDto.QUARANTINE_TO:
 				case ContactIndexDto.CASE_CLASSIFICATION:
 					expression = contact.get(sortProperty.propertyName);
 					break;
@@ -671,7 +670,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineFrom(source.getQuarantineFrom());
-		target.setQuarantineTo(source.getQuarantineTo());
 		
 		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
 		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
@@ -786,7 +784,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineFrom(source.getQuarantineFrom());
-		target.setQuarantineTo(source.getQuarantineTo());
 		
 		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
 		target.setCaseOrEventInformation(source.getCaseOrEventInformation());

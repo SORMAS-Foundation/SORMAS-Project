@@ -32,6 +32,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class CaseCountDifferenceComponent extends VerticalLayout {
 
@@ -156,8 +157,8 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 	
 	public void updateSubHeader() {
 		subtitleLabel.setValue(String.format(I18nProperties.getCaption(Captions.dashboardComparedToPreviousPeriod),
-				DateHelper.buildPeriodString(dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate()),
-				DateHelper.buildPeriodString(dashboardDataProvider.getPreviousFromDate(), dashboardDataProvider.getPreviousToDate())));
+				DateFormatHelper.buildPeriodString(dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate()),
+				DateFormatHelper.buildPeriodString(dashboardDataProvider.getPreviousFromDate(), dashboardDataProvider.getPreviousToDate())));
 	}
 
 }

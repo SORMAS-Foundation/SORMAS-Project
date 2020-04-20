@@ -27,6 +27,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -201,7 +202,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState meningealSigns;
 	private SymptomState seizures;
 	private SymptomState sepsis;
-	private SymptomState shock;	
+	private SymptomState shock;
 	private SymptomState fluidInLungCavityAuscultation;
 	private SymptomState fluidInLungCavityXray;
 	private SymptomState abnormalLungXrayFindings;
@@ -948,7 +949,7 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setMeningealSigns(SymptomState meningealSigns) {
 		this.meningealSigns = meningealSigns;
-	}	
+	}
 
 	@Enumerated(EnumType.STRING)
 	public SymptomState getChillsSweats() {
@@ -1137,10 +1138,11 @@ public class Symptoms extends AbstractDomainObject {
 	public void setMidUpperArmCircumference(Integer midUpperArmCircumference) {
 		this.midUpperArmCircumference = midUpperArmCircumference;
 	}
-	
+
 	public SymptomState getConvulsion() {
 		return convulsion;
 	}
+
 	public void setConvulsion(SymptomState convulsion) {
 		this.convulsion = convulsion;
 	}
@@ -1356,116 +1358,147 @@ public class Symptoms extends AbstractDomainObject {
 	public void setOpisthotonus(SymptomState opisthotonus) {
 		this.opisthotonus = opisthotonus;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getAnxietyStates() {
 		return anxietyStates;
 	}
+
 	public void setAnxietyStates(SymptomState anxietyStates) {
 		this.anxietyStates = anxietyStates;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getDelirium() {
 		return delirium;
 	}
+
 	public void setDelirium(SymptomState delirium) {
 		this.delirium = delirium;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getUproariousness() {
 		return uproariousness;
 	}
+
 	public void setUproariousness(SymptomState uproariousness) {
 		this.uproariousness = uproariousness;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getParesthesiaAroundWound() {
 		return paresthesiaAroundWound;
 	}
+
 	public void setParesthesiaAroundWound(SymptomState paresthesiaAroundWound) {
 		this.paresthesiaAroundWound = paresthesiaAroundWound;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getExcessSalivation() {
 		return excessSalivation;
 	}
+
 	public void setExcessSalivation(SymptomState excessSalivation) {
 		this.excessSalivation = excessSalivation;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getInsomnia() {
 		return insomnia;
 	}
+
 	public void setInsomnia(SymptomState insomnia) {
 		this.insomnia = insomnia;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getParalysis() {
 		return paralysis;
 	}
+
 	public void setParalysis(SymptomState paralysis) {
 		this.paralysis = paralysis;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getExcitation() {
 		return excitation;
 	}
+
 	public void setExcitation(SymptomState excitation) {
 		this.excitation = excitation;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getDysphagia() {
 		return dysphagia;
 	}
+
 	public void setDysphagia(SymptomState dysphagia) {
 		this.dysphagia = dysphagia;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getAerophobia() {
 		return aerophobia;
 	}
+
 	public void setAerophobia(SymptomState aerophobia) {
 		this.aerophobia = aerophobia;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getHyperactivity() {
 		return hyperactivity;
 	}
+
 	public void setHyperactivity(SymptomState hyperactivity) {
 		this.hyperactivity = hyperactivity;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getParesis() {
 		return paresis;
 	}
+
 	public void setParesis(SymptomState paresis) {
 		this.paresis = paresis;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getAgitation() {
 		return agitation;
 	}
+
 	public void setAgitation(SymptomState agitation) {
 		this.agitation = agitation;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getAscendingFlaccidParalysis() {
 		return ascendingFlaccidParalysis;
 	}
+
 	public void setAscendingFlaccidParalysis(SymptomState ascendingFlaccidParalysis) {
 		this.ascendingFlaccidParalysis = ascendingFlaccidParalysis;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getErraticBehaviour() {
 		return erraticBehaviour;
 	}
+
 	public void setErraticBehaviour(SymptomState erraticBehaviour) {
 		this.erraticBehaviour = erraticBehaviour;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public SymptomState getComa() {
 		return coma;
 	}
+
 	public void setComa(SymptomState coma) {
 		this.coma = coma;
 	}
@@ -1529,12 +1562,12 @@ public class Symptoms extends AbstractDomainObject {
 		return symptomsComments;
 	}
 
-	public String toHumanString(boolean includeOnset) {
+	public String toHumanString(boolean includeOnset, Language language) {
 		StringBuilder string = new StringBuilder();
 
 		// would be much nicer to have some automatism for this
 		if (includeOnset) {
-			appendNotNullValue(string, onsetDate, SymptomsDto.ONSET_DATE);
+			appendNotNullDateValue(string, onsetDate, SymptomsDto.ONSET_DATE, language);
 		}
 		// onsetSymptom;
 		// symptomatic;
@@ -1628,7 +1661,7 @@ public class Symptoms extends AbstractDomainObject {
 		//		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
 		//		appendYesSymptom(string, lesionsResembleImg3, SymptomsDto.LESIONS_RESEMBLE_IMG3);
 		//		appendYesSymptom(string, lesionsResembleImg4, SymptomsDto.LESIONS_RESEMBLE_IMG4);
-		appendNotNullValue(string, lesionsOnsetDate, SymptomsDto.LESIONS_ONSET_DATE);
+		appendNotNullDateValue(string, lesionsOnsetDate, SymptomsDto.LESIONS_ONSET_DATE, language);
 		appendYesSymptom(string, lymphadenopathyInguinal, SymptomsDto.LYMPHADENOPATHY_INGUINAL);
 		appendYesSymptom(string, lymphadenopathyAxillary, SymptomsDto.LYMPHADENOPATHY_AXILLARY);
 		appendYesSymptom(string, lymphadenopathyCervical, SymptomsDto.LYMPHADENOPATHY_CERVICAL);
@@ -1678,20 +1711,21 @@ public class Symptoms extends AbstractDomainObject {
 
 	private static void appendNotNullValue(StringBuilder stringBuilder, Object value, String dtoPropertyId) {
 		if (value != null) {
-			if (value instanceof String && ((String)value).isEmpty()) {
+			if (value instanceof String && ((String) value).isEmpty()) {
 				return; // ignore empty strings
 			}
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");
 			}
 			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
-			.append(": ");
-			if (value instanceof Date) {
-				stringBuilder.append(DateHelper.formatLocalShortDate((Date)value));
-			} else {
-				stringBuilder.append(value);
-			}
+					.append(": ");
+
+			stringBuilder.append(value);
 		}
+	}
+
+	private static void appendNotNullDateValue(StringBuilder stringBuilder, Date value, String dtoPropertyId, Language language) {
+		appendNotNullValue(stringBuilder, DateHelper.formatLocalDate(value, language), dtoPropertyId);
 	}
 
 	private static void appendYesSymptom(StringBuilder stringBuilder, SymptomState symptom, String dtoPropertyId) {

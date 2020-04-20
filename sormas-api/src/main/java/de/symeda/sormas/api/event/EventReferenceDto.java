@@ -20,6 +20,7 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -56,6 +57,8 @@ public class EventReferenceDto extends ReferenceDto {
 		if (!diseaseString.isEmpty()) {
 			eventStatusString = eventStatusString.toLowerCase();
 		}
-		return diseaseString + " " + eventStatusString + " " + I18nProperties.getString(Strings.on) + " " + DateHelper.formatLocalDate(eventDate);
+
+		Language language = I18nProperties.getUserLanguage();
+		return diseaseString + " " + eventStatusString + " " + I18nProperties.getString(Strings.on) + " " + DateHelper.formatLocalDate(eventDate, language);
 	}
 }

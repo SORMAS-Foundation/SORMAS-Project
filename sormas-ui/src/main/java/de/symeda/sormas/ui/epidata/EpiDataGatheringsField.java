@@ -36,6 +36,7 @@ import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -77,7 +78,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataGatheringDto gathering = (EpiDataGatheringDto) itemId;
 				if (gathering.getGatheringDate() != null) {
-					return DateHelper.formatLocalDate(gathering.getGatheringDate());
+					return DateFormatHelper.formatDate(gathering.getGatheringDate());
 				} else {
 					return I18nProperties.getString(Strings.unknown);
 				}
