@@ -281,7 +281,6 @@ public class TaskFacadeEjb implements TaskFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> task = cq.from(Task.class);
 
-		User user = userService.getCurrentUser();
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task);
@@ -327,7 +326,6 @@ public class TaskFacadeEjb implements TaskFacade {
 				);
 
 		Predicate filter = null;
-		User user = userService.getCurrentUser();
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task);
 		}

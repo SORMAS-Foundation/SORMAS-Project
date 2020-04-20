@@ -60,6 +60,11 @@ public class UserService extends AbstractAdoService<User> {
 		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));		
 		return user;
 	}
+	
+	@Override
+	public User getCurrentUser() {
+		return super.getCurrentUser();
+	}
 
 	public User getByUserName(String userName) {
 		

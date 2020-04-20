@@ -63,32 +63,29 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AggregateReport, AggregateReport> from) {
-		if (getCurrentUser() == null || getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+		User currentUser = getCurrentUser();
+		if (currentUser == null 
+			|| currentUser.hasAnyUserRole(
+				UserRole.NATIONAL_USER,
+				UserRole.NATIONAL_CLINICIAN,
+				UserRole.NATIONAL_OBSERVER)) {
 			return null;
 		}
 
 		// Whoever created the weekly report is allowed to access it
 		Join<AggregateReport, User> reportingUser = from.join(AggregateReport.REPORTING_USER, JoinType.LEFT);
-		Predicate filter = cb.equal(reportingUser, getCurrentUser());
+		Predicate filter = cb.equal(reportingUser, currentUser);
 
 		// Allow access based on user role
-		for (UserRole userRole : getCurrentUser().getUserRoles()) {
-			switch (userRole) {
-			case SURVEILLANCE_SUPERVISOR:
-			case CONTACT_SUPERVISOR:
-			case CASE_SUPERVISOR:
-			case STATE_OBSERVER:
+		if(currentUser.hasAnyUserRole(
+				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.CONTACT_SUPERVISOR,
+				UserRole.CASE_SUPERVISOR,
+				UserRole.STATE_OBSERVER) 
+			&& currentUser.getRegion() != null) {
 				// Supervisors see all reports from their region
-				if (getCurrentUser().getRegion() != null) {
-					filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), getCurrentUser().getRegion()));
-				}
-				break;
-			default:
-				break;
+				filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), currentUser.getRegion()));
 			}
-		}
 
 		return filter;
 	}

@@ -60,7 +60,6 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -107,13 +106,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return facilityService.getAllUuids(user);
+		return facilityService.getAllUuids();
 	}
 
 	@Override

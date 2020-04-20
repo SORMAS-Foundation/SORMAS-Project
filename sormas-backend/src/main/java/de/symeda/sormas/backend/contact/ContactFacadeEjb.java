@@ -158,7 +158,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			return Collections.emptyList();
 		}
 
-		return contactService.getAllActiveContactsAfter(date, user).stream()
+		return contactService.getAllActiveContactsAfter(date).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
@@ -314,7 +314,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		Predicate filter = null;
 
 		// Only use user filter if no restricting case is specified
-		User user = userService.getCurrentUser();
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, contact);
 		}
@@ -355,7 +354,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		Predicate filter = null;
 		// Only use user filter if no restricting case is specified
-		User user = userService.getCurrentUser();
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, root);
 		}
@@ -388,7 +386,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactOfficer.get(User.UUID), contactOfficer.get(User.FIRST_NAME), contactOfficer.get(User.LAST_NAME), contact.get(Contact.LAST_CONTACT_DATE),
 				contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.FOLLOW_UP_UNTIL), contact.get(Contact.DISEASE));
 
-		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
 		Predicate filter = null;
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
@@ -504,7 +501,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactCase.get(Case.CASE_CLASSIFICATION));
 
 		Predicate filter = null;
-		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, contact);

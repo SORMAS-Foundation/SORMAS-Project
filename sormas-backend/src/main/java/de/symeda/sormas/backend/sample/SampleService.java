@@ -245,14 +245,15 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 
 		// lab users can see samples assigned to their laboratory
-		if (getCurrentUser().getUserRoles().contains(UserRole.LAB_USER) || getCurrentUser().getUserRoles().contains(UserRole.EXTERNAL_LAB_USER)) {
-			if(getCurrentUser().getLaboratory() != null) {
-				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), getCurrentUser().getLaboratory()));			}
+		User currentUser = getCurrentUser();
+		if (currentUser.hasAnyUserRole(UserRole.LAB_USER, UserRole.EXTERNAL_LAB_USER)) {
+			if(currentUser.getLaboratory() != null) {
+				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), currentUser.getLaboratory()));			}
 		}
 
 		// only show samples of a specific disease if a limited disease is set
-		if (filter != null && getCurrentUser().getLimitedDisease() != null) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), getCurrentUser().getLimitedDisease()));
+		if (filter != null && currentUser.getLimitedDisease() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), currentUser.getLimitedDisease()));
 		}
 
 		return filter;

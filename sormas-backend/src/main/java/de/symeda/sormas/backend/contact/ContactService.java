@@ -115,14 +115,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return resultList;
 	}
 
-	public List<Contact> getAllActiveContactsAfter(Date date, User user) {
+	public List<Contact> getAllActiveContactsAfter(Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
 		Predicate filter = createActiveContactsFilter(cb, from);
 
-		if (user != null) {
+		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
@@ -718,25 +718,27 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq,
 			From<Contact, Contact> contactPath) {
 		// National users can access all contacts in the system
-		if (getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
-			if (getCurrentUser().getLimitedDisease() != null) {
-				return cb.equal(contactPath.get(Contact.DISEASE), getCurrentUser().getLimitedDisease());
+		User currentUser = getCurrentUser();
+		if (currentUser.hasAnyUserRole(
+				UserRole.NATIONAL_USER,
+				UserRole.NATIONAL_CLINICIAN,
+				UserRole.NATIONAL_OBSERVER)) {
+			if (currentUser.getLimitedDisease() != null) {
+				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
 				return null;
 			}
 		}
 
 		// whoever created it or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), getCurrentUser());
-		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), getCurrentUser()));
+		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
+		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
 
 		// users have access to all contacts in their region/district
-		if (getCurrentUser().getDistrict() != null) {
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), getCurrentUser().getDistrict()));
-		} else if (getCurrentUser().getRegion() != null) {
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), getCurrentUser().getRegion()));
+		if (currentUser.getDistrict() != null) {
+			filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
+		} else if (currentUser.getRegion() != null) {
+			filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
 		}
 
 		return filter;

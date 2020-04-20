@@ -56,13 +56,11 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-		
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 		
-		return userRoleConfigService.getAllUuids(user);
+		return userRoleConfigService.getAllUuids();
 	}
 	
 	

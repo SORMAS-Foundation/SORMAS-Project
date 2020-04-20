@@ -182,7 +182,6 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Event> event = cq.from(Event.class);
 
-		User user = userService.getCurrentUser();
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
@@ -223,7 +222,6 @@ public class EventFacadeEjb implements EventFacade {
 				event.get(Event.REPORT_DATE_TIME)
 		);
 
-		User user = userService.getCurrentUser();
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {

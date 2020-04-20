@@ -225,7 +225,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), sample.get(Sample.PATHOGEN_TEST_RESULT), 
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
 
-		User user = userService.getCurrentUser();
 		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
@@ -375,7 +374,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				caze.get(Case.HEALTH_FACILITY_DETAILS)
 				);
 
-		User user = userService.getCurrentUser();
 		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
@@ -482,7 +480,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Sample> root = cq.from(Sample.class);
-		User user = userService.getCurrentUser();
 		Predicate filter = sampleService.createUserFilter(cb, cq, root);
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, root);

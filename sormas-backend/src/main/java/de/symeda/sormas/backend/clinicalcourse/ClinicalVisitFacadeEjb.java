@@ -194,13 +194,11 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	
 	@Override
 	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date) {
-		User user = userService.getCurrentUser();
-		
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllActiveClinicalVisitsAfter(date, user).stream()
+		return service.getAllActiveClinicalVisitsAfter(date).stream()
 				.map(t -> toDto(t))
 				.collect(Collectors.toList());
 	}
@@ -244,7 +242,6 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 				clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
 				symptoms.get(Symptoms.ID));
 		
-		User user = userService.getCurrentUser();
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit);
 		Join<Case, Case> casePath = clinicalCourse.join(ClinicalCourse.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);

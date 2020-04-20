@@ -42,7 +42,6 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -118,11 +117,10 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-		return service.getAllUuids(user);
+		return service.getAllUuids();
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public List<String> getAllUuids() {
-		return service.getAllUuids(null);
+		return service.getAllUuids();
 	}
 
 	@Override

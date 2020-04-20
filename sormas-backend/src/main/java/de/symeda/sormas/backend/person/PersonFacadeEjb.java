@@ -109,14 +109,11 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<String> getAllUuids() {
-
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return personService.getAllUuids(user);
+		return personService.getAllUuids();
 	}
 
 	@Override
@@ -173,7 +170,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria) {
-		User user = userService.getCurrentUser();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);

@@ -164,12 +164,13 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReport, WeeklyReport> from) {
 
-		if (getCurrentUser() == null) {
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
 			return null;
 		}
 
 		// National users can access all reports in the system
-		if (getCurrentUser().hasAnyUserRole(
+		if (currentUser.hasAnyUserRole(
 				UserRole.NATIONAL_USER,
 				UserRole.NATIONAL_CLINICIAN,
 				UserRole.NATIONAL_OBSERVER)) {
@@ -178,24 +179,24 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 
 		// Whoever created the weekly report is allowed to access it
 		Join<WeeklyReport, User> informant = from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT);
-		Predicate filter = cb.equal(informant, getCurrentUser());
+		Predicate filter = cb.equal(informant, currentUser);
 
 		// Allow access based on user role
 		
 		// Supervisors see all reports from users in their region
-		if (getCurrentUser().getRegion() != null &&
-				getCurrentUser().hasAnyUserRole(
+		if (currentUser.getRegion() != null &&
+				currentUser.hasAnyUserRole(
 				UserRole.SURVEILLANCE_SUPERVISOR,
 				UserRole.CONTACT_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
 				UserRole.STATE_OBSERVER)) {
 				filter = cb.or(filter, cb.equal(
-						from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT).get(User.REGION), getCurrentUser().getRegion()));
+						from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT).get(User.REGION), currentUser.getRegion()));
 			 }
 		
 		// Officers see all reports from their assigned informants
-		if (getCurrentUser().hasAnyUserRole(UserRole.SURVEILLANCE_OFFICER)) {
-				filter = cb.or(filter, cb.equal(informant.get(User.ASSOCIATED_OFFICER), getCurrentUser()));
+		if (currentUser.hasAnyUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+				filter = cb.or(filter, cb.equal(informant.get(User.ASSOCIATED_OFFICER), currentUser));
 		}
 
 		return filter;

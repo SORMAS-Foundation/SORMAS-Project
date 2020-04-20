@@ -78,7 +78,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		this.elementClass = elementClass;
 	}
 
-	public User getCurrentUser() {
+	protected User getCurrentUser() {
 		return currentUser.get().getUser();
 	}
 
@@ -177,16 +177,14 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return resultList;
 	}
 	
-	public List<String> getAllUuids(User user) {
+	public List<String> getAllUuids() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(getElementClass());
 
-		if (user != null) {
-			Predicate filter = createUserFilter(cb, cq, from);
-			if (filter != null) {
-				cq.where(filter);
-			}
+		Predicate filter = createUserFilter(cb, cq, from);
+		if (filter != null) {
+			cq.where(filter);
 		}
 		
 		cq.select(from.get(AbstractDomainObject.UUID));

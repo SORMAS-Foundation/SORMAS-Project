@@ -52,7 +52,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -179,13 +178,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return districtService.getAllUuids(user);
+		return districtService.getAllUuids();
 	}
 
 	@Override	

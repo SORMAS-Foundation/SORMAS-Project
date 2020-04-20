@@ -98,7 +98,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	public void deletePrescription(String prescriptionUuid) {
 		User user = userService.getCurrentUser();
 		// TODO replace this with a proper user right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
+		if (!user.hasAnyUserRole(UserRole.ADMIN, UserRole.CASE_SUPERVISOR)) {
 			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete prescriptions");
 		}
 		
@@ -164,7 +164,6 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				prescription.get(Prescription.ROUTE_DETAILS),
 				prescription.get(Prescription.ADDITIONAL_NOTES));
 		
-		User user = userService.getCurrentUser();
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
