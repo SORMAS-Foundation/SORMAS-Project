@@ -27,6 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -103,6 +104,10 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 
 	@Override
 	protected void editEntry(EpiDataTravelDto entry, boolean create, Consumer<EpiDataTravelDto> commitCallback) {
+		if (create && entry.getUuid() == null) {
+			entry.setUuid(DataHelper.createUuid());
+		}
+		
 		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 

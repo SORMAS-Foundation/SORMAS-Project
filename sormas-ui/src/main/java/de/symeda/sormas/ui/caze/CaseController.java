@@ -525,8 +525,8 @@ public class CaseController {
 				break;
 		}
 
-		RegionReferenceDto region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid);
-		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
+		RegionReferenceDto region = regionUuid != null ? FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid) : null;
+		DistrictReferenceDto district = districtUuid != null ? FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid) : null;
 
 		// Create a temporary case in order to use the CommitDiscardWrapperComponent
 		CaseBulkEditData bulkEditData = new CaseBulkEditData();
