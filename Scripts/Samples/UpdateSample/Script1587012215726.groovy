@@ -35,8 +35,9 @@ WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_searchNam
 
 WebUI.delay(1)
 
+println(GlobalVariable.gSamplesTestDataName)
 String sampleTypeColumnName = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'sample-type-column')
-
+println('other test:' + TestDataConnector.getValueByKey('defaultSamplesTestData', 'sample-type-column'))
 String typeBlood = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'sample-type-blood')
 
 String typeNasalSwab = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'sample-type-nasal')
