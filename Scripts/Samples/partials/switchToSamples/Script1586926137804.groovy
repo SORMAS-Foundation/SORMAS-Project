@@ -21,7 +21,4 @@ import internal.GlobalVariable as GlobalVariable
 WebUI.click(findTestObject('Login/MainView/menu_Samples'))
 
 // resize window so all columns of the table are visible
-WebDriver driver = DriverFactory.getWebDriver()
-
-driver.manage().window().setSize(new Dimension(2500, 2500))
-
+WebUI.maximizeWindow()
