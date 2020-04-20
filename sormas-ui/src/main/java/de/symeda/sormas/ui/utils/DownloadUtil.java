@@ -124,6 +124,7 @@ public final class DownloadUtil {
 				String zipPath = FacadeProvider.getExportFacade().generateDatabaseExportArchive(tablesToExport);
 				return new BufferedInputStream(Files.newInputStream(new File(zipPath).toPath()));
 			} catch (IOException | ExportErrorException e) {
+				LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
 				// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
 				databaseExportView.showExportErrorNotification();
