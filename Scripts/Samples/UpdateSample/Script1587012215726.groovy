@@ -35,23 +35,21 @@ WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_searchNam
 
 WebUI.delay(1)
 
-println(GlobalVariable.gSamplesTestDataName)
+println('test-files-db: ' + GlobalVariable.gSamplesTestDataName)
 String sampleTypeColumnName = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'sample-type-column')
-println('other test:' + TestDataConnector.getValueByKey('defaultSamplesTestData', 'sample-type-column'))
 String typeBlood = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'sample-type-blood')
-
 String typeNasalSwab = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'sample-type-nasal')
 
-TableContent content = Table.getVisibleTableContent()
-println(content.getTableRows())
-String typeOfSample = content.getRowData(0, sampleTypeColumnName)
+
+'select sample to edit'
+WebUI.click(findTestObject('Samples/MainView/edit_sample_from_table'))
+
+String typeOfSample = WebUI.getAttribute(findTestObject('Object Repository/Samples/SampleInformation/input_TypeOfSample'), 'value')
+//String typeOfSample = WebUI.getText(findTestObject('Object Repository/Samples/SampleInformation/input_TypeOfSample'))
 
 String futureTypeOfSample = typeOfSample.equalsIgnoreCase(typeBlood) ? typeNasalSwab : typeBlood
 
 println('type of sample found: ' + typeOfSample + ' will change to: ' + futureTypeOfSample)
-
-'select sample to edit'
-WebUI.click(findTestObject('Samples/MainView/edit_sample_from_table'))
 
 // TESTCASE
 WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/div_TypeOfSample_select-button'))
@@ -70,9 +68,10 @@ WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/save_Sam
 WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/link_SamplesList'))
 
 // CHECK
-content = Table.getVisibleTableContent()
+WebUI.click(findTestObject('Samples/MainView/edit_sample_from_table'))
+// content = Table.getVisibleTableContent()
 
-String currentTypeOfSample = content.getRowData(0, sampleTypeColumnName)
+String currentTypeOfSample = WebUI.getAttribute(findTestObject('Object Repository/Samples/SampleInformation/input_TypeOfSample'), 'value')
 
 if (!(currentTypeOfSample.equals(futureTypeOfSample))) {
     WebUI.closeBrowser()
