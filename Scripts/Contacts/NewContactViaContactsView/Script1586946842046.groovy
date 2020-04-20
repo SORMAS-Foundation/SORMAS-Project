@@ -35,6 +35,8 @@ WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_Select 
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Search case'))
 
+WebUI.delay(1)
+
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/td_selectRow'))
 
 WebUI.click(findTestObject('Contacts/ContactsOverview/NewContact/div_Confirm'))
