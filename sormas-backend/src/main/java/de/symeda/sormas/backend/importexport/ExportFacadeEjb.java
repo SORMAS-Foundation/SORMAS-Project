@@ -105,23 +105,33 @@ public class ExportFacadeEjb implements ExportFacade {
 
 	@Override
 	public String generateDatabaseExportArchive(List<DatabaseTable> databaseTables) throws ExportErrorException, IOException {
+
+		Path tempPath = Paths.get(configFacade.getTempFilesPath());
 		// Create the folder if it doesn't exist
 		try {	
-			Files.createDirectories(Paths.get(configFacade.getTempFilesPath()));
+			Files.createDirectories(tempPath);
 		} catch (IOException e) {
 			logger.error("Temp directory doesn't exist and creation failed.");
 			throw e;
 		}
 
-		// Export all selected tables to .csv files
 		long startTime = System.currentTimeMillis();
-		String formattedDate = DateHelper.formatDateForExport(new Date());
-		int exportId = new Random().nextInt(Integer.MAX_VALUE);
-		databaseExportService.exportAsCsvFiles(databaseTables, formattedDate, exportId);
+		Path csvTempPath = Files.createTempDirectory(tempPath, ImportExportUtils.TEMP_FILE_PREFIX);
+		String zipFilePath;
+		try {
+			// Export all selected tables to .csv files
+			List<Path> exportedCsvs = databaseExportService.exportAsCsvFiles(csvTempPath, databaseTables);
 
-		// Create a zip containing all created .csv files
-		String zipFilePath =
-			createZipFromCsvFiles(databaseTables.stream().map(t -> t.getFileName()).collect(Collectors.toList()), formattedDate, exportId);
+			String formattedDate = DateHelper.formatDateForExport(new Date());
+			int exportId = new Random().nextInt(Integer.MAX_VALUE);
+	
+			// Create a zip containing all created .csv files
+			zipFilePath =
+				createZipFromFiles(csvTempPath, exportedCsvs, formattedDate, exportId);
+		
+		} finally {
+			Files.delete(csvTempPath);
+		}
 		logger
 			.debug(
 				"generateDatabaseExportArchive() finished. {} tables, {} s",
@@ -177,24 +187,34 @@ public class ExportFacadeEjb implements ExportFacade {
 	 * the date and randomNumber suffixes. The zip is stored in the same export folder that contains the .csv files
 	 * and its file path is returned.
 	 */
-	private String createZipFromCsvFiles(List<String> fileNames, String date, int randomNumber) throws ExportErrorException {
-		Path tempPath = new File(configFacade.getTempFilesPath()).toPath();
+	private String createZipFromFiles(Path basePath, List<Path> files, String date, int randomNumber) throws ExportErrorException {
 		String zipPath = generateZipArchive(date, randomNumber);
 		try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream( new FileOutputStream(zipPath)))) {
-			for (String fileName : fileNames) {
-				String name = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + fileName + "_" + date + "_" + randomNumber + ".csv";
-				Path filePath = tempPath.resolve(name);
-				zos.putNextEntry(new ZipEntry(fileName + ".csv"));
-				byte[] bytes = Files.readAllBytes(filePath);
-				zos.write(bytes, 0, bytes.length);
+			for (Path file : files) {
+				Path filePath = basePath.resolve(file);
+				
+				if (! filePath.normalize().startsWith(basePath.normalize())) {
+					throw new IOException(filePath + " is not child of " + basePath);
+				}
+				
+				Path relativePath = basePath.relativize(file);
+				zos.putNextEntry(new ZipEntry(relativePath.toString().replace(File.separatorChar, '/')));
+				Files.copy(filePath, zos);
 				zos.closeEntry();
 			}
-
-			zos.close();
 			return zipPath;
 		} catch (IOException e) {
 			logger.error("Failed to generate a zip file for database export.");
 			throw new ExportErrorException();
+		} finally {
+			//get rid of csv files
+			files.forEach(f -> {
+				try {
+					Files.deleteIfExists(f);
+				} catch (IOException e) {
+					logger.warn(e.getMessage(), e);
+				}
+			});
 		}
 	}
 
