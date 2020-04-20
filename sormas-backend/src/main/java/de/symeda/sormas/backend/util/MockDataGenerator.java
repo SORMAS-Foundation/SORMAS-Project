@@ -21,7 +21,7 @@ import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.user.User;
 
-public class MockDataGenerator {
+public final class MockDataGenerator {
 
 	private MockDataGenerator() {
 		// Hide Utility Class Constructor
