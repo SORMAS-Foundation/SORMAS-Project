@@ -712,8 +712,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid) {
-		User user = userService.getCurrentUser();
-		return caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), user).stream()
+		return caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false).stream()
 				.map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
