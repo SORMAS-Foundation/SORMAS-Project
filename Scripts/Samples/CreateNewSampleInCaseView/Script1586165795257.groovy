@@ -8,6 +8,8 @@ import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
+import internal.GlobalVariable
+
 WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.callTestCase(findTestCase('Samples/partials/switchToSamples'), [:], FailureHandling.STOP_ON_FAILURE)
@@ -15,12 +17,13 @@ int numberOfSamples = Table.getNumberOfTableRows()
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
-String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_case')
+// String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_case')
+// String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_case')
 
-String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_case')
+String searchName = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'test-filter-by-name')
+println('search-name: ' + searchName)
 
-WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPersonName'), [('personName') : (firstName + 
-        ' ') + lastName], FailureHandling.STOP_ON_FAILURE)
+WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPersonName'), [('personName') : searchName], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.click(findTestObject('Surveillance/CaseView/Sample/div_NewSample_btn'))
 WebUI.waitForElementPresent(findTestObject('Surveillance/CaseView/Sample/input_DateSampleWasCollected_date'), 2)
