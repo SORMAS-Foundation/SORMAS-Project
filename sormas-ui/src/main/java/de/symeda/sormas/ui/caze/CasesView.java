@@ -252,7 +252,7 @@ public class CasesView extends AbstractView {
 			}
 
 			{
-				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", createExportFileNameWithCurrentDate("sormas_cases_", ".csv"));
 				
 				addExportButton(streamResource, exportPopupButton, exportLayout, "basicExport", VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
@@ -274,14 +274,14 @@ public class CasesView extends AbstractView {
 							}
 							return caption;
 						},
-						"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+						createExportFileNameWithCurrentDate("sormas_cases_", ".csv"), null);
 				
 				addExportButton(exportStreamResource, exportPopupButton, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
 				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(grid.getCriteria(),
-						"sormas_case_management_" + DateHelper.formatDateForExport(new Date()) + ".zip");
+						createExportFileNameWithCurrentDate("sormas_case_management_", ".zip"));
 				
 				addExportButton(caseManagementExportStreamResource, exportPopupButton, exportLayout, "caseManagementExport", VaadinIcons.FILE_TEXT, Captions.exportCaseManagement, Strings.infoCaseManagementExport);
 			}
@@ -301,7 +301,7 @@ public class CasesView extends AbstractView {
 							}
 							return caption;
 						},
-						"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+						createExportFileNameWithCurrentDate("sormas_samples_", ".csv"), null);
 				
 				addExportButton(sampleExportStreamResource, exportPopupButton, exportLayout, "sampleExport", VaadinIcons.FILE_TEXT, Captions.exportSamples, Strings.infoSampleExport);
 			}
@@ -335,7 +335,7 @@ public class CasesView extends AbstractView {
 											}
 											return caption;
 										},
-										"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", exportConfig), null, true);
+										createExportFileNameWithCurrentDate("sormas_cases_" , ".csv"), exportConfig), null, true);
 							});
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
@@ -446,19 +446,6 @@ public class CasesView extends AbstractView {
 		addComponent(gridLayout);
 	}
 	
-	/**
-	 * Iterates through the prefixes to determines the caption for the specified propertyId.
-	 *  
-	 * @return
-	 */
-	private static String findPrefixCaption(String propertyId, String ... prefixes) {
-		return Arrays.stream(prefixes)
-		.map(p -> I18nProperties.getPrefixCaption(p, propertyId, null))
-		.filter(Objects::nonNull)
-		.findFirst()
-		.orElse(propertyId);
-	}
-
 	private void addImportButton(VerticalLayout importLayout, String buttonId, String captionKey,
 			String windowHeadingKey, Supplier<Component> windowContentSupplier) {
 		Button lineListingImportButton = new Button(I18nProperties.getCaption(captionKey));

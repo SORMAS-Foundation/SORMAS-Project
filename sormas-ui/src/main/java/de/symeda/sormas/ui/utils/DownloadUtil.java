@@ -33,14 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -49,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import de.symeda.sormas.api.visit.VisitExportType;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
@@ -410,7 +404,7 @@ public final class DownloadUtil {
 		}
 	}
 
-	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, CaseExportType exportType, BiFunction<Integer, Integer, List<T>> exportRowsSupplier, 
+	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, Enum<?> exportType, BiFunction<Integer, Integer, List<T>> exportRowsSupplier,
 			BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName, ExportConfigurationDto exportConfiguration) {
 		StreamResource extendedStreamResource = new StreamResource(() -> {
 			
@@ -423,10 +417,9 @@ public final class DownloadUtil {
 						readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
 								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) 
 										&& m.isAnnotationPresent(Order.class)
-										&& (exportType == null || (m.isAnnotationPresent(ExportTarget.class) && Arrays.asList(m.getAnnotation(ExportTarget.class).exportTypes()).contains(exportType)))
+										&& (exportType == null || hasExportTarget(exportType, m))
 										&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
-								.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
-										b.getAnnotationsByType(Order.class)[0].value()))
+								.sorted(Comparator.comparingInt(a -> a.getAnnotationsByType(Order.class)[0].value()))
 								.collect(Collectors.toList()));
 	
 						// 2. replace entity fields with all the columns of the entity 
@@ -450,8 +443,7 @@ public final class DownloadUtil {
 								// add columns of the entity
 								List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
 										.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
-										.sorted((a2,b2) -> Integer.compare(a2.getAnnotationsByType(Order.class)[0].value(), 
-												b2.getAnnotationsByType(Order.class)[0].value()))
+										.sorted(Comparator.comparingInt(a2 -> a2.getAnnotationsByType(Order.class)[0].value()))
 										.collect(Collectors.toList());
 								readMethods.addAll(i, subReadMethods);
 								i--;
@@ -526,6 +518,27 @@ public final class DownloadUtil {
 		extendedStreamResource.setMIMEType("text/csv");
 		extendedStreamResource.setCacheTime(0);
 		return extendedStreamResource;
+	}
+
+	private static boolean hasExportTarget(Enum<?> exportType, Method m) {
+		if (m.isAnnotationPresent(ExportTarget.class)) {
+			final Class<? extends Enum> exportTypeClass = exportType.getClass();
+			final ExportTarget exportTarget = m.getAnnotation(ExportTarget.class);
+			Supplier<Enum[]> exportTypeSupplier = null;
+			if (exportTypeClass.isAssignableFrom(CaseExportType.class)) {
+				exportTypeSupplier = exportTarget::caseExportTypes;
+			}
+			if (exportTypeClass.isAssignableFrom(VisitExportType.class)) {
+				exportTypeSupplier = exportTarget::visitExportTypes;
+
+			}
+			return exportTypeSupplier == null ? false : containsExportType(exportType, exportTypeSupplier);
+		}
+		return false;
+	}
+
+	private static boolean containsExportType(Enum<?> exportType, Supplier<Enum[]> supplier) {
+		return Arrays.asList(supplier.get()).contains(exportType);
 	}
 
 	/**

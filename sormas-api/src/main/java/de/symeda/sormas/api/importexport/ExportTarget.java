@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import de.symeda.sormas.api.caze.CaseExportType;
+import de.symeda.sormas.api.visit.VisitExportType;
 
 /**
  * Defines which {@link CaseExportType}s the annotated field will be used for. If an export type is
@@ -15,6 +16,7 @@ import de.symeda.sormas.api.caze.CaseExportType;
 @Target(ElementType.METHOD)
 public @interface ExportTarget {
 
-	CaseExportType[] exportTypes() default CaseExportType.CASE_SURVEILLANCE;
-	
+	CaseExportType[] caseExportTypes() default CaseExportType.CASE_SURVEILLANCE;
+	VisitExportType[] visitExportTypes() default VisitExportType.CONTACT_VISITS;
+
 }
