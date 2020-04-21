@@ -190,7 +190,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	}
 
 
-	protected String createExportFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
+	protected String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
 		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + fileExtension;
 	}
 }

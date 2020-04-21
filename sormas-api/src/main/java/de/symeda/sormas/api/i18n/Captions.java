@@ -652,6 +652,7 @@ public interface Captions {
 	String exportCaseManagement = "exportCaseManagement";
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
 	String exportDetailed = "exportDetailed";
+	String exportFollowUp = "exportFollowUp";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";
 	String exportInfrastructureData = "exportInfrastructureData";
 	String exportNewExportConfiguration = "exportNewExportConfiguration";

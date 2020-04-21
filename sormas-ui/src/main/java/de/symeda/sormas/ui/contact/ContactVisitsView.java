@@ -31,12 +31,11 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.ContactVisitExportDto;
+import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
@@ -107,11 +106,11 @@ public class ContactVisitsView extends AbstractContactView {
 				topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
 			}
 
-			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactVisitExportDto.class, VisitExportType.CONTACT_VISITS,
-					(Integer start, Integer max) -> FacadeProvider.getVisitFacade().getContactVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
+			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(VisitExportDto.class, VisitExportType.CONTACT_VISITS,
+					(Integer start, Integer max) -> FacadeProvider.getVisitFacade().getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
 					(propertyId, type) -> {
 						String caption = findPrefixCaption(propertyId,
-								ContactVisitExportDto.I18N_PREFIX,
+								VisitExportDto.I18N_PREFIX,
 								VisitDto.I18N_PREFIX,
 								PersonDto.I18N_PREFIX,
 								SymptomsDto.I18N_PREFIX);
@@ -120,7 +119,7 @@ public class ContactVisitsView extends AbstractContactView {
 						}
 						return caption;
 					},
-					createExportFileNameWithCurrentDate("sormas_contact_visits_", ".csv"), null);
+					createFileNameWithCurrentDate("sormas_contact_visits_", ".csv"), null);
 
 			new FileDownloader(exportStreamResource).extend(exportButton);
 		}

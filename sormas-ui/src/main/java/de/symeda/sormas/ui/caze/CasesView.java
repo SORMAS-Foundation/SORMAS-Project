@@ -17,10 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.vaadin.hene.popupbutton.PopupButton;
@@ -252,7 +250,7 @@ public class CasesView extends AbstractView {
 			}
 
 			{
-				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", createExportFileNameWithCurrentDate("sormas_cases_", ".csv"));
+				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", createFileNameWithCurrentDate("sormas_cases_", ".csv"));
 				
 				addExportButton(streamResource, exportPopupButton, exportLayout, "basicExport", VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
@@ -274,14 +272,14 @@ public class CasesView extends AbstractView {
 							}
 							return caption;
 						},
-						createExportFileNameWithCurrentDate("sormas_cases_", ".csv"), null);
+						createFileNameWithCurrentDate("sormas_cases_", ".csv"), null);
 				
 				addExportButton(exportStreamResource, exportPopupButton, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
 				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(grid.getCriteria(),
-						createExportFileNameWithCurrentDate("sormas_case_management_", ".zip"));
+						createFileNameWithCurrentDate("sormas_case_management_", ".zip"));
 				
 				addExportButton(caseManagementExportStreamResource, exportPopupButton, exportLayout, "caseManagementExport", VaadinIcons.FILE_TEXT, Captions.exportCaseManagement, Strings.infoCaseManagementExport);
 			}
@@ -301,7 +299,7 @@ public class CasesView extends AbstractView {
 							}
 							return caption;
 						},
-						createExportFileNameWithCurrentDate("sormas_samples_", ".csv"), null);
+						createFileNameWithCurrentDate("sormas_samples_", ".csv"), null);
 				
 				addExportButton(sampleExportStreamResource, exportPopupButton, exportLayout, "sampleExport", VaadinIcons.FILE_TEXT, Captions.exportSamples, Strings.infoSampleExport);
 			}
@@ -335,7 +333,7 @@ public class CasesView extends AbstractView {
 											}
 											return caption;
 										},
-										createExportFileNameWithCurrentDate("sormas_cases_" , ".csv"), exportConfig), null, true);
+										createFileNameWithCurrentDate("sormas_cases_" , ".csv"), exportConfig), null, true);
 							});
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));

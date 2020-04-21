@@ -52,7 +52,7 @@ public interface VisitFacade {
 	
 	List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<ContactVisitExportDto> getContactVisitsExportList(VisitCriteria visitCriteria, VisitExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration);
+	List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria, VisitExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration);
 
 	long count(VisitCriteria visitCriteria);
 	

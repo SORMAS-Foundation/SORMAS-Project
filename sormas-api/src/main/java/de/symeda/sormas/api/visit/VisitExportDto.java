@@ -13,9 +13,9 @@ import de.symeda.sormas.api.utils.Order;
 import java.io.Serializable;
 import java.util.Date;
 
-public class ContactVisitExportDto implements Serializable {
+public class VisitExportDto implements Serializable {
 
-    public static final String I18N_PREFIX = "ContactVisitExport";
+    public static final String I18N_PREFIX = "VisitExport";
 
     private Long id;
     private String uuid;
@@ -33,8 +33,8 @@ public class ContactVisitExportDto implements Serializable {
     private Double reportLat;
     private Double reportLon;
 
-    public ContactVisitExportDto(Long id, String uuid, Long personId, String firstName, String lastName, Long symptomsId, Long visitUserId, Disease disease, Date visitDateTime,
-                                  VisitStatus visitStatus, String visitRemarks, Double reportLat, Double reportLon) {
+    public VisitExportDto(Long id, String uuid, Long personId, String firstName, String lastName, Long symptomsId, Long visitUserId, Disease disease, Date visitDateTime,
+                          VisitStatus visitStatus, String visitRemarks, Double reportLat, Double reportLon) {
         this.id = id;
         this.uuid = uuid;
         this.personId = personId;

@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.api.contact.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -52,17 +53,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactCategory;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactDateType;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactExportDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.OrderMeans;
-import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -233,7 +223,7 @@ public class ContactsView extends AbstractView {
 				addHeaderComponent(exportButton);
 			}
 			{
-				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
 
 				addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
@@ -253,9 +243,30 @@ public class ContactsView extends AbstractView {
 							}
 							return caption;
 						},
-						"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+						createFileNameWithCurrentDate("sormas_contacts_", ".csv"), null);
 
 				addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+			}
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)){
+				StreamResource followUpVisitsExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactVisitsExportDto.class, null,
+						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getContactVisitsExportList(grid.getCriteria(), start, max),
+						(propertyId,type) -> {
+							String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
+									I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
+											I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+													I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
+															I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, propertyId,
+																	I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
+																			I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
+							if (Date.class.isAssignableFrom(type)) {
+								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+							}
+							return caption;
+						},
+						createFileNameWithCurrentDate("sormas_contacts_", ".csv"), null);
+
+				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportFollowUp, Descriptions.descFollowUpExportButton);
 			}
 
 			// Warning if no filters have been selected

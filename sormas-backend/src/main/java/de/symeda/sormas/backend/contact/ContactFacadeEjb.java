@@ -46,23 +46,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.contact.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactExportDto;
-import de.symeda.sormas.api.contact.ContactFacade;
-import de.symeda.sormas.api.contact.ContactFollowUpDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.DashboardContactDto;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -344,6 +333,12 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return resultList;
+	}
+
+	@Override
+	public List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first,
+																   int max) {
+		return null;
 	}
 
 	@Override

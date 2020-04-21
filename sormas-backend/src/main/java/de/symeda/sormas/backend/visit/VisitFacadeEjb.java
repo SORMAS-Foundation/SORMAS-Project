@@ -258,12 +258,12 @@ public class VisitFacadeEjb implements VisitFacade {
 
     @Override
     @Transactional(value = Transactional.TxType.REQUIRES_NEW)
-    public List<ContactVisitExportDto> getContactVisitsExportList(VisitCriteria visitCriteria,
-                                                                  VisitExportType exportType, int first, int max,
-                                                                  ExportConfigurationDto exportConfiguration) {
+    public List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria,
+                                                    VisitExportType exportType, int first, int max,
+                                                    ExportConfigurationDto exportConfiguration) {
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
-        final CriteriaQuery<ContactVisitExportDto> cq = cb.createQuery(ContactVisitExportDto.class);
+        final CriteriaQuery<VisitExportDto> cq = cb.createQuery(VisitExportDto.class);
         final Root<Visit> visitRoot = cq.from(Visit.class);
         final Join<Visit, Symptoms> symptomsJoin = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
         final Join<Visit, Person> personJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
@@ -280,7 +280,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
         cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
 
-        List<ContactVisitExportDto> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY,
+        List<VisitExportDto> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY,
                 true).setFirstResult(first).setMaxResults(max).getResultList();
 
         if (!resultList.isEmpty()) {
@@ -291,13 +291,13 @@ public class VisitFacadeEjb implements VisitFacade {
                 CriteriaQuery<Symptoms> symptomsCq = cb.createQuery(Symptoms.class);
                 Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
                 Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
-                symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(ContactVisitExportDto::getSymptomsId).collect(Collectors.toList())));
+                symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(VisitExportDto::getSymptomsId).collect(Collectors.toList())));
                 symptomsList =
                         em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
                 symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
             }
 
-            for (ContactVisitExportDto exportDto : resultList) {
+            for (VisitExportDto exportDto : resultList) {
                 if (symptoms != null) {
                     Optional.ofNullable(symptoms.get(exportDto.getSymptomsId())).ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
                 }
