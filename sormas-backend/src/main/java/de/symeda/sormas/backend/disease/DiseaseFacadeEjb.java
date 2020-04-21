@@ -96,8 +96,17 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, userUuid);
 		
 		//previous cases
-		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);		
-		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, userUuid);
+		//no need for previous cases when previous dates are null
+		Map<Disease, Long> _previousCases = null;
+		if (previousFrom != null && previousTo != null) {
+			caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);	
+			_previousCases = caseFacade.getCaseCountByDisease(caseCriteria, userUuid);
+		}
+		else
+			_previousCases = new HashMap<Disease, Long>();
+		
+		//work-around to resolve "Local variable defined in an enclosing scope must be final or effectively final"
+		final Map<Disease, Long> previousCases = _previousCases;
 		
 		//build diseasesBurden
 		List<DiseaseBurdenDto> diseasesBurden = diseases.stream().map(disease -> {
