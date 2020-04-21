@@ -91,10 +91,13 @@ public class DashboardDataProvider {
 
 		if (getDashboardType() == DashboardType.CONTACTS) {
 			// Contacts
-			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
-					toDate, userUuid));
-			setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease,
-					previousFromDate, previousToDate, userUuid));
+			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, 
+					periodFilterMode, fromDate, toDate, userUuid));
+			if (previousFromDate == null || previousToDate == null)
+				setPreviousContacts(Collections.emptyList());
+			else
+				setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease,
+					periodFilterMode, previousFromDate, previousToDate, userUuid));
 		}
 
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {

@@ -43,6 +43,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactLogic;
@@ -63,6 +64,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -370,7 +372,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return result;
 	}
 
-	public List<DashboardContactDto> getContactsForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
+	public List<DashboardContactDto> getContactsForDashboard(Region region, District district, Disease disease, 
+			PeriodFilterMode periodSelectionType, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardContactDto> cq = cb.createQuery(DashboardContactDto.class);
 		Root<Contact> contact = cq.from(getElementClass());
@@ -380,11 +383,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact, user));
 
 		// Date filter
-		Predicate dateFilter = buildDateFilter(cb, contact, from, to);
-		if (filter != null) {
+		Predicate dateFilter = buildDateFilter(cb, cq, contact, periodSelectionType, from, to);
+		if (filter != null && dateFilter != null) {
 			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
 		}
 
 		if (region != null) {
@@ -894,7 +895,16 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return cb.isFalse(root.get(Contact.DELETED));
 	}
 	
-	private Predicate buildDateFilter(CriteriaBuilder cb, Root<Contact> contact, Date from, Date to) {
+	private Predicate buildDateFilter(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Contact> contact, PeriodFilterMode periodSelectionType, Date from, Date to) {
+		if (periodSelectionType == PeriodFilterMode.USE_OUTBREAK_ONSET) {
+			Root<DiseaseConfiguration> disease = cq.from(DiseaseConfiguration.class);
+			Predicate filter = and(cb, null, cb.equal(contact.get(Contact.DISEASE), disease.get(DiseaseConfiguration.DISEASE)));
+			return and(cb, filter, cb.or(cb.isNull(disease.get(DiseaseConfiguration.OUTBREAK_ONSET)), cb.greaterThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), disease.get(DiseaseConfiguration.OUTBREAK_ONSET))));
+		}
+		
+		if (from == null && to == null)
+			return null;
+		
 		return cb.and(
 				cb.greaterThanOrEqualTo(contact.get(Contact.FOLLOW_UP_UNTIL), from),
 				cb.or(

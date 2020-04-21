@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -56,7 +57,7 @@ public interface ContactFacade {
 	
 	List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria, int first, int max);
 	
-	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, PeriodFilterMode periodSelectionType, Date from, Date to, String userUuid);
 	
 	Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, String userUuid);
 

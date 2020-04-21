@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -690,13 +691,13 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
+	public List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, 
+			Disease disease, PeriodFilterMode periodSelectionType, Date from, Date to, String userUuid) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getByUuid(userUuid);
 
-		return contactService.getContactsForDashboard(region, district, disease, from, to, user);
+		return contactService.getContactsForDashboard(region, district, disease, periodSelectionType, from, to, user);
 	}
 
 	@Override
