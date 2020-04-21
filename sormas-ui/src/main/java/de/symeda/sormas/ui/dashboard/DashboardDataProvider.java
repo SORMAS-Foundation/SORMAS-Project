@@ -89,7 +89,7 @@ public class DashboardDataProvider {
 		if (getDashboardType() == DashboardType.CONTACTS) {
 			// Contacts
 			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, 
-					periodFilterMode, fromDate, toDate,));
+					periodFilterMode, fromDate, toDate));
 			if (previousFromDate == null || previousToDate == null)
 				setPreviousContacts(Collections.emptyList());
 			else
