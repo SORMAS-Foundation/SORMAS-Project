@@ -52,6 +52,7 @@ public class Hospitalization extends AbstractDomainObject {
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date dischargeDate;
     @Enumerated(EnumType.STRING)
+    @Deprecated
     private AccommodationType accommodation;
     @Enumerated(EnumType.STRING)
     private YesNoUnknown isolated;
@@ -62,6 +63,12 @@ public class Hospitalization extends AbstractDomainObject {
 
     @Enumerated(EnumType.STRING)
     private YesNoUnknown hospitalizedPreviously;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown intensiveCareUnit;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date intensiveCareUnitStart;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date intensiveCareUnitEnd;
     // just for reference, not persisted in DB
     private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
 
@@ -113,6 +120,30 @@ public class Hospitalization extends AbstractDomainObject {
         this.admittedToHealthFacility = admittedToHealthFacility;
     }
 
+    public YesNoUnknown getIntensiveCareUnit() {
+        return intensiveCareUnit;
+    }
+
+    public void setIntensiveCareUnit(YesNoUnknown intensiveCareUnit) {
+        this.intensiveCareUnit = intensiveCareUnit;
+    }
+
+    public Date getIntensiveCareUnitStart() {
+        return intensiveCareUnitStart;
+    }
+
+    public void setIntensiveCareUnitStart(Date intensiveCareUnitStart) {
+        this.intensiveCareUnitStart = intensiveCareUnitStart;
+    }
+
+    public Date getIntensiveCareUnitEnd() {
+        return intensiveCareUnitEnd;
+    }
+
+    public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
+        this.intensiveCareUnitEnd = intensiveCareUnitEnd;
+    }
+
     /**
      * NOTE: This is only initialized when the hospitalization is retrieved using {@link HospitalizationDao}
      * @return
@@ -130,10 +161,12 @@ public class Hospitalization extends AbstractDomainObject {
         return I18N_PREFIX;
     }
 
+    @Deprecated
     public AccommodationType getAccommodation() {
         return accommodation;
     }
 
+    @Deprecated
     public void setAccommodation(AccommodationType accommodation) {
         this.accommodation = accommodation;
     }
