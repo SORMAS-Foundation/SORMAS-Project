@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -40,6 +41,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private DistrictReferenceDto district;
 	private Date reportedDateFrom;
 	private Date reportedDateTo;
+	private PeriodFilterMode periodFilterMode;
 	private EntityRelevanceStatus relevanceStatus;
 	
 	public EventStatus getEventStatus() {
@@ -114,5 +116,14 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	}
 	public Date getReportedDateTo() {
 		return reportedDateTo;
+	}
+	
+	public PeriodFilterMode getPeriodSelectionType () {
+		return periodFilterMode;
+	}
+	
+	public EventCriteria periodSelectionType(PeriodFilterMode periodSelectionType) {
+		this.periodFilterMode = periodSelectionType;
+		return this;
 	}
 }

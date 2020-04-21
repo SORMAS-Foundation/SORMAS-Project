@@ -126,11 +126,15 @@ public class DashboardDataProvider {
 
 		// Events
 		EventCriteria eventCriteria = new EventCriteria();
-		eventCriteria.region(region).district(district).disease(disease).reportedBetween(fromDate, toDate);	
+		eventCriteria.region(region).district(district).disease(disease).periodSelectionType(periodFilterMode).reportedBetween(fromDate, toDate);	
 		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));
 
-		eventCriteria.reportedBetween(previousFromDate, previousToDate);
-		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));		
+		if (previousFromDate == null || previousToDate == null)
+			setPreviousEvents(Collections.emptyList());
+		else {
+			eventCriteria.reportedBetween(previousFromDate, previousToDate);
+			setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));
+		}
 
 		eventCriteria.reportedBetween(fromDate, toDate);
 		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria, userUuid));

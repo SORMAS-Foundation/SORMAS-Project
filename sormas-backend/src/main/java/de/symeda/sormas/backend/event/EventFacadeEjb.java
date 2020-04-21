@@ -203,7 +203,7 @@ public class EventFacadeEjb implements EventFacade {
 		}
 		
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, cq, event);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		
@@ -250,7 +250,7 @@ public class EventFacadeEjb implements EventFacade {
 		}
 		
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, cq, event);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		

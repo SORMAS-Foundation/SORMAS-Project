@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -44,10 +45,12 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -121,7 +124,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = createDefaultFilter(cb, event);
-		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event));
+		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, cq, event));
 		filter = and(cb, filter, createUserFilter(cb, cq, event, user));
 
 		List<DashboardEventDto> result;
@@ -159,7 +162,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.groupBy(event.get(Event.DISEASE));
 		
 		Predicate filter = createDefaultFilter(cb, event);
-		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event));
+		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, cq, event));
 		filter = and(cb, filter, createUserFilter(cb, cq, event, user));
 
 		if (filter != null)
@@ -182,7 +185,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.groupBy(event.get(Event.EVENT_STATUS));
 		
 		Predicate filter = createDefaultFilter(cb, event);
-		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, event));
+		filter = and(cb, filter, buildCriteriaFilter(eventCriteria, cb, cq, event));
 		filter = and(cb, filter, createUserFilter(cb, cq, event, user));
 		
 		if (filter != null)
@@ -350,7 +353,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super.delete(event);
 	}
 
-	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, Root<Event> from) {
+	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Event> from) {
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
@@ -380,6 +383,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 		if (eventCriteria.getDistrict() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID), eventCriteria.getDistrict().getUuid()));
+		}
+		if (eventCriteria.getPeriodSelectionType() == PeriodFilterMode.USE_OUTBREAK_ONSET) {
+			Root<DiseaseConfiguration> disease = cq.from(DiseaseConfiguration.class);
+			filter = and(cb, filter, cb.equal(from.get(Event.DISEASE), disease.get(DiseaseConfiguration.DISEASE)));
+			filter = and(cb, filter, cb.or(cb.isNull(disease.get(DiseaseConfiguration.OUTBREAK_ONSET)), cb.greaterThanOrEqualTo(from.get(Event.REPORT_DATE_TIME), disease.get(DiseaseConfiguration.OUTBREAK_ONSET))));
 		}
 		if (eventCriteria.getReportedDateFrom() != null || eventCriteria.getReportedDateTo() != null) {
 			filter = and(cb, filter, cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));
