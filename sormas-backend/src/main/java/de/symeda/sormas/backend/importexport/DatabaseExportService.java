@@ -20,6 +20,8 @@ import javax.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.caze.Case;
@@ -100,6 +102,8 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.CLINICAL_VISIT_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id"));
 	}
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -107,10 +111,11 @@ public class DatabaseExportService {
 
 		//Writer must not be closed so it does not close the zip too early
 		Writer writer = new OutputStreamWriter(zos, StandardCharsets.UTF_8);
-		
+
 		// Export all selected tables to .csv files
 		for (DatabaseTable databaseTable : databaseTables) {
-			
+
+			long startTime = System.currentTimeMillis();
 			zos.putNextEntry(new ZipEntry(databaseTable.getFileName() + ".csv"));
 
 			DatabaseExportConfiguration config = getConfig(databaseTable);
@@ -123,14 +128,20 @@ public class DatabaseExportService {
 							config.getJoinTableName(),
 							config.getColumnName(),
 							config.getJoinColumnName());
-				} else {
-					sql = String.format(COPY_SINGLE_TABLE, config.getTableName());
+			} else {
+				sql = String.format(COPY_SINGLE_TABLE, config.getTableName());
 			}
 			writeCsv(writer, sql, databaseTable.getFileName());
 			writer.flush();
-	
 			zos.closeEntry();
-		};
+			// Be able to check performance for each export query
+			logger
+				.trace(
+					"exportAsCsvFiles(): Exported '{}' in {} ms. sql='{}'",
+					databaseTable.getFileName(),
+					System.currentTimeMillis() - startTime,
+					sql);
+		}
 	}
 
 	/**
