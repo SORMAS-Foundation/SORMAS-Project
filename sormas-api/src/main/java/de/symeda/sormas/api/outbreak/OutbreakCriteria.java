@@ -22,6 +22,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
@@ -37,6 +39,7 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	private Date changeDateAfter;
 	private Date reportedDateFrom;
 	private Date reportedDateTo;
+	private PeriodFilterMode periodFilterMode;
 	
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -116,5 +119,14 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	}
 	public Date getReportedDateTo() {
 		return reportedDateTo;
+	}
+	
+	public PeriodFilterMode getPeriodSelectionType () {
+		return periodFilterMode;
+	}
+	
+	public OutbreakCriteria periodSelectionType(PeriodFilterMode periodSelectionType) {
+		this.periodFilterMode = periodSelectionType;
+		return this;
 	}
 }
