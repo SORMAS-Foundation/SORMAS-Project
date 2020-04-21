@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.caze;
 
-public class BirthDateDto {
+import java.io.Serializable;
+
+public class BirthDateDto implements Serializable {
 	private Integer birthdateDD;
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;

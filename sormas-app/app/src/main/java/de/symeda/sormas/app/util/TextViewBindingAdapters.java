@@ -20,26 +20,23 @@ package de.symeda.sormas.app.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.ObservableList;
-
 import android.graphics.Typeface;
 import android.text.Html;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableList;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -137,7 +134,7 @@ public class TextViewBindingAdapters {
 
     @BindingAdapter(value = {"dateValue", "valueCaption", "defaultValue"})
     public static void setDateValueWithCaption(TextView view, Date date, String valueCaption, String defaultValue) {
-        setValueWithCaption(view, DateHelper.formatLocalShortDate(date), valueCaption, defaultValue);
+        setValueWithCaption(view, DateFormatHelper.formatLocalDate(date), valueCaption, defaultValue);
     }
 
     @BindingAdapter(value = {"facilityValue", "facilityDetailsValue", "valueCaption", "defaultValue"})
@@ -156,7 +153,9 @@ public class TextViewBindingAdapters {
 
     @BindingAdapter(value = {"ageDateValue", "valueCaption", "defaultValue"})
     public static void setAgeDateValueWithCaption(TextView view, Person person, String valueCaption, String defaultValue) {
-        setValueWithCaption(view, PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()), valueCaption, defaultValue);
+        setValueWithCaption(view,
+                DateFormatHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()),
+                valueCaption, defaultValue);
     }
 
     @BindingAdapter(value = {"value", "prependValue", "appendValue", "valueFormat", "defaultValue"}, requireAll = true)
@@ -205,7 +204,7 @@ public class TextViewBindingAdapters {
         } else {
             String age = person.getApproximateAge().toString();
             ApproximateAgeType ageType = person.getApproximateAgeType();
-            String dateOfBirth = PersonHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+            String dateOfBirth = DateFormatHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
 
             StringBuilder ageWithDateBuilder = new StringBuilder()
                     .append(age).append(" ").append(ageType != null ? ageType.toString() : "")
@@ -246,13 +245,13 @@ public class TextViewBindingAdapters {
         if (fromValue == null) {
             from = " ? ";
         } else {
-            from = DateHelper.formatLocalShortDate(fromValue);
+            from = DateFormatHelper.formatLocalDate(fromValue);
         }
 
         if (appendValue == null) {
             to = " ? ";
         } else {
-            to = DateHelper.formatLocalShortDate(appendValue);
+            to = DateFormatHelper.formatLocalDate(appendValue);
         }
 
         if (valueFormat != null && valueFormat.trim() != "") {
@@ -485,7 +484,7 @@ public class TextViewBindingAdapters {
             textField.setText(val);
         } else {
             val = enumValue.toString();
-            String _dateValue = DateHelper.formatLocalShortDate(dateValue);
+            String _dateValue = DateFormatHelper.formatLocalDate(dateValue);
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -587,7 +586,7 @@ public class TextViewBindingAdapters {
         if (task == null || task.getDueDate() == null) {
             textField.setText(val);
         } else {
-            val = DateHelper.formatLocalShortDate(task.getDueDate());
+            val = DateFormatHelper.formatLocalDate(task.getDueDate());
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -652,7 +651,7 @@ public class TextViewBindingAdapters {
                 String ageType = person.getApproximateAgeType().toString();
 
                 //Dob
-                String dob = PersonHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+                String dob = DateFormatHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
 
                 textField.setText(String.format(valueFormat, val, ageType, dob));
             } else {
@@ -715,7 +714,7 @@ public class TextViewBindingAdapters {
         if (dateValue == null) {
             textField.setText(defaultValue);
         } else {
-            String val = DateHelper.formatLocalShortDate(dateValue);
+            String val = DateFormatHelper.formatLocalDate(dateValue);
 
             if (valueFormat != null && !valueFormat.trim().equals("")) {
                 val = String.format(valueFormat, val);
@@ -747,7 +746,7 @@ public class TextViewBindingAdapters {
         if (dateValue == null) {
             textField.setText(defaultValue);
         } else {
-            textField.setText(DateHelper.formatLocalShortDateTime(dateValue));
+            textField.setText(DateFormatHelper.formatLocalDateTime(dateValue));
         }
     }
 
@@ -1032,7 +1031,7 @@ public class TextViewBindingAdapters {
         } else if (record.getEvent() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(record.getEvent().getEventStatus());
-            sb.append(", " + DateHelper.formatLocalShortDate(record.getEvent().getEventDate()));
+            sb.append(", " + DateFormatHelper.formatLocalDate(record.getEvent().getEventDate()));
             if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
                 sb.append(", " + record.getEvent().getEventLocation().getCity());
             }

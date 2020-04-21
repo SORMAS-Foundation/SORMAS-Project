@@ -369,7 +369,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	@Transactional(value = TxType.REQUIRES_NEW)
-	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration) {
+	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage) {
 		Boolean previousCaseManagementDataCriteria = caseCriteria.isMustHaveCaseManagementData();
 		if (CaseExportType.CASE_MANAGEMENT == exportType) {
 			caseCriteria.mustHaveCaseManagementData(Boolean.TRUE);
@@ -592,7 +592,6 @@ public class CaseFacadeEjb implements CaseFacade {
 					Optional.ofNullable(travels.get(exportDto.getEpiDataId())).ifPresent(caseTravels -> {
 						StringBuilder travelHistoryBuilder = new StringBuilder();
 						caseTravels.forEach(travel -> {
-							Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
 							travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(travel.getTravelType(),
 									travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo(), userLanguage)).append(", ");
 						});

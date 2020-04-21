@@ -2,7 +2,9 @@ package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.person.ApproximateAgeType;
 
-public class AgeAndBirthDateDto extends BirthDateDto {
+import java.io.Serializable;
+
+public class AgeAndBirthDateDto extends BirthDateDto implements Serializable {
 	private Integer age;
 	private ApproximateAgeType ageType;
 
