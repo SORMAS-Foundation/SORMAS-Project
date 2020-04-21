@@ -17,7 +17,6 @@ Jenkins plugins needed to be installed:
 
 - katalon
 - github
-- xvfb
 - git
 
 ## Jenkins configuration (FreeStyle element / mandatory)
