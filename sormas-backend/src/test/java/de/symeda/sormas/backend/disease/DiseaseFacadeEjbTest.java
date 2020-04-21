@@ -27,6 +27,7 @@ import org.junit.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -68,6 +69,7 @@ public class DiseaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, referenceDate, rdcf2);
 
 		List<DiseaseBurdenDto> diseaseBurdenForDashboard = getDiseaseFacade().getDiseaseBurdenForDashboard(rdcf.region, rdcf.district, 
+				PeriodFilterMode.SELECT_PERIOD, 
 				DateHelper.getStartOfDay(referenceDate), DateHelper.getEndOfDay(DateHelper.addDays(referenceDate, 10)),
 				DateHelper.getStartOfDay(DateHelper.subtractDays(referenceDate, 10)), DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)), user.getUuid());
 		
