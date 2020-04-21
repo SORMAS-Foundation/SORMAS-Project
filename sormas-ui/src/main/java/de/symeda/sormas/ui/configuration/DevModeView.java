@@ -26,7 +26,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -273,9 +276,7 @@ public class DevModeView extends AbstractConfigurationView {
 		Random random = new Random();
 		try {
 			Class<? extends EntityDto> entityClass = entity.getClass();
-			List<Method> setters = Arrays.stream(entityClass.getDeclaredMethods())
-					.filter(method -> method.getName().startsWith("set") && method.getParameterTypes().length == 1)
-					.collect(Collectors.toList());
+			List<Method> setters = setters(entityClass);
 			for (Method setter : setters) {
 				if (random.nextInt(10) > 6) {
 					continue; // leave some empty/default
@@ -291,13 +292,9 @@ public class DevModeView extends AbstractConfigurationView {
 							.atZone(ZoneId.systemDefault()).toInstant()));
 				}
 				else if (parameterType.isEnum()) {
-					Object[] enumConstants = null;
+					Object[] enumConstants;
 					// Only use active primary diseases
-					if (parameterType == Disease.class) {
-						enumConstants = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray();
-					} else {
-						enumConstants = parameterType.getEnumConstants();
-					}
+					enumConstants = getEnumConstants(parameterType);
 					// Generate more living persons
 					if (parameterType == PresentCondition.class && random.nextInt(10) <= 5) {
 						setter.invoke(entity, PresentCondition.ALIVE);
@@ -306,18 +303,55 @@ public class DevModeView extends AbstractConfigurationView {
 					}
 				}
 				else if (EntityDto.class.isAssignableFrom(parameterType)) {
-					Method getter = entityClass.getDeclaredMethod(setter.getName().replaceFirst("set", "get"));
-					if (getter != null) {
-						Object subEntity = getter.invoke(entity);
-						if (subEntity instanceof EntityDto) {
-							fillEntity((EntityDto)subEntity, referenceDateTime);
+					getter(setter).ifPresent(g -> {
+						Object subEntity;
+						try {
+							subEntity = g.invoke(entity);
+							if (subEntity instanceof EntityDto) {
+								fillEntity((EntityDto)subEntity, referenceDateTime);
+							}
+						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+							throw new RuntimeException(e.getMessage(), e);
 						}
-					}
+					});
 				}
 			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	Object[] diseaseEnumConstants;
+
+	private Object[] getEnumConstants(Class<?> parameterType) {
+		if (parameterType == Disease.class) {
+			if (diseaseEnumConstants == null) {
+				diseaseEnumConstants = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray();
+			}
+			return diseaseEnumConstants;
+		} else {
+			return parameterType.getEnumConstants();
+		}
+	}
+
+	private Map<Class<? extends EntityDto>, List<Method>> setters = new HashMap<>();
+	private Map<Method, Optional<Method>> getters = new HashMap<>();
+
+	private List<Method> setters(Class<? extends EntityDto> entityClass) {
+		return setters.computeIfAbsent(entityClass, c -> 
+				Arrays.stream(c.getDeclaredMethods())
+					.filter(method -> method.getName().startsWith("set") && method.getParameterTypes().length == 1)
+					.collect(Collectors.toList()));
+	}
+
+	private Optional<Method> getter(Method setter) throws NoSuchMethodException {
+		return getters.computeIfAbsent(setter, s -> {
+			try {
+				return Optional.of(s.getDeclaringClass().getDeclaredMethod(s.getName().replaceFirst("set", "get")));
+			} catch (NoSuchMethodException | SecurityException e) {
+				return Optional.empty();
+			}
+		});
 	}
 
 	private void generateCases() {
