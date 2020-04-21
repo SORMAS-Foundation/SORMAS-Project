@@ -180,7 +180,7 @@ public class VisitFacadeEjb implements VisitFacade {
     @Override
     public void validate(VisitDto visit) {
         if (visit.getVisitStatus() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitSymptoms));
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitStatus));
         }
         if (visit.getSymptoms() == null) {
             throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitSymptoms));

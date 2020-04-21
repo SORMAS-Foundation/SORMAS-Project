@@ -786,6 +786,28 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		return resultMap;
 	}
+	
+	@Override
+	public List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, false);
+		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(criteria, cb, cq, caze));
+		if (filter != null) {
+			cq.where(filter);
+		}
+		
+		cq.select(caze.get(Case.UUID));
+		
+		List<String> uuids = em.createQuery(cq).getResultList();
+		
+		return new Random()
+				.ints(count, 0, uuids.size())
+				.mapToObj(i -> new CaseReferenceDto(uuids.get(i)))
+				.collect(Collectors.toList());
+	}
 
 	public Map<Disease, District> getLastReportedDistrictByDisease(CaseCriteria caseCriteria, boolean includeSharedCases) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
