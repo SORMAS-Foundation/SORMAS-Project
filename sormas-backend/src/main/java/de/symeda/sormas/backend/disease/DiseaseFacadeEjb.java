@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.disease;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -62,6 +64,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
 			RegionReferenceDto regionRef,
 			DistrictReferenceDto districtRef, 
+			PeriodFilterMode periodSelectionType,
 			Date from, 
 			Date to,
 			Date previousFrom,
@@ -73,6 +76,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 				
 		//new cases
 		CaseCriteria caseCriteria = new CaseCriteria()
+				.periodSelectionType(periodSelectionType)
 				.newCaseDateBetween(from, to, null)
 				.region(regionRef)
 				.district(districtRef);
@@ -80,10 +84,10 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> newCases = caseFacade.getCaseCountByDisease(caseCriteria, userUuid);
 		
 		//events
-		Map<Disease, Long> events = eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).reportedBetween(from, to), userUuid);
+		Map<Disease, Long> events = eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).periodSelectionType(periodSelectionType).reportedBetween(from, to), userUuid);
 					
 		//outbreaks
-		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to), userUuid);
+		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).periodSelectionType(periodSelectionType).reportedBetween(from, to), userUuid);
 				
 		//last report district
 		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, userUuid);
