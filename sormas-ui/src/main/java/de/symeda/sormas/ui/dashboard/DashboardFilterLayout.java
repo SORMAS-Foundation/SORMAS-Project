@@ -213,6 +213,9 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		setDateFilter(DateHelper.getStartOfWeek(new Date()), new Date());
 		updateComparisonButtons(DateFilterType.THIS_WEEK, DateHelper.getStartOfWeek(new Date()), new Date(), false);
 		btnCurrentPeriod.setCaption(btnThisWeek.getCaption());
+		
+		//set initial period filter mode
+		cmbPeriodSelectionMode.setValue(PeriodFilterMode.USE_OUTBREAK_ONSET);
 	}
 
 	private HorizontalLayout createDateFilterButtonsLayout() {
