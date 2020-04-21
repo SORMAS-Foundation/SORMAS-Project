@@ -4064,3 +4064,7 @@ ALTER TABLE contact_history ADD COLUMN overwritefollowupuntil boolean;
 UPDATE contact SET overwritefollowupuntil = false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (197, 'Make follow-up until editable #1680');
+
+-- 2020-04-21 Date of outbreak onset for each disease #1862
+ALTER TABLE diseaseconfiguration ADD COLUMN outbreakonset timestamp;
+INSERT INTO schema_version (version_number, comment) VALUES (198, 'Date of outbreak onset for each disease #1862');

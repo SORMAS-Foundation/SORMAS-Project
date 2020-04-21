@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.disease;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,6 +20,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public static final String TABLE_NAME = "diseaseconfiguration";
 	
 	public static final String DISEASE = "disease";
+	public static final String OUTBREAK_ONSET = "outbreakOnset";
 	
 	private Disease disease;
 	private Boolean active;
@@ -25,6 +28,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean caseBased;
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
+	private Date outbreakOnset;
 	
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
@@ -79,6 +83,14 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	}
 	public void setFollowUpDuration(Integer followUpDuration) {
 		this.followUpDuration = followUpDuration;
+	}
+
+	@Column
+	public Date getOutbreakOnset() {
+		return outbreakOnset;
+	}
+	public void setOutbreakOnset(Date outbreakOnset) {
+		this.outbreakOnset = outbreakOnset;
 	}
 	
 }
