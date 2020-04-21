@@ -220,7 +220,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
 		District district = districtService.getByUuid(dto.getUuid());
 		
-		if (district == null && !getByName(dto.getName(), dto.getRegion()).isEmpty()) {
+		if (district == null && !getByName(dto.getName(), dto.getRegion(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
 		}
 
@@ -233,8 +233,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef) {
-		return districtService.getByName(name, regionService.getByReferenceDto(regionRef)).stream().map(d -> toReferenceDto(d)).collect(Collectors.toList());
+	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities) {
+		return districtService.getByName(name, regionService.getByReferenceDto(regionRef), includeArchivedEntities).stream().map(d -> toReferenceDto(d)).collect(Collectors.toList());
 	}
 
 	@Override

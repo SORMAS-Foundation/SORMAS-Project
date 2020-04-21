@@ -185,16 +185,16 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef,
-			CommunityReferenceDto communityRef) {
+			CommunityReferenceDto communityRef, boolean includeArchivedEntities) {
 		return facilityService
 				.getHealthFacilitiesByName(name, districtService.getByReferenceDto(districtRef),
-						communityService.getByReferenceDto(communityRef))
+						communityService.getByReferenceDto(communityRef), includeArchivedEntities)
 				.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getLaboratoriesByName(String name) {
-		return facilityService.getLaboratoriesByName(name).stream().map(f -> toReferenceDto(f))
+	public List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
+		return facilityService.getLaboratoriesByName(name, includeArchivedEntities).stream().map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 
@@ -365,9 +365,9 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 		
 		if (facility == null) {
-			if (FacilityType.LABORATORY.equals(dto.getType()) && !getLaboratoriesByName(dto.getName()).isEmpty()) {
+			if (FacilityType.LABORATORY.equals(dto.getType()) && !getLaboratoriesByName(dto.getName(), true).isEmpty()) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importLaboratoryAlreadyExists));
-			} else if (!getByName(dto.getName(), dto.getDistrict(), dto.getCommunity()).isEmpty()) {
+			} else if (!getByName(dto.getName(), dto.getDistrict(), dto.getCommunity(), true).isEmpty()) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
 			}
 		}

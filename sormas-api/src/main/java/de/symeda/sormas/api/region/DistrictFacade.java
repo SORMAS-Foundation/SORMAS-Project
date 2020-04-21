@@ -53,7 +53,7 @@ public interface DistrictFacade {
 	
 	void saveDistrict(DistrictDto dto) throws ValidationRuntimeException;
 	
-	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef);
+	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities);
 	
 	List<String> getNamesByIds(List<Long> districtIds);
 
