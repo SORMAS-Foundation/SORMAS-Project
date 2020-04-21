@@ -8,7 +8,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -20,7 +19,7 @@ public class ExportConfigurationService extends AbstractAdoService<ExportConfigu
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ExportConfiguration, ExportConfiguration> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ExportConfiguration, ExportConfiguration> from) {
 		// A user should not query for this
 		throw new UnsupportedOperationException();
 	}

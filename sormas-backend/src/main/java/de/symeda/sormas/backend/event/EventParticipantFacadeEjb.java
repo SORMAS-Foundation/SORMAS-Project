@@ -61,7 +61,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private EventService eventService;
@@ -75,8 +75,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private UserService userService;
 	
 	@Override
-	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
+		User user = userService.getCurrentUser();
 		Event event = eventService.getByUuid(eventUuid);
 		
 		if(user == null) {
@@ -93,8 +93,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 	
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();
@@ -104,9 +104,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}	
 	
 	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, String userUuid) {
+	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date) {
 		
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();
@@ -139,8 +139,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 	
 	@Override
-	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef) {
+		User user = userService.getCurrentUser();
 		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
 			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
 		}

@@ -25,10 +25,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.Month;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 
 /**
  * Created by Stefan Szczesny on 02.08.2016.
@@ -124,6 +126,15 @@ public class DataUtils {
             items.add(new Item<E>(listInEntry.toString(),listInEntry));
         }
         return items;
+    }
+
+    public static void updateListOfDays(ControlSpinnerField birthdateDD, Integer selectedYear, Integer selectedMonth) {
+        Integer currentlySelected = (Integer) birthdateDD.getValue();
+        List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
+        birthdateDD.setSpinnerData(days);
+        if (currentlySelected != null) {
+            birthdateDD.setValue(currentlySelected);
+        }
     }
 
 }

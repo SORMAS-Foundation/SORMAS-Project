@@ -27,64 +27,50 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
- *      documentation</a>
+ * documentation</a>
  * @see <a href=
- *      "https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey
- *      documentation HTTP Methods</a>
- *
+ * "https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey
+ * documentation HTTP Methods</a>
  */
 @Path("/eventparticipants")
-@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
+@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@Consumes({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
 @RolesAllowed("USER")
 public class EventParticipantResource extends EntityDtoResource {
 
-	@GET
-	@Path("/all/{since}")
-	public List<EventParticipantDto> getAllEventParticipantsAfter(@Context SecurityContext sc,
-			@PathParam("since") long since) {
+    @GET
+    @Path("/all/{since}")
+    public List<EventParticipantDto> getAllEventParticipantsAfter(@PathParam("since") long since) {
+        return FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since));
+    }
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade()
-				.getAllActiveEventParticipantsAfter(new Date(since), userDto.getUuid());
-		return result;
-	}
+    @POST
+    @Path("/query")
+    public List<EventParticipantDto> getByUuids(List<String> uuids) {
 
-	@POST
-	@Path("/query")
-	public List<EventParticipantDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+        List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
+        return result;
+    }
 
-		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
-		return result;
-	}
+    @POST
+    @Path("/push")
+    public List<PushResult> postEventParticipants(List<EventParticipantDto> dtos) {
 
-	@POST
-	@Path("/push")
-	public List<PushResult> postEventParticipants(List<EventParticipantDto> dtos) {
+        List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
+        return result;
+    }
 
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
-		return result;
-	}
-
-	@GET
-	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getEventParticipantFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
-	}
+    @GET
+    @Path("/uuids")
+    public List<String> getAllActiveUuids() {
+        return FacadeProvider.getEventParticipantFacade().getAllActiveUuids();
+    }
 }

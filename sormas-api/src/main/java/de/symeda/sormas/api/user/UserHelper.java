@@ -19,6 +19,10 @@ package de.symeda.sormas.api.user;
 
 public final class UserHelper {
 
+	private UserHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	public static String getSuggestedUsername(String firstname, String lastname) {
 		StringBuilder sb = new StringBuilder();
 		String trim = firstname.replaceAll("\\s", "");

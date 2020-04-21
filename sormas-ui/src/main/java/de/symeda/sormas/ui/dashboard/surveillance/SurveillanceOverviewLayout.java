@@ -21,10 +21,10 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.CheckBox;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -37,19 +37,19 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class SurveillanceOverviewLayout extends CustomLayout {
 
-	protected HorizontalLayout diseaseBurdenView;
-	protected DiseaseBurdenComponent diseaseBurdenComponent;
-	protected DiseaseTileViewLayout diseaseTileViewLayout;
-	protected CaseCountDifferenceComponent diseaseDifferenceComponent;
+	private static final String BURDEN_LOC = "burden";
+	private static final String DIFFERENCE_LOC = "difference";
+	private static final String EXTEND_BUTTONS_LOC = "extendButtons";
+
+	private HorizontalLayout diseaseBurdenView;
+	private DiseaseBurdenComponent diseaseBurdenComponent;
+	private DiseaseTileViewLayout diseaseTileViewLayout;
+	private CaseCountDifferenceComponent diseaseDifferenceComponent;
 	private Button showMoreButton;
 	private Button showLessButton;
 	private CheckBox hideOverview;
 	private Boolean isShowingAllDiseases;
 
-	private static String BURDEN_LOC = "burden";
-	private static String DIFFERENCE_LOC = "difference";
-	private static String EXTEND_BUTTONS_LOC = "extendButtons";
-	
 	public SurveillanceOverviewLayout(DashboardDataProvider dashboardDataProvider) {
 
 		setTemplateContents(

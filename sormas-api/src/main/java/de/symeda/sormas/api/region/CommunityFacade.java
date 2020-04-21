@@ -39,7 +39,7 @@ public interface CommunityFacade {
 	
 	CommunityDto getByUuid(String uuid);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 
 	CommunityReferenceDto getCommunityReferenceByUuid(String uuid);
 	
@@ -47,7 +47,7 @@ public interface CommunityFacade {
 	
 	void saveCommunity(CommunityDto dto) throws ValidationRuntimeException;
 	
-	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef);
+	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
 	
 	void archive(String communityUuid);
 	

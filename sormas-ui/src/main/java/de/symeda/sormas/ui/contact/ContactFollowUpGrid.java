@@ -19,7 +19,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -110,13 +109,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	public void setDataProvider() {
 		DataProvider<ContactFollowUpDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getContactFacade().getContactFollowUpList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), referenceDate, query.getOffset(), query.getLimit(), 
+						 query.getFilter().orElse(null), referenceDate, query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 						.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getContactFacade().count(
-							UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
+				query -> (int) FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}

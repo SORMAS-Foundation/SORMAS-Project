@@ -77,7 +77,7 @@ import de.symeda.sormas.backend.util.PasswordHelper;
 public class UserFacadeEjb implements UserFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private UserService userService;
@@ -150,15 +150,13 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
+	public List<String> getAllUuids() {
 
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return userService.getAllUuids(user);
+		return userService.getAllUuids();
 	}
 
 	@Override

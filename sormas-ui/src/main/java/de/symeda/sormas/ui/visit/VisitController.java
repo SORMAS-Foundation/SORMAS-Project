@@ -83,7 +83,7 @@ public class VisitController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getVisitFacade().deleteVisit(referenceDto.getUuid(), UserProvider.getCurrent().getUuid());
+					FacadeProvider.getVisitFacade().deleteVisit(referenceDto.getUuid());
 					UI.getCurrent().removeWindow(window);
         			if (doneConsumer != null) {
         				doneConsumer.accept(referenceDto);
@@ -135,15 +135,13 @@ public class VisitController {
 			new Notification(I18nProperties.getString(Strings.headingNoVisitsSelected), 
 					I18nProperties.getString(Strings.messageNoVisitsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteVisits), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getVisitFacade().deleteVisit(((VisitIndexDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
-					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingVisitsDeleted), 
-							I18nProperties.getString(Strings.messageVisitsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteVisits), selectedRows.size()), () -> {
+				for (Object selectedRow : selectedRows) {
+					FacadeProvider.getVisitFacade().deleteVisit(((VisitIndexDto) selectedRow).getUuid());
 				}
+				callback.run();
+				new Notification(I18nProperties.getString(Strings.headingVisitsDeleted),
+						I18nProperties.getString(Strings.messageVisitsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 			});
 		}
 	}

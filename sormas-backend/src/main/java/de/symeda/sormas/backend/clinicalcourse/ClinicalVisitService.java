@@ -73,7 +73,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date, User user) {
+	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisit> cq = cb.createQuery(getElementClass());
 		Root<ClinicalVisit> from = cq.from(getElementClass());
@@ -84,8 +84,8 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 				cb.equal(caze.get(Case.ARCHIVED), false),
 				cb.isNull(caze.get(Case.ARCHIVED)));
 		
-		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
@@ -113,7 +113,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 				cb.isNull(caze.get(Case.ARCHIVED)));
 		
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 		
@@ -146,9 +146,9 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ClinicalVisit, ClinicalVisit> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ClinicalVisit, ClinicalVisit> from) {
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
-		return caseService.createUserFilter(cb, cq, clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT), user);
+		return caseService.createUserFilter(cb, cq, clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT));
 	}
 	
 }

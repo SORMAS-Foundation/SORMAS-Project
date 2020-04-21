@@ -36,6 +36,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public final class SymptomsHelper {
 
+	private SymptomsHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	// TODO thread safety, etc.?!
 	private static List<String> symptomPropertyIds;
 	private static List<String> specialSymptomPropertyIds;

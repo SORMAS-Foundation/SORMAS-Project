@@ -27,9 +27,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
@@ -42,19 +40,19 @@ public class DiseaseConfigurationResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<DiseaseConfigurationDto> getAllDiseaseConfigurations(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<DiseaseConfigurationDto> getAllDiseaseConfigurations(@PathParam("since") long since) {
 		return FacadeProvider.getDiseaseConfigurationFacade().getAllAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<DiseaseConfigurationDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<DiseaseConfigurationDto> getByUuids(List<String> uuids) {
 		return FacadeProvider.getDiseaseConfigurationFacade().getByUuids(uuids);
 	}
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
+	public List<String> getAllUuids() {
 		return FacadeProvider.getDiseaseConfigurationFacade().getAllUuids();
 	}
 

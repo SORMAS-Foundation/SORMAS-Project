@@ -40,7 +40,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private PrescriptionService service;
@@ -95,10 +95,10 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	public void deletePrescription(String prescriptionUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deletePrescription(String prescriptionUuid) {
+		User user = userService.getCurrentUser();
 		// TODO replace this with a proper user right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
+		if (!user.hasAnyUserRole(UserRole.ADMIN, UserRole.CASE_SUPERVISOR)) {
 			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete prescriptions");
 		}
 		
@@ -107,8 +107,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 	
 	@Override
-	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date) {
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();
@@ -128,8 +128,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 	
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -139,7 +139,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 	
 	@Override
-	public List<PrescriptionExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+	public List<PrescriptionExportDto> getExportList(CaseCriteria criteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PrescriptionExportDto> cq = cb.createQuery(PrescriptionExportDto.class);
 		Root<Prescription> prescription = cq.from(Prescription.class);
@@ -164,8 +164,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				prescription.get(Prescription.ROUTE_DETAILS),
 				prescription.get(Prescription.ADDITIONAL_NOTES));
 		
-		User user = userService.getByUuid(userUuid);
-		Predicate filter = service.createUserFilter(cb, cq, prescription, user);
+		Predicate filter = service.createUserFilter(cb, cq, prescription);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);

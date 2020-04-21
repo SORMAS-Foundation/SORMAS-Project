@@ -43,13 +43,13 @@ public interface RegionFacade {
 
 	RegionReferenceDto getRegionReferenceById(int id);
 	
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 	
 	List<RegionDto> getByUuids(List<String> uuids);
 	
 	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
 	
-	List<RegionReferenceDto> getByName(String name);
+	List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities);
 	
 	List<String> getNamesByIds(List<Long> regionIds);
 	

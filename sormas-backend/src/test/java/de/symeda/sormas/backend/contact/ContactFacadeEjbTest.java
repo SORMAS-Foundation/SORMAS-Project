@@ -17,33 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Test;
-
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactExportDto;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.contact.*;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -56,8 +39,19 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.util.DateHelper8;
+import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Test;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
@@ -74,23 +68,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
-		
+
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE);
-				
+
 		// should now be one day more
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21+1), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
-		
+
 		visit.setVisitStatus(VisitStatus.COOPERATIVE);
 		visit = getVisitFacade().saveVisit(visit);
-		
+
 		// and now the old date again - and done
 		contact =  getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.COMPLETED, contact.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
 	}
-	
+
 	@Test
 	public void testUpdateContactStatus() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -102,10 +96,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		Date contactDate = new Date();
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, contactDate, contactDate);
-		
+
 		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
 		assertNull(contact.getResultingCase());
-		
+
 		// drop
 		contact.setContactClassification(ContactClassification.NO_CONTACT);
 		contact = getContactFacade().saveContact(contact);
@@ -119,7 +113,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		contact = getContactFacade().saveContact(contact);
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
 	}
-	
+
 	@Test
 	public void testGenerateContactFollowUpTasks() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -132,7 +126,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		ContactDto contact = creator.createContact(user.toReference(), contactOfficer.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 
 		getContactFacade().generateContactFollowUpTasks();
-		
+
 		// task should have been generated
 		List<TaskDto> tasks = getTaskFacade().getAllByContact(contact.toReference());
 		assertEquals(1, tasks.size());
@@ -147,7 +141,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		tasks = getTaskFacade().getAllByContact(contact.toReference());
 		assertEquals(1, tasks.size());
 	}
-	
+
 	@Test
 	public void testMapContactListCreation() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -157,21 +151,21 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
-		MapCaseDto mapCaseDto = new MapCaseDto(caze.getUuid(), caze.getReportDate(), caze.getCaseClassification(), caze.getDisease(), 
+		MapCaseDto mapCaseDto = new MapCaseDto(caze.getUuid(), caze.getReportDate(), caze.getCaseClassification(), caze.getDisease(),
 				caze.getPerson().getUuid(), cazePerson.getFirstName(), cazePerson.getLastName(),
 				caze.getHealthFacility().getUuid(), 0d, 0d,
 				caze.getReportLat(), caze.getReportLon(), caze.getReportLat(), caze.getReportLon());
-		
-		List<MapContactDto> mapContactDtos =  getContactFacade().getContactsForMap(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid(), Arrays.asList(mapCaseDto));
-		
+
+		List<MapContactDto> mapContactDtos =  getContactFacade().getContactsForMap(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), Arrays.asList(mapCaseDto));
+
 		// List should have one entry
 		assertEquals(1, mapContactDtos.size());
 	}
-	
+
 	@Test
 	public void testContactDeletion() {
 		Date since = new Date();
-		
+
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
@@ -183,34 +177,49 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE);
 		TaskDto task = creator.createTask(TaskContext.CONTACT, TaskType.CONTACT_INVESTIGATION, TaskStatus.PENDING, null, contact.toReference(), null, new Date(), user.toReference());
-		
+
 		// Database should contain the created contact, visit and task
 		assertNotNull(getContactFacade().getContactByUuid(contact.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 		assertNotNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
-		
-		 getContactFacade().deleteContact(contact.getUuid(), adminUuid);
+
+		 getContactFacade().deleteContact(contact.getUuid());
 
 		// Deleted flag should be set for contact; Task should be deleted
-		assertTrue(getContactFacade().getDeletedUuidsSince(user.getUuid(), since).contains(contact.getUuid()));
+		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		// Can't delete visit because it might be associated with other contacts as well
 //		assertNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
 	}
-	
+
 	@Test
 	public void testGetIndexList() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		String userUuid = user.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
-		
+
 		// Database should contain one contact, associated visit and task
-		assertEquals(1, getContactFacade().getIndexList(userUuid, null, 0, 100, null).size());
+		assertEquals(1, getContactFacade().getIndexList(null, 0, 100, null).size());
+	}
+
+	@Test
+	public void testCreatedContactExistWhenValidatedByUUID() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+
+		// database contains the created contact
+		assertEquals(true, getContactFacade().isValidContactUuid(contact.getUuid()));
+		// database contains the created contact
+		assertEquals(false, getContactFacade().isValidContactUuid("nonExistingContactUUID"));
 	}
 
 	@Test
@@ -224,21 +233,31 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
-		
+
+		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
 		contactPerson.getAddress().setCity("City");
+		contactPerson.getAddress().setAddress("Street Address");
+		contactPerson.getAddress().setPostalCode("1234");
 		getPersonFacade().savePerson(contactPerson);
-		
+
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
-		
-		List<ContactExportDto> results = getContactFacade().getExportList(userUuid, null, 0, 100);
-		
+
+		List<ContactExportDto> results = getContactFacade().getExportList(null, 0, 100);
+
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, results.size());
-		
+
 		// Make sure that everything that is added retrospectively (address, last cooperative visit date and symptoms) is present
 		ContactExportDto exportDto = results.get(0);
-		assertTrue(StringUtils.isNotEmpty(exportDto.getAddress()));
+
+		assertEquals(rdcf.region.getName(), exportDto.getAddressRegion());
+		assertEquals(rdcf.district.getName(), exportDto.getAddressDistrict());
+		assertEquals("City", exportDto.getCity());
+		assertEquals("Street Address", exportDto.getAddress());
+		assertEquals("1234", exportDto.getPostalCode());
+
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
 		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
 		assertEquals(exportDto.getLastCooperativeVisitSymptomatic(), YesNoUnknown.YES);
@@ -255,27 +274,29 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 		creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
-		
+
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+
 		// getAllActiveContacts and getAllUuids should return length 1
-		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null, user.getUuid()).size());
-		assertEquals(1, getContactFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null, user.getUuid()).size());
-		assertEquals(1, getVisitFacade().getAllActiveUuids(user.getUuid()).size());
-		
+		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null).size());
+		assertEquals(1, getContactFacade().getAllActiveUuids().size());
+		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
+		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
+
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
-		
+
 		// getAllActiveContacts and getAllUuids should return length 0
-		assertEquals(0, getContactFacade().getAllActiveContactsAfter(null, user.getUuid()).size());
-		assertEquals(0, getContactFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null, user.getUuid()).size());
-		assertEquals(0, getVisitFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getContactFacade().getAllActiveContactsAfter(null).size());
+		assertEquals(0, getContactFacade().getAllActiveUuids().size());
+		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null).size());
+		assertEquals(0, getVisitFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
-		
+
 		// getAllActiveContacts and getAllUuids should return length 1
-		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null, user.getUuid()).size());
-		assertEquals(1, getContactFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null, user.getUuid()).size());
-		assertEquals(1, getVisitFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null).size());
+		assertEquals(1, getContactFacade().getAllActiveUuids().size());
+		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
+		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 	}
 }

@@ -21,20 +21,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.CheckBox;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;

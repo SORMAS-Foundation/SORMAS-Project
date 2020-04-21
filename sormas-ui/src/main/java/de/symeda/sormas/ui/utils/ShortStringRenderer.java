@@ -17,12 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.ui.renderers.HtmlRenderer;
+import java.util.Optional;
+
+import com.vaadin.ui.renderers.TextRenderer;
 
 import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
-public class ShortStringRenderer extends HtmlRenderer {
+public class ShortStringRenderer extends TextRenderer {
 	
 	private final int length;
 	
@@ -31,16 +33,21 @@ public class ShortStringRenderer extends HtmlRenderer {
 	}
 	
 	@Override
-	public JsonValue encode(String value) {
-		if(value != null && !value.isEmpty()) {
-			if(value.length() > length) {
-				value = value.substring(0, length);
-				value += "...";
+	public JsonValue encode(Object value) {
+		
+		String val = Optional.ofNullable(value)
+		.map(o -> o.toString())
+		.filter(s -> !s.isEmpty())
+		.map(s -> {
+			if(s.length() <= length) {
+				return s;
+			} else {
+				return s.substring(0, length) + "...";
 			}
-			return super.encode(value);
-		} else {
-			return null;
-		}
+		})
+		.orElse(null);
+		
+		return super.encode(val);
 	}
 
 }

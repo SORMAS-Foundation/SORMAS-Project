@@ -107,19 +107,6 @@ public class PersonDao extends AbstractAdoDao<Person> {
                     .stream()
                     .map(person -> new PersonNameDto(person.getFirstName(), person.getLastName(), person.getUuid()))
                     .collect(Collectors.toList());
-
-//            GenericRawResults<Object[]> rawResults = queryRaw("SELECT " + Person.FIRST_NAME +
-//                            ", " + Person.LAST_NAME + ", " + Person.UUID + " FROM " + Person.TABLE_NAME +
-//                            " WHERE " + Person.TABLE_NAME + "." + AbstractDomainObject.SNAPSHOT + " = 0;",
-//                    new DataType[]{DataType.STRING, DataType.STRING, DataType.STRING});
-//            List<Object[]> results = rawResults.getResults();
-//            List<PersonNameDto> personNames = new ArrayList<>();
-//            for (Object[] result : results) {
-//                PersonNameDto personName = new PersonNameDto((String) result[0], (String) result[1], (String) result[2]);
-//                personNames.add(personName);
-//            }
-
-//            return personNames;
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getRelevantPersonNames on Person");
             throw new RuntimeException(e);

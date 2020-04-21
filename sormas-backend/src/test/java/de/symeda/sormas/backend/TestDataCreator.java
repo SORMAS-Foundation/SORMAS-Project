@@ -38,6 +38,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -149,6 +150,14 @@ public class TestDataCreator {
 			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
 			RDCFEntities rdcf) {
 		return createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
+	}
+
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
+			RDCFEntities rdcf, String healthFacilityDetails) {
+		final CaseDataDto aCase = createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
+		aCase.setHealthFacilityDetails(healthFacilityDetails);
+		return beanTest.getCaseFacade().saveCase(aCase);
 	}
 	
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
@@ -430,12 +439,17 @@ public class TestDataCreator {
 	}
 
 	public Facility createFacility(String facilityName, Region region, District district, Community community) {
+		return createFacility(facilityName, null, region, district, community);
+	}
+
+	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community) {
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
+		facility.setType(type);
 		beanTest.getFacilityService().persist(facility);
 
 		return facility;

@@ -31,11 +31,11 @@ public interface PointOfEntryFacade {
 
 	List<PointOfEntryDto> getAllAfter(Date date);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 	
 	List<PointOfEntryDto> getByUuids(List<String> uuids);
 	
-	List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district);
+	List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities);
 	
 	void archive(String pointOfEntryUuid);
 	

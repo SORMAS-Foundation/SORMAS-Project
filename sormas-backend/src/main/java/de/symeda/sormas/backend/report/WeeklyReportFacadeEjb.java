@@ -78,6 +78,8 @@ import de.symeda.sormas.backend.util.DtoHelper;
 @Stateless(name = "WeeklyReportFacade")
 public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@EJB
 	private WeeklyReportService weeklyReportService;
 	@EJB
@@ -98,13 +100,11 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
-
-	private static final Logger logger = LoggerFactory.getLogger(WeeklyReportFacadeEjb.class);
 	
 	@Override
-	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, String userUuid) {
+	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date) {
 
-		User user = userService.getByUuid(userUuid);
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -140,15 +140,13 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
+	public List<String> getAllUuids() {
 
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return weeklyReportService.getAllUuids(user);
+		return weeklyReportService.getAllUuids();
 	}
 
 	@Override

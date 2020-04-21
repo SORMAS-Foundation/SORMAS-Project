@@ -11,7 +11,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -44,7 +43,7 @@ public class DiseaseConfigurationService extends AbstractAdoService<DiseaseConfi
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq,
-			From<DiseaseConfiguration, DiseaseConfiguration> from, User user) {
+			From<DiseaseConfiguration, DiseaseConfiguration> from) {
 		return null;
 	}
 

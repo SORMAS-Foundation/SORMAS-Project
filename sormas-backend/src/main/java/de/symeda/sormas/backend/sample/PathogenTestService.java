@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -32,16 +31,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -63,7 +58,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Predicate filter = createActiveTestsFilter(cb, from);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -87,7 +82,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Predicate filter = createActiveTestsFilter(cb, from);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -148,7 +143,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<PathogenTest> pathogenTest = cq.from(PathogenTest.class);
 
-		Predicate filter = createUserFilter(cb, cq, pathogenTest, user);
+		Predicate filter = createUserFilter(cb, cq, pathogenTest);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(pathogenTest.get(PathogenTest.CHANGE_DATE), since);
 			if (filter != null) {
@@ -171,64 +166,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<DashboardTestResultDto> getNewTestResultsForDashboard (Region region, District district, Disease disease,
-			Date from, Date to, User user) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardTestResultDto> cq = cb.createQuery(DashboardTestResultDto.class);
-		Root<PathogenTest> pathogenTest = cq.from(getElementClass());
-		Join<PathogenTest, Sample> sample = pathogenTest.join(PathogenTest.SAMPLE, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-
-		Predicate filter = createDefaultFilter(cb, pathogenTest);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, pathogenTest, user));
-		Predicate dateFilter = cb.between(pathogenTest.get(PathogenTest.TEST_DATE_TIME), from, to);
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
-		}
-
-		if (region != null) {
-			Predicate regionFilter = cb.equal(caze.get(Case.REGION), region);
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
-		}
-
-		if (district != null) {
-			Predicate districtFilter = cb.equal(caze.get(Case.DISTRICT), district);
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
-		}
-
-		if (disease != null) {
-			Predicate diseaseFilter = cb.equal(caze.get(Case.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
-		}
-
-		List<DashboardTestResultDto> result;
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(caze.get(Case.DISEASE), pathogenTest.get(PathogenTest.TEST_RESULT));
-
-			result = em.createQuery(cq).getResultList();
-		} else {
-			result = Collections.emptyList();
-		}
-
-		return result;
-	}
-
-	public List<PathogenTestResultType> getPathogenTestResultsForCase(long caseId) {
+		public List<PathogenTestResultType> getPathogenTestResultsForCase(long caseId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTestResultType> cq = cb.createQuery(PathogenTestResultType.class);
 		Root<PathogenTest> root = cq.from(getElementClass());
@@ -245,12 +183,11 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PathogenTest, PathogenTest> sampleTestPath,
-			User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PathogenTest, PathogenTest> sampleTestPath) {
 		// whoever created the sample the sample test is associated with is allowed to
 		// access it
 		Join<Sample, Sample> samplePath = sampleTestPath.join(PathogenTest.SAMPLE);
-		Predicate filter = sampleService.createUserFilter(cb, cq, samplePath, user);
+		Predicate filter = sampleService.createUserFilter(cb, cq, samplePath);
 
 		return filter;
 	}

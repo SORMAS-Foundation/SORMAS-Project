@@ -39,7 +39,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -110,7 +109,7 @@ public class PersonController {
 
 	private void savePerson(PersonDto personDto) {
 		PersonDto existingPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
-		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid());
 
 		onPersonChanged(existingPerson, personDto);
 		

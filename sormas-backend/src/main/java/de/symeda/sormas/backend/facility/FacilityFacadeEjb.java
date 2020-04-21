@@ -60,13 +60,15 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "FacilityFacade")
 public class FacilityFacadeEjb implements FacilityFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private FacilityService facilityService;
@@ -78,9 +80,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	private DistrictService districtService;
 	@EJB
 	private RegionService regionService;
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
 
 	@Override
 	public List<FacilityReferenceDto> getActiveHealthFacilitiesByCommunity(CommunityReferenceDto communityRef, boolean includeStaticFacilities) {
@@ -106,14 +105,12 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
+	public List<String> getAllUuids() {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return facilityService.getAllUuids(user);
+		return facilityService.getAllUuids();
 	}
 
 	@Override
@@ -188,16 +185,16 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef,
-			CommunityReferenceDto communityRef) {
+			CommunityReferenceDto communityRef, boolean includeArchivedEntities) {
 		return facilityService
 				.getHealthFacilitiesByName(name, districtService.getByReferenceDto(districtRef),
-						communityService.getByReferenceDto(communityRef))
+						communityService.getByReferenceDto(communityRef), includeArchivedEntities)
 				.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getLaboratoriesByName(String name) {
-		return facilityService.getLaboratoriesByName(name).stream().map(f -> toReferenceDto(f))
+	public List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
+		return facilityService.getLaboratoriesByName(name, includeArchivedEntities).stream().map(f -> toReferenceDto(f))
 				.collect(Collectors.toList());
 	}
 
@@ -368,9 +365,9 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 		
 		if (facility == null) {
-			if (FacilityType.LABORATORY.equals(dto.getType()) && !getLaboratoriesByName(dto.getName()).isEmpty()) {
+			if (FacilityType.LABORATORY.equals(dto.getType()) && !getLaboratoriesByName(dto.getName(), true).isEmpty()) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importLaboratoryAlreadyExists));
-			} else if (!getByName(dto.getName(), dto.getDistrict(), dto.getCommunity()).isEmpty()) {
+			} else if (!getByName(dto.getName(), dto.getDistrict(), dto.getCommunity(), true).isEmpty()) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
 			}
 		}

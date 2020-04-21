@@ -31,7 +31,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 		// Database should contain the created prescription
 		assertNotNull(getTreatmentFacade().getTreatmentByUuid(treatment.getUuid()));
 
-		getTreatmentFacade().deleteTreatment(treatment.getUuid(), admin.getUuid());
+		getTreatmentFacade().deleteTreatment(treatment.getUuid());
 
 		// Database should not contain the deleted visit
 		assertNull(getTreatmentFacade().getTreatmentByUuid(treatment.getUuid()));

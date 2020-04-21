@@ -59,7 +59,11 @@ public class ContactExportDto implements Serializable {
 	private Date followUpUntil;
 	private PresentCondition presentCondition;
 	private Date deathDate;
+	private String addressRegion;
+	private String addressDistrict;
+	private String city;
 	private String address;
+	private String postalCode;
 	private String phone;
 	private String occupationType;
 	private int numberOfVisits;
@@ -73,6 +77,7 @@ public class ContactExportDto implements Serializable {
 			ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
 			Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
 			ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil, PresentCondition presentCondition, Date deathDate,
+			String addressRegion, String addressDistrict, String city, String address, String postalCode,
 			String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 			String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
 			String region, String district) {
@@ -96,6 +101,11 @@ public class ContactExportDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.presentCondition = presentCondition;
 		this.deathDate = deathDate;
+		this.addressRegion = addressRegion;
+		this.addressDistrict = addressDistrict;
+		this.city = city;
+		this.address = address;
+		this.postalCode = postalCode;
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails,
 				FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
@@ -214,9 +224,29 @@ public class ContactExportDto implements Serializable {
 		return deathDate;
 	}
 
-	@Order(30)
+	@Order(26)
+	public String getAddressRegion() {
+		return addressRegion;
+	}
+
+	@Order(27)
+	public String getAddressDistrict() {
+		return addressDistrict;
+	}
+
+	@Order(28)
+	public String getCity() {
+		return city;
+	}
+
+	@Order(29)
 	public String getAddress() {
 		return address;
+	}
+
+	@Order(30)
+	public String getPostalCode() {
+		return postalCode;
 	}
 
 	@Order(31)
@@ -327,10 +357,6 @@ public class ContactExportDto implements Serializable {
 
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
 	}
 
 	public void setPhone(String phone) {

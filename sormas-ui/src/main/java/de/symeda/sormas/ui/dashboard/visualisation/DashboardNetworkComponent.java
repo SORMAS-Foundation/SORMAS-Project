@@ -17,15 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.visualisation;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
@@ -35,13 +31,13 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class DashboardNetworkComponent extends VerticalLayout {
-
-	final static Logger logger = LoggerFactory.getLogger(DashboardNetworkComponent.class);
 
 	// Layouts and components
 	private final DashboardDataProvider dashboardDataProvider;
@@ -50,14 +46,15 @@ public class DashboardNetworkComponent extends VerticalLayout {
 	private Consumer<Boolean> externalExpandListener;
 	
 	private String getNetworkDiagramJson() {
-		LocalDate from = LocalDate.now().minusYears(1);
-		LocalDate to = LocalDate.now();
 		Set<Disease> diseases = Optional.of(dashboardDataProvider)
 				.map(DashboardDataProvider::getDisease)
 				.map(Collections::singleton)
 				.orElseGet(() -> EnumSet.allOf(Disease.class));
+
+		RegionReferenceDto region = dashboardDataProvider.getRegion();
+		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 		
-		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(from, to, diseases);
+		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(region, district, diseases);
 		return networkJson;
 	}
 

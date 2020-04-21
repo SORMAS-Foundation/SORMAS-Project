@@ -28,8 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -91,8 +89,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class DashboardMapComponent extends VerticalLayout {
-
-	final static Logger logger = LoggerFactory.getLogger(DashboardMapComponent.class);
 
 	private static final String CASES_GROUP_ID = "cases";
 	private static final String CONTACTS_GROUP_ID = "contacts";
@@ -225,18 +221,16 @@ public class DashboardMapComponent extends VerticalLayout {
 			showRegionsShapes(caseMeasure, fromDate, toDate, dashboardDataProvider.getDisease());
 		}
 		if (showCases) {
-			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate,
-					UserProvider.getCurrent().getUuid()));
+			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
 		}
 		if (showContacts) {
 			if (!showCases) {
 				// Case lists need to be filled even when cases are hidden because they are
 				// needed to retrieve the contacts
-				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate,
-						UserProvider.getCurrent().getUuid()));
+				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
 			}
 			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate,
-					toDate, UserProvider.getCurrent().getUuid(), mapAndFacilityCases));
+					toDate, mapAndFacilityCases));
 		}
 		if (showEvents) {
 			showEventMarkers(dashboardDataProvider.getEvents());

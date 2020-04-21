@@ -44,7 +44,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private FeatureConfigurationService service;
@@ -56,8 +56,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	private UserService userService;
 
 	@Override
-	public List<FeatureConfigurationDto> getAllAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<FeatureConfigurationDto> getAllAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		return service.getAllAfter(date, user)
 				.stream()
@@ -74,15 +74,13 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
-		return service.getAllUuids(user);
+	public List<String> getAllUuids() {
+		return service.getAllUuids();
 	}
 
 	@Override
-	public List<String> getDeletedUuids(Date since, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getDeletedUuids(Date since) {
+		User user = userService.getCurrentUser();
 
 		return service.getDeletedUuids(since, user);
 	}

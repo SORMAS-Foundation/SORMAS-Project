@@ -17,20 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.vaadin.event.UIEvents.PollListener;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.CheckBox;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;

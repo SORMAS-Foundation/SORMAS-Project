@@ -19,8 +19,8 @@ package de.symeda.sormas.ui.epidata;
 
 import java.util.function.Consumer;
 
-import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -142,6 +142,10 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 
 	@Override
 	protected void editEntry(EpiDataBurialDto entry, boolean create, Consumer<EpiDataBurialDto> commitCallback) {
+		if (create && entry.getUuid() == null) {
+			entry.setUuid(DataHelper.createUuid());
+		}
+		
 		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create, UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 

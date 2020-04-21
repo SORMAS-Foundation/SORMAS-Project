@@ -66,7 +66,6 @@ public class ContactDto extends EntityDto {
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
-	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
@@ -74,6 +73,8 @@ public class ContactDto extends EntityDto {
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String OVERWRITE_FOLLOW_UP_UTIL = "overwriteFollowUpUntil";
+	public static final String QUARANTINE_ORDER_MEANS = "quarantineOrderMeans";
+	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -114,7 +115,6 @@ public class ContactDto extends EntityDto {
 
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
-	private Date quarantineTo;
 	
 
 	@Required
@@ -124,6 +124,9 @@ public class ContactDto extends EntityDto {
 
 	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
 	private UserReferenceDto resultingCaseUser;
+
+	private OrderMeans quarantineOrderMeans;
+	private String quarantineHelpNeeded;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -137,9 +140,7 @@ public class ContactDto extends EntityDto {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 
-		contact.setCaze(caze);
-		contact.setDisease(disease);
-		contact.setDiseaseDetails(diseaseDetails);
+		contact.assignCase(caze, disease, diseaseDetails);
 		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
 
 		contact.setReportDateTime(new Date());
@@ -147,6 +148,16 @@ public class ContactDto extends EntityDto {
 		contact.setContactStatus(ContactStatus.ACTIVE);
 
 		return contact;
+	}
+	
+	public void assignCase(CaseDataDto caze) {
+		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+	}
+	
+	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
+		setCaze(caze);
+		setDisease(disease);
+		setDiseaseDetails(diseaseDetails);
 	}
 	
 	public PersonReferenceDto getPerson() {
@@ -360,14 +371,6 @@ public class ContactDto extends EntityDto {
 		this.quarantineFrom = quarantineFrom;
 	}
 
-	public Date getQuarantineTo() {
-		return quarantineTo;
-	}
-
-	public void setQuarantineTo(Date quarantineTo) {
-		this.quarantineTo = quarantineTo;
-	}
-
 	public String getCaseIdExternalSystem() {
 		return caseIdExternalSystem;
 	}
@@ -406,5 +409,21 @@ public class ContactDto extends EntityDto {
 
 	public void setContactCategory(ContactCategory contactCategory) {
 		this.contactCategory = contactCategory;
+	}
+
+	public OrderMeans getQuarantineOrderMeans() {
+		return quarantineOrderMeans;
+	}
+
+	public void setQuarantineOrderMeans(OrderMeans quarantineOrderMeans) {
+		this.quarantineOrderMeans = quarantineOrderMeans;
+	}
+
+	public String getQuarantineHelpNeeded() {
+		return quarantineHelpNeeded;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
 	}
 }

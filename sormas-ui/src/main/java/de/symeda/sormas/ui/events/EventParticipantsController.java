@@ -45,7 +45,6 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventParticipantsController {
@@ -113,13 +112,10 @@ public class EventParticipantsController {
 		});
 		
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editView.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference(), UserProvider.getCurrent().getUserReference().getUuid());
-					UI.getCurrent().removeWindow(window);
-					refreshView();
-				}
+			editView.addDeleteListener(() -> {
+				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
+				UI.getCurrent().removeWindow(window);
+				refreshView();
 			}, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX));
 		}
 	}
@@ -137,15 +133,13 @@ public class EventParticipantsController {
 			new Notification(I18nProperties.getString(Strings.headingNoEventParticipantsSelected), 
 					I18nProperties.getString(Strings.messageNoEventParticipantsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
-					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingEventParticipantsDeleted), 
-							I18nProperties.getString(Strings.messageEventParticipantsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()), () -> {
+				for (Object selectedRow : selectedRows) {
+					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()));
 				}
+				callback.run();
+				new Notification(I18nProperties.getString(Strings.headingEventParticipantsDeleted),
+						I18nProperties.getString(Strings.messageEventParticipantsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 			});
 		}
 	}

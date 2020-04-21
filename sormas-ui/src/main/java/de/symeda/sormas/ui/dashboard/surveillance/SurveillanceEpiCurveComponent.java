@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -34,7 +34,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
@@ -146,7 +145,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getCaseCountPerClassification(caseCriteria, UserProvider.getCurrent().getUuid());
+						.getCaseCountPerClassification(caseCriteria, false);
 
 				Long confirmedCount = caseCounts.get(CaseClassification.CONFIRMED);
 				Long probableCount = caseCounts.get(CaseClassification.PROBABLE);
@@ -212,7 +211,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getCaseCountPerPersonCondition(caseCriteria, UserProvider.getCurrent().getUuid());
+						.getCaseCountPerPersonCondition(caseCriteria, false);
 
 				Long aliveCount = caseCounts.get(PresentCondition.ALIVE);
 				Long deadCount = caseCounts.get(PresentCondition.DEAD);

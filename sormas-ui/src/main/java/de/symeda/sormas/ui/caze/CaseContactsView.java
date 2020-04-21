@@ -20,14 +20,16 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -42,12 +44,19 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -55,11 +64,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.contact.ContactFollowUpGrid;
 import de.symeda.sormas.ui.contact.ContactGrid;
-import de.symeda.sormas.ui.contact.ContactsViewType;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -73,16 +81,17 @@ public class CaseContactsView extends AbstractCaseView {
 
 	private ContactCriteria criteria;
 	private ViewConfiguration viewConfiguration;
-	
+
 	private ContactGrid grid;  
-	
+
 	//Filters
 	private ComboBox classificationFilter;
+	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox officerFilter;
 	private TextField searchField;
 	private Button resetButton;
-	
+
 	private Button newButton;
 	private VerticalLayout gridLayout;
 	private HashMap<Button, String> statusButtons;
@@ -111,6 +120,25 @@ public class CaseContactsView extends AbstractCaseView {
 		});
 		topLayout.addComponent(classificationFilter);
 
+		UserDto user = UserProvider.getCurrent().getUser();
+		regionFilter = new ComboBox();
+		if (user.getRegion() == null) {
+			regionFilter.setWidth(240, Unit.PIXELS);
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionFilter.addValueChangeListener(e -> {
+				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+				if (region != null) {
+					officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.CONTACT_OFFICER));
+				} else {
+					officerFilter.removeAllItems();
+				}
+				criteria.region(region);
+				navigateTo(criteria);
+			});
+			topLayout.addComponent(regionFilter);
+		}
+
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(240, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
@@ -118,7 +146,30 @@ public class CaseContactsView extends AbstractCaseView {
 			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
+
+		if (user.getRegion() != null && user.getDistrict() == null) {	
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else {
+			regionFilter.addValueChangeListener(e -> {
+				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
+				districtFilter.removeAllItems();
+				if (region != null) {
+					districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+					districtFilter.setEnabled(true);
+				} else {
+					districtFilter.setEnabled(false);
+				}
+			});
+			districtFilter.setEnabled(false);
+		}
 		topLayout.addComponent(districtFilter);
+
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+		infoLabel.setDescription(I18nProperties.getString(Strings.infoContactsViewRegionDistrictFilter), ContentMode.HTML);
+		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+		topLayout.addComponent(infoLabel);
 
 		officerFilter = new ComboBox();
 		officerFilter.setWidth(240, Unit.PIXELS);
@@ -127,10 +178,13 @@ public class CaseContactsView extends AbstractCaseView {
 			criteria.contactOfficer((UserReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
+		if (user.getRegion() != null) {
+			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
+		}
 		topLayout.addComponent(officerFilter);
-		
+
 		searchField = new TextField();
- 		searchField.setWidth(200, Unit.PIXELS);
+		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
 		searchField.addTextChangeListener(e -> {
@@ -138,7 +192,7 @@ public class CaseContactsView extends AbstractCaseView {
 			((ContactGrid) grid).reload();
 		});
 		topLayout.addComponent(searchField);
-			
+
 		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
 		resetButton.setVisible(false);
 		resetButton.addClickListener(event -> {
@@ -246,21 +300,58 @@ public class CaseContactsView extends AbstractCaseView {
 				statusFilterLayout.setExpandRatio(importButton, 1);
 			}
 		}
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
-			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export));
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
-
-			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
-
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true);
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(200, Unit.PIXELS);
+			exportButton.setContent(exportLayout);
 			statusFilterLayout.addComponent(exportButton);
 			statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
 			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
+			
+			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts",
+					"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
+
+			StreamResource extendedExportStreamResource = DownloadUtil
+					.createCsvExportStreamResource(
+							ContactExportDto.class, null, (Integer start, Integer max) -> FacadeProvider
+									.getContactFacade().getExportList(grid.getCriteria(), start, max),
+							(propertyId, type) -> {
+								String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX,
+										propertyId,
+										I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
+												I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
+														I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX,
+																propertyId,
+																I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX,
+																		propertyId,
+																		I18nProperties.getPrefixCaption(
+																				HospitalizationDto.I18N_PREFIX,
+																				propertyId))))));
+								if (Date.class.isAssignableFrom(type)) {
+									caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								}
+								return caption;
+							}, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+			addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+
+			// Warning if no filters have been selected
+			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
+			warningLabel.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(warningLabel);
+			warningLabel.setVisible(false);
+
+			exportButton.addClickListener(e -> {
+				warningLabel.setVisible(!criteria.hasAnyFilterActive());
+			});
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
@@ -282,7 +373,7 @@ public class CaseContactsView extends AbstractCaseView {
 		super.enter(event);
 
 		criteria.caze(getCaseRef());
-		
+
 		if (grid == null) {
 			grid = new ContactGrid(criteria, getClass());
 			gridLayout = new VerticalLayout();
@@ -304,37 +395,30 @@ public class CaseContactsView extends AbstractCaseView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-		
+
 		grid.reload();
 	}
 
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
-		
+
 		resetButton.setVisible(criteria.hasAnyFilterActive());
-		
+
 		updateStatusButtons();
-		
+
 		classificationFilter.removeAllItems();
 		classificationFilter.addItems((Object[]) ContactClassification.values());
 		classificationFilter.setValue(criteria.getContactClassification());
 
-		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-
-		districtFilter.removeAllItems();
-		districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(caseDto.getRegion().getUuid()));
+		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
-		
 		searchField.setValue(criteria.getNameUuidCaseLike());
-
-		officerFilter.removeAllItems();
-		officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(caseDto.getRegion(), UserRole.CONTACT_OFFICER));
 		officerFilter.setValue(criteria.getContactOfficer());
-		
+
 		applyingCriteria = false;
 	}
-	
+
 	private void updateStatusButtons() {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);

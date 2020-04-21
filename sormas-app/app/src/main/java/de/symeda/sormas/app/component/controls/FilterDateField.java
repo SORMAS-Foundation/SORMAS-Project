@@ -47,38 +47,6 @@ public class FilterDateField extends ControlDateField {
     }
 
     @Override
-    protected void changeVisualState(VisualState state) {
-        if (getUserEditRight() != null && !ConfigProvider.hasUserRight(getUserEditRight())) {
-            state = VisualState.DISABLED;
-        }
-
-        if (this.visualState == state) {
-            return;
-        }
-
-        visualState = state;
-
-        int labelColor = getResources().getColor(state.getLabelColor());
-        Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControlType.TEXT_FIELD));
-        int textColor = getResources().getColor(state.getTextColor());
-        int hintColor = getResources().getColor(state.getHintColor());
-
-        if (drawable != null) {
-            drawable = drawable.mutate();
-        }
-
-        label.setTextColor(labelColor);
-        setBackground(drawable);
-
-        if (state != VisualState.ERROR) {
-            input.setTextColor(textColor);
-            input.setHintTextColor(hintColor);
-        }
-
-        setEnabled(state != VisualState.DISABLED);
-    }
-
-    @Override
     public void enableErrorState(String errorMessage) {
         // Don't do anything here
     }

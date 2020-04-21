@@ -27,19 +27,19 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface EventParticipantFacade {
 	
-	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid, String userUuid);
+	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid);
 
-	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, String userUuid);
+	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date);
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
 	
 	EventParticipantDto saveEventParticipant(EventParticipantDto dto);
 
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 
 	List<EventParticipantDto> getByUuids(List<String> uuids);
 
-	void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef, String userUuid);
+	void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef);
 	
 	List<EventParticipantIndexDto> getIndexList(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	

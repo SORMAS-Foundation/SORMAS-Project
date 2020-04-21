@@ -17,16 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visualization;
 
-import java.time.LocalDate;
 import java.util.Collection;
 
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 
 @Remote
 public interface VisualizationFacade {
 
-	String buildTransmissionChainJson(LocalDate fromDate, LocalDate toDate, Collection<Disease> diseases);
+	String buildTransmissionChainJson(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases);
 	
 }

@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -45,7 +44,11 @@ import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 @Singleton
 @RunAs(UserRole._SYSTEM)
 public class CronService {
-	
+
+	public static final int TASK_UPDATE_INTERVAL = 10;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -61,10 +64,6 @@ public class CronService {
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
 
-	public static final int TASK_UPDATE_INTERVAL = 10;
-
-	private static final Logger logger = LoggerFactory.getLogger(CaseFacadeEjb.class);
-	
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();

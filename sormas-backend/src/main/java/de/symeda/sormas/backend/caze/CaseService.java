@@ -141,17 +141,19 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	/**
-	 * Returns all cases that match the specified {@code caseCriteria} and that the specified {@code user} has access to.
+	 * Returns all cases that match the specified {@code caseCriteria} and that the current user has access to.
 	 * This should be the preferred method of retrieving cases from the database if there is no special logic required
 	 * that can not be part of the {@link CaseCriteria}.
 	 */
-	public List<Case> findBy(CaseCriteria caseCriteria, User user) {
+	public List<Case> findBy(CaseCriteria caseCriteria, boolean ignoreUserFilter) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
 		Predicate filter = createCriteriaFilter(caseCriteria, cb, cq, from);
-		filter = and(cb, filter, createUserFilter(cb, cq, from, user));
+		if (!ignoreUserFilter) {
+			filter = and(cb, filter, createUserFilter(cb, cq, from));
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -162,15 +164,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return resultList;	
 	}
 
-	public List<Case> getAllActiveCasesAfter(Date date, User user) {
+	public List<Case> getAllActiveCasesAfter(Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
 		Predicate filter = createActiveCasesFilter(cb, from);
 
-		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			if (userFilter != null) {
 				filter = cb.and(filter, userFilter);
 			}
@@ -190,15 +192,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getAllActiveUuids(User user) {
+	public List<String> getAllActiveUuids() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> from = cq.from(getElementClass());
 
 		Predicate filter = createActiveCasesFilter(cb, from);
 
-		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -208,7 +210,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to, User user) {
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
@@ -217,7 +219,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Person, Location> casePersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 
 		Predicate filter = createActiveCasesFilter(cb, caze);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, caze, user));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, caze, false));
 		filter = AbstractAdoService.and(cb, filter, createCaseRelevanceFilter(cb, caze, from, to));
 
 		if (region != null) {
@@ -312,7 +314,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (StringUtils.isEmpty(searchTerm)) {
 			return null;
 		}
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> root = cq.from(Case.class);
@@ -334,12 +336,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 	}
 
-	public List<String> getArchivedUuidsSince(User user, Date since) {
+	public List<String> getArchivedUuidsSince(Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
 
-		Predicate filter = createUserFilter(cb, cq, caze, user);
+		Predicate filter = createUserFilter(cb, cq, caze);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(caze.get(Case.CHANGE_DATE), since);
 			if (filter != null) {
@@ -362,12 +364,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getDeletedUuidsSince(User user, Date since) {
+	public List<String> getDeletedUuidsSince(Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
 
-		Predicate filter = createUserFilter(cb, cq, caze, user);
+		Predicate filter = createUserFilter(cb, cq, caze);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(caze.get(Case.CHANGE_DATE), since);
 			if (filter != null) {
@@ -425,6 +427,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<Case, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
+		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
+		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
@@ -439,10 +443,26 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Case.REGION, JoinType.LEFT).get(Region.UUID), caseCriteria.getRegion().getUuid()));
+			filter = and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), caseCriteria.getDistrict().getUuid()));
+			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
+			User currentUser = getCurrentUser();
+			if (currentUser != null) {
+				if (currentUser.getDistrict() != null) {
+					filter = and(cb, filter, cb.not(cb.and(
+							cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
+							cb.notEqual(region.get(District.UUID), currentUser.getDistrict().getUuid())
+							)));
+				} else if (currentUser.getRegion() != null) {
+					filter = and(cb, filter, cb.not(cb.and(
+							cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
+							cb.notEqual(region.get(Region.UUID), currentUser.getRegion().getUuid())
+							)));
+				}
+			}
 		}
 		if (caseCriteria.getCaseOrigin() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
@@ -593,7 +613,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link CaseCriteria}.
 	 * This essentially removes {@link CoreAdo#deleted} cases from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Case> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Case> root) {
 		return cb.isFalse(root.get(Case.DELETED));
 	}
 
@@ -700,85 +720,77 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return dateFilter;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, boolean includeSharedCases) {
 		// National users can access all cases in the system
-		if (user == null
-				|| user.getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
-			if (user != null && user.getLimitedDisease() != null) {
-				return cb.equal(casePath.get(Case.DISEASE), user.getLimitedDisease());
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		} else if (currentUser.hasAnyUserRole(
+				UserRole.NATIONAL_USER,
+				UserRole.NATIONAL_CLINICIAN,
+				UserRole.NATIONAL_OBSERVER)) {
+			if (currentUser.getLimitedDisease() != null) {
+				return cb.equal(casePath.get(Case.DISEASE), currentUser.getLimitedDisease());
 			} else {
 				return null;
 			}
 		}
 
 		// whoever created the case or is assigned to it is allowed to access it
-		Predicate filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), user);
-		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), user));
-		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), user));
+		Predicate filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), currentUser);
+		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
+		filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), currentUser));
 
 		Predicate filter = null;
 		// allow case access based on user role
-		for (UserRole userRole : user.getUserRoles()) {
-			switch (userRole) {
-			case SURVEILLANCE_SUPERVISOR:
-			case CONTACT_SUPERVISOR:
-			case CASE_SUPERVISOR:
-			case POE_SUPERVISOR:
-			case EVENT_OFFICER:
-			case STATE_OBSERVER:
-				// supervisors see all cases of their region
-				if (user.getRegion() != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), user.getRegion()));
-				}
-				break;
-			case SURVEILLANCE_OFFICER:
-			case CONTACT_OFFICER:
-			case CASE_OFFICER:
-			case DISTRICT_OBSERVER:
-				// officers see all cases of their district
-				if (user.getDistrict() != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), user.getDistrict()));
-				}
-				break;
-			case HOSPITAL_INFORMANT:
-				// hospital informants see all cases of their facility
-				if (user.getHealthFacility() != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), user.getHealthFacility()));
-				}
-				break;
-			case COMMUNITY_INFORMANT:
-				// community informants see all cases of their community
-				if (user.getCommunity() != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), user.getCommunity()));
-				}
-				break;
-			case POE_INFORMANT:
-				// poe informants see all cases of their point of entry
-				if (user.getPointOfEntry() != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), user.getPointOfEntry()));
-				}
-				break;
-			case LAB_USER:
-				// get all cases based on the user's sample association
-				Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
-				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
-				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot, user));
-				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
-				filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
-				break;
-			default:
-				break;
-			}
+		if (currentUser.hasAnyUserRole(
+				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.CONTACT_SUPERVISOR,
+				UserRole.CASE_SUPERVISOR,
+				UserRole.POE_SUPERVISOR,
+				UserRole.EVENT_OFFICER,
+				UserRole.STATE_OBSERVER)
+				&& currentUser.getRegion() != null) {
+			// supervisors see all cases of their region
+			filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), currentUser.getRegion()));
+		}
+		if (currentUser.hasAnyUserRole(
+				UserRole.SURVEILLANCE_OFFICER,
+				UserRole.CONTACT_OFFICER,
+				UserRole.CASE_OFFICER,
+				UserRole.DISTRICT_OBSERVER)
+				&& currentUser.getDistrict() != null) {
+			// officers see all cases of their district
+			filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), currentUser.getDistrict()));
+		}
+		if (currentUser.hasAnyUserRole(UserRole.HOSPITAL_INFORMANT)
+				&& currentUser.getHealthFacility() != null) {
+			// hospital informants see all cases of their facility
+			filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), currentUser.getHealthFacility()));
+		}
+		if (currentUser.hasAnyUserRole(UserRole.COMMUNITY_INFORMANT)
+				&& currentUser.getCommunity() != null) {
+			// community informants see all cases of their community
+			filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), currentUser.getCommunity()));
+		}
+		if (currentUser.hasAnyUserRole(UserRole.POE_INFORMANT)
+				&& currentUser.getPointOfEntry() != null) {
+			// poe informants see all cases of their point of entry
+			filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), currentUser.getPointOfEntry()));
+		}
+		if (currentUser.hasAnyUserRole(UserRole.LAB_USER)) {
+			// get all cases based on the user's sample association
+			Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
+			Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
+			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot));
+			sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
+			filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 		}
 
 		// get all cases based on the user's contact association
 		Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
 		Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
-		contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot, user));
+		contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot));
 		contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
 		filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
 
@@ -787,17 +799,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 
 		// all users (without specific restrictions) get access to cases that have been made available to the whole country
-		if (!featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
+		if (includeSharedCases && !featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			filter = or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
 		}
 
 		// only show cases of a specific disease if a limited disease is set
-		if (user.getLimitedDisease() != null) {
-			filter = and(cb, filter, cb.equal(casePath.get(Case.DISEASE), user.getLimitedDisease()));
+		if (currentUser.getLimitedDisease() != null) {
+			filter = and(cb, filter, cb.equal(casePath.get(Case.DISEASE), currentUser.getLimitedDisease()));
 		}
 
 		// only show port health cases to port health users
-		if (UserRole.isPortHealthUser(user.getUserRoles())) {
+		if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
 			filter = and(cb, filter, cb.equal(casePath.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY));
 		}
 
@@ -808,6 +820,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return filter;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath) {
+		return createUserFilter(cb, cq, casePath, true);
 	}
 
 	/**

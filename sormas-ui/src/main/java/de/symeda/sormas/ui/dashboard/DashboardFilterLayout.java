@@ -504,5 +504,9 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	public void setDiseaseFilterChangeCallback(Consumer<Boolean> diseaseFilterChangeCallback) {
 		this.diseaseFilterChangeCallback = diseaseFilterChangeCallback;
 	}
+	
+	public boolean hasDiseaseSelected() {
+		return diseaseFilter.getValue() != null;
+	}
 
 }

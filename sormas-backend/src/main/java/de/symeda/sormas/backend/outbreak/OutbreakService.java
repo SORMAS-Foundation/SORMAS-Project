@@ -60,7 +60,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 			cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
 		}
 
-		Predicate filter = createUserFilter(cb, cq, from, user);
+		Predicate filter = createUserFilter(cb, cq, from);
 		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, cq, from));
 		if (filter != null) {
 			cq.where(filter);
@@ -79,7 +79,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 			cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
 		}
 
-		Predicate filter = createUserFilter(cb, cq, from, user);
+		Predicate filter = createUserFilter(cb, cq, from);
 		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, cq, from));
 		if (filter != null) {
 			cq.where(filter);
@@ -95,7 +95,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Outbreak> from = cq.from(getElementClass());
 		
-		Predicate filter = createUserFilter(cb, cq, from, user);
+		Predicate filter = createUserFilter(cb, cq, from);
 		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, cq, from));
 		if (filter != null) {
 			cq.where(filter);
@@ -108,7 +108,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Outbreak, Outbreak> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Outbreak, Outbreak> from) {
 		// no filter by user needed
 		return null;
 	}
@@ -156,7 +156,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		cq.groupBy(outbreak.get(Outbreak.DISEASE));
 		
 		Predicate filter = this.buildCriteriaFilter(criteria, cb, cq, outbreak);
-		filter = and(cb, filter, createUserFilter(cb, cq, outbreak, user));
+		filter = and(cb, filter, createUserFilter(cb, cq, outbreak));
 		
 		if (filter != null)
 			cq.where(filter);
@@ -178,7 +178,7 @@ public class OutbreakService extends AbstractAdoService<Outbreak> {
 		cq.groupBy(regionJoin);
 		
 		Predicate filter = this.buildCriteriaFilter(criteria, cb, cq, outbreak);
-		filter = and(cb, filter, createUserFilter(cb, cq, outbreak, user));
+		filter = and(cb, filter, createUserFilter(cb, cq, outbreak));
 		
 		if (filter != null)
 			cq.where(filter);

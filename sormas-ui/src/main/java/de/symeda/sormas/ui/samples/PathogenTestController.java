@@ -111,8 +111,7 @@ public class PathogenTestController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getPathogenTestFacade().deletePathogenTest(dto.getUuid(),
-							UserProvider.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getPathogenTestFacade().deletePathogenTest(dto.getUuid());
 					UI.getCurrent().removeWindow(popupWindow);
 					doneCallback.run();
 				}
@@ -203,19 +202,15 @@ public class PathogenTestController {
 			.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(String
-					.format(I18nProperties.getString(Strings.confirmationDeletePathogenTests), selectedRows.size()),
-					new Runnable() {
-				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getPathogenTestFacade().deletePathogenTest(
-								((PathogenTestDto) selectedRow).getUuid(), UserProvider.getCurrent().getUuid());
-					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingPathogenTestsDeleted),
-							I18nProperties.getString(Strings.messagePathogenTestsDeleted),
-							Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+					.format(I18nProperties.getString(Strings.confirmationDeletePathogenTests), selectedRows.size()), () -> {
+						for (Object selectedRow : selectedRows) {
+							FacadeProvider.getPathogenTestFacade().deletePathogenTest(((PathogenTestDto) selectedRow).getUuid());
+						}
+						callback.run();
+						new Notification(I18nProperties.getString(Strings.headingPathogenTestsDeleted),
+								I18nProperties.getString(Strings.messagePathogenTestsDeleted),
+								Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+					});
 		}
 	}
 

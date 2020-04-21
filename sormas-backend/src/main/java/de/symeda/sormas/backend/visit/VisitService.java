@@ -73,11 +73,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Subquery<Long> contactPersonSubquery = visitsQuery.subquery(Long.class);
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
 		Join<Contact, Case> contactCase = contactRoot.join(Contact.CAZE, JoinType.LEFT);
-		contactPersonSubquery.where(cb.and(
-				contactService.createUserFilter(cb, visitsQuery, contactRoot, user), 
-				cb.or(
-						cb.equal(contactCase.get(Case.ARCHIVED), false),
-						cb.isNull(contactCase.get(Case.ARCHIVED)))));
+		Predicate userFilter = contactService.createUserFilter(cb, visitsQuery, contactRoot);
+		Predicate contactPersonPredicate = createContactPersonPredicate(cb, contactCase, userFilter);
+		contactPersonSubquery.where(contactPersonPredicate);
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
 
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
@@ -91,7 +89,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	public List<Visit> getAllActiveVisitsAfter(Date date, User user) {
+	public List<Visit> getAllActiveVisitsAfter(Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
 		Root<Visit> visitRoot = cq.from(Visit.class);
@@ -100,11 +98,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 		Subquery<Integer> contactPersonSubquery = cq.subquery(Integer.class);
 		Root<Contact> contactRoot = contactPersonSubquery.from(Contact.class);
 		Join<Contact, Case> contactCase = contactRoot.join(Contact.CAZE, JoinType.LEFT);
-		contactPersonSubquery.where(cb.and(
-				contactService.createUserFilter(cb, cq, contactRoot, user), 
-				cb.or(
-						cb.equal(contactCase.get(Case.ARCHIVED), false),
-						cb.isNull(contactCase.get(Case.ARCHIVED)))));
+		Predicate userFilter = contactService.createUserFilter(cb, cq, contactRoot);
+		Predicate contactPersonPredicate = createContactPersonPredicate(cb, contactCase, userFilter);
+		contactPersonSubquery.where(contactPersonPredicate);
 		contactPersonSubquery.select(contactRoot.get(Contact.PERSON).get(Person.ID));
 		Predicate filter = cb.in(visitRoot.get(Visit.PERSON).get(Person.ID)).value(contactPersonSubquery);
 		// date range
@@ -117,6 +113,13 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 		List<Visit> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+
+	private Predicate createContactPersonPredicate(CriteriaBuilder cb, Join<Contact, Case> contactCase, Predicate userFilter) {
+		Predicate contactCaseNotArchived = cb.or(cb.equal(contactCase.get(Case.ARCHIVED), false),
+				cb.isNull(contactCase.get(Case.ARCHIVED)));
+		return userFilter != null ? cb.and(userFilter,
+				contactCaseNotArchived) : contactCaseNotArchived;
 	}
 
 	/**
@@ -333,7 +336,7 @@ public class VisitService extends AbstractAdoService<Visit> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit, Visit> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Visit, Visit> from) {
 		// getAllUuids and getAllAfter have custom implementations
 		throw new UnsupportedOperationException();
 	}

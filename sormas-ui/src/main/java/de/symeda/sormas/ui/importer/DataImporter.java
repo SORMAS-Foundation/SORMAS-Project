@@ -58,7 +58,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public abstract class DataImporter {
 
 	protected static final String ERROR_COLUMN_NAME = I18nProperties.getCaption(Captions.importErrorDescription);
-	protected static final Logger logger = LoggerFactory.getLogger(DataImporter.class);
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * The input CSV file that contains the data to be imported.
@@ -365,7 +366,7 @@ public abstract class DataImporter {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry);
+			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry, false);
 			if (region.isEmpty()) {
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist,
 						entry, buildEntityProperty(entryHeaderPath)));

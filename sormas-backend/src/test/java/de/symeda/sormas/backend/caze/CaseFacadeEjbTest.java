@@ -176,21 +176,26 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testDashboardCaseListCreation() {
+	public void testGetCasesForDashboard() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze2 = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf2);
+		caze2.setSharedToCountry(true);
+		getCaseFacade().saveCase(caze2);
 
 		CaseCriteria caseCriteria = new CaseCriteria().region(caze.getRegion()).district(caze.getDistrict())
 				.disease(caze.getDisease()).newCaseDateBetween(DateHelper.subtractDays(new Date(), 1),
 						DateHelper.addDays(new Date(), 1), NewCaseDateType.MOST_RELEVANT);
 
-		List<DashboardCaseDto> dashboardCaseDtos = getCaseFacade().getCasesForDashboard(caseCriteria, user.getUuid());
+		List<DashboardCaseDto> dashboardCaseDtos = getCaseFacade().getCasesForDashboard(caseCriteria);
 
-		// List should have one entry
+		// List should have only one entry; shared case should not appear
 		assertEquals(1, dashboardCaseDtos.size());
 	}
 
@@ -204,8 +209,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
 		List<MapCaseDto> mapCaseDtos = getCaseFacade().getCasesForMap(caze.getRegion(), caze.getDistrict(),
-				caze.getDisease(), DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1),
-				user.getUuid());
+				caze.getDisease(), DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1));
 
 		// List should have one entry
 		assertEquals(1, mapCaseDtos.size());
@@ -221,18 +225,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto cazePerson = creator.createPerson("Case", lastName);
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
+		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf, "abc");
+		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf, "xyz");
 
-		List<CaseIndexDto> results = getCaseFacade().getIndexList(null, 0, 100, user.getUuid(), 
+		List<CaseIndexDto> results = getCaseFacade().getIndexList(null, 0, 100,
 				Arrays.asList(new SortProperty(CaseIndexDto.DISEASE), new SortProperty(CaseIndexDto.PERSON_FIRST_NAME),
 						new SortProperty(CaseIndexDto.DISTRICT_NAME),
-						new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME),
+						new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME, false),
 						new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
 
 		// List should have one entry
-		assertEquals(1, results.size());
+		assertEquals(3, results.size());
 		
 		assertEquals(districtName, results.get(0).getDistrictName());
 		assertEquals(lastName, results.get(0).getPersonLastName());
+		assertEquals("Facility - xyz", results.get(0).getHealthFacilityName());
+		assertEquals("Facility - abc", results.get(1).getHealthFacilityName());
+		assertEquals("Facility", results.get(2).getHealthFacilityName());
 	}
 
 	@Test
@@ -260,7 +271,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_MANAGEMENT, 0, 100, user.getUuid(), null);
+		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_MANAGEMENT, 0, 100, null);
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -319,7 +330,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze = cut.saveCase(caze);
 
-		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, user.getUuid(), null);
+		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null);
 		assertThat(result, hasSize(1));
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
@@ -358,13 +369,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
-		getCaseFacade().deleteCase(caze.getUuid(), adminUuid);
+		getCaseFacade().deleteCase(caze.getUuid());
 
 		// Deleted flag should be set for case, contact, sample and pathogen test; Task and additional test should be deleted
-		assertTrue(getCaseFacade().getDeletedUuidsSince(user.getUuid(), since).contains(caze.getUuid()));
-		assertTrue(getContactFacade().getDeletedUuidsSince(user.getUuid(), since).contains(contact.getUuid()));
-		assertTrue(getSampleFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(user.getUuid(), since).contains(pathogenTest.getUuid()));
+		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
+		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
+		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
 	}
@@ -470,26 +481,26 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Date testStartDate = new Date();
 
 		// getAllActiveCases and getAllUuids should return length 1
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-		assertEquals(1, getCaseFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 
 		// getAllActiveCases and getAllUuids should return length 0
-		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-		assertEquals(0, getCaseFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 1
-		assertEquals(1, getCaseFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
+		assertEquals(1, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 
 		// getAllActiveCases and getAllUuids should return length 1
-		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null, user.getUuid()).size());
-		assertEquals(1, getCaseFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
+		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
 		// getArchivedUuidsSince should return length 0
-		assertEquals(0, getCaseFacade().getArchivedUuidsSince(user.getUuid(), testStartDate).size());
+		assertEquals(0, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
 	}
 
 	@Test
@@ -530,7 +541,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
 		
 		// Make sure that deleted cases are ignored when searching for the highest existing epid nummber
-		getCaseFacade().deleteCase(fourthCaze.getUuid(), user.getUuid());
+		getCaseFacade().deleteCase(fourthCaze.getUuid());
 		
 		CaseDataDto fifthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 		

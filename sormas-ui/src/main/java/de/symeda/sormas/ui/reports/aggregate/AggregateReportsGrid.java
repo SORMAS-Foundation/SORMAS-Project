@@ -7,7 +7,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
 @SuppressWarnings("serial")
@@ -32,7 +31,7 @@ public class AggregateReportsGrid extends FilteredGrid<AggregatedCaseCountDto, A
 	
 	public void reload() {
 		ListDataProvider<AggregatedCaseCountDto> dataProvider = DataProvider.fromStream(
-				FacadeProvider.getAggregateReportFacade().getIndexList(getCriteria(), UserProvider.getCurrent().getUuid()).stream());
+				FacadeProvider.getAggregateReportFacade().getIndexList(getCriteria()).stream());
 		setDataProvider(dataProvider);
 		dataProvider.refreshAll();
 	}

@@ -317,8 +317,7 @@ public class AggregateReportsView extends AbstractView {
 					&& cbFromEpiWeekFilter.getValue().equals(cbToEpiWeekFilter.getValue())) {
 				criteria.healthFacility(cbFacilityFilter.getValue());
 				criteria.pointOfEntry(cbPoeFilter.getValue());
-				if (FacadeProvider.getAggregateReportFacade().countWithCriteria(criteria,
-						UserProvider.getCurrent().getUuid()) > 0) {
+				if (FacadeProvider.getAggregateReportFacade().countWithCriteria(criteria) > 0) {
 					btnCreate.setVisible(false);
 					btnEdit.setVisible(true);
 				} else {

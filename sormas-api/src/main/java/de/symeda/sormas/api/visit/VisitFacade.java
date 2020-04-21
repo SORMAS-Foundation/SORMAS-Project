@@ -28,7 +28,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface VisitFacade {
 
-	List<VisitDto> getAllActiveVisitsAfter(Date date, String userUuid);
+	List<VisitDto> getAllActiveVisitsAfter(Date date);
 
 	VisitDto getVisitByUuid(String uuid);
 
@@ -36,11 +36,15 @@ public interface VisitFacade {
 
 	VisitDto saveVisit(VisitDto dto);
 
-	List<String> getAllActiveUuids(String userUuid);
+	void validate(VisitDto dto);
+
+	ExternalVisitDto saveExternalVisit(ExternalVisitDto dto);
+
+	List<String> getAllActiveUuids();
 
 	List<VisitDto> getByUuids(List<String> uuids);
 	
-	void deleteVisit(String visitUuid, String userUuid);
+	void deleteVisit(String visitUuid);
 	
 	int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus);
 	

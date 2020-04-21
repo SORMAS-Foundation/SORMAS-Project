@@ -34,46 +34,48 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface ContactFacade {
 
-	List<ContactDto> getAllActiveContactsAfter(Date date, String userUuid);
+	List<ContactDto> getAllActiveContactsAfter(Date date);
 	
 	ContactDto getContactByUuid(String uuid);
-    
+
+	Boolean isValidContactUuid(String uuid);
+
 	ContactDto saveContact(ContactDto dto);
 	
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 
 	void generateContactFollowUpTasks();
 
 	List<ContactDto> getByUuids(List<String> uuids);
 	
-	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, String userUuid, List<MapCaseDto> mapCaseDtos);
+	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, List<MapCaseDto> mapCaseDtos);
 	
-	void deleteContact(String contactUuid, String userUuid);
+	void deleteContact(String contactUuid);
 
-	List<ContactIndexDto> getIndexList(String userUuid, ContactCriteria contactCriteria, Integer first, Integer max,
+	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
-	List<ContactExportDto> getExportList(String userUuid, ContactCriteria contactCriteria, int first, int max);
+	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max);
 	
-	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, PeriodFilterMode periodSelectionType, Date from, Date to, String userUuid);
+	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, PeriodFilterMode periodSelectionType, Date from, Date to);
 	
-	Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, String userUuid);
+	Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria);
 
-	Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria, String userUuid);
+	Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria);
 	
-	Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria, String userUuid);
+	Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria);
 	
-	int getFollowUpUntilCount(ContactCriteria contactCriteria, String userUuid);
+	int getFollowUpUntilCount(ContactCriteria contactCriteria);
 
-	long count(String userUuid, ContactCriteria contactCriteria);
+	long count(ContactCriteria contactCriteria);
 	
-	List<String> getDeletedUuidsSince(String userUuid, Date since);
+	List<String> getDeletedUuidsSince(Date since);
 	
 	boolean isDeleted(String contactUuid);
 	
-	List<ContactFollowUpDto> getContactFollowUpList(String userUuid, ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max,
+	List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
 	int[] getContactCountsByCasesForDashboard(List<String> contactUuids);

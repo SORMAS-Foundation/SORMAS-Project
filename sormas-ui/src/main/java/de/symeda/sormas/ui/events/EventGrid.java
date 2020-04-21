@@ -114,19 +114,15 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	public void setLazyDataProvider() {
 		DataProvider<EventIndexDto,EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getEventFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int)FacadeProvider.getEventFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
+							.collect(Collectors.toList())).stream(), query -> (int) FacadeProvider.getEventFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 	
 	public void setEagerDataProvider() {
-		ListDataProvider<EventIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getEventFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		ListDataProvider<EventIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getEventFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

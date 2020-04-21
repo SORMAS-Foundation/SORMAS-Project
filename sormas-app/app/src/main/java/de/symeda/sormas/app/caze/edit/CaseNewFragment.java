@@ -146,10 +146,10 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
         contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
         contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
-            updateListOfDays(contentBinding, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
         });
         contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
-            updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
 
         int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -257,15 +257,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         record.setCaseOrigin(lastCase.getCaseOrigin());
 
         getContentBinding().setData(record);
-    }
-
-    private static void updateListOfDays(FragmentCaseNewLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
-        Integer currentlySelected = (Integer) binding.personBirthdateDD.getValue();
-        List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
-        binding.personBirthdateDD.setSpinnerData(days);
-        if (currentlySelected != null) {
-            binding.personBirthdateDD.setValue(currentlySelected);
-        }
     }
 
 }

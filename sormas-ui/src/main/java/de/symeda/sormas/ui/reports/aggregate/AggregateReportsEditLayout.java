@@ -187,7 +187,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			comboBoxPoe.setValue(criteria.getPointOfEntry());
 			comboBoxPoe.setEnabled(false);
 			reports = FacadeProvider.getAggregateReportFacade()
-					.getList(criteria, FacadeProvider.getUserFacade().getCurrentUser().getUuid()).stream()
+					.getList(criteria).stream()
 					.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
 		}
 
@@ -272,7 +272,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
 			reports = FacadeProvider.getAggregateReportFacade()
-					.getList(criteria, FacadeProvider.getUserFacade().getCurrentUser().getUuid()).stream()
+					.getList(criteria).stream()
 					.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
 			if (!reports.isEmpty()) {
 				popUpIsShown = true;
@@ -368,8 +368,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 				report.setNewCases(newCases);
 				FacadeProvider.getAggregateReportFacade().saveAggregateReport(report);
 			} else if (report != null) {
-				FacadeProvider.getAggregateReportFacade().deleteReport(report.getUuid(),
-						FacadeProvider.getUserFacade().getCurrentUser().getUuid());
+				FacadeProvider.getAggregateReportFacade().deleteReport(report.getUuid());
 			} else {
 				if (deaths > 0 || labConfirmations > 0 || newCases > 0) {
 					AggregateReportDto newReport = AggregateReportDto.build();

@@ -24,12 +24,10 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactLogic;
@@ -106,13 +104,17 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 
 		setColumns(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
 				ContactIndexDto.PERSON, ContactIndexDto.CONTACT_CATEGORY, ContactIndexDto.CONTACT_PROXIMITY,
-				ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.QUARANTINE_TO, NUMBER_OF_VISITS, NUMBER_OF_PENDING_TASKS);
+				ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.FOLLOW_UP_UNTIL,
+				NUMBER_OF_VISITS,
+				NUMBER_OF_PENDING_TASKS);
 		if (!FacadeProvider.getConfigFacade().isGermanServer()) {
 			getColumn(ContactIndexDto.CONTACT_CATEGORY).setHidden(true);
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>)getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		((Column<ContactIndexDto, Date>) getColumn(
+				ContactIndexDto.FOLLOW_UP_UNTIL))
+						.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
@@ -149,19 +151,16 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 	public void setLazyDataProvider() {
 		DataProvider<ContactIndexDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getContactFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int)FacadeProvider.getContactFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
+				query -> (int)FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 	
 	public void setEagerDataProvider() {
-		ListDataProvider<ContactIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getContactFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		ListDataProvider<ContactIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getContactFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

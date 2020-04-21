@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ResourceBundle;
 
-public class I18nProperties {
+public final class I18nProperties {
 
 	private static Map<Language, I18nProperties> instances = new HashMap<>();
 	private static ThreadLocal<Language> userLanguage = new ThreadLocal<>();
@@ -210,17 +210,17 @@ public class I18nProperties {
 		return StringUtils.isEmpty(result) ? defaultValue : result;
 	}
 
-
 	private I18nProperties() {
 		this(defaultLanguage);
 	}
 
 	private I18nProperties(Language language) {
-		this.captionProperties = loadProperties("captions", language.getLocale());
-		this.descriptionProperties = loadProperties("descriptions", language.getLocale());
-		this.enumProperties = loadProperties("enum", language.getLocale());
-		this.validationProperties = loadProperties("validations", language.getLocale());
-		this.stringProperties = loadProperties("strings", language.getLocale());
+
+		this.captionProperties = loadProperties("captions", language.getLocaleWithCountryCode());
+		this.descriptionProperties = loadProperties("descriptions", language.getLocaleWithCountryCode());
+		this.enumProperties = loadProperties("enum", language.getLocaleWithCountryCode());
+		this.validationProperties = loadProperties("validations", language.getLocaleWithCountryCode());
+		this.stringProperties = loadProperties("strings", language.getLocaleWithCountryCode());
 	}
 
 	public static ResourceBundle loadProperties(String propertiesGroup, Locale locale) {
@@ -234,6 +234,11 @@ public class I18nProperties {
 		{
 			// The below is a copy of the default implementation.
 			String bundleName = toBundleName(baseName, locale);
+			if (bundleName.contains("-")) {
+				// A simple "replace" does not work here because the country code could be identical to the language code
+				String countryCode = bundleName.substring(bundleName.lastIndexOf("-") + 1).toUpperCase();
+				bundleName = bundleName.substring(0, bundleName.lastIndexOf("-") + 1) + countryCode;
+			}
 			String resourceName = toResourceName(bundleName, "properties");
 			java.util.ResourceBundle bundle = null;
 			InputStream stream = null;

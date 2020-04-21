@@ -22,6 +22,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
@@ -51,6 +52,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -115,6 +117,18 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         boolean result = super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_contact);
         return result;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home && caseUuid == null) {
+            NavigationHelper.goToContacts(getContext());
+            finish();
+        } else {
+            super.onOptionsItemSelected(item);
+        }
+
+        return true;
     }
 
     @Override

@@ -27,13 +27,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.visit.VisitDto;
 
 /**
@@ -52,18 +49,14 @@ public class VisitResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<VisitDto> getAllVisits(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<VisitDto> getAllVisits(@PathParam("since") long since) {
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<VisitDto> result = FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since),
-				userDto.getUuid());
-		return result;
+		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<VisitDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<VisitDto> getByUuids(List<String> uuids) {
 
 		List<VisitDto> result = FacadeProvider.getVisitFacade().getByUuids(uuids);
 		return result;
@@ -79,12 +72,8 @@ public class VisitResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getVisitFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllActiveUuids() {
+		return FacadeProvider.getVisitFacade().getAllActiveUuids();
 	}
 	
 }

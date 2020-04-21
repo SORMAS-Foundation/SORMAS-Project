@@ -19,21 +19,21 @@ package de.symeda.sormas.ui.dashboard.map;
 
 import java.util.List;
 
+import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.v7.ui.Grid;
-import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;

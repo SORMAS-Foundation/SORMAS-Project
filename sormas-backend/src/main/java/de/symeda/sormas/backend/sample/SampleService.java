@@ -76,7 +76,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Predicate filter = buildCriteriaFilter(criteria, cb, from);
 
 		if (user != null) {
-			filter = and(cb, filter, createUserFilter(cb, cq, from, user));
+			filter = and(cb, filter, createUserFilter(cb, cq, from));
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -104,7 +104,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Predicate filter = createActiveSamplesFilter(cb, from);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -128,7 +128,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Predicate filter = createActiveSamplesFilter(cb, from);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -175,7 +175,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Sample> sample = cq.from(Sample.class);
 
-		Predicate filter = createUserFilter(cb, cq, sample, user);
+		Predicate filter = createUserFilter(cb, cq, sample);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(sample.get(Sample.CHANGE_DATE), since);
 			if (filter != null) {
@@ -223,21 +223,21 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 	@Override
 	@SuppressWarnings({ "rawtypes" })
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
-		Predicate filter = createUserFilterWithoutCase(cb, cq, samplePath, user);
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample, Sample> samplePath) {
+		Predicate filter = createUserFilterWithoutCase(cb, cq, samplePath);
 
 		// whoever created the case the sample is associated with or is assigned to it
 		// is allowed to access it
 		Join<Case,Case> casePath = samplePath.join(Sample.ASSOCIATED_CASE);
 
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, casePath, user);
+		Predicate caseFilter = caseService.createUserFilter(cb, cq, casePath);
 		filter = or(cb, filter, caseFilter);
 
 		return filter;
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath, User user) {
+	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<Sample,Sample> samplePath) {
 		Join<Sample, Case> caze = samplePath.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
 		Predicate filter = null;
@@ -245,14 +245,15 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 
 		// lab users can see samples assigned to their laboratory
-		if (user.getUserRoles().contains(UserRole.LAB_USER) || user.getUserRoles().contains(UserRole.EXTERNAL_LAB_USER)) {
-			if(user.getLaboratory() != null) {
-				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), user.getLaboratory()));			}
+		User currentUser = getCurrentUser();
+		if (currentUser.hasAnyUserRole(UserRole.LAB_USER, UserRole.EXTERNAL_LAB_USER)) {
+			if(currentUser.getLaboratory() != null) {
+				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), currentUser.getLaboratory()));			}
 		}
 
 		// only show samples of a specific disease if a limited disease is set
-		if (filter != null && user.getLimitedDisease() != null) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), user.getLimitedDisease()));
+		if (filter != null && currentUser.getLimitedDisease() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), currentUser.getLimitedDisease()));
 		}
 
 		return filter;

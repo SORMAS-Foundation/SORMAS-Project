@@ -31,7 +31,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -146,7 +145,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 									: data.getChildren(caze).get(0);
 							FacadeProvider.getCaseFacade().mergeCase(caze.getUuid(), caseToMergeAndDelete.getUuid());
 							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(),
-									caze.getUuid(), UserProvider.getCurrent().getUuid());
+									caze.getUuid());
 
 							if (FacadeProvider.getCaseFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
 								reload();
@@ -168,8 +167,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 						if (confirmed.booleanValue()) {
 							CaseIndexDto caseToDelete = data.getParent(caze) != null ? data.getParent(caze)
 									: data.getChildren(caze).get(0);
-							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToDelete.getUuid(), caze.getUuid(),
-									UserProvider.getCurrent().getUuid());
+							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToDelete.getUuid(), caze.getUuid());
 
 							if (FacadeProvider.getCaseFacade().isDeleted(caseToDelete.getUuid())) {
 								data.removeItem(data.getParent(caze) == null ? caze : data.getParent(caze));
@@ -223,8 +221,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 			hiddenUuidPairs = new ArrayList<>();
 		}
 
-		List<CaseIndexDto[]> casePairs = FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria,
-				UserProvider.getCurrent().getUuid(), ignoreRegion);
+		List<CaseIndexDto[]> casePairs = FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, ignoreRegion);
 		for (CaseIndexDto[] casePair : casePairs) {
 			boolean uuidPairExists = false;
 			for (String[] hiddenUuidPair : hiddenUuidPairs) {

@@ -92,7 +92,6 @@ import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -403,8 +402,7 @@ public class CaseController {
 		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria().firstName(personFirstName)
 				.lastName(personLastName).caseCriteria(caseCriteria).reportDate(caseDto.getReportDate());
 
-		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria,
-				UserProvider.getCurrent().getUuid());
+		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
 		if (similarCases.size() > 0) {
 			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(similarCases);
@@ -527,8 +525,8 @@ public class CaseController {
 				break;
 		}
 
-		RegionReferenceDto region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid);
-		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
+		RegionReferenceDto region = regionUuid != null ? FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid) : null;
+		DistrictReferenceDto district = districtUuid != null ? FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid) : null;
 
 		// Create a temporary case in order to use the CommitDiscardWrapperComponent
 		CaseBulkEditData bulkEditData = new CaseBulkEditData();
@@ -657,13 +655,9 @@ public class CaseController {
 
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editView.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getCaseFacade().deleteCase(caze.getUuid(),
-							UserProvider.getCurrent().getUserReference().getUuid());
-					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-				}
+			editView.addDeleteListener(() -> {
+				FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCase));
 		}
 
@@ -952,18 +946,14 @@ public class CaseController {
 							.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(
-					String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()),
-					new Runnable() {
-						public void run() {
-							for (CaseIndexDto selectedRow : selectedRows) {
-								FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid(),
-										UserProvider.getCurrent().getUuid());
-							}
-							callback.run();
-							new Notification(I18nProperties.getString(Strings.headingCasesDeleted),
-									I18nProperties.getString(Strings.messageCasesDeleted), Type.HUMANIZED_MESSAGE,
-									false).show(Page.getCurrent());
+					String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()), () -> {
+						for (CaseIndexDto selectedRow : selectedRows) {
+							FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid());
 						}
+						callback.run();
+						new Notification(I18nProperties.getString(Strings.headingCasesDeleted),
+								I18nProperties.getString(Strings.messageCasesDeleted), Type.HUMANIZED_MESSAGE,
+								false).show(Page.getCurrent());
 					});
 		}
 	}

@@ -3,7 +3,7 @@ files:
     ignore:
       - /sormas-api/src/main/resources/*_*.properties
     translation: >-
-      /sormas-api/src/main/resources/%file_name%_%two_letters_code%.%file_extension%
+      /sormas-api/src/main/resources/%file_name%_%locale%.%file_extension%
   - source: /sormas-app/app/src/main/res/values/strings*.xml
     translation: >-
-      /sormas-app/app/src/main/res/values-%two_letters_code%/%original_file_name%
+      /sormas-app/app/src/main/res/values-%android_code%/%original_file_name%

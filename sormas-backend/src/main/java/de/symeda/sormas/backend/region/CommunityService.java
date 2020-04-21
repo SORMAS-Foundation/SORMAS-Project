@@ -33,7 +33,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.CommunityCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -43,7 +42,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		super(Community.class);
 	}
 
-	public List<Community> getByName(String name, District district) {
+	public List<Community> getByName(String name, District district, boolean includeArchivedEntities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
@@ -52,6 +51,9 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 				cb.equal(cb.trim(from.get(Community.NAME)), name.trim()),
 				cb.equal(cb.lower(cb.trim(from.get(Community.NAME))), name.trim().toLowerCase())
 				);
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
 		if (district != null) {
 			filter = cb.and(filter, cb.equal(from.get(Community.DISTRICT), district));
 		}
@@ -63,7 +65,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Community, Community> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Community, Community> from) {
 		// no filter by user needed
 		return null;
 	}

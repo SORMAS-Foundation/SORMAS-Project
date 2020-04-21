@@ -27,14 +27,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -52,18 +49,13 @@ public class TaskResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<TaskDto> getAll(@Context SecurityContext sc, @PathParam("since") long since) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<TaskDto> result = FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since),
-				userDto.getUuid());
-		return result;
+	public List<TaskDto> getAll(@PathParam("since") long since) {
+		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<TaskDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<TaskDto> getByUuids(List<String> uuids) {
 
 		List<TaskDto> result = FacadeProvider.getTaskFacade().getByUuids(uuids);
 		return result;
@@ -79,11 +71,7 @@ public class TaskResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getTaskFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllActiveUuids() {
+		return FacadeProvider.getTaskFacade().getAllActiveUuids();
 	}
 }

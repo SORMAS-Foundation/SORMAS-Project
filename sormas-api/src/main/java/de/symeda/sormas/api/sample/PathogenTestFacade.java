@@ -22,15 +22,12 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface PathogenTestFacade {
 
-	List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, String userUuid);
+	List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date);
 	
 	List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef);
 	
@@ -38,19 +35,17 @@ public interface PathogenTestFacade {
 	
 	PathogenTestDto savePathogenTest(PathogenTestDto dto);
 
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 
 	List<PathogenTestDto> getByUuids(List<String> uuids);
 	
-	List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
-	
-	void deletePathogenTest(String pathogenTestUuid, String userUuid);
+	void deletePathogenTest(String pathogenTestUuid);
 	
 	boolean hasPathogenTest(SampleReferenceDto sample);
 	
 	void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException;
 	
-	List<String> getDeletedUuidsSince(String userUuid, Date since);
+	List<String> getDeletedUuidsSince(Date since);
 	
 	Date getLatestPathogenTestDate(String sampleUuid);
 	

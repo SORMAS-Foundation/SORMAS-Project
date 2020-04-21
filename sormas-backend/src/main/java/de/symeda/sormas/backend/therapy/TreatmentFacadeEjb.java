@@ -39,7 +39,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private TreatmentService service;
@@ -93,10 +93,10 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public void deleteTreatment(String treatmentUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteTreatment(String treatmentUuid) {
+		User user = userService.getCurrentUser();
 		// TODO replace this with a proper user right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
+		if (!user.hasAnyUserRole(UserRole.ADMIN, UserRole.CASE_SUPERVISOR)) {
 			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete treatments");
 		}
 		
@@ -105,8 +105,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date) {
+		User user = userService.getCurrentUser();
 		
 		if (user == null) {
 			return Collections.emptyList();
@@ -126,8 +126,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 	
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -137,7 +137,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 	
 	@Override
-	public List<TreatmentExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+	public List<TreatmentExportDto> getExportList(CaseCriteria criteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TreatmentExportDto> cq = cb.createQuery(TreatmentExportDto.class);
 		Root<Treatment> treatment = cq.from(Treatment.class);
@@ -159,8 +159,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				treatment.get(Treatment.ROUTE_DETAILS),
 				treatment.get(Treatment.ADDITIONAL_NOTES));
 		
-		User user = userService.getByUuid(userUuid);
-		Predicate filter = service.createUserFilter(cb, cq, treatment, user);
+		Predicate filter = service.createUserFilter(cb, cq, treatment);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
@@ -169,7 +168,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		
 		return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 	}
-	
+
+
 	public static TreatmentDto toDto(Treatment source) {
 		if (source == null) {
 			return null;

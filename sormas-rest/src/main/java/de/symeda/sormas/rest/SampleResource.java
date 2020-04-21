@@ -27,14 +27,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/samples")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
@@ -44,18 +41,14 @@ public class SampleResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<SampleDto> getAllSamples(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<SampleDto> getAllSamples(@PathParam("since") long since) {
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<SampleDto> samples = FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since),
-				userDto.getUuid());
-		return samples;
+		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<SampleDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<SampleDto> getByUuids(List<String> uuids) {
 
 		List<SampleDto> result = FacadeProvider.getSampleFacade().getByUuids(uuids);
 		return result;
@@ -71,21 +64,14 @@ public class SampleResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
+	public List<String> getAllActiveUuids() {
 
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getSampleFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+		return FacadeProvider.getSampleFacade().getAllActiveUuids();
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getSampleFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
-		return uuids;
+	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getSampleFacade().getDeletedUuidsSince(new Date(since));
 	}
-	
 }

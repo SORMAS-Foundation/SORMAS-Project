@@ -49,7 +49,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -58,18 +57,18 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class RegionFacadeEjb implements RegionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
-	protected RegionService regionService;
+	private RegionService regionService;
 	@EJB
-	protected UserService userService;
+	private UserService userService;
 	@EJB
-	protected DistrictService districtService;
+	private DistrictService districtService;
 	@EJB
-	protected CommunityService communityService;
+	private CommunityService communityService;
 	@EJB
-	protected PopulationDataFacadeEjbLocal populationDataFacade;
+	private PopulationDataFacadeEjbLocal populationDataFacade;
 	
 	@Override
 	public List<RegionReferenceDto> getAllActiveAsReference() {
@@ -161,14 +160,12 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
+	public List<String> getAllUuids() {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return regionService.getAllUuids(user);
+		return regionService.getAllUuids();
 	}
 
 	@Override
@@ -268,7 +265,7 @@ public class RegionFacadeEjb implements RegionFacade {
 	public void saveRegion(RegionDto dto) throws ValidationRuntimeException {
 		Region region = regionService.getByUuid(dto.getUuid());
 		
-		if (region == null && !regionService.getByName(dto.getName()).isEmpty()) {
+		if (region == null && !regionService.getByName(dto.getName(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
 		}
 		
@@ -277,8 +274,8 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public List<RegionReferenceDto> getByName(String name) {
-		return regionService.getByName(name).stream().map(r -> toReferenceDto(r)).collect(Collectors.toList());
+	public List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities) {
+		return regionService.getByName(name, includeArchivedEntities).stream().map(r -> toReferenceDto(r)).collect(Collectors.toList());
 	}
 
 	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target) {

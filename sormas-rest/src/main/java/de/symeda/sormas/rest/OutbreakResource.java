@@ -25,9 +25,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
@@ -53,13 +51,13 @@ public class OutbreakResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getActiveUuids(@Context SecurityContext sc) {
+	public List<String> getActiveUuids() {
 		return FacadeProvider.getOutbreakFacade().getActiveUuidsAfter(null);
 	}
 
 	@GET
 	@Path("/inactive/{since}")
-	public List<String> getInactiveUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
+	public List<String> getInactiveUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getOutbreakFacade().getInactiveUuidsAfter(new Date(since));
 	}
 

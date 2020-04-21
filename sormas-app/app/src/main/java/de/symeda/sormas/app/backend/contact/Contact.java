@@ -36,6 +36,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -140,6 +141,7 @@ public class Contact extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	@Deprecated
 	private Date quarantineTo;
 
 	@Column
@@ -151,6 +153,11 @@ public class Contact extends AbstractDomainObject {
 	private ContactCategory contactCategory;
 	@Column(length = 512)
 	private String contactProximityDetails;
+
+	@Enumerated(EnumType.STRING)
+	private OrderMeans quarantineOrderMeans;
+	@Column(length = 512)
+	private String quarantineHelpNeeded;
 
 	public Person getPerson() {
 		return person;
@@ -410,10 +417,12 @@ public class Contact extends AbstractDomainObject {
 		this.quarantineFrom = quarantineFrom;
 	}
 
+	@Deprecated
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
 
+	@Deprecated
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}
@@ -447,5 +456,20 @@ public class Contact extends AbstractDomainObject {
 
 	public void setContactProximityDetails(String contactProximityDetails) {
 		this.contactProximityDetails = contactProximityDetails;
+	}
+	public OrderMeans getQuarantineOrderMeans() {
+		return quarantineOrderMeans;
+	}
+
+	public void setQuarantineOrderMeans(OrderMeans quarantineOrderMeans) {
+		this.quarantineOrderMeans = quarantineOrderMeans;
+	}
+
+	public String getQuarantineHelpNeeded() {
+		return quarantineHelpNeeded;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
 	}
 }

@@ -62,7 +62,12 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			h3(I18nProperties.getString(Strings.headingHospitalization)) +
 			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
-			fluidRowLocs(HospitalizationDto.ACCOMMODATION, HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "") +
+					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
+							HospitalizationDto.INTENSIVE_CARE_UNIT_START,
+							3,
+							HospitalizationDto.INTENSIVE_CARE_UNIT_END)
+					+ fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "")
+					+
 			fluidRow(
 					fluidColumnLocCss(VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
@@ -88,7 +93,9 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
 		DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
-		addFields(HospitalizationDto.ACCOMMODATION, HospitalizationDto.ISOLATION_DATE);
+		addField(HospitalizationDto.INTENSIVE_CARE_UNIT, OptionGroup.class);
+		addFields(HospitalizationDto.INTENSIVE_CARE_UNIT_START, HospitalizationDto.INTENSIVE_CARE_UNIT_END);
+		addField(HospitalizationDto.ISOLATION_DATE);
 		addField(HospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(HospitalizationDto.LEFT_AGAINST_ADVICE, OptionGroup.class);
 		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);

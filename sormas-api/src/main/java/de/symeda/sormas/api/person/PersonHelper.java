@@ -26,7 +26,11 @@ import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
-public class PersonHelper {
+public final class PersonHelper {
+
+	private PersonHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	public static final double NAME_SIMILARITY_THRESHOLD = 0.5D;
 	

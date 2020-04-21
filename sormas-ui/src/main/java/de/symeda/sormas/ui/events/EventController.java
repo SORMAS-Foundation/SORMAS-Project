@@ -43,7 +43,6 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -125,25 +124,19 @@ public class EventController {
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, eventEditForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!eventEditForm.getFieldGroup().isModified()) {
-					EventDto eventDto = eventEditForm.getValue();
-					eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
-					Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
-					SormasUI.refreshView();
-				}
+		editView.addCommitListener(() -> {
+			if (!eventEditForm.getFieldGroup().isModified()) {
+				EventDto eventDto = eventEditForm.getValue();
+				eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
+				Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
 			}
 		});
 
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editView.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getEventFacade().deleteEvent(event.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
-					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-				}
+			editView.addDeleteListener(() -> {
+				FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent));
 		}
 
@@ -248,15 +241,13 @@ public class EventController {
 			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
 					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (EventIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid(), UserProvider.getCurrent().getUuid());
-					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingEventsDeleted), 
-							I18nProperties.getString(Strings.messageEventsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), () -> {
+				for (EventIndexDto selectedRow : selectedRows) {
+					FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid());
 				}
+				callback.run();
+				new Notification(I18nProperties.getString(Strings.headingEventsDeleted),
+						I18nProperties.getString(Strings.messageEventsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 			});
 		}
 	}

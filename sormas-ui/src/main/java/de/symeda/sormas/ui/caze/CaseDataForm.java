@@ -68,7 +68,6 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -136,7 +135,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
 			fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
 			locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
-			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3,
+							CaseDataDto.QUARANTINE_TO)
+					+
 			fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 			fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
 			loc(MEDICAL_INFORMATION_LOC) +
@@ -212,11 +213,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
-		quarantine = addField(ContactDto.QUARANTINE);
+		quarantine = addField(CaseDataDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> updateQuarantineFields());
-		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
+		quarantineFrom = addField(CaseDataDto.QUARANTINE_FROM, DateField.class);
 		quarantineFrom.setVisible(false);
-		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
+		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 		quarantineTo.setVisible(false);
 		
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);

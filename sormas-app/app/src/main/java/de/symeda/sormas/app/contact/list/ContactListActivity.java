@@ -160,7 +160,6 @@ public class ContactListActivity extends PagedBaseListActivity {
     @Override
     public void goToNewView() {
         ContactNewActivity.startActivity(getContext(), null);
-        finish();
     }
 
     @Override

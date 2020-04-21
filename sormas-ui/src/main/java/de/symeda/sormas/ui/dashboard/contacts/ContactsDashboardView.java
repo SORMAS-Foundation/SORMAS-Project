@@ -104,10 +104,10 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		networkDiagramRowLayout = createNetworkDiagramRowLayout();
 		rowsLayout.addComponent(networkDiagramRowLayout);
 		
-		filterLayout.setDiseaseFilterChangeCallback((diseaseSelected) -> {
-			networkDiagramLayout.ifPresent(l -> {
-				l.setVisible(diseaseSelected);
-				noNetworkDiagramLayout.setVisible(!diseaseSelected);
+		networkDiagramLayout.ifPresent(l -> {
+			filterLayout.setDiseaseFilterChangeCallback((diseaseSelected) -> {
+					networkDiagramLayout.get().setVisible(diseaseSelected);
+					noNetworkDiagramLayout.setVisible(!diseaseSelected);
 			});
 		});
 	}
@@ -230,8 +230,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		noNetworkDiagramLayout.setVisible(false);
 		
 		networkDiagramLayout.ifPresent(l -> {
-			l.setVisible(false);
-			noNetworkDiagramLayout.setVisible(true);
+			l.setVisible(filterLayout.hasDiseaseSelected());
+			noNetworkDiagramLayout.setVisible(!filterLayout.hasDiseaseSelected());
 		});
 
 		return layout;
@@ -362,7 +362,9 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			mapComponent.refreshMap();
 
 		// Update cases and contacts shown on the map
-		networkDiagramComponent.ifPresent(DashboardNetworkComponent::refreshDiagram);
+		networkDiagramComponent
+		.filter(c -> c.getParent().isVisible())
+		.ifPresent(DashboardNetworkComponent::refreshDiagram);
 
 		// Epi curve chart has to be created again due to a canvas resizing issue when
 		// simply refreshing the component

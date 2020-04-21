@@ -151,16 +151,25 @@
                         app:value="@={data.quarantineFrom}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlDateField
+                    <TextView
                         android:id="@+id/contact_quarantineTo"
-                        app:allowedDaysInFuture="-1"
-                        app:dependencyParentField="@{contactQuarantine}"
-                        app:dependencyParentValue="@{QuarantineType.HOME}"
-                        app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
-                        app:value="@={data.quarantineTo}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
+                        android:text="@string/quarantine_to"
+                        style="@style/TextViewSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_quarantineOrderMeans"
+                    app:value="@={data.quarantineOrderMeans}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_quarantineHelpNeeded"
+                    app:dependencyParentField="@{contactQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@={data.quarantineHelpNeeded}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -202,6 +211,7 @@
                     <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/contact_reportDateTime"
                         app:value="@={data.reportDateTime}"
+                        app:required="true"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

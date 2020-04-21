@@ -15,6 +15,10 @@
         <group-name>POE_INFORMANT</group-name>
     </security-role-mapping>
     <security-role-mapping>
+        <role-name>REST_EXTERNAL_VISITS_USER</role-name>
+        <group-name>REST_EXTERNAL_VISITS_USER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
         <role-name>SURVEILLANCE_OFFICER</role-name>
         <group-name>SURVEILLANCE_OFFICER</group-name>
     </security-role-mapping>

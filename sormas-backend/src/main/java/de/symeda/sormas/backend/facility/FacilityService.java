@@ -39,7 +39,6 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -119,7 +118,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return facilities;
 	}
 
-	public List<Facility> getHealthFacilitiesByName(String name, District district, Community community) {
+	public List<Facility> getHealthFacilitiesByName(String name, District district, Community community, boolean includeArchivedEntities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
@@ -132,6 +131,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		// values is null
 		filter = cb.and(filter, cb.or(cb.isNull(from.get(Facility.TYPE)),
 				cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
 
 		// Don't check for district and community equality when searching for constant facilities
 		if (!FacilityDto.OTHER_FACILITY.equals(name.trim()) && !FacilityDto.NO_FACILITY.equals(name.trim())) {
@@ -147,7 +149,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Facility> getLaboratoriesByName(String name) {
+	public List<Facility> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
@@ -157,6 +159,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 				cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase())
 				);
 		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
 
 		cq.where(filter);
 
@@ -165,7 +170,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from) {
 		// no filter by user needed
 		return null;
 	}

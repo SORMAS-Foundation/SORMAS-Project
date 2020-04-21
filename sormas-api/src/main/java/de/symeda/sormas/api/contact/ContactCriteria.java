@@ -48,15 +48,22 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date reportDateTo;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
+	/**
+	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
+	 * even if a followUpUntilFrom is specified
+	 */
+	private Boolean followUpUntilToPrecise;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
-	private Date quarantineTo;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
+	private QuarantineType quarantineType;
+	private OrderMeans quarantineOrderMeans;
+	private Boolean onlyQuarantineHelpNeeded;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -211,6 +218,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return followUpUntilTo;
 	}
 	
+	public Boolean getFollowUpUntilToPrecise() {
+		return followUpUntilToPrecise;
+	}
+
+	public ContactCriteria followUpUntilToPrecise(Boolean followUpUntilToPrecise) {
+		this.followUpUntilToPrecise = followUpUntilToPrecise;
+		return this;
+	}
+
 	public ContactCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
@@ -261,15 +277,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.onlyHighPriorityContacts = onlyHighPriorityContacts;
 		return this;
 	}
-	
-	public Date getQuarantineTo() {
-		return quarantineTo;
-	}
-	
-	public ContactCriteria quarantineTo(Date quarantineTo) {
-		this.quarantineTo = quarantineTo;
-		return this;
-	}
 
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -277,6 +284,33 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria caseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
+		return this;
+	}
+
+	public QuarantineType getQuarantineType() {
+		return quarantineType;
+	}
+
+	public ContactCriteria quarantineType(QuarantineType quarantineType) {
+		this.quarantineType = quarantineType;
+		return this;
+	}
+
+	public OrderMeans getQuarantineOrderMeans() {
+		return quarantineOrderMeans;
+	}
+
+	public ContactCriteria quarantineOrderMeans(OrderMeans quarantineOrderMeans) {
+		this.quarantineOrderMeans = quarantineOrderMeans;
+		return this;
+	}
+
+	public Boolean getOnlyQuarantineHelpNeeded() {
+		return onlyQuarantineHelpNeeded;
+	}
+
+	public ContactCriteria onlyQuarantineHelpNeeded(Boolean onlyQuarantineHelpNeeded) {
+		this.onlyQuarantineHelpNeeded = onlyQuarantineHelpNeeded;
 		return this;
 	}
 	

@@ -4065,6 +4065,35 @@ UPDATE contact SET overwritefollowupuntil = false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (197, 'Make follow-up until editable #1680');
 
+-- 2020-04-15 Reworking of quarantine #1762
+UPDATE contact SET 	followupuntil = quarantineto WHERE quarantineto > followupuntil;
+ALTER TABLE contact DROP COLUMN quarantineto;
+ALTER TABLE contact_history DROP COLUMN quarantineto;
+
+ALTER TABLE contact ADD COLUMN quarantineordermeans varchar(255);
+ALTER TABLE contact_history ADD COLUMN quarantineordermeans varchar(255);
+
+ALTER TABLE contact ADD COLUMN quarantinehelpneeded varchar(512);
+ALTER TABLE contact_history ADD COLUMN quarantinehelpneeded varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (198, 'Reworking of quarantine #1762');
+
+-- 2020-04-20 Add fields for intensive care unit to hospitalization #1830
+
+ALTER TABLE hospitalization ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE hospitalization ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE hospitalization_history ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE hospitalization ADD COLUMN intensivecareunitend timestamp;
+ALTER TABLE hospitalization_history ADD COLUMN intensivecareunitend timestamp;
+
+UPDATE hospitalization SET 	intensivecareunit = 'YES' WHERE accommodation = 'ICU';
+
+ALTER TABLE hospitalization DROP COLUMN accommodation;
+ALTER TABLE hospitalization_history DROP COLUMN accommodation;
+
+INSERT INTO schema_version (version_number, comment) VALUES (199, 'Add fields for intensive care unit to hospitalization #1830');
+
 -- 2020-04-21 Date of outbreak onset for each disease #1862
 ALTER TABLE diseaseconfiguration ADD COLUMN outbreakonset timestamp;
-INSERT INTO schema_version (version_number, comment) VALUES (198, 'Date of outbreak onset for each disease #1862');
+INSERT INTO schema_version (version_number, comment) VALUES (200, 'Date of outbreak onset for each disease #1862');
