@@ -44,12 +44,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -71,6 +73,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.backend.epidata.EpiDataGathering;
@@ -461,6 +464,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getPresentCondition() != null) {
 			filter = and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
+		}
+		if (caseCriteria.getPeriodSelectionType() == PeriodFilterMode.USE_OUTBREAK_ONSET) {
+			Root<DiseaseConfiguration> disease = cq.from(DiseaseConfiguration.class);
+			filter = and(cb, filter, cb.equal(from.get(Case.DISEASE), disease.get(DiseaseConfiguration.DISEASE)));
+			filter = and(cb, filter, cb.or(cb.isNull(disease.get(DiseaseConfiguration.OUTBREAK_ONSET)), cb.greaterThanOrEqualTo(from.get(Case.REPORT_DATE), disease.get(DiseaseConfiguration.OUTBREAK_ONSET))));
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
 			filter = and(cb, filter, createNewCaseFilter(cb, from, DateHelper.getStartOfDay(caseCriteria.getNewCaseDateFrom()), 

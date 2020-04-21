@@ -28,6 +28,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
@@ -63,6 +64,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date creationDateFrom;
 	private Date creationDateTo;
 	private NewCaseDateType newCaseDateType;
+	private PeriodFilterMode periodFilterMode;
 	private PersonReferenceDto person;
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean mustBePortHealthCaseWithoutFacility;
@@ -387,6 +389,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+	
+	public PeriodFilterMode getPeriodSelectionType () {
+		return periodFilterMode;
+	}
+	
+	public CaseCriteria periodSelectionType(PeriodFilterMode periodSelectionType) {
+		this.periodFilterMode = periodSelectionType;
+		return this;
 	}
 	
 }

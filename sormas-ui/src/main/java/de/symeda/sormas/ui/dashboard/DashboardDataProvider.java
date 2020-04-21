@@ -100,13 +100,17 @@ public class DashboardDataProvider {
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
 			// Cases
 			CaseCriteria caseCriteria = new CaseCriteria();
-			caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
+			caseCriteria.region(region).district(district).disease(disease).periodSelectionType(periodFilterMode).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
 			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
 			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, userUuid));
 
-			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
-			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
-
+			if (previousFromDate == null || previousToDate == null)
+				setPreviousCases(Collections.emptyList());
+			else {
+				caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
+				setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+			}
+			
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				if (getCases().size() > 0) {
 					setTestResultCountByResultType(FacadeProvider.getSampleFacade().getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
