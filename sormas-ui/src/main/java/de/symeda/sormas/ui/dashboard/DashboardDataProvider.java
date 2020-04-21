@@ -317,4 +317,26 @@ public class DashboardDataProvider {
 	public void setPeriodType(PeriodFilterMode periodType) {
 		this.periodFilterMode = periodType;
 	}
+
+	private Date tmpFromDate, tmpToDate, tmpPreviousFromDate, tmpPreviousToDate;
+	public void clearPeriodFilters () {
+		//keep recent values of date filters for restoring later
+		tmpFromDate = fromDate;
+		tmpToDate = toDate;
+		tmpPreviousFromDate = previousFromDate;
+		tmpPreviousToDate = previousToDate;
+		
+		//and then clear date filter values
+		fromDate = null;
+		toDate = null;
+		previousFromDate = null;
+		previousToDate = null;
+	}
+	
+	public void restorePeriodFilters () {
+		fromDate = tmpFromDate;
+		toDate = tmpToDate;
+		previousFromDate = tmpPreviousFromDate;
+		previousToDate = tmpPreviousToDate;
+	}
 }

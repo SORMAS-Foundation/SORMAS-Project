@@ -196,6 +196,11 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			btnComparisonPeriod.setVisible(showPeriodFilters);
 			infoLabel.setVisible(showPeriodFilters);
 			
+			if (showPeriodFilters)
+				dashboardDataProvider.restorePeriodFilters();
+			else
+				dashboardDataProvider.clearPeriodFilters();
+			
 			dashboardView.refreshDashboard();
 		});
 
