@@ -214,8 +214,11 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		updateComparisonButtons(DateFilterType.THIS_WEEK, DateHelper.getStartOfWeek(new Date()), new Date(), false);
 		btnCurrentPeriod.setCaption(btnThisWeek.getCaption());
 		
-		//set initial period filter mode
-		cmbPeriodSelectionMode.setValue(PeriodFilterMode.USE_OUTBREAK_ONSET);
+		// for now, PeriodFilterMode is only available to SurveillanceDashboard
+				if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE)
+					cmbPeriodSelectionMode.setValue(PeriodFilterMode.USE_OUTBREAK_ONSET);
+				else
+					cmbPeriodSelectionMode.setVisible(false);
 	}
 
 	private HorizontalLayout createDateFilterButtonsLayout() {
