@@ -41,6 +41,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -174,14 +175,29 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 		btnCurrentPeriod.setContent(new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()));
 		btnComparisonPeriod.setContent(createDateComparisonButtonsLayout());
+		
+		ComboBox cmbPeriodSelectionMode = new ComboBox();
+		cmbPeriodSelectionMode.addItems(PeriodFilterMode.values());
 
-		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
+		dateFilterLayout.addComponents(cmbPeriodSelectionMode, btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
 
 		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		addComponent(infoLabel);
 		setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
+				
+		cmbPeriodSelectionMode.addValueChangeListener(e -> {
+			dashboardDataProvider.setPeriodType((PeriodFilterMode) cmbPeriodSelectionMode.getValue());
+			
+			Boolean showPeriodFilters = dashboardDataProvider.getPeriodType() == PeriodFilterMode.SELECT_PERIOD;
+			btnCurrentPeriod.setVisible(showPeriodFilters);
+			lblComparedTo.setVisible(showPeriodFilters);
+			btnComparisonPeriod.setVisible(showPeriodFilters);
+			infoLabel.setVisible(showPeriodFilters);
+			
+			dashboardView.refreshDashboard();
+		});
 
 		// Set initial date filter
 		CssStyles.style(btnThisWeek, CssStyles.BUTTON_FILTER_DARK);

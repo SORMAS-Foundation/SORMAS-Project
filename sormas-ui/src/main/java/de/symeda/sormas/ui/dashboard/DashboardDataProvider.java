@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.dashboard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.statistics.PeriodFilterMode;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.DashboardContactDto;
@@ -51,6 +53,7 @@ public class DashboardDataProvider {
 	private Date toDate;
 	private Date previousFromDate;
 	private Date previousToDate;
+	private PeriodFilterMode periodFilterMode;
 
 	// overall
 	private List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
@@ -307,4 +310,11 @@ public class DashboardDataProvider {
 		this.dashboardType = dashboardType;
 	}
 
+	public PeriodFilterMode getPeriodType() {
+		return periodFilterMode;
+	}
+
+	public void setPeriodType(PeriodFilterMode periodType) {
+		this.periodFilterMode = periodType;
+	}
 }
