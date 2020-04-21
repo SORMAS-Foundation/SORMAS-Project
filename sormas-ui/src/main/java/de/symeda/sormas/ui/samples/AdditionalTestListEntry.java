@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.samples;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -37,7 +39,8 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
 
-		Label dateLabel = new Label(DateHelper.formatLocalDateTime(additionalTest.getTestDateTime()));
+		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Label dateLabel = new Label(DateHelper.formatLocalDateTime(additionalTest.getTestDateTime(), userLanguage));
 		CssStyles.style(dateLabel, CssStyles.VSPACE_3);
 		labelLayout.addComponent(dateLabel);
 

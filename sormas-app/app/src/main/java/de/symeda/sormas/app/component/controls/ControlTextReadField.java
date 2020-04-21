@@ -28,20 +28,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.BindingMethods;
+import androidx.databinding.InverseBindingListener;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.BindingMethod;
-import androidx.databinding.BindingMethods;
-import androidx.databinding.InverseBindingListener;
-
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -51,6 +50,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
+import de.symeda.sormas.app.util.DateFormatHelper;
 import de.symeda.sormas.app.util.ResourceUtils;
 
 @BindingMethods({@BindingMethod(type = ControlTextReadField.class, attribute = "valueFormat", method = "setValueFormat")})
@@ -296,11 +296,11 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(ControlTextReadField textField, Date dateValue, Date appendValue, String valueFormat, String defaultValue) {
         if (dateValue == null || appendValue == null) {
-            setValue(textField, dateValue != null ? DateHelper.formatLocalShortDate(dateValue)
-                    : appendValue != null ? DateHelper.formatLocalShortDate(appendValue)
+            setValue(textField, dateValue != null ? DateFormatHelper.formatLocalDate(dateValue)
+                    : appendValue != null ? DateFormatHelper.formatLocalDate(appendValue)
                     : null, null, valueFormat, defaultValue, dateValue);
         } else {
-            setValue(textField, DateHelper.formatLocalShortDate(dateValue), DateHelper.formatLocalShortDate(appendValue),
+            setValue(textField, DateFormatHelper.formatLocalDate(dateValue), DateFormatHelper.formatLocalDate(appendValue),
                     valueFormat, defaultValue, dateValue);
         }
     }
@@ -346,7 +346,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     // Date & time
     @BindingAdapter(value = {"dateTimeValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDateTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue) {
-        setValue(textField, dateValue != null ? DateHelper.formatLocalShortDateTime(dateValue) : null, null, valueFormat, defaultValue, dateValue);
+        setValue(textField, dateValue != null ? DateFormatHelper.formatLocalDateTime(dateValue) : null, null, valueFormat, defaultValue, dateValue);
     }
 
     // Short uuid
@@ -373,7 +373,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         } else {
             String age = person.getApproximateAge().toString();
             ApproximateAgeType ageType = person.getApproximateAgeType();
-            String dateOfBirth = PersonHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+            String dateOfBirth = DateFormatHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
 
             StringBuilder ageWithDateBuilder = new StringBuilder()
                     .append(age).append(" ").append(ageType != null ? ageType.toString() : "")

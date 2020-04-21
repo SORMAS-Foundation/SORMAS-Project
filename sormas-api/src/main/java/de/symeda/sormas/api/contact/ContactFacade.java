@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -56,7 +57,7 @@ public interface ContactFacade {
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
-	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max);
+	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 	
 	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 	

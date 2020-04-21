@@ -1,24 +1,27 @@
 package de.symeda.sormas.rest;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.OutdatedEntityException;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.ejb.EJB;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.OutdatedEntityException;
+
 public abstract class EntityDtoResource {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@EJB
-	TransactionWrapper transactionWrapper;
-	
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private TransactionWrapper transactionWrapper;
 
 	protected <T extends Object> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
 
@@ -47,6 +50,6 @@ public abstract class EntityDtoResource {
 
 	protected <T extends Object> String createErrorMessage(T dto) {
 		final EntityDto entityDto = (EntityDto) dto;
-		return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " " + DateHelper.formatLocalShortDateTime(entityDto.getChangeDate()) + "\n";
+		return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " " + DateFormat.getDateTimeInstance().format(entityDto.getChangeDate()) + "\n";
 	}
 }

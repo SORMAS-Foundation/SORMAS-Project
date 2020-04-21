@@ -35,7 +35,7 @@ import de.symeda.sormas.app.backend.synclog.SyncLog;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogSyncLogLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 public class SyncLogDialog extends AbstractDialog {
 
@@ -105,7 +105,7 @@ public class SyncLogDialog extends AbstractDialog {
                         content.append("<br/>");
                     }
                     content.append("<p><b><u>")
-                            .append(DateHelper.formatLocalShortDate(log.getCreationDate()))
+                            .append(DateFormatHelper.formatLocalDate(log.getCreationDate()))
                             .append("</u></b></p><p><b>")
                             .append(log.getEntityName())
                             .append("</b><br/>")

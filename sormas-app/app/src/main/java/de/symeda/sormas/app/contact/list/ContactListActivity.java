@@ -24,21 +24,18 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 
-import org.joda.time.DateTime;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.joda.time.DateTime;
+
+import java.util.List;
+import java.util.Random;
+
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;

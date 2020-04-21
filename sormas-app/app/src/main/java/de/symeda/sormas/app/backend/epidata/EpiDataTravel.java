@@ -30,9 +30,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.epidata.TravelType;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -111,6 +111,6 @@ public class EpiDataTravel extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatShortDate(getTravelDateTo());
+        return super.toString() + " " + DateFormatHelper.formatLocalDate(getTravelDateTo());
     }
 }
