@@ -28,6 +28,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -88,7 +90,8 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		Label labelLeft = new Label(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
 		middleLabelLayout.addComponent(labelLeft);
 
-		Label labelRight = new Label(DateHelper.formatLocalShortDateTime(pathogenTest.getTestDateTime()));
+		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Label labelRight = new Label(DateHelper.formatLocalDateTime(pathogenTest.getTestDateTime(), userLanguage));
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
 		middleLabelLayout.addComponent(labelRight);
 		middleLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);

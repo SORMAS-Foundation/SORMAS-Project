@@ -55,15 +55,8 @@ public final class DateHelper {
 		return getLocalDateFormat(language).toPattern();
 	}
 
-	private static SimpleDateFormat getLocalShortDateTimeFormat() {
-		Language language = I18nProperties.getUserLanguage();
-
+	public static SimpleDateFormat getLocalDateTimeFormat(Language language) {
 		return new SimpleDateFormat(language.getDateTimeFormat());
-
-	}
-
-	public static SimpleDateFormat getLocalDateTimeFormat() {
-		return getLocalShortDateTimeFormat();
 	}
 
 	// End of methods to create patterns/date formats that use the system's locale.
@@ -94,17 +87,9 @@ public final class DateHelper {
 		}
 	}
 
-	public static String formatLocalShortDateTime(Date date) {
+	public static String formatLocalDateTime(Date date, Language language) {
 		if (date != null) {
-			return getLocalShortDateTimeFormat().format(date);
-		} else {
-			return "";
-		}
-	}
-
-	public static String formatLocalDateTime(Date date) {
-		if (date != null) {
-			return getLocalDateTimeFormat().format(date);
+			return getLocalDateTimeFormat(language).format(date);
 		} else {
 			return "";
 		}
@@ -177,9 +162,9 @@ public final class DateHelper {
 		}
 	}
 
-	public static String formatDateWithoutYear(Date date) {
+	public static String formatDateWithoutYear(Date date, Language language) {
 		if (date != null) {
-			return new SimpleDateFormat(I18nProperties.getUserLanguage().getDayMonthFormat()).format(date);
+			return new SimpleDateFormat(language.getDayMonthFormat()).format(date);
 		} else {
 			return "";
 		}

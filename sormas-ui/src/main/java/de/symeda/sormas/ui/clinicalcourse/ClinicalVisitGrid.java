@@ -11,6 +11,7 @@ import com.vaadin.v7.ui.renderers.DateRenderer;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
@@ -50,7 +51,8 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 		getColumn(EDIT_BTN_ID).setWidth(20);
 		getColumn(EDIT_BTN_ID).setHeaderCaption("");
 
-		getColumn(ClinicalVisitIndexDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		getColumn(ClinicalVisitIndexDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(

@@ -27,6 +27,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -84,10 +85,10 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		setColumns(EventIndexDto.UUID, EventIndexDto.EVENT_STATUS,
 				EventIndexDto.EVENT_DATE, DISEASE_SHORT, EventIndexDto.EVENT_DESC, EventIndexDto.EVENT_LOCATION, INFORMATION_SOURCE, EventIndexDto.REPORT_DATE_TIME, NUMBER_OF_PENDING_TASKS);
-		
+		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
 		((Column<EventIndexDto, String>)getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<EventIndexDto, Date>)getColumn(EventIndexDto.EVENT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
-		((Column<EventIndexDto, Date>)getColumn(EventIndexDto.REPORT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		((Column<EventIndexDto, Date>)getColumn(EventIndexDto.EVENT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<EventIndexDto, Date>)getColumn(EventIndexDto.REPORT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		
 		
 		for(Column<?, ?> column : getColumns()) {

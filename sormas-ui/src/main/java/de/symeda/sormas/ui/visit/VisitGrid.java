@@ -26,6 +26,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -62,8 +63,9 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 
 		setColumns(EDIT_BTN_ID, VisitIndexDto.VISIT_DATE_TIME, VisitIndexDto.VISIT_STATUS, VisitIndexDto.VISIT_REMARKS, 
 				VisitIndexDto.DISEASE, VisitIndexDto.SYMPTOMATIC, VisitIndexDto.TEMPERATURE);
-		
-		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+
+		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new BooleanRenderer());
 
 		for(Column<?, ?> column : getColumns()) {

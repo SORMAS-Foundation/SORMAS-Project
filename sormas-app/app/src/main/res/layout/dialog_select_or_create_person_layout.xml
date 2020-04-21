@@ -25,6 +25,7 @@
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
         <import type="de.symeda.sormas.api.person.PersonHelper" />
+        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person" />
         <variable name="availablePersons" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.Person&gt;" />
@@ -88,7 +89,7 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/person_birthdate"
                         app:caption="@string/caption_date_of_birth"
-                        app:value="@{PersonHelper.formatBirthdate(data.birthdateDD, data.birthdateMM, data.birthdateYYYY)}"
+                        app:value="@{DateFormatHelper.formatBirthdate(data.birthdateDD, data.birthdateMM, data.birthdateYYYY)}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

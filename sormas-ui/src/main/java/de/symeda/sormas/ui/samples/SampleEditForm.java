@@ -45,6 +45,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -207,9 +208,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();
-
+			Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
 			String reportInfoText = I18nProperties.getString(Strings.reportedOn) + " "
-					+ DateHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
+					+ DateHelper.formatLocalDateTime(getValue().getReportDateTime(), userLanguage) + " "
 					+ I18nProperties.getString(Strings.by) + " " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);

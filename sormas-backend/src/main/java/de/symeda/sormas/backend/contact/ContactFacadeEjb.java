@@ -263,7 +263,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max) {
+	public List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -342,7 +342,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				exportDto.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				exportDto.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
 
-				Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
 				exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
 			}
 		}

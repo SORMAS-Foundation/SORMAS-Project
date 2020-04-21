@@ -41,6 +41,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.CSVUtils;
@@ -96,7 +97,8 @@ public class GridExportStreamResource extends StreamResource {
 									if (value == null) {
 										valueString = "";
 									} else if (value instanceof Date) {
-										valueString = DateHelper.formatLocalDateTime((Date) value);
+										Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+										valueString = DateHelper.formatLocalDateTime((Date) value, userLanguage);
 									} else if (value instanceof Boolean) {
 										if ((Boolean) value == true) {
 											valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);

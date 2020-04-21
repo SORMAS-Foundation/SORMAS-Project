@@ -27,10 +27,10 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -95,7 +95,7 @@ public class EpiDataGathering extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatShortDate(getGatheringDate());
+        return super.toString() + " " + DateFormatHelper.formatLocalDate(getGatheringDate());
     }
 
     @Override

@@ -257,8 +257,8 @@ public final class DownloadUtil {
 
 	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, String exportFileName) {
 		StreamResource casesResource = createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_MANAGEMENT,
-				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, null),
-				(propertyId,type) -> {
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, null, FacadeProvider.getUserFacade().getCurrentUser().getLanguage()),
+				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
 									I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
@@ -275,7 +275,7 @@ public final class DownloadUtil {
 
 		StreamResource prescriptionsResource = createCsvExportStreamResource(PrescriptionExportDto.class, null,
 				(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(criteria, start, max),
-				(propertyId,type) -> {
+				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(PrescriptionExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, propertyId));
 					if (Date.class.isAssignableFrom(type)) {
@@ -287,7 +287,7 @@ public final class DownloadUtil {
 
 		StreamResource treatmentsResource = createCsvExportStreamResource(TreatmentExportDto.class, null,
 				(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(criteria, start, max),
-				(propertyId,type) -> {
+				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(TreatmentExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, propertyId));
 					if (Date.class.isAssignableFrom(type)) {
@@ -299,7 +299,7 @@ public final class DownloadUtil {
 
 		StreamResource clinicalVisitsResource = createCsvExportStreamResource(ClinicalVisitExportDto.class, null,
 				(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(criteria, start, max),
-				(propertyId,type) -> {
+				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(ClinicalVisitExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(ClinicalVisitDto.I18N_PREFIX, propertyId,
 									I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId)));
@@ -311,18 +311,18 @@ public final class DownloadUtil {
 				"sormas_clinical_assessments_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
 
 		StreamResource caseManagementStreamResource = new StreamResource(() -> {
-				String zipFile = FacadeProvider.getExportFacade().generateZipArchive(DateHelper.formatDateForExport(new Date()), new Random().nextInt(Integer.MAX_VALUE));
-				try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)))) {
-					writeCsvToZip(zos, casesResource.getStreamSource(), "cases.csv");
-					writeCsvToZip(zos, prescriptionsResource.getStreamSource(), "prescriptions.csv");
-					writeCsvToZip(zos, treatmentsResource.getStreamSource(), "treatments.csv");
-					writeCsvToZip(zos, clinicalVisitsResource.getStreamSource(), "clinical_assessments.csv");
-					zos.close();
-					return new BufferedInputStream(new FileInputStream(new File(zipFile)));
-				} catch (IOException e) {
+			String zipFile = FacadeProvider.getExportFacade().generateZipArchive(DateHelper.formatDateForExport(new Date()), new Random().nextInt(Integer.MAX_VALUE));
+			try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)))) {
+				writeCsvToZip(zos, casesResource.getStreamSource(), "cases.csv");
+				writeCsvToZip(zos, prescriptionsResource.getStreamSource(), "prescriptions.csv");
+				writeCsvToZip(zos, treatmentsResource.getStreamSource(), "treatments.csv");
+				writeCsvToZip(zos, clinicalVisitsResource.getStreamSource(), "clinical_assessments.csv");
+				zos.close();
+				return new BufferedInputStream(new FileInputStream(new File(zipFile)));
+			} catch (IOException e) {
 				LoggerFactory.getLogger(DownloadUtil.class).error("Failed to generate a zip file for case management export.");
-					return null;
-				}
+				return null;
+			}
 		}, exportFileName);
 		caseManagementStreamResource.setMIMEType("application/zip");
 		caseManagementStreamResource.setCacheTime(0);
@@ -372,7 +372,7 @@ public final class DownloadUtil {
 			if (dataSupplier != null) {
 				buf = dataSupplier.get();
 				dataSupplier = null;
-		        this.count = buf.length;
+				this.count = buf.length;
 			}
 		}
 
@@ -381,11 +381,13 @@ public final class DownloadUtil {
 			ensureInited();
 			return super.read();
 		}
+
 		@Override
 		public int read(byte[] b) throws IOException {
 			ensureInited();
 			return super.read(b);
 		}
+
 		@Override
 		public synchronized int read(byte[] b, int off, int len) {
 			ensureInited();
@@ -397,11 +399,13 @@ public final class DownloadUtil {
 			ensureInited();
 			return super.skip(n);
 		}
+
 		@Override
 		public synchronized int available() {
 			ensureInited();
 			return super.available();
 		}
+
 		@Override
 		public void mark(int readAheadLimit) {
 			ensureInited();
@@ -410,123 +414,124 @@ public final class DownloadUtil {
 	}
 
 	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, CaseExportType exportType, BiFunction<Integer, Integer, List<T>> exportRowsSupplier,
-			BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName, ExportConfigurationDto exportConfiguration) {
+																   BiFunction<String, Class<?>, String> propertyIdCaptionFunction, String exportFileName, ExportConfigurationDto exportConfiguration) {
 		StreamResource extendedStreamResource = new StreamResource(() -> {
 
 			return new DelayedInputStream((out) -> {
-					try (CSVWriter writer = CSVUtils.createCSVWriter(
-							new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
+				try (CSVWriter writer = CSVUtils.createCSVWriter(
+						new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
 
-						// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
-						List<Method> readMethods = new ArrayList<Method>();
-						readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
-								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is"))
-										&& m.isAnnotationPresent(Order.class)
-										&& (exportType == null || (m.isAnnotationPresent(ExportTarget.class) && Arrays.asList(m.getAnnotation(ExportTarget.class).exportTypes()).contains(exportType)))
-										&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
-								.sorted((a,b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(),
-										b.getAnnotationsByType(Order.class)[0].value()))
-								.collect(Collectors.toList()));
+					// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
+					List<Method> readMethods = new ArrayList<Method>();
+					readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
+							.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is"))
+									&& m.isAnnotationPresent(Order.class)
+									&& (exportType == null || (m.isAnnotationPresent(ExportTarget.class) && Arrays.asList(m.getAnnotation(ExportTarget.class).exportTypes()).contains(exportType)))
+									&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
+							.sorted((a, b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(),
+									b.getAnnotationsByType(Order.class)[0].value()))
+							.collect(Collectors.toList()));
 
-						// 2. replace entity fields with all the columns of the entity
-						Map<Method, Function<T,?>> subEntityProviders = new HashMap<Method, Function<T,?>>();
-						for (int i = 0; i < readMethods.size(); i++) {
-							Method method = readMethods.get(i);
-							if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
+					// 2. replace entity fields with all the columns of the entity
+					Map<Method, Function<T, ?>> subEntityProviders = new HashMap<Method, Function<T, ?>>();
+					for (int i = 0; i < readMethods.size(); i++) {
+						Method method = readMethods.get(i);
+						if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
 
-								// allows us to access the sub entity
-								Function<T, ?> subEntityProvider = o -> {
-									try {
-										return method.invoke(o);
-									} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-										throw new RuntimeException(e);
-									}
-								};
-
-								// remove entity field
-								readMethods.remove(i);
-
-								// add columns of the entity
-								List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
-										.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
-										.sorted((a2,b2) -> Integer.compare(a2.getAnnotationsByType(Order.class)[0].value(),
-												b2.getAnnotationsByType(Order.class)[0].value()))
-										.collect(Collectors.toList());
-								readMethods.addAll(i, subReadMethods);
-								i--;
-
-								for (Method subReadMethod : subReadMethods) {
-									subEntityProviders.put(subReadMethod, subEntityProvider);
+							// allows us to access the sub entity
+							Function<T, ?> subEntityProvider = o -> {
+								try {
+									return method.invoke(o);
+								} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+									throw new RuntimeException(e);
 								}
+							};
+
+							// remove entity field
+							readMethods.remove(i);
+
+							// add columns of the entity
+							List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
+									.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
+									.sorted((a2, b2) -> Integer.compare(a2.getAnnotationsByType(Order.class)[0].value(),
+											b2.getAnnotationsByType(Order.class)[0].value()))
+									.collect(Collectors.toList());
+							readMethods.addAll(i, subReadMethods);
+							i--;
+
+							for (Method subReadMethod : subReadMethods) {
+								subEntityProviders.put(subReadMethod, subEntityProvider);
 							}
-						}
-
-						String[] fieldValues = new String[readMethods.size()];
-						for (int i = 0; i < readMethods.size(); i++) {
-							Method method = readMethods.get(i);
-							// field caption
-							String propertyId = method.getName().startsWith("get")
-									? method.getName().substring(3)
-											: method.getName().substring(2);
-									propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-									fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
-						}
-						writer.writeNext(fieldValues);
-
-						int startIndex = 0;
-						Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
-						List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
-						while (!exportRows.isEmpty()) {
-							try {
-								for (T exportRow : exportRows) {
-									for (int i = 0; i < readMethods.size(); i++) {
-										Method method = readMethods.get(i);
-										Function<T,?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
-										Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
-										// Sub entity might be null
-										Object value = entity != null ? method.invoke(entity) : null;
-										if (value == null) {
-											fieldValues[i] = "";
-										} else if (value instanceof Date) {
-											fieldValues[i] = DateFormatHelper.formatDate((Date)value);
-										} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
-											fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
-										} else if (value instanceof Set) {
-											StringBuilder sb = new StringBuilder();
-											for (Object o : (Set<?>) value) {
-												if (sb.length() != 0) {
-													sb.append(", ");
-												}
-												sb.append(o);
-											}
-											fieldValues[i] = sb.toString();
-										} else if (value instanceof BurialInfoDto) {
-											fieldValues[i] = PersonHelper.buildBurialInfoString((BurialInfoDto) value, userLanguage);
-										} else if (value instanceof BirthDateDto) {
-											BirthDateDto birthDate = (BirthDateDto) value;
-											fieldValues[i] = PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
-										} else {
-											fieldValues[i] = value.toString();
-										}
-									}
-									writer.writeNext(fieldValues);
-								};
-							} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-								throw new RuntimeException(e);
-							}
-
-							writer.flush();
-							startIndex += DETAILED_EXPORT_STEP_SIZE;
-							exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 						}
 					}
-				},
-				e -> {
-					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					VaadinSession.getCurrent().access(() -> new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed),
+
+					String[] fieldValues = new String[readMethods.size()];
+					for (int i = 0; i < readMethods.size(); i++) {
+						Method method = readMethods.get(i);
+						// field caption
+						String propertyId = method.getName().startsWith("get")
+								? method.getName().substring(3)
+								: method.getName().substring(2);
+						propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
+						fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
+					}
+					writer.writeNext(fieldValues);
+
+					int startIndex = 0;
+					Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+					while (!exportRows.isEmpty()) {
+						try {
+							for (T exportRow : exportRows) {
+								for (int i = 0; i < readMethods.size(); i++) {
+									Method method = readMethods.get(i);
+									Function<T, ?> subEntityProvider = subEntityProviders.getOrDefault(method, null);
+									Object entity = subEntityProvider != null ? subEntityProvider.apply(exportRow) : exportRow;
+									// Sub entity might be null
+									Object value = entity != null ? method.invoke(entity) : null;
+									if (value == null) {
+										fieldValues[i] = "";
+									} else if (value instanceof Date) {
+										fieldValues[i] = DateFormatHelper.formatDate((Date) value);
+									} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
+										fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
+									} else if (value instanceof Set) {
+										StringBuilder sb = new StringBuilder();
+										for (Object o : (Set<?>) value) {
+											if (sb.length() != 0) {
+												sb.append(", ");
+											}
+											sb.append(o);
+										}
+										fieldValues[i] = sb.toString();
+									} else if (value instanceof BurialInfoDto) {
+										fieldValues[i] = PersonHelper.buildBurialInfoString((BurialInfoDto) value, userLanguage);
+									} else if (value instanceof BirthDateDto) {
+										BirthDateDto birthDate = (BirthDateDto) value;
+										fieldValues[i] = PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
+									} else {
+										fieldValues[i] = value.toString();
+									}
+								}
+								writer.writeNext(fieldValues);
+							}
+							;
+						} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+							throw new RuntimeException(e);
+						}
+
+						writer.flush();
+						startIndex += DETAILED_EXPORT_STEP_SIZE;
+						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+					}
+				}
+			},
+					e -> {
+						// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
+						// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+						VaadinSession.getCurrent().access(() -> new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed),
 								Type.ERROR_MESSAGE, false).show(Page.getCurrent()));
-				});
+					});
 		}, exportFileName);
 		extendedStreamResource.setMIMEType("text/csv");
 		extendedStreamResource.setCacheTime(0);

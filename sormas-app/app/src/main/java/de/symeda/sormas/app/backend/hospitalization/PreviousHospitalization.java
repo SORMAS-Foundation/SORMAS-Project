@@ -29,7 +29,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
@@ -37,6 +36,7 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 /**
  * Created by Mate Strysewske on 22.02.2017.
@@ -169,6 +169,6 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatShortDate(getDischargeDate());
+        return super.toString() + " " + DateFormatHelper.formatLocalDate(getDischargeDate());
     }
 }
