@@ -103,6 +103,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	// Layers
 	private boolean showCases;
+	private MapCaseClassificationOption caseClassificationOption;
 	private boolean showContacts;
 	private boolean showConfirmedContacts;
 	private boolean showUnconfirmedContacts;
@@ -178,12 +179,14 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
 			showCases = true;
+			caseClassificationOption = MapCaseClassificationOption.CONFIRMED_CASES_ONLY;
 			showContacts = false;
 			showEvents = false;
 			showConfirmedContacts = true;
 			showUnconfirmedContacts = true;
 		} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
 			showCases = false;
+			caseClassificationOption = MapCaseClassificationOption.CONFIRMED_CASES_ONLY;
 			showContacts = true;
 			showEvents = false;
 			showConfirmedContacts = true;
@@ -333,6 +336,17 @@ public class DashboardMapComponent extends VerticalLayout {
 					mapCaseDisplayMode = (MapCaseDisplayMode) event.getProperty().getValue();
 					refreshMap();
 				});
+				
+				//case classifications
+				OptionGroup caseClassificationOptions = new OptionGroup();
+				caseClassificationOptions.setWidth(100, Unit.PERCENTAGE);
+				caseClassificationOptions.setStyleName(CssStyles.VSPACE_NONE);
+				caseClassificationOptions.addItems((Object[]) MapCaseClassificationOption.values());
+				caseClassificationOptions.setValue(caseClassificationOption);
+				caseClassificationOptions.addValueChangeListener(event -> {
+					caseClassificationOption = (MapCaseClassificationOption) event.getProperty().getValue();
+					refreshMap();
+				});
 
 				HorizontalLayout showCasesLayout = new HorizontalLayout();
 				{
@@ -344,6 +358,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					showCasesCheckBox.addValueChangeListener(e -> {
 						showCases = (boolean) e.getProperty().getValue();
 						mapCaseDisplayModeSelect.setEnabled(showCases);
+						caseClassificationOptions.setEnabled(showCases);
 						mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
 						refreshMap();
 					});
@@ -358,6 +373,10 @@ public class DashboardMapComponent extends VerticalLayout {
 					showCasesLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
 				}
 				layersLayout.addComponent(showCasesLayout);
+				
+
+				layersLayout.addComponent(caseClassificationOptions);
+				caseClassificationOptions.setEnabled(showCases);
 
 				layersLayout.addComponent(mapCaseDisplayModeSelect);
 				mapCaseDisplayModeSelect.setEnabled(showCases);
@@ -922,6 +941,8 @@ public class DashboardMapComponent extends VerticalLayout {
 		for (MapCaseDto caze : cases) {
 			CaseClassification classification = caze.getCaseClassification();
 			if (classification == null || classification == CaseClassification.NO_CASE)
+				continue;
+			if (caseClassificationOption == MapCaseClassificationOption.CONFIRMED_CASES_ONLY && classification != CaseClassification.CONFIRMED)
 				continue;
 			boolean hasCaseGps = (caze.getAddressLat() != null && caze.getAddressLon() != null)
 					|| (caze.getReportLat() != null || caze.getReportLon() != null);
