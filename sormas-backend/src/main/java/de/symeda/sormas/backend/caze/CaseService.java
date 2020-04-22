@@ -138,17 +138,19 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	/**
-	 * Returns all cases that match the specified {@code caseCriteria} and that the specified {@code user} has access to.
+	 * Returns all cases that match the specified {@code caseCriteria} and that the current user has access to.
 	 * This should be the preferred method of retrieving cases from the database if there is no special logic required
 	 * that can not be part of the {@link CaseCriteria}.
 	 */
-	public List<Case> findBy(CaseCriteria caseCriteria, User user) {
+	public List<Case> findBy(CaseCriteria caseCriteria, boolean ignoreUserFilter) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
 
 		Predicate filter = createCriteriaFilter(caseCriteria, cb, cq, from);
-		filter = and(cb, filter, createUserFilter(cb, cq, from));
+		if (!ignoreUserFilter) {
+			filter = and(cb, filter, createUserFilter(cb, cq, from));
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -740,34 +742,34 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				UserRole.POE_SUPERVISOR,
 				UserRole.EVENT_OFFICER,
 				UserRole.STATE_OBSERVER)
-			&& currentUser.getRegion() != null) {
-				// supervisors see all cases of their region
-					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), currentUser.getRegion()));
+				&& currentUser.getRegion() != null) {
+			// supervisors see all cases of their region
+			filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), currentUser.getRegion()));
 		}
 		if (currentUser.hasAnyUserRole(
 				UserRole.SURVEILLANCE_OFFICER,
 				UserRole.CONTACT_OFFICER,
 				UserRole.CASE_OFFICER,
 				UserRole.DISTRICT_OBSERVER)
-			&& currentUser.getDistrict() != null) {
+				&& currentUser.getDistrict() != null) {
 			// officers see all cases of their district
-				filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), currentUser.getDistrict()));
+			filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), currentUser.getDistrict()));
 		}
 		if (currentUser.hasAnyUserRole(UserRole.HOSPITAL_INFORMANT)
-			&& currentUser.getHealthFacility() != null) {
+				&& currentUser.getHealthFacility() != null) {
 			// hospital informants see all cases of their facility
-				filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), currentUser.getHealthFacility()));
+			filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), currentUser.getHealthFacility()));
 		}
 		if (currentUser.hasAnyUserRole(UserRole.COMMUNITY_INFORMANT)
-			&& currentUser.getCommunity() != null) {
+				&& currentUser.getCommunity() != null) {
 			// community informants see all cases of their community
-				filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), currentUser.getCommunity()));
+			filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), currentUser.getCommunity()));
 		}
 		if (currentUser.hasAnyUserRole(UserRole.POE_INFORMANT)
-			&& currentUser.getPointOfEntry() != null) {
-				// poe informants see all cases of their point of entry
-				filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), currentUser.getPointOfEntry()));
-			}
+				&& currentUser.getPointOfEntry() != null) {
+			// poe informants see all cases of their point of entry
+			filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), currentUser.getPointOfEntry()));
+		}
 		if (currentUser.hasAnyUserRole(UserRole.LAB_USER)) {
 			// get all cases based on the user's sample association
 			Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);

@@ -4077,3 +4077,19 @@ ALTER TABLE contact ADD COLUMN quarantinehelpneeded varchar(512);
 ALTER TABLE contact_history ADD COLUMN quarantinehelpneeded varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (198, 'Reworking of quarantine #1762');
+
+-- 2020-04-20 Add fields for intensive care unit to hospitalization #1830
+
+ALTER TABLE hospitalization ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE hospitalization_history ADD COLUMN intensivecareunit varchar(255);
+ALTER TABLE hospitalization ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE hospitalization_history ADD COLUMN intensivecareunitstart timestamp;
+ALTER TABLE hospitalization ADD COLUMN intensivecareunitend timestamp;
+ALTER TABLE hospitalization_history ADD COLUMN intensivecareunitend timestamp;
+
+UPDATE hospitalization SET 	intensivecareunit = 'YES' WHERE accommodation = 'ICU';
+
+ALTER TABLE hospitalization DROP COLUMN accommodation;
+ALTER TABLE hospitalization_history DROP COLUMN accommodation;
+
+INSERT INTO schema_version (version_number, comment) VALUES (199, 'Add fields for intensive care unit to hospitalization #1830');

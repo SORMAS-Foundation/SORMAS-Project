@@ -28,6 +28,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -121,6 +122,10 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 
 	@Override
 	protected void editEntry(EpiDataGatheringDto entry, boolean create, Consumer<EpiDataGatheringDto> commitCallback) {
+		if (create && entry.getUuid() == null) {
+			entry.setUuid(DataHelper.createUuid());
+		}
+		
 		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 

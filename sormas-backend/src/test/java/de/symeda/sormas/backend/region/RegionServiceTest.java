@@ -14,11 +14,11 @@ public class RegionServiceTest extends AbstractBeanTest {
 	public void testGetByName() throws Exception {
 		creator.createRegion("Region");
 		
-		assertThat(getRegionService().getByName("Region"), hasSize(1));
-		assertThat(getRegionService().getByName(" Region "), hasSize(1));
-		assertThat(getRegionService().getByName("region"), hasSize(1));
-		assertThat(getRegionService().getByName("REGION"), hasSize(1));
-		assertThat(getRegionService().getByName("The Hinterlands"), empty());
+		assertThat(getRegionService().getByName("Region", true), hasSize(1));
+		assertThat(getRegionService().getByName(" Region ", true), hasSize(1));
+		assertThat(getRegionService().getByName("region", true), hasSize(1));
+		assertThat(getRegionService().getByName("REGION", true), hasSize(1));
+		assertThat(getRegionService().getByName("The Hinterlands", true), empty());
 	}
 
 }

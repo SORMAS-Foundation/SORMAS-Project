@@ -230,8 +230,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		noNetworkDiagramLayout.setVisible(false);
 		
 		networkDiagramLayout.ifPresent(l -> {
-			l.setVisible(false);
-			noNetworkDiagramLayout.setVisible(true);
+			l.setVisible(filterLayout.hasDiseaseSelected());
+			noNetworkDiagramLayout.setVisible(!filterLayout.hasDiseaseSelected());
 		});
 
 		return layout;

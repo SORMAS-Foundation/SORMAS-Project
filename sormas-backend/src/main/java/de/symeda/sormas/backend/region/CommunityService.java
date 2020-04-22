@@ -42,7 +42,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		super(Community.class);
 	}
 
-	public List<Community> getByName(String name, District district) {
+	public List<Community> getByName(String name, District district, boolean includeArchivedEntities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
@@ -51,6 +51,9 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 				cb.equal(cb.trim(from.get(Community.NAME)), name.trim()),
 				cb.equal(cb.lower(cb.trim(from.get(Community.NAME))), name.trim().toLowerCase())
 				);
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
 		if (district != null) {
 			filter = cb.and(filter, cb.equal(from.get(Community.DISTRICT), district));
 		}
