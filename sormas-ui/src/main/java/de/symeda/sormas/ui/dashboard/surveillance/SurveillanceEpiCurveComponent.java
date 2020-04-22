@@ -135,7 +135,8 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 				CaseCriteria caseCriteria = new CaseCriteria()
 						.disease(dashboardDataProvider.getDisease())
 						.region(dashboardDataProvider.getRegion())
-						.district(dashboardDataProvider.getDistrict());
+						.district(dashboardDataProvider.getDistrict())
+						.surveillanceType(dashboardDataProvider.getCaseSurveillanceType());
 				if (epiCurveGrouping == EpiCurveGrouping.DAY) {
 					caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date), NewCaseDateType.MOST_RELEVANT);
 				} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
