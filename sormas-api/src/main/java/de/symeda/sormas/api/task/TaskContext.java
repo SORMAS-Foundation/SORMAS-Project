@@ -17,16 +17,30 @@
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum TaskContext {
 
-	CASE,
-	CONTACT,
-	EVENT,
-	GENERAL
-	;
+	CASE(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE),
+	CONTACT(FeatureType.TASK_GENERATION_CONTACT_TRACING),
+	EVENT(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE),
+	GENERAL(FeatureType.TASK_GENERATION_GENERAL);
 	
+	private FeatureType featureType;
+	
+	TaskContext(FeatureType featureType) {
+		this.featureType = featureType;
+	}
+	
+	public FeatureType getFeatureType() {
+		return featureType;
+	}
+
+	public void setFeatureType(FeatureType featureType) {
+		this.featureType = featureType;
+	}
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
