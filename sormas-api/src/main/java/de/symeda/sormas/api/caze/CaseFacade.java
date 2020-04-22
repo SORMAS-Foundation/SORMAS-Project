@@ -62,7 +62,7 @@ public interface CaseFacade {
 	
 	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
 
-	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
+	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, CaseSurveillanceType surveillanceType, Date from, Date to);
 	
 	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, boolean includeSharedCases);
 	

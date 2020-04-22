@@ -79,6 +79,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -703,11 +704,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef,
-			Disease disease, Date from, Date to) {
+			Disease disease, CaseSurveillanceType surveillanceType, Date from, Date to) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return caseService.getCasesForMap(region, district, disease, from, to);
+		return caseService.getCasesForMap(region, district, disease, surveillanceType, from, to);
 	}
 
 	@Override

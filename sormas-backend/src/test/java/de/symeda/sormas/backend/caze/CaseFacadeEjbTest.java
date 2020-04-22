@@ -209,7 +209,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
 		List<MapCaseDto> mapCaseDtos = getCaseFacade().getCasesForMap(caze.getRegion(), caze.getDistrict(),
-				caze.getDisease(), DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1));
+				caze.getDisease(), null, DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1));
 
 		// List should have one entry
 		assertEquals(1, mapCaseDtos.size());

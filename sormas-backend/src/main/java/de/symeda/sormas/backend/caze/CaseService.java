@@ -45,6 +45,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
@@ -207,7 +208,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, CaseSurveillanceType surveillanceType, Date from, Date to) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
@@ -243,6 +244,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				filter = cb.and(filter, diseaseFilter);
 			} else {
 				filter = diseaseFilter;
+			}
+		}
+
+		if (surveillanceType != null) {
+			Predicate surveillanceFilter = cb.equal(caze.get(Case.SURVEILLANCE_TYPE), surveillanceType);
+			if (filter != null) {
+				filter = cb.and(filter, surveillanceFilter);
+			} else {
+				filter = surveillanceFilter;
 			}
 		}
 

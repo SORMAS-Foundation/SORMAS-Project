@@ -53,6 +53,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
@@ -216,18 +217,19 @@ public class DashboardMapComponent extends VerticalLayout {
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 		Disease disease = dashboardDataProvider.getDisease();
+		CaseSurveillanceType surveillanceType = dashboardDataProvider.getCaseSurveillanceType();
 
 		if (showRegions) {
 			showRegionsShapes(caseMeasure, fromDate, toDate, dashboardDataProvider.getDisease());
 		}
 		if (showCases) {
-			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
+			showCaseMarkers(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, surveillanceType, fromDate, toDate));
 		}
 		if (showContacts) {
 			if (!showCases) {
 				// Case lists need to be filled even when cases are hidden because they are
 				// needed to retrieve the contacts
-				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, fromDate, toDate));
+				fillCaseLists(FacadeProvider.getCaseFacade().getCasesForMap(region, district, disease, surveillanceType, fromDate, toDate));
 			}
 			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate,
 					toDate, mapAndFacilityCases));
