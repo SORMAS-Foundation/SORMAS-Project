@@ -129,7 +129,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							CaseDataDto.RABIES_TYPE))) +
 			fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
 			fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
-			fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
+			fluidRowLocs(CaseDataDto.CASE_ORIGIN, CaseDataDto.SURVEILLANCE_TYPE) +
 			fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 			fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
 			fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
@@ -212,6 +212,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
 
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
+		addField(CaseDataDto.SURVEILLANCE_TYPE, TextField.class);
 
 		quarantine = addField(CaseDataDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> updateQuarantineFields());
