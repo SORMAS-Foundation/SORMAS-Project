@@ -320,7 +320,7 @@ public class CaseContactsView extends AbstractCaseView {
 			StreamResource extendedExportStreamResource = DownloadUtil
 					.createCsvExportStreamResource(
 							ContactExportDto.class, null, (Integer start, Integer max) -> FacadeProvider
-									.getContactFacade().getExportList(grid.getCriteria(), start, max, FacadeProvider.getUserFacade().getCurrentUser().getLanguage()),
+									.getContactFacade().getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
 							(propertyId, type) -> {
 								String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX,
 										propertyId,

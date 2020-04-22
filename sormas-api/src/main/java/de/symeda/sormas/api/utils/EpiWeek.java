@@ -74,7 +74,10 @@ public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGro
 
 	@Override
 	public String toString() {
-		Language language = I18nProperties.getUserLanguage();
+		return toString(I18nProperties.getUserLanguage());
+	}
+
+	public String toString(Language language) {
 		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this), language) + ")") : "");
 	}
 	

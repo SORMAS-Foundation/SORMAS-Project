@@ -105,7 +105,7 @@ public class CasePopupGrid extends Grid {
         		LAST_NAME, CaseDataDto.REPORT_DATE, CaseDataDto.HEALTH_FACILITY_DETAILS);
         
         getColumn(CaseDataDto.UUID).setRenderer(new V7UuidRenderer());
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Language userLanguage = I18nProperties.getUserLanguage();
 		getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
         
         if (facility == null || !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {

@@ -75,8 +75,7 @@ public class V7GridExportStreamResource extends StreamResource {
 								Property<?> property = container.getItem(i).getItemProperty(c.getPropertyId());
 								if (property.getValue() != null) {
 									if (property.getType() == Date.class) {
-										Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
-										row.add(DateHelper.formatLocalDateTime((Date) property.getValue(), userLanguage));
+										row.add(DateFormatHelper.formatLocalDateTime((Date) property.getValue()));
 									} else if (property.getType() == Boolean.class) {
 										if ((Boolean) property.getValue() == true) {
 											row.add(I18nProperties.getEnumCaption(YesNoUnknown.YES));

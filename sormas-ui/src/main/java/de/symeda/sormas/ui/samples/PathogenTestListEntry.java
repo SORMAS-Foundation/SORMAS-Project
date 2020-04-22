@@ -37,6 +37,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
 public class PathogenTestListEntry extends HorizontalLayout {
@@ -90,8 +91,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		Label labelLeft = new Label(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
 		middleLabelLayout.addComponent(labelLeft);
 
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
-		Label labelRight = new Label(DateHelper.formatLocalDateTime(pathogenTest.getTestDateTime(), userLanguage));
+		Label labelRight = new Label(DateFormatHelper.formatLocalDateTime(pathogenTest.getTestDateTime()));
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
 		middleLabelLayout.addComponent(labelRight);
 		middleLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);

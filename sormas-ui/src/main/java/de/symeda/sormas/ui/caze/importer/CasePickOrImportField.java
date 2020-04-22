@@ -112,7 +112,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			Label ageAndBirthDateField = new Label();
 			ageAndBirthDateField.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
 			ageAndBirthDateField.setValue(PersonHelper.getAgeAndBirthdateString(importedPerson.getApproximateAge(), importedPerson.getApproximateAgeType(),
-					importedPerson.getBirthdateDD(), importedPerson.getBirthdateMM(), importedPerson.getBirthdateYYYY(), FacadeProvider.getUserFacade().getCurrentUser().getLanguage()));
+					importedPerson.getBirthdateDD(), importedPerson.getBirthdateMM(), importedPerson.getBirthdateYYYY(), I18nProperties.getUserLanguage()));
 			ageAndBirthDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(ageAndBirthDateField);
 

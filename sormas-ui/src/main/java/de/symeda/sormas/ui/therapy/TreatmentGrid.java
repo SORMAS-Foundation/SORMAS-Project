@@ -49,7 +49,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(EDIT_BTN_ID).setWidth(20);
 		getColumn(EDIT_BTN_ID).setHeaderCaption("");
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Language userLanguage = I18nProperties.getUserLanguage();
 		getColumn(TreatmentIndexDto.TREATMENT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		
 		for (Column column : getColumns()) {

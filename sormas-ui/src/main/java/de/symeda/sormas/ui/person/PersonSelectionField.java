@@ -83,7 +83,7 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 
 		Label lblBirthDateAndAge = new Label(PersonHelper.getAgeAndBirthdateString(
 				referencePerson.getApproximateAge(), referencePerson.getApproximateAgeType(),
-				referencePerson.getBirthdateDD(), referencePerson.getBirthdateMM(), referencePerson.getBirthdateYYYY(), FacadeProvider.getUserFacade().getCurrentUser().getLanguage()));
+				referencePerson.getBirthdateDD(), referencePerson.getBirthdateMM(), referencePerson.getBirthdateYYYY(), I18nProperties.getUserLanguage()));
 		lblBirthDateAndAge.setWidthUndefined();
 		lblBirthDateAndAge.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
 		personDetailsLayout.addComponent(lblBirthDateAndAge);
