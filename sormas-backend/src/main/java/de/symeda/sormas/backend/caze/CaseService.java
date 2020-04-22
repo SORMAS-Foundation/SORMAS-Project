@@ -464,6 +464,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getCaseOrigin() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
 		}
+		if (caseCriteria.getSurveillanceType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.SURVEILLANCE_TYPE), caseCriteria.getSurveillanceType()));
+		}
 		if (caseCriteria.getHealthFacility() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
 		}

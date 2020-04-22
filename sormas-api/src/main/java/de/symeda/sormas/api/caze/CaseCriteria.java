@@ -75,6 +75,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
 	public Boolean excludeSharedCases;
+	private CaseSurveillanceType surveillanceType;
 	
 	@Override
 	public CaseCriteria clone() {
@@ -401,6 +402,19 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
+	}
+	
+	public CaseCriteria surveillanceType(CaseSurveillanceType surveillanceType) {
+		this.surveillanceType = surveillanceType;
+		return this;
+	}
+
+	public CaseSurveillanceType getSurveillanceType() {
+		return surveillanceType;
+	}
+
+	public void setSurveillanceType(CaseSurveillanceType surveillanceType) {
+		this.surveillanceType = surveillanceType;
 	}
 	
 }

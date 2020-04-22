@@ -95,7 +95,7 @@ public class DashboardDataProvider {
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
 			// Cases
 			CaseCriteria caseCriteria = new CaseCriteria();
-			caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
+			caseCriteria.region(region).district(district).disease(disease).surveillanceType(caseSurveillanceType).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
 			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
 			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, false));
 
