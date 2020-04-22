@@ -41,6 +41,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -103,6 +104,10 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		createRegionAndDistrictFilter();
 		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
 			createDiseaseFilter();
+		}
+		
+		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
+			createCaseSurveillanceTypeFilter();
 		}
 	}
 
@@ -361,6 +366,18 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		return layout;
 	}
 
+	private void createCaseSurveillanceTypeFilter () {
+		ComboBox caseSurveillanceTypeFilter = new ComboBox();
+		caseSurveillanceTypeFilter.setWidth(200, Unit.PIXELS);
+		caseSurveillanceTypeFilter.setInputPrompt(I18nProperties.getCaption(Captions.CaseData_surveillanceType));
+		caseSurveillanceTypeFilter.addItems(CaseSurveillanceType.values());
+		caseSurveillanceTypeFilter.addValueChangeListener(e -> {
+			dashboardDataProvider.setCaseSurveillanceType((CaseSurveillanceType) caseSurveillanceTypeFilter.getValue());
+			dashboardView.refreshDashboard();
+		});
+		addComponent(caseSurveillanceTypeFilter);
+	}
+	
 	private void initializeDateFilterButton(Button button, Set<Button> buttonSet) {
 		button.addClickListener(e -> {
 			changeCustomDateFilterPanelStyle(button, buttonSet);

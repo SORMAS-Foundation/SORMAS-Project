@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.DashboardContactDto;
@@ -50,6 +51,7 @@ public class DashboardDataProvider {
 	private Date toDate;
 	private Date previousFromDate;
 	private Date previousToDate;
+	private CaseSurveillanceType caseSurveillanceType;
 
 	// overall
 	private List<DiseaseBurdenDto> diseasesBurden = new ArrayList<>();
@@ -301,6 +303,14 @@ public class DashboardDataProvider {
 
 	public void setDashboardType(DashboardType dashboardType) {
 		this.dashboardType = dashboardType;
+	}
+
+	public CaseSurveillanceType getCaseSurveillanceType() {
+		return caseSurveillanceType;
+	}
+
+	public void setCaseSurveillanceType(CaseSurveillanceType caseSurveillanceType) {
+		this.caseSurveillanceType = caseSurveillanceType;
 	}
 
 }
