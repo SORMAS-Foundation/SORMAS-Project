@@ -42,22 +42,26 @@ public class SampleResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<SampleDto> getAllSamples(@PathParam("since") long since) {
-
 		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
 	public List<SampleDto> getByUuids(List<String> uuids) {
-
 		List<SampleDto> result = FacadeProvider.getSampleFacade().getByUuids(uuids);
+		return result;
+	}
+	
+	@POST
+	@Path("/query/cases")
+	public List<SampleDto> getByCaseUuids(List<String> uuids) {
+		List<SampleDto> result = FacadeProvider.getSampleFacade().getByCaseUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/push")
 	public List<PushResult> postSamples(List<SampleDto> dtos) {
-
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getSampleFacade()::saveSample);
 		return result;
 	}
@@ -65,7 +69,6 @@ public class SampleResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
-
 		return FacadeProvider.getSampleFacade().getAllActiveUuids();
 	}
 	
@@ -74,4 +77,5 @@ public class SampleResource extends EntityDtoResource {
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getSampleFacade().getDeletedUuidsSince(new Date(since));
 	}
+	
 }

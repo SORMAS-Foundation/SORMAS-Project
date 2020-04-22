@@ -337,5 +337,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public FeatureConfigurationFacade getFeatureConfigurationFacade() {
 		return getBean(FeatureConfigurationFacadeEjbLocal.class);
 	}
+	
+	public PathogenTestFacade getPathogenTestFacade() {
+		return getBean(PathogenTestFacadeEjbLocal.class);
+	}
 
 }

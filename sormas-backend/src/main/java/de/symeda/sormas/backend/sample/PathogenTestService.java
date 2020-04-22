@@ -36,6 +36,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.user.User;
 
@@ -135,6 +136,21 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(PathogenTest.TEST_DATE_TIME)));
 
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PathogenTest> cq = cb.createQuery(PathogenTest.class);
+		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
+		Join<PathogenTest, Sample> sampleJoin = pathogenTestRoot.join(PathogenTest.SAMPLE, JoinType.LEFT);
+		
+		Predicate filter = cb.and(
+				createDefaultFilter(cb, pathogenTestRoot),
+				sampleJoin.get(AbstractDomainObject.UUID).in(sampleUuids)
+				);
+		
+		cq.where(filter);
 		return em.createQuery(cq).getResultList();
 	}
 	
