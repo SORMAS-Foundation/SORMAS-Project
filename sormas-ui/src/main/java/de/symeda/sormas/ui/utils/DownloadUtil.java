@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -119,15 +120,20 @@ public final class DownloadUtil {
 					tablesToExport.add(databaseToggles.get(checkBox));
 				}
 			}
-			try {
-				String zipPath = FacadeProvider.getExportFacade().generateDatabaseExportArchive(tablesToExport);
-				return new BufferedInputStream(Files.newInputStream(new File(zipPath).toPath()));
-			} catch (IOException | ExportErrorException e) {
-				// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-				// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-				databaseExportView.showExportErrorNotification();
-				return null;
-			}
+			return new DelayedInputStream(() -> {
+
+				try {
+					String zipPath = FacadeProvider.getExportFacade().generateDatabaseExportArchive(tablesToExport);
+					return new BufferedInputStream(Files.newInputStream(new File(zipPath).toPath()));
+				} catch (IOException | ExportErrorException e) {
+					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
+					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+					databaseExportView.showExportErrorNotification();
+					return null;
+				}
+
+			});
 		}, fileName);
 		streamResource.setMIMEType(mimeType);
 		streamResource.setCacheTime(0);
@@ -343,41 +349,53 @@ public final class DownloadUtil {
 	}
 
 	public static interface OutputStreamConsumer {
-		void write(OutputStream os) throws IOException;
+		void writeTo(OutputStream os) throws IOException;
+	}
+	
+	/**
+	 * The buffer can be used for an input stream without having to copy it
+	 */
+	private static class SharedByteArrayOutputStream extends ByteArrayOutputStream {
+
+	    public SharedByteArrayOutputStream() {
+	        super(2048);
+	    }
+
+		public ByteArrayInputStream toInputStream() {
+			return new ByteArrayInputStream(buf, 0, count);
+		}
 	}
 
-	public static class DelayedInputStream extends ByteArrayInputStream {
+	public static class DelayedInputStream extends FilterInputStream {
 
-		private Supplier<byte[]> dataSupplier;
+		private Supplier<InputStream> lazyInputStreamSupplier;
 
-		protected DelayedInputStream(Supplier<byte[]> dataSupplier) {
-			super(new byte[0]);
-			this.dataSupplier = dataSupplier;
+		protected DelayedInputStream(Supplier<InputStream> lazyInputStreamSupplier) {
+			super(null);
+			this.lazyInputStreamSupplier = lazyInputStreamSupplier;
 		}
 
 		protected DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
-			super(new byte[0]);
-			this.dataSupplier = () -> {
-				try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-					osConsumer.write(os);
-					return os.toByteArray();
+			this( () -> {
+				try (SharedByteArrayOutputStream os = new SharedByteArrayOutputStream()) {
+					osConsumer.writeTo(os);
+					return os.toInputStream();
 				} catch (IOException e) {
 					exceptionHandler.accept(e);
 					throw new UncheckedIOException(e);
 				}
-			};
+			});
 		}
 
 		private void ensureInited() {
-			if (dataSupplier != null) {
-				buf = dataSupplier.get();
-				dataSupplier = null;
-				this.count = buf.length;
+			if (lazyInputStreamSupplier != null) {
+				in = lazyInputStreamSupplier.get();
+				lazyInputStreamSupplier = null;
 			}
 		}
 
 		@Override
-		public int read() {
+		public int read() throws IOException {
 			ensureInited();
 			return super.read();
 		}
@@ -389,19 +407,19 @@ public final class DownloadUtil {
 		}
 
 		@Override
-		public synchronized int read(byte[] b, int off, int len) {
+		public synchronized int read(byte[] b, int off, int len) throws IOException {
 			ensureInited();
 			return super.read(b, off, len);
 		}
 
 		@Override
-		public synchronized long skip(long n) {
+		public synchronized long skip(long n) throws IOException {
 			ensureInited();
 			return super.skip(n);
 		}
 
 		@Override
-		public synchronized int available() {
+		public synchronized int available() throws IOException {
 			ensureInited();
 			return super.available();
 		}

@@ -28,6 +28,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -142,6 +143,10 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 
 	@Override
 	protected void editEntry(EpiDataBurialDto entry, boolean create, Consumer<EpiDataBurialDto> commitCallback) {
+		if (create && entry.getUuid() == null) {
+			entry.setUuid(DataHelper.createUuid());
+		}
+		
 		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create, UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 

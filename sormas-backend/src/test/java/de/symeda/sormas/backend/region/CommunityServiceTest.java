@@ -17,12 +17,12 @@ public class CommunityServiceTest extends AbstractBeanTest {
 		District otherDistrict = creator.createDistrict("Other District", region);
 		creator.createCommunity("Community", district);
 		
-		assertThat(getCommunityService().getByName("Community", district), hasSize(1));
-		assertThat(getCommunityService().getByName(" Community ", district), hasSize(1));
-		assertThat(getCommunityService().getByName("community", district), hasSize(1));
-		assertThat(getCommunityService().getByName("COMMUNITY", district), hasSize(1));
-		assertThat(getCommunityService().getByName("Community", otherDistrict), empty());
-		assertThat(getCommunityService().getByName("Redcliffe Village", district), empty());
+		assertThat(getCommunityService().getByName("Community", district, true), hasSize(1));
+		assertThat(getCommunityService().getByName(" Community ", district, true), hasSize(1));
+		assertThat(getCommunityService().getByName("community", district, true), hasSize(1));
+		assertThat(getCommunityService().getByName("COMMUNITY", district, true), hasSize(1));
+		assertThat(getCommunityService().getByName("Community", otherDistrict, true), empty());
+		assertThat(getCommunityService().getByName("Redcliffe Village", district, true), empty());
 	}
 
 }

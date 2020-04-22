@@ -74,7 +74,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
 
-	public List<District> getByName(String name, Region region) {
+	public List<District> getByName(String name, Region region, boolean includeArchivedEntities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
@@ -85,6 +85,9 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 				);
 		if (region != null) {
 			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));
+		}
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
 
 		cq.where(filter);

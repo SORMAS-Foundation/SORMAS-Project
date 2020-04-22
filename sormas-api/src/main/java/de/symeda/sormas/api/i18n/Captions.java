@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.i18n;
 
+import javax.annotation.Generated;
+
+@Generated(value = "de.symeda.sormas.api.i18n.I18nConstantGenerator")
 public interface Captions {
 
 	/*
@@ -226,12 +229,14 @@ public interface Captions {
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
 	String CaseHospitalization = "CaseHospitalization";
-	String CaseHospitalization_accommodation = "CaseHospitalization.accommodation";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
 	String CaseHospitalization_admittedToHealthFacility = "CaseHospitalization.admittedToHealthFacility";
 	String CaseHospitalization_dischargeDate = "CaseHospitalization.dischargeDate";
 	String CaseHospitalization_healthFacility = "CaseHospitalization.healthFacility";
 	String CaseHospitalization_hospitalizedPreviously = "CaseHospitalization.hospitalizedPreviously";
+	String CaseHospitalization_intensiveCareUnit = "CaseHospitalization.intensiveCareUnit";
+	String CaseHospitalization_intensiveCareUnitEnd = "CaseHospitalization.intensiveCareUnitEnd";
+	String CaseHospitalization_intensiveCareUnitStart = "CaseHospitalization.intensiveCareUnitStart";
 	String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	String CaseHospitalization_isolationDate = "CaseHospitalization.isolationDate";
 	String CaseHospitalization_leftAgainstAdvice = "CaseHospitalization.leftAgainstAdvice";
@@ -495,11 +500,23 @@ public interface Captions {
 	String defaultPointOfEntry = "defaultPointOfEntry";
 	String defaultRegion = "defaultRegion";
 	String devModeCaseCount = "devModeCaseCount";
-	String devModeDisease = "devModeDisease";
-	String devModeDistrict = "devModeDistrict";
-	String devModeEndDate = "devModeEndDate";
-	String devModeRegion = "devModeRegion";
-	String devModeStartDate = "devModeStartDate";
+	String devModeCaseDisease = "devModeCaseDisease";
+	String devModeCaseDistrict = "devModeCaseDistrict";
+	String devModeCaseEndDate = "devModeCaseEndDate";
+	String devModeCaseRegion = "devModeCaseRegion";
+	String devModeCaseStartDate = "devModeCaseStartDate";
+	String devModeContactCount = "devModeContactCount";
+	String devModeContactCreateMultipleContactsPerPerson = "devModeContactCreateMultipleContactsPerPerson";
+	String devModeContactCreateWithoutSourceCases = "devModeContactCreateWithoutSourceCases";
+	String devModeContactCreateWithResultingCases = "devModeContactCreateWithResultingCases";
+	String devModeContactCreateWithVisits = "devModeContactCreateWithVisits";
+	String devModeContactDisease = "devModeContactDisease";
+	String devModeContactDistrict = "devModeContactDistrict";
+	String devModeContactEndDate = "devModeContactEndDate";
+	String devModeContactRegion = "devModeContactRegion";
+	String devModeContactStartDate = "devModeContactStartDate";
+	String devModeGenerateCases = "devModeGenerateCases";
+	String devModeGenerateContacts = "devModeGenerateContacts";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";

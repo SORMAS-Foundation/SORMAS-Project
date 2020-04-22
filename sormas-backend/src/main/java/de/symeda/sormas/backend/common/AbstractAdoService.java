@@ -243,7 +243,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 
 	public ADO getByReferenceDto(ReferenceDto dto) {
-		if (dto != null) {
+		if (dto != null && dto.getUuid() != null) {
 			ADO result = getByUuid(dto.getUuid());
 			if (result == null) {
 				logger.warn("Could not find entity for " + dto.getClass().getSimpleName() + " with uuid " + dto.getUuid());
@@ -255,8 +255,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 	
 	@Override
-	public ADO getByUuid(String uuid) {
-		
+	public ADO getByUuid(@NotNull String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
@@ -275,7 +274,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 	@Override
 	public Boolean exists(@NotNull String uuid) {
-
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 
 		final CriteriaQuery<Object> query = cb.createQuery(Object.class);

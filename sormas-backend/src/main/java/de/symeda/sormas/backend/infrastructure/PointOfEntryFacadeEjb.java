@@ -129,7 +129,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district) {
+	public List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities) {
 		return service.getByName(name, districtService.getByReferenceDto(district)).stream().map(p -> toReferenceDto(p))
 				.collect(Collectors.toList());
 	}
@@ -138,7 +138,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
 		PointOfEntry pointOfEntry = service.getByUuid(dto.getUuid());
 		
-		if (pointOfEntry == null && !getByName(dto.getName(), dto.getDistrict()).isEmpty()) {
+		if (pointOfEntry == null && !getByName(dto.getName(), dto.getDistrict(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPointOfEntryAlreadyExists));
 		}
 
