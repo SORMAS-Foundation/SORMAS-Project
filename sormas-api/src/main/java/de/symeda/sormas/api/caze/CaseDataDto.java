@@ -118,6 +118,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String SURVEILLANCE_TYPE = "surveillanceType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -236,6 +237,7 @@ public class CaseDataDto extends EntityDto {
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	private CaseSurveillanceType surveillanceType;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -253,6 +255,7 @@ public class CaseDataDto extends EntityDto {
 		caze.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 		caze.setOutcome(CaseOutcome.NO_OUTCOME);
 		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
+		caze.setSurveillanceType(CaseSurveillanceType.ROUTINE);
 		return caze;
 	}
 	
@@ -798,6 +801,14 @@ public class CaseDataDto extends EntityDto {
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+
+	public CaseSurveillanceType getSurveillanceType() {
+		return surveillanceType;
+	}
+
+	public void setSurveillanceType(CaseSurveillanceType surveillanceType) {
+		this.surveillanceType = surveillanceType;
 	}
 
 }

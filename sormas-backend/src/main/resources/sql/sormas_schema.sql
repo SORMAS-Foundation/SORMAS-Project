@@ -4093,3 +4093,10 @@ ALTER TABLE hospitalization DROP COLUMN accommodation;
 ALTER TABLE hospitalization_history DROP COLUMN accommodation;
 
 INSERT INTO schema_version (version_number, comment) VALUES (199, 'Add fields for intensive care unit to hospitalization #1830');
+
+-- 2020-04-22 Add surveillance type to case #1898
+
+ALTER TABLE cases ADD COLUMN surveillancetype varchar(255);
+ALTER TABLE cases_history ADD COLUMN surveillancetype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (200, 'Add surveillance type to case #1898');

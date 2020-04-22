@@ -1717,6 +1717,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setSurveillanceType(source.getSurveillanceType());
 
 		return target;
 	}
@@ -1814,6 +1815,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setSurveillanceType(source.getSurveillanceType());
 
 		return target;
 	}

@@ -40,6 +40,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -128,6 +129,7 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String SURVEILLANCE_TYPE = "surveillanceType";
 
 	private Person person;
 	private String description;
@@ -214,6 +216,8 @@ public class Case extends CoreAdo {
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	
+	private CaseSurveillanceType surveillanceType;
 
 	private List<Task> tasks;
 
@@ -881,6 +885,15 @@ public class Case extends CoreAdo {
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public CaseSurveillanceType getSurveillanceType() {
+		return surveillanceType;
+	}
+
+	public void setSurveillanceType(CaseSurveillanceType surveillanceType) {
+		this.surveillanceType = surveillanceType;
 	}
 
 }
