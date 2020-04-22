@@ -569,7 +569,8 @@ public final class DateHelper {
 	}
 
 	public static boolean isBetween(Date date, Date start, Date end) {
-		return (date.equals(start) || date.after(start)) && (date.equals(end) || date.before(end));
+		//sometimes date.equals(start) returns false but start.equals(date) returns true
+		return (date.equals(start) || start.equals(date) || date.after(start)) && (date.equals(end) || end.equals(date) || date.before(end));
 	}
 
 	/**
