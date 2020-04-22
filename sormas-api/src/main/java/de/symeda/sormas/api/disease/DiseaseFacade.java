@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
@@ -30,6 +31,7 @@ public interface DiseaseFacade {
 	List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
 			RegionReferenceDto regionRef,
 			DistrictReferenceDto districtRef, 
+			CaseSurveillanceType caseSurveillanceType,
 			Date from, 
 			Date to, 
 			Date previousFromDate,

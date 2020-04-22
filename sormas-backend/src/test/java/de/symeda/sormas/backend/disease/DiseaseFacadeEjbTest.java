@@ -67,7 +67,7 @@ public class DiseaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze4 = creator.createCase(user.toReference(), cazePerson4.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, referenceDate, rdcf2);
 
-		List<DiseaseBurdenDto> diseaseBurdenForDashboard = getDiseaseFacade().getDiseaseBurdenForDashboard(rdcf.region, rdcf.district, 
+		List<DiseaseBurdenDto> diseaseBurdenForDashboard = getDiseaseFacade().getDiseaseBurdenForDashboard(rdcf.region, rdcf.district, null,
 				DateHelper.getStartOfDay(referenceDate), DateHelper.getEndOfDay(DateHelper.addDays(referenceDate, 10)),
 				DateHelper.getStartOfDay(DateHelper.subtractDays(referenceDate, 10)), DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)));
 		

@@ -28,6 +28,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -61,7 +62,8 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	@Override
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
 			RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, 
+			DistrictReferenceDto districtRef,
+			CaseSurveillanceType caseSurveillanceType,
 			Date from, 
 			Date to,
 			Date previousFrom,
@@ -73,6 +75,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		//new cases
 		CaseCriteria caseCriteria = new CaseCriteria()
 				.newCaseDateBetween(from, to, null)
+				.surveillanceType(caseSurveillanceType)
 				.region(regionRef)
 				.district(districtRef);
 		
