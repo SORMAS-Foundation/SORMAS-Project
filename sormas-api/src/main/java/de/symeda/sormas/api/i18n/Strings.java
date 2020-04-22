@@ -632,6 +632,7 @@ public interface Strings {
 	String total = "total";
 	String unknown = "unknown";
 	String until = "until";
+	String week = "week";
 	String weekShort = "weekShort";
 	String year = "year";
 	String years = "years";
