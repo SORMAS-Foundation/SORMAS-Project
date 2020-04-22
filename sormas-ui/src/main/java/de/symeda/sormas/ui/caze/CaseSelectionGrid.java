@@ -52,7 +52,7 @@ public class CaseSelectionGrid extends Grid {
 
 		getColumn(CaseIndexDto.UUID).setRenderer(new V7UuidRenderer());
 		getColumn(CaseIndexDto.AGE_AND_BIRTH_DATE).setRenderer(new AgeAndBirthDateRendererV7());
-		getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(FacadeProvider.getUserFacade().getCurrentUser().getLanguage())));
+		getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(

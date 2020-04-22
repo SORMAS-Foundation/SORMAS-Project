@@ -48,6 +48,7 @@ public final class I18nProperties {
 
 	private static I18nProperties getInstance(Language language) {
 		if (language == null) {
+			Language defaultLanguage = getDefaultLanguage();
 			if (defaultLanguage != null) {
 				language = defaultLanguage;
 			} else {
@@ -66,7 +67,7 @@ public final class I18nProperties {
 
 	public static Language setUserLanguage(Language language) {
 		if (language == null) {
-			language = defaultLanguage;
+			language = getDefaultLanguage();
 		}
 		userLanguage.set(language);
 
@@ -74,7 +75,8 @@ public final class I18nProperties {
 	}
 
 	public static Language getUserLanguage() {
-		return userLanguage.get();
+		Language language = userLanguage.get();
+		return language == null ? getDefaultLanguage() : language;
 	}
 
 	public static void removeUserLanguage() {
@@ -85,6 +87,14 @@ public final class I18nProperties {
 		if (language != null) {
 			defaultLanguage = language;
 		}
+	}
+
+	private static Language getDefaultLanguage() {
+		if (defaultLanguage == null) {
+			return Language.EN;
+		}
+
+		return defaultLanguage;
 	}
 
 	@SuppressWarnings("rawtypes")

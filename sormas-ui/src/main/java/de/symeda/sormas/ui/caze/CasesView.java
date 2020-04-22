@@ -251,7 +251,7 @@ public class CasesView extends AbstractView {
 
 			{
 				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
-						(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null, FacadeProvider.getUserFacade().getCurrentUser().getLanguage()),
+						(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null, I18nProperties.getUserLanguage()),
 						(propertyId,type) -> {
 							String caption = findPrefixCaption(propertyId,
 									CaseExportDto.I18N_PREFIX,
@@ -313,7 +313,7 @@ public class CasesView extends AbstractView {
 					customExportsLayout.setExportCallback(
 							(exportConfig) -> {
 								Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null, 
-										(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, exportConfig, FacadeProvider.getUserFacade().getCurrentUser().getLanguage()),
+										(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, exportConfig, I18nProperties.getUserLanguage()),
 										(propertyId,type) -> {
 											String caption = findPrefixCaption(propertyId,
 													CaseExportDto.I18N_PREFIX,

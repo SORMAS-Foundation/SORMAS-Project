@@ -228,7 +228,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		btnThisWeek = new Button(String.format(I18nProperties.getCaption(Captions.dashboardThisWeek), DateHelper.getEpiWeek(new Date()).toString(new Date(), FacadeProvider.getUserFacade().getCurrentUser().getLanguage())));
+		btnThisWeek = new Button(String.format(I18nProperties.getCaption(Captions.dashboardThisWeek), DateHelper.getEpiWeek(new Date()).toString(new Date(), I18nProperties.getUserLanguage())));
 		initializeDateFilterButton(btnThisWeek, dateFilterButtons);
 		btnThisWeek.addClickListener(e -> {
 			Date now = new Date();
@@ -240,7 +240,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		btnLastWeek = new Button(String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()));
+		btnLastWeek = new Button(String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString(I18nProperties.getUserLanguage())));
 		initializeDateFilterButton(btnLastWeek, dateFilterButtons);
 		btnLastWeek.addClickListener(e -> {
 			Date now = new Date();
@@ -391,6 +391,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private void updateComparisonButtons(DateFilterType dateFilterType, Date from, Date to, boolean skipChangeButtonCaptions) {
+		Language userLanguage = I18nProperties.getUserLanguage();
+
 		if (!skipChangeButtonCaptions) {
 			switch (dateFilterType) {
 			case TODAY:
@@ -399,14 +401,13 @@ public class DashboardFilterLayout extends HorizontalLayout {
 				btnPeriodLastYear.setCaption(String.format(I18nProperties.getCaption(Captions.dashboardSameDayLastYear), DateFormatHelper.formatDate(DateHelper.subtractYears(from, 1))));
 				break;
 			case THIS_WEEK:
-				Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
 				btnPeriodBefore.setCaption(String.format(I18nProperties.getCaption(Captions.dashboardWeekBefore), DateHelper.getPreviousEpiWeek(from).toString(DateHelper.subtractWeeks(to, 1), userLanguage)));
 				int daysBetweenEpiWeekStartAndNow = DateHelper.getFullDaysBetween(DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(from)), new Date());
 				btnPeriodLastYear.setCaption(String.format(I18nProperties.getCaption(Captions.dashboardSameWeekLastYear), DateHelper.getEpiWeekYearBefore(DateHelper.getEpiWeek(from)).toString(daysBetweenEpiWeekStartAndNow, userLanguage)));
 				break;
 			case LAST_WEEK:
-				btnPeriodBefore.setCaption(String.format(I18nProperties.getCaption(Captions.dashboardWeekBefore), DateHelper.getPreviousEpiWeek(from).toString()));
-				btnPeriodLastYear.setCaption(String.format(I18nProperties.getCaption(Captions.dashboardSameWeekLastYear), DateHelper.getEpiWeekYearBefore(DateHelper.getEpiWeek(from)).toString()));
+				btnPeriodBefore.setCaption(String.format(I18nProperties.getCaption(Captions.dashboardWeekBefore), DateHelper.getPreviousEpiWeek(from).toString(userLanguage)));
+				btnPeriodLastYear.setCaption(String.format(I18nProperties.getCaption(Captions.dashboardSameWeekLastYear), DateHelper.getEpiWeekYearBefore(DateHelper.getEpiWeek(from)).toString(userLanguage)));
 				break;
 			case THIS_YEAR:
 				btnPeriodLastYear.setCaption(String.format(I18nProperties.getCaption(Captions.dashboardSamePeriodLastYear), DateFormatHelper.buildPeriodString(DateHelper.subtractYears(from, 1), DateHelper.subtractYears(to, 1))));

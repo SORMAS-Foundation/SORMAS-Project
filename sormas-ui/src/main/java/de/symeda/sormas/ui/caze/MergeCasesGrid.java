@@ -96,7 +96,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS, COLUMN_ACTIONS);
 
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))

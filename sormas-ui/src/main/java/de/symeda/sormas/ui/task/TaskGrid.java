@@ -97,7 +97,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
         		TaskIndexDto.ASSIGNEE_USER, TaskIndexDto.ASSIGNEE_REPLY, 
         		TaskIndexDto.CREATOR_USER, TaskIndexDto.CREATOR_COMMENT, TaskIndexDto.TASK_STATUS);
 
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.DUE_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.SUGGESTED_START)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<TaskIndexDto, String>)getColumn(TaskIndexDto.CREATOR_COMMENT)).setRenderer(new ShortStringRenderer(50));

@@ -97,7 +97,7 @@ public class AboutView extends VerticalLayout implements View {
 		try {
 			String serverUrl = new URL(((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest().getRequestURL().toString()).getAuthority();
 			StreamResource classificationResource = DownloadUtil.createStringStreamResource(
-					ClassificationHtmlRenderer.createHtmlForDownload(serverUrl, FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true), FacadeProvider.getUserFacade().getCurrentUser().getLanguage()), "classification_rules.html", "text/html");
+					ClassificationHtmlRenderer.createHtmlForDownload(serverUrl, FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true), I18nProperties.getUserLanguage()), "classification_rules.html", "text/html");
 			new FileDownloader(classificationResource).extend(classificationDocumentButton);
 		} catch (MalformedURLException e) {
 
