@@ -226,7 +226,7 @@ public class ContactsView extends AbstractView {
 			}
 			{
 				StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
-						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max, FacadeProvider.getUserFacade().getCurrentUser().getLanguage()),
+						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
 						(propertyId,type) -> {
 							String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
 									I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,

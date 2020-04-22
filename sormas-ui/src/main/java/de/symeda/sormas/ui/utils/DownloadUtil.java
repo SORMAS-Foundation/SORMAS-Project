@@ -257,7 +257,7 @@ public final class DownloadUtil {
 
 	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, String exportFileName) {
 		StreamResource casesResource = createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_MANAGEMENT,
-				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, null, FacadeProvider.getUserFacade().getCurrentUser().getLanguage()),
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, null, I18nProperties.getUserLanguage()),
 				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
@@ -478,7 +478,7 @@ public final class DownloadUtil {
 					writer.writeNext(fieldValues);
 
 					int startIndex = 0;
-					Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+					Language userLanguage = I18nProperties.getUserLanguage();
 					List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 					while (!exportRows.isEmpty()) {
 						try {

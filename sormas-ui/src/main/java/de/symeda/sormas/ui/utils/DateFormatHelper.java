@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.utils;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -10,25 +11,19 @@ import java.util.Date;
 
 public class DateFormatHelper {
 	public static DateFormat getDateFormat() {
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
-
-		return DateHelper.getLocalDateFormat(userLanguage);
+		return DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage());
 	}
 
 	public static String formatDate(Date date) {
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
-
-		return DateHelper.formatLocalDate(date, userLanguage);
+		return DateHelper.formatLocalDate(date, I18nProperties.getUserLanguage());
 	}
 
 	public static String getDateFormatPattern() {
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
-
-		return DateHelper.getLocalDatePattern(userLanguage);
+		return DateHelper.getLocalDatePattern(I18nProperties.getUserLanguage());
 	}
 
 	public static String buildPeriodString(Date startDate, Date endDate) {
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Language userLanguage = I18nProperties.getUserLanguage();
 
 		String startDateString = startDate != null ? DateHelper.formatLocalDate(startDate, userLanguage) : "?";
 		String endDateString = endDate != null ? DateHelper.formatLocalDate(endDate, userLanguage) : "?";
@@ -39,5 +34,9 @@ public class DateFormatHelper {
 		} else {
 			return startDateString + " - " + endDateString;
 		}
+	}
+
+	public static String formatLocalDateTime(Date dateTime){
+		return DateHelper.formatLocalDateTime(dateTime, I18nProperties.getUserLanguage());
 	}
 }

@@ -17,21 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import de.symeda.sormas.api.Language;
+import org.joda.time.*;
+
 import java.sql.Timestamp;
-import java.text.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.Months;
-import org.joda.time.Weeks;
-import org.joda.time.Years;
 
 public final class DateHelper {
 

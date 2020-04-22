@@ -65,11 +65,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.*;
 
 public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	
@@ -208,9 +204,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();
-			Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
 			String reportInfoText = I18nProperties.getString(Strings.reportedOn) + " "
-					+ DateHelper.formatLocalDateTime(getValue().getReportDateTime(), userLanguage) + " "
+					+ DateFormatHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
 					+ I18nProperties.getString(Strings.by) + " " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);

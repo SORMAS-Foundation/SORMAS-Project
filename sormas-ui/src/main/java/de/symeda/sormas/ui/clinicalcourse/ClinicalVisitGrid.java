@@ -51,7 +51,7 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 		getColumn(EDIT_BTN_ID).setWidth(20);
 		getColumn(EDIT_BTN_ID).setHeaderCaption("");
 
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Language userLanguage = I18nProperties.getUserLanguage();
 		getColumn(ClinicalVisitIndexDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		for (Column column : getColumns()) {

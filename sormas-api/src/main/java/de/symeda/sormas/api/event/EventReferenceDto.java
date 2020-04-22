@@ -48,7 +48,12 @@ public class EventReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 		setCaption(buildCaption(disease, diseaseDetails, eventStatus, eventDate));
 	}
-	
+
+	@Override
+	public String getCaption() {
+		return super.getCaption();
+	}
+
 	public static String buildCaption(Disease disease, String diseaseDetails, EventStatus eventStatus, Date eventDate) {
 		String diseaseString = disease != Disease.OTHER
 				? DataHelper.toStringNullable(disease)

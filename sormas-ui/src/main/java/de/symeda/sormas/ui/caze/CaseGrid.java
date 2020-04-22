@@ -108,7 +108,7 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 				.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
-		Language userLanguage = FacadeProvider.getUserFacade().getCurrentUser().getLanguage();
+		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
