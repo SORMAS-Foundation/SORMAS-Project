@@ -19,7 +19,9 @@ package de.symeda.sormas.ui.dashboard.map;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +29,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -45,6 +49,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.CaseMeasure;
@@ -73,6 +78,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -110,6 +116,8 @@ public class DashboardMapComponent extends VerticalLayout {
 	private boolean showEvents;
 	private boolean showRegions;
 	private boolean hideOtherCountries;
+	private Date dateFrom = null;
+	private Date dateTo = null;
 
 	// Entities
 	private final HashMap<FacilityReferenceDto, List<MapCaseDto>> casesByFacility = new HashMap<>();
@@ -475,6 +483,108 @@ public class DashboardMapComponent extends VerticalLayout {
 					refreshMap();
 				});
 				layersLayout.addComponent(hideOtherCountriesCheckBox);
+				
+				HorizontalLayout periodFilterLayout = new HorizontalLayout();
+				ComboBox cmbPeriodFilter = new ComboBox();
+				ComboBox cmbPeriodType = new ComboBox();
+				
+				cmbPeriodFilter.setWidth(50, Unit.PERCENTAGE);
+				cmbPeriodFilter.setVisible(false);
+				cmbPeriodFilter.addValueChangeListener(e -> {
+					Date date = (Date) e.getProperty().getValue();
+					
+					if (date != null) {
+						MapPeriodType periodType = (MapPeriodType) cmbPeriodType.getValue();
+											
+						switch (periodType) {
+							case DAILY:
+								dateFrom = DateHelper.getStartOfDay(date);
+								dateTo = DateHelper.getEndOfDay(date);
+								break;
+							case WEEKLY:
+								dateFrom = DateHelper.getStartOfWeek(date);
+								dateTo = DateHelper.getEndOfWeek(date);
+								break;
+							case MONTHLY:
+								dateFrom = DateHelper.getStartOfMonth(date);
+								dateTo = DateHelper.getEndOfMonth(date);
+								break;
+							case YEARLY:
+								dateFrom = DateHelper.getStartOfYear(date);
+								dateTo = DateHelper.getEndOfYear(date);
+								break;
+							default:
+								dateFrom = null;
+								dateTo = null;
+						}
+					}
+					else {
+						dateFrom = null;
+						dateTo = null;
+					}
+						
+					refreshMap();
+				});
+				
+				cmbPeriodType.setWidth(50, Unit.PERCENTAGE);
+				cmbPeriodType.addItems(MapPeriodType.values());
+				cmbPeriodType.addValueChangeListener(e -> {
+					MapPeriodType periodType = (MapPeriodType) e.getProperty().getValue();
+					
+					cmbPeriodFilter.clear();
+					
+					if (periodType == null) {
+						cmbPeriodFilter.setVisible(false);						
+						dateFrom = null;
+						dateTo = null;
+						
+						refreshMap();
+						
+						return;
+					}
+					
+					cmbPeriodFilter.setVisible(true);
+					
+					if (mapCaseDtos.size() == 0)
+						return;
+					
+					List<Date> reportedDates = mapCaseDtos.stream().map(c -> c.getReportDate()).collect(Collectors.toList());
+					Date minDate = reportedDates.stream().min(Date::compareTo).get();
+					Date maxDate = reportedDates.stream().max(Date::compareTo).get();
+					
+					List<Date> dates;
+					String strDateFormat = "";
+					switch (periodType) {
+						case DAILY:
+							dates = DateHelper.listDaysBetween(minDate, maxDate);
+							strDateFormat = "MMM dd, yyyy";
+							break;
+						case WEEKLY:
+							dates = DateHelper.listWeeksBetween(minDate, maxDate);
+							strDateFormat = "'" + I18nProperties.getString(Strings.week) + "' w, yyyy";
+							break;
+						case MONTHLY:
+							dates = DateHelper.listMonthsBetween(minDate, maxDate);
+							strDateFormat = "MMM yyyy";
+							break;
+						case YEARLY:
+							dates = DateHelper.listYearsBetween(minDate, maxDate);
+							strDateFormat = "yyyy";
+							break;
+						default:
+							dates = Collections.emptyList();
+					}
+					
+					SimpleDateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+					
+					cmbPeriodFilter.addItems(dates);
+					for (Date date : dates)
+						cmbPeriodFilter.setItemCaption(date, DateHelper.formatLocalDate(date, dateFormat));
+				});
+				
+				periodFilterLayout.addComponent(cmbPeriodType);
+				periodFilterLayout.addComponent(cmbPeriodFilter);
+				layersLayout.addComponent(periodFilterLayout);
 			}
 		}
 		mapFooterLayout.addComponent(layersDropdown);
@@ -943,6 +1053,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			if (classification == null || classification == CaseClassification.NO_CASE)
 				continue;
 			if (caseClassificationOption == MapCaseClassificationOption.CONFIRMED_CASES_ONLY && classification != CaseClassification.CONFIRMED)
+				continue;
+			if (dateFrom != null && dateTo != null && !DateHelper.isBetween(caze.getReportDate(), dateFrom, dateTo))
 				continue;
 			boolean hasCaseGps = (caze.getAddressLat() != null && caze.getAddressLon() != null)
 					|| (caze.getReportLat() != null || caze.getReportLon() != null);
