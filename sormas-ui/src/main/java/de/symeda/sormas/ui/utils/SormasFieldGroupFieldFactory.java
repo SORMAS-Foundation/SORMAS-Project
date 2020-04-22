@@ -83,7 +83,6 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new HealthConditionsForm(editOrCreateUserRight);
 		}
 		else if (DateTimeField.class.isAssignableFrom(fieldType)) {
-//			TODO - lgal
 			DateTimeField field = new DateTimeField();
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
