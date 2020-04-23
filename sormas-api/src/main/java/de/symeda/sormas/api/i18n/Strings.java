@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.i18n;
 
+import javax.annotation.Generated;
+
+@Generated(value = "de.symeda.sormas.api.i18n.I18nConstantGenerator")
 public interface Strings {
 
 	/*
@@ -226,6 +229,8 @@ public interface Strings {
 	String headingFollowUpCanceled = "headingFollowUpCanceled";
 	String headingFollowUpStatus = "headingFollowUpStatus";
 	String headingFollowUpStatusChanged = "headingFollowUpStatusChanged";
+	String headingGenerateCases = "headingGenerateCases";
+	String headingGenerateContacts = "headingGenerateContacts";
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
@@ -339,6 +344,7 @@ public interface Strings {
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
 	String infoDefineOutbreaks = "infoDefineOutbreaks";
 	String infoDetailedExport = "infoDetailedExport";
+	String infoDeveloperOptions = "infoDeveloperOptions";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
 	String infoDownloadExport = "infoDownloadExport";
@@ -631,4 +637,4 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
- }
+}

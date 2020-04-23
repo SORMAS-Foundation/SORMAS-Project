@@ -28,6 +28,8 @@ import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -149,8 +151,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 	@Override
 	public void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType) {	
-		// Delete an existing configuration that was set inactive
-		if (Boolean.FALSE.equals(configuration.isEnabled())) {
+		// Delete an existing configuration that was set inactive and is not a server feature
+		if (!featureType.isServerFeature() && Boolean.FALSE.equals(configuration.isEnabled())) {
 			FeatureConfiguration existingConfiguration = service.getByUuid(configuration.getUuid());
 			if (existingConfiguration != null) {
 				service.delete(existingConfiguration);
@@ -170,7 +172,9 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto.setEnabled(configuration.isEnabled());
 		}
 
-		configurationDto.setEndDate(DateHelper.getEndOfDay(configuration.getEndDate()));
+		if (configuration.getEndDate() != null) {
+			configurationDto.setEndDate(DateHelper.getEndOfDay(configuration.getEndDate()));
+		}
 
 		FeatureConfiguration entity = fromDto(configurationDto);
 		service.ensurePersisted(entity);
@@ -220,6 +224,22 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		cq.select(cb.count(root));
 
 		return em.createQuery(cq).getSingleResult() > 0;
+	}
+
+	@Override
+	public boolean isFeatureEnabled(FeatureType featureType) {
+		return !isFeatureDisabled(featureType);
+	}
+
+	@Override
+	public boolean isTaskGenerationFeatureEnabled(TaskType taskType) {
+		for (TaskContext context : taskType.getTaskContexts()) {
+			if (isFeatureEnabled(context.getFeatureType())) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static FeatureConfigurationDto toDto(FeatureConfiguration source) {

@@ -15,33 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.task;
+package de.symeda.sormas.api.hospitalization;
 
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum TaskContext {
+public enum AccommodationType {
 
-	CASE(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE),
-	CONTACT(FeatureType.TASK_GENERATION_CONTACT_TRACING),
-	EVENT(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE),
-	GENERAL(FeatureType.TASK_GENERATION_GENERAL);
-	
-	private FeatureType featureType;
-	
-	TaskContext(FeatureType featureType) {
-		this.featureType = featureType;
-	}
-	
-	public FeatureType getFeatureType() {
-		return featureType;
-	}
-
-	public void setFeatureType(FeatureType featureType) {
-		this.featureType = featureType;
-	}
+	WARD, ICU;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	}
+	};
+
 }

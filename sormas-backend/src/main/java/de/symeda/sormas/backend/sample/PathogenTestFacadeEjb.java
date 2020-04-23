@@ -123,6 +123,14 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
+		return pathogenTestService.getBySampleUuids(sampleUuids)
+				.stream()
+				.map(p -> toDto(p))
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	public List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef) {

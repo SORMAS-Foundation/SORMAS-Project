@@ -16,12 +16,12 @@ public class DistrictServiceTest extends AbstractBeanTest {
 		Region otherRegion = creator.createRegion("Other Region");
 		creator.createDistrict("District", region);
 		
-		assertThat(getDistrictService().getByName("District", region), hasSize(1));
-		assertThat(getDistrictService().getByName(" District ", region), hasSize(1));
-		assertThat(getDistrictService().getByName("district", region), hasSize(1));
-		assertThat(getDistrictService().getByName("DISTRICT", region), hasSize(1));
-		assertThat(getDistrictService().getByName("District", otherRegion), empty());
-		assertThat(getDistrictService().getByName("Redcliffe", region), empty());
+		assertThat(getDistrictService().getByName("District", region, true), hasSize(1));
+		assertThat(getDistrictService().getByName(" District ", region, true), hasSize(1));
+		assertThat(getDistrictService().getByName("district", region, true), hasSize(1));
+		assertThat(getDistrictService().getByName("DISTRICT", region, true), hasSize(1));
+		assertThat(getDistrictService().getByName("District", otherRegion, true), empty());
+		assertThat(getDistrictService().getByName("Redcliffe", region, true), empty());
 	}
 
 }

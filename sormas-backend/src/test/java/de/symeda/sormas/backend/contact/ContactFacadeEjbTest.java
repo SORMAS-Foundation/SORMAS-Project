@@ -337,7 +337,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 		creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("ContPers");
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
 
 		// getAllActiveContacts and getAllUuids should return length 1
 		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null).size());

@@ -154,8 +154,7 @@ public class ContactDto extends EntityDto {
 		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
 	}
 	
-	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails)
-	{
+	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
 		setCaze(caze);
 		setDisease(disease);
 		setDiseaseDetails(diseaseDetails);

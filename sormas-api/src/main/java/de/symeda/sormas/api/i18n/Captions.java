@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.i18n;
 
+import javax.annotation.Generated;
+
+@Generated(value = "de.symeda.sormas.api.i18n.I18nConstantGenerator")
 public interface Captions {
 
 	/*
@@ -497,11 +500,23 @@ public interface Captions {
 	String defaultPointOfEntry = "defaultPointOfEntry";
 	String defaultRegion = "defaultRegion";
 	String devModeCaseCount = "devModeCaseCount";
-	String devModeDisease = "devModeDisease";
-	String devModeDistrict = "devModeDistrict";
-	String devModeEndDate = "devModeEndDate";
-	String devModeRegion = "devModeRegion";
-	String devModeStartDate = "devModeStartDate";
+	String devModeCaseDisease = "devModeCaseDisease";
+	String devModeCaseDistrict = "devModeCaseDistrict";
+	String devModeCaseEndDate = "devModeCaseEndDate";
+	String devModeCaseRegion = "devModeCaseRegion";
+	String devModeCaseStartDate = "devModeCaseStartDate";
+	String devModeContactCount = "devModeContactCount";
+	String devModeContactCreateMultipleContactsPerPerson = "devModeContactCreateMultipleContactsPerPerson";
+	String devModeContactCreateWithoutSourceCases = "devModeContactCreateWithoutSourceCases";
+	String devModeContactCreateWithResultingCases = "devModeContactCreateWithResultingCases";
+	String devModeContactCreateWithVisits = "devModeContactCreateWithVisits";
+	String devModeContactDisease = "devModeContactDisease";
+	String devModeContactDistrict = "devModeContactDistrict";
+	String devModeContactEndDate = "devModeContactEndDate";
+	String devModeContactRegion = "devModeContactRegion";
+	String devModeContactStartDate = "devModeContactStartDate";
+	String devModeGenerateCases = "devModeGenerateCases";
+	String devModeGenerateContacts = "devModeGenerateContacts";
 	String disease = "disease";
 	String DiseaseBurden_caseCount = "DiseaseBurden.caseCount";
 	String DiseaseBurden_caseDeathCount = "DiseaseBurden.caseDeathCount";

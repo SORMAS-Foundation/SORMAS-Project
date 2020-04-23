@@ -215,7 +215,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
 		Community community = communityService.getByUuid(dto.getUuid());
 		
-		if (community == null && !getByName(dto.getName(), dto.getDistrict()).isEmpty()) {
+		if (community == null && !getByName(dto.getName(), dto.getDistrict(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCommunityAlreadyExists));
 		}
 
@@ -228,8 +228,8 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef) {
-		return communityService.getByName(name, districtService.getByReferenceDto(districtRef)).stream()
+	public List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities) {
+		return communityService.getByName(name, districtService.getByReferenceDto(districtRef), includeArchivedEntities).stream()
 				.map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 

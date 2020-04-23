@@ -4093,3 +4093,10 @@ ALTER TABLE hospitalization DROP COLUMN accommodation;
 ALTER TABLE hospitalization_history DROP COLUMN accommodation;
 
 INSERT INTO schema_version (version_number, comment) VALUES (199, 'Add fields for intensive care unit to hospitalization #1830');
+
+-- 2020-04-22 Remove export functions which are now maintained within java code  #1830
+DROP FUNCTION export_database(text, text);
+DROP FUNCTION export_database_join(text, text, text, text, text);
+INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code  #1830');
+
+-- *** Insert new sql commands BEFORE this line ***
