@@ -322,7 +322,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		visit22.getSymptoms().setAgitation(SymptomState.YES);
 		getVisitFacade().saveVisit(visit22);
 
-		assertEquals(2, getContactFacade().countMaximumFollowUps(null));
+		PersonDto contactPerson3 = creator.createPerson("Contact3", "Person3");
+		creator.createContact(user.toReference(), user.toReference(), contactPerson3.toReference()
+				, caze, new Date(), new Date());
+		for (int i=0;i<10;i++){
+			creator.createVisit(caze.getDisease(), contactPerson3.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		}
+
+		assertEquals(10, getContactFacade().countMaximumFollowUps(null));
 	}
 
 	@Test

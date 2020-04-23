@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -90,6 +91,20 @@ public class TestDataCreator {
 		cazePerson = FacadeProvider.getPersonFacade().savePerson(cazePerson);
 
 		return cazePerson;
+	}
+
+	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
+									PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate) {
+		ContactDto contact = ContactDto.build(caze);
+		contact.setReportingUser(reportingUser);
+		contact.setContactOfficer(contactOfficer);
+		contact.setPerson(contactPerson);
+		contact.setReportDateTime(reportDateTime);
+		contact.setLastContactDate(lastContactDate);
+
+		contact = FacadeProvider.getContactFacade().saveContact(contact);
+
+		return contact;
 	}
 
 	public CaseDataDto createUnclassifiedCase(Disease disease) {

@@ -17,41 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import org.slf4j.LoggerFactory;
-
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
@@ -446,22 +411,29 @@ public final class DownloadUtil {
 					FacadeProvider.getConfigFacade().getCsvSeparator())) {
 
 				final List<String> columnNames = new ArrayList<>();
+				final List<String> dayColumns= new ArrayList<>();
 				columnNames.add(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.UUID));
 				columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 				columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
+				dayColumns.add("");
+				dayColumns.add("");
+				dayColumns.add("");
 
 				final long maximumFollowUps =
 						FacadeProvider.getContactFacade().countMaximumFollowUps(contactCriteria);
 
-				for (int index = 0; index <= maximumFollowUps; index++) {
-					final String daySuffix = " - Day " + index + 1;
-					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX,
-							VisitDto.VISIT_DATE_TIME) + daySuffix);
-					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_STATUS) + daySuffix);
-					columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, VisitDto.SYMPTOMS) + daySuffix);
+				for (int index = 0; index < maximumFollowUps; index++) {
+					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_DATE_TIME));
+					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_STATUS));
+					columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, VisitDto.SYMPTOMS));
+					final String dayString = "Day " + (index + 1);
+					dayColumns.add(dayString);
+					dayColumns.add(dayString);
+					dayColumns.add(dayString);
 				}
 
 				writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+				writer.writeNext(dayColumns.toArray(new String[columnNames.size()]));
 
 				int startIndex = 0;
 				List<ContactVisitsExportDto> exportRows =
