@@ -437,12 +437,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					contact.get(Contact.DISEASE));
 
 			result = em.createQuery(cq).getResultList();	
-			for (DashboardContactDto dashboardContactDto : result) {
-				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(dashboardContactDto.getUuid()), null);
-				dashboardContactDto.setSymptomatic(lastVisit != null ? lastVisit.getSymptoms().getSymptomatic() : false);
-				dashboardContactDto.setLastVisitStatus(lastVisit != null ? lastVisit.getVisitStatus() : null);
-				dashboardContactDto.setLastVisitDateTime(lastVisit != null ? lastVisit.getVisitDateTime() : null);
-			}
+//			for (DashboardContactDto dashboardContactDto : result) {
+//				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(dashboardContactDto.getUuid()), null);
+//				dashboardContactDto.setSymptomatic(lastVisit != null ? lastVisit.getSymptoms().getSymptomatic() : false);
+//				dashboardContactDto.setLastVisitStatus(lastVisit != null ? lastVisit.getVisitStatus() : null);
+//				dashboardContactDto.setLastVisitDateTime(lastVisit != null ? lastVisit.getVisitDateTime() : null);
+//			}
 		} else {
 			result = Collections.emptyList();
 		}
@@ -808,6 +808,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			} else {
 				filter = and(cb, filter, cb.between(from.get(Contact.FOLLOW_UP_UNTIL), DateHelper.getStartOfDay(contactCriteria.getFollowUpUntilTo()), DateHelper.getEndOfDay(contactCriteria.getFollowUpUntilTo())));
 			}
+		}
+		if (contactCriteria.getQuarantineTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Contact.QUARANTINE_TO), DateHelper.getStartOfDay(contactCriteria.getQuarantineTo()), DateHelper.getEndOfDay(contactCriteria.getQuarantineTo())));
 		}
 		if (contactCriteria.getQuarantineType() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.QUARANTINE), contactCriteria.getQuarantineType()));
