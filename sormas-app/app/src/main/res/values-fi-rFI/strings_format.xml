@@ -22,12 +22,12 @@
     <string name="date_format">%1$s/%2$s/%3$s</string>
     <string name="date_range_format">%1$s - %2$s</string>
     <string name="date_two_values_format">%1$s/%2$s</string>
-    <string name="due_timeago_format">due %1$s</string>
-    <string name="message_unsynchronized_changes_confirmation">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them. Type the word %1$s into the text field below to continue.</string>
+    <string name="due_timeago_format">erääntyy %1$s</string>
+    <string name="message_unsynchronized_changes_confirmation">Laitteellasi on synkronoimattomia muutoksia.\nJos jatkat, ne häviävät etkä pysty palauttamaan niitä. Kirjoita sana %1$s tekstikenttään jatkaaksesi.</string>
     <string name="number_of_cases_format">%1$s</string>
-    <string name="number_of_visits_long_format">%1$d visits (%2$d missed)</string>
+    <string name="number_of_visits_long_format">%1$d käyntiä (%2$d ohitettu)</string>
     <string name="person_name_format">%1$s %2$s</string>
-    <string name="report_submitted_date_format">Report submitted %1$s</string>
+    <string name="report_submitted_date_format">Ilmoitus lähetetty %1$s</string>
     <string name="title_detail_format"><b>%1$s:</b> %2$s</string>
     <string name="two_strings_format">%1$s %2$s</string>
     <string name="two_strings_with_brackets_format">%1$s (%2$s)</string>
