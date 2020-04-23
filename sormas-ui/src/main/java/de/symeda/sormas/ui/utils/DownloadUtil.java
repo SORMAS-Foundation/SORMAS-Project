@@ -426,7 +426,8 @@ public final class DownloadUtil {
 					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_DATE_TIME));
 					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_STATUS));
 					columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, VisitDto.SYMPTOMS));
-					final String dayString = "Day " + (index + 1);
+					final String dayString = I18nProperties.getCaption(Captions.contactFollowUpDay) + " " + (index + 1);
+
 					dayColumns.add(dayString);
 					dayColumns.add(dayString);
 					dayColumns.add(dayString);

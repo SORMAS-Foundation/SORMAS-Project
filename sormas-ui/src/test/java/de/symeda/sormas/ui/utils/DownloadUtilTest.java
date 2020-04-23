@@ -71,19 +71,19 @@ public class DownloadUtilTest extends AbstractBeanTest {
         Assert.assertNotNull(contactVisitsExport);
         Assert.assertEquals("test_contact_follow_up_export.csv", contactVisitsExport.getStream().getFileName());
         InputStream stream = contactVisitsExport.getStream().getStream();
-        Assert.assertEquals("\"Contact ID\",\"First name\",\"Last name\",\"Date and time of visit\",\"Person " +
-                "available and cooperative?\",\"symptoms\",\"Date and time of visit\",\"Person available and " +
+
+        Assert.assertEquals("\"Contact ID\",\"First name\",\"Last name\",\"Date and time of visit\",\"Person available and " +
                 "cooperative?\",\"symptoms\",\"Date and time of visit\",\"Person available and cooperative?\"," +
-                "\"symptoms\"\n" +
+                "\"symptoms\",\"Date and time of visit\",\"Person available and cooperative?\",\"symptoms\"\n" +
                 "\"\",\"\",\"\",\"Day 1\",\"Day 1\",\"Day 1\",\"Day 2\",\"Day 2\",\"Day 2\",\"Day 3\",\"Day 3\",\"Day" +
                 " 3\"\n" +
+                "\""+contact.getUuid()+"\",\"Contact\",\"Person\",\"23/04/20\",\"Available and cooperative\"," +
+                "\"Abdominal pain\",,,,,,\n" +
+                "\""+contact2.getUuid()+"\",\"Contact2\",\"Person2\",\"23/04/20\",\"Available and " +
+                "cooperative\",\"Abdominal pain\",\"23/04/20\",\"Available and cooperative\",\"\",,,\n" +
                 "\""+contact3.getUuid()+"\",\"Contact3\",\"Person3\",\"23/04/20\",\"Available and " +
                 "cooperative\",\"\",\"23/04/20\",\"Available and cooperative\",\"\",\"23/04/20\",\"Available and " +
-                "cooperative\",\"\"\n" +
-                "\""+contact2.getUuid()+"\",\"Contact2\",\"Person2\",\"23/04/20\",\"Available and " +
-                "cooperative\",\"\",\"23/04/20\",\"Available and cooperative\",\"Abdominal pain\",,,\n" +
-                "\""+contact.getUuid()+"\",\"Contact\",\"Person\",\"23/04/20\",\"Available and cooperative\"," +
-                "\"Abdominal pain\",,,,,,\n", IOUtils.toString(stream, StandardCharsets.UTF_8.name()));
+                "cooperative\",\"\"\n", IOUtils.toString(stream, StandardCharsets.UTF_8.name()));
 
     }
 }

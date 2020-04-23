@@ -366,7 +366,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
         query.where(contactsWithFollowUpVisitsPredicate);
 
-        query.orderBy(cb.desc(contactRoot.get(Contact.REPORT_DATE_TIME)));
+        query.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
         final List<ContactVisitsExportDto> resultList =
                 em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
@@ -390,7 +390,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
             visitTupleQuery.where(cb.equal(visitRoot.get(Visit.PERSON).get(Person.ID), contactVisitsExportDto.getPersonId()));
 
-            visitTupleQuery.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)));
+            visitTupleQuery.orderBy(cb.asc(visitRoot.get(Visit.VISIT_DATE_TIME)));
 
             final List<Tuple> tupleResult = em.createQuery(visitTupleQuery).getResultList();
 

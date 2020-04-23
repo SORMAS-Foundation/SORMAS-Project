@@ -356,6 +356,7 @@ public interface Captions {
 	String contactContactsList = "contactContactsList";
 	String contactContactsOverview = "contactContactsOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
+	String contactFollowUpDay = "contactFollowUpDay";
 	String ContactExport_address = "ContactExport.address";
 	String ContactExport_addressDistrict = "ContactExport.addressDistrict";
 	String ContactExport_addressRegion = "ContactExport.addressRegion";
