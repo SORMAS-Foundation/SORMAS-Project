@@ -18,7 +18,12 @@
 
 package de.symeda.sormas.app.sample.edit;
 
+import android.content.Intent;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+
+import com.google.android.gms.common.api.CommonStatusCodes;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,13 +46,18 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.barcode.BarcodeActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
 
@@ -206,6 +216,16 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         // Initialize ControlDateFields and ControlDateTimeFields
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
         contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
+        contentBinding.sampleReceivedDate.initializeDateField(getFragmentManager());
+
+        // Initialize on clicks
+        contentBinding.buttonScanLabSampleId.setOnClickListener((View v)->{
+            Intent intent = new Intent(getContext(), BarcodeActivity.class);
+            startActivityForResult(intent, BarcodeActivity.RC_BARCODE_CAPTURE);
+        });
+        contentBinding.sampleReceived.addValueChangedListener((ControlPropertyField field)-> {
+            contentBinding.buttonScanLabSampleId.setVisibility((boolean)field.getValue()? VISIBLE: GONE);
+        });
 
         // Disable fields the user doesn't have access to - this involves almost all fields when
         // the user is not the one that originally reported the sample
@@ -220,6 +240,10 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleShipmentDate.setEnabled(false);
             contentBinding.sampleShipmentDetails.setEnabled(false);
             contentBinding.samplePurpose.setEnabled(false);
+            contentBinding.sampleReceived.setEnabled(false);
+            contentBinding.sampleReceivedDate.setEnabled(false);
+            contentBinding.buttonScanLabSampleId.setEnabled(false);
+            contentBinding.sampleLabSampleID.setEnabled(false);
             contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
             contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
             contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
@@ -266,4 +290,15 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         return R.layout.fragment_sample_edit_layout;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == BarcodeActivity.RC_BARCODE_CAPTURE) {
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                getContentBinding().sampleLabSampleID.setValue(data.getStringExtra(BarcodeActivity.BARCODE_RESULT));
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }

@@ -19,8 +19,10 @@
 package de.symeda.sormas.app.sample.list;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.widget.AdapterView;
 
 import org.joda.time.DateTime;
@@ -28,15 +30,28 @@ import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Random;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.common.api.CommonStatusCodes;
+
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.barcode.BarcodeActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.databinding.FilterCaseListLayoutBinding;
+import de.symeda.sormas.app.databinding.FilterSampleListLayoutBinding;
 import de.symeda.sormas.app.sample.ShipmentStatus;
+import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.util.Callback;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class SampleListActivity extends PagedBaseListActivity {
 
@@ -45,6 +60,7 @@ public class SampleListActivity extends PagedBaseListActivity {
             ShipmentStatus.RECEIVED, ShipmentStatus.REFERRED_OTHER_LAB
     };
     private SampleListViewModel model;
+    private FilterSampleListLayoutBinding filterBinding;
 
     public static void startActivity(Context context, ShipmentStatus listFilter) {
         BaseListActivity.startActivity(context, SampleListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
@@ -147,7 +163,33 @@ public class SampleListActivity extends PagedBaseListActivity {
 
     @Override
     public void addFiltersToPageMenu() {
-        // Not supported yet
+        View sampleListFilterView = getLayoutInflater().inflate(R.layout.filter_sample_list_layout, null);
+        filterBinding = DataBindingUtil.bind(sampleListFilterView);
+
+        pageMenu.addFilter(sampleListFilterView);
+
+        filterBinding.scanLabSampleId.setOnClickListener(e -> {
+            Intent intent = new Intent(this, BarcodeActivity.class);
+            startActivityForResult(intent, BarcodeActivity.RC_BARCODE_CAPTURE);
+        });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == BarcodeActivity.RC_BARCODE_CAPTURE) {
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                showPreloader();
+                Sample sample = DatabaseHelper.getSampleDao().queryByLabSampleId(data.getStringExtra(BarcodeActivity.BARCODE_RESULT));
+                if(sample !=null)
+                    SampleReadActivity.startActivity(getContext(), sample.getUuid());
+                else
+                    NotificationHelper.showNotification(this, WARNING, getString(R.string.sample_not_found));
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 }

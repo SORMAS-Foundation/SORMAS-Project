@@ -61,6 +61,7 @@ public class Sample extends AbstractDomainObject {
     public static final String REFERRED_TO_UUID = "referredToUuid";
     public static final String SHIPPED = "shipped";
     public static final String RECEIVED = "received";
+    public static final String LAB_SAMPLE_ID = "labSampleID";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Case associatedCase;

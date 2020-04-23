@@ -28,6 +28,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NonUniqueResultException;
+
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -212,6 +214,26 @@ public class SampleDao extends AbstractAdoDao<Sample> {
             return (int) queryBuilder().where().eq(Sample.ASSOCIATED_CASE + "_id", caseId).countOf();
         } catch (SQLException e) {
             Log.e(getTableName(), "Could not perform getSampleCountByCaseUuid on Sample");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Sample queryByLabSampleId(String labSampleId) {
+
+        try {
+
+            List<Sample> results = queryBuilder().where().eq(Sample.LAB_SAMPLE_ID, labSampleId)
+                    .and().eq(AbstractDomainObject.SNAPSHOT, false).query();
+            if (results.size() == 0) {
+                return null;
+            } else if (results.size() == 1) {
+                return results.get(0);
+            } else {
+                Log.e(getTableName(), "Found multiple results for labSampleId: " + labSampleId);
+                throw new NonUniqueResultException("Found multiple results for labSampleId: " + labSampleId);
+            }
+        } catch (SQLException e) {
+            Log.e(getTableName(), "Could not perform queryByLabSampleId");
             throw new RuntimeException(e);
         }
     }

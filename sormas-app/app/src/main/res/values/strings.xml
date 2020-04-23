@@ -573,5 +573,9 @@
     <string name="value_visit_time_unknown">Visit Time N/A</string>
     <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
     <string name="value_investigation_status_unknown">Investigation Status N/A</string>
+    <string name="sample_not_found">Could not find sample</string>
+    <string name="no_camera_permission">No camera permission</string>
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="scan_lab_sample_id">Scan lab sample id</string>
 
 </resources>

@@ -29,6 +29,8 @@
         <import type="de.symeda.sormas.api.sample.SampleMaterial" />
         <import type="de.symeda.sormas.api.sample.SamplePurpose" />
         <import type="de.symeda.sormas.api.Disease" />
+        <import type="android.view.View" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
@@ -257,21 +259,45 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <de.symeda.sormas.app.component.controls.ControlTextImageField
+                        <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                             android:id="@+id/sample_received"
-                            app:receivedStatus="@{data}"
-                            app:dependencyParentField="@{samplePurpose}"
-                            app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
+                            app:value="@={data.received}"
                             style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                        <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        <de.symeda.sormas.app.component.controls.ControlDateField
+                            android:id="@+id/sample_receivedDate"
+                            app:required="true"
+                            app:value="@={data.receivedDate}"
+                            app:dependencyParentField="@{sampleReceived}"
+                            app:dependencyParentValue="@{true}"
+                            app:allowedDaysInFuture="7"
+                            style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <de.symeda.sormas.app.component.controls.ControlButton
+                            android:id="@+id/button_scan_lab_sample_id"
+                            android:textColor="@color/whiteOpaque"
+                            android:text="@string/scan_lab_sample_id"
+                            app:buttonType="@{ControlButtonType.PRIMARY}"
+                            android:visibility="@{data.received? View.VISIBLE : View.GONE}"
+                            style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                        <de.symeda.sormas.app.component.controls.ControlTextEditField
                             android:id="@+id/sample_labSampleID"
-                            app:value="@{data.labSampleID}"
+                            app:value="@={data.labSampleID}"
                             app:dependencyParentField="@{sampleReceived}"
                             app:dependencyParentValue="@{true}"
                             style="@style/ControlSecondOfTwoColumnsStyle" />
 
                     </LinearLayout>
+
+                    <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
