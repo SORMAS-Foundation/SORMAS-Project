@@ -165,6 +165,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setQuarantine(source.getQuarantine());
         target.setQuarantineFrom(source.getQuarantineFrom());
         target.setQuarantineTo(source.getQuarantineTo());
+
+        target.setSurveillanceType(source.getSurveillanceType());
     }
 
     @Override
@@ -330,6 +332,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setQuarantine(source.getQuarantine());
         target.setQuarantineFrom(source.getQuarantineFrom());
         target.setQuarantineTo(source.getQuarantineTo());
+
+        target.setSurveillanceType(source.getSurveillanceType());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {

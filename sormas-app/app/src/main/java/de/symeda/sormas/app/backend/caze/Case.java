@@ -33,6 +33,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.RabiesType;
@@ -82,6 +83,7 @@ public class Case extends AbstractDomainObject {
     public static final String CASE_ORIGIN = "caseOrigin";
     public static final String REGION = "region";
     public static final String COMPLETENESS = "completeness";
+    public static final String SURVEILLANCE_TYPE = "surveillanceType";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;
@@ -258,6 +260,9 @@ public class Case extends AbstractDomainObject {
     private Date quarantineFrom;
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date quarantineTo;
+
+    @Enumerated(EnumType.STRING)
+    private CaseSurveillanceType surveillanceType;
 
     public boolean isUnreferredPortHealthCase() {
         return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -772,4 +777,13 @@ public class Case extends AbstractDomainObject {
     public void setQuarantineTo(Date quarantineTo) {
         this.quarantineTo = quarantineTo;
     }
+
+    public CaseSurveillanceType getSurveillanceType() {
+        return surveillanceType;
+    }
+
+    public void setSurveillanceType(CaseSurveillanceType surveillanceType) {
+        this.surveillanceType = surveillanceType;
+    }
+
 }
