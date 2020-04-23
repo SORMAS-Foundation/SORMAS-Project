@@ -154,6 +154,14 @@ public class SampleFacadeEjb implements SampleFacade {
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
+		return sampleService.getByCaseUuids(caseUuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
