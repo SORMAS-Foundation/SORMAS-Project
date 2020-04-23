@@ -1049,7 +1049,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				continue;
 			if (caseClassificationOption == MapCaseClassificationOption.CONFIRMED_CASES_ONLY && classification != CaseClassification.CONFIRMED)
 				continue;
-			if (dateFrom != null && dateTo != null && !DateHelper.isBetween(caze.getReportDate(), dateFrom, dateTo))
+			if (dateTo != null && !(caze.getReportDate() == dateTo || caze.getReportDate().before(dateTo) || dateTo.after(caze.getReportDate())))
 				continue;
 			boolean hasCaseGps = (caze.getAddressLat() != null && caze.getAddressLon() != null)
 					|| (caze.getReportLat() != null || caze.getReportLon() != null);
