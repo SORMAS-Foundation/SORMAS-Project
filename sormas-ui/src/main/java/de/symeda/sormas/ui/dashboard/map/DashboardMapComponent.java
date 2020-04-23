@@ -336,23 +336,22 @@ public class DashboardMapComponent extends VerticalLayout {
 
 			// Add check boxes and apply button
 			{
+				//case classifications
+				OptionGroup caseClassificationOptions = new OptionGroup();
+				caseClassificationOptions.addItems((Object[]) MapCaseClassificationOption.values());
+				caseClassificationOptions.setValue(caseClassificationOption);
+				caseClassificationOptions.addValueChangeListener(event -> {
+					caseClassificationOption = (MapCaseClassificationOption) event.getProperty().getValue();
+					refreshMap();
+				});
+				layersLayout.addComponent(caseClassificationOptions);
+
 				OptionGroup mapCaseDisplayModeSelect = new OptionGroup();
 				mapCaseDisplayModeSelect.setWidth(100, Unit.PERCENTAGE);
 				mapCaseDisplayModeSelect.addItems((Object[]) MapCaseDisplayMode.values());
 				mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
 				mapCaseDisplayModeSelect.addValueChangeListener(event -> {
 					mapCaseDisplayMode = (MapCaseDisplayMode) event.getProperty().getValue();
-					refreshMap();
-				});
-				
-				//case classifications
-				OptionGroup caseClassificationOptions = new OptionGroup();
-				caseClassificationOptions.setWidth(100, Unit.PERCENTAGE);
-				caseClassificationOptions.setStyleName(CssStyles.VSPACE_NONE);
-				caseClassificationOptions.addItems((Object[]) MapCaseClassificationOption.values());
-				caseClassificationOptions.setValue(caseClassificationOption);
-				caseClassificationOptions.addValueChangeListener(event -> {
-					caseClassificationOption = (MapCaseClassificationOption) event.getProperty().getValue();
 					refreshMap();
 				});
 
@@ -366,7 +365,6 @@ public class DashboardMapComponent extends VerticalLayout {
 					showCasesCheckBox.addValueChangeListener(e -> {
 						showCases = (boolean) e.getProperty().getValue();
 						mapCaseDisplayModeSelect.setEnabled(showCases);
-						caseClassificationOptions.setEnabled(showCases);
 						mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
 						refreshMap();
 					});
@@ -382,10 +380,6 @@ public class DashboardMapComponent extends VerticalLayout {
 				}
 				layersLayout.addComponent(showCasesLayout);
 				
-
-				layersLayout.addComponent(caseClassificationOptions);
-				caseClassificationOptions.setEnabled(showCases);
-
 				layersLayout.addComponent(mapCaseDisplayModeSelect);
 				mapCaseDisplayModeSelect.setEnabled(showCases);
 
