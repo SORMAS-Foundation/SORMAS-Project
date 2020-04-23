@@ -753,11 +753,12 @@ public class ContactFacadeEjb implements ContactFacade {
         target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
         target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
-        target.setQuarantine(source.getQuarantine());
-        target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
 
-        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
-        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
         target.setContactProximityDetails(source.getContactProximityDetails());
         target.setContactCategory(source.getContactCategory());
@@ -871,11 +872,12 @@ public class ContactFacadeEjb implements ContactFacade {
         target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
         target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
-        target.setQuarantine(source.getQuarantine());
-        target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
 
-        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
-        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
         target.setContactProximityDetails(source.getContactProximityDetails());
         target.setContactCategory(source.getContactCategory());

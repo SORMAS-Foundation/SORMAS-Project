@@ -189,12 +189,10 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactQuarantine.addValueChangedListener(e -> {
             boolean visible = QuarantineType.HOME.equals(contentBinding.contactQuarantine.getValue()) || QuarantineType.INSTITUTIONELL.equals(contentBinding.contactQuarantine.getValue());
             if (visible) {
-                contentBinding.contactQuarantineTo.setVisibility(VISIBLE);
                 if (ConfigProvider.isGermanServer()) {
                     contentBinding.contactQuarantineOrderMeans.setVisibility(VISIBLE);
                 }
             } else {
-                contentBinding.contactQuarantineTo.setVisibility(GONE);
                 contentBinding.contactQuarantineOrderMeans.setVisibility(GONE);
             }
         });
@@ -262,6 +260,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
         contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
         contentBinding.contactQuarantineFrom.initializeDateField(getFragmentManager());
+        contentBinding.contactQuarantineTo.initializeDateField(getFragmentManager());
     }
 
     @Override

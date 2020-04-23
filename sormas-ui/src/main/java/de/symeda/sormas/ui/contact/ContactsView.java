@@ -135,6 +135,7 @@ public class ContactsView extends AbstractView {
 	private CheckBox onlyQuarantineHelpNeeded;
 	private ComboBox quarantineTypeFilter;
 	private ComboBox quarantineOrderMeansFilter;
+	private PopupDateField quarantineToFilter;
 
 	public ContactsView() {
 		super(VIEW_NAME);
@@ -529,6 +530,16 @@ public class ContactsView extends AbstractView {
 				thirdFilterRowLayout.addComponent(quarantineOrderMeansFilter);
 			}
 
+			quarantineToFilter = new PopupDateField();
+			quarantineToFilter.setWidth(200, Unit.PIXELS);
+			quarantineToFilter.setInputPrompt(
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO));
+			quarantineToFilter.addValueChangeListener(e -> {
+				criteria.quarantineTo((Date) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			thirdFilterRowLayout.addComponent(quarantineToFilter);
+
 			onlyQuarantineHelpNeeded = new CheckBox();
 			onlyQuarantineHelpNeeded.setCaption(I18nProperties.getCaption(Captions.contactOnlyQuarantineHelpNeeded));
 			CssStyles.style(onlyQuarantineHelpNeeded, CssStyles.CHECKBOX_FILTER_INLINE);
@@ -851,6 +862,7 @@ public class ContactsView extends AbstractView {
 		if (quarantineOrderMeansFilter != null) {
 			quarantineOrderMeansFilter.setValue(criteria.getQuarantineOrderMeans());
 		}
+		quarantineToFilter.setValue(criteria.getQuarantineTo());
 		searchField.setValue(criteria.getNameUuidCaseLike());
 		if (categoryFilter != null) {
 			categoryFilter.setValue(criteria.getContactCategory());

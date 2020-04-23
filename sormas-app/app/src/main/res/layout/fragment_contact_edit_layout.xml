@@ -151,10 +151,14 @@
                         app:value="@={data.quarantineFrom}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <TextView
+                    <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/contact_quarantineTo"
-                        android:text="@string/quarantine_to"
-                        style="@style/TextViewSecondOfTwoColumnsStyle" />
+                        app:allowedDaysInFuture="-1"
+                        app:dependencyParentField="@{contactQuarantine}"
+                        app:dependencyParentValue="@{QuarantineType.HOME}"
+                        app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                        app:value="@={data.quarantineTo}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
