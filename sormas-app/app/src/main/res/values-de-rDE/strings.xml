@@ -464,7 +464,6 @@
     <string name="notification_channel_tasks_description">Erhalten Sie eine Benachrichtigung, wenn Ihnen eine neue Aufgabe zugewiesen wurde oder eine Ihnen zugewiesene Aufgabe geändert wurde</string>
     <string name="notification_channel_case_changes_name">Wichtige Falländerungen</string>
     <string name="notification_channel_case_changes_description">Erhalten Sie eine Benachrichtigung, wenn sich wichtige Details Ihrer Fälle geändert haben</string>
-    <string name="quarantine_to">Quarantäne endet mit dem Ende des Follow Ups</string>
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Yours: </string>
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
