@@ -1119,6 +1119,9 @@ public class DashboardMapComponent extends VerticalLayout {
 			if (!showConfirmedContacts && contact.getContactClassification() != ContactClassification.UNCONFIRMED) {
 				continue;
 			}
+			if (dateTo != null && !(contact.getCaseReportDate() == dateTo || contact.getCaseReportDate().before(dateTo) || dateTo.after(contact.getCaseReportDate()))) {
+				continue;
+			}
 
 			MarkerIcon icon;
 			// #1274 Temporarily disabled because it severely impacts the performance of the Dashboard
@@ -1185,6 +1188,10 @@ public class DashboardMapComponent extends VerticalLayout {
 				icon = MarkerIcon.EVENT_RUMOR;
 				break;
 			default:
+				continue;
+			}
+			
+			if (dateTo != null && !(event.getEventDate() == dateTo || event.getEventDate().before(dateTo) || dateTo.after(event.getEventDate()))) {
 				continue;
 			}
 
