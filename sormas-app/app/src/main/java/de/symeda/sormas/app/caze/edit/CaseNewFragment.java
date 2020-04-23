@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.PlagueType;
@@ -121,6 +122,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
     public void onLayoutBinding(FragmentCaseNewLayoutBinding contentBinding) {
         contentBinding.setData(record);
         contentBinding.setCaseOriginClass(CaseOrigin.class);
+        contentBinding.setCaseSurveillanceTypeClass(CaseSurveillanceType.class);
 
         contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
         contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
@@ -255,6 +257,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         record.setDisease(lastCase.getDisease());
         record.setDiseaseDetails(lastCase.getDiseaseDetails());
         record.setCaseOrigin(lastCase.getCaseOrigin());
+        record.setSurveillanceType(lastCase.getSurveillanceType());
 
         getContentBinding().setData(record);
     }

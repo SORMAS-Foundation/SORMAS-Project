@@ -28,6 +28,7 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
         <variable name="caseOriginClass" type="Class" />
+        <variable name="caseSurveillanceTypeClass" type="Class" />
     </data>
 
 
@@ -52,6 +53,13 @@
                 app:enumClass="@{caseOriginClass}"
                 app:required="true"
                 app:value="@={data.caseOrigin}" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/caseData_surveillanceType"
+                style="@style/ControlSingleColumnStyle"
+                app:enumClass="@{caseSurveillanceTypeClass}"
+                app:required="true"
+                app:value="@={data.surveillanceType}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/caseData_disease"
