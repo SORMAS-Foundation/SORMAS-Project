@@ -488,6 +488,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				ComboBox cmbPeriodFilter = new ComboBox();
 				
 				cmbPeriodType.addItems(MapPeriodType.values());
+				cmbPeriodType.setInputPrompt(I18nProperties.getString(Strings.promptFilterByPeriod));
 				cmbPeriodType.addValueChangeListener(e -> {
 					MapPeriodType periodType = (MapPeriodType) e.getProperty().getValue();
 					
@@ -542,6 +543,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						cmbPeriodFilter.setItemCaption(date, DateHelper.formatLocalDate(date, dateFormat));
 				});
 				
+				cmbPeriodFilter.setInputPrompt(I18nProperties.getString(Strings.promptSelectPeriod));
 				cmbPeriodFilter.setEnabled(false);
 				cmbPeriodFilter.addValueChangeListener(e -> {
 					Date date = (Date) e.getProperty().getValue();
