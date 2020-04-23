@@ -17,11 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +40,6 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
-import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -47,7 +50,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.facility.Facility;
@@ -136,7 +138,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetNewTestResultCountByResultType() {
-
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person1 = creator.createPerson("Heinz", "First").toReference();
@@ -188,6 +189,27 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
 		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
 		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+	}
+	
+
+	@Test
+	public void testGetByCaseUuids() throws Exception {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze2 = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze3 = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample3 = creator.createSample(caze2.toReference(), user.toReference(), rdcf.facility);
+		creator.createSample(caze3.toReference(), user.toReference(), rdcf.facility);
+		
+		List<SampleDto> samples = getSampleFacade().getByCaseUuids(Arrays.asList(caze.getUuid(), caze2.getUuid()));
+		
+		assertThat(samples, hasSize(3));
+		assertThat(samples, contains(sample, sample2, sample3));
 	}
 
 }

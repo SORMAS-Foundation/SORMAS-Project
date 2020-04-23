@@ -52,6 +52,13 @@ public class PathogenTestResource extends EntityDtoResource {
 		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getByUuids(uuids);
 		return result;
 	}
+	
+	@POST
+	@Path("/query/samples")
+	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
+		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getBySampleUuids(sampleUuids);
+		return result;
+	}
 
 	@POST
 	@Path("/push")

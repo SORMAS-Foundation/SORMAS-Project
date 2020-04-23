@@ -10,13 +10,16 @@ public enum FeatureType {
 	/**
 	 * New server features are automatically added to the database in FeatueConfigurationFacadeEjb.createMissingFeatureConfigurations().
 	 */
-	
 	LINE_LISTING(false, false),
 	AGGREGATE_REPORTING(true, true),
 	EVENT_SURVEILLANCE(true, true),
 	WEEKLY_REPORTING(true, true),
 	CLINICAL_MANAGEMENT(true, true),
-	NATIONAL_CASE_SHARING(true, false);
+	NATIONAL_CASE_SHARING(true, false),
+	TASK_GENERATION_CASE_SURVEILLANCE(true, true),
+	TASK_GENERATION_CONTACT_TRACING(true, true),
+	TASK_GENERATION_EVENT_SURVEILLANCE(true, true),
+	TASK_GENERATION_GENERAL(true, true);
 	
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

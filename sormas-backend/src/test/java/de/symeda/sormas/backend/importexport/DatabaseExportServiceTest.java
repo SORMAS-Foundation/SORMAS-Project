@@ -1,6 +1,9 @@
 package de.symeda.sormas.backend.importexport;
 
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -23,6 +26,14 @@ public class DatabaseExportServiceTest {
 			assertNotNull(
 				String.format("No export configuration defined for %s.%s", DatabaseTable.class.getSimpleName(), databaseTable.name()),
 				config);
+
+			assertThat(config.getTableName(), not(isEmptyString()));
+
+			if (config.isUseJoinTable()) {
+				assertThat(config.getJoinTableName(), not(isEmptyString()));
+				assertThat(config.getColumnName(), not(isEmptyString()));
+				assertThat(config.getJoinColumnName(), not(isEmptyString()));
+			}
 		}
 	}
 }

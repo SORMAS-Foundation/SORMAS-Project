@@ -141,7 +141,8 @@ public class Hospitalization extends AbstractDomainObject {
 	public void setLeftAgainstAdvice(YesNoUnknown leftAgainstAdvice) {
 		this.leftAgainstAdvice = leftAgainstAdvice;
 	}
-	
+
+	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getIntensiveCareUnit() {
 		return intensiveCareUnit;
 	}
@@ -150,6 +151,7 @@ public class Hospitalization extends AbstractDomainObject {
 		this.intensiveCareUnit = intensiveCareUnit;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getIntensiveCareUnitStart() {
 		return intensiveCareUnitStart;
 	}
@@ -158,6 +160,7 @@ public class Hospitalization extends AbstractDomainObject {
 		this.intensiveCareUnitStart = intensiveCareUnitStart;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getIntensiveCareUnitEnd() {
 		return intensiveCareUnitEnd;
 	}
