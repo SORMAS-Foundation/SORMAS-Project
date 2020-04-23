@@ -24,6 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -77,6 +78,7 @@ public class CaseExportDto implements Serializable {
 	public static final String NUMBER_OF_TREATMENTS = "numberOfTreatments";
 	public static final String NUMBER_OF_CLINICAL_VISITS = "numberOfClinicalVisits";
 	public static final String SAMPLE_INFORMATION = "sampleInformation";
+	public static final String QUARANTINE_INFORMATION = "quarantineInformation";
 
 	private String country;
 	private long id;
@@ -154,6 +156,10 @@ public class CaseExportDto implements Serializable {
 	private PathogenTestResultType sampleResult3;
 	private String otherSamples = "";
 
+	private QuarantineType quarantine;
+	private Date quarantineFrom;
+	private Date quarantineTo;
+
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex, YesNoUnknown pregnant,
@@ -161,8 +167,11 @@ public class CaseExportDto implements Serializable {
 						 Integer birthdateYYYY, Date reportDate, String region, String district, String community,
 						 String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
-						 InvestigationStatus investigationStatus, CaseOutcome outcome, YesNoUnknown admittedToHealthFacility,
-						 Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
+						 InvestigationStatus investigationStatus, CaseOutcome outcome,
+						 // Quarantine
+						 QuarantineType quarantine, Date quarantineFrom, Date quarantineTo,
+
+						 YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
 						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
 						 String addressRegion, String addressDistrict, String city, String address, String postalCode,
 						 String phone, String phoneOwner, EducationType educationType, String educationDetails,
@@ -197,6 +206,11 @@ public class CaseExportDto implements Serializable {
 		this.caseClassification = caseClassification;
 		this.investigationStatus = investigationStatus;
 		this.outcome = outcome;
+
+		this.quarantine = quarantine;
+		this.quarantineFrom = quarantineFrom;
+		this.quarantineTo = quarantineTo;
+
 		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
 		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry, pointOfEntryDetails);
 		this.admittedToHealthFacility = admittedToHealthFacility;
@@ -440,6 +454,30 @@ public class CaseExportDto implements Serializable {
 	}
 
 	@Order(33)
+	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
+	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public QuarantineType getQuarantine() {
+		return quarantine;
+	}
+
+	@Order(34)
+	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
+	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	@Order(35)
+	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
+	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	@Order(36)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE})
 	@ExportProperty(MAX_SOURCE_CASE_CLASSIFICATION)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
@@ -447,7 +485,7 @@ public class CaseExportDto implements Serializable {
 		return maxSourceCaseClassification;
 	}
 
-	@Order(34)
+	@Order(37)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE})
 	@ExportProperty(ASSOCIATED_WITH_OUTBREAK)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
@@ -459,7 +497,7 @@ public class CaseExportDto implements Serializable {
 		this.maxSourceCaseClassification = maxSourceCaseClassification;
 	}
 
-	@Order(40)
+	@Order(38)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY)
 	@ExportGroup(ExportGroupType.HOSPITALIZATION)
@@ -467,7 +505,7 @@ public class CaseExportDto implements Serializable {
 		return admittedToHealthFacility;
 	}
 
-	@Order(41)
+	@Order(39)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(HospitalizationDto.ADMISSION_DATE)
 	@ExportGroup(ExportGroupType.HOSPITALIZATION)
@@ -475,7 +513,7 @@ public class CaseExportDto implements Serializable {
 		return admissionDate;
 	}
 
-	@Order(42)
+	@Order(40)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(HospitalizationDto.DISCHARGE_DATE)
 	@ExportGroup(ExportGroupType.HOSPITALIZATION)
@@ -487,7 +525,7 @@ public class CaseExportDto implements Serializable {
 		this.dischargeDate = dischargeDate;
 	}
 
-	@Order(43)
+	@Order(41)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(HospitalizationDto.LEFT_AGAINST_ADVICE)
 	@ExportGroup(ExportGroupType.HOSPITALIZATION)

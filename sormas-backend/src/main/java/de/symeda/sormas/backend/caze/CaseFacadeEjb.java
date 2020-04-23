@@ -408,8 +408,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				communityJoin.get(Community.NAME), facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.UUID),
 				caseRoot.get(Case.HEALTH_FACILITY_DETAILS), pointOfEntryJoin.get(PointOfEntry.NAME),
 				pointOfEntryJoin.get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
-				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS),
-				caseRoot.get(Case.OUTCOME), hospitalizationJoin.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
+				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
+				// quarantine
+				caseRoot.get(Case.QUARANTINE),caseRoot.get(Case.QUARANTINE_FROM),caseRoot.get(Case.QUARANTINE_TO),
+
+				hospitalizationJoin.get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY),
 				hospitalizationJoin.get(Hospitalization.ADMISSION_DATE),
 				hospitalizationJoin.get(Hospitalization.DISCHARGE_DATE),
 				hospitalizationJoin.get(Hospitalization.LEFT_AGAINST_ADVICE), personJoin.get(Person.PRESENT_CONDITION),
@@ -426,7 +429,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				epiDataJoin.get(EpiData.TRAVELED), epiDataJoin.get(EpiData.BURIAL_ATTENDED),
 				epiDataJoin.get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE), epiDataJoin.get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
 				epiDataJoin.get(EpiData.RODENTS), caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES),
-				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE));
+				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE)
+				);
 
 		cq.distinct(true);
 
