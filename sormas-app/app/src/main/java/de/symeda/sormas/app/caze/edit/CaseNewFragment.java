@@ -164,6 +164,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
     @Override
     public void onAfterLayoutBinding(final FragmentCaseNewLayoutBinding contentBinding) {
+        contentBinding.caseDataSurveillanceType.setValue(CaseSurveillanceType.ROUTINE);
+
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
         InfrastructureHelper.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
