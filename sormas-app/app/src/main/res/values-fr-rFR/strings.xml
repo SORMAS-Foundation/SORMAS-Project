@@ -464,7 +464,6 @@
     <string name="notification_channel_tasks_description">Recevoir une notification lorsqu\'une nouvelle tâche vous est attribuée ou lorsqu\'une tâche qui vous a été attribuée a été modifiée</string>
     <string name="notification_channel_case_changes_name">Changements importants de cas</string>
     <string name="notification_channel_case_changes_description">Recevoir une notification lorsque les détails importants de vos cas ont changé</string>
-    <string name="quarantine_to">Quarantine ends at the end of follow-up</string>
     <string name="synclog_server">Serveur: </string>
     <string name="synclog_yours">Votre: </string>
     <string name="tag_row_item_select_or_create_person">ligneÉlémentSélectionnerOucréerunepersonne</string>
