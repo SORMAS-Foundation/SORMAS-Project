@@ -666,6 +666,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
 		
 		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
 		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
@@ -783,6 +784,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
 		
 		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
 		target.setCaseOrEventInformation(source.getCaseOrEventInformation());

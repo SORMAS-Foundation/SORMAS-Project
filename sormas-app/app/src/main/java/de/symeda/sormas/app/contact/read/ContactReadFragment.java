@@ -70,11 +70,6 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
             contentBinding.contactExternalID.setVisibility(GONE);
             contentBinding.contactQuarantineOrderMeans.setVisibility(GONE);
         }
-
-        QuarantineType type = (QuarantineType) contentBinding.contactQuarantine.getValue();
-        if (type == null || (!type.equals(QuarantineType.HOME) && !type.equals(QuarantineType.INSTITUTIONELL))){
-            contentBinding.contactQuarantineTo.setVisibility(GONE);
-        }
     }
 
     // Overrides

@@ -62,6 +62,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	private QuarantineType quarantineType;
+	private Date quarantineTo;
 	private OrderMeans quarantineOrderMeans;
 	private Boolean onlyQuarantineHelpNeeded;
 	
@@ -311,6 +312,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria onlyQuarantineHelpNeeded(Boolean onlyQuarantineHelpNeeded) {
 		this.onlyQuarantineHelpNeeded = onlyQuarantineHelpNeeded;
+		return this;
+	}
+	
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+	
+	public ContactCriteria quarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 		return this;
 	}
 	

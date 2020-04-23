@@ -141,7 +141,6 @@ public class Contact extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
-	@Deprecated
 	private Date quarantineTo;
 
 	@Column
@@ -417,12 +416,10 @@ public class Contact extends AbstractDomainObject {
 		this.quarantineFrom = quarantineFrom;
 	}
 
-	@Deprecated
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
 
-	@Deprecated
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}

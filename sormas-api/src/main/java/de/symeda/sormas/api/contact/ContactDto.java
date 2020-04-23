@@ -66,6 +66,7 @@ public class ContactDto extends EntityDto {
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
+	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
@@ -115,7 +116,7 @@ public class ContactDto extends EntityDto {
 
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
-	
+	private Date quarantineTo;
 
 	@Required
 	private PersonReferenceDto person;
@@ -369,6 +370,14 @@ public class ContactDto extends EntityDto {
 
 	public void setQuarantineFrom(Date quarantineFrom) {
 		this.quarantineFrom = quarantineFrom;
+	}
+
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
 	}
 
 	public String getCaseIdExternalSystem() {
