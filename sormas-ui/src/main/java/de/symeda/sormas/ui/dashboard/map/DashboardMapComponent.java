@@ -484,14 +484,10 @@ public class DashboardMapComponent extends VerticalLayout {
 				});
 				layersLayout.addComponent(hideOtherCountriesCheckBox);
 				
-				HorizontalLayout periodFilterLayout = new HorizontalLayout();
-				ComboBox cmbPeriodFilter = new ComboBox();
 				ComboBox cmbPeriodType = new ComboBox();
+				ComboBox cmbPeriodFilter = new ComboBox();
 				
-				cmbPeriodFilter.setWidth(50, Unit.PERCENTAGE);
 				cmbPeriodFilter.setVisible(false);
-				
-				cmbPeriodType.setWidth(50, Unit.PERCENTAGE);
 				cmbPeriodType.addItems(MapPeriodType.values());
 				cmbPeriodType.addValueChangeListener(e -> {
 					MapPeriodType periodType = (MapPeriodType) e.getProperty().getValue();
@@ -582,6 +578,9 @@ public class DashboardMapComponent extends VerticalLayout {
 						
 					refreshMap();
 				});
+				
+				HorizontalLayout periodFilterLayout = new HorizontalLayout();
+				periodFilterLayout.setStyleName(CssStyles.VSPACE_TOP_2);
 				periodFilterLayout.addComponent(cmbPeriodType);
 				periodFilterLayout.addComponent(cmbPeriodFilter);
 				layersLayout.addComponent(periodFilterLayout);
