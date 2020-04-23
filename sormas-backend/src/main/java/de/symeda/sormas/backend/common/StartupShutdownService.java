@@ -30,6 +30,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -145,12 +146,13 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-		logger.info("Initiating automatic database update of main database...");
 
+		checkDatabaseConfig(em);
+		
+		logger.info("Initiating automatic database update of main database...");
 		updateDatabase(em, SORMAS_SCHEMA);
 
 		logger.info("Initiating automatic database update of audit database...");
-
 		updateDatabase(emAudit, AUDIT_SCHEMA);
 
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
@@ -411,6 +413,44 @@ public class StartupShutdownService {
 			poeInformant.setPointOfEntry(pointOfEntry);
 			poeInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(poeInformant);
+		}
+	}
+
+	private void checkDatabaseConfig(EntityManager entityManager) {
+		
+		List<String> errors = new ArrayList<>(); 
+		
+		// check postgres version
+		String versionString = entityManager.createNativeQuery("SHOW server_version").getSingleResult().toString();
+		
+		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+")
+				.collect(Collectors.joining(")|(", "(", ")"));
+		if (! versionString.matches(versionRegexp)) {
+			logger.warn("Your PostgreSQL Version ("+versionString+") is currently not supported.");
+		}
+		
+		
+		int maxPreparedTransactions = Integer.valueOf(entityManager.createNativeQuery("select current_setting('max_prepared_transactions')").getSingleResult().toString());
+		if (maxPreparedTransactions < 1) {
+			errors.add("max_prepared_transactions is not set. A value of at least 64 is recommended.");
+		} else if (maxPreparedTransactions < 64) {
+			logger.info("max_prepared_transactions is set to {}. A value of at least 64 is recommended.", maxPreparedTransactions);
+		} 
+		
+		//check extensions
+		
+		Stream.of("temporal_tables", "pg_trgm")
+		.filter(t -> {
+			String q = "select count(*) from pg_extension where extname = '"+t+"'";
+			int count = ((Number) entityManager.createNativeQuery(q).getSingleResult()).intValue();
+			return count == 0;
+		})
+		.map(t -> "extension '" + t + "' has to be installed")
+		.forEach(errors::add);
+		
+		if (!errors.isEmpty()) {
+			throw new RuntimeException(errors.stream().collect(Collectors.joining("\n * ", "Postgres setup is not compatible:\n * ", "")));
+			
 		}
 	}
 
