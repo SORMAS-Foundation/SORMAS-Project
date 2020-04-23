@@ -31,6 +31,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseSurveillanceType;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.PlagueType;
@@ -260,6 +261,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
         contentBinding.setVaccinationClass(Vaccination.class);
+        contentBinding.setCaseSurveillanceTypeClass(CaseSurveillanceType.class);
 
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility,
                 contentBinding.caseDataHealthFacilityDetails);

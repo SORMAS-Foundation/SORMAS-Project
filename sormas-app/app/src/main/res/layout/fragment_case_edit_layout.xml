@@ -42,6 +42,7 @@
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
         <variable name="vaccinationClass" type="Class" />
+        <variable name="caseSurveillanceTypeClass" type="Class" />
     </data>
 
     <ScrollView
@@ -220,6 +221,12 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_caseOrigin"
                     app:value="@{data.caseOrigin}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_surveillanceType"
+                    app:enumClass="@{caseSurveillanceTypeClass}"
+                    app:value="@={data.surveillanceType}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
