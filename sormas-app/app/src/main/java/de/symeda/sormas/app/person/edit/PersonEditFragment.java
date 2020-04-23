@@ -54,6 +54,7 @@ import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.LocationService;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -173,6 +174,18 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         // Initialize ControlDateFields
         contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
+
+        //app initially set current address when person address is null
+        if(record.getAddress().getLatitude()==null || record.getAddress().getLongitude()==null)
+        {
+            android.location.Location phoneLocation = LocationService.instance().getLocation(fragment.getActivity());
+            if (phoneLocation != null) {
+                record.getAddress().setLatitude(phoneLocation.getLatitude());
+                record.getAddress().setLongitude(phoneLocation.getLongitude());
+                record.getAddress().setLatLonAccuracy(phoneLocation.getAccuracy());
+                contentBinding.personAddress.setValue(record.getAddress());
+            }
+        }
     }
 
     public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
