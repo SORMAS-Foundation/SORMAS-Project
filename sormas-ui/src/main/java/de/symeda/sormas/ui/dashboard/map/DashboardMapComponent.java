@@ -490,41 +490,6 @@ public class DashboardMapComponent extends VerticalLayout {
 				
 				cmbPeriodFilter.setWidth(50, Unit.PERCENTAGE);
 				cmbPeriodFilter.setVisible(false);
-				cmbPeriodFilter.addValueChangeListener(e -> {
-					Date date = (Date) e.getProperty().getValue();
-					
-					if (date != null) {
-						MapPeriodType periodType = (MapPeriodType) cmbPeriodType.getValue();
-											
-						switch (periodType) {
-							case DAILY:
-								dateFrom = DateHelper.getStartOfDay(date);
-								dateTo = DateHelper.getEndOfDay(date);
-								break;
-							case WEEKLY:
-								dateFrom = DateHelper.getStartOfWeek(date);
-								dateTo = DateHelper.getEndOfWeek(date);
-								break;
-							case MONTHLY:
-								dateFrom = DateHelper.getStartOfMonth(date);
-								dateTo = DateHelper.getEndOfMonth(date);
-								break;
-							case YEARLY:
-								dateFrom = DateHelper.getStartOfYear(date);
-								dateTo = DateHelper.getEndOfYear(date);
-								break;
-							default:
-								dateFrom = null;
-								dateTo = null;
-						}
-					}
-					else {
-						dateFrom = null;
-						dateTo = null;
-					}
-						
-					refreshMap();
-				});
 				
 				cmbPeriodType.setWidth(50, Unit.PERCENTAGE);
 				cmbPeriodType.addItems(MapPeriodType.values());
@@ -582,6 +547,41 @@ public class DashboardMapComponent extends VerticalLayout {
 						cmbPeriodFilter.setItemCaption(date, DateHelper.formatLocalDate(date, dateFormat));
 				});
 				
+				cmbPeriodFilter.addValueChangeListener(e -> {
+					Date date = (Date) e.getProperty().getValue();
+					
+					if (date != null) {
+						MapPeriodType periodType = (MapPeriodType) cmbPeriodType.getValue();
+											
+						switch (periodType) {
+							case DAILY:
+								dateFrom = DateHelper.getStartOfDay(date);
+								dateTo = DateHelper.getEndOfDay(date);
+								break;
+							case WEEKLY:
+								dateFrom = DateHelper.getStartOfWeek(date);
+								dateTo = DateHelper.getEndOfWeek(date);
+								break;
+							case MONTHLY:
+								dateFrom = DateHelper.getStartOfMonth(date);
+								dateTo = DateHelper.getEndOfMonth(date);
+								break;
+							case YEARLY:
+								dateFrom = DateHelper.getStartOfYear(date);
+								dateTo = DateHelper.getEndOfYear(date);
+								break;
+							default:
+								dateFrom = null;
+								dateTo = null;
+						}
+					}
+					else {
+						dateFrom = null;
+						dateTo = null;
+					}
+						
+					refreshMap();
+				});
 				periodFilterLayout.addComponent(cmbPeriodType);
 				periodFilterLayout.addComponent(cmbPeriodFilter);
 				layersLayout.addComponent(periodFilterLayout);
