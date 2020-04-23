@@ -248,25 +248,13 @@ public class ContactsView extends AbstractView {
 				addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)){
-				StreamResource followUpVisitsExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactVisitsExportDto.class, null,
-						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getContactVisitsExportList(grid.getCriteria(), start, max),
-						(propertyId,type) -> {
-							String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
-									I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
-											I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
-													I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
-															I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, propertyId,
-																	I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
-																			I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
-							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
-							}
-							return caption;
-						},
-						createFileNameWithCurrentDate("sormas_contacts_", ".csv"), null);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+				StreamResource followUpVisitsExportStreamResource =
+						DownloadUtil.createContactVisitsExport(grid.getCriteria(),
+								createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
 
-				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportFollowUp, Descriptions.descFollowUpExportButton);
+				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout, null,
+						VaadinIcons.FILE_TEXT, Captions.exportFollowUp, Descriptions.descFollowUpExportButton);
 			}
 
 			// Warning if no filters have been selected

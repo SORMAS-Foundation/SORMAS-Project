@@ -17,52 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import de.symeda.sormas.api.visit.VisitExportType;
-import org.slf4j.LoggerFactory;
-
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
-
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
@@ -73,6 +39,9 @@ import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactVisitsExportDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -90,12 +59,25 @@ import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionExportDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentExportDto;
-import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.ExportErrorException;
-import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.*;
+import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public final class DownloadUtil {
 
@@ -207,7 +189,7 @@ public final class DownloadUtil {
 							if (exportLine[1] == null) {
 								exportLine[1] = (String) populationExportData[1];
 							}
-							
+
 							if (populationExportData[2] == null) {
 								// Total population
 								String sexString = (String) populationExportData[3];
@@ -239,7 +221,7 @@ public final class DownloadUtil {
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed), 
+					new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed),
 							Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 					return null;
 				}
@@ -404,6 +386,70 @@ public final class DownloadUtil {
 		}
 	}
 
+	public static StreamResource createContactVisitsExport(ContactCriteria contactCriteria,
+														   final String exportFileName) {
+		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
+			try (CSVWriter writer = CSVUtils.createCSVWriter(
+					new OutputStreamWriter(out, StandardCharsets.UTF_8.name()),
+					FacadeProvider.getConfigFacade().getCsvSeparator())) {
+
+				final List<String> columnNames = new ArrayList<>();
+				columnNames.add(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.UUID));
+				columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
+				columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
+
+				final long maximumFollowUps =
+						FacadeProvider.getContactFacade().countMaximumFollowUps(contactCriteria);
+
+				for (int index = 0; index <= maximumFollowUps; index++) {
+					final String daySuffix = " - Day " + index + 1;
+					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX,
+							VisitDto.VISIT_DATE_TIME) + daySuffix);
+					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_STATUS) + daySuffix);
+					columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, VisitDto.SYMPTOMS) + daySuffix);
+				}
+
+				writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+
+				int startIndex = 0;
+				List<ContactVisitsExportDto> exportRows =
+						FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria, 0,
+								DETAILED_EXPORT_STEP_SIZE);
+				while (!exportRows.isEmpty()) {
+
+					for (ContactVisitsExportDto exportRow : exportRows) {
+						final List<String> values = new ArrayList<>();
+						values.add(exportRow.getUuid());
+						values.add(exportRow.getFirstName());
+						values.add(exportRow.getLastName());
+						exportRow.getVisitDetails().forEach(contactVisitsDetailsExportDto -> {
+							values.add(DateHelper.formatLocalShortDate(contactVisitsDetailsExportDto.getVisitDateTime()));
+							values.add(contactVisitsDetailsExportDto.getVisitStatus().toString());
+							values.add(contactVisitsDetailsExportDto.getSymptoms());
+						});
+
+						writer.writeNext(values.toArray(new String[columnNames.size()]));
+					}
+
+					writer.flush();
+					startIndex += DETAILED_EXPORT_STEP_SIZE;
+					exportRows = FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria,
+							startIndex, DETAILED_EXPORT_STEP_SIZE);
+				}
+			}
+		},
+				e -> {
+					// TODO This currently requires the user to click the "Export" button again or reload the page
+					//  as the UI
+					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+					VaadinSession.getCurrent().access(() -> new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed),
+							Type.ERROR_MESSAGE, false).show(Page.getCurrent()));
+				}), exportFileName);
+		extendedStreamResource.setMIMEType("text/csv");
+		extendedStreamResource.setCacheTime(0);
+		return extendedStreamResource;
+	}
+
 	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, Enum<?> exportType, BiFunction<Integer, Integer, List<T>> exportRowsSupplier,
 			BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName, ExportConfigurationDto exportConfiguration) {
 		StreamResource extendedStreamResource = new StreamResource(() -> {
@@ -508,12 +554,13 @@ public final class DownloadUtil {
 						}
 					}
 				},
-				e -> {
-					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
-					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					VaadinSession.getCurrent().access(() -> new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed), 
+					e -> {
+						// TODO This currently requires the user to click the "Export" button again or reload the page
+						//  as the UI
+						// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
+						VaadinSession.getCurrent().access(() -> new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed),
 								Type.ERROR_MESSAGE, false).show(Page.getCurrent()));
-				});
+					});
 		}, exportFileName);
 		extendedStreamResource.setMIMEType("text/csv");
 		extendedStreamResource.setCacheTime(0);

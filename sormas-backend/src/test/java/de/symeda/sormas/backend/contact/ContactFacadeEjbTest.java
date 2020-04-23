@@ -264,6 +264,68 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	}
 
 	@Test
+	public void testGetContactVisitsExportList() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference()
+				, caze, new Date(), new Date());
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+
+		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+
+		List<ContactVisitsExportDto> results = getContactFacade().getContactVisitsExportList(null, 0, 100);
+		assertNotNull(results);
+		assertEquals(1, results.size());
+		ContactVisitsExportDto exportDto = results.get(0);
+
+		assertEquals("Contact", exportDto.getFirstName());
+		assertEquals("Person", exportDto.getLastName());
+		assertEquals(contact.getUuid(), exportDto.getUuid());
+		final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitDetails = exportDto.getVisitDetails();
+		assertNotNull(visitDetails);
+		assertEquals(1, visitDetails.size());
+		ContactVisitsExportDto.ContactVisitsDetailsExportDto visitDetail = visitDetails.get(0);
+		assertEquals(VisitStatus.COOPERATIVE, visitDetail.getVisitStatus());
+		assertNotNull(visitDetail.getVisitDateTime());
+		assertEquals("Abdominal pain", visitDetail.getSymptoms());
+	}
+
+	@Test
+	public void testCountMaximumFollowUps() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference()
+				, caze, new Date(), new Date());
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+
+		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
+		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference()
+				, caze, new Date(), new Date());
+		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit21.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit21);
+		VisitDto visit22 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit22.getSymptoms().setAgitation(SymptomState.YES);
+		getVisitFacade().saveVisit(visit22);
+
+		assertEquals(2, getContactFacade().countMaximumFollowUps(null));
+	}
+
+	@Test
 	public void testArchiveOrDearchiveContact() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
