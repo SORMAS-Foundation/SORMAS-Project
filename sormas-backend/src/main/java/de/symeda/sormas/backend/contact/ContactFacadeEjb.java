@@ -576,31 +576,34 @@ public class ContactFacadeEjb implements ContactFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(Contact.class);
-		Join<Contact, Case> caseJoin = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Contact, Case> caseJoin = contact.join(Contact.CAZE);
 
-		cq.where(cb.and(
-				cb.isNotNull(contact.get(Contact.CAZE)),
-				contact.get(Contact.UUID).in(contactUuids)
-				));
+		cq.where(contact.get(Contact.UUID).in(contactUuids));
 		cq.select(caseJoin.get(Case.ID));
 		cq.distinct(true);
 
 		List<Long> caseIds = em.createQuery(cq).getResultList();
 
-		CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
-		Root<Contact> contact2 = cq2.from(Contact.class);
-		cq2.groupBy(contact2.get(Contact.CAZE));
+		if (caseIds.isEmpty()) {
+			return new int[3];
+			
+		} else {
+			int[] counts = new int[3];
+			CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
+			Root<Contact> contact2 = cq2.from(Contact.class);
+			cq2.groupBy(contact2.get(Contact.CAZE));
+	
+			cq2.where(contact2.get(Contact.CAZE).in(caseIds));
+			cq2.select(cb.count(contact2.get(Contact.ID)));
 
-		cq2.where(contact2.get(Contact.CAZE).in(caseIds));
-		cq2.select(cb.count(contact2.get(Contact.ID)));
-
-		List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
-
-		int[] counts = new int[3];
-		counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-		counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-		counts[2] =  caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
-		return counts;
+			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
+	
+			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[2] =  caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
+			
+			return counts;
+		}
 	}
 
 	@Override
