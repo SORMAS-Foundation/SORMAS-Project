@@ -63,8 +63,7 @@ from public.contact ct
 	join public.cases cs on ct.caze_id = cs.id
 where ct.id in (%s)
 	and ct.deleted = FALSE 
-	and ct.contactclassification != 'NO_CONTACT' 
-	and ct.contactstatus != 'DROPPED'
+	and ct.contactclassification != 'NO_CONTACT'
 	and cs.caseclassification != 'NO_CASE' 
 	and cs.deleted = FALSE"
 
@@ -90,17 +89,14 @@ node as (
 		join clean_ct ct on ct.person_id = p.id
 		left join clean_cs rcs on ct.resultingcase_id = rcs.id 
 	WHERE ct.resultingcase_id is not null 
-		or (contactclassification != 'NO_CONTACT' 
-			and contactstatus != 'DROPPED'
-		)
+		or contactclassification != 'NO_CONTACT'
 union
 	--caze
 	select distinct p.id, cs.reportdate, cs.uuid, cs.caseclassification
 	from clean_ct ct 
 		join clean_cs cs on ct.caze_id = cs.id
 		join public.person p on cs.person_id = p.id
-	WHERE contactclassification != 'NO_CONTACT' 
-		and contactstatus != 'DROPPED'
+	WHERE contactclassification != 'NO_CONTACT'
 )
 --XXX take data from earliest case
 select distinct on (person_id)

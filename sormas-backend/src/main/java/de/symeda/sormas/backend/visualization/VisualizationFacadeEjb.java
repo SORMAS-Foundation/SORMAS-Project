@@ -56,7 +56,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -123,7 +122,6 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				contactService.createActiveContactsFilter(cb, root),
 				contactService.createDefaultFilter(cb, root),
 				cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),
-				cb.notEqual(root.get(Contact.CONTACT_STATUS), ContactStatus.DROPPED),
 				cb.or(cb.isNull(caze), caseService.createDefaultFilter(cb, caze)),
 				root.get(Contact.DISEASE).in(diseases),
 				region == null ? null : cb.equal(root.join(Contact.REGION).get(Region.UUID), region.getUuid()),
