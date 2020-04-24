@@ -110,7 +110,7 @@
       <name>gSamplesTestDataName</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
-      <description></description>
+      <description>Downloadpath for file download in browser</description>
       <initValue>'/var/jenkins_home/downloads/'</initValue>
       <name>gDownloadPath</name>
    </GlobalVariableEntity>

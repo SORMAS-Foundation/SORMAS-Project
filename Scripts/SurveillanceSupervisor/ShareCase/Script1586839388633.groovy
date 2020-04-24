@@ -11,6 +11,8 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
 import internal.GlobalVariable as GlobalVariable
 
+// THIS TEST IS OBSOLETE BECAUSE THE TESTED FUNCTIONALITY WAS REMOVED
+// THE TEST WAS REMOVED FROM ALL SUITES AND COLLECTIONS
 
 // PREPARE
 WebUI.openBrowser(GlobalVariable.gUrl)
