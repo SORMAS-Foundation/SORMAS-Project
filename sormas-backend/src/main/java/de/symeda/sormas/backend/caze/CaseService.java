@@ -720,7 +720,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else if (currentUser.hasAnyUserRole(
 				UserRole.NATIONAL_USER,
 				UserRole.NATIONAL_CLINICIAN,
-				UserRole.NATIONAL_OBSERVER)) {
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(casePath.get(Case.DISEASE), currentUser.getLimitedDisease());
 			} else {
