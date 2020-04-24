@@ -10,6 +10,8 @@ import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.driver.WebUIDriverType
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
+import internal.GlobalVariable
+
 WebUIDriverType executedBrowser = DriverFactory.getExecutedBrowser()
 switch(executedBrowser) {
 	case WebUIDriverType.FIREFOX_DRIVER:          // "Firefox"
@@ -38,8 +40,6 @@ switch(executedBrowser) {
 WebUI.callTestCase(findTestCase('Login/partials/LoginAsNationalUser'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.click(findTestObject('Login/MainView/menu_Statistics'))
-
-
 
 WebUI.click(findTestObject('Object Repository/Statistics/span_Database Export'))
 
