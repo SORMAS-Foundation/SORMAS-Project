@@ -127,6 +127,7 @@ public class CaseDataDto extends EntityDto {
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String REPORTING_TYPE = "reportingType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -254,6 +255,7 @@ public class CaseDataDto extends EntityDto {
 	private String quarantineHomePossibleComment;
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
+	private ReportingType reportingType;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -890,4 +892,11 @@ public class CaseDataDto extends EntityDto {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 
+	public ReportingType getReportingType() {
+		return reportingType;
+	}
+
+	public void setReportingType(ReportingType reportingType) {
+		this.reportingType = reportingType;
+	}
 }

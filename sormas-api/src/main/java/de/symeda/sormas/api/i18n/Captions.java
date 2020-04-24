@@ -178,6 +178,7 @@ public interface Captions {
 	String CaseData_rabiesType = "CaseData.rabiesType";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reportDate = "CaseData.reportDate";
+	String CaseData_reportingType = "CaseData.reportingType";
 	String CaseData_reportingUser = "CaseData.reportingUser";
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
@@ -218,12 +219,12 @@ public interface Captions {
 	String CaseExport_numberOfPrescriptions = "CaseExport.numberOfPrescriptions";
 	String CaseExport_numberOfTreatments = "CaseExport.numberOfTreatments";
 	String CaseExport_otherSamples = "CaseExport.otherSamples";
+	String CaseExport_quarantineInformation = "CaseExport.quarantineInformation";
 	String CaseExport_sampleDates = "CaseExport.sampleDates";
 	String CaseExport_sampleDateTime1 = "CaseExport.sampleDateTime1";
 	String CaseExport_sampleDateTime2 = "CaseExport.sampleDateTime2";
 	String CaseExport_sampleDateTime3 = "CaseExport.sampleDateTime3";
 	String CaseExport_sampleInformation = "CaseExport.sampleInformation";
-	String CaseExport_quarantineInformation = "CaseExport.quarantineInformation";
 	String CaseExport_sampleLab1 = "CaseExport.sampleLab1";
 	String CaseExport_sampleLab2 = "CaseExport.sampleLab2";
 	String CaseExport_sampleLab3 = "CaseExport.sampleLab3";

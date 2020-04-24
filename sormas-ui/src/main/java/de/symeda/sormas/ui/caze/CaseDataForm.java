@@ -131,6 +131,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							CaseDataDto.RABIES_TYPE))) +
 			fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
 			fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
+					fluidRowLocs(CaseDataDto.REPORTING_TYPE,
+							"")
+					+
 			fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
 			fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 			fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
@@ -210,6 +213,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
 		addField(CaseDataDto.OUTCOME, OptionGroup.class);
 		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
+		addField(CaseDataDto.REPORTING_TYPE);
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);

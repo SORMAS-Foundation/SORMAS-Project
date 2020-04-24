@@ -4153,4 +4153,11 @@ ALTER TABLE contact_history DROP COLUMN quarantineordermeans;
 
 INSERT INTO schema_version (version_number, comment) VALUES (202, 'Additional quarantine fields #1906');
 
+-- 2020-04-24 Add type of reporting to cases #1833
+
+ALTER TABLE cases ADD COLUMN reportingtype varchar(255);
+ALTER TABLE cases_history ADD COLUMN reportingtype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (203, 'Add type of reporting to cases #1833');
+
 -- *** Insert new sql commands BEFORE this line ***
