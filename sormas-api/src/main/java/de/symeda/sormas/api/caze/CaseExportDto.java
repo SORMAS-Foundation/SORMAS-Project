@@ -206,11 +206,9 @@ public class CaseExportDto implements Serializable {
 		this.caseClassification = caseClassification;
 		this.investigationStatus = investigationStatus;
 		this.outcome = outcome;
-
 		this.quarantine = quarantine;
 		this.quarantineFrom = quarantineFrom;
 		this.quarantineTo = quarantineTo;
-
 		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
 		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry, pointOfEntryDetails);
 		this.admittedToHealthFacility = admittedToHealthFacility;
@@ -456,7 +454,7 @@ public class CaseExportDto implements Serializable {
 	@Order(33)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
@@ -464,7 +462,7 @@ public class CaseExportDto implements Serializable {
 	@Order(34)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
@@ -472,7 +470,7 @@ public class CaseExportDto implements Serializable {
 	@Order(35)
 	@ExportTarget(exportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}

@@ -296,7 +296,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.FOLLOW_UP_UNTIL),
 				contact.get(Contact.QUARANTINE),
 				contact.get(Contact.QUARANTINE_FROM),
-				contact.get(Contact.QUARANTINE_ORDER_MEANS),
+				contact.get(Contact.QUARANTINE_TO),
 				contact.get(Contact.QUARANTINE_HELP_NEEDED),
 				contactPerson.get(Person.PRESENT_CONDITION),
 				contactPerson.get(Person.DEATH_DATE),
