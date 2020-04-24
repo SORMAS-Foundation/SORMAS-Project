@@ -21,13 +21,21 @@ Jenkins plugins needed to be installed:
 
 ## Jenkins configuration (FreeStyle element / mandatory)
 
-### GitHub config
+### Prequisites: Getting the API-Key from Katalon Studio
+
+In Katalon-Studio open the dialog Window->Command Palette
+
+Select the option "Generate Command for Console Mode"
+
+Copy the String from the field "Katalon API Key" and insert it into the build step from jenkins. 
+
+### Jenkins Project "GitHub" config
 
 Repository URL: URL to Katalon Sormas tests
 
 ![alt text](images/J_config_scm.png "GitHub config")
 
-### Build config
+### Jenkins Project "Build" config
 
 Download Katalon Studio Version: `e.g.: 7.2.6`
 
@@ -37,7 +45,7 @@ Xvfb-run configuration (for Linux): `-s "-screen 0 1024x768x24"`
 
 ![alt text](images/J_config_build.png "Build config")
 
-### Post build config
+### Jenkins Project "Post build" config
 
 Archive: `Reports/**`
 
@@ -45,14 +53,14 @@ JUnit-Tests: `Reports/**/*.xml`
 
 ![alt text](images/J_config_post_build.png "PostBuild config")
 
-## Getting the API-Key from Katalon Studio
 
-In Katalon-Studio open the dialog Window->Command Palette
+### Configure Katalon plugin to find testing project in a given subfolder
 
-Select the option "Generate Command for Console Mode"
+Command arguments: `-browserType="Firefox" -retry=0 -statusDelay=15 -projectPath="$WORKSPACE/<subfolder>/Sormas-Testing.prj" -testSuitePath="Test Suites/Login/LoginRoles" -apiKey=<your api key>`
 
-Copy the String from the field "Katalon API Key" and insert it into the build step from jenkins. 
+Don't forget to adjust the Post build configuration.
 
+![alt text](images/J_config_testing_subfolder.png "Subfolder config")
 
 ## Katalon command line options (useful ones)
 Source: https://docs.katalon.com/katalon-studio/docs/console-mode-execution.html#general-options
