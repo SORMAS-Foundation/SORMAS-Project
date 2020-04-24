@@ -183,7 +183,7 @@ public class SampleController {
 			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
 			FacilityReferenceDto referredDtoLab = referredDto.getLab();
 			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null
-					? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " " + DateHelper.formatLocalDateTime(referredDto.getSampleDateTime())
+					? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " (" + DateHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
 					: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
 			referOrLinkToOtherLabButton.setCaption(referOrLinkToOtherLabButtonCaption);
 			referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
