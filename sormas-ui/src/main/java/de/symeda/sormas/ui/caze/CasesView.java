@@ -1014,9 +1014,7 @@ public class CasesView extends AbstractView {
 		if (excludeSharedCases != null) {
 			excludeSharedCases.setValue(criteria.getExcludeSharedCases());
 		}
-		if(criteria.isWithoutResponsibleOfficer() != null) {
-			withoutResponsibleOfficerFilter.setValue(criteria.isWithoutResponsibleOfficer());
-		}
+		withoutResponsibleOfficerFilter.setValue(criteria.isWithoutResponsibleOfficer());
 
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
