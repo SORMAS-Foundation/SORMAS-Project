@@ -416,41 +416,39 @@ public class StartupShutdownService {
 		}
 	}
 
+	/**
+	 * Checks if the PostgreSQL server is configured correctly to run SORMAS.
+	 */
 	private void checkDatabaseConfig(EntityManager entityManager) {
-		
-		List<String> errors = new ArrayList<>(); 
-		
-		// check postgres version
+
+		List<String> errors = new ArrayList<>();
+
+		// Check postgres version
+		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
 		String versionString = entityManager.createNativeQuery("SHOW server_version").getSingleResult().toString();
-		
-		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+")
-				.collect(Collectors.joining(")|(", "(", ")"));
-		if (! versionString.matches(versionRegexp)) {
-			logger.warn("Your PostgreSQL Version ("+versionString+") is currently not supported.");
+		if (!versionString.matches(versionRegexp)) {
+			logger.warn("Your PostgreSQL Version (" + versionString + ") is currently not supported.");
 		}
-		
-		
-		int maxPreparedTransactions = Integer.valueOf(entityManager.createNativeQuery("select current_setting('max_prepared_transactions')").getSingleResult().toString());
+
+		// Check setting "max_prepared_transactions"
+		int maxPreparedTransactions =
+			Integer.valueOf(entityManager.createNativeQuery("select current_setting('max_prepared_transactions')").getSingleResult().toString());
 		if (maxPreparedTransactions < 1) {
 			errors.add("max_prepared_transactions is not set. A value of at least 64 is recommended.");
 		} else if (maxPreparedTransactions < 64) {
 			logger.info("max_prepared_transactions is set to {}. A value of at least 64 is recommended.", maxPreparedTransactions);
-		} 
-		
-		//check extensions
-		
-		Stream.of("temporal_tables", "pg_trgm")
-		.filter(t -> {
-			String q = "select count(*) from pg_extension where extname = '"+t+"'";
+		}
+
+		// Check that required extensions are installed
+		Stream.of("temporal_tables", "pg_trgm").filter(t -> {
+			String q = "select count(*) from pg_extension where extname = '" + t + "'";
 			int count = ((Number) entityManager.createNativeQuery(q).getSingleResult()).intValue();
 			return count == 0;
-		})
-		.map(t -> "extension '" + t + "' has to be installed")
-		.forEach(errors::add);
-		
+		}).map(t -> "extension '" + t + "' has to be installed").forEach(errors::add);
+
 		if (!errors.isEmpty()) {
+			// List all config problems and stop deployment
 			throw new RuntimeException(errors.stream().collect(Collectors.joining("\n * ", "Postgres setup is not compatible:\n * ", "")));
-			
 		}
 	}
 
