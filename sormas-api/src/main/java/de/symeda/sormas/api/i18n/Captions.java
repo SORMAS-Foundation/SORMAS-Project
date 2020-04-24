@@ -1074,8 +1074,10 @@ public interface Captions {
 	String sampleRefer = "sampleRefer";
 	String sampleReferred = "sampleReferred";
 	String sampleReferredFrom = "sampleReferredFrom";
+	String sampleReferredFromInternal = "sampleReferredFromInternal";
 	String sampleReferredShort = "sampleReferredShort";
 	String sampleReferredTo = "sampleReferredTo";
+	String sampleReferredToInternal = "sampleReferredToInternal";
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
