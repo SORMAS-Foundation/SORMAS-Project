@@ -122,7 +122,10 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				contactService.createActiveContactsFilter(cb, root),
 				contactService.createDefaultFilter(cb, root),
 				cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),
-				cb.or(cb.isNull(caze), caseService.createDefaultFilter(cb, caze)),
+				cb.or(cb.isNull(caze), 
+					cb.and(
+						caseService.createDefaultFilter(cb, caze), 
+						cb.notEqual(caze.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE))),
 				root.get(Contact.DISEASE).in(diseases),
 				region == null ? null : cb.equal(root.join(Contact.REGION).get(Region.UUID), region.getUuid()),
 				district == null ? null : cb.equal(root.join(Contact.DISTRICT).get(District.UUID), district.getUuid())
