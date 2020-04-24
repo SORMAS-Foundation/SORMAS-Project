@@ -1720,6 +1720,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		return target;
 	}
@@ -1817,6 +1826,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		return target;
 	}
