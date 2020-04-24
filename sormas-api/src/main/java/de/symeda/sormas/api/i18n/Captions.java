@@ -223,6 +223,7 @@ public interface Captions {
 	String CaseExport_sampleDateTime2 = "CaseExport.sampleDateTime2";
 	String CaseExport_sampleDateTime3 = "CaseExport.sampleDateTime3";
 	String CaseExport_sampleInformation = "CaseExport.sampleInformation";
+	String CaseExport_quarantineInformation = "CaseExport.quarantineInformation";
 	String CaseExport_sampleLab1 = "CaseExport.sampleLab1";
 	String CaseExport_sampleLab2 = "CaseExport.sampleLab2";
 	String CaseExport_sampleLab3 = "CaseExport.sampleLab3";
