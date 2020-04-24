@@ -46,7 +46,7 @@ public class Helper {
 
 	static String formatDateToString(String format, Date date) {
 		SimpleDateFormat formatter = new SimpleDateFormat(format)
-		
+
 		return formatter.format(date)
 	}
 }
