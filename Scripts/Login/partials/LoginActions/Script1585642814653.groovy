@@ -16,7 +16,14 @@ import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 import org.openqa.selenium.Keys as Keys
 
-WebUI.openBrowser(GlobalVariable.gUrl)
+// check if browser is already opened, if a testcase needs to change some profile properties it automatically would open a browser
+try {
+	WebUI.navigateToUrl(GlobalVariable.gUrl)
+} catch(BrowserNotOpenedException){
+	WebUI.openBrowser(GlobalVariable.gUrl)
+}
+
+// WebUI.openBrowser(GlobalVariable.gUrl)
 
 WebUI.setText(findTestObject('Login/input_username_username'), Username)
 

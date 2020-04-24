@@ -1,24 +1,45 @@
-import static com.kms.katalon.core.checkpoint.CheckpointFactory.findCheckpoint
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
-import static com.kms.katalon.core.testdata.TestDataFactory.findTestData
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-import static com.kms.katalon.core.testobject.ObjectRepository.findWindowsObject
-import com.kms.katalon.core.checkpoint.Checkpoint as Checkpoint
-import com.kms.katalon.core.cucumber.keyword.CucumberBuiltinKeywords as CucumberKW
-import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords as Mobile
+
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.firefox.FirefoxOptions
+
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
-import com.kms.katalon.core.testcase.TestCase as TestCase
-import com.kms.katalon.core.testdata.TestData as TestData
-import com.kms.katalon.core.testobject.TestObject as TestObject
-import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
+import com.kms.katalon.core.webui.driver.DriverFactory
+import com.kms.katalon.core.webui.driver.WebUIDriverType
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
-import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
-import internal.GlobalVariable as GlobalVariable
-import org.openqa.selenium.Keys as Keys
+
+WebUIDriverType executedBrowser = DriverFactory.getExecutedBrowser()
+switch(executedBrowser) {
+	case WebUIDriverType.FIREFOX_DRIVER:          // "Firefox"
+		System.setProperty('webdriver.gecko.driver', DriverFactory.getGeckoDriverPath())
+		FirefoxOptions options = new FirefoxOptions()
+				
+		options.addPreference('marionette', true)
+		options.addPreference('browser.download.folderList', 2)
+		options.addPreference('browser.helperApps.alwaysAsk.force', false)
+		options.addPreference('browser.download.manager.showWhenStarting', false)
+		// options.addPreference('browser.download.useDownloadDir', true) // local test
+		options.addPreference('browser.download.dir', GlobalVariable.gDownloadPath)
+		options.addPreference('browser.download.downloadDir', GlobalVariable.gDownloadPath)
+		options.addPreference('browser.download.defaultFolder', GlobalVariable.gDownloadPath)
+		options.addPreference('browser.helperApps.neverAsk.saveToDisk', 'application/download, application/octet-stream, application/zip')
+		
+		WebDriver driver = new FirefoxDriver(options);
+		// let Katalon Studio to use the WebDriver created here
+		DriverFactory.changeWebDriver(driver)
+		break
+	default:
+		WebUI.openBrowser('')
+}
+
 
 WebUI.callTestCase(findTestCase('Login/partials/LoginAsNationalUser'), [:], FailureHandling.STOP_ON_FAILURE)
 
 WebUI.click(findTestObject('Login/MainView/menu_Statistics'))
+
+
 
 WebUI.click(findTestObject('Object Repository/Statistics/span_Database Export'))
 

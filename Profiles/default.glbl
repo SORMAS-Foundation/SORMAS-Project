@@ -109,4 +109,9 @@
       <initValue>'defaultSamplesTestData'</initValue>
       <name>gSamplesTestDataName</name>
    </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'/var/jenkins_home/downloads/'</initValue>
+      <name>gDownloadPath</name>
+   </GlobalVariableEntity>
 </GlobalVariableEntities>
