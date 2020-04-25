@@ -151,16 +151,6 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws Exception {
                 DatabaseHelper.getVisitDao().saveAndSnapshot(visit);
-
-                //save a contact person's address to current location after follow up
-                Person person = DatabaseHelper.getContactDao().queryUuid(contactUuid).getPerson();
-                android.location.Location phoneLocation = LocationService.instance().getLocation(VisitEditActivity.this);
-                if (phoneLocation != null) {
-                    person.getAddress().setLatitude(phoneLocation.getLatitude());
-                    person.getAddress().setLongitude(phoneLocation.getLongitude());
-                    person.getAddress().setLatLonAccuracy(phoneLocation.getAccuracy());
-                    DatabaseHelper.getPersonDao().saveAndSnapshot(person);
-                }
             }
 
             @Override

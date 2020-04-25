@@ -31,6 +31,7 @@ import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -39,6 +40,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.visit.VisitSection;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -136,6 +138,17 @@ public class VisitNewActivity extends BaseEditActivity<Visit> {
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws Exception {
                 DatabaseHelper.getVisitDao().saveAndSnapshot(visitToSave);
+
+                Person person = DatabaseHelper.getContactDao().queryUuid(contactUuid).getPerson();
+                if (person.getAddress().getLatitude() == null || person.getAddress().getLongitude() == null) {
+                    android.location.Location phoneLocation = LocationService.instance().getLocation(VisitNewActivity.this);
+                    if (phoneLocation != null) {
+                        person.getAddress().setLatitude(phoneLocation.getLatitude());
+                        person.getAddress().setLongitude(phoneLocation.getLongitude());
+                        person.getAddress().setLatLonAccuracy(phoneLocation.getAccuracy());
+                        DatabaseHelper.getPersonDao().saveAndSnapshot(person);
+                    }
+                }
             }
 
             @Override

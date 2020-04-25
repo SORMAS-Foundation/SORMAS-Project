@@ -279,7 +279,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                         setNewSubHeading(caseToSave.getPerson());
                     } else {
                         finish();
-                        CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO);
+                        CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO, true);
                     }
                 }
 

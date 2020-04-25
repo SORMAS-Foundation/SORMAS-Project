@@ -207,7 +207,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                         super.onPostExecute(taskResult);
                         if (taskResult.getResultStatus().isSuccess()) {
                             finish();
-                            ContactEditActivity.startActivity(getContext(), contactToSave.getUuid(), ContactSection.PERSON_INFO);
+                            ContactEditActivity.startActivity(getContext(), contactToSave.getUuid(), ContactSection.PERSON_INFO, true);
                         }
                         saveTask = null;
                     }
