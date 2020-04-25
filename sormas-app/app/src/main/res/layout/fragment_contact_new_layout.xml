@@ -29,7 +29,6 @@
         <import type="de.symeda.sormas.api.i18n.Strings" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact" />
-        <variable name="personAddress" type="de.symeda.sormas.app.backend.location.Location" />
     </data>
 
     <ScrollView
