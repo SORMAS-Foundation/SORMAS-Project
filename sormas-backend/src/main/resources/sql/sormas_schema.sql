@@ -4155,6 +4155,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (202, 'Additional qu
 
 -- 2020-04-21 Date of outbreak onset for each disease #1862
 ALTER TABLE diseaseconfiguration ADD COLUMN outbreakonset timestamp;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN outbreakonset timestamp;
 INSERT INTO schema_version (version_number, comment) VALUES (203, 'Date of outbreak onset for each disease #1862');
 
 -- *** Insert new sql commands BEFORE this line ***
