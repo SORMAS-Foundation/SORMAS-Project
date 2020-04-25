@@ -46,6 +46,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
@@ -195,6 +196,21 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		cq.where(filter);
 		cq.select(sample.get(Sample.UUID));
 
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<Sample> getByCaseUuids(List<String> caseUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		Root<Sample> sampleRoot = cq.from(Sample.class);
+		Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
+		Predicate filter = cb.and(
+				createDefaultFilter(cb, sampleRoot),
+				caseJoin.get(AbstractDomainObject.UUID).in(caseUuids)
+				);
+		
+		cq.where(filter);
 		return em.createQuery(cq).getResultList();
 	}
 	

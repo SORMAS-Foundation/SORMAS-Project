@@ -95,22 +95,36 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseHospitalization_intensiveCareUnit"
+                    app:value="@{data.intensiveCareUnit}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseHospitalization_accommodation"
-                        app:value="@{data.accommodation}"
+                        android:id="@+id/caseHospitalization_intensiveCareUnitStart"
+                        dependencyParentField="@{caseHospitalizationIntensiveCareUnit}"
+                        dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.intensiveCareUnitStart}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseHospitalization_leftAgainstAdvice"
-                        app:value="@{data.leftAgainstAdvice}"
+                        android:id="@+id/caseHospitalization_intensiveCareUnitEnd"
+                        dependencyParentField="@{caseHospitalizationIntensiveCareUnit}"
+                        dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.intensiveCareUnitEnd}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseHospitalization_leftAgainstAdvice"
+                    app:value="@{data.leftAgainstAdvice}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

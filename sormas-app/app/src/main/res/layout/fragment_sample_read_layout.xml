@@ -225,8 +225,8 @@
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/sample_referredToUuid"
-                    app:value="@{referredSample.lab}"
-                    app:goneIfEmpty="@{data.referredToUuid}"
+                    app:value="@{referredSample.lab == null ? referredSample : referredSample.lab }"
+                    app:goneIfEmpty="@{referredSample.referredToUuid}"
                     style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>

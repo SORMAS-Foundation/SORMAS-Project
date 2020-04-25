@@ -68,12 +68,10 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
             contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
             contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
             contentBinding.contactExternalID.setVisibility(GONE);
-            contentBinding.contactQuarantineOrderMeans.setVisibility(GONE);
-        }
-
-        QuarantineType type = (QuarantineType) contentBinding.contactQuarantine.getValue();
-        if (type == null || (!type.equals(QuarantineType.HOME) && !type.equals(QuarantineType.INSTITUTIONELL))){
-            contentBinding.contactQuarantineTo.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
         }
     }
 

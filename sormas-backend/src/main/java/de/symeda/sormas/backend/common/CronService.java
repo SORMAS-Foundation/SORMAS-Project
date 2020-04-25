@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -68,19 +70,23 @@ public class CronService {
 	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();
 	}
-	
+
 	@Schedule(hour = "1", minute = "0", second = "0", persistent = false)
 	public void deleteAllExpiredFeatureConfigurations() {
 		// Remove all feature configurations whose end dates have been reached
 		featureConfigurationFacade.deleteAllExpiredFeatureConfigurations(new Date());
-		
+
 		logger.info("Deleted expired feature configurations");
 	}
 
 	@Schedule(hour = "1", minute = "5", second = "0", persistent = false)
 	public void generateAutomaticTasks() {
-		contactFacade.generateContactFollowUpTasks();
-		weeklyReportFacade.generateSubmitWeeklyReportTasks();
+		if (featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_FOLLOW_UP)) {
+			contactFacade.generateContactFollowUpTasks();
+		}
+		if (featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.WEEKLY_REPORT_GENERATION)) {
+			weeklyReportFacade.generateSubmitWeeklyReportTasks();
+		}
 	}
 
 	@Schedule(hour = "1", minute = "10", second = "0", persistent = false)
@@ -93,7 +99,7 @@ public class CronService {
 			if (!fileEntry.isFile() || (!fileEntry.getName().startsWith(ImportExportUtils.TEMP_FILE_PREFIX))) {
 				continue;
 			}
-			
+
 			try {
 				BasicFileAttributes fileAttributes = Files.readAttributes(fileEntry.toPath(), BasicFileAttributes.class);
 				if (now.getTime() - fileAttributes.creationTime().toMillis() >= 1000 * 60 * 120) {
@@ -104,7 +110,7 @@ public class CronService {
 				logger.info("Error deleting a file in CronService. The file in question was " + fileEntry.getAbsolutePath(), e);
 			}
 		}
-		
+
 		logger.info("Deleted " + numberOfDeletedFiles + " export files");
 	}
 

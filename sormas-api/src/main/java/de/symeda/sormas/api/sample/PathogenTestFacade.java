@@ -49,4 +49,6 @@ public interface PathogenTestFacade {
 	
 	Date getLatestPathogenTestDate(String sampleUuid);
 	
+	List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids);
+	
 }

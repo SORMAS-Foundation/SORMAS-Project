@@ -273,6 +273,25 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
             contentBinding.caseDataHealthFacility.setRequired(false);
         }
+
+        contentBinding.caseDataQuarantine.addValueChangedListener(e -> {
+            boolean visible = QuarantineType.HOME.equals(contentBinding.caseDataQuarantine.getValue()) || QuarantineType.INSTITUTIONELL.equals(contentBinding.caseDataQuarantine.getValue());
+            if (visible) {
+                if (ConfigProvider.isGermanServer()) {
+                    contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(VISIBLE);
+                    contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
+                }
+            } else {
+                contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
+                contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            }
+        });
+        if (!ConfigProvider.isGermanServer()) {
+            contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedVerballyDate.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
+        }
     }
 
     @Override
@@ -300,6 +319,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.caseDataDistrictLevelDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataQuarantineFrom.initializeDateField(getFragmentManager());
         contentBinding.caseDataQuarantineTo.initializeDateField(getFragmentManager());
+        contentBinding.caseDataQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
+        contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
 
         // Replace classification user field with classified by field when case has been classified automatically
         if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {

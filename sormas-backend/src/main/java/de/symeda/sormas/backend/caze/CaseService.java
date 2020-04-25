@@ -541,6 +541,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.exists(treatmentSubquery),
 							cb.exists(clinicalVisitSubquery)));
 		}
+		if(Boolean.TRUE.equals(caseCriteria.isWithoutResponsibleOfficer())){
+			filter = and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
+		}
 		if (caseCriteria.getRelevanceStatus() != null) {
 			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(
@@ -728,7 +731,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} else if (currentUser.hasAnyUserRole(
 				UserRole.NATIONAL_USER,
 				UserRole.NATIONAL_CLINICIAN,
-				UserRole.NATIONAL_OBSERVER)) {
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(casePath.get(Case.DISEASE), currentUser.getLimitedDisease());
 			} else {

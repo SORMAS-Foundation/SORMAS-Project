@@ -160,8 +160,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void createDateFilters() {
 		HorizontalLayout dateFilterLayout = new HorizontalLayout();
-		dateFilterLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 		dateFilterLayout.setSpacing(true);
+		CssStyles.style(dateFilterLayout, CssStyles.VSPACE_3);
 		addComponent(dateFilterLayout);
 
 		btnCurrentPeriod = new PopupButton();

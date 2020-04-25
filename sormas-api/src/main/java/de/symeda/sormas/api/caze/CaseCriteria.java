@@ -47,7 +47,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
 	public static final String NEW_CASE_DATE_FROM = "newCaseDateFrom";
 	public static final String NEW_CASE_DATE_TO = "newCaseDateTo";
-	
+
 	private UserRole reportingUserRole;
 	private Disease disease;
 	private CaseOutcome outcome;
@@ -69,6 +69,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
+	private Boolean withoutResponsibleOfficer;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
@@ -77,16 +78,16 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
 	public Boolean excludeSharedCases;
-	
+
 	@Override
 	public CaseCriteria clone() {
 		try {
-			return (CaseCriteria)super.clone();
+			return (CaseCriteria) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public CaseCriteria reportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 		return this;
@@ -100,7 +101,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.outcome = outcome;
 		return this;
 	}
-	
+
 	public CaseOutcome getOutcome() {
 		return outcome;
 	}
@@ -109,16 +110,16 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.caseOrigin = caseOrigin;
 		return this;
 	}
-	
+
 	public CaseOrigin getCaseOrigin() {
 		return caseOrigin;
 	}
-	
+
 	public CaseCriteria disease(Disease disease) {
 		this.disease = disease;
 		return this;
 	}
-	
+
 	public Disease getDisease() {
 		return disease;
 	}
@@ -127,7 +128,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.region = region;
 		return this;
 	}
-	
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -136,7 +137,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.district = district;
 		return this;
 	}
-	
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
@@ -150,7 +151,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.newCaseDateType = newCaseDateType;
 		return this;
 	}
-	
+
 	public CaseCriteria newCaseDateFrom(Date newCaseDateFrom) {
 		this.newCaseDateFrom = newCaseDateFrom;
 		return this;
@@ -182,7 +183,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.person = person;
 		return this;
 	}
-	
+
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
@@ -191,29 +192,38 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.mustHaveNoGeoCoordinates = mustHaveNoGeoCoordinates;
 		return this;
 	}
-	
+
 	public Boolean isMustHaveNoGeoCoordinates() {
 		return mustHaveNoGeoCoordinates;
 	}
-	
+
 	public CaseCriteria mustBePortHealthCaseWithoutFacility(Boolean mustBePortHealthCaseWithoutFacility) {
 		this.mustBePortHealthCaseWithoutFacility = mustBePortHealthCaseWithoutFacility;
 		return this;
 	}
-	
+
 	public Boolean isMustBePortHealthCaseWithoutFacility() {
 		return mustBePortHealthCaseWithoutFacility;
 	}
-	
+
 	public CaseCriteria mustHaveCaseManagementData(Boolean mustHaveCaseManagementData) {
 		this.mustHaveCaseManagementData = mustHaveCaseManagementData;
 		return this;
 	}
-	
+
 	public Boolean isMustHaveCaseManagementData() {
 		return mustHaveCaseManagementData;
 	}
-	
+
+	public CaseCriteria withoutResponsibleOfficer(Boolean withoutResponsibleOfficer) {
+		this.withoutResponsibleOfficer = withoutResponsibleOfficer;
+		return this;
+	}
+
+	public Boolean isWithoutResponsibleOfficer() {
+		return this.withoutResponsibleOfficer;
+	}
+
 	public CaseCriteria caseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 		return this;
@@ -249,12 +259,12 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
 	}
-	
+
 	public CaseCriteria pointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
 		this.pointOfEntry = pointOfEntry;
 		return this;
 	}
-	
+
 	public PointOfEntryReferenceDto getPointOfEntry() {
 		return pointOfEntry;
 	}
@@ -267,17 +277,17 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public UserReferenceDto getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
-	
+
 	public CaseCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
 	}
-	
+
 	public CaseCriteria deleted(Boolean deleted) {
 		this.deleted = deleted;
 		return this;
@@ -315,7 +325,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.reportingUserLike = reportingUserLike;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public String getReportingUserLike() {
 		return reportingUserLike;
@@ -378,16 +388,16 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
 	}
-	
+
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
-	
+
 	public CaseCriteria quarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 		return this;
 	}
-	
+
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}
@@ -399,19 +409,19 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public CaseCriteria periodSelectionType(PeriodFilterMode periodSelectionType) {
 		this.periodFilterMode = periodSelectionType;
 		return this;
-	}
-	
+	}	
+
 	public Boolean getExcludeSharedCases() {
 		return excludeSharedCases;
 	}
-	
+
 	public CaseCriteria excludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
 		return this;
 	}
-	
+
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
 	}
-	
+
 }

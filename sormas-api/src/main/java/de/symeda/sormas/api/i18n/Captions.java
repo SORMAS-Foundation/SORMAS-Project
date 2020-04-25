@@ -165,6 +165,15 @@ public interface Captions {
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_quarantine = "CaseData.quarantine";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
+	String CaseData_quarantineHelpNeeded = "CaseData.quarantineHelpNeeded";
+	String CaseData_quarantineHomePossible = "CaseData.quarantineHomePossible";
+	String CaseData_quarantineHomePossibleComment = "CaseData.quarantineHomePossibleComment";
+	String CaseData_quarantineHomeSupplyEnsured = "CaseData.quarantineHomeSupplyEnsured";
+	String CaseData_quarantineHomeSupplyEnsuredComment = "CaseData.quarantineHomeSupplyEnsuredComment";
+	String CaseData_quarantineOrderedOfficialDocument = "CaseData.quarantineOrderedOfficialDocument";
+	String CaseData_quarantineOrderedOfficialDocumentDate = "CaseData.quarantineOrderedOfficialDocumentDate";
+	String CaseData_quarantineOrderedVerbally = "CaseData.quarantineOrderedVerbally";
+	String CaseData_quarantineOrderedVerballyDate = "CaseData.quarantineOrderedVerballyDate";
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_rabiesType = "CaseData.rabiesType";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
@@ -214,6 +223,7 @@ public interface Captions {
 	String CaseExport_sampleDateTime2 = "CaseExport.sampleDateTime2";
 	String CaseExport_sampleDateTime3 = "CaseExport.sampleDateTime3";
 	String CaseExport_sampleInformation = "CaseExport.sampleInformation";
+	String CaseExport_quarantineInformation = "CaseExport.quarantineInformation";
 	String CaseExport_sampleLab1 = "CaseExport.sampleLab1";
 	String CaseExport_sampleLab2 = "CaseExport.sampleLab2";
 	String CaseExport_sampleLab3 = "CaseExport.sampleLab3";
@@ -227,6 +237,7 @@ public interface Captions {
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
+	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
 	String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
@@ -333,7 +344,14 @@ public interface Captions {
 	String Contact_quarantine = "Contact.quarantine";
 	String Contact_quarantineFrom = "Contact.quarantineFrom";
 	String Contact_quarantineHelpNeeded = "Contact.quarantineHelpNeeded";
-	String Contact_quarantineOrderMeans = "Contact.quarantineOrderMeans";
+	String Contact_quarantineHomePossible = "Contact.quarantineHomePossible";
+	String Contact_quarantineHomePossibleComment = "Contact.quarantineHomePossibleComment";
+	String Contact_quarantineHomeSupplyEnsured = "Contact.quarantineHomeSupplyEnsured";
+	String Contact_quarantineHomeSupplyEnsuredComment = "Contact.quarantineHomeSupplyEnsuredComment";
+	String Contact_quarantineOrderedOfficialDocument = "Contact.quarantineOrderedOfficialDocument";
+	String Contact_quarantineOrderedOfficialDocumentDate = "Contact.quarantineOrderedOfficialDocumentDate";
+	String Contact_quarantineOrderedVerbally = "Contact.quarantineOrderedVerbally";
+	String Contact_quarantineOrderedVerballyDate = "Contact.quarantineOrderedVerballyDate";
 	String Contact_quarantineTo = "Contact.quarantineTo";
 	String Contact_region = "Contact.region";
 	String Contact_regionUuid = "Contact.regionUuid";
@@ -375,6 +393,7 @@ public interface Captions {
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
+	String contactQuarantineNotOrdered = "contactQuarantineNotOrdered";
 	String contactRelated = "contactRelated";
 	String contactRemoveCase = "contactRemoveCase";
 	String contactResumeFollowUp = "contactResumeFollowUp";
@@ -1057,8 +1076,10 @@ public interface Captions {
 	String sampleRefer = "sampleRefer";
 	String sampleReferred = "sampleReferred";
 	String sampleReferredFrom = "sampleReferredFrom";
+	String sampleReferredFromInternal = "sampleReferredFromInternal";
 	String sampleReferredShort = "sampleReferredShort";
 	String sampleReferredTo = "sampleReferredTo";
+	String sampleReferredToInternal = "sampleReferredToInternal";
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";

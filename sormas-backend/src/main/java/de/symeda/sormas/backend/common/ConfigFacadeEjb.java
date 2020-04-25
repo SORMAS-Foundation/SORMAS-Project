@@ -95,7 +95,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("Could not parse boolean value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}
@@ -104,7 +104,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("Could not parse numeric value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}
@@ -113,7 +113,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("Could not parse integer value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}

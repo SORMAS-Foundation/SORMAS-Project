@@ -94,10 +94,10 @@ public enum TaskType {
 	}
 
 	public static List<TaskType> getTaskTypes(TaskContext taskContext) {
-
 		if (taskContext == null) {
 			return Arrays.asList(TaskType.values());
 		}
 		return TASK_TYPES_BY_CONTEXT.get(taskContext);
 	}
+	
 }

@@ -38,7 +38,7 @@ import de.symeda.sormas.api.region.RegionDto;
  */
 @Path("/regions")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class RegionResource {
 
 	@GET @Path("/all/{since}")
