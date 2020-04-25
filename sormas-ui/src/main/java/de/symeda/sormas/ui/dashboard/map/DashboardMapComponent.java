@@ -140,6 +140,9 @@ public class DashboardMapComponent extends VerticalLayout {
 	private BigDecimal districtValuesUpperQuartile;
 	private Consumer<Boolean> externalExpandListener;
 	private boolean emptyPopulationDistrictPresent;
+	
+	ComboBox cmbPeriodType;
+	ComboBox cmbPeriodFilter;
 
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -249,6 +252,8 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		// Re-create the map key layout to only show the keys for the selected layers
 		legendDropdown.setContent(createLegend());
+		
+		updatePeriodFilters();
 	}
 
 	public List<CaseDataDto> getCasesForFacility(FacilityReferenceDto facility) {
@@ -487,65 +492,24 @@ public class DashboardMapComponent extends VerticalLayout {
 		return mapFooterLayout;
 	}
 	
+	private enum PeriodFilterReloadFlag {
+		RELOAD_AND_KEEP_VALUE,
+		RELOAD_AND_CLEAR_VALUE,
+		DONT_RELOAD
+	}
+	
+	private PeriodFilterReloadFlag reloadPeriodFiltersFlag = PeriodFilterReloadFlag.RELOAD_AND_KEEP_VALUE;
+	
 	private void createPeriodFilters (VerticalLayout layersLayout) {
-		ComboBox cmbPeriodType = new ComboBox();
-		ComboBox cmbPeriodFilter = new ComboBox();
+		cmbPeriodType = new ComboBox();
+		cmbPeriodFilter = new ComboBox();
 		
 		cmbPeriodType.addItems(MapPeriodType.values());
 		cmbPeriodType.setInputPrompt(I18nProperties.getString(Strings.promptFilterByPeriod));
 		cmbPeriodType.addValueChangeListener(e -> {
-			MapPeriodType periodType = (MapPeriodType) e.getProperty().getValue();
-			
-			cmbPeriodFilter.removeAllItems();
-			
-			if (periodType == null) {
-				cmbPeriodFilter.setEnabled(false);						
-				dateFrom = null;
-				dateTo = null;
-				
-				refreshMap();
-				
-				return;
-			}
-			
-			cmbPeriodFilter.setEnabled(true);
-			
-			if (mapCaseDtos.size() == 0)
-				return;
-			
-			List<Date> reportedDates = mapCaseDtos.stream().map(c -> c.getReportDate()).collect(Collectors.toList());
-			Date minDate = reportedDates.stream().min(Date::compareTo).get();
-			Date maxDate = reportedDates.stream().max(Date::compareTo).get();
-			
-			List<Date> dates;
-			String strDateFormat = "";
-			switch (periodType) {
-				case DAILY:
-					dates = DateHelper.listDaysBetween(minDate, maxDate);
-					strDateFormat = "MMM dd, yyyy";
-					break;
-				case WEEKLY:
-					dates = DateHelper.listWeeksBetween(minDate, maxDate);
-					strDateFormat = "'" + I18nProperties.getString(Strings.week) + "' w, yyyy";
-					break;
-				case MONTHLY:
-					dates = DateHelper.listMonthsBetween(minDate, maxDate);
-					strDateFormat = "MMM yyyy";
-					break;
-				case YEARLY:
-					dates = DateHelper.listYearsBetween(minDate, maxDate);
-					strDateFormat = "yyyy";
-					break;
-				default:
-					dates = Collections.emptyList();
-			}
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat(strDateFormat);
-			
-			cmbPeriodFilter.addItems(dates);
-			for (Date date : dates)
-				cmbPeriodFilter.setItemCaption(date, DateHelper.formatLocalDate(date, dateFormat));
-		});
+			reloadPeriodFiltersFlag = PeriodFilterReloadFlag.RELOAD_AND_CLEAR_VALUE;
+			updatePeriodFilters();
+		});		
 		
 		cmbPeriodFilter.setInputPrompt(I18nProperties.getString(Strings.promptSelectPeriod));
 		cmbPeriodFilter.setEnabled(false);
@@ -581,7 +545,9 @@ public class DashboardMapComponent extends VerticalLayout {
 				dateFrom = null;
 				dateTo = null;
 			}
-				
+			
+			reloadPeriodFiltersFlag = PeriodFilterReloadFlag.DONT_RELOAD;
+			
 			refreshMap();
 		});
 		
@@ -592,6 +558,72 @@ public class DashboardMapComponent extends VerticalLayout {
 		layersLayout.addComponent(periodFilterLayout);
 	}
 
+	private void updatePeriodFilters () {
+		MapPeriodType periodType = (MapPeriodType) cmbPeriodType.getValue();
+		
+		//store current flag and reset it
+		PeriodFilterReloadFlag reloadFlag = reloadPeriodFiltersFlag;
+		reloadPeriodFiltersFlag = PeriodFilterReloadFlag.RELOAD_AND_KEEP_VALUE;
+		
+		String cachedDateValue = cmbPeriodFilter.getCaption();
+		
+		if (reloadFlag != PeriodFilterReloadFlag.DONT_RELOAD)
+			cmbPeriodFilter.removeAllItems();
+		
+		if (periodType == null) {
+			cmbPeriodFilter.setEnabled(false);						
+			dateFrom = null;
+			dateTo = null;
+			
+			if (reloadFlag != PeriodFilterReloadFlag.RELOAD_AND_KEEP_VALUE)
+				refreshMap();
+			
+			return;
+		}
+		
+		cmbPeriodFilter.setEnabled(true);
+		
+		if (mapCaseDtos.size() == 0)
+			return;
+		
+		List<Date> reportedDates = mapCaseDtos.stream().map(c -> c.getReportDate()).collect(Collectors.toList());
+		Date minDate = reportedDates.stream().min(Date::compareTo).get();
+		Date maxDate = reportedDates.stream().max(Date::compareTo).get();
+		
+		List<Date> dates;
+		String strDateFormat = "";
+		switch (periodType) {
+			case DAILY:
+				dates = DateHelper.listDaysBetween(minDate, maxDate);
+				strDateFormat = "MMM dd, yyyy";
+				break;
+			case WEEKLY:
+				dates = DateHelper.listWeeksBetween(minDate, maxDate);
+				strDateFormat = "'" + I18nProperties.getString(Strings.week) + "' w, yyyy";
+				break;
+			case MONTHLY:
+				dates = DateHelper.listMonthsBetween(minDate, maxDate);
+				strDateFormat = "MMM yyyy";
+				break;
+			case YEARLY:
+				dates = DateHelper.listYearsBetween(minDate, maxDate);
+				strDateFormat = "yyyy";
+				break;
+			default:
+				dates = Collections.emptyList();
+		}
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+		
+		cmbPeriodFilter.addItems(dates);
+		for (Date date : dates) {
+			String caption = DateHelper.formatLocalDate(date, dateFormat);
+			cmbPeriodFilter.setItemCaption(date, caption);
+			if (reloadFlag != PeriodFilterReloadFlag.RELOAD_AND_CLEAR_VALUE && caption.equals(cachedDateValue))
+				cmbPeriodFilter.setValue(date);
+		}
+	}
+	
 	private VerticalLayout createLegend() {
 		VerticalLayout legendLayout = new VerticalLayout();
 		legendLayout.setSpacing(false);
