@@ -1503,7 +1503,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Contact.class).executeRaw("UPDATE contacts SET quarantineOrderedOfficialDocument = CASE WHEN quarantineOrderMeans = 'OFFICIAL_DOCUMENT' THEN 1 ELSE 0 END;");
 				case 197:
 					currentVersion = 197;
-					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN surveillancetype varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN surveillanceType varchar(255);");
 
 
 					// ATTENTION: break should only be done after last version
