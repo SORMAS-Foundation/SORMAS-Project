@@ -52,6 +52,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -197,6 +198,16 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                             }
                         }
 
+                        //set current address when person address is null
+                        if (contactToSave.getPerson().getAddress().getLatitude() == null || contactToSave.getPerson().getAddress().getLongitude() == null) {
+                            android.location.Location phoneLocation = LocationService.instance().getLocation(ContactNewActivity.this);
+                            if (phoneLocation != null) {
+                                contactToSave.getPerson().getAddress().setLatitude(phoneLocation.getLatitude());
+                                contactToSave.getPerson().getAddress().setLongitude(phoneLocation.getLongitude());
+                                contactToSave.getPerson().getAddress().setLatLonAccuracy(phoneLocation.getAccuracy());
+                            }
+                        }
+
                         DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
                         DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
                     }
@@ -207,7 +218,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
                         super.onPostExecute(taskResult);
                         if (taskResult.getResultStatus().isSuccess()) {
                             finish();
-                            ContactEditActivity.startActivity(getContext(), contactToSave.getUuid(), ContactSection.PERSON_INFO, true);
+                            ContactEditActivity.startActivity(getContext(), contactToSave.getUuid(), ContactSection.PERSON_INFO);
                         }
                         saveTask = null;
                     }

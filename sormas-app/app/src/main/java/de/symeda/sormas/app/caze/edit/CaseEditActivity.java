@@ -72,31 +72,12 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
     private AsyncTask saveTask;
 
-    private static String IS_NEW_RECORD = "isNewRecord";
-    private boolean isNewRecord = false;
-
     public static void startActivity(Context context, String recordUuid, CaseSection section) {
         BaseActivity.startActivity(context, CaseEditActivity.class, buildBundle(recordUuid, section));
     }
 
-    public static void startActivity(Context context, String recordUuid, CaseSection section, boolean isNewRecord) {
-        BaseActivity.startActivity(context, CaseEditActivity.class, buildBundle(recordUuid, section, isNewRecord));
-    }
-
     public static Bundler buildBundle(String recordUuid, CaseSection section) {
         return BaseEditActivity.buildBundle(recordUuid, section.ordinal());
-    }
-
-    public static Bundler buildBundle(String recordUuid, CaseSection section, boolean isNewRecord) {
-        Bundler bundler = BaseEditActivity.buildBundle(recordUuid, section.ordinal());
-        bundler.get().putBoolean(IS_NEW_RECORD, isNewRecord);
-        return bundler;
-    }
-
-    @Override
-    protected void onCreateInner(Bundle savedInstanceState) {
-        super.onCreateInner(savedInstanceState);
-        isNewRecord = savedInstanceState.getBoolean(IS_NEW_RECORD, false);
     }
 
     @Override
@@ -262,18 +243,6 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
             @Override
             protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
                 synchronized (CaseEditActivity.this) {
-                    //app initially set current address when person address is null
-                    if (isNewRecord) {
-                        CaseSection section = CaseSection.fromOrdinal(CaseEditActivity.this.getActivePage().getPosition());
-                        if (section == CaseSection.PERSON_INFO && (changedCase.getPerson().getAddress().getLatitude() == null || changedCase.getPerson().getAddress().getLongitude() == null)) {
-                            android.location.Location phoneLocation = LocationService.instance().getLocation(CaseEditActivity.this);
-                            if (phoneLocation != null) {
-                                changedCase.getPerson().getAddress().setLatitude(phoneLocation.getLatitude());
-                                changedCase.getPerson().getAddress().setLongitude(phoneLocation.getLongitude());
-                                changedCase.getPerson().getAddress().setLatLonAccuracy(phoneLocation.getAccuracy());
-                            }
-                        }
-                    }
                     DatabaseHelper.getPersonDao().saveAndSnapshot(changedCase.getPerson());
                     DatabaseHelper.getCaseDao().saveAndSnapshot(changedCase);
                 }

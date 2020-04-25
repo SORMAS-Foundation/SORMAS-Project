@@ -29,6 +29,7 @@
         <import type="de.symeda.sormas.api.i18n.Strings" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact" />
+        <variable name="personAddress" type="de.symeda.sormas.app.backend.location.Location" />
     </data>
 
     <ScrollView
@@ -43,6 +44,13 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:id="@+id/main_content">
+
+            <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                android:id="@+id/person_address"
+                app:iconStart="@drawable/ic_edit_location_black_24dp"
+                app:hint="@string/hint_enter_location"
+                app:locationValue="@={data.person.address}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/contact_reportDateTime"

@@ -54,6 +54,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.LocationService;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -239,6 +240,15 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
             @Override
             protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
+                //set current address when person address is null
+                if (caseToSave.getPerson().getAddress().getLatitude() == null || caseToSave.getPerson().getAddress().getLongitude() == null) {
+                    android.location.Location phoneLocation = LocationService.instance().getLocation(CaseNewActivity.this);
+                    if (phoneLocation != null) {
+                        caseToSave.getPerson().getAddress().setLatitude(phoneLocation.getLatitude());
+                        caseToSave.getPerson().getAddress().setLongitude(phoneLocation.getLongitude());
+                        caseToSave.getPerson().getAddress().setLatLonAccuracy(phoneLocation.getAccuracy());
+                    }
+                }
                 DatabaseHelper.getPersonDao().saveAndSnapshot(caseToSave.getPerson());
 
                 // epid number
@@ -279,7 +289,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
                         setNewSubHeading(caseToSave.getPerson());
                     } else {
                         finish();
-                        CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO, true);
+                        CaseEditActivity.startActivity(getContext(), caseToSave.getUuid(), CaseSection.CASE_INFO);
                     }
                 }
 

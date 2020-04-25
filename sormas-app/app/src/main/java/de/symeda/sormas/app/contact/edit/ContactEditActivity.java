@@ -57,31 +57,17 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
     private AsyncTask saveTask;
 
-    private static String IS_NEW_RECORD = "isNewRecord";
-    private boolean isNewRecord = false;
-
     public static void startActivity(Context context, String rootUuid, ContactSection section) {
         BaseActivity.startActivity(context, ContactEditActivity.class, buildBundle(rootUuid, section));
-    }
-
-    public static void startActivity(Context context, String rootUuid, ContactSection section, boolean isNewRecord) {
-        BaseActivity.startActivity(context, ContactEditActivity.class, buildBundle(rootUuid, section, isNewRecord));
     }
 
     public static Bundler buildBundle(String rootUuid, ContactSection section) {
         return buildBundle(rootUuid, section.ordinal());
     }
 
-    public static Bundler buildBundle(String rootUuid, ContactSection section, boolean isNewRecord) {
-        Bundler bundler = BaseEditActivity.buildBundle(rootUuid, section.ordinal());
-        bundler.get().putBoolean(IS_NEW_RECORD, isNewRecord);
-        return bundler;
-    }
-
     @Override
     protected void onCreateInner(Bundle savedInstanceState) {
         super.onCreateInner(savedInstanceState);
-        isNewRecord = savedInstanceState.getBoolean(IS_NEW_RECORD, false);
     }
 
     @Override
@@ -156,18 +142,6 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                //app initially set current address when person address is null
-                if (isNewRecord) {
-                    ContactSection section = ContactSection.fromOrdinal(ContactEditActivity.this.getActivePage().getPosition());
-                    if (section == ContactSection.PERSON_INFO && (contactToSave.getPerson().getAddress().getLatitude() == null || contactToSave.getPerson().getAddress().getLongitude() == null)) {
-                        android.location.Location phoneLocation = LocationService.instance().getLocation(ContactEditActivity.this);
-                        if (phoneLocation != null) {
-                            contactToSave.getPerson().getAddress().setLatitude(phoneLocation.getLatitude());
-                            contactToSave.getPerson().getAddress().setLongitude(phoneLocation.getLongitude());
-                            contactToSave.getPerson().getAddress().setLatLonAccuracy(phoneLocation.getAccuracy());
-                        }
-                    }
-                }
                 DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
                 DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
             }
