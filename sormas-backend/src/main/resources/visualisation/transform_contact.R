@@ -48,8 +48,12 @@ con = dbConnect(PostgreSQL(), user=DB_USER, dbname=DB_NAME, password = DB_PASS, 
 
 #query contact table and ratin only contacts parsed from Sys.getenv
 if (CONTACT_IDS == "") {
-	idCont = as.character(dbGetQuery(con," select id from public.contact")$id) # these are Sys.getenv("contact") parsed as character vector
-	idContString = toString(idCont)
+	#for testing: get all valid contacts
+	idCont = as.character(dbGetQuery(con, "select ct.id 
+from public.contact ct
+	join public.cases cs on (ct.caze_id = cs.id)
+where ct.deleted = FALSE and ct.contactclassification != 'NO_CONTACT'
+	and cs.caseclassification != 'NO_CASE' and cs.deleted = FALSE")$id)
 } else {
 	idContString = CONTACT_IDS
 }
@@ -61,11 +65,7 @@ sql_edge = "select distinct cs.person_id case_pid, ct.person_id contact_pid,
 	'ContactProximity.' || ct.contactproximity as contactproximity, 'ContactStatus.' || ct.contactstatus as contactstatus
 from public.contact ct 
 	join public.cases cs on ct.caze_id = cs.id
-where ct.id in (%s)
-	and ct.deleted = FALSE 
-	and ct.contactclassification != 'NO_CONTACT'
-	and cs.caseclassification != 'NO_CASE' 
-	and cs.deleted = FALSE"
+where ct.id in (%s)"
 
 edgeTable = dbGetQuery( con, sprintf(sql_edge, idContString) )
 
@@ -74,7 +74,6 @@ sql_node = "with clean_ct as (
 	select *
 	from public.contact
 	where id in (%s)
-		and deleted = FALSE
 ),
 clean_cs as (
 	select *
@@ -87,18 +86,15 @@ node as (
 	select p.id as person_id, rcs.reportdate, rcs.uuid, rcs.caseclassification
 	from public.person p
 		join clean_ct ct on ct.person_id = p.id
-		left join clean_cs rcs on ct.resultingcase_id = rcs.id 
-	WHERE ct.resultingcase_id is not null 
-		or contactclassification != 'NO_CONTACT'
+		left join clean_cs rcs on ct.resultingcase_id = rcs.id
 union
 	--caze
 	select distinct p.id, cs.reportdate, cs.uuid, cs.caseclassification
 	from clean_ct ct 
-		join clean_cs cs on ct.caze_id = cs.id
+		join public.cases cs on ct.caze_id = cs.id
 		join public.person p on cs.person_id = p.id
-	WHERE contactclassification != 'NO_CONTACT'
 )
---XXX take data from earliest case
+-- take data from earliest case
 select distinct on (person_id)
 	person_id, uuid,  upper(left(uuid, 6)) as short_uuid, 'Classification.' || caseclassification as caseclassification
 from node
@@ -125,11 +121,17 @@ highRiskProximity = paste("ContactProximity", c(
 elist$label = NA
 elist$label[elist$contactproximity %in% highRiskProximity] = 1 
 elist$label[!(elist$contactproximity %in% highRiskProximity)] = 2
+#drop contactproximity
+elist$contactproximity <- NULL
 
 ## defining plotting parameters  
 
 nodesS = nlist
 edgesS = elist
+
+#deleting duplicate edges
+edgesS <- edgesS[order(edgesS$label),]
+edgesS <- distinct(edgesS, from, to, .keep_all = TRUE)
 
 # deleting edges linking a node to itselt
 edgesS = edgesS[edgesS$from != edgesS$to,]
