@@ -297,6 +297,32 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_quarantineHomePossible"
+                    app:value="@={data.quarantineHomePossible}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_quarantineHomePossibleComment"
+                    app:dependencyParentField="@{caseDataQuarantineHomePossible}"
+                    app:dependencyParentValue="@{YesNoUnknown.NO}"
+                    app:value="@={data.quarantineHomePossibleComment}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_quarantineHomeSupplyEnsured"
+                    app:dependencyParentField="@{caseDataQuarantineHomePossible}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:value="@={data.quarantineHomeSupplyEnsured}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_quarantineHomeSupplyEnsuredComment"
+                    app:dependencyParentField="@{caseDataQuarantineHomeSupplyEnsured}"
+                    app:dependencyParentValue="@{YesNoUnknown.NO}"
+                    app:value="@={data.quarantineHomeSupplyEnsuredComment}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_quarantine"
                     app:value="@={data.quarantine}"
@@ -325,6 +351,38 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/caseData_quarantineOrderedVerbally"
+                    app:value="@={data.quarantineOrderedVerbally}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/caseData_quarantineOrderedVerballyDate"
+                    app:dependencyParentField="@{caseDataQuarantineOrderedVerbally}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@={data.quarantineOrderedVerballyDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/caseData_quarantineOrderedOfficialDocument"
+                    app:value="@={data.quarantineOrderedOfficialDocument}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/caseData_quarantineOrderedOfficialDocumentDate"
+                    app:dependencyParentField="@{caseDataQuarantineOrderedOfficialDocument}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@={data.quarantineOrderedOfficialDocumentDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_quarantineHelpNeeded"
+                    app:dependencyParentField="@{caseDataQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@={data.quarantineHelpNeeded}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_additionalDetails"

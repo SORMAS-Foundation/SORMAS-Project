@@ -38,7 +38,7 @@ import de.symeda.sormas.api.region.DistrictDto;
  */
 @Path("/districts")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class DistrictResource {
 
 	@GET @Path("/all/{since}")

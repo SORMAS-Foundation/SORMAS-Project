@@ -4079,7 +4079,6 @@ ALTER TABLE contact_history ADD COLUMN quarantinehelpneeded varchar(512);
 INSERT INTO schema_version (version_number, comment) VALUES (198, 'Reworking of quarantine #1762');
 
 -- 2020-04-20 Add fields for intensive care unit to hospitalization #1830
-
 ALTER TABLE hospitalization ADD COLUMN intensivecareunit varchar(255);
 ALTER TABLE hospitalization_history ADD COLUMN intensivecareunit varchar(255);
 ALTER TABLE hospitalization ADD COLUMN intensivecareunitstart timestamp;
@@ -4097,13 +4096,69 @@ INSERT INTO schema_version (version_number, comment) VALUES (199, 'Add fields fo
 -- 2020-04-22 Remove export functions which are now maintained within java code  #1830
 DROP FUNCTION export_database(text, text);
 DROP FUNCTION export_database_join(text, text, text, text, text);
-INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code  #1830');
+
+-- *** Insert new sql commands BEFORE this line ***
+INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code #1830');
+
+-- 2020-04-23 Re-introduce quarantine end date #1891
+ALTER TABLE contact ADD COLUMN quarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineto timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (201, 'Re-introduce quarantine end date #1891');
+
+-- 2020-04-24 Additional quarantine fields #1906
+ALTER TABLE cases ADD COLUMN quarantinehelpneeded varchar(512);
+ALTER TABLE cases ADD COLUMN quarantineorderedverbally boolean;
+ALTER TABLE cases ADD COLUMN quarantineorderedofficialdocument boolean;
+ALTER TABLE cases ADD COLUMN quarantineorderedverballydate timestamp;
+ALTER TABLE cases ADD COLUMN quarantineorderedofficialdocumentdate timestamp;
+ALTER TABLE cases ADD COLUMN quarantinehomepossible varchar(255);
+ALTER TABLE cases ADD COLUMN quarantinehomepossiblecomment varchar(512);
+ALTER TABLE cases ADD COLUMN quarantinehomesupplyensured varchar(255);
+ALTER TABLE cases ADD COLUMN quarantinehomesupplyensuredcomment varchar(512);
+ALTER TABLE cases_history ADD COLUMN quarantinehelpneeded varchar(512);
+ALTER TABLE cases_history ADD COLUMN quarantineorderedverbally boolean;
+ALTER TABLE cases_history ADD COLUMN quarantineorderedofficialdocument boolean;
+ALTER TABLE cases_history ADD COLUMN quarantineorderedverballydate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineorderedofficialdocumentdate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantinehomepossible varchar(255);
+ALTER TABLE cases_history ADD COLUMN quarantinehomepossiblecomment varchar(512);
+ALTER TABLE cases_history ADD COLUMN quarantinehomesupplyensured varchar(255);
+ALTER TABLE cases_history ADD COLUMN quarantinehomesupplyensuredcomment varchar(512);
+
+UPDATE cases SET quarantineorderedverbally = false;
+UPDATE cases SET quarantineorderedofficialdocument = false;
+
+ALTER TABLE contact ADD COLUMN quarantineorderedverbally boolean;
+ALTER TABLE contact ADD COLUMN quarantineorderedofficialdocument boolean;
+ALTER TABLE contact ADD COLUMN quarantineorderedverballydate timestamp;
+ALTER TABLE contact ADD COLUMN quarantineorderedofficialdocumentdate timestamp;
+ALTER TABLE contact ADD COLUMN quarantinehomepossible varchar(255);
+ALTER TABLE contact ADD COLUMN quarantinehomepossiblecomment varchar(512);
+ALTER TABLE contact ADD COLUMN quarantinehomesupplyensured varchar(255);
+ALTER TABLE contact ADD COLUMN quarantinehomesupplyensuredcomment varchar(512);
+ALTER TABLE contact_history ADD COLUMN quarantineorderedverbally boolean;
+ALTER TABLE contact_history ADD COLUMN quarantineorderedofficialdocument boolean;
+ALTER TABLE contact_history ADD COLUMN quarantineorderedverballydate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineorderedofficialdocumentdate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantinehomepossible varchar(255);
+ALTER TABLE contact_history ADD COLUMN quarantinehomepossiblecomment varchar(512);
+ALTER TABLE contact_history ADD COLUMN quarantinehomesupplyensured varchar(255);
+ALTER TABLE contact_history ADD COLUMN quarantinehomesupplyensuredcomment varchar(512);
+
+UPDATE contact SET quarantineorderedverbally = CASE WHEN quarantineordermeans = 'VERBALLY' THEN true ELSE false END;
+UPDATE contact SET quarantineorderedofficialdocument = CASE WHEN quarantineordermeans = 'OFFICIAL_DOCUMENT' THEN true ELSE false END;
+
+ALTER TABLE contact DROP COLUMN quarantineordermeans;
+ALTER TABLE contact_history DROP COLUMN quarantineordermeans;
+
+INSERT INTO schema_version (version_number, comment) VALUES (202, 'Additional quarantine fields #1906');
 
 -- 2020-04-22 Add surveillance type to case #1898
 
 ALTER TABLE cases ADD COLUMN surveillancetype varchar(255);
 ALTER TABLE cases_history ADD COLUMN surveillancetype varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (201, 'Add surveillance type to case #1898');
+INSERT INTO schema_version (version_number, comment) VALUES (203, 'Add surveillance type to case #1898');
 
 -- *** Insert new sql commands BEFORE this line ***

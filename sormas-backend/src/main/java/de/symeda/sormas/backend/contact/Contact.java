@@ -39,7 +39,6 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
@@ -88,6 +87,7 @@ public class Contact extends CoreAdo {
 	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPracticionerDetails";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
+	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
@@ -95,8 +95,15 @@ public class Contact extends CoreAdo {
 	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
-	public static final String QUARANTINE_ORDER_MEANS = "quarantineOrderMeans";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
+	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
+	public static final String QUARANTINE_ORDERED_VERBALLY_DATE = "quarantineOrderedVerballyDate";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE = "quarantineOrderedOfficialDocumentDate";
+	public static final String QUARANTINE_HOME_POSSIBLE = "quarantineHomePossible";
+	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -135,6 +142,7 @@ public class Contact extends CoreAdo {
 	
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
+	private Date quarantineTo;
 	
 	private String caseIdExternalSystem;
 	private String caseOrEventInformation;
@@ -142,8 +150,15 @@ public class Contact extends CoreAdo {
 	private String contactProximityDetails;
 	private ContactCategory contactCategory;
 
-	private OrderMeans quarantineOrderMeans;
 	private String quarantineHelpNeeded;
+	private boolean quarantineOrderedVerbally;
+	private boolean quarantineOrderedOfficialDocument;
+	private Date quarantineOrderedVerballyDate;
+	private Date quarantineOrderedOfficialDocumentDate;
+	private YesNoUnknown quarantineHomePossible;
+	private String quarantineHomePossibleComment;
+	private YesNoUnknown quarantineHomeSupplyEnsured;
+	private String quarantineHomeSupplyEnsuredComment;
 
 	private List<Task> tasks;
 	
@@ -444,6 +459,15 @@ public class Contact extends CoreAdo {
 		this.quarantineFrom = quarantineFrom;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+	}
+
 	@Column(length=255)
 	public String getCaseIdExternalSystem() {
 		return caseIdExternalSystem;
@@ -489,15 +513,6 @@ public class Contact extends CoreAdo {
 		this.contactCategory = contactCategory;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public OrderMeans getQuarantineOrderMeans() {
-		return quarantineOrderMeans;
-	}
-
-	public void setQuarantineOrderMeans(OrderMeans quarantineOrderMeans) {
-		this.quarantineOrderMeans = quarantineOrderMeans;
-	}
-
 	@Column(length = 512)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
@@ -506,4 +521,77 @@ public class Contact extends CoreAdo {
 	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
 		this.quarantineHelpNeeded = quarantineHelpNeeded;
 	}
+
+	@Column
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	public void setQuarantineOrderedVerbally(boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+	}
+
+	@Column
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	public void setQuarantineOrderedOfficialDocument(boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	public void setQuarantineOrderedVerballyDate(Date quarantineOrderedVerballyDate) {
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getQuarantineHomePossible() {
+		return quarantineHomePossible;
+	}
+
+	public void setQuarantineHomePossible(YesNoUnknown quarantineHomePossible) {
+		this.quarantineHomePossible = quarantineHomePossible;
+	}
+
+	@Column(length = 512)
+	public String getQuarantineHomePossibleComment() {
+		return quarantineHomePossibleComment;
+	}
+
+	public void setQuarantineHomePossibleComment(String quarantineHomePossibleComment) {
+		this.quarantineHomePossibleComment = quarantineHomePossibleComment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getQuarantineHomeSupplyEnsured() {
+		return quarantineHomeSupplyEnsured;
+	}
+
+	public void setQuarantineHomeSupplyEnsured(YesNoUnknown quarantineHomeSupplyEnsured) {
+		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
+	}
+
+	@Column(length = 512)
+	public String getQuarantineHomeSupplyEnsuredComment() {
+		return quarantineHomeSupplyEnsuredComment;
+	}
+
+	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
+		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+	}
+	
 }

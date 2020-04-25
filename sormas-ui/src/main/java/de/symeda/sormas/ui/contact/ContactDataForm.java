@@ -31,7 +31,6 @@ import org.joda.time.LocalDate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
@@ -83,7 +82,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
-	private static final String QUARANTINE_TO_LOC = "quarantineEndLoc";
 
 	private static final String HTML_LAYOUT = 
 			h3(I18nProperties.getString(Strings.headingContactData)) +
@@ -102,13 +100,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 			fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 			fluidRowLocs(ContactDto.DESCRIPTION) +
-			fluidRowLocs(4, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM,
-					5,
-					QUARANTINE_TO_LOC)
-			+ fluidRowLocs(4, ContactDto.QUARANTINE_ORDER_MEANS,
-					8,
-					ContactDto.QUARANTINE_HELP_NEEDED)
-			+
+			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
+			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
+			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) + 
+			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
+			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
+			fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
 			locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 			fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
 			loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
@@ -121,11 +118,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private OptionGroup contactProximity;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
-	private Label quarantineTo;
+	private DateField quarantineTo;
+	private CheckBox quarantineOrderedVerbally;
+	private CheckBox quarantineOrderedOfficialDocument;
 	private ComboBox cbDisease;
 	private OptionGroup contactCategory;
-	private ComboBox quarantineOrderMeans;
-	private TextField quarantineHelpNeeded;
 
 	public ContactDataForm(UserRight editOrCreateUserRight) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
@@ -157,19 +154,34 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		quarantine = addField(ContactDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> updateQuarantineFields());
 		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
-		quarantineFrom.setVisible(false);
-		quarantineTo = new Label(I18nProperties.getString(Strings.quarantineEnd));
-		CssStyles.style(quarantineTo, CssStyles.VSPACE_TOP_2);
-		quarantineTo.setVisible(false);
-		getContent().addComponent(quarantineTo, QUARANTINE_TO_LOC);
+		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
 
 		if (isGermanServer()) {
-			quarantineOrderMeans = addField(ContactDto.QUARANTINE_ORDER_MEANS, ComboBox.class);
-			quarantineOrderMeans.setVisible(false);
+			quarantineOrderedVerbally = addField(ContactDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
+			CssStyles.style(quarantineOrderedVerbally, CssStyles.FORCE_CAPTION);
+			addField(ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, DateField.class);
+			quarantineOrderedOfficialDocument = addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CheckBox.class);
+			CssStyles.style(quarantineOrderedOfficialDocument, CssStyles.FORCE_CAPTION);
+			addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, DateField.class);
+			setVisible(false, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, 
+					ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
 		}
-		quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
+		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
-		quarantineHelpNeeded.setVisible(false);
+		setVisible(false, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
+
+		addField(ContactDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
+		addField(ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
+		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, OptionGroup.class);
+		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, ContactDto.QUARANTINE_HOME_POSSIBLE, Arrays.asList(YesNoUnknown.NO), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, ContactDto.QUARANTINE_HOME_POSSIBLE, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, Arrays.asList(YesNoUnknown.NO), true);
+		if (isGermanServer()) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, ContactDto.QUARANTINE_ORDERED_VERBALLY, Arrays.asList(Boolean.TRUE), true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, Arrays.asList(Boolean.TRUE), true);
+		}
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
 
@@ -327,14 +339,17 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		} else {
 			visible = false;
 			quarantineFrom.clear();
+			quarantineTo.clear();
+			if (isGermanServer()) {
+				quarantineOrderedVerbally.clear();
+				quarantineOrderedOfficialDocument.clear();
+			}
 		}
 
-		quarantineFrom.setVisible(visible);
-		quarantineTo.setVisible(visible);
-		if (quarantineOrderMeans != null) {
-			quarantineOrderMeans.setVisible(visible);
+		if (isGermanServer()) {
+			setVisible(visible, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT);
 		}
-		quarantineHelpNeeded.setVisible(visible);
+		setVisible(visible, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
 	}
 
 	private ValueChangeListener getHighPriorityValueChangeListener(CheckBox cbHighPriority) {

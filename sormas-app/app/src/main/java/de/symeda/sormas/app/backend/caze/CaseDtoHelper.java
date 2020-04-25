@@ -166,6 +166,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setQuarantineFrom(source.getQuarantineFrom());
         target.setQuarantineTo(source.getQuarantineTo());
 
+        target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+        target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+        target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+        target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+        target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+        target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+        target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+        target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+        target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+        
         target.setSurveillanceType(source.getSurveillanceType());
     }
 
@@ -333,6 +343,16 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setQuarantineFrom(source.getQuarantineFrom());
         target.setQuarantineTo(source.getQuarantineTo());
 
+        target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+        target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+        target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+        target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+        target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+        target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+        target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+        target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+        target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+        
         target.setSurveillanceType(source.getSurveillanceType());
     }
 
