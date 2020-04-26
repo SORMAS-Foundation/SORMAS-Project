@@ -4106,4 +4106,10 @@ ALTER TABLE contact_history ADD COLUMN quarantineto timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (201, 'Re-introduce quarantine end date #1891');
 
+-- 2020-04-26 Add fieldSampleID to sample #1863
+ALTER TABLE samples ADD COLUMN fieldsampleid varchar(512);
+ALTER TABLE samples_history ADD COLUMN fieldsampleid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (202, 'Add fieldSampleID to sample #1863');
+
 -- *** Insert new sql commands BEFORE this line ***
