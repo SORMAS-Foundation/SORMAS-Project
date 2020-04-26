@@ -36,7 +36,7 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 @Path("/additionaltests")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class AdditionalTestResource extends EntityDtoResource {
 
 	@GET

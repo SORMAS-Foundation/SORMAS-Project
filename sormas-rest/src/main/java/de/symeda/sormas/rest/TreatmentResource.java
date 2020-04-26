@@ -19,7 +19,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 @Path("/treatments")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class TreatmentResource extends EntityDtoResource {
 
 	@GET

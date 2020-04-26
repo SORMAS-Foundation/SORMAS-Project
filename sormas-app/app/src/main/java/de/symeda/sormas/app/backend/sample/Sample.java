@@ -37,8 +37,8 @@ import javax.persistence.Transient;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -446,7 +446,7 @@ public class Sample extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + DateHelper.formatLocalShortDate(getSampleDateTime());
+        return super.toString() + " " + DateHelper.formatLocalShortDate(getSampleDateTime());
     }
 
     public Double getReportLat() {

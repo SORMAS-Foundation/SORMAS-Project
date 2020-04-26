@@ -38,7 +38,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
  */
 @Path("/facilities")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class FacilityResource {
 
 	@GET @Path("/region/{regionUuid}/{since}")

@@ -33,8 +33,8 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
@@ -190,6 +190,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         // Initialize ControlSpinnerFields
         contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
         contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
+        contentBinding.samplePurpose.setEnabled(referredSample == null || record.getSamplePurpose() != SamplePurpose.EXTERNAL);
         contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), field -> {
             Facility laboratory = (Facility) field.getValue();
             if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {

@@ -31,6 +31,8 @@
         <import type="de.symeda.sormas.api.Disease" />
         <import type="android.view.View" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Captions" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.Sample"/>
         <variable name="referredSample" type="de.symeda.sormas.app.backend.sample.Sample"/>
@@ -322,7 +324,7 @@
 
                     <de.symeda.sormas.app.component.controls.ControlLinkField
                         android:id="@+id/sample_referredToUuid"
-                        app:value="@{referredSample.lab}"
+                        app:value="@{referredSample.lab == null ? referredSample : referredSample.lab }"
                         app:goneIfEmpty="@{referredSample}"
                         style="@style/ControlSingleColumnStyle" />
 
