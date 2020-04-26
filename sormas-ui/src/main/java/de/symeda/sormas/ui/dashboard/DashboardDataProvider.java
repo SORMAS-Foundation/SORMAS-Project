@@ -329,10 +329,12 @@ public class DashboardDataProvider {
 	private Date tmpFromDate, tmpToDate, tmpPreviousFromDate, tmpPreviousToDate;
 	public void clearPeriodFilters () {
 		//keep recent values of date filters for restoring later
-		tmpFromDate = fromDate;
-		tmpToDate = toDate;
-		tmpPreviousFromDate = previousFromDate;
-		tmpPreviousToDate = previousToDate;
+		if (fromDate != null) {
+			tmpFromDate = fromDate;
+			tmpToDate = toDate;
+			tmpPreviousFromDate = previousFromDate;
+			tmpPreviousToDate = previousToDate;
+		}
 		
 		//and then clear date filter values
 		fromDate = null;
