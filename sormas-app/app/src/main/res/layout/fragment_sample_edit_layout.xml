@@ -116,6 +116,25 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlButton
+                        android:id="@+id/button_scan_field_sample_id"
+                        android:textColor="@color/whiteOpaque"
+                        android:text="@string/scan_field_sample_id"
+                        app:buttonType="@{ControlButtonType.PRIMARY}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/sample_fieldSampleID"
+                        app:value="@={data.fieldSampleID}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_sampleSource"
                     app:value="@={data.sampleSource}"
@@ -261,45 +280,21 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                        <de.symeda.sormas.app.component.controls.ControlTextImageField
                             android:id="@+id/sample_received"
-                            app:value="@={data.received}"
+                            app:receivedStatus="@{data}"
+                            app:dependencyParentField="@{samplePurpose}"
+                            app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
                             style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                        <de.symeda.sormas.app.component.controls.ControlDateField
-                            android:id="@+id/sample_receivedDate"
-                            app:required="true"
-                            app:value="@={data.receivedDate}"
-                            app:dependencyParentField="@{sampleReceived}"
-                            app:dependencyParentValue="@{true}"
-                            app:allowedDaysInFuture="7"
-                            style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <de.symeda.sormas.app.component.controls.ControlButton
-                            android:id="@+id/button_scan_lab_sample_id"
-                            android:textColor="@color/whiteOpaque"
-                            android:text="@string/scan_lab_sample_id"
-                            app:buttonType="@{ControlButtonType.PRIMARY}"
-                            android:visibility="@{data.received? View.VISIBLE : View.GONE}"
-                            style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                        <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
                             android:id="@+id/sample_labSampleID"
-                            app:value="@={data.labSampleID}"
+                            app:value="@{data.labSampleID}"
                             app:dependencyParentField="@{sampleReceived}"
                             app:dependencyParentValue="@{true}"
                             style="@style/ControlSecondOfTwoColumnsStyle" />
 
                     </LinearLayout>
-
-                    <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"

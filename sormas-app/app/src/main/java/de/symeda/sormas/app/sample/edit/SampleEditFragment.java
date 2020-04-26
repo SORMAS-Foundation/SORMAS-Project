@@ -217,15 +217,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         // Initialize ControlDateFields and ControlDateTimeFields
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
         contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
-        contentBinding.sampleReceivedDate.initializeDateField(getFragmentManager());
 
         // Initialize on clicks
-        contentBinding.buttonScanLabSampleId.setOnClickListener((View v)->{
+        contentBinding.buttonScanFieldSampleId.setOnClickListener((View v)->{
             Intent intent = new Intent(getContext(), BarcodeActivity.class);
             startActivityForResult(intent, BarcodeActivity.RC_BARCODE_CAPTURE);
-        });
-        contentBinding.sampleReceived.addValueChangedListener((ControlPropertyField field)-> {
-            contentBinding.buttonScanLabSampleId.setVisibility((boolean)field.getValue()? VISIBLE: GONE);
         });
 
         // Disable fields the user doesn't have access to - this involves almost all fields when
@@ -242,8 +238,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleShipmentDetails.setEnabled(false);
             contentBinding.samplePurpose.setEnabled(false);
             contentBinding.sampleReceived.setEnabled(false);
-            contentBinding.sampleReceivedDate.setEnabled(false);
-            contentBinding.buttonScanLabSampleId.setEnabled(false);
             contentBinding.sampleLabSampleID.setEnabled(false);
             contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
             contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
@@ -295,7 +289,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == BarcodeActivity.RC_BARCODE_CAPTURE) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
-                getContentBinding().sampleLabSampleID.setValue(data.getStringExtra(BarcodeActivity.BARCODE_RESULT));
+                getContentBinding().sampleFieldSampleID.setValue(data.getStringExtra(BarcodeActivity.BARCODE_RESULT));
             }
         }
         else {

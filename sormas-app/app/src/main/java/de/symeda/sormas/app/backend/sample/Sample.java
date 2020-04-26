@@ -62,12 +62,16 @@ public class Sample extends AbstractDomainObject {
     public static final String SHIPPED = "shipped";
     public static final String RECEIVED = "received";
     public static final String LAB_SAMPLE_ID = "labSampleID";
+    public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Case associatedCase;
 
     @Column(length = 512)
     private String labSampleID;
+
+    @Column(length = 512)
+    private String fieldSampleID;
 
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date sampleDateTime;
@@ -175,6 +179,14 @@ public class Sample extends AbstractDomainObject {
 
     public Date getSampleDateTime() {
         return sampleDateTime;
+    }
+
+    public String getFieldSampleID() {
+        return fieldSampleID;
+    }
+
+    public void setFieldSampleID(String fieldSampleID) {
+        this.fieldSampleID = fieldSampleID;
     }
 
     public void setSampleDateTime(Date sampleDateTime) {

@@ -576,6 +576,6 @@
     <string name="sample_not_found">Could not find sample</string>
     <string name="no_camera_permission">No camera permission</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
-    <string name="scan_lab_sample_id">Scan lab sample id</string>
+    <string name="scan_field_sample_id">Scan field sample id</string>
 
 </resources>

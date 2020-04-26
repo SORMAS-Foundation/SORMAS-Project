@@ -168,7 +168,7 @@ public class SampleListActivity extends PagedBaseListActivity {
 
         pageMenu.addFilter(sampleListFilterView);
 
-        filterBinding.scanLabSampleId.setOnClickListener(e -> {
+        filterBinding.scanFieldSampleId.setOnClickListener(e -> {
             Intent intent = new Intent(this, BarcodeActivity.class);
             startActivityForResult(intent, BarcodeActivity.RC_BARCODE_CAPTURE);
         });
@@ -180,7 +180,7 @@ public class SampleListActivity extends PagedBaseListActivity {
         if (requestCode == BarcodeActivity.RC_BARCODE_CAPTURE) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 showPreloader();
-                Sample sample = DatabaseHelper.getSampleDao().queryByLabSampleId(data.getStringExtra(BarcodeActivity.BARCODE_RESULT));
+                Sample sample = DatabaseHelper.getSampleDao().queryByFieldSampleId(data.getStringExtra(BarcodeActivity.BARCODE_RESULT));
                 if(sample !=null)
                     SampleReadActivity.startActivity(getContext(), sample.getUuid());
                 else

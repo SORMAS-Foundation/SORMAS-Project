@@ -46,8 +46,8 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/scan_lab_sample_id"
-                    android:text="@string/scan_lab_sample_id"
+                    android:id="@+id/scan_field_sample_id"
+                    android:text="@string/scan_field_sample_id"
                     app:buttonType="@{ControlButtonType.FILTER_PRIMARY}"
                     style="@style/ControlFirstOfTwoColumnsStyle"/>
 
