@@ -68,7 +68,8 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 			|| currentUser.hasAnyUserRole(
 				UserRole.NATIONAL_USER,
 				UserRole.NATIONAL_CLINICIAN,
-				UserRole.NATIONAL_OBSERVER)) {
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.REST_USER)) {
 			return null;
 		}
 

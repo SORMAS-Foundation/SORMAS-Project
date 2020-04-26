@@ -262,6 +262,46 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_quarantineHomePossible"
+                        app:value="@{data.quarantineHomePossible}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_quarantineHomePossibleComment"
+                        app:dependencyParentField="@{caseDataQuarantineHomePossible}"
+                        app:dependencyParentValue="@{YesNoUnknown.NO}"
+                        app:value="@{data.quarantineHomePossibleComment}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_quarantineHomeSupplyEnsured"
+                        app:dependencyParentField="@{caseDataQuarantineHomePossible}"
+                        app:dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@{data.quarantineHomeSupplyEnsured}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_quarantineHomeSupplyEnsuredComment"
+                        app:dependencyParentField="@{caseDataQuarantineHomeSupplyEnsured}"
+                        app:dependencyParentValue="@{YesNoUnknown.NO}"
+                        app:value="@{data.quarantineHomeSupplyEnsuredComment}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_quarantine"
                     app:value="@{data.quarantine}"
@@ -289,6 +329,44 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/caseData_quarantineOrderedVerbally"
+                    app:dependencyParentField="@{caseDataQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@{data.quarantineOrderedVerbally}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_quarantineOrderedVerballyDate"
+                    app:dependencyParentField="@{caseDataQuarantineOrderedVerbally}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@{data.quarantineOrderedVerballyDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/caseData_quarantineOrderedOfficialDocument"
+                    app:dependencyParentField="@{caseDataQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@{data.quarantineOrderedOfficialDocument}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_quarantineOrderedOfficialDocumentDate"
+                    app:dependencyParentField="@{caseDataQuarantineOrderedOfficialDocument}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@{data.quarantineOrderedOfficialDocumentDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_quarantineHelpNeeded"
+                    app:dependencyParentField="@{caseDataQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@{data.quarantineHelpNeeded}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_additionalDetails"
