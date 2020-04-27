@@ -43,7 +43,7 @@ public class MergeCasesView extends AbstractView {
 		if (criteriaUninitialized) {
 			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
 			.creationDateTo(new Date())
-			.region(UserProvider.getCurrent().getUser().getRegion());
+			.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		}
 
 		grid = new MergeCasesGrid();

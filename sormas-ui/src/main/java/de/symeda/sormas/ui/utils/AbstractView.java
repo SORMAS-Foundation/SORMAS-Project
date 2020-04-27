@@ -111,29 +111,47 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		return viewSubTitleLabel;
 	}
 
-	public void navigateTo(BaseCriteria criteria) {
+	public boolean navigateTo(BaseCriteria criteria) {
 		if (applyingCriteria) {
-			return;
+			return false;
 		}
 		applyingCriteria = true;
 
+		boolean didNavigate = navigateIfNeeded(criteria);
+
+		applyingCriteria = false;
+
+		return didNavigate;
+	}
+
+	private boolean navigateIfNeeded(BaseCriteria criteria) {
+
 		String state = getUI().getNavigator().getState();
-		int paramsIndex = state.lastIndexOf('?');
+
+		String newState = state;
+		int paramsIndex = newState.lastIndexOf('?');
 		if (paramsIndex >= 0) {
-			state = state.substring(0, paramsIndex);
+			newState = newState.substring(0, paramsIndex);
 		}
-		if (state.charAt(state.length()-1) != '/')
-			state += "/";
+
 		if (criteria != null) {
 			String params = criteria.toUrlParams();
 			if (!DataHelper.isNullOrEmpty(params)) {
-				state += "?" + params;
+				if (newState.charAt(newState.length()-1) != '/') {
+					newState += "/";
+				}
+
+				newState += "?" + params;
 			}
 		}
-		
-		getUI().getNavigator().navigateTo(state);
 
-		applyingCriteria = false;
+		if(!newState.equals(state)) {
+			getUI().getNavigator().navigateTo(newState);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public void setApplyingCriteria(boolean applyingCriteria) {

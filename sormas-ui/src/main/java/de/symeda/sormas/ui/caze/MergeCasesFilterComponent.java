@@ -98,12 +98,12 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		firstRowLayout.addComponent(dfCreationDateTo);
 
 		cbDisease = new ComboBox<>();
-		cbDisease.setId(CaseCriteria.DISEASE);
+		cbDisease.setId(CaseDataDto.DISEASE);
 		cbDisease.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbDisease, CssStyles.FORCE_CAPTION);
 		cbDisease.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		cbDisease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
-		binder.bind(cbDisease, CaseCriteria.DISEASE);
+		binder.bind(cbDisease, CaseDataDto.DISEASE);
 		firstRowLayout.addComponent(cbDisease);
 
 		tfSearch = new TextField();
@@ -143,12 +143,12 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbRegion = new ComboBox<>();
 		cbDistrict = new ComboBox<>();
 
-		cbRegion.setId(CaseCriteria.REGION);
+		cbRegion.setId(CaseDataDto.REGION);
 		cbRegion.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbRegion, CssStyles.FORCE_CAPTION);
 		cbRegion.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 		cbRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		binder.bind(cbRegion, CaseCriteria.REGION);
+		binder.bind(cbRegion, CaseDataDto.REGION);
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
 			cbDistrict.clear();
@@ -164,11 +164,11 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			cbRegion.setEnabled(false);
 		}
 
-		cbDistrict.setId(CaseCriteria.DISTRICT);
+		cbDistrict.setId(CaseDataDto.DISTRICT);
 		cbDistrict.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbDistrict, CssStyles.FORCE_CAPTION);
 		cbDistrict.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-		binder.bind(cbDistrict, CaseCriteria.DISTRICT);
+		binder.bind(cbDistrict, CaseDataDto.DISTRICT);
 		secondRowLayout.addComponent(cbDistrict);
 
 		cbNewCaseDateType = new ComboBox<>();
