@@ -7,16 +7,16 @@ public class SimilarContactDto implements Serializable {
     private String firstName;
     private String lastName;
 
-    private String contactUUID;
+    private String uuid;
     private ContactClassification contactClassification;
     private ContactStatus contactStatus;
     private FollowUpStatus followUpStatus;
 
-    public SimilarContactDto(String firstName, String lastName, String contactUUID, ContactClassification contactClassification,
+    public SimilarContactDto(String firstName, String lastName, String uuid, ContactClassification contactClassification,
                              ContactStatus contactStatus, FollowUpStatus followUpStatus) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.contactUUID = contactUUID;
+        this.uuid = uuid;
         this.contactClassification = contactClassification;
         this.contactStatus = contactStatus;
         this.followUpStatus = followUpStatus;
@@ -38,12 +38,12 @@ public class SimilarContactDto implements Serializable {
         this.lastName = lastName;
     }
 
-    public String getContactUUID() {
-        return contactUUID;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setContactUUID(String contactUUID) {
-        this.contactUUID = contactUUID;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public ContactClassification getContactClassification() {

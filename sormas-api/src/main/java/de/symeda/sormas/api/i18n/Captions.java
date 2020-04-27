@@ -378,6 +378,8 @@ public interface Captions {
 	String contactRelated = "contactRelated";
 	String contactRemoveCase = "contactRemoveCase";
 	String contactResumeFollowUp = "contactResumeFollowUp";
+	String contactSelect = "contactSelect";
+	String contactCreateNew = "contactCreateNew";
 	String creationDate = "creationDate";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";

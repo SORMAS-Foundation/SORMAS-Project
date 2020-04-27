@@ -15,6 +15,18 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
     private Date lastContactDate;
     private Date reportDate;
 
+    public ContactSimilarityCriteria() {
+    }
+
+    public ContactSimilarityCriteria(PersonReferenceDto person, CaseReferenceDto caze, Disease disease,
+                                     Date lastContactDate, Date reportDate) {
+        this.person = person;
+        this.caze = caze;
+        this.disease = disease;
+        this.lastContactDate = lastContactDate;
+        this.reportDate = reportDate;
+    }
+
     public PersonReferenceDto getPerson() {
         return person;
     }
