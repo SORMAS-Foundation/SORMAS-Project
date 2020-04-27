@@ -288,7 +288,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == BarcodeActivity.RC_BARCODE_CAPTURE) {
-            if (resultCode == CommonStatusCodes.SUCCESS) {
+            if (resultCode == CommonStatusCodes.SUCCESS && data != null) {
                 getContentBinding().sampleFieldSampleID.setValue(data.getStringExtra(BarcodeActivity.BARCODE_RESULT));
             }
         }
