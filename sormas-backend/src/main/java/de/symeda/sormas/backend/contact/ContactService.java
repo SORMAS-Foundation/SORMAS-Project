@@ -722,7 +722,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (currentUser.hasAnyUserRole(
 				UserRole.NATIONAL_USER,
 				UserRole.NATIONAL_CLINICIAN,
-				UserRole.NATIONAL_OBSERVER)) {
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
@@ -815,11 +816,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getQuarantineType() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Contact.QUARANTINE), contactCriteria.getQuarantineType()));
 		}
-		if (contactCriteria.getQuarantineOrderMeans() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Contact.QUARANTINE_ORDER_MEANS), contactCriteria.getQuarantineOrderMeans()));
-		}
 		if (Boolean.TRUE.equals(contactCriteria.getOnlyQuarantineHelpNeeded())) {
 			filter = and(cb, filter, cb.and(cb.notEqual(from.get(Contact.QUARANTINE_HELP_NEEDED), ""), cb.isNotNull(from.get(Contact.QUARANTINE_HELP_NEEDED))));
+		}
+		if (Boolean.TRUE.equals(contactCriteria.getQuarantineOrderedVerbally())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Contact.QUARANTINE_ORDERED_VERBALLY)));
+		}
+		if (Boolean.TRUE.equals(contactCriteria.getQuarantineOrderedOfficialDocument())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT)));
+		}
+		if (Boolean.TRUE.equals(contactCriteria.getQuarantineNotOrdered())) {
+			filter = and(cb, filter, cb.and(cb.isFalse(from.get(Contact.QUARANTINE_ORDERED_VERBALLY)), cb.isFalse(from.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT))));
 		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
