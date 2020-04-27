@@ -4159,6 +4159,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (202, 'Additional qu
 ALTER TABLE cases ADD COLUMN surveillancetype varchar(255);
 ALTER TABLE cases_history ADD COLUMN surveillancetype varchar(255);
 
+UPDATE cases SET surveillancetype = 'ROUTINE' WHERE surveillancetype IS NULL;
+
 INSERT INTO schema_version (version_number, comment) VALUES (203, 'Add surveillance type to case #1898');
 
 -- *** Insert new sql commands BEFORE this line ***
