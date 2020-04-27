@@ -66,7 +66,7 @@ public class VisitExportDto implements Serializable {
         return personId;
     }
 
-    @Order(2)
+    @Order(0)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(PersonDto.FIRST_NAME)
     @ExportGroup(ExportGroupType.SENSITIVE)
@@ -74,7 +74,7 @@ public class VisitExportDto implements Serializable {
         return firstName;
     }
 
-    @Order(3)
+    @Order(1)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(PersonDto.LAST_NAME)
     @ExportGroup(ExportGroupType.SENSITIVE)
@@ -82,7 +82,7 @@ public class VisitExportDto implements Serializable {
         return lastName;
     }
 
-    @Order(4)
+    @Order(2)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(VisitDto.DISEASE)
     @ExportGroup(ExportGroupType.CORE)
@@ -90,7 +90,7 @@ public class VisitExportDto implements Serializable {
         return diseaseFormatted;
     }
 
-    @Order(5)
+    @Order(3)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(VisitDto.VISIT_DATE_TIME)
     @ExportGroup(ExportGroupType.CORE)
@@ -102,7 +102,7 @@ public class VisitExportDto implements Serializable {
         return visitUserId;
     }
 
-    @Order(6)
+    @Order(4)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(VisitDto.VISIT_STATUS)
     @ExportGroup(ExportGroupType.CORE)
@@ -110,7 +110,7 @@ public class VisitExportDto implements Serializable {
         return visitStatus;
     }
 
-    @Order(7)
+    @Order(5)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(VisitDto.VISIT_REMARKS)
     @ExportGroup(ExportGroupType.CORE)
@@ -118,7 +118,7 @@ public class VisitExportDto implements Serializable {
         return visitRemarks;
     }
 
-    @Order(8)
+    @Order(6)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(VisitDto.REPORT_LAT)
     @ExportGroup(ExportGroupType.CORE)
@@ -126,7 +126,7 @@ public class VisitExportDto implements Serializable {
         return reportLat;
     }
 
-    @Order(9)
+    @Order(7)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(VisitDto.REPORT_LON)
     @ExportGroup(ExportGroupType.CORE)
@@ -134,7 +134,7 @@ public class VisitExportDto implements Serializable {
         return reportLon;
     }
 
-    @Order(10)
+    @Order(8)
     @ExportTarget(visitExportTypes = {VisitExportType.CONTACT_VISITS})
     @ExportProperty(VisitDto.SYMPTOMS)
     @ExportGroup(ExportGroupType.ADDITIONAL)

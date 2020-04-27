@@ -425,7 +425,7 @@ public final class DownloadUtil {
 				for (int index = 0; index < maximumFollowUps; index++) {
 					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_DATE_TIME));
 					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_STATUS));
-					columnNames.add(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, VisitDto.SYMPTOMS));
+					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.SYMPTOMS));
 					final String dayString = I18nProperties.getCaption(Captions.contactFollowUpDay) + " " + (index + 1);
 
 					dayColumns.add(dayString);
@@ -527,13 +527,17 @@ public final class DownloadUtil {
 	
 						String[] fieldValues = new String[readMethods.size()];
 						for (int i = 0; i < readMethods.size(); i++) {
-							Method method = readMethods.get(i);
+							final Method method = readMethods.get(i);
 							// field caption
-							String propertyId = method.getName().startsWith("get") 
+							String propertyId = method.getName().startsWith("get")
 									? method.getName().substring(3)
-											: method.getName().substring(2); 
-									propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
-									fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
+									: method.getName().substring(2);
+							if (method.isAnnotationPresent(ExportProperty.class)) {
+								final ExportProperty exportProperty = method.getAnnotation(ExportProperty.class);
+								propertyId = exportProperty.value();
+							}
+							propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
+							fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
 						}
 						writer.writeNext(fieldValues);
 	

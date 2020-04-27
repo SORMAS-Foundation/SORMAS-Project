@@ -96,34 +96,6 @@ public class ContactVisitsView extends AbstractContactView {
 
 //		topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
-			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
-			{
-				exportButton.setId("export");
-				exportButton.setIcon(VaadinIcons.DOWNLOAD);
-				exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-				topLayout.addComponent(exportButton);
-				topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			}
-
-			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(VisitExportDto.class, VisitExportType.CONTACT_VISITS,
-					(Integer start, Integer max) -> FacadeProvider.getVisitFacade().getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
-					(propertyId, type) -> {
-						String caption = findPrefixCaption(propertyId,
-								VisitExportDto.I18N_PREFIX,
-								VisitDto.I18N_PREFIX,
-								PersonDto.I18N_PREFIX,
-								SymptomsDto.I18N_PREFIX);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
-						}
-						return caption;
-					},
-					createFileNameWithCurrentDate("sormas_contact_visits_", ".csv"), null);
-
-			new FileDownloader(exportStreamResource).extend(exportButton);
-		}
-
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
@@ -142,6 +114,34 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			{
+				exportButton.setId("export");
+				exportButton.setIcon(VaadinIcons.DOWNLOAD);
+				exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				topLayout.addComponent(exportButton);
+				topLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+			}
+
+			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(VisitExportDto.class, VisitExportType.CONTACT_VISITS,
+					(Integer start, Integer max) -> FacadeProvider.getVisitFacade().getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
+					(propertyId, type) -> {
+						String caption = findPrefixCaption(propertyId,
+								VisitExportDto.I18N_PREFIX,
+								VisitDto.I18N_PREFIX,
+								PersonDto.I18N_PREFIX,
+								SymptomsDto.I18N_PREFIX);
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						}
+						return caption;
+					},
+					createFileNameWithCurrentDate("sormas_contact_visits_", ".csv"), null);
+
+			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
