@@ -12,6 +12,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -72,17 +73,19 @@ public class DownloadUtilTest extends AbstractBeanTest {
         Assert.assertEquals("test_contact_follow_up_export.csv", contactVisitsExport.getStream().getFileName());
         InputStream stream = contactVisitsExport.getStream().getStream();
 
+        final String shortDate = DateHelper.formatLocalShortDate(new Date());
+
         Assert.assertEquals("\"Contact ID\",\"First name\",\"Last name\",\"Date and time of visit\",\"Person available and " +
-                "cooperative?\",\"symptoms\",\"Date and time of visit\",\"Person available and cooperative?\"," +
-                "\"symptoms\",\"Date and time of visit\",\"Person available and cooperative?\",\"symptoms\"\n" +
+                "cooperative?\",\"Symptoms\",\"Date and time of visit\",\"Person available and cooperative?\"," +
+                "\"Symptoms\",\"Date and time of visit\",\"Person available and cooperative?\",\"Symptoms\"\n" +
                 "\"\",\"\",\"\",\"Day 1\",\"Day 1\",\"Day 1\",\"Day 2\",\"Day 2\",\"Day 2\",\"Day 3\",\"Day 3\",\"Day" +
                 " 3\"\n" +
-                "\""+contact.getUuid()+"\",\"Contact\",\"Person\",\"23/04/20\",\"Available and cooperative\"," +
+                "\""+contact.getUuid()+"\",\"Contact\",\"Person\",\""+shortDate+"\",\"Available and cooperative\"," +
                 "\"Abdominal pain\",,,,,,\n" +
-                "\""+contact2.getUuid()+"\",\"Contact2\",\"Person2\",\"23/04/20\",\"Available and " +
-                "cooperative\",\"Abdominal pain\",\"23/04/20\",\"Available and cooperative\",\"\",,,\n" +
-                "\""+contact3.getUuid()+"\",\"Contact3\",\"Person3\",\"23/04/20\",\"Available and " +
-                "cooperative\",\"\",\"23/04/20\",\"Available and cooperative\",\"\",\"23/04/20\",\"Available and " +
+                "\""+contact2.getUuid()+"\",\"Contact2\",\"Person2\",\""+shortDate+"\",\"Available and " +
+                "cooperative\",\"Abdominal pain\",\""+shortDate+"\",\"Available and cooperative\",\"\",,,\n" +
+                "\""+contact3.getUuid()+"\",\"Contact3\",\"Person3\",\""+shortDate+"\",\"Available and " +
+                "cooperative\",\"\",\""+shortDate+"\",\"Available and cooperative\",\"\",\""+shortDate+"\",\"Available and " +
                 "cooperative\",\"\"\n", IOUtils.toString(stream, StandardCharsets.UTF_8.name()));
 
     }
