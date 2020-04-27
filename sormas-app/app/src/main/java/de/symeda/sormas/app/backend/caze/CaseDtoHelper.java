@@ -174,6 +174,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
         target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
         target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+        target.setReportingType(source.getReportingType());
     }
 
     @Override
@@ -348,6 +349,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
         target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
         target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
         target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+        target.setReportingType(source.getReportingType());
     }
 
     public static CaseReferenceDto toReferenceDto(Case ado) {
