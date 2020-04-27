@@ -277,6 +277,10 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.CONTACT_STATUS),
 				contact.get(Contact.FOLLOW_UP_STATUS),
 				contact.get(Contact.FOLLOW_UP_UNTIL),
+				contact.get(Contact.QUARANTINE),
+				contact.get(Contact.QUARANTINE_FROM),
+				contact.get(Contact.QUARANTINE_TO),
+				contact.get(Contact.QUARANTINE_HELP_NEEDED),
 				contactPerson.get(Person.PRESENT_CONDITION),
 				contactPerson.get(Person.DEATH_DATE),
 				addressRegion.get(Region.NAME),
@@ -292,7 +296,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				occupationFacility.get(Facility.UUID),
 				contactPerson.get(Person.OCCUPATION_FACILITY_DETAILS),
 				contactRegion.get(Region.NAME),
-				contactDistrict.get(District.NAME));
+				contactDistrict.get(District.NAME)
+		);
 
         Predicate filter = createContactFilter(contactCriteria, cb, contact, contactService.createUserFilter(cb, cq,
                 contact));
@@ -654,37 +659,40 @@ public class ContactFacadeEjb implements ContactFacade {
         }
     }
 
-    @Override
-    public int[] getContactCountsByCasesForDashboard(List<String> contactUuids) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Contact> contact = cq.from(Contact.class);
-        Join<Contact, Case> caseJoin = contact.join(Contact.CAZE, JoinType.LEFT);
+	@Override
+	public int[] getContactCountsByCasesForDashboard(List<String> contactUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> contact = cq.from(Contact.class);
+		Join<Contact, Case> caseJoin = contact.join(Contact.CAZE);
 
-        cq.where(cb.and(
-                cb.isNotNull(contact.get(Contact.CAZE)),
-                contact.get(Contact.UUID).in(contactUuids)
-        ));
-        cq.select(caseJoin.get(Case.ID));
-        cq.distinct(true);
+		cq.where(contact.get(Contact.UUID).in(contactUuids));
+		cq.select(caseJoin.get(Case.ID));
+		cq.distinct(true);
 
         List<Long> caseIds = em.createQuery(cq).getResultList();
 
-        CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
-        Root<Contact> contact2 = cq2.from(Contact.class);
-        cq2.groupBy(contact2.get(Contact.CAZE));
+		if (caseIds.isEmpty()) {
+			return new int[3];
 
-        cq2.where(contact2.get(Contact.CAZE).in(caseIds));
-        cq2.select(cb.count(contact2.get(Contact.ID)));
+		} else {
+			int[] counts = new int[3];
+			CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
+			Root<Contact> contact2 = cq2.from(Contact.class);
+			cq2.groupBy(contact2.get(Contact.CAZE));
 
-        List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
+			cq2.where(contact2.get(Contact.CAZE).in(caseIds));
+			cq2.select(cb.count(contact2.get(Contact.ID)));
 
-        int[] counts = new int[3];
-        counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-        counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-        counts[2] = caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
-        return counts;
-    }
+			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
+
+			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[2] =  caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
+
+			return counts;
+		}
+	}
 
     @Override
     public int getNonSourceCaseCountForDashboard(List<String> caseUuids) {
@@ -763,8 +771,15 @@ public class ContactFacadeEjb implements ContactFacade {
         target.setContactProximityDetails(source.getContactProximityDetails());
         target.setContactCategory(source.getContactCategory());
 
-        target.setQuarantineOrderMeans(source.getQuarantineOrderMeans());
-        target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
         return target;
     }
@@ -882,8 +897,15 @@ public class ContactFacadeEjb implements ContactFacade {
         target.setContactProximityDetails(source.getContactProximityDetails());
         target.setContactCategory(source.getContactCategory());
 
-        target.setQuarantineOrderMeans(source.getQuarantineOrderMeans());
-        target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
         return target;
     }

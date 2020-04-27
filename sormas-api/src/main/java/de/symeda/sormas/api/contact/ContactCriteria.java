@@ -63,8 +63,10 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private CaseClassification caseClassification;
 	private QuarantineType quarantineType;
 	private Date quarantineTo;
-	private OrderMeans quarantineOrderMeans;
 	private Boolean onlyQuarantineHelpNeeded;
+	private Boolean quarantineOrderedVerbally;
+	private Boolean quarantineOrderedOfficialDocument;
+	private Boolean quarantineNotOrdered;
 	
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -297,15 +299,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public OrderMeans getQuarantineOrderMeans() {
-		return quarantineOrderMeans;
-	}
-
-	public ContactCriteria quarantineOrderMeans(OrderMeans quarantineOrderMeans) {
-		this.quarantineOrderMeans = quarantineOrderMeans;
-		return this;
-	}
-
 	public Boolean getOnlyQuarantineHelpNeeded() {
 		return onlyQuarantineHelpNeeded;
 	}
@@ -321,6 +314,33 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	
 	public ContactCriteria quarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+		return this;
+	}
+
+	public Boolean getQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	public ContactCriteria quarantineOrderedVerbally(Boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+		return this;
+	}
+
+	public Boolean getQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	public ContactCriteria quarantineOrderedOfficialDocument(Boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+		return this;
+	}
+
+	public Boolean getQuarantineNotOrdered() {
+		return quarantineNotOrdered;
+	}
+
+	public ContactCriteria quarantineNotOrdered(Boolean quarantineNotOrdered) {
+		this.quarantineNotOrdered = quarantineNotOrdered;
 		return this;
 	}
 	

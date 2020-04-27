@@ -53,6 +53,16 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactCategory;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactDateType;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -134,8 +144,10 @@ public class ContactsView extends AbstractView {
 	private ComboBox categoryFilter;
 	private CheckBox onlyQuarantineHelpNeeded;
 	private ComboBox quarantineTypeFilter;
-	private ComboBox quarantineOrderMeansFilter;
 	private PopupDateField quarantineToFilter;
+	private CheckBox quarantineOrderedVerballyFilter;
+	private CheckBox quarantineOrderedOfficialDocumentFilter;
+	private CheckBox quarantineNotOrderedFilter;
 
 	public ContactsView() {
 		super(VIEW_NAME);
@@ -518,18 +530,6 @@ public class ContactsView extends AbstractView {
 			});
 			thirdFilterRowLayout.addComponent(quarantineTypeFilter);
 
-			if (isGermanServer()) {
-				quarantineOrderMeansFilter = new ComboBox();
-				quarantineOrderMeansFilter.setWidth(140, Unit.PIXELS);
-				quarantineOrderMeansFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDER_MEANS));
-				quarantineOrderMeansFilter.addItems((Object[]) OrderMeans.values());
-				quarantineOrderMeansFilter.addValueChangeListener(e -> {
-					criteria.quarantineOrderMeans(((OrderMeans) e.getProperty().getValue()));
-					navigateTo(criteria);
-				});
-				thirdFilterRowLayout.addComponent(quarantineOrderMeansFilter);
-			}
-
 			quarantineToFilter = new PopupDateField();
 			quarantineToFilter.setWidth(200, Unit.PIXELS);
 			quarantineToFilter.setInputPrompt(
@@ -539,6 +539,35 @@ public class ContactsView extends AbstractView {
 				navigateTo(criteria);
 			});
 			thirdFilterRowLayout.addComponent(quarantineToFilter);
+
+			if (isGermanServer()) {
+				quarantineOrderedVerballyFilter = new CheckBox();
+				quarantineOrderedVerballyFilter.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_VERBALLY));
+				CssStyles.style(quarantineOrderedVerballyFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+				quarantineOrderedVerballyFilter.addValueChangeListener(e -> {
+					criteria.quarantineOrderedVerbally((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(quarantineOrderedVerballyFilter);
+
+				quarantineOrderedOfficialDocumentFilter = new CheckBox();
+				quarantineOrderedOfficialDocumentFilter.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT));
+				CssStyles.style(quarantineOrderedOfficialDocumentFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+				quarantineOrderedOfficialDocumentFilter.addValueChangeListener(e -> {
+					criteria.quarantineOrderedOfficialDocument((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(quarantineOrderedOfficialDocumentFilter);
+
+				quarantineNotOrderedFilter = new CheckBox();
+				quarantineNotOrderedFilter.setCaption(I18nProperties.getCaption(Captions.contactQuarantineNotOrdered));
+				CssStyles.style(quarantineNotOrderedFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+				quarantineNotOrderedFilter.addValueChangeListener(e -> {
+					criteria.quarantineNotOrdered((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(quarantineNotOrderedFilter);
+			}
 
 			onlyQuarantineHelpNeeded = new CheckBox();
 			onlyQuarantineHelpNeeded.setCaption(I18nProperties.getCaption(Captions.contactOnlyQuarantineHelpNeeded));
@@ -859,8 +888,10 @@ public class ContactsView extends AbstractView {
 		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
 		onlyQuarantineHelpNeeded.setValue(criteria.getOnlyQuarantineHelpNeeded());
 		quarantineTypeFilter.setValue(criteria.getQuarantineType());
-		if (quarantineOrderMeansFilter != null) {
-			quarantineOrderMeansFilter.setValue(criteria.getQuarantineOrderMeans());
+		if (isGermanServer()) {
+			quarantineOrderedVerballyFilter.setValue(criteria.getQuarantineOrderedVerbally());
+			quarantineOrderedOfficialDocumentFilter.setValue(criteria.getQuarantineOrderedOfficialDocument());
+			quarantineNotOrderedFilter.setValue(criteria.getQuarantineNotOrdered());
 		}
 		quarantineToFilter.setValue(criteria.getQuarantineTo());
 		searchField.setValue(criteria.getNameUuidCaseLike());

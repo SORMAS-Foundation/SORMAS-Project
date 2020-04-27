@@ -44,7 +44,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 @Path("/visits")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class VisitResource extends EntityDtoResource {
 
 	@GET

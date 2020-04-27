@@ -154,6 +154,7 @@ public class CasesView extends AbstractView {
 	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private CheckBox casesWithCaseManagementData;
 	private CheckBox excludeSharedCases;
+	private CheckBox withoutResponsibleOfficerFilter;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
@@ -741,6 +742,16 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(excludeSharedCases);
 			}
+
+			withoutResponsibleOfficerFilter = new CheckBox();
+			CssStyles.style(withoutResponsibleOfficerFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+			withoutResponsibleOfficerFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleOfficer));
+			withoutResponsibleOfficerFilter.setDescription(I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer));
+			withoutResponsibleOfficerFilter.addValueChangeListener(e -> {
+				criteria.withoutResponsibleOfficer((Boolean) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			thirdFilterRowLayout.addComponent(withoutResponsibleOfficerFilter);
 		}
 		filterLayout.addComponent(thirdFilterRowLayout);
 		thirdFilterRowLayout.setVisible(false);
@@ -988,7 +999,8 @@ public class CasesView extends AbstractView {
 		if (excludeSharedCases != null) {
 			excludeSharedCases.setValue(criteria.getExcludeSharedCases());
 		}
-		
+		withoutResponsibleOfficerFilter.setValue(criteria.isWithoutResponsibleOfficer());
+
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
 		Date newCaseDateTo = criteria.getNewCaseDateTo();

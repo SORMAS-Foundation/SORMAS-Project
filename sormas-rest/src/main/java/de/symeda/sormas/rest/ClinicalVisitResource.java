@@ -36,7 +36,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 @Path("/clinicalvisits")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class ClinicalVisitResource extends EntityDtoResource {
 
 	@GET
