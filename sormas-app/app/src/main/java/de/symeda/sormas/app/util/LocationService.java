@@ -242,7 +242,7 @@ public final class LocationService {
                 List<Address> addresses = instance.geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                 if (addresses.size() > 0) {
                     String countryCode = addresses.get(0).getCountryCode();
-                    if (countryCode == null || !countryCode.equals(countryLocale.substring(countryLocale.indexOf("_") + 1).toUpperCase())) {
+                    if (countryCode == null || !countryCode.equals(countryLocale.substring(countryLocale.indexOf("-") + 1).toUpperCase())) {
                         return false;
                     }
                 }
