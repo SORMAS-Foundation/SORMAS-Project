@@ -32,15 +32,18 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
@@ -265,6 +268,16 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactQuarantineTo.initializeDateField(getFragmentManager());
         contentBinding.contactQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
         contentBinding.contactQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
+
+        contentBinding.personAddress.setOnClickListener(v -> {
+            final Location locationClone = (Location) record.getPerson().getAddress().clone();
+            final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+            locationDialog.show();
+            locationDialog.setPositiveCallback(() -> {
+                record.getPerson().setAddress(locationClone);
+                contentBinding.personAddress.setValue(locationClone);
+            });
+        });
     }
 
     @Override

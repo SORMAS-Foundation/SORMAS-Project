@@ -71,6 +71,13 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                    android:id="@+id/person_address"
+                    app:iconStart="@drawable/ic_edit_location_black_24dp"
+                    app:hint="@string/hint_enter_location"
+                    app:locationValue="@={data.person.address}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/contact_externalID"
                     app:value="@={data.externalID}"
