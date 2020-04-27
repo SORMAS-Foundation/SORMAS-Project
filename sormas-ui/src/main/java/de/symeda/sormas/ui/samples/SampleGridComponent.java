@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.HashMap;
-import java.util.List;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
