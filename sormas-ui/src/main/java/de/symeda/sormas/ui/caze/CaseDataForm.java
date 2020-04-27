@@ -213,7 +213,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
 		addField(CaseDataDto.OUTCOME, OptionGroup.class);
 		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
-		addField(CaseDataDto.REPORTING_TYPE);
+		if (isGermanServer()) {
+			addField(CaseDataDto.REPORTING_TYPE);
+		}
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
