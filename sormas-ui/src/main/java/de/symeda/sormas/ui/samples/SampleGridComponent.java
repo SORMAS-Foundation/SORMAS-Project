@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.HashMap;
+import java.util.List;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -223,6 +224,11 @@ public class SampleGridComponent extends VerticalLayout {
 		searchField.addTextChangeListener(e -> {
 			criteria.caseCodeIdLike(e.getText());
 			grid.reload();
+			
+			//open sample if it's the only one
+			if (grid.getItemCount() == 1) {
+				ControllerProvider.getSampleController().navigateToData(grid.getFirstItem().getUuid());
+			}
 		});
 		filterLayout.addComponent(searchField);
 

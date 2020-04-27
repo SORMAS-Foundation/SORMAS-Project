@@ -1,5 +1,10 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
@@ -59,5 +64,9 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	public int getItemCount() {
 		return getDataProvider().size(new Query<>());
+	}
+	
+	public T getFirstItem () {
+		return getDataProvider().fetch(new Query<>(0, 1, Collections.emptyList(), null, null)).findFirst().orElse(null);
 	}
 }
