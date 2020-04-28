@@ -30,12 +30,14 @@ caseClass = paste("Classification", c(
 	"SUSPECT",
 	"PROBABLE",
 	"CONFIRMED"), sep=("."))
+	
+# see CountElementStyle.POSITIVE and styles.css count-element
 caseClassColor = c(
-	"#17bd27", 
-	"#706c67", 
-	"#a88732", 
-	"#db890f", 
-	"#f70707")
+	"#32CD32", # positive
+	"#808080", # minor
+	"#c8aa00", # relevant
+	"#be6900", # important
+	"#c80000") # critical
 
 hierarchical= "T" == substr(HIERARCHICAL, 1, 1)
 defaultFont="font-family:'Open Sans', sans-serif, 'Source Sans Pro'"
@@ -119,8 +121,8 @@ highRiskProximity = paste("ContactProximity", c(
 		"CLOTHES_OR_OTHER",
 		"PHYSICAL_CONTACT"), sep=("."))
 elist$label = NA
-elist$label[elist$contactproximity %in% highRiskProximity] = 1 
-elist$label[!(elist$contactproximity %in% highRiskProximity)] = 2
+elist$label[elist$contactproximity %in% highRiskProximity] = "1" 
+elist$label[!(elist$contactproximity %in% highRiskProximity)] = "2"
 #drop contactproximity
 elist$contactproximity <- NULL
 
