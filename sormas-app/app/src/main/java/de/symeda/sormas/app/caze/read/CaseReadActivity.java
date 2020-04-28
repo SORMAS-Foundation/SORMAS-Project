@@ -34,6 +34,7 @@ import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseSection;
@@ -161,7 +162,15 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
+
         getEditMenu().setTitle(R.string.action_edit_case);
+
+        Case selectedCase = DatabaseHelper.getCaseDao().queryUuidBasic(getRootUuid());
+        if(CaseEditAuthorization.isCaseEditAllowed(selectedCase)) {
+            getEditMenu().setVisible(true);
+        }else{
+            getEditMenu().setVisible(false);
+        }
         return result;
     }
 

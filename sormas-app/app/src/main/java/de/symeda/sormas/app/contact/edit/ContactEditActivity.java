@@ -34,6 +34,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.contact.ContactSection;
@@ -124,37 +125,41 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
         final Contact contactToSave = getStoredRootEntity();
 
-        try {
-            FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
-        } catch (ValidationException e) {
-            NotificationHelper.showNotification(this, ERROR, e.getMessage());
-            return;
-        }
-
-        saveTask = new SavingAsyncTask(getRootView(), contactToSave) {
-
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
-                DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
+        if(ContactEditAuthorization.isContactEditAllowed(contactToSave)) {
+            try {
+                FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
+            } catch (ValidationException e) {
+                NotificationHelper.showNotification(this, ERROR, e.getMessage());
+                return;
             }
 
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                super.onPostExecute(taskResult);
+            saveTask = new SavingAsyncTask(getRootView(), contactToSave) {
 
-                if (taskResult.getResultStatus().isSuccess()) {
-                    if (getActivePage().getPosition() == ContactSection.PERSON_INFO.ordinal()) {
-                        finish();
-                    } else {
-                        goToNextPage();
-                    }
-                }  else {
-                    onResume(); // reload data
+                @Override
+                public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+                    DatabaseHelper.getPersonDao().saveAndSnapshot(contactToSave.getPerson());
+                    DatabaseHelper.getContactDao().saveAndSnapshot(contactToSave);
                 }
-                saveTask = null;
-            }
-        }.executeOnThreadPool();
+
+                @Override
+                protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+                    super.onPostExecute(taskResult);
+
+                    if (taskResult.getResultStatus().isSuccess()) {
+                        if (getActivePage().getPosition() == ContactSection.PERSON_INFO.ordinal()) {
+                            finish();
+                        } else {
+                            goToNextPage();
+                        }
+                    } else {
+                        onResume(); // reload data
+                    }
+                    saveTask = null;
+                }
+            }.executeOnThreadPool();
+        }else {
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_edit_forbidden));
+        }
     }
 
     @Override
