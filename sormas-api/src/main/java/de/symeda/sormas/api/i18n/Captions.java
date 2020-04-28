@@ -375,6 +375,7 @@ public interface Captions {
 	String contactContactsList = "contactContactsList";
 	String contactContactsOverview = "contactContactsOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
+	String contactFollowUpDay = "contactFollowUpDay";
 	String ContactExport_address = "ContactExport.address";
 	String ContactExport_addressDistrict = "ContactExport.addressDistrict";
 	String ContactExport_addressRegion = "ContactExport.addressRegion";
@@ -689,6 +690,7 @@ public interface Captions {
 	String exportCaseManagement = "exportCaseManagement";
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
 	String exportDetailed = "exportDetailed";
+	String exportFollowUp = "exportFollowUp";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";
 	String exportInfrastructureData = "exportInfrastructureData";
 	String exportNewExportConfiguration = "exportNewExportConfiguration";

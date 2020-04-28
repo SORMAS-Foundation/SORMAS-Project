@@ -17,13 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
-import java.util.Date;
-import java.util.List;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 import javax.ejb.Remote;
-
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.utils.SortProperty;
+import java.util.Date;
+import java.util.List;
 
 @Remote
 public interface VisitFacade {
@@ -51,7 +51,9 @@ public interface VisitFacade {
 	List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to);
 	
 	List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
-	
+
+	List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria, VisitExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration);
+
 	long count(VisitCriteria visitCriteria);
 	
 	VisitDto getLastVisitByContact(ContactReferenceDto contactRef);

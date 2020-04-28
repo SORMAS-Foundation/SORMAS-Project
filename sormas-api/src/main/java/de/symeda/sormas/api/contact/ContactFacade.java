@@ -56,7 +56,11 @@ public interface ContactFacade {
 			List<SortProperty> sortProperties);
 	
 	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max);
-	
+
+	List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first, int max);
+
+	long countMaximumFollowUps(ContactCriteria contactCriteria);
+
 	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 	
 	Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria);

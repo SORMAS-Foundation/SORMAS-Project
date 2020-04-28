@@ -17,27 +17,33 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.util.Date;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.MenuBar;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
+import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
+import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
 public class ContactVisitsView extends AbstractContactView {
@@ -90,7 +96,6 @@ public class ContactVisitsView extends AbstractContactView {
 
 //		topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
 
-		// Bulk operation dropdown
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
@@ -109,6 +114,34 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			{
+				exportButton.setId("export");
+				exportButton.setIcon(VaadinIcons.DOWNLOAD);
+				exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+				topLayout.addComponent(exportButton);
+				topLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+			}
+
+			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(VisitExportDto.class, VisitExportType.CONTACT_VISITS,
+					(Integer start, Integer max) -> FacadeProvider.getVisitFacade().getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
+					(propertyId, type) -> {
+						String caption = findPrefixCaption(propertyId,
+								VisitExportDto.I18N_PREFIX,
+								VisitDto.I18N_PREFIX,
+								PersonDto.I18N_PREFIX,
+								SymptomsDto.I18N_PREFIX);
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						}
+						return caption;
+					},
+					createFileNameWithCurrentDate("sormas_contact_visits_", ".csv"), null);
+
+			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
