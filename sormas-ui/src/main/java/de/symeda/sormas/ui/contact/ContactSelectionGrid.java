@@ -5,6 +5,7 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -30,12 +31,13 @@ public class ContactSelectionGrid extends Grid {
         setContainerDataSource(generatedContainer);
 
         setColumns(PersonIndexDto.FIRST_NAME, PersonIndexDto.LAST_NAME, ContactIndexDto.UUID,
+                ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactIndexDto.CONTACT_PROXIMITY,
                 ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
                 ContactIndexDto.FOLLOW_UP_STATUS);
 
         for (Column column : getColumns()) {
-            column.setHeaderCaption(I18nProperties.getPrefixCaption(
-                    PersonIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+            column.setHeaderCaption(I18nProperties.findPrefixCaption(column.getPropertyId().toString(),
+                    PersonIndexDto.I18N_PREFIX, ContactIndexDto.I18N_PREFIX, ContactDto.I18N_PREFIX));
         }
 
         getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);

@@ -133,6 +133,19 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
         lblContactUuid.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.UUID));
         contactDetailsLayout.addComponent(lblContactUuid);
 
+        final Label lblCaseIdExternalSystem = new Label(referenceContact.getCaseIdExternalSystem());
+        lblCaseIdExternalSystem.setWidthUndefined();
+        lblCaseIdExternalSystem.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
+                ContactDto.CASE_ID_EXTERNAL_SYSTEM));
+        contactDetailsLayout.addComponent(lblCaseIdExternalSystem);
+
+        final Label lblContactProximity = new Label(referenceContact.getContactProximity() != null ?
+                referenceContact.getContactProximity().toString() : "");
+        lblContactProximity.setWidthUndefined();
+        lblContactProximity.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
+                ContactDto.CONTACT_PROXIMITY));
+        contactDetailsLayout.addComponent(lblContactProximity);
+
         final Label lblContactClassification = new Label(referenceContact.getContactClassification() != null ?
                 referenceContact.getContactClassification().toString() : "");
         lblContactClassification.setWidthUndefined();
@@ -180,7 +193,7 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
         rbCreateContact.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.contactCreateNew));
         rbCreateContact.addValueChangeListener(e -> {
             if (e.getValue() != null) {
-                rbCreateContact.setValue(null);
+                rbSelectContact.setValue(null);
                 contactSelectionGrid.deselectAll();
                 contactSelectionGrid.setEnabled(false);
                 if (selectionChangeCallback != null) {

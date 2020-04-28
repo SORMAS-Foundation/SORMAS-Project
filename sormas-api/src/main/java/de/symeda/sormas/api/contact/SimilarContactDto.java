@@ -8,18 +8,39 @@ public class SimilarContactDto implements Serializable {
     private String lastName;
 
     private String uuid;
+    private String caseIdExternalSystem;
+    private ContactProximity contactProximity;
     private ContactClassification contactClassification;
     private ContactStatus contactStatus;
     private FollowUpStatus followUpStatus;
 
-    public SimilarContactDto(String firstName, String lastName, String uuid, ContactClassification contactClassification,
+    public SimilarContactDto(String firstName, String lastName, String uuid, String caseIdExternalSystem,
+                             ContactProximity contactProximity, ContactClassification contactClassification,
                              ContactStatus contactStatus, FollowUpStatus followUpStatus) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.uuid = uuid;
+        this.caseIdExternalSystem = caseIdExternalSystem;
+        this.contactProximity = contactProximity;
         this.contactClassification = contactClassification;
         this.contactStatus = contactStatus;
         this.followUpStatus = followUpStatus;
+    }
+
+    public String getCaseIdExternalSystem() {
+        return caseIdExternalSystem;
+    }
+
+    public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+        this.caseIdExternalSystem = caseIdExternalSystem;
+    }
+
+    public ContactProximity getContactProximity() {
+        return contactProximity;
+    }
+
+    public void setContactProximity(ContactProximity contactProximity) {
+        this.contactProximity = contactProximity;
     }
 
     public String getFirstName() {

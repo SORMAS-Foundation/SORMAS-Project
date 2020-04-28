@@ -22,10 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.PropertyResourceBundle;
+import java.util.*;
 import java.util.ResourceBundle.Control;
 
 import org.apache.commons.lang3.StringUtils;
@@ -143,6 +140,23 @@ public final class I18nProperties {
 			result = getCaption(key, defaultValue);
 		}
 		return result;
+	}
+
+	/**
+	 * Iterates through the prefixes to determines the caption for the specified propertyId.
+	 *
+	 * @return
+	 */
+	public static String findPrefixCaption(String propertyId, String ... prefixes) {
+
+		for (String prefix : prefixes) {
+			final String caption = I18nProperties.getPrefixCaption(prefix, propertyId, null);
+			if (caption != null) {
+				return caption;
+			}
+		}
+
+		return propertyId;
 	}
 
 	public static String getDescription(String key) {
