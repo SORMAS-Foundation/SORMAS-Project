@@ -19,8 +19,11 @@ package de.symeda.sormas.ui.epidata;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
+import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
@@ -41,7 +44,14 @@ public class EpiDataView extends AbstractCaseView {
     		return;
     	}
 		
-		setSubComponent(ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode()));
+    	CommitDiscardWrapperComponent<EpiDataForm> epidDataForm = ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode());
+    	
+		setSubComponent(epidDataForm);
+		
+		Boolean isCaseEditAllowed  = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
+    	if (!isCaseEditAllowed){
+    		getComponent(getComponentIndex(epidDataForm)).setEnabled(false);
+    	}
 	}
 
 }

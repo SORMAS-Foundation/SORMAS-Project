@@ -49,5 +49,12 @@ public class CasePersonView extends AbstractCaseView {
     	CommitDiscardWrapperComponent<PersonEditForm> personEditComponent = ControllerProvider.getPersonController().getPersonEditComponent(caseData.getPerson().getUuid(), caseData.getDisease(), caseData.getDiseaseDetails(), UserRight.CASE_EDIT, getViewMode());
 		
     	setSubComponent(personEditComponent);
+    	
+    	String caseRefUUID = getCaseRef().getUuid();
+    	
+    	Boolean isCaseEditAllowed  = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
+    	if (!isCaseEditAllowed){
+    		getComponent(getComponentIndex(personEditComponent)).setEnabled(false);
+    	}
     }
 }
