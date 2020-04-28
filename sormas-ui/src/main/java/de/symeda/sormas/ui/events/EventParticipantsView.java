@@ -74,7 +74,8 @@ public class EventParticipantsView extends AbstractEventView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
-			MenuBar bulkOperationsDropdown = new MenuBar();	
+			MenuBar bulkOperationsDropdown = new MenuBar();
+			bulkOperationsDropdown.setId("bulkOperationsDropdown");
 			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 			Command deleteCommand = selectedItem -> {
@@ -93,6 +94,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
 			addButton = new Button(I18nProperties.getCaption(Captions.eventParticipantAddPerson));
+			addButton.setId("addPerson");
 			addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			addButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			addButton.addClickListener(e -> {

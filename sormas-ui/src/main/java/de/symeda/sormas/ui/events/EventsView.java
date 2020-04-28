@@ -72,9 +72,7 @@ public class EventsView extends AbstractView {
 	private Button activeStatusButton;
 
 	// Filter
-	private ComboBox diseaseFilter;
-	private ComboBox reportedByFilter;
-	private Button resetButton;
+	private EventsFilterForm filterForm;
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
@@ -114,6 +112,7 @@ public class EventsView extends AbstractView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
 			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			exportButton.setId("export");
 			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 
@@ -157,6 +156,7 @@ public class EventsView extends AbstractView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.eventNewEvent));
+			createButton.setId("createEvent");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> ControllerProvider.getEventController().create());
@@ -170,33 +170,16 @@ public class EventsView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setSizeUndefined();
 
-		diseaseFilter = new ComboBox();
-		diseaseFilter.setWidth(140, Unit.PIXELS);
-		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.DISEASE));
-		diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
-		diseaseFilter.addValueChangeListener(e -> {
-			criteria.disease(((Disease)e.getProperty().getValue()));
+		filterForm = new EventsFilterForm();
+		filterForm.addValueChangeListener(e -> {
 			navigateTo(criteria);
 		});
-		filterLayout.addComponent(diseaseFilter);
-
-		reportedByFilter = new ComboBox();
-		reportedByFilter.setWidth(140, Unit.PIXELS);
-		reportedByFilter.setInputPrompt(I18nProperties.getString(Strings.reportedBy));
-		reportedByFilter.addItems((Object[]) UserRole.values());
-		reportedByFilter.addValueChangeListener(e -> {
-			criteria.reportingUserRole((UserRole) e.getProperty().getValue());
-			navigateTo(criteria);
-		});
-		filterLayout.addComponent(reportedByFilter);
-
-		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-		resetButton.setVisible(false);
-		resetButton.addClickListener(event -> {
+		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			navigateTo(null);
 		});
-		filterLayout.addComponent(resetButton);
+
+		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
 	}
@@ -215,6 +198,7 @@ public class EventsView extends AbstractView {
 			navigateTo(criteria);
 		});
 		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+		statusAll.setId("statusAll");
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
 		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
@@ -225,6 +209,7 @@ public class EventsView extends AbstractView {
 				criteria.eventStatus(status);
 				navigateTo(criteria);
 			});
+			statusButton.setId("status-button-" + status.name());
 			statusButton.setData(status);
 			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
@@ -249,6 +234,7 @@ public class EventsView extends AbstractView {
 					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
 				}
 				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
@@ -266,7 +252,8 @@ public class EventsView extends AbstractView {
 
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				bulkOperationsDropdown = new MenuBar();	
+				bulkOperationsDropdown = new MenuBar();
+				bulkOperationsDropdown.setId("bulkOperationsDropdown");
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = selectedItem -> {
@@ -328,14 +315,12 @@ public class EventsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		resetButton.setVisible(criteria.hasAnyFilterActive());
-
 		updateStatusButtons();
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
-		diseaseFilter.setValue(criteria.getDisease());
-		reportedByFilter.setValue(criteria.getReportingUserRole());
+
+		filterForm.setValue(criteria);
 
 		applyingCriteria = false;
 	}

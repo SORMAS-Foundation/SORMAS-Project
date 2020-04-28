@@ -220,7 +220,7 @@ public class TaskGridComponent extends VerticalLayout {
 
 	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String status, String caption) {
 		button.setData(status);
-		button.setId(status);
+		button.setId("status-button-" + status);
 		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setCaptionAsHtml(true);
 		filterLayout.addComponent(button);

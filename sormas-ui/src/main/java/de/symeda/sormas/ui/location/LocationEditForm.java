@@ -97,6 +97,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
 			Button geocodeButton = new Button(VaadinIcons.MAP_MARKER, e -> triggerGeocoding());
+			geocodeButton.setId("geocodeButton");
 			geocodeButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
 			geocodeButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
 			geocodeButton.addStyleName(ValoTheme.BUTTON_LARGE);
