@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
@@ -146,6 +147,23 @@ public final class I18nProperties {
 		return result;
 	}
 
+	/**
+	 * Iterates through the prefixes to determines the caption for the specified propertyId.
+	 *
+	 * @return
+	 */
+	public static String findPrefixCaption(String propertyId, String ... prefixes) {
+
+		for (String prefix : prefixes) {
+			final String caption = I18nProperties.getPrefixCaption(prefix, propertyId, null);
+			if (caption != null) {
+				return caption;
+			}
+		}
+
+		return propertyId;
+	}
+
 	public static String getDescription(String key) {
 		return getInstance(userLanguage.get()).descriptionProperties.getString(key);
 	}
@@ -258,18 +276,18 @@ public final class I18nProperties {
 		}
 
 		private Reader loadResource(ClassLoader loader, String resourceName, boolean reload) throws IOException {
-			
+
 			URL url = loader.getResource(resourceName);
 			if (url == null) {
 				return null;
 			}
-			
+
 			URLConnection connection = url.openConnection();
-			
+
 			if (reload) {
 				connection.setUseCaches(false);
 			}
-			
+
 			return new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
 		}
 	}

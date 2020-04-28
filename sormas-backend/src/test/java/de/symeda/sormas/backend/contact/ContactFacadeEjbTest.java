@@ -46,7 +46,10 @@ import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.caze.*;
+import de.symeda.sormas.api.contact.*;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -64,6 +67,17 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.util.DateHelper8;
+import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
@@ -95,6 +109,41 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		contact =  getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.COMPLETED, contact.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+	}
+
+	@Test
+	public void testGetMatchingContacts(){
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
+				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.CORONAVIRUS, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact1 = creator.createContact(user.toReference(), user.toReference(),
+				contactPerson.toReference(), caze, new Date(), new Date());
+		contact1.setContactClassification(ContactClassification.CONFIRMED);
+		getContactFacade().saveContact(contact1);
+		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(),
+				contactPerson.toReference(), caze, DateHelper.subtractDays(new Date(), 15), new Date());
+		ContactDto contact3 = creator.createContact(user.toReference(), user.toReference(),
+				contactPerson.toReference(), caze, DateHelper.subtractDays(new Date(), 15),
+				DateHelper.subtractDays(new Date(), 31));
+
+		final ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
+		contactSimilarityCriteria.setDisease(Disease.CORONAVIRUS);
+		contactSimilarityCriteria.setPerson(new PersonReferenceDto(contactPerson.getUuid()));
+		contactSimilarityCriteria.setCaze(new CaseReferenceDto(caze.getUuid()));
+		contactSimilarityCriteria.setLastContactDate(new Date());
+		contactSimilarityCriteria.setReportDate(new Date());
+
+		final List<SimilarContactDto> matchingContacts = getContactFacade().getMatchingContacts(contactSimilarityCriteria);
+		Assert.assertNotNull(matchingContacts);
+		Assert.assertEquals(2, matchingContacts.size());
+		final SimilarContactDto similarContactDto1 = matchingContacts.get(0);
+		Assert.assertEquals(contact1.getUuid(), similarContactDto1.getUuid());
+		final SimilarContactDto similarContactDto2 = matchingContacts.get(1);
+		Assert.assertEquals(contact2.getUuid(), similarContactDto2.getUuid());
 	}
 
 	@Test
