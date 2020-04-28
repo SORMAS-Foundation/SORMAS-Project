@@ -219,6 +219,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			if (referredFromRef != null) {
 				SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
 				Button referredButton = new Button(I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFrom.getLab().toString());
+				referredButton.setId("referredFrom");
 				referredButton.addStyleName(ValoTheme.BUTTON_LINK);
 				referredButton.addStyleName(VSPACE_NONE);
 				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));

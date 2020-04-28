@@ -311,6 +311,7 @@ public class ContactsView extends AbstractView {
 		filterForm = new ContactsFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!navigateTo(criteria, false)) {
+				filterForm.updateResetButtonState();
 				if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 					((ContactFollowUpGrid) grid).reload();
 				} else {

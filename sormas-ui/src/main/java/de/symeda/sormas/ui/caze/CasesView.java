@@ -439,6 +439,7 @@ public class CasesView extends AbstractView {
 		filterForm = new CaseFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!navigateTo(criteria, false)) {
+				filterForm.updateResetButtonState();
 				grid.reload();
 			}
 		});

@@ -39,6 +39,7 @@ public class AdditionalTestListComponent extends VerticalLayout {
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.additionalTestNewTest));
+			createButton.setId("additionalTestNewTest");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> {

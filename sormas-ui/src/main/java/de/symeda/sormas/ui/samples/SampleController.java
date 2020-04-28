@@ -158,6 +158,7 @@ public class SampleController {
 
 		// Initialize 'Refer to another laboratory' button or link to referred sample
 		Button referOrLinkToOtherLabButton = new Button();
+		referOrLinkToOtherLabButton.setId("referOrLinkToOtherLab");
 		referOrLinkToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
 		if (dto.getReferredTo() == null) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {

@@ -64,6 +64,7 @@ public class PathogenTestListComponent extends VerticalLayout {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
 			createButton = new Button(I18nProperties.getCaption(Captions.pathogenTestNewTest));
+			createButton.setId("pathogenTestNewTest");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> {

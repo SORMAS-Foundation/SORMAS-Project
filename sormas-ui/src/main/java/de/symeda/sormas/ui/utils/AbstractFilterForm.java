@@ -125,10 +125,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		doWithoutChangeHandler(() -> {
 			super.setValue(newFieldValue);
 
-			boolean hasFilter = streamFieldsForEmptyCheck(getContent())
-					.anyMatch(f -> !f.isEmpty());
-
-			getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
+			updateResetButtonState();
 
 			applyDependenciesOnNewValue(newFieldValue);
 
@@ -138,6 +135,13 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 				moreFiltersLayout.setVisible(hasExpandedFilter);
 			}
 		});
+	}
+
+	public void updateResetButtonState() {
+		boolean hasFilter = streamFieldsForEmptyCheck(getContent())
+				.anyMatch(f -> !f.isEmpty());
+
+		getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
 	}
 
 	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {

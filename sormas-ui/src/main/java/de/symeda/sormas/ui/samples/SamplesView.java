@@ -65,7 +65,8 @@ public class SamplesView extends AbstractView {
 		addComponent(sampleListComponent);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
-			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
+			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export));
+			exportButton.setId("export");
 			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true); 
@@ -77,6 +78,7 @@ public class SamplesView extends AbstractView {
 			
 			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
+			basicExportButton.setId("basicExportButton");
 			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setIcon(VaadinIcons.TABLE);
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
@@ -87,6 +89,7 @@ public class SamplesView extends AbstractView {
 			fileDownloader.extend(basicExportButton);
 
 			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
+			extendedExportButton.setId("extendedExport");
 			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
 			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
