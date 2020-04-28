@@ -552,4 +552,8 @@
     <string name="value_visit_time_unknown">Anrufszeit N/A</string>
     <string name="value_visiting_person_unknown">Anwesende*r Arzt/Ärztin N/A</string>
     <string name="value_investigation_status_unknown">Untersuchungsstatus N/A</string>
+    <string name="sample_not_found">Probe konnte nicht gefunden werden</string>
+    <string name="no_camera_permission">Keine Kameraberechtigung</string>
+    <string name="permission_camera_rationale">Zugriff auf die Kamera wird für die Erkennung benötigt</string>
+    <string name="scan_field_sample_id">Scanbereich Proben ID</string>
 </resources>
