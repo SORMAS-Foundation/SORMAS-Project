@@ -17,13 +17,35 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Test;
+
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.contact.*;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactExportDto;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -42,16 +64,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.util.DateHelper8;
-import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Test;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
@@ -207,6 +219,35 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	}
 
 	@Test
+	public void testGetContactCountsByCasesForDashboard() {
+
+		List<String> uuids;
+
+		// test with some random uuid: returns 0,0,0
+		uuids = Arrays.asList("some-uuid");
+		int[] result = getContactFacade().getContactCountsByCasesForDashboard(uuids);
+		assertThat(result[0], equalTo(0));
+		assertThat(result[1], equalTo(0));
+		assertThat(result[2], equalTo(0));
+	}
+
+	@Test
+	public void testCreatedContactExistWhenValidatedByUUID() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+
+		// database contains the created contact
+		assertEquals(true, getContactFacade().isValidContactUuid(contact.getUuid()));
+		// database contains the created contact
+		assertEquals(false, getContactFacade().isValidContactUuid("nonExistingContactUUID"));
+	}
+
+	@Test
 	public void testGetExportList() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -259,7 +300,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
 		creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("ContPers");
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
 
 		// getAllActiveContacts and getAllUuids should return length 1
 		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null).size());

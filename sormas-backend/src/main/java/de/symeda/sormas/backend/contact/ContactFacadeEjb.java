@@ -46,7 +46,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.location.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +87,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -113,10 +113,10 @@ import de.symeda.sormas.backend.visit.VisitService;
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private ContactService contactService;	
@@ -158,7 +158,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			return Collections.emptyList();
 		}
 
-		return contactService.getAllActiveContactsAfter(date, user).stream()
+		return contactService.getAllActiveContactsAfter(date).stream()
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
@@ -185,6 +185,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public ContactDto getContactByUuid(String uuid) {
 		return toDto(contactService.getByUuid(uuid));
+	}
+
+	@Override
+	public Boolean isValidContactUuid(String uuid) {
+		return contactService.exists(uuid);
 	}
 
 	@Override
@@ -289,6 +294,10 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.CONTACT_STATUS),
 				contact.get(Contact.FOLLOW_UP_STATUS),
 				contact.get(Contact.FOLLOW_UP_UNTIL),
+				contact.get(Contact.QUARANTINE),
+				contact.get(Contact.QUARANTINE_FROM),
+				contact.get(Contact.QUARANTINE_TO),
+				contact.get(Contact.QUARANTINE_HELP_NEEDED),
 				contactPerson.get(Person.PRESENT_CONDITION),
 				contactPerson.get(Person.DEATH_DATE),
 				addressRegion.get(Region.NAME),
@@ -304,12 +313,12 @@ public class ContactFacadeEjb implements ContactFacade {
 				occupationFacility.get(Facility.UUID),
 				contactPerson.get(Person.OCCUPATION_FACILITY_DETAILS),
 				contactRegion.get(Region.NAME),
-				contactDistrict.get(District.NAME));
+				contactDistrict.get(District.NAME)
+		);
 
 		Predicate filter = null;
 
 		// Only use user filter if no restricting case is specified
-		User user = userService.getCurrentUser();
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, contact);
 		}
@@ -350,7 +359,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		Predicate filter = null;
 		// Only use user filter if no restricting case is specified
-		User user = userService.getCurrentUser();
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, root);
 		}
@@ -383,7 +391,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactOfficer.get(User.UUID), contactOfficer.get(User.FIRST_NAME), contactOfficer.get(User.LAST_NAME), contact.get(Contact.LAST_CONTACT_DATE),
 				contact.get(Contact.REPORT_DATE_TIME), contact.get(Contact.FOLLOW_UP_UNTIL), contact.get(Contact.DISEASE));
 
-		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
 		Predicate filter = null;
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
@@ -496,10 +503,9 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS),
 				contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
 				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME),
-				contact.get(Contact.QUARANTINE_TO), contactCase.get(Case.CASE_CLASSIFICATION));
+				contactCase.get(Case.CASE_CLASSIFICATION));
 
 		Predicate filter = null;
-		User user = userService.getCurrentUser();
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			filter = contactService.createUserFilter(cb, cq, contact);
@@ -529,7 +535,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				case ContactIndexDto.FOLLOW_UP_UNTIL:
 				case ContactIndexDto.REPORT_DATE_TIME:
 				case ContactIndexDto.DISEASE:
-				case ContactIndexDto.QUARANTINE_TO:
 				case ContactIndexDto.CASE_CLASSIFICATION:
 					expression = contact.get(sortProperty.propertyName);
 					break;
@@ -571,31 +576,34 @@ public class ContactFacadeEjb implements ContactFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> contact = cq.from(Contact.class);
-		Join<Contact, Case> caseJoin = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Contact, Case> caseJoin = contact.join(Contact.CAZE);
 
-		cq.where(cb.and(
-				cb.isNotNull(contact.get(Contact.CAZE)),
-				contact.get(Contact.UUID).in(contactUuids)
-				));
+		cq.where(contact.get(Contact.UUID).in(contactUuids));
 		cq.select(caseJoin.get(Case.ID));
 		cq.distinct(true);
 
 		List<Long> caseIds = em.createQuery(cq).getResultList();
 
-		CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
-		Root<Contact> contact2 = cq2.from(Contact.class);
-		cq2.groupBy(contact2.get(Contact.CAZE));
+		if (caseIds.isEmpty()) {
+			return new int[3];
+			
+		} else {
+			int[] counts = new int[3];
+			CriteriaQuery<Long> cq2 = cb.createQuery(Long.class);
+			Root<Contact> contact2 = cq2.from(Contact.class);
+			cq2.groupBy(contact2.get(Contact.CAZE));
+	
+			cq2.where(contact2.get(Contact.CAZE).in(caseIds));
+			cq2.select(cb.count(contact2.get(Contact.ID)));
 
-		cq2.where(contact2.get(Contact.CAZE).in(caseIds));
-		cq2.select(cb.count(contact2.get(Contact.ID)));
-
-		List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
-
-		int[] counts = new int[3];
-		counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-		counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-		counts[2] =  caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
-		return counts;
+			List<Long> caseContactCounts = em.createQuery(cq2).getResultList();
+	
+			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
+			counts[2] =  caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
+			
+			return counts;
+		}
 	}
 
 	@Override
@@ -673,6 +681,16 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setContactProximityDetails(source.getContactProximityDetails());
 		target.setContactCategory(source.getContactCategory());
+
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		return target;
 	}
@@ -788,6 +806,16 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		target.setContactProximityDetails(source.getContactProximityDetails());
 		target.setContactCategory(source.getContactCategory());
+
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		return target;
 	}

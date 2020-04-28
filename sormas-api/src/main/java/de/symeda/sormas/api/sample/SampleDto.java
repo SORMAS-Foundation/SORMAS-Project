@@ -36,6 +36,7 @@ public class SampleDto extends EntityDto {
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
@@ -65,6 +66,7 @@ public class SampleDto extends EntityDto {
 	@Required
 	private CaseReferenceDto associatedCase;
 	private String labSampleID;
+	private String fieldSampleID;
 	@Required
 	private Date sampleDateTime;
 
@@ -118,6 +120,14 @@ public class SampleDto extends EntityDto {
 
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
+	}
+
+	public String getFieldSampleID() {
+		return fieldSampleID;
+	}
+
+	public void setFieldSampleID(String fieldSampleID) {
+		this.fieldSampleID = fieldSampleID;
 	}
 
 	public Date getSampleDateTime() {

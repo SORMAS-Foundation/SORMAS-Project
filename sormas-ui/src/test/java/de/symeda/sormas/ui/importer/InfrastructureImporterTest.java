@@ -42,25 +42,25 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").getFile());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user.toReference(), InfrastructureType.REGION);
 		importer.runImport();
-		RegionReferenceDto region = getRegionFacade().getByName("Region with ä").get(0);
+		RegionReferenceDto region = getRegionFacade().getByName("Region with ä", false).get(0);
 		
 		// Import district
 		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_import_test.csv").getFile());
 		importer = new InfrastructureImporterExtension(districtCsvFile, user.toReference(), InfrastructureType.DISTRICT);
 		importer.runImport();
-		DistrictReferenceDto district = getDistrictFacade().getByName("District with ß", region).get(0);
+		DistrictReferenceDto district = getDistrictFacade().getByName("District with ß", region, false).get(0);
 		
 		// Import community
 		File communityCsvFile = new File(getClass().getClassLoader().getResource("sormas_community_import_test.csv").getFile());
 		importer = new InfrastructureImporterExtension(communityCsvFile, user.toReference(), InfrastructureType.COMMUNITY);
 		importer.runImport();
-		CommunityReferenceDto community = getCommunityFacade().getByName("Community with ö", district).get(0);
+		CommunityReferenceDto community = getCommunityFacade().getByName("Community with ö", district, false).get(0);
 		
 		// Import facility
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").getFile());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user.toReference(), InfrastructureType.FACILITY);
 		importer.runImport();
-		getFacilityFacade().getByName("Facility with ü", district, community).get(0);
+		getFacilityFacade().getByName("Facility with ü", district, community, false).get(0);
 	}
 	
 	@Test

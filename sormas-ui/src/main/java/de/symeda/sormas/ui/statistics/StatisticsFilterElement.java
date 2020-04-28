@@ -34,8 +34,8 @@ public abstract class StatisticsFilterElement extends HorizontalLayout {
 		setMargin(false);
 		setSpacing(false);
 	}
-	
-	abstract public List<TokenizableValue> getSelectedValues();
+
+	public abstract List<TokenizableValue> getSelectedValues();
 
 	protected List<TokenizableValue> createTokens(StatisticsGroupingKey ...groupingKeys) {
 		List<TokenizableValue> result = new ArrayList<>(groupingKeys.length);

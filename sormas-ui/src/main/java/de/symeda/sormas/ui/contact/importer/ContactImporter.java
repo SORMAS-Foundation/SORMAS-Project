@@ -59,11 +59,12 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class ContactImporter extends DataImporter {
 
-	CaseDataDto caze;
-	UI currentUI;
+	private CaseDataDto caze;
+	private UI currentUI;
 
 	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser,
 			CaseDataDto caze) {
+
 		super(inputFile, hasEntityClassRow, currentUser);
 		this.caze = caze;
 	}
@@ -267,7 +268,7 @@ public class ContactImporter extends DataImporter {
 					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
-						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, contact, person, currentElement));
+						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, contact, person, currentElement), false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (district.size() > 1) {
@@ -276,7 +277,7 @@ public class ContactImporter extends DataImporter {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getPersonDistrict(pd.getName(), person));
+						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getPersonDistrict(pd.getName(), person), false);
 						if (community.isEmpty()) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (community.size() > 1) {
@@ -286,7 +287,7 @@ public class ContactImporter extends DataImporter {
 						}
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData = ImporterPersonHelper.getPersonDistrictAndCommunity(pd.getName(), person);
-						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1());
+						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1(), false);
 						if (facility.isEmpty()) {
 							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrCommunity, entry, buildEntityProperty(entryHeaderPath)));

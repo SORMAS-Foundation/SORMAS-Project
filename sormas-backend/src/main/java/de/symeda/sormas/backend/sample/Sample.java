@@ -42,8 +42,8 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -62,6 +62,7 @@ public class Sample extends CoreAdo {
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
@@ -92,6 +93,7 @@ public class Sample extends CoreAdo {
 	
 	private Case associatedCase;
 	private String labSampleID;
+	private String fieldSampleID;
 	private Date sampleDateTime;
 
 	private Date reportDateTime;
@@ -145,6 +147,14 @@ public class Sample extends CoreAdo {
 	}
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
+	}
+
+	@Column(length=512)
+	public String getFieldSampleID() {
+		return fieldSampleID;
+	}
+	public void setFieldSampleID(String fieldSampleID) {
+		this.fieldSampleID = fieldSampleID;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

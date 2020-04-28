@@ -18,16 +18,14 @@
 
 package de.symeda.sormas.app.component.dialog;
 
-import android.app.Notification;
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
-
-import java.util.List;
 
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
+
+import java.util.List;
 
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.app.R;
@@ -37,7 +35,6 @@ import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;

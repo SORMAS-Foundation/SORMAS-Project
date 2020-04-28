@@ -69,14 +69,21 @@ else
 	
 	echo "Do you wish to install the current R for Windows (${R_VERSION})?"
 	select yn in "Yes" "No"
+	do
 	case $yn in
-	    Yes ) 
-	    	echo "Downloading ${R_WINDOWS_URL}${R_INSTALLER}"
-	    	curl ${R_WINDOWS_URL}${R_INSTALLER} > ${R_INSTALLER}
-	    	echo "Starting installation of R..."
-	    	./${R_INSTALLER}
-	    	;;
+		Yes)
+			echo "Downloading ${R_WINDOWS_URL}${R_INSTALLER}"
+			curl ${R_WINDOWS_URL}${R_INSTALLER} > ${R_INSTALLER}
+			echo "Starting installation of R..."
+			./${R_INSTALLER}
+		break
+		;;
+		*)
+		echo "Skipping download"
+		break
+		;;
 	esac
+	done
 fi
 
 # install R packages 
@@ -87,7 +94,7 @@ if [[ ${LINUX} = true ]]; then
 	#sudo apt remove libpq-dev
 	
 else
-	read -p "Required R packages will be downloaded and installed. Admin rights are required. Press [Enter] to continue or [Ctrl+C] to cancel."
+	read -p "Required R packages will be downloaded and installed. Admin rights will be requested. Press [Enter] to continue or [Ctrl+C] to cancel."
 	
 	R_DIR_DEFAULT="${PROGRAMFILES}\\R\\${R_VERSION}"
 	echo "--- Enter the install path of R on your system (default: \"${R_DIR_DEFAULT}\":"
@@ -99,7 +106,7 @@ else
 		read -p "Please specify a valid directory" R_DIR
 	done
 	echo "Starting package installation..."
-	powershell -Command "Start-Process -Verb "RunAs" -Wait -FilePath \"${R_DIR}\\bin\R.exe\" \"--no-save -f install_packages.r\""
+	powershell -Command "Start-Process -Verb \"RunAs\" -Wait -FilePath \"${R_DIR}\\bin\R.exe\" \"--no-save -f install_packages.r\""
 fi
 
 #modify sormas.properties, if needed

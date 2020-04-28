@@ -56,7 +56,8 @@ public enum DatabaseTable {
 	private final DatabaseTable parentTable;
 	private final String fileName;
 
-	private DatabaseTable(DatabaseTableType databaseTableType, DatabaseTable parentTable, String fileName) {
+	DatabaseTable(DatabaseTableType databaseTableType, DatabaseTable parentTable, String fileName) {
+
 		this.databaseTableType = databaseTableType;
 		this.parentTable = parentTable;
 		this.fileName = fileName;

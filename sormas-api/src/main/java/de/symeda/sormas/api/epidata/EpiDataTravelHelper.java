@@ -22,7 +22,11 @@ import java.util.Date;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
-public class EpiDataTravelHelper {
+public final class EpiDataTravelHelper {
+
+	private EpiDataTravelHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	public static String buildTravelString(TravelType travelType,  String travelDestination, Date travelDateFrom, Date travelDateTo) {
 		StringBuilder resultString = new StringBuilder();
@@ -56,5 +60,5 @@ public class EpiDataTravelHelper {
 		
 		return resultString.toString();
 	}
-	
+
 }

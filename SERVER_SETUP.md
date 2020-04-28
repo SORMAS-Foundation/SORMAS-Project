@@ -112,10 +112,10 @@ Here are some things that you should do to configure the Apache server as a prox
 * Add a proxy pass to the local port:
 
 		ProxyRequests Off
-		ProxyPass /sormas-ui http://localhost:5080/sormas-ui
-		ProxyPassReverse /sormas-ui http://localhost:5080/sormas-ui
-		ProxyPass /sormas-rest http://localhost:5080/sormas-rest
-		ProxyPassReverse /sormas-rest http://localhost:5080/sormas-rest
+		ProxyPass /sormas-ui http://localhost:6080/sormas-ui
+		ProxyPassReverse /sormas-ui http://localhost:6080/sormas-ui
+		ProxyPass /sormas-rest http://localhost:6080/sormas-rest
+		ProxyPassReverse /sormas-rest http://localhost:6080/sormas-rest
 * Configure security settings:
 
 		Header always set X-Content-Type-Options "nosniff"

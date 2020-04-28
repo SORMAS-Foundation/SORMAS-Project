@@ -3,6 +3,7 @@
 ## Content
 * [Importing Infrastructure Data](#importing-infrastructure-data)
 * [Disease Configuration](#disease-configuration)
+* [Feature Confguration](#feature-configuration)
 
 ## Importing Infrastructure Data
 When you start a SORMAS server for the first time, some default infrastructure data is generated to ensure that the server is usable and the default users can be created. It is recommended (and, unless you're working on a demo server, necessary) to archive this default data and import the official infrastructure data of the country or part of the country that you intend to use SORMAS in instead.
@@ -29,5 +30,17 @@ SORMAS supports a wide range of diseases, and not all of those might be relevant
 * The **contact follow-up duration**
 
 Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *diseaseconfiguration* table according to your needs. 
+
+**IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited disease configuration.
+
+## Feature Configuration
+Some of the features in SORMAS can be enabled or disabled for the system.
+Examples for this are aggregated reporting, event surveillance, national case sharing and more.
+
+Right now, changing these variables unfortunately is not possible from within the user interface, but requires **direct database access**. If you have this access, you can edit the entries in the *featureconfiguration* table. 
+
+* There will be an entry in the database table for each feature that is available in SORMAS
+* Set the "enabled" value of the feature to true or false to enable or disable it
+* The region, district, disease and enddate columns are currently only appicable for the line listing feature. The line listing feature is the only feature that can currently be configured using the UI.
 
 **IMPORTANT:** Whenever you edit an entry in this table, you also need to manually set the *changedate* to the current date and time. This is required in order for the mobile app to synchronize the changes and use the edited disease configuration.

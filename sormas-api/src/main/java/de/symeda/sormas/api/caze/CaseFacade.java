@@ -109,4 +109,6 @@ public interface CaseFacade {
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
+	
+	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
 }

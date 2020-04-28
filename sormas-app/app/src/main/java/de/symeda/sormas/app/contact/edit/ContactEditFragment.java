@@ -183,11 +183,27 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
         contentBinding.contactContactProximity.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues(record.getDisease(), ConfigProvider.getServerLocale()))));
 
-        if (ConfigProvider.isGermanServer()){
+        contentBinding.contactQuarantine.addValueChangedListener(e -> {
+            boolean visible = QuarantineType.HOME.equals(contentBinding.contactQuarantine.getValue()) || QuarantineType.INSTITUTIONELL.equals(contentBinding.contactQuarantine.getValue());
+            if (visible) {
+                if (ConfigProvider.isGermanServer()) {
+                    contentBinding.contactQuarantineOrderedVerbally.setVisibility(VISIBLE);
+                    contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
+                }
+            } else {
+                contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+                contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            }
+        });
+        if (ConfigProvider.isGermanServer()) {
             contentBinding.contactContactProximity.addValueChangedListener(e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
         } else {
             contentBinding.contactContactProximityDetails.setVisibility(GONE);
             contentBinding.contactContactCategory.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
         }
 
         if (record.getCaseUuid() != null) {
@@ -246,6 +262,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
         contentBinding.contactQuarantineFrom.initializeDateField(getFragmentManager());
         contentBinding.contactQuarantineTo.initializeDateField(getFragmentManager());
+        contentBinding.contactQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
+        contentBinding.contactQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
     }
 
     @Override

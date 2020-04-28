@@ -74,9 +74,9 @@ public class PersonService extends AbstractAdoService<Person> {
 		Person person = new Person();
 		return person;
 	}
-
+	
 	@Override
-	public List<String> getAllUuids(User user) {
+	public List<String> getAllUuids() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
 		// persons by LGA

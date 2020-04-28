@@ -48,12 +48,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -176,14 +174,16 @@ public class CaseImporter extends DataImporter {
 					if (firstPathogenTestColumnName == null) {
 						firstPathogenTestColumnName = String.join(".", cellData.getEntityPropertyPath());
 					}
-					SampleDto referenceSample = samples.get(samples.size() - 1);
-					if (String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
-						currentPathogenTestHasEntries = false;
-						pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUser));
-					}
-					if (!StringUtils.isEmpty(cellData.getValue())) {
-						currentPathogenTestHasEntries = true;					
-						insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
+					if (!samples.isEmpty()) {
+						SampleDto referenceSample = samples.get(samples.size() - 1);
+						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName)) {
+							currentPathogenTestHasEntries = false;
+							pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUser));
+						}
+						if (!StringUtils.isEmpty(cellData.getValue())) {
+							currentPathogenTestHasEntries = true;					
+							insertColumnEntryIntoSampleData(null, pathogenTests.get(pathogenTests.size() - 1), cellData.getValue(), cellData.getEntityPropertyPath());
+						}
 					}
 				} else if (!StringUtils.isEmpty(cellData.getValue())) {
 					// If the cell entry is not empty, try to insert it into the current case or its person
@@ -368,7 +368,7 @@ public class CaseImporter extends DataImporter {
 					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
-						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), caze, null, person, currentElement));
+						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade().getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), caze, null, person, currentElement), false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (district.size() > 1) {
@@ -377,7 +377,7 @@ public class CaseImporter extends DataImporter {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getDistrictBasedOnCommunity(pd.getName(), caze, person, currentElement));
+						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getDistrictBasedOnCommunity(pd.getName(), caze, person, currentElement), false);
 						if (community.isEmpty()) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (community.size() > 1) {
@@ -387,7 +387,7 @@ public class CaseImporter extends DataImporter {
 						}
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData = ImporterPersonHelper.getDistrictAndCommunityBasedOnFacility(pd.getName(), caze, person, currentElement);
-						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1());
+						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade().getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1(), false);
 						if (facility.isEmpty()) {
 							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrCommunity, entry, buildEntityProperty(entryHeaderPath)));
@@ -402,7 +402,7 @@ public class CaseImporter extends DataImporter {
 							pd.getWriteMethod().invoke(currentElement, facility.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
-						List<PointOfEntryReferenceDto> pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByName(entry, caze.getDistrict());
+						List<PointOfEntryReferenceDto> pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByName(entry, caze.getDistrict(), false);
 						if (pointOfEntry.isEmpty()) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (pointOfEntry.size() > 1) {
@@ -451,7 +451,7 @@ public class CaseImporter extends DataImporter {
 					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
-						List<FacilityReferenceDto> lab = FacadeProvider.getFacilityFacade().getLaboratoriesByName(entry);
+						List<FacilityReferenceDto> lab = FacadeProvider.getFacilityFacade().getLaboratoriesByName(entry, false);
 						if (lab.isEmpty()) {
 							throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
 						} else if (lab.size() > 1) {

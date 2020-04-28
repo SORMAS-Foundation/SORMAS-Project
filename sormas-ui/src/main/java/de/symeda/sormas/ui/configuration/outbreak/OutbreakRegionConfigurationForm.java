@@ -29,9 +29,9 @@ import java.util.Set;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -43,12 +43,11 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class OutbreakRegionConfigurationForm extends VerticalLayout {
 		
-		private static final long serialVersionUID = 1L;
-		
+	private static final long serialVersionUID = 1L;
 
 	// Outbreak mode statics
-	private final static String OUTBREAK = I18nProperties.getCaption(Captions.outbreakOutbreak);
-	private final static String NORMAL = I18nProperties.getCaption(Captions.outbreakNormal);
+	private static final String OUTBREAK = I18nProperties.getCaption(Captions.outbreakOutbreak);
+	private static final String NORMAL = I18nProperties.getCaption(Captions.outbreakNormal);
 
 	// Data
 	private final Set<DistrictReferenceDto> affectedDistricts;

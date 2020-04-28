@@ -34,16 +34,22 @@ public enum ApproximateAgeType {
 	MONTHS,
 	DAYS,
 	;
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
-	
+	}
+
 	public static final class ApproximateAgeHelper {
-		
-		public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
-			if (birthDate == null)
+
+		private ApproximateAgeHelper() {
+			// Hide Utility Class Constructor
+		}
+
+		public static Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
+
+			if (birthDate == null) {
 	            return Pair.createPair(null, ApproximateAgeType.YEARS);
+			}
 
 	        DateTime toDate = deathDate==null?DateTime.now(): new DateTime(deathDate);
 	        DateTime startDate = new DateTime(birthDate);
@@ -77,12 +83,17 @@ public enum ApproximateAgeType {
 //				return Pair.createPair(period.getYears(), ApproximateAgeType.YEARS);
 //			}
 		}
-		
-		public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate) {
+
+		public static Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate) {
 			return getApproximateAge(birthDate, null);
 		}
-		
-		public static final Pair<Integer, ApproximateAgeType> getApproximateAge(Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD, Date deathDate) {
+
+		public static Pair<Integer, ApproximateAgeType> getApproximateAge(
+			Integer birthdateYYYY,
+			Integer birthdateMM,
+			Integer birthdateDD,
+			Date deathDate) {
+
 			Calendar birthdate = new GregorianCalendar();
 			birthdate.set(birthdateYYYY,
 					birthdateMM !=null ? birthdateMM - 1 : 0, 
@@ -90,7 +101,7 @@ public enum ApproximateAgeType {
 
 			return getApproximateAge(birthdate.getTime(), deathDate);
 		}
-		
+
 		public static String formatApproximateAge(Integer approximateAge, ApproximateAgeType approximateAgeType) {
 			if (approximateAge == null) {
 				return "";
@@ -140,5 +151,4 @@ public enum ApproximateAgeType {
 			}
 		}
 	}
-	
 }

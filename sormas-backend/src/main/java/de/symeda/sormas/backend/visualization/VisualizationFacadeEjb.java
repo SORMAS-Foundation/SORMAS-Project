@@ -51,13 +51,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -81,19 +79,14 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	private static final String[] REQUIRED_SCRIPTS = {"encodeGraphic.R", "networkFunction.R"};
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-	
+	private EntityManager em;
 
 	@EJB
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
-	
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
-	
-
-	private static final Logger logger = LoggerFactory.getLogger(VisualizationFacadeEjb.class);
 
 	@Override
 	public String buildTransmissionChainJson(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
@@ -129,8 +122,10 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				contactService.createActiveContactsFilter(cb, root),
 				contactService.createDefaultFilter(cb, root),
 				cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),
-				cb.notEqual(root.get(Contact.CONTACT_STATUS), ContactStatus.DROPPED),
-				cb.or(cb.isNull(caze), caseService.createDefaultFilter(cb, caze)),
+				cb.or(cb.isNull(caze), 
+					cb.and(
+						caseService.createDefaultFilter(cb, caze), 
+						cb.notEqual(caze.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE))),
 				root.get(Contact.DISEASE).in(diseases),
 				region == null ? null : cb.equal(root.join(Contact.REGION).get(Region.UUID), region.getUuid()),
 				district == null ? null : cb.equal(root.join(Contact.DISTRICT).get(District.UUID), district.getUuid())
@@ -238,7 +233,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 					String html = new String(Files.readAllBytes(outputFile));
 					return extractJson(html);
 				} else {
-					logger.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
+					LoggerFactory
+						.getLogger(VisualizationFacadeEjb.class)
+						.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
 					return null;
 				}
 				

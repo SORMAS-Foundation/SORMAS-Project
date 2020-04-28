@@ -58,12 +58,12 @@ public class FacilityServiceTest extends AbstractBeanTest {
 		Community otherCommunity = creator.createCommunity("Other Community", otherDistrict);
 		creator.createFacility("Facility", region, district, community);
 		
-		assertThat(getFacilityService().getHealthFacilitiesByName("Facility", district, community), hasSize(1));
-		assertThat(getFacilityService().getHealthFacilitiesByName(" Facility ", district, community), hasSize(1));
-		assertThat(getFacilityService().getHealthFacilitiesByName("facility", district, null), hasSize(1));
-		assertThat(getFacilityService().getHealthFacilitiesByName("FACILITY", district, null), hasSize(1));
-		assertThat(getFacilityService().getHealthFacilitiesByName("Facility", otherDistrict, otherCommunity), empty());
-		assertThat(getFacilityService().getHealthFacilitiesByName("Redcliffe Church", district, community), empty());
+		assertThat(getFacilityService().getHealthFacilitiesByName("Facility", district, community, true), hasSize(1));
+		assertThat(getFacilityService().getHealthFacilitiesByName(" Facility ", district, community, true), hasSize(1));
+		assertThat(getFacilityService().getHealthFacilitiesByName("facility", district, null, true), hasSize(1));
+		assertThat(getFacilityService().getHealthFacilitiesByName("FACILITY", district, null, true), hasSize(1));
+		assertThat(getFacilityService().getHealthFacilitiesByName("Facility", otherDistrict, otherCommunity, true), empty());
+		assertThat(getFacilityService().getHealthFacilitiesByName("Redcliffe Church", district, community, true), empty());
 	}
 
 	@Test
@@ -73,10 +73,10 @@ public class FacilityServiceTest extends AbstractBeanTest {
 		Community community = creator.createCommunity("Community", district);
 		creator.createFacility("Laboratory", FacilityType.LABORATORY, region, district, community);
 		
-		assertThat(getFacilityService().getLaboratoriesByName("Laboratory"), hasSize(1));
-		assertThat(getFacilityService().getLaboratoriesByName(" Laboratory "), hasSize(1));
-		assertThat(getFacilityService().getLaboratoriesByName("laboratory"), hasSize(1));
-		assertThat(getFacilityService().getLaboratoriesByName("LABORATORY"), hasSize(1));
-		assertThat(getFacilityService().getLaboratoriesByName("Jowan's Chamber"), empty());
+		assertThat(getFacilityService().getLaboratoriesByName("Laboratory", true), hasSize(1));
+		assertThat(getFacilityService().getLaboratoriesByName(" Laboratory ", true), hasSize(1));
+		assertThat(getFacilityService().getLaboratoriesByName("laboratory", true), hasSize(1));
+		assertThat(getFacilityService().getLaboratoriesByName("LABORATORY", true), hasSize(1));
+		assertThat(getFacilityService().getLaboratoriesByName("Jowan's Chamber", true), empty());
 	}
 }

@@ -8,7 +8,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
-public class InfrastructureHelper {
+public final class InfrastructureHelper {
+
+	private InfrastructureHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	public static final int CASE_INCIDENCE_DIVISOR = 100000;
 	

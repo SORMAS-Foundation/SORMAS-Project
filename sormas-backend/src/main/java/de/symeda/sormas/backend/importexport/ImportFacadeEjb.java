@@ -90,8 +90,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -127,8 +129,6 @@ public class ImportFacadeEjb implements ImportFacade {
 	private HospitalizationService hospitalizationService;
 	@EJB
 	private EpiDataService epiDataService;
-
-	private static final Logger logger = LoggerFactory.getLogger(ImportFacadeEjb.class);
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX
 			+ "_import_case_template.csv";

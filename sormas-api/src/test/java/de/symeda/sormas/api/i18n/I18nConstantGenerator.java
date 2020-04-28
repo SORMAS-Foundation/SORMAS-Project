@@ -36,8 +36,13 @@ public class I18nConstantGenerator {
 		String filePath = "src/main/java/de/symeda/sormas/api/i18n/" + outputClassName + ".java";
         FileWriter writer = new FileWriter(filePath, false);
         writer.write("package de.symeda.sormas.api.i18n;\n\n");
+        writer.write("import javax.annotation.Generated;\n\n");
+        writer.write("@Generated(value = \""+getClass().getCanonicalName()+"\")\n");
         writer.write("public interface " + outputClassName + " {\n\n");
-        
+		writer
+			.write(
+				"\t/*\n\t * Hint for SonarQube issues:\n\t * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.\n\t */\n\n");
+ 
         Collection<String> orderedKeys = new TreeSet<String>(new Comparator<String>() {
             public int compare(String s1, String s2) {
                 return s1.compareToIgnoreCase(s2);
@@ -54,10 +59,10 @@ public class I18nConstantGenerator {
 
         for (String key : orderedKeys) {
 	        String constant =  key.replaceAll("[\\.\\-]", "_");
-	        writer.write("\tpublic static String "+constant+" = \""+key+"\";\n");
+	        writer.write("\tString "+constant+" = \""+key+"\";\n");
         }
         
-        writer.write(" }\n");
+        writer.write("}\n");
         writer.flush();      
         writer.close();
 	}

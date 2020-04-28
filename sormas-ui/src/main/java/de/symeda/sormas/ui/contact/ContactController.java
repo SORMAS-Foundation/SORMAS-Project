@@ -53,8 +53,6 @@ import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.CaseSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ContactController {
@@ -252,11 +250,10 @@ public class ContactController {
 			}
 		}
 
-		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
+		DistrictReferenceDto district = districtUuid != null ? FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid) : null;
 
 		// Create a temporary contact in order to use the CommitDiscardWrapperComponent
 		ContactBulkEditData bulkEditData = new ContactBulkEditData();
-
 		BulkContactDataForm form = new BulkContactDataForm(district);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkContactDataForm> editView = new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());

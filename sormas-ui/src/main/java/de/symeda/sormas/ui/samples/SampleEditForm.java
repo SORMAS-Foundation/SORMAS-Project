@@ -90,6 +90,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 					fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_PURPOSE),
 					fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
 					fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
+					fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, ""),
 					fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
 			) +
 			loc(SampleDto.PATHOGEN_TESTING_REQUESTED) +
@@ -123,6 +124,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
+		addField(SampleDto.FIELD_SAMPLE_ID, TextField.class);
 		DateField shipmentDate = addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
@@ -218,7 +220,11 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(getValue().getUuid());
 			if (referredFromRef != null) {
 				SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
-				Button referredButton = new Button(I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFrom.getLab().toString());
+				FacilityReferenceDto referredFromLab = referredFrom.getLab();
+				String referredButtonCaption = referredFromLab == null
+						? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " (" +DateHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
+						: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
+				Button referredButton = new Button(referredButtonCaption);
 				referredButton.addStyleName(ValoTheme.BUTTON_LINK);
 				referredButton.addStyleName(VSPACE_NONE);
 				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));

@@ -59,20 +59,42 @@ public class VisitDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
-	
+
 	public static VisitDto build(PersonReferenceDto contactPerson, Disease disease) {
 		VisitDto visit = new VisitDto();
     	visit.setUuid(DataHelper.createUuid());
-    	
+
     	visit.setPerson(contactPerson);
     	visit.setDisease(disease);
 
     	SymptomsDto symptoms = new SymptomsDto();
     	visit.setSymptoms(symptoms);
-    	
+
     	visit.setVisitDateTime(new Date());
-    	
+
     	return visit;
+	}
+
+	public static VisitDto build(PersonReferenceDto person, Disease disease, Date visitDateTime, UserReferenceDto visitUser, VisitStatus visitStatus, String visitRemarks,
+								 SymptomsDto symptoms, Double reportLat, Double reportLon, Float reportLatLonAccuracy) {
+
+		final VisitDto visit = build(person, disease);
+
+		if (visitDateTime != null) {
+			visit.setVisitDateTime(visitDateTime);
+		}
+		visit.setVisitUser(visitUser);
+		visit.setVisitStatus(visitStatus);
+		visit.setVisitRemarks(visitRemarks);
+		visit.setVisitRemarks(visitRemarks);
+		if (symptoms != null) {
+			visit.setSymptoms(symptoms);
+		}
+		visit.setReportLat(reportLat);
+		visit.setReportLon(reportLon);
+		visit.setReportLatLonAccuracy(reportLatLonAccuracy);
+
+		return visit;
 	}
 	
 	public Date getVisitDateTime() {

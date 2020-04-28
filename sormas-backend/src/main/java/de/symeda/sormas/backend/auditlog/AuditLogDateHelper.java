@@ -29,7 +29,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
 import java.util.Date;
 
-public class AuditLogDateHelper {
+public final class AuditLogDateHelper {
+
+	private AuditLogDateHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	/**
 	 * From this year on the conversion via Time API works without the shift of 6:32 minutes or 2 days.

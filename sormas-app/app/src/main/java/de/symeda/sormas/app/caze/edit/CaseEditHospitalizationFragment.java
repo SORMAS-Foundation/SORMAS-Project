@@ -26,7 +26,6 @@ import org.joda.time.DateTimeComparator;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.hospitalization.AccommodationType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -176,10 +175,9 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
         // Initialize ControlDateFields
         contentBinding.caseHospitalizationAdmissionDate.initializeDateField(getFragmentManager());
         contentBinding.caseHospitalizationDischargeDate.initializeDateField(getFragmentManager());
+        contentBinding.caseHospitalizationIntensiveCareUnitStart.initializeDateField(getFragmentManager());
+        contentBinding.caseHospitalizationIntensiveCareUnitEnd.initializeDateField(getFragmentManager());
         contentBinding.caseHospitalizationIsolationDate.initializeDateField(getFragmentManager());
-
-        // Initialize ControlSpinnerFields
-        contentBinding.caseHospitalizationAccommodation.initializeSpinner(DataUtils.getEnumItems(AccommodationType.class), true);
 
         verifyPrevHospitalizationStatus();
     }

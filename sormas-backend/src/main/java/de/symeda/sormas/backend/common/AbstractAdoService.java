@@ -17,16 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.user.CurrentUser;
-import de.symeda.sormas.backend.user.CurrentUserQualifier;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.ModelConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -45,13 +42,20 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import javax.persistence.criteria.Subquery;
+import javax.validation.constraints.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.user.CurrentUser;
+import de.symeda.sormas.backend.user.CurrentUserQualifier;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 public abstract class AbstractAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
@@ -66,6 +70,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@CurrentUserQualifier
 	private Instance<CurrentUser> currentUser;
 
+	// protected to be used by implementations
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
@@ -73,7 +78,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		this.elementClass = elementClass;
 	}
 
-	public User getCurrentUser() {
+	protected User getCurrentUser() {
 		return currentUser.get().getUser();
 	}
 
@@ -172,16 +177,14 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		return resultList;
 	}
 	
-	public List<String> getAllUuids(User user) {
+	public List<String> getAllUuids() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(getElementClass());
 
-		if (user != null) {
-			Predicate filter = createUserFilter(cb, cq, from);
-			if (filter != null) {
-				cq.where(filter);
-			}
+		Predicate filter = createUserFilter(cb, cq, from);
+		if (filter != null) {
+			cq.where(filter);
 		}
 		
 		cq.select(from.get(AbstractDomainObject.UUID));
@@ -240,7 +243,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 
 	public ADO getByReferenceDto(ReferenceDto dto) {
-		if (dto != null) {
+		if (dto != null && dto.getUuid() != null) {
 			ADO result = getByUuid(dto.getUuid());
 			if (result == null) {
 				logger.warn("Could not find entity for " + dto.getClass().getSimpleName() + " with uuid " + dto.getUuid());
@@ -252,8 +255,7 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 	
 	@Override
-	public ADO getByUuid(String uuid) {
-		
+	public ADO getByUuid(@NotNull String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
@@ -268,6 +270,28 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 				.orElse(null);
 		
 		return entity;
+	}
+
+	@Override
+	public Boolean exists(@NotNull String uuid) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		final CriteriaQuery<Object> query = cb.createQuery(Object.class);
+		query.from(getElementClass());
+
+		final Subquery<ADO> subquery = query.subquery(getElementClass());
+		final Root<ADO> subRootEntity = subquery.from(getElementClass());
+		subquery.select(subRootEntity);
+		subquery.where(cb.equal(subRootEntity.get(AbstractDomainObject.UUID), uuid));
+
+		final Predicate exists = cb.exists(subquery);
+		final Expression<Boolean> trueExpression = cb.literal(true);
+		final Expression<Boolean> falseExpression = cb.literal(false);
+		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
+
+		final TypedQuery<Object> typedQuery = em.createQuery(query);
+
+		return (Boolean) typedQuery.getSingleResult();
 	}
 
 	@Override

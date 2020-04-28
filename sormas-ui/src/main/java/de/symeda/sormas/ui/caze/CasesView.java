@@ -27,9 +27,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
-import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -158,6 +156,7 @@ public class CasesView extends AbstractView {
 	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private CheckBox casesWithCaseManagementData;
 	private CheckBox excludeSharedCases;
+	private CheckBox withoutResponsibleOfficerFilter;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
@@ -476,34 +475,6 @@ public class CasesView extends AbstractView {
 		importLayout.addComponent(lineListingImportButton);
 	}
 
-	private void addExportButton(StreamResource exportStreamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, String buttonId,
-			Resource icon, String captionKey, String descriptionKey) {
-		
-		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
-			
-			Button button = e.getButton();
-			int buttonPos = exportLayout.getComponentIndex(button);
-			
-			DownloadUtil.showExportWaitDialog(button, ce -> {
-				//restore the button
-				exportLayout.addComponent(button, buttonPos);
-				button.setEnabled(true);
-			});
-			exportPopupButton.setPopupVisible(false);
-		});
-			
-		exportButton.setDisableOnClick(true);
-			
-		exportButton.setId(buttonId);
-		exportButton.setDescription(I18nProperties.getString(descriptionKey));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(icon);
-		exportButton.setWidth(100, Unit.PERCENTAGE);
-		exportLayout.addComponent(exportButton);
-
-		new FileDownloader(exportStreamResource).extend(exportButton);
-	}
-
 	private void buildAndOpenCasesInstructions() {
 		Window window = VaadinUiUtil.showPopupWindow(new CasesGuideLayout());
 		window.setWidth(1024, Unit.PIXELS);
@@ -786,6 +757,16 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(excludeSharedCases);
 			}
+
+			withoutResponsibleOfficerFilter = new CheckBox();
+			CssStyles.style(withoutResponsibleOfficerFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+			withoutResponsibleOfficerFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleOfficer));
+			withoutResponsibleOfficerFilter.setDescription(I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer));
+			withoutResponsibleOfficerFilter.addValueChangeListener(e -> {
+				criteria.withoutResponsibleOfficer((Boolean) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			thirdFilterRowLayout.addComponent(withoutResponsibleOfficerFilter);
 		}
 		filterLayout.addComponent(thirdFilterRowLayout);
 		thirdFilterRowLayout.setVisible(false);
@@ -1033,7 +1014,8 @@ public class CasesView extends AbstractView {
 		if (excludeSharedCases != null) {
 			excludeSharedCases.setValue(criteria.getExcludeSharedCases());
 		}
-		
+		withoutResponsibleOfficerFilter.setValue(criteria.isWithoutResponsibleOfficer());
+
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
 		Date newCaseDateTo = criteria.getNewCaseDateTo();
