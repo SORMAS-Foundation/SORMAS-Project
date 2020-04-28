@@ -310,7 +310,7 @@ public class ContactsView extends AbstractView {
 
 		filterForm = new ContactsFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!navigateTo(criteria)) {
+			if (!navigateTo(criteria, false)) {
 				if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 					((ContactFollowUpGrid) grid).reload();
 				} else {
@@ -320,7 +320,7 @@ public class ContactsView extends AbstractView {
 		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
-			navigateTo(null);
+			navigateTo(null, true);
 		});
 		filterLayout.addComponent(filterForm);
 
@@ -522,16 +522,9 @@ public class ContactsView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-
-		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-			((ContactFollowUpGrid) grid).reload();
-		} else {
-			((ContactGrid) grid).reload();
-		}
 	}
 
 	public void updateFilterComponents() {
-		filterForm.setValue(criteria);
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
@@ -539,6 +532,8 @@ public class ContactsView extends AbstractView {
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
+
+		filterForm.setValue(criteria);
 
 		applyingCriteria = false;
 	}

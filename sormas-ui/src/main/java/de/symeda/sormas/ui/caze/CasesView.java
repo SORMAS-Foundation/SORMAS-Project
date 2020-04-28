@@ -438,13 +438,13 @@ public class CasesView extends AbstractView {
 
 		filterForm = new CaseFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!navigateTo(criteria)) {
+			if (!navigateTo(criteria, false)) {
 				grid.reload();
 			}
 		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
-			navigateTo(null);
+			navigateTo(null, true);
 		});
 		filterLayout.addComponent(filterForm);
 
@@ -554,13 +554,11 @@ public class CasesView extends AbstractView {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
+
 		updateFilterComponents();
-		grid.reload();
 	}
 
 	public void updateFilterComponents() {
-		filterForm.setValue(criteria);
-
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
@@ -568,6 +566,8 @@ public class CasesView extends AbstractView {
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
+
+		filterForm.setValue(criteria);
 
 		applyingCriteria = false;
 	}

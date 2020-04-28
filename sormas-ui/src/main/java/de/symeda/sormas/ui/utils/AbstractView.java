@@ -34,7 +34,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -112,23 +111,32 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	}
 
 	public boolean navigateTo(BaseCriteria criteria) {
+		return navigateTo(criteria, true);
+	}
+
+	public boolean navigateTo(BaseCriteria criteria, boolean force) {
 		if (applyingCriteria) {
 			return false;
 		}
 		applyingCriteria = true;
 
-		boolean didNavigate = navigateIfNeeded(criteria);
+		String state = getUI().getNavigator().getState();
+		String newState = buildNavigationState(state, criteria);
 
+		boolean didNavigate = false;
+		if(!newState.equals(state) || force) {
+			getUI().getNavigator().navigateTo(newState);
+
+			didNavigate = true;
+		}
 		applyingCriteria = false;
 
 		return didNavigate;
 	}
 
-	private boolean navigateIfNeeded(BaseCriteria criteria) {
+	private String buildNavigationState(String currentState, BaseCriteria criteria) {
 
-		String state = getUI().getNavigator().getState();
-
-		String newState = state;
+		String newState = currentState;
 		int paramsIndex = newState.lastIndexOf('?');
 		if (paramsIndex >= 0) {
 			newState = newState.substring(0, paramsIndex);
@@ -145,13 +153,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			}
 		}
 
-		if(!newState.equals(state)) {
-			getUI().getNavigator().navigateTo(newState);
-
-			return true;
-		}
-
-		return false;
+		return newState;
 	}
 
 	public void setApplyingCriteria(boolean applyingCriteria) {
