@@ -46,7 +46,7 @@
     <string name="action_create_treatment">Behandlung erstellen</string>
     <string name="action_edit_data">Daten bearbeiten</string>
     <string name="action_delete">Löschen</string>
-    <string name="action_dismiss">Verwerfen</string>
+    <string name="action_dismiss">Abbrechen</string>
     <string name="action_done">Erledigt</string>
     <string name="action_download">Herunterladen</string>
     <string name="action_download_background">Herunterladen im Hintergrund</string>
@@ -113,7 +113,7 @@
     <string name="action_submit_case_numbers">Fallnummern einreichen</string>
     <string name="caption_address">Adresse</string>
     <string name="caption_age">Alter</string>
-    <string name="caption_attended_by">Attended by</string>
+    <string name="caption_attended_by">Besucht von</string>
     <string name="caption_case_clinical_visits">Klinische Bewertungen</string>
     <string name="caption_case_contacts">Fallkontakte</string>
     <string name="caption_case_epidemiological_data">Epidemiologische Info</string>
@@ -157,7 +157,7 @@
     <string name="caption_inadequate_specimen">Unzureichende Probe</string>
     <string name="caption_indeterminate">Unbestimmt</string>
     <string name="caption_informant_reports">Informantenberichte</string>
-    <string name="caption_issued_on">Issued on </string>
+    <string name="caption_issued_on">Gemeldet am </string>
     <string name="caption_last_case">Letzter Fall</string>
     <string name="caption_last_name">Nachname</string>
     <string name="caption_lesions_locations">Lokalisierung der Läsionen</string>
@@ -326,7 +326,7 @@
     <string name="heading_pathogen_test_summary">Erregertest Zusammenfassung</string>
     <string name="heading_pathogen_tests_list">Erregertestliste</string>
     <string name="heading_sign_in">Anmelden</string>
-    <string name="heading_social_events">Soziale Ereignisse</string>
+    <string name="heading_social_events">Events/Ereignisse</string>
     <string name="heading_source_case">Indexfall</string>
     <string name="heading_source_of_information">Informationsquelle</string>
     <string name="heading_surveillance_outbreak">Überwachung Ausbruch</string>
@@ -552,4 +552,8 @@
     <string name="value_visit_time_unknown">Anrufszeit N/A</string>
     <string name="value_visiting_person_unknown">Anwesende*r Arzt/Ärztin N/A</string>
     <string name="value_investigation_status_unknown">Untersuchungsstatus N/A</string>
+    <string name="sample_not_found">Probe konnte nicht gefunden werden</string>
+    <string name="no_camera_permission">Keine Kameraberechtigung</string>
+    <string name="permission_camera_rationale">Zugriff auf die Kamera wird für die Erkennung benötigt</string>
+    <string name="scan_field_sample_id">Scanbereich Proben ID</string>
 </resources>
