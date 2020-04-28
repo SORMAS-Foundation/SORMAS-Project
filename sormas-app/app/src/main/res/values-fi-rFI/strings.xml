@@ -552,4 +552,8 @@
     <string name="value_visit_time_unknown">Käyntiaika puuttuu</string>
     <string name="value_visiting_person_unknown">Hoitava lääkäri puuttuu</string>
     <string name="value_investigation_status_unknown">Selvittelyn tila puuttuu</string>
+    <string name="sample_not_found">Näytettä ei löytynyt</string>
+    <string name="no_camera_permission">Ei lupaa kameran käyttöön</string>
+    <string name="permission_camera_rationale">Tunnistaminen vaatii käyttöoikeuden kameraan</string>
+    <string name="scan_field_sample_id">Skannaa kenttänäytteen ID</string>
 </resources>
