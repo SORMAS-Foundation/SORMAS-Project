@@ -89,6 +89,7 @@ public class TasksView extends AbstractView {
 		
     	if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
 	    	Button createButton = new Button(I18nProperties.getCaption(Captions.taskNewTask));
+			createButton.setId("createTask");
 	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 	        createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 	        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload));

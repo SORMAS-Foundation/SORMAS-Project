@@ -35,6 +35,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.contact.*;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -62,8 +64,7 @@ public class TaskGridComponent extends VerticalLayout {
 	private Button activeStatusButton;
 
 	// Filter
-	private ComboBox statusFilter;
-	private Button resetButton;
+	private TaskGridFilterForm filterForm;
 	private ComboBox relevanceStatusFilter;
 
 	MenuBar bulkOperationsDropdown;
@@ -105,23 +106,16 @@ public class TaskGridComponent extends VerticalLayout {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		statusFilter = new ComboBox();
-		statusFilter.setWidth(200, Unit.PIXELS);
-		statusFilter.setInputPrompt(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.TASK_STATUS));
-		statusFilter.addItems((Object[])TaskStatus.values());
-		statusFilter.addValueChangeListener(e -> {
-			criteria.taskStatus((TaskStatus)e.getProperty().getValue());
+		filterForm = new TaskGridFilterForm();
+		filterForm.addValueChangeListener(e -> {
 			tasksView.navigateTo(criteria);
 		});
-		filterLayout.addComponent(statusFilter);
-
-		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-		resetButton.setVisible(false);
-		resetButton.addClickListener(event -> {
+		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(TasksView.class).remove(TaskCriteria.class);
 			tasksView.navigateTo(null);
 		});
-		filterLayout.addComponent(resetButton);
+
+		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
 	}
@@ -139,6 +133,7 @@ public class TaskGridComponent extends VerticalLayout {
 		buttonFilterLayout.setSpacing(true);
 		{
 			Button allTasks = new Button(I18nProperties.getCaption(Captions.all), e -> processAssigneeFilterChange(null));
+			allTasks.setId("allTasks");
 			CssStyles.style(allTasks, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			allTasks.setCaptionAsHtml(true);
 			buttonFilterLayout.addComponent(allTasks);
@@ -164,6 +159,7 @@ public class TaskGridComponent extends VerticalLayout {
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
@@ -224,6 +220,7 @@ public class TaskGridComponent extends VerticalLayout {
 
 	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String status, String caption) {
 		button.setData(status);
+		button.setId(status);
 		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setCaptionAsHtml(true);
 		filterLayout.addComponent(button);
@@ -260,13 +257,12 @@ public class TaskGridComponent extends VerticalLayout {
 		// TODO replace with Vaadin 8 databinding
 		tasksView.setApplyingCriteria(true);
 
-		resetButton.setVisible(criteria.hasAnyFilterActive());
-
-		updateAssigneeFilterButtons();		
+		updateAssigneeFilterButtons();
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
-		statusFilter.setValue(criteria.getTaskStatus());
+
+		filterForm.setValue(criteria);
 
 		tasksView.setApplyingCriteria(false);
 	}

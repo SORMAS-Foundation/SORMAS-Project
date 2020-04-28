@@ -52,6 +52,7 @@ public class DateTimeField extends CustomField<Date> {
 		layout.setWidth(100, Unit.PERCENTAGE);
 
 		dateField = new DateField();
+		dateField.setId(this.getId() + "_" + "date");
 		dateField.setWidth(100, Unit.PERCENTAGE);
 		dateField.setDateFormat(DateHelper.getLocalDatePattern());
 		dateField.setLenient(true);
@@ -64,6 +65,7 @@ public class DateTimeField extends CustomField<Date> {
 		}
 		
 		timeField = new ComboBox();
+		timeField.setId(this.getId() + "_" + "time");
 		timeField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, null);
 		timeField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
 
