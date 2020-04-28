@@ -19,10 +19,8 @@
 package de.symeda.sormas.app.contact.read;
 
 import android.os.Bundle;
-import android.view.View;
 
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;

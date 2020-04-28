@@ -18,10 +18,12 @@
 package de.symeda.sormas.api.i18n;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -145,6 +147,23 @@ public final class I18nProperties {
 		return result;
 	}
 
+	/**
+	 * Iterates through the prefixes to determines the caption for the specified propertyId.
+	 *
+	 * @return
+	 */
+	public static String findPrefixCaption(String propertyId, String ... prefixes) {
+
+		for (String prefix : prefixes) {
+			final String caption = I18nProperties.getPrefixCaption(prefix, propertyId, null);
+			if (caption != null) {
+				return caption;
+			}
+		}
+
+		return propertyId;
+	}
+
 	public static String getDescription(String key) {
 		return getInstance(userLanguage.get()).descriptionProperties.getString(key);
 	}
@@ -233,36 +252,43 @@ public final class I18nProperties {
 				throws IllegalAccessException, InstantiationException, IOException
 		{
 			// The below is a copy of the default implementation.
-			String bundleName = toBundleName(baseName, locale);
-			if (bundleName.contains("-")) {
-				// A simple "replace" does not work here because the country code could be identical to the language code
-				String countryCode = bundleName.substring(bundleName.lastIndexOf("-") + 1).toUpperCase();
-				bundleName = bundleName.substring(0, bundleName.lastIndexOf("-") + 1) + countryCode;
-			}
+			String bundleName = normalizeCountryCode(toBundleName(baseName, locale));
 			String resourceName = toResourceName(bundleName, "properties");
-			java.util.ResourceBundle bundle = null;
-			InputStream stream = null;
-			if (reload) {
-				URL url = loader.getResource(resourceName);
-				if (url != null) {
-					URLConnection connection = url.openConnection();
-					if (connection != null) {
-						connection.setUseCaches(false);
-						stream = connection.getInputStream();
-					}
+			try (Reader reader = loadResource(loader, resourceName, reload)) {
+				if (reader == null) {
+					return null;
+				} else {
+					return new PropertyResourceBundle(reader);
 				}
+			}
+		}
+
+		static String normalizeCountryCode(String bundleName) {
+			int splitPos = bundleName.lastIndexOf("-") + 1;
+			if (splitPos > 0) {
+				//Uppercase countryCode
+				// A simple "replace" does not work here because the country code could be identical to the language code
+				String countryCode = bundleName.substring(splitPos).toUpperCase();
+				return bundleName.substring(0, splitPos) + countryCode;
 			} else {
-				stream = loader.getResourceAsStream(resourceName);
+				return bundleName;
 			}
-			if (stream != null) {
-				try {
-					// Only this line is changed to make it to read properties files as UTF-8.
-					bundle = new PropertyResourceBundle(new InputStreamReader(stream, "UTF-8"));
-				} finally {
-					stream.close();
-				}
+		}
+
+		private Reader loadResource(ClassLoader loader, String resourceName, boolean reload) throws IOException {
+
+			URL url = loader.getResource(resourceName);
+			if (url == null) {
+				return null;
 			}
-			return bundle;
+
+			URLConnection connection = url.openConnection();
+
+			if (reload) {
+				connection.setUseCaches(false);
+			}
+
+			return new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
 		}
 	}
 	

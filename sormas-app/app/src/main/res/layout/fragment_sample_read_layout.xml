@@ -107,6 +107,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_fieldSampleID"
+                    app:value="@{data.fieldSampleID}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_lab"
                     app:value="@{data.lab}"
                     app:appendValue="@{data.labDetails}"

@@ -17,18 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Remote;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+
+import javax.ejb.Remote;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Remote
 public interface ContactFacade {
@@ -86,4 +85,7 @@ public interface ContactFacade {
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 
 	void validate(ContactDto contact) throws ValidationRuntimeException;
+
+	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
+
 }

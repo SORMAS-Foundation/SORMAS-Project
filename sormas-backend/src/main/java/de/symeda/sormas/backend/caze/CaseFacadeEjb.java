@@ -1733,6 +1733,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setReportingType(source.getReportingType());
 
 		return target;
 	}
@@ -1839,6 +1840,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setReportingType(source.getReportingType());
 
 		return target;
 	}

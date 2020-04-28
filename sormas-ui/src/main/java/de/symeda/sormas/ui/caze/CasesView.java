@@ -260,7 +260,7 @@ public class CasesView extends AbstractView {
 				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
 						(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null),
 						(propertyId,type) -> {
-							String caption = findPrefixCaption(propertyId,
+							String caption = I18nProperties.findPrefixCaption(propertyId,
 									CaseExportDto.I18N_PREFIX,
 									CaseDataDto.I18N_PREFIX,
 									PersonDto.I18N_PREFIX,
@@ -289,7 +289,7 @@ public class CasesView extends AbstractView {
 				StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class, null,
 						(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(grid.getCriteria(), start, max),
 						(propertyId,type) -> {
-							String caption = findPrefixCaption(propertyId,
+							String caption = I18nProperties.findPrefixCaption(propertyId,
 									SampleExportDto.I18N_PREFIX,
 									SampleDto.I18N_PREFIX,
 									CaseDataDto.I18N_PREFIX,
@@ -322,7 +322,7 @@ public class CasesView extends AbstractView {
 								Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null, 
 										(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, exportConfig),
 										(propertyId,type) -> {
-											String caption = findPrefixCaption(propertyId,
+											String caption = I18nProperties.findPrefixCaption(propertyId,
 													CaseExportDto.I18N_PREFIX,
 													CaseDataDto.I18N_PREFIX,
 													PersonDto.I18N_PREFIX,
@@ -444,7 +444,7 @@ public class CasesView extends AbstractView {
 		}
 		addComponent(gridLayout);
 	}
-	
+
 	private void addImportButton(VerticalLayout importLayout, String buttonId, String captionKey,
 			String windowHeadingKey, Supplier<Component> windowContentSupplier) {
 		Button lineListingImportButton = new Button(I18nProperties.getCaption(captionKey));
