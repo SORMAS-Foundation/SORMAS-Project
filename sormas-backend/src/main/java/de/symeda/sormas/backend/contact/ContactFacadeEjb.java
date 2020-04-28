@@ -20,12 +20,7 @@ package de.symeda.sormas.backend.contact;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -383,32 +378,47 @@ public class ContactFacadeEjb implements ContactFacade {
 
     private void fillDetailsOfVisits(CriteriaBuilder cb, List<ContactVisitsExportDto> resultList) {
 
-        for (ContactVisitsExportDto contactVisitsExportDto : resultList) {
+        final Set<Long> personIds =
+                resultList.stream().map(contactVisitsExportDto -> contactVisitsExportDto.getPersonId()).collect(Collectors.toSet());
 
-            final CriteriaQuery<Tuple> visitTupleQuery = cb.createQuery(Tuple.class);
-            final Root<Visit> visitRoot = visitTupleQuery.from(Visit.class);
+        final Map<Long, List<ContactVisitsExportDto.ContactVisitsDetailsExportDto>> visitDetailsMap = new HashMap<>();
 
-            visitTupleQuery.multiselect(
-                    visitRoot.get(Visit.VISIT_DATE_TIME).alias(Visit.VISIT_DATE_TIME),
-                    visitRoot.get(Visit.VISIT_STATUS).alias(Visit.VISIT_STATUS),
-                    visitRoot.get(Visit.SYMPTOMS).alias(Visit.SYMPTOMS));
+        final CriteriaQuery<Tuple> visitTupleQuery = cb.createQuery(Tuple.class);
+        final Root<Visit> visitRoot = visitTupleQuery.from(Visit.class);
 
-            visitTupleQuery.where(cb.equal(visitRoot.get(Visit.PERSON).get(Person.ID), contactVisitsExportDto.getPersonId()));
+        visitTupleQuery.multiselect(
+                visitRoot.get(Visit.VISIT_DATE_TIME).alias(Visit.VISIT_DATE_TIME),
+                visitRoot.get(Visit.VISIT_STATUS).alias(Visit.VISIT_STATUS),
+                visitRoot.get(Visit.SYMPTOMS).alias(Visit.SYMPTOMS),
+                visitRoot.get(Visit.PERSON).get(Person.ID).alias(Visit.PERSON));
 
-            visitTupleQuery.orderBy(cb.asc(visitRoot.get(Visit.VISIT_DATE_TIME)));
+        if (!personIds.isEmpty()) {
+            visitTupleQuery.where(visitRoot.get(Visit.PERSON).get(Person.ID).in(personIds));
+        }
 
-            final List<Tuple> tupleResult = em.createQuery(visitTupleQuery).getResultList();
+        visitTupleQuery.orderBy(cb.asc(visitRoot.get(Visit.VISIT_DATE_TIME)));
 
-            for (Tuple tuple : tupleResult) {
-                final Date visitDateTime = extractTupleValue(tuple, Visit.VISIT_DATE_TIME);
-                final VisitStatus visitStatus = extractTupleValue(tuple, Visit.VISIT_STATUS);
-                final Symptoms symptoms = extractTupleValue(tuple, Visit.SYMPTOMS);
-                final ContactVisitsExportDto.ContactVisitsDetailsExportDto contactVisitsDetailsExportDto =
-                        new ContactVisitsExportDto.ContactVisitsDetailsExportDto(visitDateTime, visitStatus,
-                                symptoms.toHumanString(true));
-                contactVisitsExportDto.getVisitDetails().add(contactVisitsDetailsExportDto);
+        final List<Tuple> tupleResult = em.createQuery(visitTupleQuery).getResultList();
+
+        for (Tuple tuple : tupleResult) {
+            final Date visitDateTime = extractTupleValue(tuple, Visit.VISIT_DATE_TIME);
+            final VisitStatus visitStatus = extractTupleValue(tuple, Visit.VISIT_STATUS);
+            final Symptoms symptoms = extractTupleValue(tuple, Visit.SYMPTOMS);
+            final Long personId = extractTupleValue(tuple, Visit.PERSON);
+            final ContactVisitsExportDto.ContactVisitsDetailsExportDto contactVisitsDetailsExportDto =
+                    new ContactVisitsExportDto.ContactVisitsDetailsExportDto(visitDateTime, visitStatus,
+                            symptoms.toHumanString(true));
+            if (visitDetailsMap.containsKey(personId)) {
+                visitDetailsMap.get(personId).add(contactVisitsDetailsExportDto);
+            } else {
+                final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitsDetails = new ArrayList<>();
+                visitsDetails.add(contactVisitsDetailsExportDto);
+                visitDetailsMap.put(personId, visitsDetails);
             }
         }
+
+        resultList.forEach(contactVisitsExportDto ->
+                contactVisitsExportDto.setVisitDetails(visitDetailsMap.get(contactVisitsExportDto.getPersonId())));
     }
 
     private <T extends Object> T extractTupleValue(Tuple tuple, String alias) {

@@ -3,7 +3,6 @@ package de.symeda.sormas.api.contact;
 import de.symeda.sormas.api.visit.VisitStatus;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class ContactVisitsExportDto implements Serializable {
     private String uuid;
     private String firstName;
     private String lastName;
-    private List<ContactVisitsDetailsExportDto> visitDetails = new ArrayList<>();
+    private List<ContactVisitsDetailsExportDto> visitDetails;
 
     public ContactVisitsExportDto(String uuid, Long personId, String firstName, String lastName) {
         this.uuid = uuid;
