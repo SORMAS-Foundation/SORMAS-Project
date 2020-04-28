@@ -128,11 +128,6 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
         lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
         contactDetailsLayout.addComponent(lblLastName);
 
-        final Label lblContactUuid = new Label(referenceContact.getUuid());
-        lblContactUuid.setWidthUndefined();
-        lblContactUuid.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.UUID));
-        contactDetailsLayout.addComponent(lblContactUuid);
-
         final Label lblCaseIdExternalSystem = new Label(referenceContact.getCaseIdExternalSystem());
         lblCaseIdExternalSystem.setWidthUndefined();
         lblCaseIdExternalSystem.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
@@ -159,14 +154,7 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
         lblContactStatus.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_STATUS));
         contactDetailsLayout.addComponent(lblContactStatus);
 
-        final Label lblContactFollowUpStatus = new Label(referenceContact.getFollowUpStatus() != null ?
-                referenceContact.getFollowUpStatus().toString() : "");
-        lblContactFollowUpStatus.setWidthUndefined();
-        lblContactFollowUpStatus.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
-                ContactDto.FOLLOW_UP_STATUS));
-        contactDetailsLayout.addComponent(lblContactFollowUpStatus);
-
-        mainLayout.addComponent(contactDetailsLayout);
+        mainLayout.addComponent(new Panel(contactDetailsLayout));
     }
 
     private void addSelectContactRadioGroup() {
