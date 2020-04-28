@@ -115,7 +115,7 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter.setWidth(240, Unit.PIXELS);
 		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addValueChangeListener(e -> {
-			criteria.contactClassification((ContactClassification) e.getProperty().getValue());
+			criteria.setContactClassification((ContactClassification) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
 		topLayout.addComponent(classificationFilter);
@@ -175,7 +175,7 @@ public class CaseContactsView extends AbstractCaseView {
 		officerFilter.setWidth(240, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> {
-			criteria.contactOfficer((UserReferenceDto) e.getProperty().getValue());
+			criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
 		if (user.getRegion() != null) {
@@ -188,7 +188,7 @@ public class CaseContactsView extends AbstractCaseView {
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
 		searchField.addTextChangeListener(e -> {
-			criteria.nameUuidCaseLike(e.getText());
+			criteria.setNameUuidCaseLike(e.getText());
 			((ContactGrid) grid).reload();
 		});
 		topLayout.addComponent(searchField);

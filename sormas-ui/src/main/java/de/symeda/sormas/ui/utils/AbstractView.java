@@ -157,10 +157,6 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	public void setApplyingCriteria(boolean applyingCriteria) {
 		this.applyingCriteria = applyingCriteria;
 	}
-
-	protected boolean isGermanServer() {
-		return FacadeProvider.getConfigFacade().isGermanServer();
-	}
 	
 	protected void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, String buttonId,
 			Resource icon, String captionKey, String descriptionKey) {
@@ -176,7 +172,8 @@ public abstract class AbstractView extends VerticalLayout implements View {
 			});
 			exportPopupButton.setPopupVisible(false);
 		});
-		
+
+		exportButton.setId(captionKey);
 		exportButton.setDisableOnClick(true);
 		
 		exportButton.setId(buttonId);

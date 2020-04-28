@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.caze;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
@@ -8,9 +7,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -32,49 +31,37 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
-import de.symeda.sormas.ui.utils.*;
+import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
+import de.symeda.sormas.ui.utils.FieldConfiguration;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.*;
 
 public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
-	private static final String EXPAND_COLLAPSE_ID = "expandCollapse";
-	private static final String RESET_BUTTON_ID = "reset";
-	private static final String MORE_FILTERS_ID = "moreFilters";
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
-
-	private static final String HTML_LAYOUT = div(filterLocs(CaseDataDto.CASE_ORIGIN, CaseDataDto.OUTCOME, CaseDataDto.DISEASE, CaseDataDto.CASE_CLASSIFICATION, CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE, EXPAND_COLLAPSE_ID, RESET_BUTTON_ID) +
-			loc(MORE_FILTERS_ID));
 
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(CaseCriteria.PRESENT_CONDITION, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY, CaseDataDto.POINT_OF_ENTRY,
 			CaseDataDto.SURVEILLANCE_OFFICER, CaseCriteria.REPORTING_USER_ROLE, CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO) +
 			filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES, CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA, CaseCriteria.EXCLUDE_SHARED_CASES) +
 			loc(WEEK_AND_DATE_FILTER);
 
-	private final CustomLayout moreFilters;
-
 	protected CaseFilterForm() {
-		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX, null, true);
-
-		moreFilters = new CustomLayout();
-		moreFilters.setTemplateContents(MORE_FILTERS_HTML_LAYOUT);
-		moreFilters.setVisible(false);
-		getContent().addComponent(moreFilters, MORE_FILTERS_ID);
-
-		addMoreFilters();
-
-		addValueChangeListener(e -> updateFieldDependencies((CaseCriteria) e.getProperty().getValue()));
-	}
-
-	public void addResetHandler(Button.ClickListener resetHandler) {
-		((Button) getContent().getComponent(RESET_BUTTON_ID)).addClickListener(resetHandler);
+		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX);
 	}
 
 	@Override
-	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+	protected String[] getMainFilterLocators() {
+		return new String[]{CaseDataDto.CASE_ORIGIN, CaseDataDto.OUTCOME, CaseDataDto.DISEASE, CaseDataDto.CASE_CLASSIFICATION, CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE};
+	}
+
+	@Override
+	protected String createMoreFiltersHtmlLayout() {
+		return MORE_FILTERS_HTML_LAYOUT;
 	}
 
 	@Override
@@ -89,78 +76,58 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		TextField searchField = addField(FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE, I18nProperties.getString(Strings.promptCasesSearchField), 200));
 		searchField.setNullRepresentation("");
-
-		String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
-		Button expandCollapseFiltersButton = new Button(showMoreCaption, VaadinIcons.CHEVRON_DOWN);
-		CssStyles.style(expandCollapseFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		expandCollapseFiltersButton.addClickListener(e -> {
-			boolean isShowMore = expandCollapseFiltersButton.getCaption().equals(showMoreCaption);
-			expandCollapseFiltersButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
-			expandCollapseFiltersButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
-
-			if (isShowMore) {
-				getContent().getComponent(MORE_FILTERS_ID).setVisible(true);
-			} else {
-				getContent().getComponent(MORE_FILTERS_ID).setVisible(false);
-			}
-		});
-
-		getContent().addComponent(expandCollapseFiltersButton, EXPAND_COLLAPSE_ID);
-
-		Button resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-		getContent().addComponent(resetButton, RESET_BUTTON_ID);
 	}
 
-	public void addMoreFilters() {
-		ComboBox presentConditionField = addField(moreFilters, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
+	public void addMoreFilters(CustomLayout moreFiltersContainer) {
+		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
 		UserDto user = UserProvider.getCurrent().getUser();
 		if (user.getRegion() == null) {
-			addField(moreFilters, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
+			addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
 		}
 
-		ComboBox districtField = addField(moreFilters, FieldConfiguration.pixelSized(CaseDataDto.DISTRICT, 140));
+		ComboBox districtField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.DISTRICT, 140));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 
 		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
-			ComboBox facilityField = addField(moreFilters, FieldConfiguration.pixelSized(CaseDataDto.HEALTH_FACILITY, 140));
+			ComboBox facilityField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.HEALTH_FACILITY, 140));
 			facilityField.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
-			ComboBox pointOfEntryField = addField(moreFilters, FieldConfiguration.pixelSized(CaseDataDto.POINT_OF_ENTRY, 140));
+			ComboBox pointOfEntryField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.POINT_OF_ENTRY, 140));
 			pointOfEntryField.setDescription(I18nProperties.getDescription(Descriptions.descPointOfEntryFilter));
 		}
 
-		ComboBox officerField = addField(moreFilters, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
+		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
 		if (user.getRegion() != null) {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 		}
 
-		addField(moreFilters, FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
+		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
 
-		TextField reportingUserField = addField(moreFilters, FieldConfiguration.pixelSized(CaseCriteria.REPORTING_USER_LIKE, 200));
+		TextField reportingUserField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REPORTING_USER_LIKE, 200));
 		reportingUserField.setNullRepresentation("");
 		reportingUserField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, CaseDataDto.REPORTING_USER));
 
-		addField(moreFilters, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
+		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
 
-		addField(moreFilters, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES, I18nProperties.getCaption(Captions.caseFilterWithoutGeo), I18nProperties.getDescription(Descriptions.descCaseFilterWithoutGeo), CssStyles.CHECKBOX_FILTER_INLINE));
+		addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES, I18nProperties.getCaption(Captions.caseFilterWithoutGeo), I18nProperties.getDescription(Descriptions.descCaseFilterWithoutGeo), CssStyles.CHECKBOX_FILTER_INLINE));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
-			addField(moreFilters, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, I18nProperties.getCaption(Captions.caseFilterPortHealthWithoutFacility), I18nProperties.getDescription(Descriptions.descCaseFilterPortHealthWithoutFacility), CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, I18nProperties.getCaption(Captions.caseFilterPortHealthWithoutFacility), I18nProperties.getDescription(Descriptions.descCaseFilterPortHealthWithoutFacility), CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
-			addField(moreFilters, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA, I18nProperties.getCaption(Captions.caseFilterCasesWithCaseManagementData), I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithCaseManagementData), CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA, I18nProperties.getCaption(Captions.caseFilterCasesWithCaseManagementData), I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithCaseManagementData), CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
 		if (user.getRegion() != null || user.getDistrict() != null) {
-			addField(moreFilters, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.EXCLUDE_SHARED_CASES, I18nProperties.getCaption(Captions.caseFilterExcludeSharedCases), I18nProperties.getDescription(Descriptions.descCaseFilterExcludeSharedCasesString), CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.EXCLUDE_SHARED_CASES, I18nProperties.getCaption(Captions.caseFilterExcludeSharedCases), I18nProperties.getDescription(Descriptions.descCaseFilterExcludeSharedCasesString), CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		moreFilters.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
+		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
 	@Override
@@ -194,41 +161,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	@Override
-	public void setValue(CaseCriteria criteria) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(criteria);
-
-		HorizontalLayout dateFilterLayout = (HorizontalLayout) ((CustomLayout) getContent().getComponent(MORE_FILTERS_ID)).getComponent(WEEK_AND_DATE_FILTER);
+	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {
+		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
 		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = (EpiWeekAndDateFilterComponent<NewCaseDateType>) dateFilterLayout.getComponent(0);
-		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
-		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
-		Date newCaseDateTo = criteria.getNewCaseDateTo();
-		// Reconstruct date/epi week choice
-		if ((newCaseDateFrom != null && newCaseDateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo)))
-				|| (newCaseDateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom))
-				|| (newCaseDateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo))) {
-			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
-			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(newCaseDateFrom));
-			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(newCaseDateTo));
-		} else {
-			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
-			weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
-			weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
-		}
 
-		boolean hasFilter = FieldHelper.streamFields(getContent())
-				.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter())
-				.anyMatch(f -> !f.isEmpty());
-		boolean hasExpandedFilter = FieldHelper.streamFields(moreFilters)
-				.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter())
-				.anyMatch(f -> !f.isEmpty());
-
-		getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
-		moreFilters.setVisible(hasExpandedFilter);
-
-		updateFieldDependencies(criteria);
+		return super.streamFieldsForEmptyCheck(layout)
+				.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
 	}
 
-	private void updateFieldDependencies(CaseCriteria criteria) {
+	protected void applyDependenciesOnNewValue(CaseCriteria criteria) {
 		ComboBox districtField = (ComboBox) getField(CaseDataDto.DISTRICT);
 		districtField.setEnabled(false);
 
@@ -263,6 +204,25 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		getField(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY).setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);
+
+		// Date/Epi week filter
+		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
+		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = (EpiWeekAndDateFilterComponent<NewCaseDateType>) dateFilterLayout.getComponent(0);
+		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
+		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
+		Date newCaseDateTo = criteria.getNewCaseDateTo();
+		// Reconstruct date/epi week choice
+		if ((newCaseDateFrom != null && newCaseDateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo)))
+				|| (newCaseDateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom))
+				|| (newCaseDateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo))) {
+			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
+			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(newCaseDateFrom));
+			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(newCaseDateTo));
+		} else {
+			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
+			weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
+			weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
+		}
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter() {

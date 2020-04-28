@@ -425,7 +425,7 @@ public class CasesView extends AbstractView {
 		viewConfiguration.setInEagerMode(true);
 		btnEnterBulkEditMode.setVisible(false);
 		btnLeaveBulkEditMode.setVisible(true);
-		this.filterForm.disableSearchAndReportingUser();
+		filterForm.disableSearchAndReportingUser();
 		grid.setEagerDataProvider();
 		grid.reload();
 	}
@@ -436,17 +436,17 @@ public class CasesView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
-		this.filterForm = new CaseFilterForm();
-		this.filterForm.addValueChangeListener(e -> {
+		filterForm = new CaseFilterForm();
+		filterForm.addValueChangeListener(e -> {
 			if (!navigateTo(criteria)) {
 				grid.reload();
 			}
 		});
-		this.filterForm.addResetHandler(e -> {
+		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
 			navigateTo(null);
 		});
-		filterLayout.addComponent(this.filterForm);
+		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
 	}
@@ -520,6 +520,7 @@ public class CasesView extends AbstractView {
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				bulkOperationsDropdown = new MenuBar();
+				bulkOperationsDropdown.setId("bulkOperationsDropdown");
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.asMultiSelect().getSelectedItems());

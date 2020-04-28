@@ -100,7 +100,7 @@
 			<groupId>info.novatec</groupId>
 			<artifactId>bean-test</artifactId>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>

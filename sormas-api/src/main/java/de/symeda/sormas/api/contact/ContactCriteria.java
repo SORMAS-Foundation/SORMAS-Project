@@ -24,6 +24,7 @@ import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -32,6 +33,16 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class ContactCriteria extends BaseCriteria implements Serializable {
+
+	public static final String NAME_UUID_CASE_LIKE = "nameUuidCaseLike";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String CONTACT_OFFICER = "contactOfficer";
+	public static final String REPORTING_USER_ROLE = "reportingUserRole";
+	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
+	public static final String QUARANTINE_TYPE = "quarantineType";
+	public static final String ONLY_QUARANTINE_HELP_NEEDED = "onlyQuarantineHelpNeeded";
+	public static final String ONLY_HIGH_PRIORITY_CONTACTS = "onlyHighPriorityContacts";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -64,22 +75,26 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private QuarantineType quarantineType;
 	private OrderMeans quarantineOrderMeans;
 	private Boolean onlyQuarantineHelpNeeded;
-	
+
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
 	}
 
-	public ContactCriteria reportingUserRole(UserRole reportingUserRole) {
+	public void setReportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
-		return this;
 	}
 
 	public Disease getDisease() {
 		return disease;
 	}
 
-	public ContactCriteria disease(Disease disease) {
+	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public ContactCriteria disease(Disease disease) {
+		setDisease(disease);
+
 		return this;
 	}
 
@@ -96,8 +111,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return region;
 	}
 
-	public ContactCriteria region(RegionReferenceDto region) {
+	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
+	}
+
+	public ContactCriteria region(RegionReferenceDto region) {
+		setRegion(region);
+
 		return this;
 	}
 
@@ -105,8 +125,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return district;
 	}
 
-	public ContactCriteria district(DistrictReferenceDto district) {
+	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public ContactCriteria district(DistrictReferenceDto district) {
+		setDistrict(district);
 		return this;
 	}
 
@@ -114,18 +138,16 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return contactOfficer;
 	}
 
-	public ContactCriteria contactOfficer(UserReferenceDto contactOfficer) {
+	public void setContactOfficer(UserReferenceDto contactOfficer) {
 		this.contactOfficer = contactOfficer;
-		return this;
 	}
 
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}
 
-	public ContactCriteria contactClassification(ContactClassification contactClassification) {
+	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
-		return this;
 	}
 
 	public ContactStatus getContactStatus() {
@@ -141,11 +163,10 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return followUpStatus;
 	}
 
-	public ContactCriteria followUpStatus(FollowUpStatus followUpStatus) {
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
 		this.followUpStatus = followUpStatus;
-		return this;
 	}
-	
+
 	public ContactCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo) {
 		this.reportDateFrom = reportDateFrom;
 		this.reportDateTo = reportDateTo;
@@ -169,7 +190,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public Date getReportDateTo() {
 		return reportDateTo;
 	}
-	
+
 	public ContactCriteria lastContactDateBetween(Date lastContactDateFrom, Date lastContactDateTo) {
 		this.lastContactDateFrom = lastContactDateFrom;
 		this.lastContactDateTo = lastContactDateTo;
@@ -193,7 +214,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public Date getLastContactDateTo() {
 		return lastContactDateTo;
 	}
-	
+
 	public ContactCriteria followUpUntilBetween(Date followUpUntilFrom, Date followUpUntilTo) {
 		this.followUpUntilFrom = followUpUntilFrom;
 		this.followUpUntilTo = followUpUntilTo;
@@ -204,20 +225,19 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.followUpUntilFrom = followUpUntilFrom;
 		return this;
 	}
-	
+
 	public Date getFollowUpUntilFrom() {
 		return followUpUntilFrom;
 	}
 
-	public ContactCriteria followUpUntilTo(Date followUpUntilTo) {
+	public void setFollowUpUntilTo(Date followUpUntilTo) {
 		this.followUpUntilTo = followUpUntilTo;
-		return this;
 	}
-	
+
 	public Date getFollowUpUntilTo() {
 		return followUpUntilTo;
 	}
-	
+
 	public Boolean getFollowUpUntilToPrecise() {
 		return followUpUntilToPrecise;
 	}
@@ -231,12 +251,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
 	}
-	
+
 	public ContactCriteria deleted(Boolean deleted) {
 		this.deleted = deleted;
 		return this;
@@ -246,13 +266,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public Boolean getDeleted() {
 		return deleted;
 	}
-	
+
 	/**
 	 * returns all entries that match ALL of the passed words
 	 */
-	public ContactCriteria nameUuidCaseLike(String nameUuidCaseLike) {
+	public void setNameUuidCaseLike(String nameUuidCaseLike) {
 		this.nameUuidCaseLike = nameUuidCaseLike;
-		return this;
 	}
 
 	@IgnoreForUrl
@@ -264,54 +283,48 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return onlyHighPriorityContacts;
 	}
 
-	public ContactCriteria contactCategory(ContactCategory contactCategory) {
+	public void setContactCategory(ContactCategory contactCategory) {
 		this.contactCategory = contactCategory;
-		return this;
 	}
 
 	public ContactCategory getContactCategory() {
 		return contactCategory;
 	}
 
-	public ContactCriteria onlyHighPriorityContacts(Boolean onlyHighPriorityContacts) {
+	public void setOnlyHighPriorityContacts(Boolean onlyHighPriorityContacts) {
 		this.onlyHighPriorityContacts = onlyHighPriorityContacts;
-		return this;
 	}
 
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
 
-	public ContactCriteria caseClassification(CaseClassification caseClassification) {
+	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
-		return this;
 	}
 
 	public QuarantineType getQuarantineType() {
 		return quarantineType;
 	}
 
-	public ContactCriteria quarantineType(QuarantineType quarantineType) {
+	public void setQuarantineType(QuarantineType quarantineType) {
 		this.quarantineType = quarantineType;
-		return this;
 	}
 
 	public OrderMeans getQuarantineOrderMeans() {
 		return quarantineOrderMeans;
 	}
 
-	public ContactCriteria quarantineOrderMeans(OrderMeans quarantineOrderMeans) {
+	public void setQuarantineOrderMeans(OrderMeans quarantineOrderMeans) {
 		this.quarantineOrderMeans = quarantineOrderMeans;
-		return this;
 	}
 
 	public Boolean getOnlyQuarantineHelpNeeded() {
 		return onlyQuarantineHelpNeeded;
 	}
 
-	public ContactCriteria onlyQuarantineHelpNeeded(Boolean onlyQuarantineHelpNeeded) {
+	public void setOnlyQuarantineHelpNeeded(Boolean onlyQuarantineHelpNeeded) {
 		this.onlyQuarantineHelpNeeded = onlyQuarantineHelpNeeded;
-		return this;
 	}
-	
+
 }
