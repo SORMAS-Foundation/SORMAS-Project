@@ -107,6 +107,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_fieldSampleID"
+                    app:value="@{data.fieldSampleID}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_lab"
                     app:value="@{data.lab}"
                     app:appendValue="@{data.labDetails}"
@@ -225,8 +230,8 @@
 
                 <de.symeda.sormas.app.component.controls.ControlLinkField
                     android:id="@+id/sample_referredToUuid"
-                    app:value="@{referredSample.lab}"
-                    app:goneIfEmpty="@{data.referredToUuid}"
+                    app:value="@{referredSample.lab == null ? referredSample : referredSample.lab }"
+                    app:goneIfEmpty="@{referredSample.referredToUuid}"
                     style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>

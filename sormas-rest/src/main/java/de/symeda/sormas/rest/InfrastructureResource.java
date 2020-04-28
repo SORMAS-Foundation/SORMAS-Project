@@ -12,7 +12,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 
 @Path("/infrastructure")
 @Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class InfrastructureResource {
 
 	@POST @Path("/sync")

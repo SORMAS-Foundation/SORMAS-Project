@@ -114,7 +114,8 @@ public class TaskService extends AbstractAdoService<Task> {
 		if (currentUser.hasAnyUserRole(
 				UserRole.NATIONAL_USER,
 				UserRole.NATIONAL_CLINICIAN,
-				UserRole.NATIONAL_OBSERVER)) {
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.REST_USER)) {
 			return null;
 		}
 

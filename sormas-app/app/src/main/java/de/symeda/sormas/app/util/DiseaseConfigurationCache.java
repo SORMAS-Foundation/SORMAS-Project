@@ -35,7 +35,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.user.User;
 
-public class DiseaseConfigurationCache {
+public final class DiseaseConfigurationCache {
 
     private static DiseaseConfigurationCache instance;
 
