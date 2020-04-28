@@ -101,6 +101,7 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
             contentBinding.caseDataQuarantineOrderedVerballyDate.setVisibility(GONE);
             contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
             contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
+            contentBinding.caseDataReportingType.setVisibility(GONE);
         }
     }
 

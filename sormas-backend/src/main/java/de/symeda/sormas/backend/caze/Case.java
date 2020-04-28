@@ -45,6 +45,7 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -137,6 +138,7 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String REPORTING_TYPE = "reportingType";
 
 	private Person person;
 	private String description;
@@ -232,6 +234,7 @@ public class Case extends CoreAdo {
 	private String quarantineHomePossibleComment;
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
+	private ReportingType reportingType;
 
 	private List<Task> tasks;
 
@@ -982,4 +985,12 @@ public class Case extends CoreAdo {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public ReportingType getReportingType() {
+		return reportingType;
+	}
+
+	public void setReportingType(ReportingType reportingType) {
+		this.reportingType = reportingType;
+	}
 }

@@ -38,6 +38,7 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -276,6 +277,9 @@ public class Case extends AbstractDomainObject {
     private YesNoUnknown quarantineHomeSupplyEnsured;
     @Column(length = 512)
     private String quarantineHomeSupplyEnsuredComment;
+    @Enumerated(EnumType.STRING)
+    private ReportingType reportingType;
+
 
     public boolean isUnreferredPortHealthCase() {
         return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -861,5 +865,13 @@ public class Case extends AbstractDomainObject {
 
     public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
         this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+    }
+
+    public ReportingType getReportingType() {
+        return reportingType;
+    }
+
+    public void setReportingType(ReportingType reportingType) {
+        this.reportingType = reportingType;
     }
 }
