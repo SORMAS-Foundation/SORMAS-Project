@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -687,6 +688,18 @@ public final class ConfigProvider {
 
         instance.initialSyncRequired = initialSyncRequired;
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(INITIAL_SYNC_REQUIRED, String.valueOf(initialSyncRequired)));
+    }
+
+    public static boolean hasRole (UserRole userRoleName){
+        User user = ConfigProvider.getUser();
+        Set<UserRole> userRoles = user.getUserRoles();
+        return !userRoles.stream().filter(userRole -> userRole.name().equals(userRoleName.toString())).collect(Collectors.toList()).isEmpty();
+    }
+
+    public static boolean hasRole(Set<UserRole> typeRoles) {
+        User user = ConfigProvider.getUser();
+        Set<UserRole> userRoles = user.getUserRoles();
+        return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
     }
 
 }
