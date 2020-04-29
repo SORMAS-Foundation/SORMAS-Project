@@ -32,6 +32,9 @@ import com.vaadin.v7.ui.Grid.Column;
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.BirthDateDto;
+import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
@@ -53,6 +56,7 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
@@ -550,6 +554,7 @@ public final class DownloadUtil {
 
 						int startIndex = 0;
 						List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
+						Language userLanguage = I18nProperties.getUserLanguage();
 						while (!exportRows.isEmpty()) {
 							try {
 								for (T exportRow : exportRows) {
@@ -574,6 +579,11 @@ public final class DownloadUtil {
 												sb.append(o);
 											}
 											fieldValues[i] = sb.toString();
+										} else if (value instanceof BurialInfoDto) {
+											fieldValues[i] = PersonHelper.buildBurialInfoString((BurialInfoDto) value, userLanguage);
+										} else if (value instanceof BirthDateDto) {
+											BirthDateDto birthDate = (BirthDateDto) value;
+											fieldValues[i] = PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
 										} else {
 											fieldValues[i] = value.toString();
 										}
