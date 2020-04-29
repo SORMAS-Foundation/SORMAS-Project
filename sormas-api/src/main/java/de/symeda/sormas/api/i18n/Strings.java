@@ -173,7 +173,6 @@ public interface Strings {
 	String headingContactMap = "headingContactMap";
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsPerCase = "headingContactsPerCase";
-	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateEntry = "headingCreateEntry";
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
@@ -290,6 +289,7 @@ public interface Strings {
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
+	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
