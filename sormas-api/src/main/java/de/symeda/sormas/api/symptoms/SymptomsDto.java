@@ -188,6 +188,8 @@ public class SymptomsDto extends EntityDto {
 	public static final String CONJUNCTIVAL_INJECTION = "conjunctivalInjection";
 	public static final String ACUTE_RESPIRATORY_DISTRESS_SYNDROME = "acuteRespiratoryDistressSyndrome";
 	public static final String PNEUMONIA_CLINICAL_OR_RADIOLOGIC = "pneumoniaClinicalOrRadiologic";
+	public static final String LOSS_OF_TASTE = "lossOfTaste";
+	public static final String LOSS_OF_SMELL = "lossOfSmell";
 	
 	public static final String WEIGHT = "weight";
 
@@ -652,6 +654,10 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState acuteRespiratoryDistressSyndrome;
 	@Diseases({Disease.CORONAVIRUS, Disease.UNDEFINED, Disease.OTHER})
 	private SymptomState pneumoniaClinicalOrRadiologic;
+	@Diseases({ Disease.CORONAVIRUS })
+	private SymptomState lossOfTaste;
+	@Diseases({ Disease.CORONAVIRUS })
+	private SymptomState lossOfSmell;
 
 	private Integer weight;
 	
@@ -1175,6 +1181,16 @@ public class SymptomsDto extends EntityDto {
 	public SymptomState getPneumoniaClinicalOrRadiologic() {
 		return pneumoniaClinicalOrRadiologic;
 	}
+
+	@Order(264)
+	public SymptomState getLossOfTaste() {
+		return lossOfTaste;
+	}
+
+	@Order(265)
+	public SymptomState getLossOfSmell() {
+		return lossOfSmell;
+	}
 	
 	public Integer getWeight() {
 		return weight;
@@ -1694,5 +1710,10 @@ public class SymptomsDto extends EntityDto {
 	public void setPneumoniaClinicalOrRadiologic(SymptomState pneumoniaClinicalOrRadiologic) {
 		this.pneumoniaClinicalOrRadiologic = pneumoniaClinicalOrRadiologic;
 	}
-	
+	public void setLossOfTaste(SymptomState lossOfTaste) {
+		this.lossOfTaste = lossOfTaste;
+	}
+	public void setLossOfSmell(SymptomState lossOfSmell) {
+		this.lossOfSmell = lossOfSmell;
+	}
 }

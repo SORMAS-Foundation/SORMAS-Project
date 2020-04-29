@@ -369,6 +369,10 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState acuteRespiratoryDistressSyndrome;
     @Enumerated(EnumType.STRING)
     private SymptomState pneumoniaClinicalOrRadiologic;
+    @Enumerated(EnumType.STRING)
+    private SymptomState lossOfTaste;
+    @Enumerated(EnumType.STRING)
+    private SymptomState lossOfSmell;
 
     @Override
     public String getI18nPrefix() {
@@ -1589,5 +1593,21 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setPneumoniaClinicalOrRadiologic(SymptomState pneumoniaClinicalOrRadiologic) {
         this.pneumoniaClinicalOrRadiologic = pneumoniaClinicalOrRadiologic;
+    }
+
+    public SymptomState getLossOfTaste() {
+        return lossOfTaste;
+    }
+
+    public void setLossOfTaste(SymptomState lossOfTaste) {
+        this.lossOfTaste = lossOfTaste;
+    }
+
+    public SymptomState getLossOfSmell() {
+        return lossOfSmell;
+    }
+
+    public void setLossOfSmell(SymptomState lossOfSmell) {
+        this.lossOfSmell = lossOfSmell;
     }
 }

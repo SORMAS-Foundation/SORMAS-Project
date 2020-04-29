@@ -129,7 +129,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS, SymptomsDto.LESIONS_ALL_OVER_BODY, SymptomsDto.LESIONS_RESEMBLE_IMG1, MONKEYPOX_LESIONS_IMG1, 
 									SymptomsDto.LESIONS_RESEMBLE_IMG2, MONKEYPOX_LESIONS_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, MONKEYPOX_LESIONS_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4, MONKEYPOX_LESIONS_IMG4,
 									SymptomsDto.LESIONS_ONSET_DATE, SymptomsDto.VOMITING, SymptomsDto.HYDROPHOBIA, SymptomsDto.OPISTHOTONUS, SymptomsDto.HYPERACTIVITY, SymptomsDto.PARESIS, SymptomsDto.AGITATION, 
-									SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA,
+											SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR,
+											SymptomsDto.COMA, SymptomsDto.LOSS_OF_TASTE,
+											SymptomsDto.LOSS_OF_SMELL,
 									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT) +
 							locsCss(VSPACE_3,
 									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS)
@@ -230,7 +232,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEADACHE, SymptomsDto.MUSCLE_PAIN, SymptomsDto.FATIGUE_WEAKNESS, SymptomsDto.SKIN_RASH, 
 				SymptomsDto.NECK_STIFFNESS, SymptomsDto.SORE_THROAT, SymptomsDto.COUGH, SymptomsDto.RUNNY_NOSE, 
 				SymptomsDto.DIFFICULTY_BREATHING, SymptomsDto.CHEST_PAIN, SymptomsDto.CONJUNCTIVITIS, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.KOPLIKS_SPOTS,
-				SymptomsDto.THROBOCYTOPENIA, SymptomsDto.OTITIS_MEDIA, SymptomsDto.HEARINGLOSS, SymptomsDto.DEHYDRATION, SymptomsDto.ANOREXIA_APPETITE_LOSS, 
+				SymptomsDto.THROBOCYTOPENIA, SymptomsDto.OTITIS_MEDIA, SymptomsDto.HEARINGLOSS, SymptomsDto.DEHYDRATION,
+				SymptomsDto.ANOREXIA_APPETITE_LOSS, 
 				SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.JOINT_PAIN, SymptomsDto.HICCUPS, SymptomsDto.BACKACHE, SymptomsDto.EYES_BLEEDING,
 				SymptomsDto.JAUNDICE, SymptomsDto.DARK_URINE, SymptomsDto.STOMACH_BLEEDING, SymptomsDto.RAPID_BREATHING, SymptomsDto.SWOLLEN_GLANDS, SymptomsDto.SYMPTOMS_COMMENTS,
 				SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
@@ -251,7 +254,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.EXCESS_SALIVATION, SymptomsDto.INSOMNIA, SymptomsDto.PARALYSIS, SymptomsDto.EXCITATION, SymptomsDto.DYSPHAGIA, SymptomsDto.AEROPHOBIA, SymptomsDto.HYPERACTIVITY, 
 				SymptomsDto.PARESIS, SymptomsDto.AGITATION, SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA, SymptomsDto.CONVULSION,
 				SymptomsDto.FLUID_IN_LUNG_CAVITY_AUSCULTATION, SymptomsDto.FLUID_IN_LUNG_CAVITY_XRAY, SymptomsDto.ABNORMAL_LUNG_XRAY_FINDINGS, SymptomsDto.CONJUNCTIVAL_INJECTION,
-				SymptomsDto.ACUTE_RESPIRATORY_DISTRESS_SYNDROME, SymptomsDto.PNEUMONIA_CLINICAL_OR_RADIOLOGIC);
+				SymptomsDto.ACUTE_RESPIRATORY_DISTRESS_SYNDROME, SymptomsDto.PNEUMONIA_CLINICAL_OR_RADIOLOGIC,
+				SymptomsDto.LOSS_OF_TASTE, SymptomsDto.LOSS_OF_SMELL);
 		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 		// complications
@@ -324,7 +328,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				// complications
 				SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.HEMORRHAGIC_SYNDROME,
 				SymptomsDto.HYPERGLYCEMIA, SymptomsDto.HYPOGLYCEMIA, SymptomsDto.MENINGEAL_SIGNS,
-				SymptomsDto.SEIZURES, SymptomsDto.SEPSIS, SymptomsDto.SHOCK);
+				SymptomsDto.SEIZURES, SymptomsDto.SEPSIS, SymptomsDto.SHOCK, SymptomsDto.LOSS_OF_TASTE,
+				SymptomsDto.LOSS_OF_SMELL);
 
 		// Set visibilities
 
