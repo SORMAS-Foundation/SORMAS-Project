@@ -1034,10 +1034,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		final Root<Contact> contactRoot = cq.from(Contact.class);
 		final Join<Case, Person> personJoin = contactRoot.join(Case.PERSON, JoinType.LEFT);
 
-		cq.multiselect(personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME),
-				contactRoot.get(Contact.UUID), contactRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM),
-				contactRoot.get(Contact.CONTACT_PROXIMITY), contactRoot.get(Contact.CONTACT_CLASSIFICATION),
-				contactRoot.get(Contact.CONTACT_STATUS), contactRoot.get(Contact.FOLLOW_UP_STATUS));
+        cq.multiselect(personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME),
+                contactRoot.get(Contact.UUID), contactRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM),
+                contactRoot.get(Contact.LAST_CONTACT_DATE),
+                contactRoot.get(Contact.CONTACT_PROXIMITY), contactRoot.get(Contact.CONTACT_CLASSIFICATION),
+                contactRoot.get(Contact.CONTACT_STATUS), contactRoot.get(Contact.FOLLOW_UP_STATUS));
 
 		final Predicate defaultFilter = contactService.createDefaultFilter(cb, contactRoot);
 		final Predicate userFilter = contactService.createUserFilter(cb, cq, contactRoot);
