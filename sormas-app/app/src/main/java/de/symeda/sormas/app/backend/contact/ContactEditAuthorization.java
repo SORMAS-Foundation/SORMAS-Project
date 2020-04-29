@@ -1,7 +1,5 @@
 package de.symeda.sormas.app.backend.contact;
 
-import java.util.Set;
-
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
@@ -11,17 +9,16 @@ import de.symeda.sormas.app.backend.user.User;
 
 public class ContactEditAuthorization {
 
-    public static boolean isContactEditAllowed(Contact contact){
+    public static boolean isContactEditAllowed(Contact contact) {
 
         User user = ConfigProvider.getUser();
-        Set<UserRole> userRole = user.getUserRoles();
         Case caseofContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
 
-        if (user.getUuid().equals(contact.getReportingUser().getUuid())){
+        if (user.getUuid().equals(contact.getReportingUser().getUuid())) {
             return true;
         }
 
-        if (CaseEditAuthorization.isCaseEditAllowed(caseofContact)){
+        if (CaseEditAuthorization.isCaseEditAllowed(caseofContact)) {
             return true;
         }
 

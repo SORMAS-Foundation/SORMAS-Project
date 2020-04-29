@@ -20,6 +20,7 @@ package de.symeda.sormas.app.contact.read;
 
 import android.content.Context;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.List;
 
@@ -90,15 +91,25 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
         boolean result = super.onCreateOptionsMenu(menu);
         getEditMenu().setTitle(R.string.action_edit_contact);
 
+        return result;
+    }
+
+    @Override
+    protected void processActionbarMenu() {
+        super.processActionbarMenu();
+
+        final MenuItem editMenu = getEditMenu();
+
         final ReferenceDto referenceDto = new ContactReferenceDto(getRootUuid());
         final Contact selectedContact = DatabaseHelper.getContactDao().getByReferenceDto(referenceDto);
-        if(ContactEditAuthorization.isContactEditAllowed(selectedContact)) {
-            getEditMenu().setVisible(true);
-        }else{
-            getEditMenu().setVisible(false);
-        }
 
-        return result;
+        if (editMenu != null) {
+            if (ContactEditAuthorization.isContactEditAllowed(selectedContact)) {
+                editMenu.setVisible(true);
+            } else {
+                editMenu.setVisible(false);
+            }
+        }
     }
 
     @Override
