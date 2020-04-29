@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.Collection;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -36,7 +34,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -52,7 +49,6 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -60,7 +56,10 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.Collection;
 
 public class SampleController {
 
@@ -187,7 +186,7 @@ public class SampleController {
 			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
 			FacilityReferenceDto referredDtoLab = referredDto.getLab();
 			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null
-					? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " (" + DateHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
+					? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " (" + DateFormatHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
 					: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
 			referOrLinkToOtherLabButton.setCaption(referOrLinkToOtherLabButtonCaption);
 			referOrLinkToOtherLabButton.addClickListener(new ClickListener() {

@@ -51,6 +51,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 public class ControlDateField extends ControlPropertyEditField<Date> {
 
@@ -245,7 +246,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
-        dateFormat = DateHelper.getLocalShortDateFormat();
+        dateFormat = DateFormatHelper.getLocalDateFormat();
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(

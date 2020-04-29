@@ -17,19 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import static de.symeda.sormas.ui.utils.CssStyles.HSPACE_RIGHT_4;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
-
-import java.util.Arrays;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -42,7 +29,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -61,14 +47,27 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+
+import java.util.Arrays;
+
+import static de.symeda.sormas.ui.utils.CssStyles.HSPACE_RIGHT_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	
@@ -209,9 +208,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();
-
 			String reportInfoText = I18nProperties.getString(Strings.reportedOn) + " "
-					+ DateHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
+					+ DateFormatHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
 					+ I18nProperties.getString(Strings.by) + " " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);
@@ -222,7 +220,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
 				FacilityReferenceDto referredFromLab = referredFrom.getLab();
 				String referredButtonCaption = referredFromLab == null
-						? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " (" +DateHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
+						? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " (" +DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
 						: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
 				Button referredButton = new Button(referredButtonCaption);
 				referredButton.addStyleName(ValoTheme.BUTTON_LINK);

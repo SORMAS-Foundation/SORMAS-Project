@@ -1,19 +1,10 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.Date;
-import java.util.List;
-
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
-import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.v7.ui.AbstractTextField;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
-
+import com.vaadin.v7.ui.*;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -28,6 +19,9 @@ import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
+
+import java.util.Date;
+import java.util.List;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 	private static final long serialVersionUID = 471700572643936674L;
@@ -95,7 +89,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} 
 		else if (DateField.class.isAssignableFrom(fieldType)) {
 			DateField field = super.createField(type, DateField.class);
-			field.setDateFormat(DateHelper.getLocalDatePattern());
+			field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 			field.setLenient(true);
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
@@ -116,7 +110,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {
 				DateField field = super.createField(type, DateField.class);
-				field.setDateFormat(DateHelper.getLocalDatePattern());
+				field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 				field.setLenient(true);
 				field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 				return (T) field;

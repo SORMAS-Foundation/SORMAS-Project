@@ -29,11 +29,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -148,7 +148,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatLocalShortDate(getBurialDateTo());
+        return super.toString() + " " + DateFormatHelper.formatLocalDate(getBurialDateTo());
     }
 
 }

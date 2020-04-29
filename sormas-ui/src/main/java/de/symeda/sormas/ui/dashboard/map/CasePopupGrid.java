@@ -29,6 +29,7 @@ import com.vaadin.v7.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -104,7 +105,8 @@ public class CasePopupGrid extends Grid {
         		LAST_NAME, CaseDataDto.REPORT_DATE, CaseDataDto.HEALTH_FACILITY_DETAILS);
         
         getColumn(CaseDataDto.UUID).setRenderer(new V7UuidRenderer());
-        getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		Language userLanguage = I18nProperties.getUserLanguage();
+		getColumn(CaseDataDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
         
         if (facility == null || !FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {
         	getColumn(CaseDataDto.HEALTH_FACILITY_DETAILS).setHidden(true);

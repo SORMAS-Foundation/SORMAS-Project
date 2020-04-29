@@ -49,7 +49,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 		setInEagerMode(true);
 		setCriteria(criteria);
 		setEagerDataProvider();
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
         	setSelectionMode(SelectionMode.MULTI);
         } else {
@@ -60,10 +60,10 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 		editColumn.setId(EDIT_BTN_ID);
 		editColumn.setWidth(20);
 
-		setColumns(EDIT_BTN_ID, VisitIndexDto.VISIT_DATE_TIME, VisitIndexDto.VISIT_STATUS, VisitIndexDto.VISIT_REMARKS, 
+		setColumns(EDIT_BTN_ID, VisitIndexDto.VISIT_DATE_TIME, VisitIndexDto.VISIT_STATUS, VisitIndexDto.VISIT_REMARKS,
 				VisitIndexDto.DISEASE, VisitIndexDto.SYMPTOMATIC, VisitIndexDto.TEMPERATURE);
-		
-		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+
+		((Column<VisitIndexDto, Date>) getColumn(VisitIndexDto.VISIT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 		((Column<VisitIndexDto, String>) getColumn(VisitIndexDto.SYMPTOMATIC)).setRenderer(new BooleanRenderer());
 
 		for(Column<?, ?> column : getColumns()) {
@@ -77,7 +77,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			}
 		});
 	}
-	
+
 	public void setEagerDataProvider() {
 		ListDataProvider<VisitIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getVisitFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);

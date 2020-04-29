@@ -74,6 +74,9 @@ import com.vaadin.v7.ui.Grid.Column;
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.BirthDateDto;
+import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
@@ -95,6 +98,7 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
@@ -270,8 +274,8 @@ public final class DownloadUtil {
 
 	public static StreamResource createCaseManagementExportResource(CaseCriteria criteria, String exportFileName) {
 		StreamResource casesResource = createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_MANAGEMENT,
-				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, null),
-				(propertyId,type) -> {
+				(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(criteria, CaseExportType.CASE_MANAGEMENT, start, max, null, I18nProperties.getUserLanguage()),
+				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
 									I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, propertyId,
@@ -280,7 +284,7 @@ public final class DownloadUtil {
 															I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId,
 																	I18nProperties.getPrefixCaption(HealthConditionsDto.I18N_PREFIX, propertyId)))))));
 					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 					}
 					return caption;
 				},
@@ -288,11 +292,11 @@ public final class DownloadUtil {
 
 		StreamResource prescriptionsResource = createCsvExportStreamResource(PrescriptionExportDto.class, null,
 				(Integer start, Integer max) -> FacadeProvider.getPrescriptionFacade().getExportList(criteria, start, max),
-				(propertyId,type) -> {
+				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(PrescriptionExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, propertyId));
 					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 					}
 					return caption;
 				},
@@ -300,11 +304,11 @@ public final class DownloadUtil {
 
 		StreamResource treatmentsResource = createCsvExportStreamResource(TreatmentExportDto.class, null,
 				(Integer start, Integer max) -> FacadeProvider.getTreatmentFacade().getExportList(criteria, start, max),
-				(propertyId,type) -> {
+				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(TreatmentExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, propertyId));
 					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 					}
 					return caption;
 				},
@@ -312,12 +316,12 @@ public final class DownloadUtil {
 
 		StreamResource clinicalVisitsResource = createCsvExportStreamResource(ClinicalVisitExportDto.class, null,
 				(Integer start, Integer max) -> FacadeProvider.getClinicalVisitFacade().getExportList(criteria, start, max),
-				(propertyId,type) -> {
+				(propertyId, type) -> {
 					String caption = I18nProperties.getPrefixCaption(ClinicalVisitExportDto.I18N_PREFIX, propertyId,
 							I18nProperties.getPrefixCaption(ClinicalVisitDto.I18N_PREFIX, propertyId,
 									I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId)));
 					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 					}
 					return caption;
 				},
@@ -354,7 +358,7 @@ public final class DownloadUtil {
 		result.writeTo(zos);
 		zos.closeEntry();
 	}
-	
+
 	public static interface OutputStreamConsumer {
 		void writeTo(OutputStream os) throws IOException;
 	}
@@ -374,14 +378,14 @@ public final class DownloadUtil {
 	}
 
 	public static class DelayedInputStream extends FilterInputStream {
-		
+
 		private Supplier<InputStream> lazyInputStreamSupplier;
-		
+
 		protected DelayedInputStream(Supplier<InputStream> lazyInputStreamSupplier) {
 			super(null);
 			this.lazyInputStreamSupplier = lazyInputStreamSupplier;
 		}
-		
+
 		protected DelayedInputStream(OutputStreamConsumer osConsumer, Consumer<IOException> exceptionHandler) {
 			this( () -> {
 				try (SharedByteArrayOutputStream os = new SharedByteArrayOutputStream()) {
@@ -393,40 +397,44 @@ public final class DownloadUtil {
 				}
 			});
 		}
-		
+
 		private void ensureInited() {
 			if (lazyInputStreamSupplier != null) {
 				in = lazyInputStreamSupplier.get();
 				lazyInputStreamSupplier = null;
 			}
 		}
-		
+
 		@Override
 		public int read() throws IOException {
 			ensureInited();
 			return super.read();
 		}
+
 		@Override
 		public int read(byte[] b) throws IOException {
 			ensureInited();
 			return super.read(b);
 		}
+
 		@Override
 		public synchronized int read(byte[] b, int off, int len) throws IOException {
 			ensureInited();
 			return super.read(b, off, len);
 		}
-		
+
 		@Override
 		public synchronized long skip(long n) throws IOException {
 			ensureInited();
 			return super.skip(n);
 		}
+
 		@Override
 		public synchronized int available() throws IOException {
 			ensureInited();
 			return super.available();
 		}
+
 		@Override
 		public synchronized void mark(int readAheadLimit) {
 			ensureInited();
@@ -470,7 +478,7 @@ public final class DownloadUtil {
 				int startIndex = 0;
 				List<ContactVisitsExportDto> exportRows =
 						FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria, 0,
-								DETAILED_EXPORT_STEP_SIZE);
+								DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				while (!exportRows.isEmpty()) {
 
 					for (ContactVisitsExportDto exportRow : exportRows) {
@@ -479,7 +487,7 @@ public final class DownloadUtil {
 						values.add(exportRow.getFirstName());
 						values.add(exportRow.getLastName());
 						exportRow.getVisitDetails().forEach(contactVisitsDetailsExportDto -> {
-							values.add(DateHelper.formatLocalShortDate(contactVisitsDetailsExportDto.getVisitDateTime()));
+							values.add(DateFormatHelper.formatDate(contactVisitsDetailsExportDto.getVisitDateTime()));
 							values.add(contactVisitsDetailsExportDto.getVisitStatus().toString());
 							values.add(contactVisitsDetailsExportDto.getSymptoms());
 						});
@@ -490,7 +498,7 @@ public final class DownloadUtil {
 					writer.flush();
 					startIndex += DETAILED_EXPORT_STEP_SIZE;
 					exportRows = FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria,
-							startIndex, DETAILED_EXPORT_STEP_SIZE);
+							startIndex, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				}
 			}
 		},
@@ -509,7 +517,7 @@ public final class DownloadUtil {
 	public static <T> StreamResource createCsvExportStreamResource(Class<T> exportRowClass, Enum<?> exportType, BiFunction<Integer, Integer, List<T>> exportRowsSupplier,
 			BiFunction<String,Class<?>,String> propertyIdCaptionFunction, String exportFileName, ExportConfigurationDto exportConfiguration) {
 		StreamResource extendedStreamResource = new StreamResource(() -> {
-			
+
 			return new DelayedInputStream((out) -> {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(
 							new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
@@ -523,13 +531,13 @@ public final class DownloadUtil {
 										&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
 								.sorted(Comparator.comparingInt(a -> a.getAnnotationsByType(Order.class)[0].value()))
 								.collect(Collectors.toList()));
-	
-						// 2. replace entity fields with all the columns of the entity 
+
+						// 2. replace entity fields with all the columns of the entity
 						Map<Method, Function<T,?>> subEntityProviders = new HashMap<Method, Function<T,?>>();
 						for (int i = 0; i < readMethods.size(); i++) {
 							Method method = readMethods.get(i);
 							if (EntityDto.class.isAssignableFrom(method.getReturnType())) {
-	
+
 								// allows us to access the sub entity
 								Function<T, ?> subEntityProvider = o -> {
 									try {
@@ -538,10 +546,10 @@ public final class DownloadUtil {
 										throw new RuntimeException(e);
 									}
 								};
-	
+
 								// remove entity field
 								readMethods.remove(i);
-	
+
 								// add columns of the entity
 								List<Method> subReadMethods = Arrays.stream(method.getReturnType().getDeclaredMethods())
 										.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(Order.class))
@@ -549,13 +557,13 @@ public final class DownloadUtil {
 										.collect(Collectors.toList());
 								readMethods.addAll(i, subReadMethods);
 								i--;
-	
+
 								for (Method subReadMethod : subReadMethods) {
 									subEntityProviders.put(subReadMethod, subEntityProvider);
 								}
-							}							
+							}
 						}
-	
+
 						String[] fieldValues = new String[readMethods.size()];
 						for (int i = 0; i < readMethods.size(); i++) {
 							final Method method = readMethods.get(i);
@@ -574,10 +582,11 @@ public final class DownloadUtil {
 							fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
 						}
 						writer.writeNext(fieldValues);
-	
+
 						int startIndex = 0;
 						List<T> exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
-						while (!exportRows.isEmpty()) {						
+						Language userLanguage = I18nProperties.getUserLanguage();
+						while (!exportRows.isEmpty()) {
 							try {
 								for (T exportRow : exportRows) {
 									for (int i = 0; i < readMethods.size(); i++) {
@@ -589,7 +598,7 @@ public final class DownloadUtil {
 										if (value == null) {
 											fieldValues[i] = "";
 										} else if (value instanceof Date) {
-											fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
+											fieldValues[i] = DateFormatHelper.formatDate((Date)value);
 										} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
 											fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
 										} else if (value instanceof Set) {
@@ -601,6 +610,11 @@ public final class DownloadUtil {
 												sb.append(o);
 											}
 											fieldValues[i] = sb.toString();
+										} else if (value instanceof BurialInfoDto) {
+											fieldValues[i] = PersonHelper.buildBurialInfoString((BurialInfoDto) value, userLanguage);
+										} else if (value instanceof BirthDateDto) {
+											BirthDateDto birthDate = (BirthDateDto) value;
+											fieldValues[i] = PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
 										} else {
 											fieldValues[i] = value.toString();
 										}
@@ -610,7 +624,7 @@ public final class DownloadUtil {
 							} catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
 								throw new RuntimeException(e);
 							}
-	
+
 							writer.flush();
 							startIndex += DETAILED_EXPORT_STEP_SIZE;
 							exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
@@ -653,32 +667,32 @@ public final class DownloadUtil {
 
 	/**
 	 * <p>
-	 * When downloading a Resource via FileDownloader, 
+	 * When downloading a Resource via FileDownloader,
 	 * the Component of the FileDownloader must remain visible in the UI.
 	 * Otherwise the Resource is unregistered and the download may fail.
 	 * </p><p>
 	 * This method display a modal dialog that includes the exportComponent without actually showing it to the user.
 	 * When the dialog is closed, it up to the closeListener to decide the fate of the exportComponent.
 	 * </p>
-	 *  
+	 *
 	 * @param exportButton
 	 * @param closeListener
 	 */
 	public static void showExportWaitDialog(AbstractComponent exportComponent, CloseListener closeListener) {
-		
+
 		//the button has to remain in the UI for the download to succeed, but it should not be seen 
 		CustomLayout hidingLayout = new CustomLayout();
 		hidingLayout.setSizeUndefined();
 		hidingLayout.setTemplateContents("");
 		hidingLayout.addComponent(exportComponent);
-		
+
 		Label lbl = new Label(I18nProperties.getString(Strings.infoDownloadExport), ContentMode.HTML);
 		HorizontalLayout layout = new HorizontalLayout(lbl, hidingLayout);
 		layout.setMargin(true);
 		layout.setExpandRatio(lbl, 1);
 		Window dialog = VaadinUiUtil.showPopupWindow(layout);
 		dialog.setCaption(exportComponent.getCaption());
-		
+
 		dialog.addCloseListener(closeListener);
 	}
 }
