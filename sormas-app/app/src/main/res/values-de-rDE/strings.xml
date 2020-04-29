@@ -444,6 +444,7 @@
     <string name="message_report_not_sent">Bericht kann momentan nicht gesendet werden.</string>
     <string name="message_report_sent">Problembericht erfolgreich gesendet.</string>
     <string name="message_save_error">%1$s konnte aufgrund eines internen Fehlers nicht gespeichert werden.</string>
+    <string name="message_edit_forbidden">Sie haben keine Berechtigung, die Einträge aus diesem Zuständigkeitsbereich zu bearbeiten.</string>
     <string name="message_save_success">%1$s erfolgreich gespeichert.</string>
     <string name="message_settings_saved">Anwendungseinstellungen wurden geändert.</string>
     <string name="message_settings_server_url">Willkommen! Bitte geben Sie zuerst die URL Ihres SORMAS Servers ein, danach können Sie sich mit Ihrem Benutzernamen und Passwort anmelden.</string>
