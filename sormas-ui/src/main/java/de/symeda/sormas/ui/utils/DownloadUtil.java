@@ -533,8 +533,11 @@ public final class DownloadUtil {
 									? method.getName().substring(3)
 									: method.getName().substring(2);
 							if (method.isAnnotationPresent(ExportProperty.class)) {
+								// TODO not sure why we are using the export property name to get the caption here
 								final ExportProperty exportProperty = method.getAnnotation(ExportProperty.class);
-								propertyId = exportProperty.value();
+								if (!exportProperty.combined()) {
+									propertyId = exportProperty.value();
+								}
 							}
 							propertyId = Character.toLowerCase(propertyId.charAt(0)) + propertyId.substring(1);
 							fieldValues[i] = propertyIdCaptionFunction.apply(propertyId, method.getReturnType());
