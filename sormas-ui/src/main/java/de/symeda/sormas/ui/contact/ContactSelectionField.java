@@ -7,6 +7,7 @@ import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -133,6 +134,13 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
         lblCaseIdExternalSystem.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
                 ContactDto.CASE_ID_EXTERNAL_SYSTEM));
         contactDetailsLayout.addComponent(lblCaseIdExternalSystem);
+
+        final Label lblLastContactDate =
+                new Label(DateHelper.formatLocalShortDate(referenceContact.getLastContactDate()));
+        lblLastContactDate.setWidthUndefined();
+        lblLastContactDate.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
+                ContactDto.LAST_CONTACT_DATE));
+        contactDetailsLayout.addComponent(lblLastContactDate);
 
         final Label lblContactProximity = new Label(referenceContact.getContactProximity() != null ?
                 referenceContact.getContactProximity().toString() : "");

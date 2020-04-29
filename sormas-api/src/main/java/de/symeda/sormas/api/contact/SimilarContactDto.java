@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class SimilarContactDto implements Serializable {
 
@@ -9,18 +10,21 @@ public class SimilarContactDto implements Serializable {
 
     private String uuid;
     private String caseIdExternalSystem;
+    private Date lastContactDate;
     private ContactProximity contactProximity;
     private ContactClassification contactClassification;
     private ContactStatus contactStatus;
     private FollowUpStatus followUpStatus;
 
     public SimilarContactDto(String firstName, String lastName, String uuid, String caseIdExternalSystem,
+                             Date lastContactDate,
                              ContactProximity contactProximity, ContactClassification contactClassification,
                              ContactStatus contactStatus, FollowUpStatus followUpStatus) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.uuid = uuid;
         this.caseIdExternalSystem = caseIdExternalSystem;
+        this.lastContactDate = lastContactDate;
         this.contactProximity = contactProximity;
         this.contactClassification = contactClassification;
         this.contactStatus = contactStatus;
@@ -33,6 +37,14 @@ public class SimilarContactDto implements Serializable {
 
     public void setCaseIdExternalSystem(String caseIdExternalSystem) {
         this.caseIdExternalSystem = caseIdExternalSystem;
+    }
+
+    public Date getLastContactDate() {
+        return lastContactDate;
+    }
+
+    public void setLastContactDate(Date lastContactDate) {
+        this.lastContactDate = lastContactDate;
     }
 
     public ContactProximity getContactProximity() {

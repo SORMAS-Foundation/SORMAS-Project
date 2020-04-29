@@ -31,7 +31,8 @@ public class ContactSelectionGrid extends Grid {
         setContainerDataSource(generatedContainer);
 
         setColumns(PersonIndexDto.FIRST_NAME, PersonIndexDto.LAST_NAME, ContactIndexDto.UUID,
-                ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactIndexDto.CONTACT_PROXIMITY,
+                ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactIndexDto.LAST_CONTACT_DATE,
+                ContactIndexDto.CONTACT_PROXIMITY,
                 ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
                 ContactIndexDto.FOLLOW_UP_STATUS);
 
