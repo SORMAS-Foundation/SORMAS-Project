@@ -4154,18 +4154,23 @@ ALTER TABLE contact_history DROP COLUMN quarantineordermeans;
 INSERT INTO schema_version (version_number, comment) VALUES (202, 'Additional quarantine fields #1906');
 
 -- 2020-04-24 Add type of reporting to cases #1833
-
 ALTER TABLE cases ADD COLUMN reportingtype varchar(255);
 ALTER TABLE cases_history ADD COLUMN reportingtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (203, 'Add type of reporting to cases #1833');
 
 -- 2020-04-26 Add fieldSampleID to sample #1863
-
 ALTER TABLE samples ADD COLUMN fieldsampleid varchar(512);
 ALTER TABLE samples_history ADD COLUMN fieldsampleid varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (204, 'Add fieldSampleID to sample #1863');
 
+-- 2020-04-29 Added symptoms loss of taste and loss of smell #1936
+ALTER TABLE symptoms ADD COLUMN lossoftaste varchar(255);
+ALTER TABLE symptoms ADD COLUMN lossofsmell varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lossoftaste varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lossofsmell varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (205, 'Added symptoms loss of taste and loss of smell #1936');
 
 -- *** Insert new sql commands BEFORE this line ***
