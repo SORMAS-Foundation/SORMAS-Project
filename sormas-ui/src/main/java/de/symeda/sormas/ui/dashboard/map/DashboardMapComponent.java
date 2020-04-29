@@ -583,10 +583,10 @@ public class DashboardMapComponent extends VerticalLayout {
 		
 		cmbPeriodFilter.setEnabled(true);
 		
-		if (mapCaseDtos.size() == 0)
+		if (mapAndFacilityCases.size() == 0)
 			return;
 		
-		List<Date> reportedDates = mapCaseDtos.stream().map(c -> c.getReportDate()).collect(Collectors.toList());
+		List<Date> reportedDates = mapAndFacilityCases.stream().map(c -> c.getReportDate()).collect(Collectors.toList());
 		Date minDate = reportedDates.stream().min(Date::compareTo).get();
 		Date maxDate = reportedDates.stream().max(Date::compareTo).get();
 		
