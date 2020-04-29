@@ -14,15 +14,16 @@ public class ContactEditAuthorization {
     public static boolean isContactEditAllowed(Contact contact){
 
         User user = ConfigProvider.getUser();
-        Set<UserRole> userRole = user.getUserRoles();
-        Case caseofContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
 
         if (user.getUuid().equals(contact.getReportingUser().getUuid())){
             return true;
         }
 
-        if (CaseEditAuthorization.isCaseEditAllowed(caseofContact)){
-            return true;
+        if (contact.getCaseUuid() != null) {
+            Case caseofContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+            if (caseofContact != null && CaseEditAuthorization.isCaseEditAllowed(caseofContact)) {
+                return true;
+            }
         }
 
         if (ConfigProvider.hasRole(UserRole.getSupervisorRoles())) {
