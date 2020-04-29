@@ -1,8 +1,5 @@
 package de.symeda.sormas.ui.samples;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -16,8 +13,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
 public class AdditionalTestListEntry extends HorizontalLayout {

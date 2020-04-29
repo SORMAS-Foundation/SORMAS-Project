@@ -39,11 +39,9 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Grid.Column;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @SuppressWarnings("serial")
