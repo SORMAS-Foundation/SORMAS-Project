@@ -20,6 +20,7 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.Context;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
         if (caze != null && caze.isUnreferredPortHealthCase()) {
             menuItems.set(CaseSection.SAMPLES.ordinal(), null);
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isUnreferredPortHealthCase())  ||
+        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
                 (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.set(CaseSection.CONTACTS.ordinal(), null);
         }
@@ -165,13 +166,22 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 
         getEditMenu().setTitle(R.string.action_edit_case);
 
-        Case selectedCase = DatabaseHelper.getCaseDao().queryUuidBasic(getRootUuid());
-        if(CaseEditAuthorization.isCaseEditAllowed(selectedCase)) {
-            getEditMenu().setVisible(true);
-        }else{
-            getEditMenu().setVisible(false);
-        }
         return result;
+    }
+
+    @Override
+    protected void processActionbarMenu() {
+        super.processActionbarMenu();
+        final Case selectedCase = DatabaseHelper.getCaseDao().queryUuidBasic(getRootUuid());
+        final MenuItem editMenu = getEditMenu();
+
+        if (editMenu != null) {
+            if (CaseEditAuthorization.isCaseEditAllowed(selectedCase) || (getActiveFragment() != null && getActiveFragment() instanceof CaseReadContactListFragment)) {
+                editMenu.setVisible(true);
+            } else {
+                editMenu.setVisible(false);
+            }
+        }
     }
 
     @Override
@@ -182,6 +192,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     @Override
     public void goToEditView() {
         CaseSection section = CaseSection.fromOrdinal(getActivePage().getPosition());
+
         CaseEditActivity.startActivity(CaseReadActivity.this, getRootUuid(), section);
     }
 }
