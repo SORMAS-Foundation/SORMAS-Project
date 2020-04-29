@@ -190,14 +190,14 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
 			showCases = true;
-			caseClassificationOption = MapCaseClassificationOption.CONFIRMED_CASES_ONLY;
+			caseClassificationOption = MapCaseClassificationOption.ALL_CASES;
 			showContacts = false;
 			showEvents = false;
 			showConfirmedContacts = true;
 			showUnconfirmedContacts = true;
 		} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
 			showCases = false;
-			caseClassificationOption = MapCaseClassificationOption.CONFIRMED_CASES_ONLY;
+			caseClassificationOption = MapCaseClassificationOption.ALL_CASES;
 			showContacts = true;
 			showEvents = false;
 			showConfirmedContacts = true;
