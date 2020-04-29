@@ -29,14 +29,17 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -181,6 +184,16 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
         });
         int year = Calendar.getInstance().get(Calendar.YEAR);
         contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
+
+        contentBinding.personAddress.setOnClickListener(v -> {
+            final Location locationClone = (Location) record.getPerson().getAddress().clone();
+            final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+            locationDialog.show();
+            locationDialog.setPositiveCallback(() -> {
+                record.getPerson().setAddress(locationClone);
+                contentBinding.personAddress.setValue(locationClone);
+            });
+        });
     }
 
     @Override

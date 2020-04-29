@@ -50,11 +50,13 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelpe
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -328,6 +330,16 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
             contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
             contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
         }
+
+        contentBinding.personAddress.setOnClickListener(v -> {
+            final Location locationClone = (Location) record.getPerson().getAddress().clone();
+            final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+            locationDialog.show();
+            locationDialog.setPositiveCallback(() -> {
+                record.getPerson().setAddress(locationClone);
+                contentBinding.personAddress.setValue(locationClone);
+            });
+        });
     }
 
     @Override

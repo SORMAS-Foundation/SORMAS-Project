@@ -31,14 +31,17 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
@@ -233,6 +236,16 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.caseDataCaseOrigin.setVisibility(GONE);
             contentBinding.caseDataPointOfEntry.setVisibility(GONE);
         }
+
+        contentBinding.personAddress.setOnClickListener(v -> {
+            final Location locationClone = (Location) record.getPerson().getAddress().clone();
+            final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+            locationDialog.show();
+            locationDialog.setPositiveCallback(() -> {
+                record.getPerson().setAddress(locationClone);
+                contentBinding.personAddress.setValue(locationClone);
+            });
+        });
     }
 
     @Override
