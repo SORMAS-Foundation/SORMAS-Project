@@ -173,6 +173,7 @@ public interface Strings {
 	String headingContactMap = "headingContactMap";
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsPerCase = "headingContactsPerCase";
+	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateEntry = "headingCreateEntry";
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
@@ -346,6 +347,7 @@ public interface Strings {
 	String infoDefineOutbreaks = "infoDefineOutbreaks";
 	String infoDetailedExport = "infoDetailedExport";
 	String infoDeveloperOptions = "infoDeveloperOptions";
+	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
 	String infoDownloadExport = "infoDownloadExport";
@@ -380,6 +382,7 @@ public interface Strings {
 	String infoSampleExport = "infoSampleExport";
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
+	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";

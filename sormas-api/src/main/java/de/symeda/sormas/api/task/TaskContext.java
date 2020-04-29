@@ -27,7 +27,7 @@ public enum TaskContext {
 	EVENT(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE),
 	GENERAL(FeatureType.TASK_GENERATION_GENERAL);
 	
-	private FeatureType featureType;
+	private final FeatureType featureType;
 	
 	TaskContext(FeatureType featureType) {
 		this.featureType = featureType;
@@ -35,10 +35,6 @@ public enum TaskContext {
 	
 	public FeatureType getFeatureType() {
 		return featureType;
-	}
-
-	public void setFeatureType(FeatureType featureType) {
-		this.featureType = featureType;
 	}
 
 	public String toString() {
