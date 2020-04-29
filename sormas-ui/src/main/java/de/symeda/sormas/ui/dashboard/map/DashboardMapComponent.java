@@ -552,12 +552,20 @@ public class DashboardMapComponent extends VerticalLayout {
 				dateTo = null;
 			}
 			
+			//disable arrow buttons if date is first or last item in the dropdown
+			int curDateIndex = ((List<?>)cmbPeriodFilter.getItemIds()).indexOf(date);
+			Boolean hasNextDate = cmbPeriodFilter.size() > 0 && curDateIndex < cmbPeriodFilter.size() - 1;
+			Boolean hasPrevDate = cmbPeriodFilter.size() > 0 && curDateIndex > 0;
+			btnBack.setEnabled(hasPrevDate);
+			btnForward.setEnabled(hasNextDate);
+			
 			reloadPeriodFiltersFlag = PeriodFilterReloadFlag.DONT_RELOAD;
 			
 			refreshMap();
 		});
 		cmbPeriodFilter.addItemSetChangeListener(e -> {
 			cmbPeriodFilter.setEnabled(cmbPeriodFilter.size() > 0);
+			btnForward.setEnabled(cmbPeriodFilter.size() > 0);
 		});
 		
 		
