@@ -347,6 +347,7 @@ public interface Strings {
 	String infoDefineOutbreaks = "infoDefineOutbreaks";
 	String infoDetailedExport = "infoDetailedExport";
 	String infoDeveloperOptions = "infoDeveloperOptions";
+	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
 	String infoDownloadExport = "infoDownloadExport";

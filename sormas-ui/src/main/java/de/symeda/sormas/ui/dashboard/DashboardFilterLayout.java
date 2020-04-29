@@ -148,10 +148,10 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
 		}
 		diseaseFilter.addValueChangeListener(e -> {
-			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
 			if (diseaseFilterChangeCallback != null) {
 				diseaseFilterChangeCallback.accept(diseaseFilter.getValue() != null);
 			}
+			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
 			dashboardView.refreshDashboard();
 		});
 		addComponent(diseaseFilter);
