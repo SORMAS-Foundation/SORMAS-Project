@@ -49,7 +49,7 @@ public interface RegionFacade {
 	
 	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
 	
-	List<RegionReferenceDto> getByName(String name);
+	List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities);
 	
 	List<String> getNamesByIds(List<Long> regionIds);
 	

@@ -27,19 +27,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/clinicalvisits")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class ClinicalVisitResource extends EntityDtoResource {
 
 	@GET

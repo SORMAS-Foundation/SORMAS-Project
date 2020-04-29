@@ -19,10 +19,8 @@
 package de.symeda.sormas.app.contact.read;
 
 import android.os.Bundle;
-import android.view.View;
 
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -68,12 +66,10 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
             contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
             contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
             contentBinding.contactExternalID.setVisibility(GONE);
-            contentBinding.contactQuarantineOrderMeans.setVisibility(GONE);
-        }
-
-        QuarantineType type = (QuarantineType) contentBinding.contactQuarantine.getValue();
-        if (type == null || (!type.equals(QuarantineType.HOME) && !type.equals(QuarantineType.INSTITUTIONELL))){
-            contentBinding.contactQuarantineTo.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
         }
     }
 

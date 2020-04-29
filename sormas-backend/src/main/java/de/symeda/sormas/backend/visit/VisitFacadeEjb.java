@@ -18,9 +18,11 @@
 package de.symeda.sormas.backend.visit;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -29,20 +31,14 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.api.visit.DashboardVisitDto;
-import de.symeda.sormas.api.visit.ExternalVisitDto;
-import de.symeda.sormas.api.visit.VisitCriteria;
-import de.symeda.sormas.api.visit.VisitDto;
-import de.symeda.sormas.api.visit.VisitFacade;
-import de.symeda.sormas.api.visit.VisitIndexDto;
-import de.symeda.sormas.api.visit.VisitReferenceDto;
-import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.api.visit.*;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -62,29 +58,21 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-    protected EntityManager em;
+	private EntityManager em;
 
     @EJB
     private VisitService visitService;
@@ -100,8 +88,6 @@ public class VisitFacadeEjb implements VisitFacade {
     private MessagingService messagingService;
     @EJB
     private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-
-    private static final Logger logger = LoggerFactory.getLogger(VisitFacadeEjb.class);
 
     @Override
     public List<String> getAllActiveUuids() {
@@ -178,7 +164,7 @@ public class VisitFacadeEjb implements VisitFacade {
     @Override
     public void validate(VisitDto visit) {
         if (visit.getVisitStatus() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitSymptoms));
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitStatus));
         }
         if (visit.getSymptoms() == null) {
             throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitSymptoms));
@@ -268,6 +254,57 @@ public class VisitFacadeEjb implements VisitFacade {
         } else {
             return em.createQuery(cq).getResultList();
         }
+    }
+
+    @Override
+    @Transactional(value = Transactional.TxType.REQUIRES_NEW)
+    public List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria,
+                                                    VisitExportType exportType, int first, int max,
+                                                    ExportConfigurationDto exportConfiguration) {
+
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<VisitExportDto> cq = cb.createQuery(VisitExportDto.class);
+        final Root<Visit> visitRoot = cq.from(Visit.class);
+        final Join<Visit, Symptoms> symptomsJoin = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
+        final Join<Visit, Person> personJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
+        final Join<Visit, User> userJoin = visitRoot.join(Visit.VISIT_USER, JoinType.LEFT);
+
+        cq.multiselect(visitRoot.get(Visit.ID), visitRoot.get(Visit.UUID), personJoin.get(Person.ID),
+                personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME),
+                symptomsJoin.get(Symptoms.ID), userJoin.get(User.ID), visitRoot.get(Visit.DISEASE),
+                visitRoot.get(Visit.VISIT_DATE_TIME), visitRoot.get(Visit.VISIT_STATUS),
+                visitRoot.get(Visit.VISIT_REMARKS), visitRoot.get(Visit.REPORT_LAT), visitRoot.get(Visit.REPORT_LON));
+
+
+        cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot));
+
+        cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
+
+        List<VisitExportDto> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY,
+                true).setFirstResult(first).setMaxResults(max).getResultList();
+
+        if (!resultList.isEmpty()) {
+
+            Map<Long, Symptoms> symptoms = null;
+            if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseDataDto.SYMPTOMS)) {
+                List<Symptoms> symptomsList = null;
+                CriteriaQuery<Symptoms> symptomsCq = cb.createQuery(Symptoms.class);
+                Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
+                Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
+                symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(VisitExportDto::getSymptomsId).collect(Collectors.toList())));
+                symptomsList =
+                        em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+                symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
+            }
+
+            for (VisitExportDto exportDto : resultList) {
+                if (symptoms != null) {
+                    Optional.ofNullable(symptoms.get(exportDto.getSymptomsId())).ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
+                }
+            }
+        }
+
+        return resultList;
     }
 
     @Override

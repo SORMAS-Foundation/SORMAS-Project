@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -41,6 +43,7 @@ import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
+import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
@@ -82,6 +85,7 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
@@ -126,6 +130,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+
+		I18nProperties.setUserLanguage(Language.EN);
 	}
 
 	private void initH2Functions() {
@@ -330,6 +336,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public DiseaseFacade getDiseaseFacade() {
 		return getBean(DiseaseFacadeEjbLocal.class);
+	}
+	
+	public FeatureConfigurationFacade getFeatureConfigurationFacade() {
+		return getBean(FeatureConfigurationFacadeEjbLocal.class);
+	}
+	
+	public PathogenTestFacade getPathogenTestFacade() {
+		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 
 }

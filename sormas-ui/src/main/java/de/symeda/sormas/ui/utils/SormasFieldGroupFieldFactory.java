@@ -20,7 +20,6 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
@@ -95,7 +94,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} 
 		else if (DateField.class.isAssignableFrom(fieldType)) {
 			DateField field = super.createField(type, DateField.class);
-			field.setDateFormat(DateHelper.getLocalDatePattern());
+			field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 			field.setLenient(true);
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
@@ -116,7 +115,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {
 				DateField field = super.createField(type, DateField.class);
-				field.setDateFormat(DateHelper.getLocalDatePattern());
+				field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 				field.setLenient(true);
 				field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 				return (T) field;

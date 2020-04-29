@@ -95,6 +95,14 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
         } else {
             contentBinding.caseDataEpidNumber.setVisibility(GONE);
         }
+
+        if (!ConfigProvider.isGermanServer()) {
+            contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedVerballyDate.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
+            contentBinding.caseDataReportingType.setVisibility(GONE);
+        }
     }
 
     private void setUpControlListeners(FragmentCaseReadLayoutBinding contentBinding) {

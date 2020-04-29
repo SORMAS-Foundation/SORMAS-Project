@@ -136,7 +136,7 @@ if [[ ${LINUX} = true ]]; then
 	setfacl -m u:${USER_NAME}:rwx "${GENERATED_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${CUSTOM_DIR}"
 
-	setfacl -m u:postgres:rwx "${TEMP_DIR} "
+	setfacl -m u:postgres:rwx "${TEMP_DIR}"
 	setfacl -m u:postgres:rwx "${GENERATED_DIR}"
 	setfacl -m u:postgres:rwx "${CUSTOM_DIR}"
 fi
@@ -260,7 +260,7 @@ EOF
 
 if [[ ${LINUX} = true ]]; then
 	# no host is specified as by default the postgres user has only local access
-	su postgres -c "psql -p ${DB_PORT} -f setup.sql"
+	su postgres -c "psql -p ${DB_PORT} < setup.sql"
 else
 	PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
 	echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
@@ -390,3 +390,4 @@ if [[ ${DEV_SYSTEM} != true ]]; then
 	echo "  - Execute the sormas-update.sh file to populate the database and deploy the server"
 	echo "  - Configure the apache web server according to the server setup guide"
 fi
+	echo "  - Execute the r-setup.sh file to enable disease network diagrams"

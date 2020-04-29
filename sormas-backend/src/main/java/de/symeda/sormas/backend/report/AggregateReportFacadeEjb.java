@@ -48,8 +48,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-	
+	private EntityManager em;
+
 	@EJB
 	private AggregateReportService service;
 	@EJB
@@ -92,19 +92,15 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return service.getAllUuids(user);
+		return service.getAllUuids();
 	}
 	
 	@Override
 	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
-		User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
@@ -208,8 +204,6 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	@Override
 	public long countWithCriteria(AggregateReportCriteria criteria) {
-		User user = userService.getCurrentUser();
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);

@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.samples;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -14,8 +13,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
 public class AdditionalTestListEntry extends HorizontalLayout {
@@ -37,7 +36,7 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 		addComponent(labelLayout);
 		setExpandRatio(labelLayout, 1);
 
-		Label dateLabel = new Label(DateHelper.formatLocalDateTime(additionalTest.getTestDateTime()));
+		Label dateLabel = new Label(DateFormatHelper.formatLocalDateTime(additionalTest.getTestDateTime()));
 		CssStyles.style(dateLabel, CssStyles.VSPACE_3);
 		labelLayout.addComponent(dateLabel);
 

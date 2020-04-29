@@ -20,12 +20,11 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -68,12 +67,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -325,7 +318,7 @@ public class CaseContactsView extends AbstractCaseView {
 			StreamResource extendedExportStreamResource = DownloadUtil
 					.createCsvExportStreamResource(
 							ContactExportDto.class, null, (Integer start, Integer max) -> FacadeProvider
-									.getContactFacade().getExportList(grid.getCriteria(), start, max),
+									.getContactFacade().getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
 							(propertyId, type) -> {
 								String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX,
 										propertyId,
@@ -339,7 +332,7 @@ public class CaseContactsView extends AbstractCaseView {
 																				HospitalizationDto.I18N_PREFIX,
 																				propertyId))))));
 								if (Date.class.isAssignableFrom(type)) {
-									caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+									caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 								}
 								return caption;
 							}, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
@@ -413,8 +406,6 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter.addItems((Object[]) ContactClassification.values());
 		classificationFilter.setValue(criteria.getContactClassification());
 
-		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		searchField.setValue(criteria.getNameUuidCaseLike());
@@ -436,31 +427,5 @@ public class CaseContactsView extends AbstractCaseView {
 			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
-	}
-	
-	private void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, Resource icon,
-			String captionKey, String descriptionKey) {
-		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
-			
-			Button button = e.getButton();
-			int buttonPos = exportLayout.getComponentIndex(button);
-			
-			DownloadUtil.showExportWaitDialog(button, ce -> {
-				//restore the button
-				exportLayout.addComponent(button, buttonPos);
-				button.setEnabled(true);
-			});
-			exportPopupButton.setPopupVisible(false);
-		});
-		
-		exportButton.setDisableOnClick(true);
-		
-		exportButton.setDescription(I18nProperties.getDescription(descriptionKey));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(icon);
-		exportButton.setWidth(100, Unit.PERCENTAGE);
-		exportLayout.addComponent(exportButton);
-
-		new FileDownloader(streamResource).extend(exportButton);
 	}
 }

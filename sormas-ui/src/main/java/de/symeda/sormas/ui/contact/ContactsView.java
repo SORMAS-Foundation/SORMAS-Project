@@ -21,6 +21,17 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DateHelper8;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -61,7 +72,6 @@ import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -87,16 +97,6 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -144,7 +144,10 @@ public class ContactsView extends AbstractView {
 	private ComboBox categoryFilter;
 	private CheckBox onlyQuarantineHelpNeeded;
 	private ComboBox quarantineTypeFilter;
-	private ComboBox quarantineOrderMeansFilter;
+	private PopupDateField quarantineToFilter;
+	private CheckBox quarantineOrderedVerballyFilter;
+	private CheckBox quarantineOrderedOfficialDocumentFilter;
+	private CheckBox quarantineNotOrderedFilter;
 
 	public ContactsView() {
 		super(VIEW_NAME);
@@ -233,13 +236,13 @@ public class ContactsView extends AbstractView {
 				addHeaderComponent(exportButton);
 			}
 			{
-				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
 
 				addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
 				StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
-						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max),
+						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
 						(propertyId,type) -> {
 							String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
 									I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
@@ -249,13 +252,22 @@ public class ContactsView extends AbstractView {
 																	I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
 																			I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
 							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 							}
 							return caption;
 						},
-						"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+						createFileNameWithCurrentDate("sormas_contacts_", ".csv"), null);
 
 				addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+			}
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+				StreamResource followUpVisitsExportStreamResource =
+						DownloadUtil.createContactVisitsExport(grid.getCriteria(),
+								createFileNameWithCurrentDate("sormas_contacts_follow_ups", ".csv"));
+
+				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout, null,
+						VaadinIcons.FILE_TEXT, Captions.exportFollowUp, Descriptions.descFollowUpExportButton);
 			}
 
 			// Warning if no filters have been selected
@@ -518,16 +530,43 @@ public class ContactsView extends AbstractView {
 			});
 			thirdFilterRowLayout.addComponent(quarantineTypeFilter);
 
+			quarantineToFilter = new PopupDateField();
+			quarantineToFilter.setWidth(200, Unit.PIXELS);
+			quarantineToFilter.setInputPrompt(
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO));
+			quarantineToFilter.addValueChangeListener(e -> {
+				criteria.quarantineTo((Date) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			thirdFilterRowLayout.addComponent(quarantineToFilter);
+
 			if (isGermanServer()) {
-				quarantineOrderMeansFilter = new ComboBox();
-				quarantineOrderMeansFilter.setWidth(140, Unit.PIXELS);
-				quarantineOrderMeansFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDER_MEANS));
-				quarantineOrderMeansFilter.addItems((Object[]) OrderMeans.values());
-				quarantineOrderMeansFilter.addValueChangeListener(e -> {
-					criteria.quarantineOrderMeans(((OrderMeans) e.getProperty().getValue()));
+				quarantineOrderedVerballyFilter = new CheckBox();
+				quarantineOrderedVerballyFilter.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_VERBALLY));
+				CssStyles.style(quarantineOrderedVerballyFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+				quarantineOrderedVerballyFilter.addValueChangeListener(e -> {
+					criteria.quarantineOrderedVerbally((Boolean) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
-				thirdFilterRowLayout.addComponent(quarantineOrderMeansFilter);
+				thirdFilterRowLayout.addComponent(quarantineOrderedVerballyFilter);
+
+				quarantineOrderedOfficialDocumentFilter = new CheckBox();
+				quarantineOrderedOfficialDocumentFilter.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT));
+				CssStyles.style(quarantineOrderedOfficialDocumentFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+				quarantineOrderedOfficialDocumentFilter.addValueChangeListener(e -> {
+					criteria.quarantineOrderedOfficialDocument((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(quarantineOrderedOfficialDocumentFilter);
+
+				quarantineNotOrderedFilter = new CheckBox();
+				quarantineNotOrderedFilter.setCaption(I18nProperties.getCaption(Captions.contactQuarantineNotOrdered));
+				CssStyles.style(quarantineNotOrderedFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+				quarantineNotOrderedFilter.addValueChangeListener(e -> {
+					criteria.quarantineNotOrdered((Boolean) e.getProperty().getValue());
+					navigateTo(criteria);
+				});
+				thirdFilterRowLayout.addComponent(quarantineNotOrderedFilter);
 			}
 
 			onlyQuarantineHelpNeeded = new CheckBox();
@@ -849,9 +888,12 @@ public class ContactsView extends AbstractView {
 		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
 		onlyQuarantineHelpNeeded.setValue(criteria.getOnlyQuarantineHelpNeeded());
 		quarantineTypeFilter.setValue(criteria.getQuarantineType());
-		if (quarantineOrderMeansFilter != null) {
-			quarantineOrderMeansFilter.setValue(criteria.getQuarantineOrderMeans());
+		if (isGermanServer()) {
+			quarantineOrderedVerballyFilter.setValue(criteria.getQuarantineOrderedVerbally());
+			quarantineOrderedOfficialDocumentFilter.setValue(criteria.getQuarantineOrderedOfficialDocument());
+			quarantineNotOrderedFilter.setValue(criteria.getQuarantineNotOrdered());
 		}
+		quarantineToFilter.setValue(criteria.getQuarantineTo());
 		searchField.setValue(criteria.getNameUuidCaseLike());
 		if (categoryFilter != null) {
 			categoryFilter.setValue(criteria.getContactCategory());

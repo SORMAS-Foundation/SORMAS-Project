@@ -37,7 +37,10 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 	 * @see https://www.bkg.bund.de/SharedDocs/Produktinformationen/BKG/DE/P-Download/Doku-Geokodierungsdienst.pdf?__blob=publicationFile&v=3
 	 * 4.3.1.10 Sonderzeichen 
 	 */
-	private static Pattern TO_BE_ESCAPED = Pattern.compile(Stream.of(
+	private static final Pattern TO_BE_ESCAPED = Pattern
+		.compile(
+			Stream
+				.of(
 			"&&",
 			"||",
 			"+",
@@ -57,7 +60,7 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 			":")
 	.map(Pattern::quote)
 	.collect(Collectors.joining("|")));
-	
+
 	@EJB
 	private GeocodingService geocodingService;
 

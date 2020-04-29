@@ -22,6 +22,10 @@ import java.util.regex.Pattern;
 
 public final class VersionHelper {
 
+	private VersionHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	/**
 	 * Extract the version (X.Y.Z) from any string. 
 	 * If multiple matching patterns are found the last one is returned.

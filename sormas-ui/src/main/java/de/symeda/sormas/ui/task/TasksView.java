@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 

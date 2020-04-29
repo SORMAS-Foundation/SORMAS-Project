@@ -141,7 +141,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 			result = em.createQuery(cq).getResultList();
 			for (DashboardEventDto dashboardEventDto : result) {
-				dashboardEventDto.setDistrict(districtFacade.getDistrictReferenceByUuid(dashboardEventDto.getDistrictUuid()));
+				if (dashboardEventDto.getDistrictUuid() != null) {
+					dashboardEventDto.setDistrict(districtFacade.getDistrictReferenceByUuid(dashboardEventDto.getDistrictUuid()));
+				}
 			}
 		} else {
 			result = Collections.emptyList();
@@ -256,50 +258,49 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath) {
 		// National users can access all events in the system
-		if (getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| getCurrentUser().getUserRoles().contains(UserRole.NATIONAL_OBSERVER)
-				|| getCurrentUser().getUserRoles().contains(UserRole.POE_NATIONAL_USER)) {
+		User currentUser = getCurrentUser();
+		if (currentUser.hasAnyUserRole(
+				UserRole.NATIONAL_USER,
+				UserRole.NATIONAL_CLINICIAN,
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.POE_NATIONAL_USER,
+				UserRole.REST_USER)) {
 			return null;
 		}
 
 		// whoever created the event or is assigned to it is allowed to access it
-		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), getCurrentUser());
-		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), getCurrentUser()));
+		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);
+		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
 
 		Predicate filter = null;
 		// allow event access based on user role
-		for (UserRole userRole : getCurrentUser().getUserRoles()) {
-			switch (userRole) {
-			case SURVEILLANCE_SUPERVISOR:
-			case CONTACT_SUPERVISOR:
-			case CASE_SUPERVISOR:
-			case POE_SUPERVISOR:
-			case EVENT_OFFICER:
-			case STATE_OBSERVER:
-				// supervisors see all events of their region
-				if (getCurrentUser().getRegion() != null) {
-					filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), getCurrentUser().getRegion()));
-				}
-				break;
-			case SURVEILLANCE_OFFICER:
-			case CONTACT_OFFICER:
-			case CASE_OFFICER:
-			case DISTRICT_OBSERVER:
-				// officers see all events of their district
-				if (getCurrentUser().getDistrict() != null) {
-					filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), getCurrentUser().getDistrict()));
-				}
-				break;
-			case HOSPITAL_INFORMANT:
-			case COMMUNITY_INFORMANT:
-			case POE_INFORMANT:
-			case EXTERNAL_LAB_USER:
-				// informants dont see events
-				break;
-			default:
-				break;
-			}
+		if (currentUser.hasAnyUserRole(
+				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.CONTACT_SUPERVISOR,
+				UserRole.CASE_SUPERVISOR,
+				UserRole.POE_SUPERVISOR,
+				UserRole.EVENT_OFFICER,
+				UserRole.STATE_OBSERVER)
+			&& currentUser.getRegion() != null) {
+			// supervisors see all events of their region
+			filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
+		}
+		if (currentUser.hasAnyUserRole(
+				UserRole.SURVEILLANCE_OFFICER,
+				UserRole.CONTACT_OFFICER,
+				UserRole.CASE_OFFICER,
+				UserRole.DISTRICT_OBSERVER)
+			&& currentUser.getDistrict() != null) {
+			// officers see all events of their district
+			filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), currentUser.getDistrict()));
+		}
+		if (currentUser.hasAnyUserRole(
+				UserRole.HOSPITAL_INFORMANT,
+				UserRole.COMMUNITY_INFORMANT,
+				UserRole.POE_INFORMANT,
+				UserRole.EXTERNAL_LAB_USER)) {
+			//NOOP
+			// informants don't see events
 		}
 
 		//		// events assigned with task
@@ -307,9 +308,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		//		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 
 		// only show cases of a specific disease if a limited disease is set
-		if (filter != null && getCurrentUser().getLimitedDisease() != null) {
+		if (filter != null && currentUser.getLimitedDisease() != null) {
 			filter = cb.and(filter, cb.or(
-					cb.equal(eventPath.get(Event.DISEASE), getCurrentUser().getLimitedDisease()),
+					cb.equal(eventPath.get(Event.DISEASE), currentUser.getLimitedDisease()),
 					cb.isNull(eventPath.get(Event.DISEASE))));
 		}
 		

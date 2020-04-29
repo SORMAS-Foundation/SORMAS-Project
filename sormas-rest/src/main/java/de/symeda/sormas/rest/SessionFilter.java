@@ -31,8 +31,6 @@ import javax.servlet.annotation.WebFilter;
 @WebFilter(asyncSupported = true, urlPatterns = "/*")
 public class SessionFilter implements Filter {
 
-	//protected static final Logger LOGGER = LoggerFactory.getLogger(SessionFilter.class);
-	
 	@EJB
 	private SessionFilterBean sessionFilterBean;
 

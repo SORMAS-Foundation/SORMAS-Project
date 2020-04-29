@@ -38,6 +38,10 @@ import de.symeda.sormas.ui.utils.UserRightsException;
 
 public final class LoginHelper {
 
+	private LoginHelper() {
+		// Hide Utility Class Constructor
+	}
+
     public static boolean login(String username, String password) throws UserRightsException {
         if (username == null || username.isEmpty()) {
             return false;

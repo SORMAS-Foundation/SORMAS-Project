@@ -46,13 +46,11 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 public class SormasErrorHandler implements ErrorHandler {
 
 	private static final long serialVersionUID = -8550777561547915589L;
-	
-	private static final Logger logger = LoggerFactory.getLogger(SormasErrorHandler.class);
-	
-	private static final SormasErrorHandler instance = new SormasErrorHandler();
-	
+
+	private static final SormasErrorHandler INSTANCE = new SormasErrorHandler();
+
 	public static SormasErrorHandler get() {
-		return instance;
+		return INSTANCE;
 	}
 	
 	@Override
@@ -61,6 +59,8 @@ public class SormasErrorHandler implements ErrorHandler {
 	}
 	
 	public static void handleError(ErrorEvent event) {
+
+		Logger logger = LoggerFactory.getLogger(SormasErrorHandler.class);
         final Throwable t = event.getThrowable();
         if (t instanceof SocketException) {
             // Most likely client browser closed socket

@@ -27,40 +27,41 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/samples")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class SampleResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<SampleDto> getAllSamples(@PathParam("since") long since) {
-
 		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
 	public List<SampleDto> getByUuids(List<String> uuids) {
-
 		List<SampleDto> result = FacadeProvider.getSampleFacade().getByUuids(uuids);
+		return result;
+	}
+	
+	@POST
+	@Path("/query/cases")
+	public List<SampleDto> getByCaseUuids(List<String> uuids) {
+		List<SampleDto> result = FacadeProvider.getSampleFacade().getByCaseUuids(uuids);
 		return result;
 	}
 
 	@POST
 	@Path("/push")
 	public List<PushResult> postSamples(List<SampleDto> dtos) {
-
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getSampleFacade()::saveSample);
 		return result;
 	}
@@ -68,7 +69,6 @@ public class SampleResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
-
 		return FacadeProvider.getSampleFacade().getAllActiveUuids();
 	}
 	
@@ -77,4 +77,5 @@ public class SampleResource extends EntityDtoResource {
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getSampleFacade().getDeletedUuidsSince(new Date(since));
 	}
+	
 }

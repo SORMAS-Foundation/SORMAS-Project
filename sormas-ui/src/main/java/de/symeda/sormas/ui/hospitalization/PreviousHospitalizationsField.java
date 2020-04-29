@@ -19,19 +19,20 @@ package de.symeda.sormas.ui.hospitalization;
 
 import java.util.function.Consumer;
 
-import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -59,9 +60,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
-					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateHelper.formatLocalDate(prevHospitalization.getAdmissionDate()) : "?");
+					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateFormatHelper.formatDate(prevHospitalization.getAdmissionDate()) : "?");
 					periodBuilder.append(" - ");
-					periodBuilder.append(prevHospitalization.getDischargeDate() != null ? DateHelper.formatLocalDate(prevHospitalization.getDischargeDate()) : "?");
+					periodBuilder.append(prevHospitalization.getDischargeDate() != null ? DateFormatHelper.formatDate(prevHospitalization.getDischargeDate()) : "?");
 					return periodBuilder.toString();
 				}
 			}
@@ -126,7 +127,10 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 
 	@Override
 	protected void editEntry(PreviousHospitalizationDto entry, boolean create, Consumer<PreviousHospitalizationDto> commitCallback) {
-
+		if (create && entry.getUuid() == null) {
+			entry.setUuid(DataHelper.createUuid());
+		}
+		
 		PreviousHospitalizationEditForm editForm = new PreviousHospitalizationEditForm(create, UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 

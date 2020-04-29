@@ -42,6 +42,10 @@ import de.symeda.sormas.api.person.Sex;
 
 public final class DataHelper {
 
+	private DataHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	public static String createUuid() {
 		//uuid = java.util.UUID.randomUUID().toString();
 		java.util.UUID randomUuid = java.util.UUID.randomUUID();
@@ -134,11 +138,11 @@ public final class DataHelper {
 		return buffer.array();
 	}
 
-	public static final String getShortUuid(EntityDto domainObject) {
+	public static String getShortUuid(EntityDto domainObject) {
 		return getShortUuid(domainObject.getUuid());
 	}
 
-	public static final String getShortUuid(String uuid) {
+	public static String getShortUuid(String uuid) {
 		if (uuid == null)
 			return null;
 		return uuid.substring(0, 6).toUpperCase();

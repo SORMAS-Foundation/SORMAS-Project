@@ -10,10 +10,6 @@ import android.view.LayoutInflater;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableArrayList;
 
-import com.j256.ormlite.field.DatabaseField;
-
-import org.apache.commons.lang3.math.NumberUtils;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +23,6 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.report.AggregateReport;
-import de.symeda.sormas.app.backend.report.WeeklyReport;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -39,8 +34,8 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentReportsAggregateLayoutBinding;
 import de.symeda.sormas.app.databinding.RowReportAggregateLayoutBinding;
 import de.symeda.sormas.app.report.EpiWeekFilterOption;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 public class AggregateReportsFragment extends BaseReportFragment<FragmentReportsAggregateLayoutBinding> {
 
@@ -182,7 +177,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
         if (latestLocalChangeDate == null) {
             getSubHeadingHandler().updateSubHeadingTitle(r.getString(R.string.hint_case_numbers_not_submitted));
         } else {
-            getSubHeadingHandler().updateSubHeadingTitle(String.format(r.getString(R.string.caption_latest_submission), DateHelper.formatLocalShortDateTime(latestLocalChangeDate)));
+            getSubHeadingHandler().updateSubHeadingTitle(String.format(r.getString(R.string.caption_latest_submission), DateFormatHelper.formatLocalDateTime(latestLocalChangeDate)));
         }
     }
 

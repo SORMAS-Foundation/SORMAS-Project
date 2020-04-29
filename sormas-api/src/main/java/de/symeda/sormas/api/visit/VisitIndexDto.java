@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.visit;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.symptoms.TemperatureSource;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.symptoms.TemperatureSource;
 
 public class VisitIndexDto implements Serializable {
 

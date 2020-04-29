@@ -35,11 +35,11 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -114,7 +114,7 @@ public class ContactGrid extends FilteredGrid<ContactIndexDto, ContactCriteria> 
 		((Column<ContactIndexDto, String>)getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(
 				ContactIndexDto.FOLLOW_UP_UNTIL))
-						.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat()));
+						.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(

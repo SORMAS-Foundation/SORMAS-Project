@@ -39,12 +39,8 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -55,15 +51,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -75,8 +68,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "PathogenTestFacade")
 public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
@@ -96,8 +91,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-
-	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -128,6 +121,14 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return pathogenTestService.getByUuids(uuids)
 				.stream()
 				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
+		return pathogenTestService.getBySampleUuids(sampleUuids)
+				.stream()
+				.map(p -> toDto(p))
 				.collect(Collectors.toList());
 	}
 

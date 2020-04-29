@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.Language;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -271,7 +272,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(caze, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
 		creator.createPrescription(caze);
 
-		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_MANAGEMENT, 0, 100, null);
+		List<CaseExportDto> results = getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_MANAGEMENT, 0, 100, null, Language.EN);
 
 		// List should have one entry
 		assertEquals(1, results.size());
@@ -330,7 +331,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze = cut.saveCase(caze);
 
-		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null);
+		List<CaseExportDto> result = cut.getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
 		assertThat(result, hasSize(1));
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
@@ -725,7 +726,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
 		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
 	}
-
+	
 //	@Test
 //	public void testGetSimilarCases() {
 //		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");

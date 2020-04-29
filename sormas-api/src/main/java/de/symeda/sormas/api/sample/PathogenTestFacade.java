@@ -22,9 +22,6 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
@@ -51,5 +48,7 @@ public interface PathogenTestFacade {
 	List<String> getDeletedUuidsSince(Date since);
 	
 	Date getLatestPathogenTestDate(String sampleUuid);
+	
+	List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids);
 	
 }

@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -34,11 +34,11 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 
@@ -92,7 +92,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 		Calendar calendar = Calendar.getInstance();
 		for (Date date : filteredDates) {
 			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-				String label = DateHelper.formatLocalShortDate(date);
+				String label = DateFormatHelper.formatDate(date);
 				newLabels.add(label);
 			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
 				calendar.setTime(date);

@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.caze.porthealthinfo;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
 

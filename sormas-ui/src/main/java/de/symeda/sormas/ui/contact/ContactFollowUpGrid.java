@@ -19,8 +19,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -55,7 +55,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			}).setId(DAY_RESULTS[i]);
 			
 			final int index = i;
-			getColumn(DAY_RESULTS[i]).setCaption(DateHelper.formatLocalShortDate(dates[i])).setSortable(false).setStyleGenerator(
+			getColumn(DAY_RESULTS[i]).setCaption(DateFormatHelper.formatDate(dates[i])).setSortable(false).setStyleGenerator(
 					new StyleGenerator<ContactFollowUpDto>() {
 						@Override
 						public String apply(ContactFollowUpDto item) {
@@ -65,9 +65,9 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		}
 
 		((Column<ContactFollowUpDto, String>) getColumn(ContactFollowUpDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalShortDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.REPORT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalShortDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateHelper.getLocalShortDateFormat()));
+		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.REPORT_DATE_TIME)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
@@ -131,7 +131,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	
 	private void setColumnCaptions() {
 		for (int i = 0; i < DAY_RESULTS.length; i++) {
-			getColumn(DAY_RESULTS[i]).setCaption(DateHelper.formatLocalShortDate(dates[i]));
+			getColumn(DAY_RESULTS[i]).setCaption(DateFormatHelper.formatDate(dates[i]));
 		}
 	}
 	

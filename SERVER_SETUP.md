@@ -12,7 +12,8 @@
   * [Apache Web Server](#apache-web-server)
   * [Firewall](#firewall)
   * [Postfix Mail Server](#postfix-mail-server)
-  * [Security](#security)
+  * [Testing the Server Setup](#testing-the-server-setup)
+* [R Software Environment](#r-software-environment)
 * [Troubleshooting](#troubleshooting)
 
 ## Related
@@ -112,10 +113,10 @@ Here are some things that you should do to configure the Apache server as a prox
 * Add a proxy pass to the local port:
 
 		ProxyRequests Off
-		ProxyPass /sormas-ui http://localhost:5080/sormas-ui
-		ProxyPassReverse /sormas-ui http://localhost:5080/sormas-ui
-		ProxyPass /sormas-rest http://localhost:5080/sormas-rest
-		ProxyPassReverse /sormas-rest http://localhost:5080/sormas-rest
+		ProxyPass /sormas-ui http://localhost:6080/sormas-ui
+		ProxyPassReverse /sormas-ui http://localhost:6080/sormas-ui
+		ProxyPass /sormas-rest http://localhost:6080/sormas-rest
+		ProxyPassReverse /sormas-rest http://localhost:6080/sormas-rest
 * Configure security settings:
 
 		Header always set X-Content-Type-Options "nosniff"
@@ -214,6 +215,20 @@ Here are some things that you should do to configure the Apache server as a prox
 ### Testing the Server Setup
 
 Use SSL Labs to test your server security config: https://www.ssllabs.com/ssltest
+
+## R Software Environment
+
+In order to enable disease network diagrams in the contact dashboard, R and several extension packages are required.
+Then the Rscript executable has to be configured in the ``sormas.properties`` file.
+This can be conveniently accomplished by executing the R setup script from the SORMAS ZIP archive (see [SORMAS Server](#sormas-server)):
+
+* If the SORMAS installation has been customized, ``r-setup.sh`` the install paths may have to be adjusted accordingly with a text editor.
+* Execute R setup script:
+
+	chmod +x r-setup.sh
+	./r-setup.sh
+	
+* Follow the instructions of the script.
 
 
 ## Troubleshooting
