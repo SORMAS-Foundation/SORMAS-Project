@@ -4066,9 +4066,11 @@ UPDATE contact SET overwritefollowupuntil = false;
 INSERT INTO schema_version (version_number, comment) VALUES (197, 'Make follow-up until editable #1680');
 
 -- 2020-04-15 Reworking of quarantine #1762
-UPDATE contact SET 	followupuntil = quarantineto WHERE quarantineto > followupuntil;
-ALTER TABLE contact DROP COLUMN quarantineto;
-ALTER TABLE contact_history DROP COLUMN quarantineto;
+
+-- 2020-04-29 #1891 keep the old quarantineto database colum
+-- UPDATE contact SET 	followupuntil = quarantineto WHERE quarantineto > followupuntil;
+-- ALTER TABLE contact DROP COLUMN quarantineto;
+-- ALTER TABLE contact_history DROP COLUMN quarantineto;
 
 ALTER TABLE contact ADD COLUMN quarantineordermeans varchar(255);
 ALTER TABLE contact_history ADD COLUMN quarantineordermeans varchar(255);
@@ -4100,8 +4102,8 @@ DROP FUNCTION export_database_join(text, text, text, text, text);
 INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code #1830');
 
 -- 2020-04-23 Re-introduce quarantine end date #1891
-ALTER TABLE contact ADD COLUMN quarantineto timestamp;
-ALTER TABLE contact_history ADD COLUMN quarantineto timestamp;
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS quarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS quarantineto timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (201, 'Re-introduce quarantine end date #1891');
 
