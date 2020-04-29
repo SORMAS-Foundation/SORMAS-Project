@@ -509,12 +509,14 @@ public class DashboardMapComponent extends VerticalLayout {
 		
 		cmbPeriodType.addItems(MapPeriodType.values());
 		cmbPeriodType.setInputPrompt(I18nProperties.getString(Strings.promptFilterByPeriod));
+		cmbPeriodType.setWidth(132, Unit.PIXELS);
 		cmbPeriodType.addValueChangeListener(e -> {
 			reloadPeriodFiltersFlag = PeriodFilterReloadFlag.RELOAD_AND_CLEAR_VALUE;
 			updatePeriodFilters();
 		});		
 		
 		cmbPeriodFilter.setInputPrompt(I18nProperties.getString(Strings.promptSelectPeriod));
+		cmbPeriodFilter.setWidth(120, Unit.PIXELS);
 		cmbPeriodFilter.setEnabled(false);
 		cmbPeriodFilter.addValueChangeListener(e -> {
 			Date date = (Date) e.getProperty().getValue();
