@@ -651,7 +651,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				break;
 			case WEEKLY:
 				dates = DateHelper.listWeeksBetween(minDate, maxDate);
-				strDateFormat = "'" + I18nProperties.getString(Strings.week) + "' w, yyyy";
+				strDateFormat = "'" + I18nProperties.getString(Strings.weekShort) + "' w, yyyy";
 				break;
 			case MONTHLY:
 				dates = DateHelper.listMonthsBetween(minDate, maxDate);
