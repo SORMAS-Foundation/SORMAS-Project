@@ -21,7 +21,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.GridButtonRenderer;
-import de.symeda.sormas.ui.utils.PeriodRenderer;
+import de.symeda.sormas.ui.utils.PeriodDtoConverter;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -70,7 +70,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 		getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
 		getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		getColumn(PrescriptionIndexDto.PRESCRIPTION_PERIOD).setRenderer(new PeriodRenderer());
+		getColumn(PrescriptionIndexDto.PRESCRIPTION_PERIOD).setConverter(new PeriodDtoConverter());
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(

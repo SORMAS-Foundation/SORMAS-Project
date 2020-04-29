@@ -19,6 +19,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DiseaseHelper;
@@ -30,11 +31,10 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.utils.AgeAndBirthDateRenderer;
-import de.symeda.sormas.ui.utils.AgeAndBirthDateRendererV7;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -101,7 +101,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		((Column<CaseIndexDto, AgeAndBirthDateDto>)getColumn(CaseIndexDto.AGE_AND_BIRTH_DATE)).setRenderer(new AgeAndBirthDateRenderer());
+		((Column<CaseIndexDto, AgeAndBirthDateDto>)getColumn(CaseIndexDto.AGE_AND_BIRTH_DATE)).setRenderer( value -> PersonHelper.getAgeAndBirthdateString(value.getAge(), value.getAgeType(), value.getBirthdateDD(), value.getBirthdateMM(), value.getBirthdateYYYY(), I18nProperties.getUserLanguage()), new TextRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, column.getId().toString(),

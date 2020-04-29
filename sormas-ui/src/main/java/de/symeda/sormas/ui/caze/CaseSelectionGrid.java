@@ -13,7 +13,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.utils.AgeAndBirthDateRendererV7;
+import de.symeda.sormas.ui.utils.AgeAndBirthDateDtoConverterV7;
 import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -51,7 +51,7 @@ public class CaseSelectionGrid extends Grid {
 		}
 
 		getColumn(CaseIndexDto.UUID).setRenderer(new V7UuidRenderer());
-		getColumn(CaseIndexDto.AGE_AND_BIRTH_DATE).setRenderer(new AgeAndBirthDateRendererV7());
+		getColumn(CaseIndexDto.AGE_AND_BIRTH_DATE).setConverter(new AgeAndBirthDateDtoConverterV7());
 		getColumn(CaseIndexDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 
 		for (Column column : getColumns()) {
