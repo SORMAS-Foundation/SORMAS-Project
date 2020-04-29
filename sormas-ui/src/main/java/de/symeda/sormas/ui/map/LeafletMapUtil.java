@@ -7,9 +7,12 @@ import de.symeda.sormas.api.region.GeoLatLon;
 
 public final class LeafletMapUtil {
 
+	private LeafletMapUtil() {
+		// Hide Utility Class Constructor
+	}
+
 	private static final String OTHER_COUNTRIES_OVERLAY_GROUP_ID = "countryNegative";
 
-	
 	public static void clearOtherCountriesOverlay(LeafletMap map) {
 		map.removeGroup(OTHER_COUNTRIES_OVERLAY_GROUP_ID);
 	}

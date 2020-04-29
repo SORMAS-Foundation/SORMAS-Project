@@ -726,7 +726,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
 		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
 	}
-
+	
 //	@Test
 //	public void testGetSimilarCases() {
 //		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");

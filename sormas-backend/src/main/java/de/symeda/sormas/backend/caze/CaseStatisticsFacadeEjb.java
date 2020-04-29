@@ -67,8 +67,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-	
+	private EntityManager em;
+
 	@EJB
 	private RegionService regionService;
 	@EJB

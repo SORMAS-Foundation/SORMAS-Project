@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.visit.VisitStatus;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.visit.VisitStatus;
 
 public class DashboardContactDto implements Serializable {
 

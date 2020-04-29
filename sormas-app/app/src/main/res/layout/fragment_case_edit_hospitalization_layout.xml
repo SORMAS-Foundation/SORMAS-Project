@@ -98,22 +98,36 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseHospitalization_intensiveCareUnit"
+                    app:value="@={data.intensiveCareUnit}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/caseHospitalization_accommodation"
-                        app:value="@={data.accommodation}"
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/caseHospitalization_intensiveCareUnitStart"
+                        dependencyParentField="@{caseHospitalizationIntensiveCareUnit}"
+                        dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@={data.intensiveCareUnitStart}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlSwitchField
-                        android:id="@+id/caseHospitalization_leftAgainstAdvice"
-                        app:value="@={data.leftAgainstAdvice}"
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/caseHospitalization_intensiveCareUnitEnd"
+                        dependencyParentField="@{caseHospitalizationIntensiveCareUnit}"
+                        dependencyParentValue="@{YesNoUnknown.YES}"
+                        app:value="@={data.intensiveCareUnitEnd}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseHospitalization_leftAgainstAdvice"
+                    app:value="@={data.leftAgainstAdvice}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

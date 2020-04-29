@@ -36,12 +36,14 @@ public class HospitalizationDto extends EntityDto {
 	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
-	public static final String ACCOMMODATION = "accommodation";
 	public static final String ISOLATED = "isolated";
 	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String LEFT_AGAINST_ADVICE = "leftAgainstAdvice";
 	public static final String HOSPITALIZED_PREVIOUSLY = "hospitalizedPreviously";
 	public static final String PREVIOUS_HOSPITALIZATIONS = "previousHospitalizations";
+	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
+	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
+	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
 
 	// Fields are declared in the order they should appear in the import template
 	
@@ -49,13 +51,15 @@ public class HospitalizationDto extends EntityDto {
 	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
 	private Date dischargeDate;
-	private AccommodationType accommodation;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private YesNoUnknown leftAgainstAdvice;
 
 	private YesNoUnknown hospitalizedPreviously;
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
+	private YesNoUnknown intensiveCareUnit;
+	private Date intensiveCareUnitStart;
+	private Date intensiveCareUnitEnd;
 	
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
@@ -114,11 +118,28 @@ public class HospitalizationDto extends EntityDto {
 		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
 
-	public AccommodationType getAccommodation() {
-		return accommodation;
+	public YesNoUnknown getIntensiveCareUnit() {
+		return intensiveCareUnit;
 	}
-	public void setAccommodation(AccommodationType accommodation) {
-		this.accommodation = accommodation;
+
+	public void setIntensiveCareUnit(YesNoUnknown intensiveCareUnit) {
+		this.intensiveCareUnit = intensiveCareUnit;
+	}
+
+	public Date getIntensiveCareUnitStart() {
+		return intensiveCareUnitStart;
+	}
+
+	public void setIntensiveCareUnitStart(Date intensiveCareUnitStart) {
+		this.intensiveCareUnitStart = intensiveCareUnitStart;
+	}
+
+	public Date getIntensiveCareUnitEnd() {
+		return intensiveCareUnitEnd;
+	}
+
+	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
+		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
 	}
 
 	public YesNoUnknown getLeftAgainstAdvice() {

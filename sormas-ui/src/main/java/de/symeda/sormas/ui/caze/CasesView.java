@@ -17,10 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import de.symeda.sormas.ui.utils.*;
@@ -148,6 +146,7 @@ public class CasesView extends AbstractView {
 	private CheckBox portHealthCasesWithoutFacilityFilter;
 	private CheckBox casesWithCaseManagementData;
 	private CheckBox excludeSharedCases;
+	private CheckBox withoutResponsibleOfficerFilter;
 	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
@@ -244,7 +243,7 @@ public class CasesView extends AbstractView {
 			}
 
 			{
-				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", "sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", createFileNameWithCurrentDate("sormas_cases_", ".csv"));
 				
 				addExportButton(streamResource, exportPopupButton, exportLayout, "basicExport", VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
@@ -253,7 +252,7 @@ public class CasesView extends AbstractView {
 				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
 						(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null, I18nProperties.getUserLanguage()),
 						(propertyId,type) -> {
-							String caption = findPrefixCaption(propertyId,
+							String caption = I18nProperties.findPrefixCaption(propertyId,
 									CaseExportDto.I18N_PREFIX,
 									CaseDataDto.I18N_PREFIX,
 									PersonDto.I18N_PREFIX,
@@ -266,14 +265,14 @@ public class CasesView extends AbstractView {
 							}
 							return caption;
 						},
-						"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+						createFileNameWithCurrentDate("sormas_cases_", ".csv"), null);
 				
 				addExportButton(exportStreamResource, exportPopupButton, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
 				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(grid.getCriteria(),
-						"sormas_case_management_" + DateHelper.formatDateForExport(new Date()) + ".zip");
+						createFileNameWithCurrentDate("sormas_case_management_", ".zip"));
 				
 				addExportButton(caseManagementExportStreamResource, exportPopupButton, exportLayout, "caseManagementExport", VaadinIcons.FILE_TEXT, Captions.exportCaseManagement, Strings.infoCaseManagementExport);
 			}
@@ -282,7 +281,7 @@ public class CasesView extends AbstractView {
 				StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class, null,
 						(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(grid.getCriteria(), start, max),
 						(propertyId,type) -> {
-							String caption = findPrefixCaption(propertyId,
+							String caption = I18nProperties.findPrefixCaption(propertyId,
 									SampleExportDto.I18N_PREFIX,
 									SampleDto.I18N_PREFIX,
 									CaseDataDto.I18N_PREFIX,
@@ -293,7 +292,7 @@ public class CasesView extends AbstractView {
 							}
 							return caption;
 						},
-						"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+						createFileNameWithCurrentDate("sormas_samples_", ".csv"), null);
 				
 				addExportButton(sampleExportStreamResource, exportPopupButton, exportLayout, "sampleExport", VaadinIcons.FILE_TEXT, Captions.exportSamples, Strings.infoSampleExport);
 			}
@@ -315,7 +314,7 @@ public class CasesView extends AbstractView {
 								Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null, 
 										(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, exportConfig, I18nProperties.getUserLanguage()),
 										(propertyId,type) -> {
-											String caption = findPrefixCaption(propertyId,
+											String caption = I18nProperties.findPrefixCaption(propertyId,
 													CaseExportDto.I18N_PREFIX,
 													CaseDataDto.I18N_PREFIX,
 													PersonDto.I18N_PREFIX,
@@ -327,7 +326,7 @@ public class CasesView extends AbstractView {
 											}
 											return caption;
 										},
-										"sormas_cases_" + DateHelper.formatDateForExport(new Date()) + ".csv", exportConfig), null, true);
+										createFileNameWithCurrentDate("sormas_cases_" , ".csv"), exportConfig), null, true);
 							});
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
@@ -436,19 +435,6 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(moreButton);
 		}
 		addComponent(gridLayout);
-	}
-	
-	/**
-	 * Iterates through the prefixes to determines the caption for the specified propertyId.
-	 *  
-	 * @return
-	 */
-	private static String findPrefixCaption(String propertyId, String ... prefixes) {
-		return Arrays.stream(prefixes)
-		.map(p -> I18nProperties.getPrefixCaption(p, propertyId, null))
-		.filter(Objects::nonNull)
-		.findFirst()
-		.orElse(propertyId);
 	}
 
 	private void addImportButton(VerticalLayout importLayout, String buttonId, String captionKey,
@@ -748,6 +734,16 @@ public class CasesView extends AbstractView {
 				});
 				thirdFilterRowLayout.addComponent(excludeSharedCases);
 			}
+
+			withoutResponsibleOfficerFilter = new CheckBox();
+			CssStyles.style(withoutResponsibleOfficerFilter, CssStyles.CHECKBOX_FILTER_INLINE);
+			withoutResponsibleOfficerFilter.setCaption(I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleOfficer));
+			withoutResponsibleOfficerFilter.setDescription(I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer));
+			withoutResponsibleOfficerFilter.addValueChangeListener(e -> {
+				criteria.withoutResponsibleOfficer((Boolean) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			thirdFilterRowLayout.addComponent(withoutResponsibleOfficerFilter);
 		}
 		filterLayout.addComponent(thirdFilterRowLayout);
 		thirdFilterRowLayout.setVisible(false);
@@ -995,7 +991,8 @@ public class CasesView extends AbstractView {
 		if (excludeSharedCases != null) {
 			excludeSharedCases.setValue(criteria.getExcludeSharedCases());
 		}
-		
+		withoutResponsibleOfficerFilter.setValue(criteria.isWithoutResponsibleOfficer());
+
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
 		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
 		Date newCaseDateTo = criteria.getNewCaseDateTo();

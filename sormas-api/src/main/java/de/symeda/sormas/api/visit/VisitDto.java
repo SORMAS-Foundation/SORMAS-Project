@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -24,8 +26,6 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
-
-import java.util.Date;
 
 public class VisitDto extends EntityDto {
 

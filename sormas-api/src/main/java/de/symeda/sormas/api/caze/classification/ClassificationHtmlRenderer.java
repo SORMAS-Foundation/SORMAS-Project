@@ -35,9 +35,11 @@ import de.symeda.sormas.api.utils.InfoProvider;
 /**
  * Provides methods that create HTML Strings to visualize the automatic classification rules.
  */
-public class ClassificationHtmlRenderer {
+public final class ClassificationHtmlRenderer {
 
-	private ClassificationHtmlRenderer() { }
+	private ClassificationHtmlRenderer() {
+		// Hide Utility Class Constructor
+	}
 
 	public static String createSuspectHtmlString(DiseaseClassificationCriteriaDto criteria) {
 		StringBuilder sb = new StringBuilder();

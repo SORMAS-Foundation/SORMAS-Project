@@ -46,6 +46,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
@@ -198,6 +199,21 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 	
+	public List<Sample> getByCaseUuids(List<String> caseUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		Root<Sample> sampleRoot = cq.from(Sample.class);
+		Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+		
+		Predicate filter = cb.and(
+				createDefaultFilter(cb, sampleRoot),
+				caseJoin.get(AbstractDomainObject.UUID).in(caseUuids)
+				);
+		
+		cq.where(filter);
+		return em.createQuery(cq).getResultList();
+	}
+	
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
@@ -245,14 +261,15 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 
 		// lab users can see samples assigned to their laboratory
-		if (getCurrentUser().getUserRoles().contains(UserRole.LAB_USER) || getCurrentUser().getUserRoles().contains(UserRole.EXTERNAL_LAB_USER)) {
-			if(getCurrentUser().getLaboratory() != null) {
-				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), getCurrentUser().getLaboratory()));			}
+		User currentUser = getCurrentUser();
+		if (currentUser.hasAnyUserRole(UserRole.LAB_USER, UserRole.EXTERNAL_LAB_USER)) {
+			if(currentUser.getLaboratory() != null) {
+				filter = or(cb, filter, cb.equal(samplePath.get(Sample.LAB), currentUser.getLaboratory()));			}
 		}
 
 		// only show samples of a specific disease if a limited disease is set
-		if (filter != null && getCurrentUser().getLimitedDisease() != null) {
-			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), getCurrentUser().getLimitedDisease()));
+		if (filter != null && currentUser.getLimitedDisease() != null) {
+			filter = and(cb, filter, cb.equal(caze.get(Case.DISEASE), currentUser.getLimitedDisease()));
 		}
 
 		return filter;
@@ -325,6 +342,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 							cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
 							cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter),
 							cb.like(cb.lower(from.get(Sample.LAB_SAMPLE_ID)), textFilter),
+							cb.like(cb.lower(from.get(Sample.FIELD_SAMPLE_ID)), textFilter),
 							cb.like(cb.lower(caze.get(Case.EPID_NUMBER)), textFilter),
 							cb.like(cb.lower(lab.get(Facility.NAME)), textFilter));
 					filter = and(cb, filter, likeFilters);

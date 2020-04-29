@@ -29,7 +29,11 @@ import org.simmetrics.metrics.StringMetrics;
 
 import java.util.Date;
 
-public class PersonHelper {
+public final class PersonHelper {
+
+	private PersonHelper() {
+		// Hide Utility Class Constructor
+	}
 
 	public static final double NAME_SIMILARITY_THRESHOLD = 0.5D;
 

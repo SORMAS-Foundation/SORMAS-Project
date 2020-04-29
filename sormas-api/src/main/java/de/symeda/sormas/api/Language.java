@@ -11,7 +11,8 @@ public enum Language {
 	EN_GH(new Locale("en", "GH"), new Locale("en-GH"), "M/d/yyyy", "M/d/yyyy h:mm a", "M/d"),
 	FR(new Locale("fr", "FR"), new Locale("fr-FR"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
 	DE(new Locale("de", "DE"), new Locale("de-DE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
-	ES_EC(new Locale("es", "EC"), new Locale("es-EC"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM");
+	ES_EC(new Locale("es", "EC"), new Locale("es-EC"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
+	FI(new Locale("fi", "FI"), new Locale("fi-FI"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM");
 
 	private Locale locale;
 	private Locale localeWithCountryCode;
@@ -56,20 +57,16 @@ public enum Language {
 	 */
 	public static Language fromLocaleString(String locale) {
 		switch (locale) {
-			case "en":
-				return EN;
-			case "en-NG":
-				return EN_NG;
-			case "en-GH":
-				return EN_GH;
-			case "fr-FR":
-				return FR;
-			case "de-DE":
-				return DE;
-			case "es-EC":
-				return ES_EC;
-			default:
-				return EN;
+		case "en": return EN;
+		case "en-NG": return EN_NG;
+		case "en-GH": return EN_GH;
+		case "fr-FR": return FR;
+		case "de-DE": return DE;
+		case "es-EC": return ES_EC;
+		case "fi-FI":
+			return FI;
+		default:
+			return EN;
 		}
 	}
 

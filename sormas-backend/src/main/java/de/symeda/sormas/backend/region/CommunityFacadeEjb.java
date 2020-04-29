@@ -49,7 +49,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -58,7 +57,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class CommunityFacadeEjb implements CommunityFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private CommunityService communityService;
@@ -190,13 +189,11 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return communityService.getAllUuids(user);
+		return communityService.getAllUuids();
 	}
 
 	@Override
@@ -218,7 +215,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
 		Community community = communityService.getByUuid(dto.getUuid());
 		
-		if (community == null && !getByName(dto.getName(), dto.getDistrict()).isEmpty()) {
+		if (community == null && !getByName(dto.getName(), dto.getDistrict(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCommunityAlreadyExists));
 		}
 
@@ -231,8 +228,8 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef) {
-		return communityService.getByName(name, districtService.getByReferenceDto(districtRef)).stream()
+	public List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities) {
+		return communityService.getByName(name, districtService.getByReferenceDto(districtRef), includeArchivedEntities).stream()
 				.map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 

@@ -14,6 +14,9 @@
 		<role-name>REST_EXTERNAL_VISITS_USER</role-name>
     </security-role>
 	<security-role>
+		<role-name>REST_USER</role-name>
+    </security-role>
+	<security-role>
         <role-name>SURVEILLANCE_OFFICER</role-name>
     </security-role>
 	<security-role>
@@ -36,6 +39,7 @@
 			<!-- mapped in glassfish-web.xml -->
 			<role-name>USER</role-name>
 			<role-name>REST_EXTERNAL_VISITS_USER</role-name>
+			<role-name>REST_USER</role-name>
 		</auth-constraint>
 	</security-constraint>
 </web-app>

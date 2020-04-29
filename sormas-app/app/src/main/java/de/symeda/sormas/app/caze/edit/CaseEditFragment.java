@@ -35,6 +35,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -85,6 +86,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     private List<Item> initialCommunities;
     private List<Item> initialFacilities;
     private List<Item> quarantineList;
+    private List<Item> reportingTypeList;
 
     // Static methods
 
@@ -149,6 +151,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
         if (!ConfigProvider.isGermanServer()) {
             contentBinding.caseDataExternalID.setVisibility(GONE);
+            contentBinding.caseDataReportingType.setVisibility(GONE);
         } else {
             contentBinding.caseDataEpidNumber.setVisibility(GONE);
         }
@@ -207,6 +210,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         humanRabiesTypeList = DataUtils.getEnumItems(RabiesType.class, true);
         hospitalWardTypeList = DataUtils.getEnumItems(HospitalWardType.class, true);
         quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
+        reportingTypeList = DataUtils.getEnumItems(ReportingType.class, true);
 
         initialRegions = InfrastructureHelper.loadRegions();
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
@@ -273,6 +277,25 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
             contentBinding.caseDataHealthFacility.setRequired(false);
         }
+
+        contentBinding.caseDataQuarantine.addValueChangedListener(e -> {
+            boolean visible = QuarantineType.HOME.equals(contentBinding.caseDataQuarantine.getValue()) || QuarantineType.INSTITUTIONELL.equals(contentBinding.caseDataQuarantine.getValue());
+            if (visible) {
+                if (ConfigProvider.isGermanServer()) {
+                    contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(VISIBLE);
+                    contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
+                }
+            } else {
+                contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
+                contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            }
+        });
+        if (!ConfigProvider.isGermanServer()) {
+            contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedVerballyDate.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
+        }
     }
 
     @Override
@@ -300,6 +323,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.caseDataDistrictLevelDate.initializeDateField(getFragmentManager());
         contentBinding.caseDataQuarantineFrom.initializeDateField(getFragmentManager());
         contentBinding.caseDataQuarantineTo.initializeDateField(getFragmentManager());
+        contentBinding.caseDataQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
+        contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
+        contentBinding.caseDataReportingType.initializeSpinner(reportingTypeList);
 
         // Replace classification user field with classified by field when case has been classified automatically
         if (contentBinding.getData().getClassificationDate() != null && contentBinding.getData().getClassificationUser() == null) {

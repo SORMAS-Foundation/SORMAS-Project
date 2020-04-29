@@ -42,15 +42,19 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		super(Region.class);
 	}
 
-	public List<Region> getByName(String name) {
+	public List<Region> getByName(String name, boolean includeArchivedEntities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
-		cq.where(cb.or(
+		Predicate filter = cb.or(
 				cb.equal(cb.trim(from.get(Region.NAME)), name.trim()),
-				cb.equal(cb.lower(cb.trim(from.get(Region.NAME))), name.trim().toLowerCase())
-				));
+				cb.equal(cb.lower(cb.trim(from.get(Region.NAME))), name.trim().toLowerCase()));
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+		
+		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
 	}

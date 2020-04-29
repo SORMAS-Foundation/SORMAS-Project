@@ -57,7 +57,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 @Stateless(name = "GeoShapeProvider")
 public class GeoShapeProviderEjb implements GeoShapeProvider {
 
-	final static Logger logger = LoggerFactory.getLogger(GeoShapeProviderEjb.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;

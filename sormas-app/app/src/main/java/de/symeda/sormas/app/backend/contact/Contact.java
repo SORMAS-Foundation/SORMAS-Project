@@ -36,6 +36,7 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -151,6 +152,28 @@ public class Contact extends AbstractDomainObject {
 	private ContactCategory contactCategory;
 	@Column(length = 512)
 	private String contactProximityDetails;
+
+	@Enumerated(EnumType.STRING)
+	@Deprecated
+	private OrderMeans quarantineOrderMeans;
+	@Column(length = 512)
+	private String quarantineHelpNeeded;
+	@DatabaseField
+	private boolean quarantineOrderedVerbally;
+	@DatabaseField
+	private boolean quarantineOrderedOfficialDocument;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date quarantineOrderedVerballyDate;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date quarantineOrderedOfficialDocumentDate;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown quarantineHomePossible;
+	@Column(length = 512)
+	private String quarantineHomePossibleComment;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown quarantineHomeSupplyEnsured;
+	@Column(length = 512)
+	private String quarantineHomeSupplyEnsuredComment;
 
 	public Person getPerson() {
 		return person;
@@ -447,5 +470,87 @@ public class Contact extends AbstractDomainObject {
 
 	public void setContactProximityDetails(String contactProximityDetails) {
 		this.contactProximityDetails = contactProximityDetails;
+	}
+
+	@Deprecated
+	public OrderMeans getQuarantineOrderMeans() {
+		return quarantineOrderMeans;
+	}
+
+	@Deprecated
+	public void setQuarantineOrderMeans(OrderMeans quarantineOrderMeans) {
+		this.quarantineOrderMeans = quarantineOrderMeans;
+	}
+
+	public String getQuarantineHelpNeeded() {
+		return quarantineHelpNeeded;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
+	}
+
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	public void setQuarantineOrderedVerbally(boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+	}
+
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	public void setQuarantineOrderedOfficialDocument(boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+	}
+
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	public void setQuarantineOrderedVerballyDate(Date quarantineOrderedVerballyDate) {
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+	}
+
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	public YesNoUnknown getQuarantineHomePossible() {
+		return quarantineHomePossible;
+	}
+
+	public void setQuarantineHomePossible(YesNoUnknown quarantineHomePossible) {
+		this.quarantineHomePossible = quarantineHomePossible;
+	}
+
+	public String getQuarantineHomePossibleComment() {
+		return quarantineHomePossibleComment;
+	}
+
+	public void setQuarantineHomePossibleComment(String quarantineHomePossibleComment) {
+		this.quarantineHomePossibleComment = quarantineHomePossibleComment;
+	}
+
+	public YesNoUnknown getQuarantineHomeSupplyEnsured() {
+		return quarantineHomeSupplyEnsured;
+	}
+
+	public void setQuarantineHomeSupplyEnsured(YesNoUnknown quarantineHomeSupplyEnsured) {
+		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
+	}
+
+	public String getQuarantineHomeSupplyEnsuredComment() {
+		return quarantineHomeSupplyEnsuredComment;
+	}
+
+	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
+		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 }

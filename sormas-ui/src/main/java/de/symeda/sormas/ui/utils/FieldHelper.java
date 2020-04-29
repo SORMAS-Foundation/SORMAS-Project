@@ -43,6 +43,10 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public final class FieldHelper {
 
+	private FieldHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	public static void setReadOnlyWhen(FieldGroup fieldGroup, Object targetPropertyId, Object sourcePropertyId,
 			List<Object> sourceValues, boolean clearOnReadOnly, boolean readOnlyWhenNull) {
 		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnReadOnly, readOnlyWhenNull);
@@ -175,14 +179,14 @@ public final class FieldHelper {
 			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
 
 		//a workaround variable to be modified in the forEach lambda
-		boolean[] visible_ = { true }; 
+		boolean[] visibleArray = { true }; 
 
 		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
 			if (!sourceValues.contains(fieldGroup.getField(sourcePropertyId).getValue()))
-				visible_[0] = false;
+				visibleArray[0] = false;
 		});
 
-		boolean visible = visible_[0];
+		boolean visible = visibleArray[0];
 
 		for (Object targetPropertyId : targetPropertyIds) {
 			Field targetField = fieldGroup.getField(targetPropertyId);

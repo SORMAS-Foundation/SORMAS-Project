@@ -19,10 +19,9 @@ package de.symeda.sormas.ui.epidata;
 
 import java.util.function.Consumer;
 
-import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.Window;
+import com.vaadin.v7.ui.Table;
 
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -124,6 +123,10 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 
 	@Override
 	protected void editEntry(EpiDataGatheringDto entry, boolean create, Consumer<EpiDataGatheringDto> commitCallback) {
+		if (create && entry.getUuid() == null) {
+			entry.setUuid(DataHelper.createUuid());
+		}
+		
 		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm(UserRight.CASE_EDIT);
 		editForm.setValue(entry);
 

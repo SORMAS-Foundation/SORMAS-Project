@@ -21,7 +21,11 @@ import java.util.Date;
 
 import de.symeda.sormas.api.utils.DateHelper;
 
-public class ContactLogic {
+public final class ContactLogic {
+
+	private ContactLogic() {
+		// Hide Utility Class Constructor
+	}
 
 	public static int getNumberOfRequiredVisitsSoFar(Date contactReportDate, Date contactFollowUpUntil) {
 		if (contactFollowUpUntil == null) {
@@ -43,5 +47,4 @@ public class ContactLogic {
 			return reportDate;
 		}
 	}
-	
 }

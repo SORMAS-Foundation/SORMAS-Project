@@ -180,27 +180,28 @@ public abstract class BaseCriteria implements Serializable {
 	}
 
 	public static Map<String, List<String>> splitQuery(String urlParams) {
+
 		if (DataHelper.isNullOrEmpty(urlParams)) {
 			return Collections.emptyMap();
 		}
 		String encoding = "UTF-8";
 
-		final Map<String, List<String>> query_pairs = new LinkedHashMap<String, List<String>>();
+		final Map<String, List<String>> queryPairs = new LinkedHashMap<String, List<String>>();
 		try {
 			final String[] pairs = urlParams.split("&");
 			for (String pair : pairs) {
 				final int idx = pair.indexOf("=");
 				String key;
 				key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), encoding) : pair;
-				if (!query_pairs.containsKey(key)) {
-					query_pairs.put(key, new LinkedList<String>());
+				if (!queryPairs.containsKey(key)) {
+					queryPairs.put(key, new LinkedList<String>());
 				}
 				final String value = idx > 0 && pair.length() > idx + 1 ? URLDecoder.decode(pair.substring(idx + 1), encoding) : null;
-				query_pairs.get(key).add(value);
+				queryPairs.get(key).add(value);
 			}
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
-		return query_pairs;
+		return queryPairs;
 	}
 }

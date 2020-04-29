@@ -1,6 +1,5 @@
 package de.symeda.sormas.rest;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;

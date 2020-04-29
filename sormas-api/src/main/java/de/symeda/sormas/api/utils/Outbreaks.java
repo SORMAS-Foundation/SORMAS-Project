@@ -35,8 +35,12 @@ import java.util.List;
 @Target(ElementType.FIELD)
 public @interface Outbreaks {
 	
-	public static class OutbreaksConfiguration {
-		
+	public static final class OutbreaksConfiguration {
+
+		private OutbreaksConfiguration() {
+			// Hide Utility Class Constructor
+		}
+
 		private static final HashMap<Class<?>, List<String>> classConfigCache = 
 				new HashMap<Class<?>, List<String>>();
 		

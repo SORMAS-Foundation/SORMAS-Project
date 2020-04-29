@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.user;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,13 +56,11 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	
 	@Override
 	public List<String> getAllUuids() {
-		User user = userService.getCurrentUser();
-		
-		if (user == null) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 		
-		return userRoleConfigService.getAllUuids(user);
+		return userRoleConfigService.getAllUuids();
 	}
 	
 	
@@ -90,7 +89,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 
 	@Override
 	public Set<UserRight> getEffectiveUserRights(UserRole... userRoles) {
-		HashSet<UserRight> userRights = new HashSet<UserRight>();
+		Set<UserRight> userRights = EnumSet.noneOf(UserRight.class);
 		
 		for (UserRole userRole : userRoles) {
 			UserRoleConfig userRoleConfig = userRoleConfigService.getByUserRole(userRole);

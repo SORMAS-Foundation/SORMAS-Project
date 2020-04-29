@@ -25,7 +25,7 @@ import java.util.List;
  */
 public interface ClassificationCollectiveCriteria {
 
-	public String getCriteriaName();
-	public List<ClassificationCriteriaDto> getSubCriteria();
-	
+	String getCriteriaName();
+
+	List<ClassificationCriteriaDto> getSubCriteria();
 }

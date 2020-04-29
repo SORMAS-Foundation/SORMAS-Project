@@ -31,6 +31,10 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public final class DtoHelper {
 
+	private DtoHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	/**
 	 * some inaccuracy is ok, because of the rest conversion
 	 */

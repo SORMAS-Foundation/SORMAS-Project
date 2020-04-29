@@ -20,8 +20,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.*;
-import elemental.json.JsonValue;
+import de.symeda.sormas.ui.utils.GridButtonRenderer;
+import de.symeda.sormas.ui.utils.V7AbstractGrid;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class PrescriptionGrid extends Grid implements V7AbstractGrid<PrescriptionCriteria> {

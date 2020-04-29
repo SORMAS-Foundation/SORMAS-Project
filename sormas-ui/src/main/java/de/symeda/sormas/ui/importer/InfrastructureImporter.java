@@ -142,15 +142,15 @@ public class InfrastructureImporter extends DataImporter {
 						switch (type) {
 						case COMMUNITY:
 							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((CommunityDto) newEntityDto).getRegion());
+									((CommunityDto) newEntityDto).getRegion(), false);
 							break;
 						case FACILITY:
 							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((FacilityDto) newEntityDto).getRegion());
+									((FacilityDto) newEntityDto).getRegion(), false);
 							break;
 						case POINT_OF_ENTRY:
 							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((PointOfEntryDto) newEntityDto).getRegion());
+									((PointOfEntryDto) newEntityDto).getRegion(), false);
 							break;
 						default:
 							throw new UnsupportedOperationException(I18nProperties.getValidationError(
@@ -172,7 +172,7 @@ public class InfrastructureImporter extends DataImporter {
 						switch (type) {
 						case FACILITY:
 							community = FacadeProvider.getCommunityFacade().getByName(value,
-									((FacilityDto) newEntityDto).getDistrict());
+									((FacilityDto) newEntityDto).getDistrict(), false);
 							break;
 						default:
 							throw new UnsupportedOperationException(I18nProperties.getValidationError(

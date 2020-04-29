@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.task.TaskType;
+
 @Remote
 public interface FeatureConfigurationFacade {
 	
@@ -28,5 +30,9 @@ public interface FeatureConfigurationFacade {
 	void deleteAllExpiredFeatureConfigurations(Date date);
 	
 	boolean isFeatureDisabled(FeatureType featureType);
+	
+	boolean isFeatureEnabled(FeatureType featureType);
+	
+	boolean isTaskGenerationFeatureEnabled(TaskType taskType);
 	
 }

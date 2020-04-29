@@ -40,7 +40,11 @@ import de.symeda.sormas.api.Disease;
 public @interface Diseases {
     Disease[] value() default {};
 
-    public static class DiseasesConfiguration {
+	public static final class DiseasesConfiguration {
+
+		private DiseasesConfiguration() {
+			// Hide Utility Class Constructor
+		}
 
     	// TODO thread safety, etc.?!
     	private static final HashMap<Class<?>,HashMap<String,List<Disease>>> diseaseConfigCache = 

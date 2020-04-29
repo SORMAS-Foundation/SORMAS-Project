@@ -454,6 +454,18 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER
 			),
+	VISIT_EXPORT(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_CLINICIAN,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
+			SURVEILLANCE_SUPERVISOR,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR,
+			LAB_USER
+			),
 	TASK_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -770,7 +782,10 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			POE_SUPERVISOR,
 			LAB_USER,
-			EVENT_OFFICER
+			EVENT_OFFICER,
+			SURVEILLANCE_OFFICER,
+			CASE_OFFICER,
+			CONTACT_OFFICER
 			),
 	DASHBOARD_SURVEILLANCE_ACCESS(
 			ADMIN,
@@ -784,9 +799,20 @@ public enum UserRight {
 			CASE_SUPERVISOR,
 			POE_SUPERVISOR,
 			LAB_USER,
-			EVENT_OFFICER
+			EVENT_OFFICER,
+			SURVEILLANCE_OFFICER,
+			CASE_OFFICER
 			),
 	DASHBOARD_CONTACT_ACCESS(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
+			CONTACT_SUPERVISOR,
+			CONTACT_OFFICER
+			),
+	DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS(
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
@@ -947,7 +973,8 @@ public enum UserRight {
 
 	private final Set<UserRole> defaultUserRoles;
 
-	private UserRight(UserRole... defaultUserRoles) {
+	UserRight(UserRole... defaultUserRoles) {
+
 		this.defaultUserRoles = Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(defaultUserRoles)));
 	}
 
@@ -958,5 +985,4 @@ public enum UserRight {
 	public Set<UserRole> getDefaultUserRoles() {
 		return defaultUserRoles;
 	}
-	
 }

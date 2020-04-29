@@ -30,6 +30,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -104,9 +105,10 @@ public class StartupShutdownService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)
-	protected EntityManager emAudit;
+	private EntityManager emAudit;
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -144,12 +146,13 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-		logger.info("Initiating automatic database update of main database...");
 
+		checkDatabaseConfig(em);
+		
+		logger.info("Initiating automatic database update of main database...");
 		updateDatabase(em, SORMAS_SCHEMA);
 
 		logger.info("Initiating automatic database update of audit database...");
-
 		updateDatabase(emAudit, AUDIT_SCHEMA);
 
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
@@ -410,6 +413,42 @@ public class StartupShutdownService {
 			poeInformant.setPointOfEntry(pointOfEntry);
 			poeInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(poeInformant);
+		}
+	}
+
+	/**
+	 * Checks if the PostgreSQL server is configured correctly to run SORMAS.
+	 */
+	private void checkDatabaseConfig(EntityManager entityManager) {
+
+		List<String> errors = new ArrayList<>();
+
+		// Check postgres version
+		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
+		String versionString = entityManager.createNativeQuery("SHOW server_version").getSingleResult().toString();
+		if (!versionString.matches(versionRegexp)) {
+			logger.warn("Your PostgreSQL Version (" + versionString + ") is currently not supported.");
+		}
+
+		// Check setting "max_prepared_transactions"
+		int maxPreparedTransactions =
+			Integer.valueOf(entityManager.createNativeQuery("select current_setting('max_prepared_transactions')").getSingleResult().toString());
+		if (maxPreparedTransactions < 1) {
+			errors.add("max_prepared_transactions is not set. A value of at least 64 is recommended.");
+		} else if (maxPreparedTransactions < 64) {
+			logger.info("max_prepared_transactions is set to {}. A value of at least 64 is recommended.", maxPreparedTransactions);
+		}
+
+		// Check that required extensions are installed
+		Stream.of("temporal_tables", "pg_trgm").filter(t -> {
+			String q = "select count(*) from pg_extension where extname = '" + t + "'";
+			int count = ((Number) entityManager.createNativeQuery(q).getSingleResult()).intValue();
+			return count == 0;
+		}).map(t -> "extension '" + t + "' has to be installed").forEach(errors::add);
+
+		if (!errors.isEmpty()) {
+			// List all config problems and stop deployment
+			throw new RuntimeException(errors.stream().collect(Collectors.joining("\n * ", "Postgres setup is not compatible:\n * ", "")));
 		}
 	}
 

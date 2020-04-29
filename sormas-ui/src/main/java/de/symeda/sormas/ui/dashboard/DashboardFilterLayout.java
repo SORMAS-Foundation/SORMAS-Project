@@ -150,10 +150,10 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
 		}
 		diseaseFilter.addValueChangeListener(e -> {
-			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
 			if (diseaseFilterChangeCallback != null) {
 				diseaseFilterChangeCallback.accept(diseaseFilter.getValue() != null);
 			}
+			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
 			dashboardView.refreshDashboard();
 		});
 		addComponent(diseaseFilter);
@@ -161,8 +161,8 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	private void createDateFilters() {
 		HorizontalLayout dateFilterLayout = new HorizontalLayout();
-		dateFilterLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 		dateFilterLayout.setSpacing(true);
+		CssStyles.style(dateFilterLayout, CssStyles.VSPACE_3);
 		addComponent(dateFilterLayout);
 
 		btnCurrentPeriod = new PopupButton();
@@ -480,6 +480,10 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 	public void setDiseaseFilterChangeCallback(Consumer<Boolean> diseaseFilterChangeCallback) {
 		this.diseaseFilterChangeCallback = diseaseFilterChangeCallback;
+	}
+	
+	public boolean hasDiseaseSelected() {
+		return diseaseFilter.getValue() != null;
 	}
 
 }
