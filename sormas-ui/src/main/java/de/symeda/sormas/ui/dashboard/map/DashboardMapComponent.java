@@ -504,6 +504,9 @@ public class DashboardMapComponent extends VerticalLayout {
 		cmbPeriodType = new ComboBox();
 		cmbPeriodFilter = new ComboBox();
 		
+		Button btnBack = new Button(VaadinIcons.CHEVRON_LEFT);
+		Button btnForward = new Button(VaadinIcons.CHEVRON_RIGHT);
+		
 		cmbPeriodType.addItems(MapPeriodType.values());
 		cmbPeriodType.setInputPrompt(I18nProperties.getString(Strings.promptFilterByPeriod));
 		cmbPeriodType.addValueChangeListener(e -> {
@@ -550,11 +553,47 @@ public class DashboardMapComponent extends VerticalLayout {
 			
 			refreshMap();
 		});
+		CssStyles.style(btnBack, ValoTheme.BUTTON_BORDERLESS);
+		btnBack.setEnabled(false);
+		btnBack.addClickListener(e -> {
+			Date curDate = (Date) cmbPeriodFilter.getValue();
+			int curDateIndex = ((List<?>)cmbPeriodFilter.getItemIds()).indexOf(curDate);
+			
+			if (curDateIndex <= 0)
+				return;
+				
+			int prevDateIndex = curDateIndex - 1;
+			Date prevDate = (Date) ((List<?>)cmbPeriodFilter.getItemIds()).get(prevDateIndex);
+			
+			cmbPeriodFilter.setValue(prevDate);
+		});
+		
+		CssStyles.style(btnForward, ValoTheme.BUTTON_BORDERLESS);
+		btnForward.setEnabled(false);
+		btnForward.addClickListener(e -> {
+			Date curDate = (Date) cmbPeriodFilter.getValue();
+			int curDateIndex = ((List<?>)cmbPeriodFilter.getItemIds()).indexOf(curDate);
+			
+			if (curDateIndex >= cmbPeriodFilter.size() - 1)
+				return;
+				
+			int nextDateIndex = curDateIndex + 1;
+			Date nextDate = (Date) ((List<?>)cmbPeriodFilter.getItemIds()).get(nextDateIndex);
+			
+			cmbPeriodFilter.setValue(nextDate);
+		});
+
+		HorizontalLayout periodSelectionLayout = new HorizontalLayout();
+		periodSelectionLayout.setSpacing(false);
+		
+		periodSelectionLayout.addComponent(btnBack);
+		periodSelectionLayout.addComponent(cmbPeriodFilter);
+		periodSelectionLayout.addComponent(btnForward);
 		
 		HorizontalLayout periodFilterLayout = new HorizontalLayout();
 		periodFilterLayout.setStyleName(CssStyles.VSPACE_TOP_2);
 		periodFilterLayout.addComponent(cmbPeriodType);
-		periodFilterLayout.addComponent(cmbPeriodFilter);
+		periodFilterLayout.addComponent(periodSelectionLayout);
 		layersLayout.addComponent(periodFilterLayout);
 	}
 
