@@ -129,6 +129,12 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
         lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
         contactDetailsLayout.addComponent(lblLastName);
 
+        final Label lblCase = new Label(referenceContact.getCaze() != null ? referenceContact.getCaze().getCaption() : "");
+        lblCase.setWidthUndefined();
+        lblCase.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
+                ContactDto.CAZE));
+        contactDetailsLayout.addComponent(lblCase);
+
         final Label lblCaseIdExternalSystem = new Label(referenceContact.getCaseIdExternalSystem());
         lblCaseIdExternalSystem.setWidthUndefined();
         lblCaseIdExternalSystem.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,

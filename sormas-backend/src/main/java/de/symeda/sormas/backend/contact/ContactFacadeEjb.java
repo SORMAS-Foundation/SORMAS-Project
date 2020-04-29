@@ -1032,11 +1032,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarContactDto> cq = cb.createQuery(SimilarContactDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
-		final Join<Case, Person> personJoin = contactRoot.join(Case.PERSON, JoinType.LEFT);
+		final Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+		final Join<Contact, Case> caseJoin = contactRoot.join(Contact.CAZE, JoinType.LEFT);
+		final Join<Case, Person> casePersonJoin = contactRoot.join(Case.PERSON, JoinType.LEFT);
 
         cq.multiselect(personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME),
-                contactRoot.get(Contact.UUID), contactRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM),
-                contactRoot.get(Contact.LAST_CONTACT_DATE),
+                contactRoot.get(Contact.UUID), caseJoin.get(Case.UUID), casePersonJoin.get(Person.FIRST_NAME), casePersonJoin.get(Person.LAST_NAME),
+                contactRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM), contactRoot.get(Contact.LAST_CONTACT_DATE),
                 contactRoot.get(Contact.CONTACT_PROXIMITY), contactRoot.get(Contact.CONTACT_CLASSIFICATION),
                 contactRoot.get(Contact.CONTACT_STATUS), contactRoot.get(Contact.FOLLOW_UP_STATUS));
 
@@ -1051,8 +1053,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		final Predicate diseaseFilter = disease != null ? cb.equal(contactRoot.get(Contact.DISEASE), disease) : null;
 
 		final CaseReferenceDto caze = criteria.getCaze();
-		final Predicate cazeFilter = caze != null ? cb.equal(contactRoot.get(Contact.CAZE).get(Case.UUID),
-				caze.getUuid()) : null;
+		final Predicate cazeFilter = caze != null ? cb.equal(caseJoin.get(Case.UUID), caze.getUuid()) : null;
 
 		final Date reportDate = criteria.getReportDate();
 		final Date lastContactDate = criteria.getLastContactDate();

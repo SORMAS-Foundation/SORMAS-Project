@@ -3,26 +3,44 @@ package de.symeda.sormas.api.contact;
 import java.io.Serializable;
 import java.util.Date;
 
-public class SimilarContactDto implements Serializable {
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 
+public class SimilarContactDto implements Serializable {
+	
+	private static final long serialVersionUID = -7290520732250426907L;
+	
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String UUID = "uuid";
+	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
+	public static final String CAZE = "caze";
+	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_CLASSIFICATION = "contactClassification";
+	public static final String CONTACT_STATUS = "contactStatus";
+	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	
     private String firstName;
     private String lastName;
-
     private String uuid;
-    private String caseIdExternalSystem;
+	private CaseReferenceDto caze;
+	private String caseIdExternalSystem;
     private Date lastContactDate;
     private ContactProximity contactProximity;
     private ContactClassification contactClassification;
     private ContactStatus contactStatus;
     private FollowUpStatus followUpStatus;
 
-    public SimilarContactDto(String firstName, String lastName, String uuid, String caseIdExternalSystem,
-                             Date lastContactDate,
-                             ContactProximity contactProximity, ContactClassification contactClassification,
+    public SimilarContactDto(String firstName, String lastName, String uuid, 
+    						 String cazeUuid, String caseFirstName, String caseLastName, String caseIdExternalSystem,
+                             Date lastContactDate, ContactProximity contactProximity, ContactClassification contactClassification,
                              ContactStatus contactStatus, FollowUpStatus followUpStatus) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.uuid = uuid;
+        if (cazeUuid != null) {
+        	this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
+        }
         this.caseIdExternalSystem = caseIdExternalSystem;
         this.lastContactDate = lastContactDate;
         this.contactProximity = contactProximity;
@@ -31,6 +49,14 @@ public class SimilarContactDto implements Serializable {
         this.followUpStatus = followUpStatus;
     }
 
+    public CaseReferenceDto getCaze() {
+		return caze;
+	}
+
+	public void setCaze(CaseReferenceDto caze) {
+		this.caze = caze;
+	}
+	
     public String getCaseIdExternalSystem() {
         return caseIdExternalSystem;
     }
