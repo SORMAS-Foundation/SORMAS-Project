@@ -17,18 +17,60 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.slf4j.LoggerFactory;
+
 import com.opencsv.CSVWriter;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.v7.data.Container.Indexed;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Grid.Column;
+
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
@@ -63,25 +105,14 @@ import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionExportDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentExportDto;
-import de.symeda.sormas.api.utils.*;
+import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ExportErrorException;
+import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public final class DownloadUtil {
 
@@ -405,7 +436,7 @@ public final class DownloadUtil {
 		}
 
 		@Override
-		public void mark(int readAheadLimit) {
+		public synchronized void mark(int readAheadLimit) {
 			ensureInited();
 			super.mark(readAheadLimit);
 		}

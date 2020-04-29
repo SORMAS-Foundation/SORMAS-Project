@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.function.Supplier;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;

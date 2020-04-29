@@ -192,6 +192,8 @@ public class Symptoms extends AbstractDomainObject {
 	private String otherNonHemorrhagicSymptomsText;
 	private String symptomsComments;
 	private SymptomState convulsion;
+	private SymptomState lossOfTaste;
+	private SymptomState lossOfSmell;
 
 	// complications
 	private SymptomState alteredConsciousness;
@@ -1562,6 +1564,24 @@ public class Symptoms extends AbstractDomainObject {
 		return symptomsComments;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLossOfTaste() {
+		return lossOfTaste;
+	}
+
+	public void setLossOfTaste(SymptomState lossOfTaste) {
+		this.lossOfTaste = lossOfTaste;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getLossOfSmell() {
+		return lossOfSmell;
+	}
+
+	public void setLossOfSmell(SymptomState lossOfSmell) {
+		this.lossOfSmell = lossOfSmell;
+	}
+
 	public String toHumanString(boolean includeOnset, Language language) {
 		StringBuilder string = new StringBuilder();
 
@@ -1704,6 +1724,9 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, pneumoniaClinicalOrRadiologic, SymptomsDto.PNEUMONIA_CLINICAL_OR_RADIOLOGIC);
 		appendNotNullValue(string, congenitalHeartDiseaseType, SymptomsDto.CONGENITAL_HEART_DISEASE_TYPE);
 		appendNotNullValue(string, congenitalHeartDiseaseDetails, SymptomsDto.CONGENITAL_HEART_DISEASE_DETAILS);
+		appendYesSymptom(string, lossOfTaste, SymptomsDto.LOSS_OF_TASTE);
+		appendYesSymptom(string, lossOfSmell, SymptomsDto.LOSS_OF_SMELL);
+
 		// symptomsComments;
 
 		return string.toString();

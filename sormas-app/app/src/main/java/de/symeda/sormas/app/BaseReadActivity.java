@@ -171,12 +171,16 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         return true;
     }
 
-    private void processActionbarMenu() {
+    protected void processActionbarMenu() {
         if (activeFragment == null)
             return;
 
         if (editMenu != null)
             editMenu.setVisible(activeFragment.showEditAction());
+    }
+
+    public BaseReadFragment getActiveFragment() {
+        return activeFragment;
     }
 
     public MenuItem getEditMenu() {

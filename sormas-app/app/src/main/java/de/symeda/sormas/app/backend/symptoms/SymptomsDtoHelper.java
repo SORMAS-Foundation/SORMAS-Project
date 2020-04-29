@@ -210,6 +210,8 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setConjunctivalInjection(source.getConjunctivalInjection());
         target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
         target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
+        target.setLossOfSmell(source.getLossOfSmell());
+        target.setLossOfTaste(source.getLossOfTaste());
     }
 
     @Override
@@ -366,5 +368,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setConjunctivalInjection(source.getConjunctivalInjection());
         target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
         target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
+        target.setLossOfSmell(source.getLossOfSmell());
+        target.setLossOfTaste(source.getLossOfTaste());
     }
 }
