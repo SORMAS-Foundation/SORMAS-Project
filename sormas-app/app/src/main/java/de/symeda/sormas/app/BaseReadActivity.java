@@ -20,13 +20,13 @@ package de.symeda.sormas.app;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentTransaction;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -171,12 +171,16 @@ public abstract class BaseReadActivity<ActivityRootEntity extends AbstractDomain
         return true;
     }
 
-    private void processActionbarMenu() {
+    protected void processActionbarMenu() {
         if (activeFragment == null)
             return;
 
         if (editMenu != null)
             editMenu.setVisible(activeFragment.showEditAction());
+    }
+
+    public BaseReadFragment getActiveFragment() {
+        return activeFragment;
     }
 
     public MenuItem getEditMenu() {

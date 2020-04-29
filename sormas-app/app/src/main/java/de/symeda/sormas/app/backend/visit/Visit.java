@@ -18,9 +18,6 @@
 
 package de.symeda.sormas.app.backend.visit;
 
-import androidx.annotation.Nullable;
-
-import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -33,12 +30,12 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 @Entity(name= Visit.TABLE_NAME)
 @DatabaseTable(tableName = Visit.TABLE_NAME)
@@ -159,7 +156,7 @@ public class Visit extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return super.toString() + " " + DateHelper.formatLocalShortDate(getVisitDateTime());
+		return super.toString() + " " + DateFormatHelper.formatLocalDate(getVisitDateTime());
 	}
 
 	public Float getReportLatLonAccuracy() {

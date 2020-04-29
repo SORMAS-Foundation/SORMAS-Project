@@ -28,6 +28,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -35,6 +37,7 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
 public class PathogenTestListEntry extends HorizontalLayout {
@@ -88,7 +91,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		Label labelLeft = new Label(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
 		middleLabelLayout.addComponent(labelLeft);
 
-		Label labelRight = new Label(DateHelper.formatLocalShortDateTime(pathogenTest.getTestDateTime()));
+		Label labelRight = new Label(DateFormatHelper.formatLocalDateTime(pathogenTest.getTestDateTime()));
 		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
 		middleLabelLayout.addComponent(labelRight);
 		middleLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);

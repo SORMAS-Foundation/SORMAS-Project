@@ -39,6 +39,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Grid.Column;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.CSVUtils;
@@ -74,7 +75,7 @@ public class V7GridExportStreamResource extends StreamResource {
 								Property<?> property = container.getItem(i).getItemProperty(c.getPropertyId());
 								if (property.getValue() != null) {
 									if (property.getType() == Date.class) {
-										row.add(DateHelper.formatLocalDateTime((Date) property.getValue()));
+										row.add(DateFormatHelper.formatLocalDateTime((Date) property.getValue()));
 									} else if (property.getType() == Boolean.class) {
 										if ((Boolean) property.getValue() == true) {
 											row.add(I18nProperties.getEnumCaption(YesNoUnknown.YES));

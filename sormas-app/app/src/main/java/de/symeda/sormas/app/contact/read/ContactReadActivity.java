@@ -20,16 +20,20 @@ package de.symeda.sormas.app.contact.read;
 
 import android.content.Context;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.List;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
@@ -84,10 +88,28 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+        boolean result = super.onCreateOptionsMenu(menu);
         getEditMenu().setTitle(R.string.action_edit_contact);
 
-        return true;
+        return result;
+    }
+
+    @Override
+    protected void processActionbarMenu() {
+        super.processActionbarMenu();
+
+        final MenuItem editMenu = getEditMenu();
+
+        final ReferenceDto referenceDto = new ContactReferenceDto(getRootUuid());
+        final Contact selectedContact = DatabaseHelper.getContactDao().getByReferenceDto(referenceDto);
+
+        if (editMenu != null) {
+            if (ContactEditAuthorization.isContactEditAllowed(selectedContact)) {
+                editMenu.setVisible(true);
+            } else {
+                editMenu.setVisible(false);
+            }
+        }
     }
 
     @Override

@@ -22,14 +22,15 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.View;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -56,8 +57,8 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentReportWeeklyLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -261,7 +262,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     showPendingReport();
                 } else {
                     setVisibilityForTable(false);
-                    reportDate = DateHelper.formatLocalDate(weeklyReport.getReportDateTime());
+                    reportDate = DateFormatHelper.formatLocalDate(weeklyReport.getReportDateTime());
                     showWeeklyReport(weeklyReport);
                 }
             } else { // any other week;
@@ -279,7 +280,7 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
                     }
                 } else {
                     setVisibilityForTable(false);
-                    reportDate = DateHelper.formatLocalDate(weeklyReport.getReportDateTime());
+                    reportDate = DateFormatHelper.formatLocalDate(weeklyReport.getReportDateTime());
                     showWeeklyReport(weeklyReport);
                 }
             }

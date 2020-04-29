@@ -1,5 +1,6 @@
 package de.symeda.sormas.rest;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -49,6 +50,6 @@ public abstract class EntityDtoResource {
 
 	protected <T extends Object> String createErrorMessage(T dto) {
 		final EntityDto entityDto = (EntityDto) dto;
-		return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " " + DateHelper.formatLocalShortDateTime(entityDto.getChangeDate()) + "\n";
+		return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " " + DateFormat.getDateTimeInstance().format(entityDto.getChangeDate()) + "\n";
 	}
 }

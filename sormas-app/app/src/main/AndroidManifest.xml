@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-feature android:name="android.hardware.location.gps" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".SormasApplication"
@@ -341,6 +342,9 @@
         <!-- Only needed for androidTest - found no other way to manifest this -->
         <activity
             android:name=".TestBackendActivity" />
+
+        <activity
+            android:name=".barcode.BarcodeActivity" />
 
         <receiver
             android:name=".SormasBootstrap"

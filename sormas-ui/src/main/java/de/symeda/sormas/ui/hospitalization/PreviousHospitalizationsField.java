@@ -33,6 +33,7 @@ import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -60,9 +61,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
-					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateHelper.formatLocalDate(prevHospitalization.getAdmissionDate()) : "?");
+					periodBuilder.append(prevHospitalization.getAdmissionDate() != null ? DateFormatHelper.formatDate(prevHospitalization.getAdmissionDate()) : "?");
 					periodBuilder.append(" - ");
-					periodBuilder.append(prevHospitalization.getDischargeDate() != null ? DateHelper.formatLocalDate(prevHospitalization.getDischargeDate()) : "?");
+					periodBuilder.append(prevHospitalization.getDischargeDate() != null ? DateFormatHelper.formatDate(prevHospitalization.getDischargeDate()) : "?");
 					return periodBuilder.toString();
 				}
 			}

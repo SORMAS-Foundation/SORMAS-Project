@@ -13,6 +13,7 @@ public interface Descriptions {
 	String descDashboardFollowUpInfo = "descDashboardFollowUpInfo";
 	String descDashboardNewTestResults = "descDashboardNewTestResults";
 	String descDetailedExportButton = "descDetailedExportButton";
+	String descFollowUpExportButton = "descFollowUpExportButton";
 	String descDistrictFilter = "descDistrictFilter";
 	String descExportButton = "descExportButton";
 	String descFacilityFilter = "descFacilityFilter";

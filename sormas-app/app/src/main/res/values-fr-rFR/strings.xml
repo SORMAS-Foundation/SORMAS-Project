@@ -305,7 +305,7 @@
     <string name="heading_outbreak_response">Réponse à l\'épidémie</string>
     <string name="heading_person_involved">Personne impliquée</string>
     <string name="heading_person_involved_new">Nouvelle personne impliquée</string>
-    <string name="heading_pick_or_create_person">Pick or Create Person</string>
+    <string name="heading_pick_or_create_person">Choisir ou créer une personne</string>
     <string name="heading_pick_or_create_case">Choisir ou créer un Cas</string>
     <string name="heading_prescription">Ordonnance</string>
     <string name="heading_prescription_edit">Modifier l\'ordonnance</string>
@@ -380,24 +380,24 @@
     <string name="hint_weekly_report_confirmation_required">Vous devez confirmer le rapport pour la semaine dernière.</string>
     <string name="hint_weekly_report_no_data">Aucune donnée disponible pour cette semaine Epi.</string>
     <string name="hint_case_numbers_not_submitted">Les numéros de cas n\'ont pas encore été soumis</string>
-    <string name="hint_contact_text_filter">Contact ID or contact person name</string>
+    <string name="hint_contact_text_filter">ID du contact ou nom de la personne de contact</string>
     <string name="indicator_error">ERREUR</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
     <string name="indicator_warning">ATTENTION</string>
     <string name="info_add_cases_before_report_submit">Êtes-vous sûr de vouloir soumettre ces numéros de cas pour la semaine épi sélectionnée ?</string>
     <string name="info_app_download">Téléchargement de la nouvelle version SORMAS... En fonction de votre connexion Internet, cela peut prendre un certain temps.</string>
-    <string name="info_create_person">If you could <b>not</b> find a person that matches the personal details you have entered, click the \"Create\" button.</string>
+    <string name="info_create_person">Si vous n\'avez <b>pas</b> trouvé de personne correspondant aux données personnelles que vous avez saisies, cliquez sur le bouton \"Créer\".</string>
     <string name="info_epidemiological_info">Veuillez indiquer si l\'un des éléments suivants est pertinent pour le patient pendant la période d\'incubation ou la maladie.</string>
     <string name="info_initial_synchronization">Synchronisation initiale avec le serveur SORMAS.\nL\'extraction des données d\'infrastructure prendra quelques minutes.</string>
     <string name="info_no_additional_test">Aucun test supplémentaire n\'a encore été effectué sur cet échantillon</string>
     <string name="info_no_sample_test">L\'échantillon n\'a pas encore été testé</string>
-    <string name="info_pick_person">Please look through this list of persons. <b>If you feel certain</b> that the personal details you have entered belong to one of these persons, select that person by tapping on them and then click the \"Select\" button below.</string>
+    <string name="info_pick_person">Veuillez consulter cette liste de personnes. <b>Si vous avez la certitude</b> que les données personnelles que vous avez saisies appartiennent à l\'une de ces personnes, sélectionnez cette personne en appuyant sur elles, puis cliquez sur le bouton \"Sélectionner\" ci-dessous.</string>
     <string name="info_reset_pin">Pour réinitialiser votre code PIN, vous aurez <b>besoin de votre mot de passe d\'utilisateur SORMAS.</b></string>
     <string name="info_resync_duration">La Re-synchronisation prendra probablement plusieurs minutes.</string>
     <string name="info_select_create_person">Veuillez sélectionner une personne ou cliquez sur \'Créer\' pour en créer une nouvelle.</string>
     <string name="info_sign_in">Connectez-vous à SORMAS pour continuer à sauver des vies.</string>
-    <string name="info_similar_persons_found">SORMAS already contains at least one person that seems to be very similar to the personal details you have entered.</string>
+    <string name="info_similar_persons_found">SORMAS contient déjà au moins une personne qui semble être très similaire aux données personnelles que vous avez saisies.</string>
     <string name="info_symptoms">Veuillez sélectionner une réponse pour TOUS les symptômes indiquant s\'ils sont survenus au cours de cette maladie entre l\'apparition des symptômes et la détection du cas :</string>
     <string name="info_synchronizing">Synchronisation avec le serveur SORMAS...</string>
     <string name="info_user_report">Veuillez décrire brièvement le problème que vous avez rencontré. N\'entrez pas de données personnelles ou sensibles !</string>
@@ -552,4 +552,8 @@
     <string name="value_visit_time_unknown">Date de visite N/A</string>
     <string name="value_visiting_person_unknown">Clinicien traitant N/A</string>
     <string name="value_investigation_status_unknown">Statut d\'Investigation N/A</string>
+    <string name="sample_not_found">Could not find sample</string>
+    <string name="no_camera_permission">No camera permission</string>
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="scan_field_sample_id">Scan field sample id</string>
 </resources>

@@ -21,6 +21,17 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DateHelper8;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -86,16 +97,6 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -235,13 +236,13 @@ public class ContactsView extends AbstractView {
 				addHeaderComponent(exportButton);
 			}
 			{
-				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
 
 				addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
 				StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
-						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max),
+						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
 						(propertyId,type) -> {
 							String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
 									I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
@@ -251,13 +252,22 @@ public class ContactsView extends AbstractView {
 																	I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId,
 																			I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, propertyId)))))));
 							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 							}
 							return caption;
 						},
-						"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+						createFileNameWithCurrentDate("sormas_contacts_", ".csv"), null);
 
 				addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+			}
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+				StreamResource followUpVisitsExportStreamResource =
+						DownloadUtil.createContactVisitsExport(grid.getCriteria(),
+								createFileNameWithCurrentDate("sormas_contacts_follow_ups", ".csv"));
+
+				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout, null,
+						VaadinIcons.FILE_TEXT, Captions.exportFollowUp, Descriptions.descFollowUpExportButton);
 			}
 
 			// Warning if no filters have been selected
