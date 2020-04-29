@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
