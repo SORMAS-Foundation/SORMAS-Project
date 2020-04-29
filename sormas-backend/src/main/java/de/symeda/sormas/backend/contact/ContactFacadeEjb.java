@@ -341,7 +341,9 @@ public class ContactFacadeEjb implements ContactFacade {
                 contactPerson.get(Person.ID),
                 contactPerson.get(Person.FIRST_NAME),
                 contactPerson.get(Person.LAST_NAME),
-                contactRoot.get(Contact.LAST_CONTACT_DATE),
+                cb.<Date>selectCase().when(cb.isNotNull(contactRoot.get(Contact.LAST_CONTACT_DATE)),
+                        contactRoot.get(Contact.LAST_CONTACT_DATE))
+                        .otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
                 contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
         final Subquery<Visit> visitSubquery = query.subquery(Visit.class);

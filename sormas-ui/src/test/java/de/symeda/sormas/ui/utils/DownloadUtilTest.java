@@ -51,7 +51,7 @@ public class DownloadUtilTest extends AbstractBeanTest {
 
         PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
         ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference()
-                , caze, new Date(), new Date());
+                , caze, new Date(), null);
         VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
         visit21.getSymptoms().setAbdominalPain(SymptomState.YES);
         FacadeProvider.getVisitFacade().saveVisit(visit21);
