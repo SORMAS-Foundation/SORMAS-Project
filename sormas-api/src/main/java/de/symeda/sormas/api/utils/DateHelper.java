@@ -290,6 +290,21 @@ public final class DateHelper {
 	public static int getDaysBetween(Date start, Date end) {
 		return Days.daysBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getDays() + 1;
 	}
+	
+	/**
+	 * List days between the two given dates. This includes both the start and
+	 * end dates.
+	 */
+	public static List<Date> listDaysBetween(Date start, Date end) {
+		int numOfDaysBetween = getDaysBetween(start, end); 
+		
+		List<Date> dates = new ArrayList<Date>();
+		
+		for (int dayNum = 0; dayNum < numOfDaysBetween; dayNum++)
+			dates.add(addDays(start, dayNum));
+	    
+		return dates;
+	}
 
 	/**
 	 * Calculate weeks between the two given dates. This includes both the start and
@@ -297,6 +312,21 @@ public final class DateHelper {
 	 */
 	public static int getWeeksBetween(Date start, Date end) {
 		return Weeks.weeksBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getWeeks() + 1;
+	}
+	
+	/**
+	 * List weeks between the two given dates. This includes both the start and
+	 * end dates.
+	 */
+	public static List<Date> listWeeksBetween(Date start, Date end) {
+		int numOfWeeksBetween = getWeeksBetween(start, end); 
+		
+		List<Date> dates = new ArrayList<Date>();
+		
+		for (int weekNum = 0; weekNum < numOfWeeksBetween; weekNum++)
+			dates.add(addWeeks(start, weekNum));
+	    
+		return dates;
 	}
 
 	/**
@@ -306,12 +336,42 @@ public final class DateHelper {
 	public static int getMonthsBetween(Date start, Date end) {
 		return Months.monthsBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getMonths() + 1;
 	}
+	
+	/**
+	 * List months between the two given dates. This includes both the start and
+	 * end dates.
+	 */
+	public static List<Date> listMonthsBetween(Date start, Date end) {
+		int numOfMonthsBetween = getMonthsBetween(start, end); 
+		
+		List<Date> dates = new ArrayList<Date>();
+		
+		for (int monthNum = 0; monthNum < numOfMonthsBetween; monthNum++)
+			dates.add(addMonths(start, monthNum));
+	    
+		return dates;
+	}
 
 	/**
 	 * Calculate years between the two given dates.
 	 */
 	public static int getYearsBetween(Date start, Date end) {
 		return Years.yearsBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getYears();
+	}
+	
+	/**
+	 * List years between the two given dates. This includes both the start and
+	 * end dates.
+	 */
+	public static List<Date> listYearsBetween(Date start, Date end) {
+		int numOfYearsBetween = getYearsBetween(start, end); 
+		
+		List<Date> dates = new ArrayList<Date>();
+		
+		for (int yearNum = 0; yearNum <= numOfYearsBetween; yearNum++)
+			dates.add(addYears(start, yearNum));
+	    
+		return dates;
 	}
 
 	public static Date addDays(Date date, int amountOfDays) {
@@ -336,6 +396,10 @@ public final class DateHelper {
 
 	public static Date subtractMonths(Date date, int amountOfMonths) {
 		return new LocalDate(date).minusMonths(amountOfMonths).toDate();
+	}
+
+	public static Date addYears(Date date, int amountOfYears) {
+		return new LocalDate(date).plusYears(amountOfYears).toDate();
 	}
 
 	public static Date subtractYears(Date date, int amountOfYears) {
@@ -388,7 +452,8 @@ public final class DateHelper {
 	}
 
 	public static boolean isBetween(Date date, Date start, Date end) {
-		return (date.equals(start) || date.after(start)) && (date.equals(end) || date.before(end));
+		//sometimes date.equals(start) returns false but start.equals(date) returns true
+		return (date.equals(start) || start.equals(date) || date.after(start)) && (date.equals(end) || end.equals(date) || date.before(end));
 	}
 
 	/**
