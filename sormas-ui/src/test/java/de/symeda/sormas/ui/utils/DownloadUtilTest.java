@@ -59,6 +59,12 @@ public class DownloadUtilTest extends AbstractBeanTest {
         visit22.getSymptoms().setAgitation(SymptomState.YES);
         FacadeProvider.getVisitFacade().saveVisit(visit22);
 
+        // this visit is older than the allowed offset days - should not affect our export
+        VisitDto visit23 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(),
+                DateHelper.subtractDays(new Date(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET + 1), VisitStatus.COOPERATIVE);
+        visit23.getSymptoms().setAgitation(SymptomState.YES);
+        FacadeProvider.getVisitFacade().saveVisit(visit23);
+
         PersonDto contactPerson3 = creator.createPerson("Contact3", "Person3");
         ContactDto contact3 = creator.createContact(user.toReference(), user.toReference(), contactPerson3.toReference()
                 , caze, new Date(), new Date());

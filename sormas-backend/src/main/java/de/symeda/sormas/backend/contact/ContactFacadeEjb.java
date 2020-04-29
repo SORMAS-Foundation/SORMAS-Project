@@ -33,6 +33,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -339,7 +340,9 @@ public class ContactFacadeEjb implements ContactFacade {
                 contactRoot.get(Contact.UUID),
                 contactPerson.get(Person.ID),
                 contactPerson.get(Person.FIRST_NAME),
-                contactPerson.get(Person.LAST_NAME));
+                contactPerson.get(Person.LAST_NAME),
+                contactRoot.get(Contact.LAST_CONTACT_DATE),
+                contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
         final Subquery<Visit> visitSubquery = query.subquery(Visit.class);
         final Root<Visit> visitSubqueryRoot = visitSubquery.from(Visit.class);
@@ -395,6 +398,7 @@ public class ContactFacadeEjb implements ContactFacade {
             final ContactVisitsExportDto.ContactVisitsDetailsExportDto contactVisitsDetailsExportDto =
                     new ContactVisitsExportDto.ContactVisitsDetailsExportDto(visitDateTime, visitStatus,
                             symptoms.toHumanString(true));
+
             if (visitDetailsMap.containsKey(personId)) {
                 visitDetailsMap.get(personId).add(contactVisitsDetailsExportDto);
             } else {
@@ -404,8 +408,17 @@ public class ContactFacadeEjb implements ContactFacade {
             }
         }
 
-        resultList.forEach(contactVisitsExportDto ->
-                contactVisitsExportDto.setVisitDetails(visitDetailsMap.get(contactVisitsExportDto.getPersonId())));
+        resultList.forEach(contactVisitsExportDto -> {
+            final Date startDate = DateHelper.subtractDays(contactVisitsExportDto.getLastContactDate(),
+                    VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+            final Date endDate = DateHelper.addDays(contactVisitsExportDto.getFollowUpUntil(),
+                    VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+            final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitDetails =
+                    visitDetailsMap.get(contactVisitsExportDto.getPersonId()).stream()
+                            .filter(dto -> DateHelper.isBetween(dto.getVisitDateTime(), startDate, endDate))
+                            .collect(Collectors.toList());
+            contactVisitsExportDto.setVisitDetails(visitDetails);
+        });
     }
 
     private <T extends Object> T extractTupleValue(Tuple tuple, String alias) {
