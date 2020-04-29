@@ -67,6 +67,9 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personPlaceOfBirthFacility, contentBinding.personPlaceOfBirthFacilityDetails);
         PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(contentBinding.personCauseOfDeath, contentBinding.personCauseOfDeathDisease, contentBinding.personCauseOfDeathDetails);
+
+//        fragment.getActivity().getM
+
     }
 
     // Overrides
@@ -90,6 +93,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
     @Override
     public void onLayoutBinding(FragmentPersonReadLayoutBinding contentBinding) {
         contentBinding.setData(record);
+
     }
 
     @Override

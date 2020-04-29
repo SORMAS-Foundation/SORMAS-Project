@@ -13,6 +13,7 @@ public interface Descriptions {
 	String descDashboardFollowUpInfo = "descDashboardFollowUpInfo";
 	String descDashboardNewTestResults = "descDashboardNewTestResults";
 	String descDetailedExportButton = "descDetailedExportButton";
+	String descFollowUpExportButton = "descFollowUpExportButton";
 	String descDistrictFilter = "descDistrictFilter";
 	String descExportButton = "descExportButton";
 	String descFacilityFilter = "descFacilityFilter";
@@ -20,4 +21,5 @@ public interface Descriptions {
 	String descCaseFilterPortHealthWithoutFacility = "descCaseFilterPortHealthWithoutFacility";
 	String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
 	String descCaseFilterExcludeSharedCasesString = "descCaseFilterExcludeSharedCases";
+	String descCaseFilterWithoutResponsibleOfficer = "descCaseFilterWithoutResponsibleOfficer";
 }

@@ -49,7 +49,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
 	public static final String NEW_CASE_DATE_FROM = "newCaseDateFrom";
 	public static final String NEW_CASE_DATE_TO = "newCaseDateTo";
-	
+
 	private UserRole reportingUserRole;
 	private Disease disease;
 	private CaseOutcome outcome;
@@ -70,6 +70,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
+	private Boolean withoutResponsibleOfficer;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
@@ -78,16 +79,16 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
 	public Boolean excludeSharedCases;
-	
+
 	@Override
 	public CaseCriteria clone() {
 		try {
-			return (CaseCriteria)super.clone();
+			return (CaseCriteria) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void setReportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 	}
@@ -99,7 +100,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
 	}
-	
+
 	public CaseOutcome getOutcome() {
 		return outcome;
 	}
@@ -107,11 +108,11 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setCaseOrigin(CaseOrigin caseOrigin) {
 		this.caseOrigin = caseOrigin;
 	}
-	
+
 	public CaseOrigin getCaseOrigin() {
 		return caseOrigin;
 	}
-	
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
@@ -121,7 +122,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 		return this;
 	}
-	
+
 	public Disease getDisease() {
 		return disease;
 	}
@@ -135,7 +136,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 		return this;
 	}
-	
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
@@ -149,7 +150,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 		return this;
 	}
-	
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
@@ -161,6 +162,11 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;
 		this.newCaseDateType = newCaseDateType;
+		return this;
+	}
+
+	public CaseCriteria newCaseDateFrom(Date newCaseDateFrom) {
+		setNewCaseDateFrom(newCaseDateFrom);
 		return this;
 	}
 
@@ -205,25 +211,34 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setMustHaveNoGeoCoordinates(Boolean mustHaveNoGeoCoordinates) {
 		this.mustHaveNoGeoCoordinates = mustHaveNoGeoCoordinates;
 	}
-	
+
 	public Boolean getMustHaveNoGeoCoordinates() {
 		return mustHaveNoGeoCoordinates;
 	}
-	
+
 	public void setMustBePortHealthCaseWithoutFacility(Boolean mustBePortHealthCaseWithoutFacility) {
 		this.mustBePortHealthCaseWithoutFacility = mustBePortHealthCaseWithoutFacility;
 	}
-	
+
 	public Boolean getMustBePortHealthCaseWithoutFacility() {
 		return mustBePortHealthCaseWithoutFacility;
 	}
-	
+
 	public void setMustHaveCaseManagementData(Boolean mustHaveCaseManagementData) {
 		this.mustHaveCaseManagementData = mustHaveCaseManagementData;
 	}
-	
+
 	public Boolean getMustHaveCaseManagementData() {
 		return mustHaveCaseManagementData;
+	}
+
+	public CaseCriteria withoutResponsibleOfficer(Boolean withoutResponsibleOfficer) {
+		this.withoutResponsibleOfficer = withoutResponsibleOfficer;
+		return this;
+	}
+
+	public Boolean isWithoutResponsibleOfficer() {
+		return this.withoutResponsibleOfficer;
 	}
 
 	public CaseClassification getCaseClassification() {
@@ -258,11 +273,11 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
 	}
-	
+
 	public void setPointOfEntry(PointOfEntryReferenceDto pointOfEntry) {
 		this.pointOfEntry = pointOfEntry;
 	}
-	
+
 	public PointOfEntryReferenceDto getPointOfEntry() {
 		return pointOfEntry;
 	}
@@ -274,17 +289,17 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public UserReferenceDto getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
-	
+
 	public CaseCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
 	}
-	
+
 	public CaseCriteria deleted(Boolean deleted) {
 		this.deleted = deleted;
 		return this;
@@ -320,7 +335,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setReportingUserLike(String reportingUserLike) {
 		this.reportingUserLike = reportingUserLike;
 	}
-	
+
 	@IgnoreForUrl
 	public String getReportingUserLike() {
 		return reportingUserLike;
@@ -365,8 +380,9 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public Boolean getExcludeSharedCases() {
 		return excludeSharedCases;
 	}
-	
+
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
 	}
+
 }

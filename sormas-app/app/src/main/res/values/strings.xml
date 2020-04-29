@@ -459,6 +459,7 @@
     <string name="message_report_not_sent">Unable to send report at this time.</string>
     <string name="message_report_sent">Problem report successfully sent.</string>
     <string name="message_save_error">%1$s could not be saved because of an internal error.</string>
+    <string name="message_edit_forbidden">You do not have permission to edit the record from this jurisdiction.</string>
     <string name="message_save_success">%1$s saved successfully.</string>
     <string name="message_settings_saved">Application settings has been changed.</string>
     <string name="message_settings_server_url">Welcome! Please start by entering the URL of your SORMAS server. Afterwards you can log-in with your user name and password.</string>
@@ -480,8 +481,6 @@
     <string name="notification_channel_tasks_description">Receive a notification when a new task is assigned to you or a task assigned to you has been edited</string>
     <string name="notification_channel_case_changes_name">Important Case Changes</string>
     <string name="notification_channel_case_changes_description">Receive a notification when important details of your cases have changed</string>
-
-    <string name="quarantine_to">Quarantine ends at the end of follow-up</string>
 
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Yours: </string>
@@ -575,5 +574,9 @@
     <string name="value_visit_time_unknown">Visit Time N/A</string>
     <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
     <string name="value_investigation_status_unknown">Investigation Status N/A</string>
+    <string name="sample_not_found">Could not find sample</string>
+    <string name="no_camera_permission">No camera permission</string>
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="scan_field_sample_id">Scan field sample id</string>
 
 </resources>

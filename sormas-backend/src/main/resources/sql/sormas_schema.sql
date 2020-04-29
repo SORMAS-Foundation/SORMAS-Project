@@ -4066,9 +4066,11 @@ UPDATE contact SET overwritefollowupuntil = false;
 INSERT INTO schema_version (version_number, comment) VALUES (197, 'Make follow-up until editable #1680');
 
 -- 2020-04-15 Reworking of quarantine #1762
-UPDATE contact SET 	followupuntil = quarantineto WHERE quarantineto > followupuntil;
-ALTER TABLE contact DROP COLUMN quarantineto;
-ALTER TABLE contact_history DROP COLUMN quarantineto;
+
+-- 2020-04-29 #1891 keep the old quarantineto database colum
+-- UPDATE contact SET 	followupuntil = quarantineto WHERE quarantineto > followupuntil;
+-- ALTER TABLE contact DROP COLUMN quarantineto;
+-- ALTER TABLE contact_history DROP COLUMN quarantineto;
 
 ALTER TABLE contact ADD COLUMN quarantineordermeans varchar(255);
 ALTER TABLE contact_history ADD COLUMN quarantineordermeans varchar(255);
@@ -4079,7 +4081,6 @@ ALTER TABLE contact_history ADD COLUMN quarantinehelpneeded varchar(512);
 INSERT INTO schema_version (version_number, comment) VALUES (198, 'Reworking of quarantine #1762');
 
 -- 2020-04-20 Add fields for intensive care unit to hospitalization #1830
-
 ALTER TABLE hospitalization ADD COLUMN intensivecareunit varchar(255);
 ALTER TABLE hospitalization_history ADD COLUMN intensivecareunit varchar(255);
 ALTER TABLE hospitalization ADD COLUMN intensivecareunitstart timestamp;
@@ -4097,6 +4098,81 @@ INSERT INTO schema_version (version_number, comment) VALUES (199, 'Add fields fo
 -- 2020-04-22 Remove export functions which are now maintained within java code  #1830
 DROP FUNCTION export_database(text, text);
 DROP FUNCTION export_database_join(text, text, text, text, text);
-INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code  #1830');
+
+INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code #1830');
+
+-- 2020-04-23 Re-introduce quarantine end date #1891
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS quarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS quarantineto timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (201, 'Re-introduce quarantine end date #1891');
+
+-- 2020-04-24 Additional quarantine fields #1906
+ALTER TABLE cases ADD COLUMN quarantinehelpneeded varchar(512);
+ALTER TABLE cases ADD COLUMN quarantineorderedverbally boolean;
+ALTER TABLE cases ADD COLUMN quarantineorderedofficialdocument boolean;
+ALTER TABLE cases ADD COLUMN quarantineorderedverballydate timestamp;
+ALTER TABLE cases ADD COLUMN quarantineorderedofficialdocumentdate timestamp;
+ALTER TABLE cases ADD COLUMN quarantinehomepossible varchar(255);
+ALTER TABLE cases ADD COLUMN quarantinehomepossiblecomment varchar(512);
+ALTER TABLE cases ADD COLUMN quarantinehomesupplyensured varchar(255);
+ALTER TABLE cases ADD COLUMN quarantinehomesupplyensuredcomment varchar(512);
+ALTER TABLE cases_history ADD COLUMN quarantinehelpneeded varchar(512);
+ALTER TABLE cases_history ADD COLUMN quarantineorderedverbally boolean;
+ALTER TABLE cases_history ADD COLUMN quarantineorderedofficialdocument boolean;
+ALTER TABLE cases_history ADD COLUMN quarantineorderedverballydate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineorderedofficialdocumentdate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantinehomepossible varchar(255);
+ALTER TABLE cases_history ADD COLUMN quarantinehomepossiblecomment varchar(512);
+ALTER TABLE cases_history ADD COLUMN quarantinehomesupplyensured varchar(255);
+ALTER TABLE cases_history ADD COLUMN quarantinehomesupplyensuredcomment varchar(512);
+
+UPDATE cases SET quarantineorderedverbally = false;
+UPDATE cases SET quarantineorderedofficialdocument = false;
+
+ALTER TABLE contact ADD COLUMN quarantineorderedverbally boolean;
+ALTER TABLE contact ADD COLUMN quarantineorderedofficialdocument boolean;
+ALTER TABLE contact ADD COLUMN quarantineorderedverballydate timestamp;
+ALTER TABLE contact ADD COLUMN quarantineorderedofficialdocumentdate timestamp;
+ALTER TABLE contact ADD COLUMN quarantinehomepossible varchar(255);
+ALTER TABLE contact ADD COLUMN quarantinehomepossiblecomment varchar(512);
+ALTER TABLE contact ADD COLUMN quarantinehomesupplyensured varchar(255);
+ALTER TABLE contact ADD COLUMN quarantinehomesupplyensuredcomment varchar(512);
+ALTER TABLE contact_history ADD COLUMN quarantineorderedverbally boolean;
+ALTER TABLE contact_history ADD COLUMN quarantineorderedofficialdocument boolean;
+ALTER TABLE contact_history ADD COLUMN quarantineorderedverballydate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineorderedofficialdocumentdate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantinehomepossible varchar(255);
+ALTER TABLE contact_history ADD COLUMN quarantinehomepossiblecomment varchar(512);
+ALTER TABLE contact_history ADD COLUMN quarantinehomesupplyensured varchar(255);
+ALTER TABLE contact_history ADD COLUMN quarantinehomesupplyensuredcomment varchar(512);
+
+UPDATE contact SET quarantineorderedverbally = CASE WHEN quarantineordermeans = 'VERBALLY' THEN true ELSE false END;
+UPDATE contact SET quarantineorderedofficialdocument = CASE WHEN quarantineordermeans = 'OFFICIAL_DOCUMENT' THEN true ELSE false END;
+
+ALTER TABLE contact DROP COLUMN quarantineordermeans;
+ALTER TABLE contact_history DROP COLUMN quarantineordermeans;
+
+INSERT INTO schema_version (version_number, comment) VALUES (202, 'Additional quarantine fields #1906');
+
+-- 2020-04-24 Add type of reporting to cases #1833
+ALTER TABLE cases ADD COLUMN reportingtype varchar(255);
+ALTER TABLE cases_history ADD COLUMN reportingtype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (203, 'Add type of reporting to cases #1833');
+
+-- 2020-04-26 Add fieldSampleID to sample #1863
+ALTER TABLE samples ADD COLUMN fieldsampleid varchar(512);
+ALTER TABLE samples_history ADD COLUMN fieldsampleid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (204, 'Add fieldSampleID to sample #1863');
+
+-- 2020-04-29 Added symptoms loss of taste and loss of smell #1936
+ALTER TABLE symptoms ADD COLUMN lossoftaste varchar(255);
+ALTER TABLE symptoms ADD COLUMN lossofsmell varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lossoftaste varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lossofsmell varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (205, 'Added symptoms loss of taste and loss of smell #1936');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -68,6 +68,7 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -89,6 +90,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -129,15 +131,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							CaseDataDto.RABIES_TYPE))) +
 			fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
 			fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
+					fluidRowLocs(CaseDataDto.REPORTING_TYPE,
+							"")
+					+
 			fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
 			fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
 			fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
 			fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
 			fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
 			locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
-					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3,
-							CaseDataDto.QUARANTINE_TO)
-					+
+			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
+			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
+			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) + 
+			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
+			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
+			fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
 			fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 			fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
 			loc(MEDICAL_INFORMATION_LOC) +
@@ -159,6 +167,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
+	private CheckBox quarantineOrderedVerbally;
+	private CheckBox quarantineOrderedOfficialDocument;
 	
 	public CaseDataForm(PersonDto person, Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
@@ -203,6 +213,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
 		addField(CaseDataDto.OUTCOME, OptionGroup.class);
 		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
+		if (isGermanServer()) {
+			addField(CaseDataDto.REPORTING_TYPE);
+		}
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
@@ -216,9 +229,34 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantine = addField(CaseDataDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> updateQuarantineFields());
 		quarantineFrom = addField(CaseDataDto.QUARANTINE_FROM, DateField.class);
-		quarantineFrom.setVisible(false);
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
-		quarantineTo.setVisible(false);
+		
+		if (isGermanServer()) {
+			quarantineOrderedVerbally = addField(ContactDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
+			CssStyles.style(quarantineOrderedVerbally, CssStyles.FORCE_CAPTION);
+			addField(ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, DateField.class);
+			quarantineOrderedOfficialDocument = addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CheckBox.class);
+			CssStyles.style(quarantineOrderedOfficialDocument, CssStyles.FORCE_CAPTION);
+			addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, DateField.class);
+			setVisible(false, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, 
+					ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
+		}
+		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
+		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+		setVisible(false, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
+
+		addField(ContactDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
+		addField(ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
+		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, OptionGroup.class);
+		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, ContactDto.QUARANTINE_HOME_POSSIBLE, Arrays.asList(YesNoUnknown.NO), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, ContactDto.QUARANTINE_HOME_POSSIBLE, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, Arrays.asList(YesNoUnknown.NO), true);
+		if (isGermanServer()) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, ContactDto.QUARANTINE_ORDERED_VERBALLY, Arrays.asList(Boolean.TRUE), true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, Arrays.asList(Boolean.TRUE), true);
+		}
 		
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
@@ -483,10 +521,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			visible = false;
 			quarantineFrom.clear();
 			quarantineTo.clear();
+			if (isGermanServer()) {
+				quarantineOrderedVerbally.clear();
+				quarantineOrderedOfficialDocument.clear();
+			}
 		}
 
-		quarantineFrom.setVisible(visible);
-		quarantineTo.setVisible(visible);
+		if (isGermanServer()) {
+			setVisible(visible, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT);
+		}
+		setVisible(visible, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
 	}
 
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {

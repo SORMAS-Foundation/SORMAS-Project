@@ -40,7 +40,7 @@ import de.symeda.sormas.api.region.CommunityDto;
 @Produces({
 	MediaType.APPLICATION_JSON + "; charset=UTF-8"
 	})
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class CommunityResource {
 
 	@GET @Path("/all/{since}")

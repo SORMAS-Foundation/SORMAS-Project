@@ -70,6 +70,7 @@ repositories {
     mavenLocal()
     google()
     maven { url "https://maven.repository.redhat.com/ga/" }
+    jcenter()
 }
 
 dependencies {
@@ -110,6 +111,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
 }
 
 apply plugin: 'com.google.gms.google-services'

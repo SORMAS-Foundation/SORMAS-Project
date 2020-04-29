@@ -30,12 +30,14 @@ caseClass = paste("Classification", c(
 	"SUSPECT",
 	"PROBABLE",
 	"CONFIRMED"), sep=("."))
+	
+# see CountElementStyle.POSITIVE and styles.css count-element
 caseClassColor = c(
-	"#17bd27", 
-	"#706c67", 
-	"#a88732", 
-	"#db890f", 
-	"#f70707")
+	"#32CD32", # positive
+	"#808080", # minor
+	"#c8aa00", # relevant
+	"#be6900", # important
+	"#c80000") # critical
 
 hierarchical= "T" == substr(HIERARCHICAL, 1, 1)
 defaultFont="font-family:'Open Sans', sans-serif, 'Source Sans Pro'"
@@ -48,8 +50,12 @@ con = dbConnect(PostgreSQL(), user=DB_USER, dbname=DB_NAME, password = DB_PASS, 
 
 #query contact table and ratin only contacts parsed from Sys.getenv
 if (CONTACT_IDS == "") {
-	idCont = as.character(dbGetQuery(con," select id from public.contact")$id) # these are Sys.getenv("contact") parsed as character vector
-	idContString = toString(idCont)
+	#for testing: get all valid contacts
+	idCont = as.character(dbGetQuery(con, "select ct.id 
+from public.contact ct
+	join public.cases cs on (ct.caze_id = cs.id)
+where ct.deleted = FALSE and ct.contactclassification != 'NO_CONTACT'
+	and cs.caseclassification != 'NO_CASE' and cs.deleted = FALSE")$id)
 } else {
 	idContString = CONTACT_IDS
 }
@@ -61,12 +67,7 @@ sql_edge = "select distinct cs.person_id case_pid, ct.person_id contact_pid,
 	'ContactProximity.' || ct.contactproximity as contactproximity, 'ContactStatus.' || ct.contactstatus as contactstatus
 from public.contact ct 
 	join public.cases cs on ct.caze_id = cs.id
-where ct.id in (%s)
-	and ct.deleted = FALSE 
-	and ct.contactclassification != 'NO_CONTACT' 
-	and ct.contactstatus != 'DROPPED'
-	and cs.caseclassification != 'NO_CASE' 
-	and cs.deleted = FALSE"
+where ct.id in (%s)"
 
 edgeTable = dbGetQuery( con, sprintf(sql_edge, idContString) )
 
@@ -75,7 +76,6 @@ sql_node = "with clean_ct as (
 	select *
 	from public.contact
 	where id in (%s)
-		and deleted = FALSE
 ),
 clean_cs as (
 	select *
@@ -88,21 +88,15 @@ node as (
 	select p.id as person_id, rcs.reportdate, rcs.uuid, rcs.caseclassification
 	from public.person p
 		join clean_ct ct on ct.person_id = p.id
-		left join clean_cs rcs on ct.resultingcase_id = rcs.id 
-	WHERE ct.resultingcase_id is not null 
-		or (contactclassification != 'NO_CONTACT' 
-			and contactstatus != 'DROPPED'
-		)
+		left join clean_cs rcs on ct.resultingcase_id = rcs.id
 union
 	--caze
 	select distinct p.id, cs.reportdate, cs.uuid, cs.caseclassification
 	from clean_ct ct 
-		join clean_cs cs on ct.caze_id = cs.id
+		join public.cases cs on ct.caze_id = cs.id
 		join public.person p on cs.person_id = p.id
-	WHERE contactclassification != 'NO_CONTACT' 
-		and contactstatus != 'DROPPED'
 )
---XXX take data from earliest case
+-- take data from earliest case
 select distinct on (person_id)
 	person_id, uuid,  upper(left(uuid, 6)) as short_uuid, 'Classification.' || caseclassification as caseclassification
 from node
@@ -127,13 +121,19 @@ highRiskProximity = paste("ContactProximity", c(
 		"CLOTHES_OR_OTHER",
 		"PHYSICAL_CONTACT"), sep=("."))
 elist$label = NA
-elist$label[elist$contactproximity %in% highRiskProximity] = 1 
-elist$label[!(elist$contactproximity %in% highRiskProximity)] = 2
+elist$label[elist$contactproximity %in% highRiskProximity] = "1" 
+elist$label[!(elist$contactproximity %in% highRiskProximity)] = "2"
+#drop contactproximity
+elist$contactproximity <- NULL
 
 ## defining plotting parameters  
 
 nodesS = nlist
 edgesS = elist
+
+#deleting duplicate edges
+edgesS <- edgesS[order(edgesS$label),]
+edgesS <- distinct(edgesS, from, to, .keep_all = TRUE)
 
 # deleting edges linking a node to itselt
 edgesS = edgesS[edgesS$from != edgesS$to,]
@@ -162,9 +162,9 @@ avertarIcon <- function(color, code = c( "f007")) {
 }
 g = visNetwork(nodesS, edgesS,  main = list(text = "Disease network diagram", style = mainStyle),
               submain = list(text = "The arrows indicate the direction of transmission", style = submainStyle), 
-              footer = list(text = "Double click on the icon to open the associated case or contact data", style = footerStyle), 
+              #footer = list(text = "Double click on the icon to open the associated case or contact data", style = footerStyle), 
               background = "white", annot = T, width = "100%" ) %>%
-  visEdges(arrows = "to", color = "black", smooth = TRUE) %>% 
+  visEdges(arrows = "to", color = "black", smooth = list(type="continuous")) %>%
   visOptions(selectedBy = "Classification", highlightNearest = TRUE, nodesIdSelection = FALSE)
 for (i in 1:length(caseClass)) {
 	  g = visGroups(graph = g, groupname = caseClass[i], size = 10, shape = "icon", icon = avertarIcon(caseClassColor[i]))
@@ -179,7 +179,7 @@ g = g %>%
     visPhysics(hierarchicalRepulsion = list(damping=0.26))
   } else {
     g = g %>% 
-  	visPhysics(solver = "barnesHut", barnesHut = list(damping=0.26))
+  	visPhysics(solver = "barnesHut", barnesHut = list(damping=0.26, avoidOverlap=0.2))
   }	
 
   g = g %>% 

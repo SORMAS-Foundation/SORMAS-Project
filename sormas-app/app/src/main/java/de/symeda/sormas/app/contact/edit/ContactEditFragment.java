@@ -29,7 +29,6 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
-import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -63,7 +62,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     private List<Item> initialDistricts;
     private List<Item> diseaseList;
     private List<Item> categoryList;
-    private List<Item> meansList;
 
     // Instance methods
 
@@ -162,7 +160,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
         diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
         categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
-        meansList = DataUtils.getEnumItems(OrderMeans.class, true);
     }
 
     @Override
@@ -189,13 +186,13 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactQuarantine.addValueChangedListener(e -> {
             boolean visible = QuarantineType.HOME.equals(contentBinding.contactQuarantine.getValue()) || QuarantineType.INSTITUTIONELL.equals(contentBinding.contactQuarantine.getValue());
             if (visible) {
-                contentBinding.contactQuarantineTo.setVisibility(VISIBLE);
                 if (ConfigProvider.isGermanServer()) {
-                    contentBinding.contactQuarantineOrderMeans.setVisibility(VISIBLE);
+                    contentBinding.contactQuarantineOrderedVerbally.setVisibility(VISIBLE);
+                    contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
                 }
             } else {
-                contentBinding.contactQuarantineTo.setVisibility(GONE);
-                contentBinding.contactQuarantineOrderMeans.setVisibility(GONE);
+                contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+                contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
             }
         });
         if (ConfigProvider.isGermanServer()) {
@@ -203,7 +200,10 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         } else {
             contentBinding.contactContactProximityDetails.setVisibility(GONE);
             contentBinding.contactContactCategory.setVisibility(GONE);
-            contentBinding.contactQuarantineOrderMeans.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
         }
 
         if (record.getCaseUuid() != null) {
@@ -256,12 +256,14 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
         contentBinding.contactContactClassification.initializeSpinner(contactClassificationList);
         contentBinding.contactQuarantine.initializeSpinner(quarantineList);
         contentBinding.contactContactCategory.initializeSpinner(categoryList);
-        contentBinding.contactQuarantineOrderMeans.initializeSpinner(meansList);
 
         // Initialize ControlDateFields
         contentBinding.contactLastContactDate.initializeDateField(getFragmentManager());
         contentBinding.contactReportDateTime.initializeDateField(getFragmentManager());
         contentBinding.contactQuarantineFrom.initializeDateField(getFragmentManager());
+        contentBinding.contactQuarantineTo.initializeDateField(getFragmentManager());
+        contentBinding.contactQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
+        contentBinding.contactQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
     }
 
     @Override

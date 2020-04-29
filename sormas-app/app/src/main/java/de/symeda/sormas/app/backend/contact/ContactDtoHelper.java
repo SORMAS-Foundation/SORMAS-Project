@@ -38,9 +38,6 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-/**
- * Created by Stefan Szczesny on 29.11.2016.
- */
 public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
     public ContactDtoHelper() {
@@ -110,12 +107,20 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
         target.setQuarantine(source.getQuarantine());
         target.setQuarantineFrom(source.getQuarantineFrom());
+        target.setQuarantineTo(source.getQuarantineTo());
 
         target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
         target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
-        target.setQuarantineOrderMeans(source.getQuarantineOrderMeans());
         target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+        target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+        target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+        target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+        target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+        target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+        target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+        target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+        target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
     }
 
     @Override
@@ -190,12 +195,20 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
         target.setQuarantine(source.getQuarantine());
         target.setQuarantineFrom(source.getQuarantineFrom());
+        target.setQuarantineTo(source.getQuarantineTo());
 
         target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
         target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
-        target.setQuarantineOrderMeans(source.getQuarantineOrderMeans());
         target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+        target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+        target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+        target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+        target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+        target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+        target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+        target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+        target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

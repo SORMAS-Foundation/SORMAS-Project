@@ -141,7 +141,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 			result = em.createQuery(cq).getResultList();
 			for (DashboardEventDto dashboardEventDto : result) {
-				dashboardEventDto.setDistrict(districtFacade.getDistrictReferenceByUuid(dashboardEventDto.getDistrictUuid()));
+				if (dashboardEventDto.getDistrictUuid() != null) {
+					dashboardEventDto.setDistrict(districtFacade.getDistrictReferenceByUuid(dashboardEventDto.getDistrictUuid()));
+				}
 			}
 		} else {
 			result = Collections.emptyList();
@@ -261,7 +263,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				UserRole.NATIONAL_USER,
 				UserRole.NATIONAL_CLINICIAN,
 				UserRole.NATIONAL_OBSERVER,
-				UserRole.POE_NATIONAL_USER)) {
+				UserRole.POE_NATIONAL_USER,
+				UserRole.REST_USER)) {
 			return null;
 		}
 

@@ -21,8 +21,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.ui.caze.CasesView;
+import de.symeda.sormas.api.contact.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -63,7 +62,6 @@ import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -216,7 +214,7 @@ public class ContactsView extends AbstractView {
 				addHeaderComponent(exportButton);
 			}
 			{
-				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
 
 				addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
@@ -236,9 +234,18 @@ public class ContactsView extends AbstractView {
 							}
 							return caption;
 						},
-						"sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
+						createFileNameWithCurrentDate("sormas_contacts_", ".csv"), null);
 
 				addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+			}
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+				StreamResource followUpVisitsExportStreamResource =
+						DownloadUtil.createContactVisitsExport(grid.getCriteria(),
+								createFileNameWithCurrentDate("sormas_contacts_follow_ups", ".csv"));
+
+				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout, null,
+						VaadinIcons.FILE_TEXT, Captions.exportFollowUp, Descriptions.descFollowUpExportButton);
 			}
 
 			// Warning if no filters have been selected

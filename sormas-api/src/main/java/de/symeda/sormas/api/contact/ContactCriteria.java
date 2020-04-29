@@ -73,8 +73,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	private QuarantineType quarantineType;
-	private OrderMeans quarantineOrderMeans;
+	private Date quarantineTo;
 	private Boolean onlyQuarantineHelpNeeded;
+	private Boolean quarantineOrderedVerbally;
+	private Boolean quarantineOrderedOfficialDocument;
+	private Boolean quarantineNotOrdered;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -311,20 +314,48 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.quarantineType = quarantineType;
 	}
 
-	public OrderMeans getQuarantineOrderMeans() {
-		return quarantineOrderMeans;
-	}
-
-	public void setQuarantineOrderMeans(OrderMeans quarantineOrderMeans) {
-		this.quarantineOrderMeans = quarantineOrderMeans;
-	}
-
 	public Boolean getOnlyQuarantineHelpNeeded() {
 		return onlyQuarantineHelpNeeded;
 	}
 
 	public void setOnlyQuarantineHelpNeeded(Boolean onlyQuarantineHelpNeeded) {
 		this.onlyQuarantineHelpNeeded = onlyQuarantineHelpNeeded;
+	}
+
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public ContactCriteria quarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+		return this;
+	}
+
+	public Boolean getQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	public ContactCriteria quarantineOrderedVerbally(Boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+		return this;
+	}
+
+	public Boolean getQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	public ContactCriteria quarantineOrderedOfficialDocument(Boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+		return this;
+	}
+
+	public Boolean getQuarantineNotOrdered() {
+		return quarantineNotOrdered;
+	}
+
+	public ContactCriteria quarantineNotOrdered(Boolean quarantineNotOrdered) {
+		this.quarantineNotOrdered = quarantineNotOrdered;
+		return this;
 	}
 
 }
