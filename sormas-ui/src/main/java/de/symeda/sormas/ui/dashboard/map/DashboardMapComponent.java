@@ -556,6 +556,11 @@ public class DashboardMapComponent extends VerticalLayout {
 			
 			refreshMap();
 		});
+		cmbPeriodFilter.addItemSetChangeListener(e -> {
+			cmbPeriodFilter.setEnabled(cmbPeriodFilter.size() > 0);
+		});
+		
+		
 		CssStyles.style(btnBack, ValoTheme.BUTTON_BORDERLESS);
 		btnBack.setEnabled(false);
 		btnBack.addClickListener(e -> {
@@ -613,7 +618,6 @@ public class DashboardMapComponent extends VerticalLayout {
 			cmbPeriodFilter.removeAllItems();
 		
 		if (periodType == null) {
-			cmbPeriodFilter.setEnabled(false);						
 			dateFrom = null;
 			dateTo = null;
 			
@@ -622,8 +626,6 @@ public class DashboardMapComponent extends VerticalLayout {
 			
 			return;
 		}
-		
-		cmbPeriodFilter.setEnabled(true);
 		
 		if (mapAndFacilityCases.size() == 0)
 			return;
