@@ -517,6 +517,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		
 		cmbPeriodFilter.setInputPrompt(I18nProperties.getString(Strings.promptSelectPeriod));
 		cmbPeriodFilter.setWidth(120, Unit.PIXELS);
+		cmbPeriodFilter.setNullSelectionAllowed(false);
 		cmbPeriodFilter.setEnabled(false);
 		cmbPeriodFilter.addValueChangeListener(e -> {
 			Date date = (Date) e.getProperty().getValue();
@@ -663,6 +664,9 @@ public class DashboardMapComponent extends VerticalLayout {
 			if (reloadFlag != PeriodFilterReloadFlag.RELOAD_AND_CLEAR_VALUE && caption.equals(cachedDateValue))
 				cmbPeriodFilter.setValue(date);
 		}
+		
+		if (reloadFlag == PeriodFilterReloadFlag.RELOAD_AND_CLEAR_VALUE)
+			cmbPeriodFilter.setValue(cmbPeriodFilter.getItemIds().iterator().next());
 	}
 	
 	private VerticalLayout createLegend() {
