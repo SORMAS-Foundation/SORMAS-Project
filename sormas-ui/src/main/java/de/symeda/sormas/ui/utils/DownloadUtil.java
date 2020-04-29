@@ -32,6 +32,10 @@ import com.vaadin.v7.ui.Grid.Column;
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -439,7 +443,7 @@ public final class DownloadUtil {
 				int startIndex = 0;
 				List<ContactVisitsExportDto> exportRows =
 						FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria, 0,
-								DETAILED_EXPORT_STEP_SIZE);
+								DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				while (!exportRows.isEmpty()) {
 
 					for (ContactVisitsExportDto exportRow : exportRows) {
@@ -448,7 +452,7 @@ public final class DownloadUtil {
 						values.add(exportRow.getFirstName());
 						values.add(exportRow.getLastName());
 						exportRow.getVisitDetails().forEach(contactVisitsDetailsExportDto -> {
-							values.add(DateHelper.formatLocalShortDate(contactVisitsDetailsExportDto.getVisitDateTime()));
+							values.add(DateFormatHelper.formatDate(contactVisitsDetailsExportDto.getVisitDateTime()));
 							values.add(contactVisitsDetailsExportDto.getVisitStatus().toString());
 							values.add(contactVisitsDetailsExportDto.getSymptoms());
 						});
@@ -459,7 +463,7 @@ public final class DownloadUtil {
 					writer.flush();
 					startIndex += DETAILED_EXPORT_STEP_SIZE;
 					exportRows = FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria,
-							startIndex, DETAILED_EXPORT_STEP_SIZE);
+							startIndex, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				}
 			}
 		},
@@ -558,7 +562,7 @@ public final class DownloadUtil {
 										if (value == null) {
 											fieldValues[i] = "";
 										} else if (value instanceof Date) {
-											fieldValues[i] = DateHelper.formatLocalShortDate((Date)value);
+											fieldValues[i] = DateFormatHelper.formatDate((Date)value);
 										} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
 											fieldValues[i] = DataHelper.parseBoolean((Boolean) value);
 										} else if (value instanceof Set) {

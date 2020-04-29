@@ -1,8 +1,9 @@
 package de.symeda.sormas.api.therapy;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class PeriodDto {
+public class PeriodDto implements Serializable {
 	private Date start;
 
 	private Date end;

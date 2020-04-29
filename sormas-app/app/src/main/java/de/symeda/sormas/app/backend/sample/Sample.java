@@ -458,7 +458,7 @@ public class Sample extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateFormatHelper.formatLocalShortDate(getSampleDateTime());
+        return super.toString() + " " + DateFormatHelper.formatLocalDate(getSampleDateTime());
     }
 
     public Double getReportLat() {

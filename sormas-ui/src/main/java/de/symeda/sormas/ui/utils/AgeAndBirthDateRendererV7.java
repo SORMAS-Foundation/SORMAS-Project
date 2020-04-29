@@ -16,6 +16,10 @@ public class AgeAndBirthDateRendererV7 extends Grid.AbstractRenderer<AgeAndBirth
 
 	@Override
 	public JsonValue encode(AgeAndBirthDateDto value) {
+		if(value == null){
+			return encode(getNullRepresentation(), String.class);
+		}
+
 		Language userLanguage = I18nProperties.getUserLanguage();
 		String dateString = PersonHelper.getAgeAndBirthdateString(value.getAge(), value.getAgeType(), value.getBirthdateDD(), value.getBirthdateMM(), value.getBirthdateYYYY(), userLanguage);
 

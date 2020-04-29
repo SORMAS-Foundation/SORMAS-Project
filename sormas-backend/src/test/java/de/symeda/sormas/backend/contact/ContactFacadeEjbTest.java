@@ -363,7 +363,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		visit21.getSymptoms().setBackache(SymptomState.YES);
 		getVisitFacade().saveVisit(visit21);
 
-		final List<ContactVisitsExportDto> results = getContactFacade().getContactVisitsExportList(null, 0, 100);
+		final List<ContactVisitsExportDto> results = getContactFacade().getContactVisitsExportList(null, 0, 100, Language.EN);
 		assertNotNull(results);
 		assertEquals(2, results.size());
 

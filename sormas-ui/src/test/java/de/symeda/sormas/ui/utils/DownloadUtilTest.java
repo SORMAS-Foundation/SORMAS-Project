@@ -73,7 +73,7 @@ public class DownloadUtilTest extends AbstractBeanTest {
         Assert.assertEquals("test_contact_follow_up_export.csv", contactVisitsExport.getStream().getFileName());
         InputStream stream = contactVisitsExport.getStream().getStream();
 
-        final String shortDate = DateHelper.formatLocalShortDate(new Date());
+        final String shortDate = DateFormatHelper.formatDate(new Date());
 
         Assert.assertEquals("\"Contact ID\",\"First name\",\"Last name\",\"Date and time of visit\",\"Person available and " +
                 "cooperative?\",\"Symptoms\",\"Date and time of visit\",\"Person available and cooperative?\"," +
