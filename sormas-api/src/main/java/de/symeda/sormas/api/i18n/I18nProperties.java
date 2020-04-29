@@ -50,6 +50,7 @@ public final class I18nProperties {
 
 	private static I18nProperties getInstance(Language language) {
 		if (language == null) {
+			Language defaultLanguage = getDefaultLanguage();
 			if (defaultLanguage != null) {
 				language = defaultLanguage;
 			} else {
@@ -68,21 +69,34 @@ public final class I18nProperties {
 
 	public static Language setUserLanguage(Language language) {
 		if (language == null) {
-			language = defaultLanguage;
+			language = getDefaultLanguage();
 		}
 		userLanguage.set(language);
-		
+
 		return language;
+	}
+
+	public static Language getUserLanguage() {
+		Language language = userLanguage.get();
+		return language == null ? getDefaultLanguage() : language;
 	}
 
 	public static void removeUserLanguage() {
 		userLanguage.remove();
 	}
-	
+
 	public static void setDefaultLanguage(Language language) {
 		if (language != null) {
 			defaultLanguage = language;
 		}
+	}
+
+	private static Language getDefaultLanguage() {
+		if (defaultLanguage == null) {
+			return Language.EN;
+		}
+
+		return defaultLanguage;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -98,7 +112,7 @@ public final class I18nProperties {
 	/**
 	 * Retrieves the property by adding an additional string in between the class name and the property name,
 	 * e.g. Disease.Short.EVD or FollowUpStatus.Desc.NO_FOLLOW_UP
-	 * 
+	 * <p>
 	 * Does fallback to enum caption without addition.
 	 */
 	public static String getEnumCaption(Enum<?> value, String addition) {
@@ -139,7 +153,7 @@ public final class I18nProperties {
 	public static String getPrefixCaption(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance(userLanguage.get()).captionProperties.getString(prefix+"."+key);
+			result = getInstance(userLanguage.get()).captionProperties.getString(prefix + "." + key);
 		}
 		if (result == null) {
 			result = getCaption(key, defaultValue);
@@ -197,7 +211,7 @@ public final class I18nProperties {
 	/**
 	 * Uses <param>key</param> as default value
 	 */
-	public static String getValidationError(String key, Object ...formatArgs) {
+	public static String getValidationError(String key, Object... formatArgs) {
 		String result = getInstance(userLanguage.get()).validationProperties.getString(key, null);
 		if (result != null) {
 			return String.format(result, formatArgs);
@@ -208,10 +222,10 @@ public final class I18nProperties {
 		}
 	}
 
-	public static String getPrefixValidationError(String prefix, String key, Object ...formatArgs) {
+	public static String getPrefixValidationError(String prefix, String key, Object... formatArgs) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance(userLanguage.get()).validationProperties.getString(prefix+"."+key);
+			result = getInstance(userLanguage.get()).validationProperties.getString(prefix + "." + key);
 			if (result != null) {
 				return String.format(result, result);
 			}
@@ -248,9 +262,8 @@ public final class I18nProperties {
 
 	public static class UTF8Control extends Control {
 		public java.util.ResourceBundle newBundle
-		(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-				throws IllegalAccessException, InstantiationException, IOException
-		{
+				(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
+				throws IllegalAccessException, InstantiationException, IOException {
 			// The below is a copy of the default implementation.
 			String bundleName = normalizeCountryCode(toBundleName(baseName, locale));
 			String resourceName = toResourceName(bundleName, "properties");
@@ -291,5 +304,5 @@ public final class I18nProperties {
 			return new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
 		}
 	}
-	
+
 }

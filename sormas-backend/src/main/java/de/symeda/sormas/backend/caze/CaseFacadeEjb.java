@@ -59,14 +59,11 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.CaseMeasure;
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -371,7 +368,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	@Transactional(value = TxType.REQUIRES_NEW)
-	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration) {
+	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage) {
 		Boolean previousCaseManagementDataCriteria = caseCriteria.isMustHaveCaseManagementData();
 		if (CaseExportType.CASE_MANAGEMENT == exportType) {
 			caseCriteria.mustHaveCaseManagementData(Boolean.TRUE);
@@ -577,7 +574,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					Optional.ofNullable(healthConditions.get(exportDto.getHealthConditionsId())).ifPresent(healthCondition -> exportDto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(healthCondition)));
 				}
 				if (firstPreviousHospitalizations != null) {
-					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId())).ifPresent(firstPreviousHospitalization -> exportDto.setInitialDetectionPlace(FacilityHelper.buildFacilityString(firstPreviousHospitalization.getHealthFacility().getUuid(), 
+					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId())).ifPresent(firstPreviousHospitalization -> exportDto.setInitialDetectionPlace(FacilityHelper.buildFacilityString(firstPreviousHospitalization.getHealthFacility().getUuid(),
 							firstPreviousHospitalization.getHealthFacility().getName(), firstPreviousHospitalization.getHealthFacilityDetails())));
 					if (StringUtils.isEmpty(exportDto.getInitialDetectionPlace())) {
 						if (!StringUtils.isEmpty(exportDto.getHealthFacility())) {
@@ -598,7 +595,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						StringBuilder travelHistoryBuilder = new StringBuilder();
 						caseTravels.forEach(travel -> {
 							travelHistoryBuilder.append(EpiDataTravelHelper.buildTravelString(travel.getTravelType(),
-									travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo())).append(", ");
+									travel.getTravelDestination(), travel.getTravelDateFrom(), travel.getTravelDateTo(), userLanguage)).append(", ");
 						});
 						if (travelHistoryBuilder.length() > 0) {
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length() - 1);
@@ -931,7 +928,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						cb.isNull(person2.get(Person.BIRTHDATE_MM)), cb.isNull(person2.get(Person.BIRTHDATE_YYYY))),
 				cb.and(cb.equal(person.get(Person.BIRTHDATE_DD), person2.get(Person.BIRTHDATE_DD)),
 						cb.equal(person.get(Person.BIRTHDATE_MM), person2.get(Person.BIRTHDATE_MM)),
-						cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));	
+						cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));
 		// Onset date filter: only when onset date is filled in for both cases
 		Predicate onsetDateFilter = cb.or(
 				cb.or(cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), cb.isNull(symptoms2.get(Symptoms.ONSET_DATE))),
@@ -1306,11 +1303,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		updateCaseAge(existingCase, newCase);
 
 		// Change the disease of all contacts if the case disease or disease details have changed
-		if (existingCase != null && 
+		if (existingCase != null &&
 				(newCase.getDisease() != existingCase.getDisease() ||
 				!StringUtils.equals(newCase.getDiseaseDetails(), existingCase.getDiseaseDetails()))) {
 			for (Contact contact : contactService.findBy(new ContactCriteria().caze(newCase.toReference()), null)) {
-				if (contact.getDisease() != newCase.getDisease() || 
+				if (contact.getDisease() != newCase.getDisease() ||
 						!StringUtils.equals(contact.getDiseaseDetails(), newCase.getDiseaseDetails())) {
 					// Only do the change if it hasn't been done in the mobile app before
 					contact.setDisease(newCase.getDisease());
@@ -2313,7 +2310,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	/**
 	 * Archives all cases that have not been changed for a defined amount of days
-	 * 
+	 *
 	 * @param daysAfterCaseGetsArchived defines the amount of days
 	 */
 	@Override

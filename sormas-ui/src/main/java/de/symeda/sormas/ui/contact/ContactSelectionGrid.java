@@ -30,18 +30,19 @@ public class ContactSelectionGrid extends Grid {
         GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
         setContainerDataSource(generatedContainer);
 
-        setColumns(PersonIndexDto.FIRST_NAME, PersonIndexDto.LAST_NAME, ContactIndexDto.UUID,
-                ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactIndexDto.CONTACT_PROXIMITY,
-                ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS,
-                ContactIndexDto.FOLLOW_UP_STATUS);
+        setColumns(SimilarContactDto.FIRST_NAME, SimilarContactDto.LAST_NAME, SimilarContactDto.UUID,
+        		SimilarContactDto.CAZE, SimilarContactDto.CASE_ID_EXTERNAL_SYSTEM, SimilarContactDto.LAST_CONTACT_DATE,
+        		SimilarContactDto.CONTACT_PROXIMITY,
+        		SimilarContactDto.CONTACT_CLASSIFICATION, SimilarContactDto.CONTACT_STATUS,
+        		SimilarContactDto.FOLLOW_UP_STATUS);
 
         for (Column column : getColumns()) {
             column.setHeaderCaption(I18nProperties.findPrefixCaption(column.getPropertyId().toString(),
                     PersonIndexDto.I18N_PREFIX, ContactIndexDto.I18N_PREFIX, ContactDto.I18N_PREFIX));
         }
 
-        getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);
-        getColumn(PersonIndexDto.LAST_NAME).setMinimumWidth(150);
+        getColumn(SimilarContactDto.FIRST_NAME).setMinimumWidth(150);
+        getColumn(SimilarContactDto.LAST_NAME).setMinimumWidth(150);
     }
 
     private void loadData(ContactSimilarityCriteria criteria) {

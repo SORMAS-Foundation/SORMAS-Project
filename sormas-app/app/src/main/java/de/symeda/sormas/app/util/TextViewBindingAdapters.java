@@ -20,24 +20,23 @@ package de.symeda.sormas.app.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.ObservableList;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.ObservableList;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -73,7 +72,7 @@ import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 
 public class TextViewBindingAdapters {
 
-    @BindingAdapter(value={"value", "shortUuid", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"value", "shortUuid", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setUuidValue(TextView textField, String stringValue, boolean shortUuid, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -96,7 +95,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"value", "prependValue", "valueFormat", "defaultValue"})
+    @BindingAdapter(value = {"value", "prependValue", "valueFormat", "defaultValue"})
     public static void setValueWithPrepend(TextView textField, String stringValue, String prependValue, String valueFormat, String defaultValue) {
         if (StringUtils.isEmpty(stringValue)) {
             textField.setText(defaultValue);
@@ -105,7 +104,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"value", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
+    @BindingAdapter(value = {"value", "prependValue", "valueFormat", "defaultValue"}, requireAll = true)
     public static void setValueWithPrepend(TextView textField, Enum enumValue, String prependValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -122,7 +121,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"value", "valueCaption", "defaultValue"})
+    @BindingAdapter(value = {"value", "valueCaption", "defaultValue"})
     public static void setValueWithCaption(TextView view, String value, String valueCaption, String defaultValue) {
         StringBuilder valBuilder = new StringBuilder();
         valBuilder.append("<b>").append(valueCaption).append(": </b>");
@@ -133,12 +132,12 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"dateValue", "valueCaption", "defaultValue"})
+    @BindingAdapter(value = {"dateValue", "valueCaption", "defaultValue"})
     public static void setDateValueWithCaption(TextView view, Date date, String valueCaption, String defaultValue) {
-        setValueWithCaption(view, DateHelper.formatLocalShortDate(date), valueCaption, defaultValue);
+        setValueWithCaption(view, DateFormatHelper.formatLocalDate(date), valueCaption, defaultValue);
     }
 
-    @BindingAdapter(value={"facilityValue", "facilityDetailsValue", "valueCaption", "defaultValue"})
+    @BindingAdapter(value = {"facilityValue", "facilityDetailsValue", "valueCaption", "defaultValue"})
     public static void setFacilityValueWithCaption(TextView view, Facility facility, String facilityDetailsValue, String valueCaption, String defaultValue) {
         if (facility != null) {
             setValueWithCaption(view, FacilityHelper.buildFacilityString(facility.getUuid(), facility.getName(), facilityDetailsValue), valueCaption, defaultValue);
@@ -147,17 +146,19 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"enumValue", "valueCaption", "defaultValue"})
+    @BindingAdapter(value = {"enumValue", "valueCaption", "defaultValue"})
     public static void setEnumValueWithCaption(TextView view, Enum enumValue, String valueCaption, String defaultValue) {
         setValueWithCaption(view, enumValue != null ? enumValue.toString() : null, valueCaption, defaultValue);
     }
 
-    @BindingAdapter(value={"ageDateValue", "valueCaption", "defaultValue"})
+    @BindingAdapter(value = {"ageDateValue", "valueCaption", "defaultValue"})
     public static void setAgeDateValueWithCaption(TextView view, Person person, String valueCaption, String defaultValue) {
-        setValueWithCaption(view, PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()), valueCaption, defaultValue);
+        setValueWithCaption(view,
+                DateFormatHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()),
+                valueCaption, defaultValue);
     }
 
-    @BindingAdapter(value={"value", "prependValue", "appendValue", "valueFormat", "defaultValue"}, requireAll=true)
+    @BindingAdapter(value = {"value", "prependValue", "appendValue", "valueFormat", "defaultValue"}, requireAll = true)
     public static void setValueWithPrepend(TextView textField, Integer integerValue, String prependValue, String appendValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
         String stringValue = (integerValue != null) ? integerValue.toString() : "";
@@ -176,7 +177,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"locationValue", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
+    @BindingAdapter(value = {"locationValue", "prependValue", "valueFormat", "defaultValue"}, requireAll = true)
     public static void setLocationValueWithPrepend(TextView textField, Location location, String prependValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -196,49 +197,24 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"ageWithDateValue", "prependValue", "valueFormat", "defaultValue"}, requireAll=true)
+    @BindingAdapter(value = {"ageWithDateValue", "prependValue", "valueFormat", "defaultValue"}, requireAll = true)
     public static void setAgeWithDateValueAndPrepend(TextView textField, Person person, String prependValue, String valueFormat, String defaultValue) {
         if (person == null || person.getApproximateAge() == null) {
             textField.setText(prependValue + ": " + defaultValue);
         } else {
             String age = person.getApproximateAge().toString();
             ApproximateAgeType ageType = person.getApproximateAgeType();
-            String day = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : null;
-            String month = person.getBirthdateMM() != null ? person.getBirthdateMM().toString() : null;
-            String year = person.getBirthdateYYYY() != null ? person.getBirthdateYYYY().toString() : null;
-            StringBuilder ageWithDateBuilder = new StringBuilder();
-            ageWithDateBuilder.append(age).append(" ").append(ageType != null ? ageType.toString() : "");
+            String dateOfBirth = DateFormatHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
 
-            String dateOfBirth = null;
-            if (year != null) {
-                if (month != null) {
-                    if (day != null) {
-                        dateOfBirth = String.format(
-                                ResourceUtils.getString(textField.getContext(), R.string.date_format),
-                                day, month, year);
-                    } else {
-                        dateOfBirth = String.format(
-                                ResourceUtils.getString(textField.getContext(), R.string.date_two_values_format),
-                                month, year);
-                    }
-                } else {
-                    dateOfBirth = year;
-                }
-            } else if (month != null && day != null) {
-                dateOfBirth = String.format(
-                        ResourceUtils.getString(textField.getContext(), R.string.date_two_values_format),
-                        day, month);
-            }
-
-            if (dateOfBirth != null) {
-                ageWithDateBuilder.append(" (").append(dateOfBirth).append(")");
-            }
+            StringBuilder ageWithDateBuilder = new StringBuilder()
+                    .append(age).append(" ").append(ageType != null ? ageType.toString() : "")
+                    .append(" (").append(dateOfBirth).append(")");
 
             textField.setText(prependValue + ": " + ageWithDateBuilder.toString());
         }
     }
 
-    @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(TextView textField, String stringValue, String appendValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -256,7 +232,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"dateRangeValue", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"dateRangeValue", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDateRangeValue(TextView textField, Date fromValue, Date appendValue, String valueFormat, String defaultValue) {
         String from = "";
         String to = "";
@@ -269,13 +245,13 @@ public class TextViewBindingAdapters {
         if (fromValue == null) {
             from = " ? ";
         } else {
-            from = DateHelper.formatLocalShortDate(fromValue);
+            from = DateFormatHelper.formatLocalDate(fromValue);
         }
 
         if (appendValue == null) {
             to = " ? ";
         } else {
-            to = DateHelper.formatLocalShortDate(appendValue);
+            to = DateFormatHelper.formatLocalDate(appendValue);
         }
 
         if (valueFormat != null && valueFormat.trim() != "") {
@@ -285,7 +261,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"value", "append1", "append2", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"value", "append1", "append2", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(TextView textField, String stringValue, String append1, String append2, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -303,7 +279,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"temperatureValue", "temperatureSource", "defaultValue"})
+    @BindingAdapter(value = {"temperatureValue", "temperatureSource", "defaultValue"})
     public static void setTemperatureValue(TextView textField, Float temperature, TemperatureSource temperatureSource, String defaultValue) {
         if (temperature == null) {
             textField.setText(defaultValue);
@@ -312,7 +288,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"bloodPressureSystolicValue", "bloodPressureDiastolicValue", "defaultValue"})
+    @BindingAdapter(value = {"bloodPressureSystolicValue", "bloodPressureDiastolicValue", "defaultValue"})
     public static void setBloodPressureValue(TextView textField, Integer bloodPressureSystolic, Integer bloodPressureDiastolic, String defaultValue) {
         if (bloodPressureSystolic == null && bloodPressureDiastolic == null) {
             textField.setText(defaultValue);
@@ -321,7 +297,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"heartRateValue", "defaultValue"})
+    @BindingAdapter(value = {"heartRateValue", "defaultValue"})
     public static void setHeartRateValue(TextView textField, Integer heartRate, String defaultValue) {
         if (heartRate == null) {
             textField.setText(defaultValue);
@@ -330,12 +306,12 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(TextView textField, Integer integerValue, String appendValue, String valueFormat, String defaultValue) {
         setValue(textField, (integerValue != null) ? integerValue.toString() : "", appendValue, valueFormat, defaultValue);
     }
 
-    @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"diseaseValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDiseaseValue(TextView textField, Task task, String valueFormat, String defaultValue) {
         String val = defaultValue;
         String diseaseString = getDisease(task);
@@ -353,7 +329,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"diseaseValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDiseaseValue(TextView textField, Sample sample, String valueFormat, String defaultValue) {
         String val = defaultValue;
         String diseaseString = getDisease(sample);
@@ -371,7 +347,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"diseaseValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDiseaseValue(TextView textField, Event eventRecord, String valueFormat, String defaultValue) {
         String val = defaultValue;
         String diseaseString = getDisease(eventRecord);
@@ -389,7 +365,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"diseaseValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDiseaseValue(TextView textField, Case caseRecord, String valueFormat, String defaultValue) {
         if (caseRecord == null || caseRecord.getDisease() == null) {
             textField.setText(defaultValue);
@@ -402,7 +378,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"diseaseValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"diseaseValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDiseaseValue(TextView textField, Disease disease, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -419,12 +395,12 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"value", "defaultValue"}, requireAll=true)
+    @BindingAdapter(value = {"value", "defaultValue"}, requireAll = true)
     public static void setValue(TextView textField, Enum enumValue, String defaultValue) {
         setValue(textField, enumValue, defaultValue, null);
     }
 
-    @BindingAdapter(value={"value", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"value", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setValue(TextView textField, Enum enumValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -441,7 +417,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"treatmentType", "valueDetails", "typeOfDrug"})
+    @BindingAdapter(value = {"treatmentType", "valueDetails", "typeOfDrug"})
     public static void setTreatmentTypeValue(TextView textField, TreatmentType value, String valueDetails, TypeOfDrug typeOfDrug) {
         if (value == TreatmentType.DRUG_INTAKE) {
             StringBuilder sb = new StringBuilder();
@@ -464,7 +440,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"doseValue", "routeValue", "routeDetailsValue"})
+    @BindingAdapter(value = {"doseValue", "routeValue", "routeDetailsValue"})
     public static void setDoseAndRoute(TextView textField, String dose, TreatmentRoute route, String routeDetails) {
         StringBuilder sb = new StringBuilder();
         if (!StringUtils.isEmpty(dose)) {
@@ -483,7 +459,7 @@ public class TextViewBindingAdapters {
         textField.setText(sb.toString());
     }
 
-    @BindingAdapter(value={"yesNoUnknown"}, requireAll=false)
+    @BindingAdapter(value = {"yesNoUnknown"}, requireAll = false)
     public static void setYesNoUnknown(TextView textField, YesNoUnknown yesNoUnknown) {
         if (yesNoUnknown == null) {
             textField.setText("");
@@ -500,7 +476,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"value", "appendValue", "valueFormat", "defaultValue"}, requireAll=true)
+    @BindingAdapter(value = {"value", "appendValue", "valueFormat", "defaultValue"}, requireAll = true)
     public static void setValue(TextView textField, Enum enumValue, Date dateValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -508,7 +484,7 @@ public class TextViewBindingAdapters {
             textField.setText(val);
         } else {
             val = enumValue.toString();
-            String _dateValue = DateHelper.formatLocalShortDate(dateValue);
+            String _dateValue = DateFormatHelper.formatLocalDate(dateValue);
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -518,7 +494,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value ={"investigationStatusValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"investigationStatusValue", "defaultValue"}, requireAll = false)
     public static void setInvestigationStatusValue(TextView textField, InvestigationStatus status, String defaultValue) {
         if (status == null) {
             textField.setText(defaultValue);
@@ -527,7 +503,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"userValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"userValue", "defaultValue"}, requireAll = false)
     public static void setUserValue(TextView textField, User user, String defaultValue) {
         if (user == null) {
             textField.setText(defaultValue);
@@ -542,7 +518,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"personValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"personValue", "defaultValue"}, requireAll = false)
     public static void setPersonValue(TextView textField, Person person, String defaultValue) {
         if (person == null) {
             textField.setText(defaultValue);
@@ -557,7 +533,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"personValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"personValue", "defaultValue"}, requireAll = false)
     public static void setPersonValue(TextView textField, Sample sample, String defaultValue) {
         if (sample == null) {
             textField.setText(defaultValue);
@@ -586,7 +562,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"patientValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"patientValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setPatientValue(TextView textField, Task task, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -603,14 +579,14 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"dueDateValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"dueDateValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDueDateValue(TextView textField, Task task, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
         if (task == null || task.getDueDate() == null) {
             textField.setText(val);
         } else {
-            val = DateHelper.formatLocalShortDate(task.getDueDate());
+            val = DateFormatHelper.formatLocalDate(task.getDueDate());
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val));
@@ -620,7 +596,7 @@ public class TextViewBindingAdapters {
 
 
             Integer dueDateColor = null;
-            if(task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
+            if (task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
                 dueDateColor = textField.getContext().getResources().getColor(R.color.watchOut);
                 textField.setTypeface(textField.getTypeface(), Typeface.BOLD);
                 textField.setTextColor(dueDateColor);
@@ -628,7 +604,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"dueTimeAgoValue", "textColor", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"dueTimeAgoValue", "textColor", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDueTimeAgoValue(TextView textField, Task task, int textColor, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -647,7 +623,7 @@ public class TextViewBindingAdapters {
 
             Integer dueDateColor = null;
             TaskStatus kkk = task.getTaskStatus();
-            if(task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
+            if (task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
                 dueDateColor = textField.getContext().getResources().getColor(R.color.watchOut);
                 //textField.setTypeface(textField.getTypeface(), Typeface.BOLD);
                 textField.setTextColor(dueDateColor);
@@ -659,7 +635,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"ageWithDateValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"ageWithDateValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setAgeWithDateValue(TextView textField, Person person, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -675,13 +651,7 @@ public class TextViewBindingAdapters {
                 String ageType = person.getApproximateAgeType().toString();
 
                 //Dob
-                String dateFormat = textField.getContext().getResources().getString(R.string.date_format);
-                String date = person.getBirthdateDD() != null ? person.getBirthdateDD().toString() : "1";
-                String month = person.getBirthdateMM() != null ? String.valueOf(person.getBirthdateMM() - 1) : "0";
-                String year = person.getBirthdateYYYY().toString();
-
-                String dob = String.format(dateFormat, date, month, year);
-
+                String dob = DateFormatHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
 
                 textField.setText(String.format(valueFormat, val, ageType, dob));
             } else {
@@ -690,7 +660,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"ageWithUnit", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"ageWithUnit", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setAgeWithUnit(TextView textField, Person person, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -703,7 +673,7 @@ public class TextViewBindingAdapters {
                 return;
 
             //Year or Month
-            String ageType = person.getApproximateAgeType() != null? person.getApproximateAgeType().toString() : null;
+            String ageType = person.getApproximateAgeType() != null ? person.getApproximateAgeType().toString() : null;
 
             if (valueFormat != null && valueFormat.trim() != "") {
                 textField.setText(String.format(valueFormat, val, ageType));
@@ -717,7 +687,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"resultingCaseStatus", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"resultingCaseStatus", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setResultingCaseStatus(TextView textField, String resultingCaseUuid, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -739,12 +709,12 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"dateValue", "prependValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"dateValue", "prependValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setDateValue(TextView textField, Date dateValue, String prependValue, String valueFormat, String defaultValue) {
         if (dateValue == null) {
             textField.setText(defaultValue);
         } else {
-            String val = DateHelper.formatLocalShortDate(dateValue);
+            String val = DateFormatHelper.formatLocalDate(dateValue);
 
             if (valueFormat != null && !valueFormat.trim().equals("")) {
                 val = String.format(valueFormat, val);
@@ -754,7 +724,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"timeValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"timeValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setTimeValue(TextView textField, Date dateValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -771,16 +741,16 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"dateTimeValue", "defaultValue"})
+    @BindingAdapter(value = {"dateTimeValue", "defaultValue"})
     public static void setDateTimeValue(TextView textField, Date dateValue, String defaultValue) {
         if (dateValue == null) {
             textField.setText(defaultValue);
         } else {
-            textField.setText(DateHelper.formatLocalShortDateTime(dateValue));
+            textField.setText(DateFormatHelper.formatLocalDateTime(dateValue));
         }
     }
 
-    @BindingAdapter(value={"timeAgoValue", "valueFormat", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"timeAgoValue", "valueFormat", "defaultValue"}, requireAll = false)
     public static void setTimeAgoValue(TextView textField, Date dateValue, String valueFormat, String defaultValue) {
         String val = defaultValue;
 
@@ -797,7 +767,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"shortLocationValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"shortLocationValue", "defaultValue"}, requireAll = false)
     public static void setShortLocationValue(TextView textField, Location location, String defaultValue) {
         if (location == null || location.toString().isEmpty()) {
             textField.setText(defaultValue);
@@ -807,7 +777,7 @@ public class TextViewBindingAdapters {
     }
 
 
-    @BindingAdapter(value={"locationValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"locationValue", "defaultValue"}, requireAll = false)
     public static void setLocationValue(TextView textField, Location location, String defaultValue) {
         if (location == null || location.toString().isEmpty()) {
             textField.setText(defaultValue);
@@ -816,7 +786,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"testResultValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"testResultValue", "defaultValue"}, requireAll = false)
     public static void setTestResultValue(TextView textField, Sample sample, String defaultValue) {
         if (sample == null) {
             textField.setText(defaultValue);
@@ -846,7 +816,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"facilityValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"facilityValue", "defaultValue"}, requireAll = false)
     public static void setFacilityValue(TextView textField, Facility facility, String defaultValue) {
         if (facility == null) {
             textField.setText(defaultValue);
@@ -871,7 +841,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"samplePurposeValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"samplePurposeValue", "defaultValue"}, requireAll = false)
     public static void setPurposeValue(TextView textField, SamplePurpose samplePurpose, String defaultValue) {
         if (samplePurpose == null) {
             textField.setText(defaultValue);
@@ -880,7 +850,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"pointOfEntryValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"pointOfEntryValue", "defaultValue"}, requireAll = false)
     public static void setPointOfEntryValue(TextView textField, PointOfEntry pointOfEntry, String defaultValue) {
         if (pointOfEntry == null) {
             textField.setText(defaultValue);
@@ -889,7 +859,7 @@ public class TextViewBindingAdapters {
         }
     }
 
-    @BindingAdapter(value={"adoValue", "defaultValue"}, requireAll=false)
+    @BindingAdapter(value = {"adoValue", "defaultValue"}, requireAll = false)
     public static void setAdoValue(TextView textField, AbstractDomainObject ado, String defaultValue) {
         if (ado == null || StringUtils.isEmpty(ado.toString())) {
             textField.setText(defaultValue);
@@ -899,55 +869,55 @@ public class TextViewBindingAdapters {
     }
 
     //TODO: Orson - remove
-    @BindingAdapter(value={"removeBottomMarginForBurialIfEmpty", "bottomMargin"})
+    @BindingAdapter(value = {"removeBottomMarginForBurialIfEmpty", "bottomMargin"})
     public static void setRemoveBottomMarginForBurialIfEmpty(LinearLayout viewGroup, ObservableList<EpiDataBurial> list, float bottomMargin) {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
 
         if (list == null || list.size() <= 0) {
             params.bottomMargin = 0;
         } else {
-            params.bottomMargin = (int)bottomMargin;
+            params.bottomMargin = (int) bottomMargin;
         }
 
         viewGroup.setLayoutParams(params);
     }
 
     //TODO: Orson - remove
-    @BindingAdapter(value={"removeBottomMarginForGatheringIfEmpty", "bottomMargin"})
+    @BindingAdapter(value = {"removeBottomMarginForGatheringIfEmpty", "bottomMargin"})
     public static void setRemoveBottomMarginForGatheringIfEmpty(LinearLayout viewGroup, ObservableList<EpiDataGathering> list, float bottomMargin) {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
 
         if (list == null || list.size() <= 0) {
             params.bottomMargin = 0;
         } else {
-            params.bottomMargin = (int)bottomMargin;
+            params.bottomMargin = (int) bottomMargin;
         }
 
         viewGroup.setLayoutParams(params);
     }
 
     //TODO: Orson - remove
-    @BindingAdapter(value={"removeBottomMarginForTravelIfEmpty", "bottomMargin"})
+    @BindingAdapter(value = {"removeBottomMarginForTravelIfEmpty", "bottomMargin"})
     public static void setRemoveBottomMarginForTravelIfEmpty(LinearLayout viewGroup, ObservableList<EpiDataTravel> list, float bottomMargin) {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
 
         if (list == null || list.size() <= 0) {
             params.bottomMargin = 0;
         } else {
-            params.bottomMargin = (int)bottomMargin;
+            params.bottomMargin = (int) bottomMargin;
         }
 
         viewGroup.setLayoutParams(params);
     }
 
-    @BindingAdapter(value={"removeBottomMarginIfEmpty", "bottomMargin"})
+    @BindingAdapter(value = {"removeBottomMarginIfEmpty", "bottomMargin"})
     public static void setRemoveBottomMarginIfEmpty(LinearLayout viewGroup, ObservableList list, float bottomMargin) {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
 
         if (list == null || list.size() <= 0) {
             params.bottomMargin = 0;
         } else {
-            params.bottomMargin = (int)bottomMargin;
+            params.bottomMargin = (int) bottomMargin;
         }
 
         viewGroup.setLayoutParams(params);
@@ -1027,7 +997,6 @@ public class TextViewBindingAdapters {
             return result;
 
 
-
         if (disease == Disease.OTHER) {
             result = disease.toShortString() + " (" + sample.getAssociatedCase().getDiseaseDetails() + ")";
         } else {
@@ -1062,7 +1031,7 @@ public class TextViewBindingAdapters {
         } else if (record.getEvent() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(record.getEvent().getEventStatus());
-            sb.append(", " + DateHelper.formatLocalShortDate(record.getEvent().getEventDate()));
+            sb.append(", " + DateFormatHelper.formatLocalDate(record.getEvent().getEventDate()));
             if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
                 sb.append(", " + record.getEvent().getEventLocation().getCity());
             }
@@ -1072,7 +1041,6 @@ public class TextViewBindingAdapters {
 
         return result;
     }
-
 
 
 }

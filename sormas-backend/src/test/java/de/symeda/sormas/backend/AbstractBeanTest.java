@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -128,6 +130,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+
+		I18nProperties.setUserLanguage(Language.EN);
 	}
 
 	private void initH2Functions() {

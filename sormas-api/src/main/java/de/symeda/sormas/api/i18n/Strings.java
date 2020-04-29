@@ -541,6 +541,7 @@ public interface Strings {
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
 	String messageSampleErrors = "messageSampleErrors";
+	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
 	String messageSamplesDeleted = "messageSamplesDeleted";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
@@ -618,12 +619,14 @@ public interface Strings {
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDistrict = "promptDistrict";
+	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
 	String promptSamplesSearchField = "promptSamplesSearchField";
 	String promptSearch = "promptSearch";
+	String promptSelectPeriod = "promptSelectPeriod";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";
@@ -636,6 +639,7 @@ public interface Strings {
 	String total = "total";
 	String unknown = "unknown";
 	String until = "until";
+	String week = "week";
 	String weekShort = "weekShort";
 	String year = "year";
 	String years = "years";

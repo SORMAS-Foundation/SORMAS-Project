@@ -30,9 +30,9 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 public class ControlTextImageField extends ControlTextReadField {
 
@@ -227,7 +227,7 @@ public class ControlTextImageField extends ControlTextReadField {
             // TODO reset default style?
 
             if (sample.isShipped()) {
-                textImageField.setValue(DateHelper.formatLocalShortDate(sample.getShipmentDate()), true);
+                textImageField.setValue(DateFormatHelper.formatLocalDate(sample.getShipmentDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
             } else {
                 textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
@@ -245,7 +245,7 @@ public class ControlTextImageField extends ControlTextReadField {
             // TODO reset default style?
 
             if (sample.isReceived()) {
-                textImageField.setValue(DateHelper.formatLocalShortDate(sample.getReceivedDate()), true);
+                textImageField.setValue(DateFormatHelper.formatLocalDate(sample.getReceivedDate()), true);
                 textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
             } else {
                 textImageField.setValue(textImageField.getResources().getString(R.string.no), false);

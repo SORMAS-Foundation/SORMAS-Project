@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.*;
@@ -227,7 +228,7 @@ public class ContactFacadeEjb implements ContactFacade {
     }
 
 	@Override
-	public List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max) {
+	public List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -304,7 +305,7 @@ public class ContactFacadeEjb implements ContactFacade {
                 exportDto.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ?
                         YesNoUnknown.YES : YesNoUnknown.NO);
                 exportDto.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
-                exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true));
+                exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
             }
         }
 
@@ -329,7 +330,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
     @Override
     public List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first,
-                                                                   int max) {
+                                                                   int max, Language userLanguage) {
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<ContactVisitsExportDto> query = cb.createQuery(ContactVisitsExportDto.class);
@@ -363,12 +364,12 @@ public class ContactFacadeEjb implements ContactFacade {
         final List<ContactVisitsExportDto> resultList =
                 em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
 
-        fillDetailsOfVisits(cb, resultList);
+        fillDetailsOfVisits(cb, resultList, userLanguage);
 
         return resultList;
     }
 
-    private void fillDetailsOfVisits(CriteriaBuilder cb, List<ContactVisitsExportDto> resultList) {
+    private void fillDetailsOfVisits(CriteriaBuilder cb, List<ContactVisitsExportDto> resultList, Language userLanguage) {
 
         final Set<Long> personIds =
                 resultList.stream().map(contactVisitsExportDto -> contactVisitsExportDto.getPersonId()).collect(Collectors.toSet());
@@ -399,8 +400,7 @@ public class ContactFacadeEjb implements ContactFacade {
             final Long personId = extractTupleValue(tuple, Visit.PERSON);
             final ContactVisitsExportDto.ContactVisitsDetailsExportDto contactVisitsDetailsExportDto =
                     new ContactVisitsExportDto.ContactVisitsDetailsExportDto(visitDateTime, visitStatus,
-                            symptoms.toHumanString(true));
-
+                            symptoms.toHumanString(true, userLanguage));
             if (visitDetailsMap.containsKey(personId)) {
                 visitDetailsMap.get(personId).add(contactVisitsDetailsExportDto);
             } else {
@@ -1047,12 +1047,15 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarContactDto> cq = cb.createQuery(SimilarContactDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
-		final Join<Case, Person> personJoin = contactRoot.join(Case.PERSON, JoinType.LEFT);
+		final Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+		final Join<Contact, Case> caseJoin = contactRoot.join(Contact.CAZE, JoinType.LEFT);
+		final Join<Case, Person> casePersonJoin = contactRoot.join(Case.PERSON, JoinType.LEFT);
 
-		cq.multiselect(personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME),
-				contactRoot.get(Contact.UUID), contactRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM),
-				contactRoot.get(Contact.CONTACT_PROXIMITY), contactRoot.get(Contact.CONTACT_CLASSIFICATION),
-				contactRoot.get(Contact.CONTACT_STATUS), contactRoot.get(Contact.FOLLOW_UP_STATUS));
+        cq.multiselect(personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME),
+                contactRoot.get(Contact.UUID), caseJoin.get(Case.UUID), casePersonJoin.get(Person.FIRST_NAME), casePersonJoin.get(Person.LAST_NAME),
+                contactRoot.get(Contact.CASE_ID_EXTERNAL_SYSTEM), contactRoot.get(Contact.LAST_CONTACT_DATE),
+                contactRoot.get(Contact.CONTACT_PROXIMITY), contactRoot.get(Contact.CONTACT_CLASSIFICATION),
+                contactRoot.get(Contact.CONTACT_STATUS), contactRoot.get(Contact.FOLLOW_UP_STATUS));
 
 		final Predicate defaultFilter = contactService.createDefaultFilter(cb, contactRoot);
 		final Predicate userFilter = contactService.createUserFilter(cb, cq, contactRoot);
@@ -1065,8 +1068,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		final Predicate diseaseFilter = disease != null ? cb.equal(contactRoot.get(Contact.DISEASE), disease) : null;
 
 		final CaseReferenceDto caze = criteria.getCaze();
-		final Predicate cazeFilter = caze != null ? cb.equal(contactRoot.get(Contact.CAZE).get(Case.UUID),
-				caze.getUuid()) : null;
+		final Predicate cazeFilter = caze != null ? cb.equal(caseJoin.get(Case.UUID), caze.getUuid()) : null;
 
 		final Date reportDate = criteria.getReportDate();
 		final Date lastContactDate = criteria.getLastContactDate();

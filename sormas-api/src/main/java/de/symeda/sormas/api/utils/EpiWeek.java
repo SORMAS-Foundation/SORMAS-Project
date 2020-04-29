@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
@@ -73,21 +74,25 @@ public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGro
 
 	@Override
 	public String toString() {
-		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this)) + ")") : "");
+		return toString(I18nProperties.getUserLanguage());
+	}
+
+	public String toString(Language language) {
+		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this), language) + ")") : "");
 	}
 	
 	/**
 	 * Returns a human-readable representation of the epi week, starting from the first day of the week until the specified end date. This should ideally lay within the same week.
 	 */
-	public String toString(Date endDate) {
-		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatLocalDate(endDate) + ")") : "");
+	public String toString(Date endDate, Language language) {
+		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - " + DateHelper.formatLocalDate(endDate, language) + ")") : "");
 	}
 	
 	/**
 	 * Returns a human-readable representation of the epi week, starting from the first day of the week for as many days as specified by epi week length.
 	 */
-	public String toString(int epiWeekLength) {
-		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this)) + " - " + DateHelper.formatLocalDate(DateHelper.addDays(DateHelper.getEpiWeekStart(this), epiWeekLength)) + ")") : "");
+	public String toString(int epiWeekLength, Language language) {
+		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - " + DateHelper.formatLocalDate(DateHelper.addDays(DateHelper.getEpiWeekStart(this), epiWeekLength), language) + ")") : "");
 	}
 	
 	public String toShortString() {

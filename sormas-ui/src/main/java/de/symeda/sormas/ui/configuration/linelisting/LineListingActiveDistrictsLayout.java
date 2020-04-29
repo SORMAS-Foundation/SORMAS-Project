@@ -11,6 +11,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
 public class LineListingActiveDistrictsLayout extends CssLayout {
@@ -28,7 +29,7 @@ public class LineListingActiveDistrictsLayout extends CssLayout {
 			StringBuilder captionBuilder = new StringBuilder();
 			captionBuilder.append("<b>").append(config.getDistrictName()).append("</b><br/>");
 			if (config.getEndDate() != null) {
-				captionBuilder.append(I18nProperties.getString(Strings.until)).append(" ").append(DateHelper.formatLocalShortDate(config.getEndDate()));
+				captionBuilder.append(I18nProperties.getString(Strings.until)).append(" ").append(DateFormatHelper.formatDate(config.getEndDate()));
 			} else {
 				captionBuilder.append(I18nProperties.getString(Strings.messageNoEndDate));
 			}

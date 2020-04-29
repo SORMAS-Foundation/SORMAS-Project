@@ -53,7 +53,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 /**
  * A DTO class that contains the properties that are exported during a detailed case export. These
  * properties are also those that users can select when creating a custom export configuration.
- *
+ * <p>
  * PLEASE NOTE: When the @ExportProperty value of one of these properties changes, it's necessary
  * to replace all occurrences of the former value in all export configurations in the database.
  * Otherwise, existing export configurations will no longer export the property. Also, it is
@@ -99,7 +99,7 @@ public class CaseExportDto implements Serializable {
 	private YesNoUnknown pregnant;
 	private String approximateAge;
 	private String ageGroup;
-	private String birthdate;
+	private BirthDateDto birthdate;
 	private Date reportDate;
 	private String region;
 	private String district;
@@ -118,7 +118,7 @@ public class CaseExportDto implements Serializable {
 	private String initialDetectionPlace;
 	private PresentCondition presentCondition;
 	private Date deathDate;
-	private String burialInfo;
+	private BurialInfoDto burialInfo;
 	private String addressRegion;
 	private String addressDistrict;
 	private String city;
@@ -135,7 +135,7 @@ public class CaseExportDto implements Serializable {
 	private YesNoUnknown directContactProbableCase;
 	private YesNoUnknown contactWithRodent;
 	private SymptomsDto symptoms;
-//	private Date onsetDate;
+	//	private Date onsetDate;
 //	private String symptoms;
 	private Vaccination vaccination;
 	private String vaccinationDoses;
@@ -198,7 +198,7 @@ public class CaseExportDto implements Serializable {
 		this.pregnant = pregnant;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.ageGroup = ApproximateAgeHelper.getAgeGroupFromAge(approximateAge, approximateAgeType);
-		this.birthdate = PersonHelper.formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY);
+		this.birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.reportDate = reportDate;
 		this.region = region;
 		this.district = district;
@@ -217,7 +217,7 @@ public class CaseExportDto implements Serializable {
 		this.leftAgainstAdvice = leftAgainstAdvice;
 		this.presentCondition = presentCondition;
 		this.deathDate = deathDate;
-		this.burialInfo = PersonHelper.buildBurialInfoString(burialDate, burialConductor, burialPlaceDescription);
+		this.burialInfo = new BurialInfoDto(burialDate, burialConductor, burialPlaceDescription);
 		this.addressRegion = addressRegion;
 		this.addressDistrict = addressDistrict;
 		this.city = city;
@@ -363,12 +363,8 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(PersonDto.BIRTH_DATE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
-	public String getBirthdate() {
+	public BirthDateDto getBirthdate() {
 		return birthdate;
-	}
-
-	public void setBirthdate(String birthdate) {
-		this.birthdate = birthdate;
 	}
 
 	@Order(20)
@@ -555,12 +551,8 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE})
 	@ExportProperty(BURIAL_INFO)
 	@ExportGroup(ExportGroupType.SENSITIVE)
-	public String getBurialInfo() {
+	public BurialInfoDto getBurialInfo() {
 		return burialInfo;
-	}
-
-	public void setBurialInfo(String burialInfo) {
-		this.burialInfo = burialInfo;
 	}
 
 	@Order(56)
