@@ -56,18 +56,23 @@ public enum Language {
 	 * @return EN when the locale does not fit any language
 	 */
 	public static Language fromLocaleString(String locale) {
-		switch (locale) {
-		case "en": return EN;
-		case "en-NG": return EN_NG;
-		case "en-GH": return EN_GH;
-		case "fr-FR": return FR;
-		case "de-DE": return DE;
-		case "es-EC": return ES_EC;
-		case "fi-FI":
-			return FI;
-		default:
+		if (locale == null) {
 			return EN;
 		}
+		switch (locale.toLowerCase().replace('_', '-')) {
+ 		case "en": return EN;
+		case "en-ng": return EN_NG;
+		case "en-gh": return EN_GH;
+		case "fr": 
+		case "fr-fr": return FR;
+		case "de":
+		case "de-de": return DE;
+		case "es":
+		case "es-ec": return ES_EC;
+		case "fi":
+		case "fi-fi": return FI;
+ 		default:
+ 			return EN;
+		}
 	}
-
 }
