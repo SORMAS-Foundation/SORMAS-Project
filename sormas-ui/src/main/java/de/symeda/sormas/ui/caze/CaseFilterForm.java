@@ -127,6 +127,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.EXCLUDE_SHARED_CASES, I18nProperties.getCaption(Captions.caseFilterExcludeSharedCases), I18nProperties.getDescription(Descriptions.descCaseFilterExcludeSharedCasesString), CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
+		addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, I18nProperties.getCaption(Captions.caseFilterExcludeSharedCases), I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer), CssStyles.CHECKBOX_FILTER_INLINE));
+
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 

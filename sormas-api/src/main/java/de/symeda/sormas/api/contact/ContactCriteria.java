@@ -41,6 +41,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String QUARANTINE_TYPE = "quarantineType";
+	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
+	public static final String QUARANTINE_NOT_ORDERED = "quarantineNotOrdered";
 	public static final String ONLY_QUARANTINE_HELP_NEEDED = "onlyQuarantineHelpNeeded";
 	public static final String ONLY_HIGH_PRIORITY_CONTACTS = "onlyHighPriorityContacts";
 
@@ -326,36 +329,32 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		return quarantineTo;
 	}
 
-	public ContactCriteria quarantineTo(Date quarantineTo) {
+	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
-		return this;
 	}
 
 	public Boolean getQuarantineOrderedVerbally() {
 		return quarantineOrderedVerbally;
 	}
 
-	public ContactCriteria quarantineOrderedVerbally(Boolean quarantineOrderedVerbally) {
+	public void setQuarantineOrderedVerbally(Boolean quarantineOrderedVerbally) {
 		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
-		return this;
 	}
 
 	public Boolean getQuarantineOrderedOfficialDocument() {
 		return quarantineOrderedOfficialDocument;
 	}
 
-	public ContactCriteria quarantineOrderedOfficialDocument(Boolean quarantineOrderedOfficialDocument) {
+	public void setQuarantineOrderedOfficialDocument(Boolean quarantineOrderedOfficialDocument) {
 		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
-		return this;
 	}
 
 	public Boolean getQuarantineNotOrdered() {
 		return quarantineNotOrdered;
 	}
 
-	public ContactCriteria quarantineNotOrdered(Boolean quarantineNotOrdered) {
+	public void setQuarantineNotOrdered(Boolean quarantineNotOrdered) {
 		this.quarantineNotOrdered = quarantineNotOrdered;
-		return this;
 	}
 
 }

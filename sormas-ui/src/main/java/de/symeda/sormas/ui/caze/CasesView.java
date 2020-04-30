@@ -378,19 +378,6 @@ public class CasesView extends AbstractView {
 		addComponent(gridLayout);
 	}
 
-	/**
-	 * Iterates through the prefixes to determines the caption for the specified propertyId.
-	 *
-	 * @return
-	 */
-	private static String findPrefixCaption(String propertyId, String... prefixes) {
-		return Arrays.stream(prefixes)
-				.map(p -> I18nProperties.getPrefixCaption(p, propertyId, null))
-				.filter(Objects::nonNull)
-				.findFirst()
-				.orElse(propertyId);
-	}
-
 	private void addImportButton(VerticalLayout importLayout, String buttonId, String captionKey,
 								 String windowHeadingKey, Supplier<Component> windowContentSupplier) {
 		Button lineListingImportButton = new Button(I18nProperties.getCaption(captionKey));

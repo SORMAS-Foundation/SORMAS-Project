@@ -9,6 +9,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -46,7 +47,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 	private static final String MORE_FILTERS_HTML = filterLocs(ContactCriteria.REGION, ContactCriteria.DISTRICT,
 			DISTRICT_INFO_LABEL_ID, ContactCriteria.CONTACT_OFFICER, ContactCriteria.REPORTING_USER_ROLE, ContactCriteria.FOLLOW_UP_UNTIL_TO) +
-			filterLocs(ContactCriteria.QUARANTINE_TYPE, ContactDto.QUARANTINE_ORDER_MEANS, ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED, ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS) +
+			filterLocs(ContactCriteria.QUARANTINE_TYPE, ContactDto.QUARANTINE_TO, ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED, ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS) +
 			loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -104,8 +105,12 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.FOLLOW_UP_UNTIL_TO, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL), 200));
 		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.QUARANTINE_TYPE, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE), 140));
 
+		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactDto.QUARANTINE_TO, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO), 140));
+
 		if (isGermanServer()) {
-			addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactDto.QUARANTINE_ORDER_MEANS, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDER_MEANS), 140));
+			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(ContactCriteria.QUARANTINE_ORDERED_VERBALLY, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_VERBALLY), null, CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(ContactCriteria.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT), null, CssStyles.CHECKBOX_FILTER_INLINE));
+			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(ContactCriteria.QUARANTINE_NOT_ORDERED, I18nProperties.getCaption(Captions.contactQuarantineNotOrdered), null, CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
 		addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED, I18nProperties.getCaption(Captions.contactOnlyQuarantineHelpNeeded), null, CssStyles.CHECKBOX_FILTER_INLINE));

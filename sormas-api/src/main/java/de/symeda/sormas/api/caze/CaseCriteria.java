@@ -42,6 +42,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY = "mustBePortHealthCaseWithoutFacility";
 	public static final String MUST_HAVE_CASE_MANAGEMENT_DATA = "mustHaveCaseManagementData";
 	public static final String EXCLUDE_SHARED_CASES = "excludeSharedCases";
+	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
@@ -232,12 +233,11 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return mustHaveCaseManagementData;
 	}
 
-	public CaseCriteria withoutResponsibleOfficer(Boolean withoutResponsibleOfficer) {
+	public void setWithoutResponsibleOfficer(Boolean withoutResponsibleOfficer) {
 		this.withoutResponsibleOfficer = withoutResponsibleOfficer;
-		return this;
 	}
 
-	public Boolean isWithoutResponsibleOfficer() {
+	public Boolean getWithoutResponsibleOfficer() {
 		return this.withoutResponsibleOfficer;
 	}
 

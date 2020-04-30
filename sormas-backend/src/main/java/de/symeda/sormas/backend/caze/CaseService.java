@@ -533,7 +533,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.exists(treatmentSubquery),
 							cb.exists(clinicalVisitSubquery)));
 		}
-		if(Boolean.TRUE.equals(caseCriteria.isWithoutResponsibleOfficer())){
+		if(Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())){
 			filter = and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
 		}
 		if (caseCriteria.getRelevanceStatus() != null) {
