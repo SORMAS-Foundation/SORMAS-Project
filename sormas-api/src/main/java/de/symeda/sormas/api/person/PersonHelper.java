@@ -22,6 +22,8 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.simmetrics.metrics.StringMetrics;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -33,50 +35,57 @@ public final class PersonHelper {
 	}
 
 	public static final double NAME_SIMILARITY_THRESHOLD = 0.5D;
-	
+
 	/**
 	 * Calculates the trigram distance between both names and returns true
 	 * if the similarity is high enough to consider them a possible match.
 	 * Used a default of 0.6 for the threshold.
 	 */
-	public static boolean areNamesSimilar(String firstName, String secondName) {	
+	public static boolean areNamesSimilar(String firstName, String secondName) {
 		return StringMetrics.qGramsDistance().compare(firstName, secondName) >= NAME_SIMILARITY_THRESHOLD;
 	}
-	
-	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
+
+	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Language language) {
 		if (birthdateDD == null && birthdateMM == null && birthdateYYYY == null) {
 			return "";
 		} else {
-			String birthDate = DateHelper.getLocalDateFormat().toPattern();
+			String birthDate = DateHelper.getLocalDateFormat(language).toPattern();
 			birthDate = birthDate.replaceAll("d+", birthdateDD != null ? birthdateDD.toString() : "");
 			birthDate = birthDate.replaceAll("M+", birthdateMM != null ? birthdateMM.toString() : "");
 			birthDate = birthDate.replaceAll("y+", birthdateYYYY != null ? birthdateYYYY.toString() : "");
-			birthDate = birthDate.replaceAll("^\\D+", "").replaceAll("\\D+$", "");
+			birthDate = birthDate.replaceAll("^[^\\d]*", "").replaceAll("[^\\d]*$", "");
+
 			return birthDate;
 		}
 	}
-	
-	public static String getAgeAndBirthdateString(Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
+
+	public static String getAgeAndBirthdateString(Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Language language) {
 		String ageStr = ApproximateAgeHelper.formatApproximateAge(age, ageType);
-		String birthdateStr = formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY);
+		String birthdateStr = formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY, language);
 		return !StringUtils.isEmpty(ageStr) ? (ageStr + (!StringUtils.isEmpty(birthdateStr) ? " (" + birthdateStr + ")" : "")) : !StringUtils.isEmpty(birthdateStr) ? birthdateStr : "";
 	}
-	
-	public static String buildBurialInfoString(Date burialDate, BurialConductor burialConductor, String burialPlaceDescription) {
+
+	public static String buildBurialInfoString(BurialInfoDto dto, Language language) {
 		StringBuilder result = new StringBuilder();
+
+		Date burialDate = dto.getBurialDate();
 		if (burialDate != null) {
-			result.append(DateHelper.formatLocalShortDate(burialDate));
+			result.append(DateHelper.formatLocalDate(burialDate, language));
 		}
+
+		BurialConductor burialConductor = dto.getBurialConductor();
 		if (burialConductor != null) {
 			if (result.length() > 0) {
 				result.append(" ");
-			} 
+			}
 			result.append(burialConductor);
 		}
+
+		String burialPlaceDescription = dto.getBurialPlaceDescription();
 		if (burialPlaceDescription != null) {
 			if (result.length() > 0) {
 				result.append(" ");
-			} 
+			}
 			result.append(burialPlaceDescription);
 		}
 		return result.toString();

@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.*;
@@ -33,6 +34,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -226,7 +228,7 @@ public class ContactFacadeEjb implements ContactFacade {
     }
 
 	@Override
-	public List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max) {
+	public List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
@@ -303,7 +305,7 @@ public class ContactFacadeEjb implements ContactFacade {
                 exportDto.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ?
                         YesNoUnknown.YES : YesNoUnknown.NO);
                 exportDto.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
-                exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true));
+                exportDto.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
             }
         }
 
@@ -328,7 +330,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
     @Override
     public List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first,
-                                                                   int max) {
+                                                                   int max, Language userLanguage) {
 
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<ContactVisitsExportDto> query = cb.createQuery(ContactVisitsExportDto.class);
@@ -339,7 +341,11 @@ public class ContactFacadeEjb implements ContactFacade {
                 contactRoot.get(Contact.UUID),
                 contactPerson.get(Person.ID),
                 contactPerson.get(Person.FIRST_NAME),
-                contactPerson.get(Person.LAST_NAME));
+                contactPerson.get(Person.LAST_NAME),
+                cb.<Date>selectCase().when(cb.isNotNull(contactRoot.get(Contact.LAST_CONTACT_DATE)),
+                        contactRoot.get(Contact.LAST_CONTACT_DATE))
+                        .otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
+                contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
         final Subquery<Visit> visitSubquery = query.subquery(Visit.class);
         final Root<Visit> visitSubqueryRoot = visitSubquery.from(Visit.class);
@@ -358,12 +364,12 @@ public class ContactFacadeEjb implements ContactFacade {
         final List<ContactVisitsExportDto> resultList =
                 em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
 
-        fillDetailsOfVisits(cb, resultList);
+        fillDetailsOfVisits(cb, resultList, userLanguage);
 
         return resultList;
     }
 
-    private void fillDetailsOfVisits(CriteriaBuilder cb, List<ContactVisitsExportDto> resultList) {
+    private void fillDetailsOfVisits(CriteriaBuilder cb, List<ContactVisitsExportDto> resultList, Language userLanguage) {
 
         final Set<Long> personIds =
                 resultList.stream().map(contactVisitsExportDto -> contactVisitsExportDto.getPersonId()).collect(Collectors.toSet());
@@ -394,7 +400,7 @@ public class ContactFacadeEjb implements ContactFacade {
             final Long personId = extractTupleValue(tuple, Visit.PERSON);
             final ContactVisitsExportDto.ContactVisitsDetailsExportDto contactVisitsDetailsExportDto =
                     new ContactVisitsExportDto.ContactVisitsDetailsExportDto(visitDateTime, visitStatus,
-                            symptoms.toHumanString(true));
+                            symptoms.toHumanString(true, userLanguage));
             if (visitDetailsMap.containsKey(personId)) {
                 visitDetailsMap.get(personId).add(contactVisitsDetailsExportDto);
             } else {
@@ -404,8 +410,17 @@ public class ContactFacadeEjb implements ContactFacade {
             }
         }
 
-        resultList.forEach(contactVisitsExportDto ->
-                contactVisitsExportDto.setVisitDetails(visitDetailsMap.get(contactVisitsExportDto.getPersonId())));
+        resultList.forEach(contactVisitsExportDto -> {
+            final Date startDate = DateHelper.subtractDays(contactVisitsExportDto.getLastContactDate(),
+                    VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+            final Date endDate = DateHelper.addDays(contactVisitsExportDto.getFollowUpUntil(),
+                    VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+            final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitDetails =
+                    visitDetailsMap.get(contactVisitsExportDto.getPersonId()).stream()
+                            .filter(dto -> DateHelper.isBetween(dto.getVisitDateTime(), startDate, endDate))
+                            .collect(Collectors.toList());
+            contactVisitsExportDto.setVisitDetails(visitDetails);
+        });
     }
 
     private <T extends Object> T extractTupleValue(Tuple tuple, String alias) {

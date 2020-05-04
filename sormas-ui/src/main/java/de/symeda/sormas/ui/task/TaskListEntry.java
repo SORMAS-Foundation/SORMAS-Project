@@ -31,9 +31,9 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
 public class TaskListEntry extends HorizontalLayout {
@@ -68,11 +68,11 @@ public class TaskListEntry extends HorizontalLayout {
 		topLeftLayout.addComponent(taskTypeLabel);
 		
 		Label suggestedStartLabel = new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START)
-				+ ": " + DateHelper.formatLocalShortDate(task.getSuggestedStart()));
+				+ ": " + DateFormatHelper.formatDate(task.getSuggestedStart()));
 		topLeftLayout.addComponent(suggestedStartLabel);
 		
 		Label dueDateLabel = new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.DUE_DATE)
-				+ ": " + DateHelper.formatLocalShortDate(task.getDueDate()));
+				+ ": " + DateFormatHelper.formatDate(task.getDueDate()));
 		topLeftLayout.addComponent(dueDateLabel);		
 		
 		topLayout.addComponent(topLeftLayout);

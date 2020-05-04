@@ -16,17 +16,29 @@ public class ContactVisitsExportDto implements Serializable {
     private String uuid;
     private String firstName;
     private String lastName;
+    private Date lastContactDate;
+    private Date followUpUntil;
     private List<ContactVisitsDetailsExportDto> visitDetails;
 
-    public ContactVisitsExportDto(String uuid, Long personId, String firstName, String lastName) {
+    public ContactVisitsExportDto(String uuid, Long personId, String firstName, String lastName, Date lastContactDate, Date followUpUntil) {
         this.uuid = uuid;
         this.personId = personId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.lastContactDate = lastContactDate;
+        this.followUpUntil = followUpUntil;
     }
 
     public Long getPersonId() {
         return personId;
+    }
+
+    public Date getLastContactDate() {
+        return lastContactDate;
+    }
+
+    public Date getFollowUpUntil() {
+        return followUpUntil;
     }
 
     public Integer getMaximumFollowUpVisits() {

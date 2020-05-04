@@ -19,15 +19,19 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
@@ -93,10 +97,15 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS, COLUMN_ACTIONS);
 
+		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
-				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
-				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<CaseIndexDto, AgeAndBirthDateDto>)getColumn(CaseIndexDto.AGE_AND_BIRTH_DATE))
+				.setRenderer(value -> value == null ? ""
+								: PersonHelper.getAgeAndBirthdateString(value.getAge(), value.getAgeType(), value.getBirthdateDD(), value.getBirthdateMM(), value.getBirthdateYYYY(), I18nProperties.getUserLanguage())
+						, new TextRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, column.getId().toString(),

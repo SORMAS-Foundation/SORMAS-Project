@@ -51,13 +51,19 @@ public class DownloadUtilTest extends AbstractBeanTest {
 
         PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
         ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference()
-                , caze, new Date(), new Date());
+                , caze, new Date(), null);
         VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
         visit21.getSymptoms().setAbdominalPain(SymptomState.YES);
         FacadeProvider.getVisitFacade().saveVisit(visit21);
         VisitDto visit22 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
         visit22.getSymptoms().setAgitation(SymptomState.YES);
         FacadeProvider.getVisitFacade().saveVisit(visit22);
+
+        // this visit is older than the allowed offset days - should not affect our export
+        VisitDto visit23 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(),
+                DateHelper.subtractDays(new Date(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET + 1), VisitStatus.COOPERATIVE);
+        visit23.getSymptoms().setAgitation(SymptomState.YES);
+        FacadeProvider.getVisitFacade().saveVisit(visit23);
 
         PersonDto contactPerson3 = creator.createPerson("Contact3", "Person3");
         ContactDto contact3 = creator.createContact(user.toReference(), user.toReference(), contactPerson3.toReference()
@@ -73,7 +79,7 @@ public class DownloadUtilTest extends AbstractBeanTest {
         Assert.assertEquals("test_contact_follow_up_export.csv", contactVisitsExport.getStream().getFileName());
         InputStream stream = contactVisitsExport.getStream().getStream();
 
-        final String shortDate = DateHelper.formatLocalShortDate(new Date());
+        final String shortDate = DateFormatHelper.formatDate(new Date());
 
         Assert.assertEquals("\"Contact ID\",\"First name\",\"Last name\",\"Date and time of visit\",\"Person available and " +
                 "cooperative?\",\"Symptoms\",\"Date and time of visit\",\"Person available and cooperative?\"," +

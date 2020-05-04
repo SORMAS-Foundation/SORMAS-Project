@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import de.symeda.sormas.ui.utils.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -55,14 +56,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsLayout;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
-import de.symeda.sormas.ui.utils.*;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.function.Supplier;
+import de.symeda.sormas.ui.dashboard.DateFilterOption;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -187,7 +181,7 @@ public class CasesView extends AbstractView {
 
 			{
 				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE,
-						(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null),
+						(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null, I18nProperties.getUserLanguage()),
 						(propertyId, type) -> {
 							String caption = I18nProperties.findPrefixCaption(propertyId,
 									CaseExportDto.I18N_PREFIX,
@@ -198,7 +192,7 @@ public class CasesView extends AbstractView {
 									EpiDataDto.I18N_PREFIX,
 									HospitalizationDto.I18N_PREFIX);
 							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 							}
 							return caption;
 						},
@@ -223,7 +217,7 @@ public class CasesView extends AbstractView {
 									PersonDto.I18N_PREFIX,
 									AdditionalTestDto.I18N_PREFIX);
 							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 							}
 							return caption;
 						},
@@ -239,7 +233,7 @@ public class CasesView extends AbstractView {
 					customExportsLayout.setExportCallback(
 							(exportConfig) -> {
 								Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null,
-										(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, exportConfig),
+										(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, exportConfig, I18nProperties.getUserLanguage()),
 										(propertyId, type) -> {
 											String caption = I18nProperties.findPrefixCaption(propertyId,
 													CaseExportDto.I18N_PREFIX,
@@ -249,7 +243,7 @@ public class CasesView extends AbstractView {
 													EpiDataDto.I18N_PREFIX,
 													HospitalizationDto.I18N_PREFIX);
 											if (Date.class.isAssignableFrom(type)) {
-												caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+												caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 											}
 											return caption;
 										},

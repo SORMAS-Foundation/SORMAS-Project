@@ -18,8 +18,6 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import org.joda.time.DateTimeComparator;
@@ -29,16 +27,12 @@ import java.util.Date;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditPortHealthInfoLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ResultCallback;
 
 final class CaseValidator {

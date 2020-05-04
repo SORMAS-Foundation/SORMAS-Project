@@ -29,6 +29,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -107,12 +108,13 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 				.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
+		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
-		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-			((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+			((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}

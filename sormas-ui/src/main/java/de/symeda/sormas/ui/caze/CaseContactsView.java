@@ -20,7 +20,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
-import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -67,12 +67,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -320,7 +314,7 @@ public class CaseContactsView extends AbstractCaseView {
 			StreamResource extendedExportStreamResource = DownloadUtil
 					.createCsvExportStreamResource(
 							ContactExportDto.class, null, (Integer start, Integer max) -> FacadeProvider
-									.getContactFacade().getExportList(grid.getCriteria(), start, max),
+									.getContactFacade().getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
 							(propertyId, type) -> {
 								String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX,
 										propertyId,
@@ -334,7 +328,7 @@ public class CaseContactsView extends AbstractCaseView {
 																				HospitalizationDto.I18N_PREFIX,
 																				propertyId))))));
 								if (Date.class.isAssignableFrom(type)) {
-									caption += " (" + DateHelper.getLocalShortDatePattern() + ")";
+									caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 								}
 								return caption;
 							}, "sormas_contacts_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);

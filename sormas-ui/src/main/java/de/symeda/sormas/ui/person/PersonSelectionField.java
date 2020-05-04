@@ -53,7 +53,7 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 	public PersonSelectionField(PersonDto referencePerson, String infoText) {
 		this.referencePerson = referencePerson;
 		this.infoText = infoText;
-		
+
 		initializeGrid();
 	}
 
@@ -81,8 +81,8 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 		personDetailsLayout.addComponent(lblNickname);
 
 		Label lblBirthDateAndAge = new Label(PersonHelper.getAgeAndBirthdateString(
-				referencePerson.getApproximateAge(), referencePerson.getApproximateAgeType(), 
-				referencePerson.getBirthdateDD(), referencePerson.getBirthdateMM(), referencePerson.getBirthdateYYYY()));
+				referencePerson.getApproximateAge(), referencePerson.getApproximateAgeType(),
+				referencePerson.getBirthdateDD(), referencePerson.getBirthdateMM(), referencePerson.getBirthdateYYYY(), I18nProperties.getUserLanguage()));
 		lblBirthDateAndAge.setWidthUndefined();
 		lblBirthDateAndAge.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
 		personDetailsLayout.addComponent(lblBirthDateAndAge);
@@ -190,7 +190,7 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 		addSelectPersonRadioGroup();
 		mainLayout.addComponent(personGrid);
 		addCreatePersonRadioGroup();
-		
+
 		rbSelectPerson.setValue(SELECT_PERSON);
 
 		//		setInternalValue(super.getInternalValue());

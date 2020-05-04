@@ -11,6 +11,7 @@ import com.vaadin.v7.ui.renderers.DateRenderer;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
@@ -48,7 +49,8 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(EDIT_BTN_ID).setWidth(20);
 		getColumn(EDIT_BTN_ID).setHeaderCaption("");
-		getColumn(TreatmentIndexDto.TREATMENT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		Language userLanguage = I18nProperties.getUserLanguage();
+		getColumn(TreatmentIndexDto.TREATMENT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(

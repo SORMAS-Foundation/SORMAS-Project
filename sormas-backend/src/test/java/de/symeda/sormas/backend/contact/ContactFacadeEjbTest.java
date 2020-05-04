@@ -36,6 +36,7 @@ import org.junit.Test;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -318,7 +319,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
-		List<ContactExportDto> results = getContactFacade().getExportList(null, 0, 100);
+		List<ContactExportDto> results = getContactFacade().getExportList(null, 0, 100, Language.EN);
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, results.size());
@@ -357,12 +358,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
 		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference()
-				, caze, new Date(), new Date());
+				, caze, new Date(), null);
 		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
 		visit21.getSymptoms().setBackache(SymptomState.YES);
 		getVisitFacade().saveVisit(visit21);
 
-		final List<ContactVisitsExportDto> results = getContactFacade().getContactVisitsExportList(null, 0, 100);
+		final List<ContactVisitsExportDto> results = getContactFacade().getContactVisitsExportList(null, 0, 100, Language.EN);
 		assertNotNull(results);
 		assertEquals(2, results.size());
 

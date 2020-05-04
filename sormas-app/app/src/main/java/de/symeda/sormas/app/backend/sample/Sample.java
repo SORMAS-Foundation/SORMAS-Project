@@ -41,11 +41,11 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 @Entity(name=Sample.TABLE_NAME)
 @DatabaseTable(tableName = Sample.TABLE_NAME)
@@ -458,7 +458,7 @@ public class Sample extends AbstractDomainObject {
 
     @Override
     public String toString() {
-        return super.toString() + " " + DateHelper.formatLocalShortDate(getSampleDateTime());
+        return super.toString() + " " + DateFormatHelper.formatLocalDate(getSampleDateTime());
     }
 
     public Double getReportLat() {

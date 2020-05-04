@@ -28,11 +28,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -57,9 +57,9 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 					return I18nProperties.getString(Strings.unknown);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
-					periodBuilder.append(travel.getTravelDateFrom() != null ? DateHelper.formatLocalDate(travel.getTravelDateFrom()) : "?");
+					periodBuilder.append(travel.getTravelDateFrom() != null ? DateFormatHelper.formatDate(travel.getTravelDateFrom()) : "?");
 					periodBuilder.append(" - ");
-					periodBuilder.append(travel.getTravelDateTo() != null ? DateHelper.formatLocalDate(travel.getTravelDateTo()) : "?");
+					periodBuilder.append(travel.getTravelDateTo() != null ? DateFormatHelper.formatDate(travel.getTravelDateTo()) : "?");
 					return periodBuilder.toString();
 				}
 			}

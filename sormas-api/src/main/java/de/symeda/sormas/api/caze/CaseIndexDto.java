@@ -24,7 +24,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 
@@ -82,16 +81,16 @@ public class CaseIndexDto implements Serializable {
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
 	private Sex sex;
-	private String ageAndBirthDate;
+	private AgeAndBirthDateDto ageAndBirthDate;
 	private Float completeness;
 	private Date quarantineTo;
 
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
-			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
-			PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid, 
-			String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
-			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
-			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo, Float completeness) {
+						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+						PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid,
+						String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
+						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
+						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo, Float completeness) {
 		this.id = id;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
@@ -113,7 +112,7 @@ public class CaseIndexDto implements Serializable {
 		this.pointOfEntryName = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 		this.outcome = outcome;
-		this.ageAndBirthDate = PersonHelper.getAgeAndBirthdateString(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
+		this.ageAndBirthDate = new AgeAndBirthDateDto(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
 		this.sex = sex;
 		this.quarantineTo = quarantineTo;
 		this.completeness = completeness;
@@ -122,132 +121,175 @@ public class CaseIndexDto implements Serializable {
 	public long getId() {
 		return id;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
+
 	public String getEpidNumber() {
 		return epidNumber;
 	}
+
 	public void setEpidNumber(String epidNumber) {
 		this.epidNumber = epidNumber;
 	}
+
 	public String getPersonFirstName() {
 		return personFirstName;
 	}
+
 	public void setPersonFirstName(String personFirstName) {
 		this.personFirstName = personFirstName;
 	}
+
 	public String getPersonLastName() {
 		return personLastName;
 	}
+
 	public void setPersonLastName(String personLastName) {
 		this.personLastName = personLastName;
 	}
+
 	public Disease getDisease() {
 		return disease;
 	}
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
+
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
+
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
 	}
+
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
+
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 	}
+
 	public InvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
+
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
 	}
+
 	public Date getReportDate() {
 		return reportDate;
 	}
+
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
 	}
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
+
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
+
 	public String getRegionUuid() {
 		return regionUuid;
 	}
+
 	public void setRegionUuid(String regionUuid) {
 		this.regionUuid = regionUuid;
 	}
+
 	public String getDistrictUuid() {
 		return districtUuid;
 	}
+
 	public void setDistrictUuid(String districtUuid) {
 		this.districtUuid = districtUuid;
 	}
+
 	public String getSurveillanceOfficerUuid() {
 		return surveillanceOfficerUuid;
 	}
+
 	public void setSurveillanceOfficerUuid(String surveillanceOfficerUuid) {
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 	}
+
 	public String getDistrictName() {
 		return districtName;
 	}
+
 	public void setDistrictName(String districtName) {
 		this.districtName = districtName;
 	}
+
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
+
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
 	}
+
 	public String getHealthFacilityUuid() {
 		return healthFacilityUuid;
 	}
+
 	public void setHealthFacilityUuid(String healthFacilityUuid) {
 		this.healthFacilityUuid = healthFacilityUuid;
 	}
+
 	public String getHealthFacilityName() {
 		return healthFacilityName;
 	}
+
 	public void setHealthFacilityName(String healthFacilityName) {
 		this.healthFacilityName = healthFacilityName;
 	}
+
 	public String getPointOfEntryName() {
 		return pointOfEntryName;
 	}
+
 	public void setPointOfEntryName(String pointOfEntryName) {
 		this.pointOfEntryName = pointOfEntryName;
 	}
+
 	public CaseOutcome getOutcome() {
 		return outcome;
 	}
+
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
 	}
+
 	public Sex getSex() {
 		return sex;
 	}
+
 	public void setSex(Sex sex) {
 		this.sex = sex;
 	}
-	public String getAgeAndBirthDate() {
+
+	public AgeAndBirthDateDto getAgeAndBirthDate() {
 		return ageAndBirthDate;
 	}
-	public void setAgeAndBirthDate(String ageAndBirthDate) {
+
+	public void setAgeAndBirthDate(AgeAndBirthDateDto ageAndBirthDate) {
 		this.ageAndBirthDate = ageAndBirthDate;
 	}
+
 	public Float getCompleteness() {
 		return completeness;
 	}
+
 	public void setCompleteness(Float completeness) {
 		this.completeness = completeness;
 	}
@@ -260,7 +302,7 @@ public class CaseIndexDto implements Serializable {
 	public String toString() {
 		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
 	}
-	
+
 	public String getUuid() {
 		return uuid;
 	}
