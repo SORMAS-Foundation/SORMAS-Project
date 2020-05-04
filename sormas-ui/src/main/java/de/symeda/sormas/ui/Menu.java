@@ -108,24 +108,18 @@ public class Menu extends CssLayout {
 
         // settings menu item
         MenuBar settingsMenu = new MenuBar();
-        settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, new Command() {
-        	@Override
-        	public void menuSelected(MenuItem selectedItem) {
-        		showSettingsPopup();
-        	}
-        });
+        settingsMenu.setId(Captions.actionSettings);
+        settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG,
+                (Command) selectedItem -> showSettingsPopup());
         
         settingsMenu.addStyleNames("user-menu", "settings-menu");
         menuPart.addComponent(settingsMenu);
         
         // logout menu item
         MenuBar logoutMenu = new MenuBar();
-        logoutMenu.addItem(I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName()+")", VaadinIcons.SIGN_OUT, new Command() {
-            @Override
-            public void menuSelected(MenuItem selectedItem) {
-            	LoginHelper.logout();
-            }
-        });
+        logoutMenu.setId(Captions.actionLogout);
+        logoutMenu.addItem(I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName()+")",
+                VaadinIcons.SIGN_OUT, (Command) selectedItem -> LoginHelper.logout());
 
 
         logoutMenu.addStyleNames("user-menu", "logout-menu");

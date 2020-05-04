@@ -31,13 +31,13 @@ public class StatisticsFilterDateRangeElement extends StatisticsFilterElement {
 	private DateField dateFromField;
 	private DateField dateToField;
 	
-	public StatisticsFilterDateRangeElement() {
+	public StatisticsFilterDateRangeElement(int rowIndex) {
 		setSpacing(true);
 		
 		dateFromField = new DateField(I18nProperties.getCaption(Captions.from));
-		dateFromField.setId("dateFrom");
+		dateFromField.setId("dateFrom-" + rowIndex);
 		dateToField = new DateField(I18nProperties.getCaption(Captions.to));
-		dateToField.setId("dateTo");
+		dateToField.setId("dateTo-" + rowIndex);
 		
 		addComponent(dateFromField);
 		addComponent(dateToField);

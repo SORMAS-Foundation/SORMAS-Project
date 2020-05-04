@@ -48,7 +48,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(CaseCriteria.PRESENT_CONDITION, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY, CaseDataDto.POINT_OF_ENTRY,
 			CaseDataDto.SURVEILLANCE_OFFICER, CaseCriteria.REPORTING_USER_ROLE, CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO) +
-			filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES, CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA, CaseCriteria.EXCLUDE_SHARED_CASES) +
+			filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES, CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA, CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER) +
 			loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
@@ -85,7 +85,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		UserDto user = UserProvider.getCurrent().getUser();
 		if (user.getRegion() == null) {
-			addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
+			ComboBox regionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
+			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		}
 
 		ComboBox districtField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.DISTRICT, 140));
@@ -128,7 +129,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.EXCLUDE_SHARED_CASES, I18nProperties.getCaption(Captions.caseFilterExcludeSharedCases), I18nProperties.getDescription(Descriptions.descCaseFilterExcludeSharedCasesString), CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, I18nProperties.getCaption(Captions.caseFilterExcludeSharedCases), I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer), CssStyles.CHECKBOX_FILTER_INLINE));
+		addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleOfficer), I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer), CssStyles.CHECKBOX_FILTER_INLINE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}

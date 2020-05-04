@@ -211,7 +211,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		filterComponentLayout.setSpacing(true);
 		filterComponentLayout.setWidth(100, Unit.PERCENTAGE);
 
-		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent();
+		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent(filtersLayout.getComponentCount());
 
 		Button removeFilterButton = ButtonHelper.createIconButtonWithCaption("close", null, VaadinIcons.CLOSE, e -> {
 			filterComponents.remove(filterComponent);
@@ -254,6 +254,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		CssStyles.style(optionsLayout, CssStyles.STATISTICS_TITLE_BOX);
 		{
 			ogCaseCountOrIncidence = new RadioButtonGroup<CaseCountOrIncidence>(I18nProperties.getCaption(Captions.statisticsDataDisplayed), Arrays.asList(CaseCountOrIncidence.values()));
+			ogCaseCountOrIncidence.setId(Captions.statisticsDataDisplayed);
 			ogCaseCountOrIncidence.setValue(CaseCountOrIncidence.CASE_COUNT);
 			ogCaseCountOrIncidence.addValueChangeListener(e -> {
 				showCaseIncidence = e.getValue() == CaseCountOrIncidence.CASE_INCIDENCE;
@@ -264,6 +265,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			optionsLayout.addComponent(ogCaseCountOrIncidence);
 
 			tfIncidenceDivisor = new TextField(I18nProperties.getCaption(Captions.statisticsIncidenceDivisor));
+			tfIncidenceDivisor.setId("incidenceDivisor");
 			tfIncidenceDivisor.setValue("100000");
 			tfIncidenceDivisor.addValueChangeListener(e -> {
 				try {
@@ -279,11 +281,13 @@ public class StatisticsView extends AbstractStatisticsView {
 			tfIncidenceDivisor.setVisible(false);
 
 			cbShowZeroValues = new CheckBox(I18nProperties.getCaption(Captions.statisticsShowZeroValues));
+			cbShowZeroValues.setId(Captions.statisticsShowZeroValues);
 			cbShowZeroValues.setValue(false);
 			CssStyles.style(cbShowZeroValues, CssStyles.FORCE_CAPTION_CHECKBOX);
 			optionsLayout.addComponent(cbShowZeroValues);
 
 			cbHideOtherCountries = new CheckBox(I18nProperties.getCaption(Captions.dashboardHideOtherCountries));
+			cbHideOtherCountries.setId(Captions.dashboardHideOtherCountries);
 			cbHideOtherCountries.setValue(false);
 			CssStyles.style(cbHideOtherCountries, CssStyles.FORCE_CAPTION_CHECKBOX);
 			optionsLayout.addComponent(cbHideOtherCountries);

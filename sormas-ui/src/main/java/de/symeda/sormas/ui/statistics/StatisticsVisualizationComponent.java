@@ -62,6 +62,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		setWidth(100, Unit.PERCENTAGE);
 
 		visualizationSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsVisualizationType), Arrays.asList(StatisticsVisualizationType.values()));
+		visualizationSelect.setId(Captions.statisticsVisualizationType);
 		visualizationSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -86,6 +87,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		setExpandRatio(visualizationSelect, 0);
 
 		visualizationMapSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsMapType), Arrays.asList(StatisticsVisualizationMapType.values()));
+		visualizationMapSelect.setId(Captions.statisticsMapType);
 		visualizationMapSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -100,6 +102,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 
 		visualizationChartSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsChartType),
 				Arrays.asList(StatisticsVisualizationChartType.values()));
+		visualizationChartSelect.setId(Captions.statisticsChartType);
 		visualizationChartSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {

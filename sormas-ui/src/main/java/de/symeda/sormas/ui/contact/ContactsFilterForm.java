@@ -48,7 +48,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 	private static final String MORE_FILTERS_HTML = filterLocs(ContactCriteria.REGION, ContactCriteria.DISTRICT,
 			DISTRICT_INFO_LABEL_ID, ContactCriteria.CONTACT_OFFICER, ContactCriteria.REPORTING_USER_ROLE, ContactCriteria.FOLLOW_UP_UNTIL_TO) +
-			filterLocs(ContactCriteria.QUARANTINE_TYPE, ContactDto.QUARANTINE_TO, ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED, ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS) +
+			filterLocs(ContactCriteria.QUARANTINE_TYPE, ContactDto.QUARANTINE_TO, ContactCriteria.QUARANTINE_ORDERED_VERBALLY, ContactCriteria.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactCriteria.QUARANTINE_NOT_ORDERED, ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED, ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS) +
 			loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {

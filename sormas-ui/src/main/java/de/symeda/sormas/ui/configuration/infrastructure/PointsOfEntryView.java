@@ -41,6 +41,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -64,11 +65,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 	protected PointsOfEntryGrid grid;
 	protected Button createButton;
-	protected Button importButton;
 	protected Button exportButton;
 	private MenuBar bulkOperationsDropdown;
-	private MenuItem archiveItem;
-	private MenuItem dearchiveItem;
 
 	public PointsOfEntryView() {
 		super(VIEW_NAME);
@@ -246,28 +244,22 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 
 				// Bulk operation dropdown
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-					bulkOperationsDropdown = new MenuBar();	
-					MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
-
-					Command archiveCommand = selectedItem -> {
-						ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(true, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
-							public void run() {
-								navigateTo(criteria);
-							}
-						});
-					};
-					archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, archiveCommand);
-					archiveItem.setVisible(EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus()));
-
-					Command dearchiveCommand = selectedItem -> {
-						ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(false, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
-							public void run() {
-								navigateTo(criteria);
-							}
-						});
-					};
-					dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, dearchiveCommand);
-					dearchiveItem.setVisible(EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus()));
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
+								ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(true, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
+									public void run() {
+										navigateTo(criteria);
+									}
+								});
+							}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
+								ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(false, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
+									public void run() {
+										navigateTo(criteria);
+									}
+								});
+							}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus()))
+					);
 
 					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
