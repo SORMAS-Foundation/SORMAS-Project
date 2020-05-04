@@ -40,10 +40,12 @@ public class AdditionalTestList extends PaginationList<AdditionalTestDto> {
 	
 	@Override
 	protected void drawDisplayedEntries() {
-		for (AdditionalTestDto additionalTest : getDisplayedEntries()) {
+		List<AdditionalTestDto> displayedEntries = getDisplayedEntries();
+		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
+			AdditionalTestDto additionalTest = displayedEntries.get(i);
 			AdditionalTestListEntry listEntry = new AdditionalTestListEntry(additionalTest);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT)) {
-				listEntry.addEditListener(e -> {
+				listEntry.addEditListener(i, e -> {
 					ControllerProvider.getAdditionalTestController().openEditComponent(
 							additionalTest, AdditionalTestList.this::reload);
 				});

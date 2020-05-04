@@ -42,6 +42,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -141,11 +142,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		HorizontalLayout actionBar = new HorizontalLayout();
-		Button addLine = new Button(I18nProperties.getCaption(Captions.lineListingAddLine));
-		addLine.setId("lineListingAddLine");
-		addLine.setIcon(VaadinIcons.PLUS);
-		addLine.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		addLine.addClickListener(e -> {
+		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
 			CaseLineLayout newLine = new CaseLineLayout(lineComponent, caseLines.size() + 1);
 			DistrictReferenceDto districtReferenceDto = (DistrictReferenceDto) district.getValue();
 			updateCommunityAndFacility(districtReferenceDto, newLine);
@@ -168,7 +165,8 @@ public class LineListingLayout extends VerticalLayout {
 			if (caseLines.size() > 1) {
 				caseLines.get(0).getDelete().setEnabled(true);
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		actionBar.addComponent(addLine);
 		actionBar.setComponentAlignment(addLine, Alignment.MIDDLE_LEFT);
 
@@ -179,19 +177,14 @@ public class LineListingLayout extends VerticalLayout {
 		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		cancelButton = new Button(I18nProperties.getCaption(Captions.actionDiscard));
-		cancelButton.setId("lineListingDiscard");
+		cancelButton = ButtonHelper.createButton(Captions.actionDiscard, event -> closeWindow());
 
-		cancelButton.addClickListener(event -> closeWindow());
 		buttonsPanel.addComponent(cancelButton);
 		buttonsPanel.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(cancelButton, 1);
 
-		saveButton = new Button(I18nProperties.getCaption(Captions.actionSave));
-		saveButton.setId("lineListingSave");
-		saveButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> save(), ValoTheme.BUTTON_PRIMARY);
 
-		saveButton.addClickListener(event -> save());
 		buttonsPanel.addComponent(saveButton);
 		buttonsPanel.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(saveButton, 0);
@@ -457,9 +450,7 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfOnset.setId("lineListingDateOfOnSet_" + lineIndex);
 			dateOfOnset.setWidth(100, Unit.PIXELS);
 			binder.forField(dateOfOnset).bind(CaseLineDto.DATE_OF_ONSET);
-			delete = new Button(VaadinIcons.TRASH);
-			delete.setId("lineListingDelete_" + lineIndex);
-			delete.addClickListener(event -> {
+			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
 				lineComponent.removeComponent(this);
 				caseLines.remove(this);
 				caseLines.get(0).formatAsFirstLine();

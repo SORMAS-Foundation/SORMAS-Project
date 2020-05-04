@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.samples;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -131,14 +132,15 @@ public class AdditionalTestListEntry extends HorizontalLayout {
 		return new Label(caption.toUpperCase() + ": " + value);
 	}
 
-	public void addEditListener(ClickListener editClickListener) {
+	public void addEditListener(int rowIndex, ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = new Button(VaadinIcons.PENCIL);
-			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+			editButton = ButtonHelper.createIconButtonWithCaption("edit-test-" + rowIndex, null, VaadinIcons.PENCIL, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
 			setExpandRatio(editButton, 0);
 		}
+
 		editButton.addClickListener(editClickListener);
 	}
 

@@ -33,29 +33,15 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -150,22 +136,18 @@ public class SampleGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> processStatusChange(null));
-			statusAll.setId("statusAll");
-			CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+			Button statusAll = ButtonHelper.createButton(Captions.all, e -> processStatusChange(null), ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			statusAll.setCaptionAsHtml(true);
+
 			buttonFilterLayout.addComponent(statusAll);
+
 			statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 			activeStatusButton = statusAll;
 
-			Button notShippedButton = new Button(I18nProperties.getCaption(Captions.sampleNotShipped), e -> processStatusChange(NOT_SHIPPED));
-			initializeStatusButton(notShippedButton, buttonFilterLayout, NOT_SHIPPED, I18nProperties.getCaption(Captions.sampleNotShipped));
-			Button shippedButton = new Button(I18nProperties.getCaption(Captions.sampleShipped), e -> processStatusChange(SHIPPED));
-			initializeStatusButton(shippedButton, buttonFilterLayout, SHIPPED, I18nProperties.getCaption(Captions.sampleShipped));
-			Button receivedButton = new Button(I18nProperties.getCaption(Captions.sampleReceived), e -> processStatusChange(RECEIVED));
-			initializeStatusButton(receivedButton, buttonFilterLayout, RECEIVED, I18nProperties.getCaption(Captions.sampleReceived));
-			Button referredButton = new Button(I18nProperties.getCaption(Captions.sampleReferred), e -> processStatusChange(REFERRED));
-			initializeStatusButton(referredButton, buttonFilterLayout, REFERRED, I18nProperties.getCaption(Captions.sampleReferred));
+			createAndAddStatusButton(Captions.sampleNotShipped, NOT_SHIPPED, buttonFilterLayout);
+			createAndAddStatusButton(Captions.sampleShipped, SHIPPED, buttonFilterLayout);
+			createAndAddStatusButton(Captions.sampleReceived, RECEIVED, buttonFilterLayout);
+			createAndAddStatusButton(Captions.sampleReferred, REFERRED, buttonFilterLayout);
 		}
 
 		shipmentFilterLayout.addComponent(buttonFilterLayout);
@@ -279,13 +261,16 @@ public class SampleGridComponent extends VerticalLayout {
 		samplesView.navigateTo(criteria);
 	}
 
-	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String status, String caption) {
+	private void createAndAddStatusButton(String captionKey, String status, HorizontalLayout filterLayout) {
+		Button button = ButtonHelper.createButton(captionKey, e -> processStatusChange(status),
+				ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+
 		button.setData(status);
-		button.setId("status-button-" + status);
-		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setCaptionAsHtml(true);
+
 		filterLayout.addComponent(button);
-		statusButtons.put(button, caption);
+
+		statusButtons.put(button, button.getCaption());
 	}
 
 	private void updateStatusButtons() {

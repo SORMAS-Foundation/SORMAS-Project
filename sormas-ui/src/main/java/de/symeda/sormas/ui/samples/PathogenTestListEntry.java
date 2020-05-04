@@ -34,6 +34,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -102,14 +103,16 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		labelLayout.addComponent(labelBottom);
 	}
 
-	public void addEditListener(ClickListener editClickListener) {
+	public void addEditListener(int rowIndex, ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = new Button(VaadinIcons.PENCIL);
-			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+			editButton = ButtonHelper.createIconButtonWithCaption("edit-test-" + rowIndex, null, VaadinIcons.PENCIL, null,
+					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
 			setExpandRatio(editButton, 0);
 		}
+
 		editButton.addClickListener(editClickListener);
 	}
 

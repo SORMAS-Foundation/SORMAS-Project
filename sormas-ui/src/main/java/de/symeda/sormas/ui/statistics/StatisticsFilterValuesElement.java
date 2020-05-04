@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.explicatis.ext_token_field.ExtTokenField;
@@ -92,11 +93,13 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 
 	private ExtTokenField createTokenField(String caption) {
 		tokenField = new ExtTokenField();
+		tokenField.setId(attribute + "-" + "token");
 		tokenField.setCaption(caption);
 		tokenField.setWidth(100, Unit.PERCENTAGE);
 		tokenField.setEnableDefaultDeleteTokenAction(true);
 
 		addDropdown = new ComboBox<TokenizableValue>("", getFilterValues());
+		addDropdown.setId(attribute + "-" + "add");
 		addDropdown.addStyleName(CssStyles.VSPACE_NONE);
 		addDropdown.setPlaceholder(I18nProperties.getString(Strings.promptTypeToAdd));
 		tokenField.setInputField(addDropdown);
@@ -117,21 +120,17 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		utilityButtonsLayout.setSpacing(false);
 		utilityButtonsLayout.setSizeUndefined();
 
-		Button addAllButton = new Button(I18nProperties.getCaption(Captions.all), VaadinIcons.PLUS_CIRCLE);
-		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK);
-		addAllButton.addClickListener(e -> {
+		Button addAllButton = ButtonHelper.createIconButton(Captions.all, VaadinIcons.PLUS_CIRCLE, e -> {
 			for (TokenizableValue tokenizable : getFilterValues()) {
 				tokenField.addTokenizable(tokenizable);
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
 
-		Button removeAllButton = new Button(I18nProperties.getCaption(Captions.actionClear), VaadinIcons.CLOSE_CIRCLE);
-		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK);
-		removeAllButton.addClickListener(e -> {
+		Button removeAllButton = ButtonHelper.createIconButton(Captions.actionClear, VaadinIcons.CLOSE_CIRCLE, e -> {
 			for (Tokenizable tokenizable : tokenField.getValue()) {
 				tokenField.removeTokenizable(tokenizable);
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
 
 		utilityButtonsLayout.addComponent(addAllButton);
 		utilityButtonsLayout.addComponent(removeAllButton);

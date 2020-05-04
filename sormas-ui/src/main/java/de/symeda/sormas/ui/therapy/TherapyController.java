@@ -21,6 +21,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
@@ -182,10 +183,10 @@ public class TherapyController {
 		}
 
 		if (treatment.getPrescription() != null) {
-			Button openPrescriptionButton = new Button(I18nProperties.getCaption(Captions.treatmentOpenPrescription));
-			openPrescriptionButton.addClickListener(e -> {
+			Button openPrescriptionButton = ButtonHelper.createButton(Captions.treatmentOpenPrescription, e -> {
 				openPrescriptionEditForm(treatment.getPrescription(), null, true);
 			});
+
 			view.getButtonsPanel().addComponent(openPrescriptionButton, view.getButtonsPanel().getComponentIndex(view.getDiscardButton()));
 			view.getButtonsPanel().setComponentAlignment(openPrescriptionButton, Alignment.MIDDLE_LEFT);
 		}

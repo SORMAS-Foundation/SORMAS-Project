@@ -32,6 +32,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -228,8 +229,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter() {
-		Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
-		applyButton.setId("applyDateFilter");
+		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
 		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, I18nProperties.getString(Strings.infoCaseDate), NewCaseDateType.class, I18nProperties.getString(Strings.promptNewCaseDateType), NewCaseDateType.MOST_RELEVANT);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));

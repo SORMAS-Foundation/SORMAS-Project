@@ -39,6 +39,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationMapType;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -116,27 +117,22 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		addComponent(rowsElement);
 		setExpandRatio(rowsElement, 0);
 
-		switchRowsAndColumnsButton = new Button();
-		CssStyles.style(switchRowsAndColumnsButton, CssStyles.FORCE_CAPTION);
-		switchRowsAndColumnsButton.setIcon(VaadinIcons.EXCHANGE);
+		switchRowsAndColumnsButton = ButtonHelper.createIconButtonWithCaption("switchRowsAndColumns", null, VaadinIcons.EXCHANGE, event -> {
+			StatisticsVisualizationElement newRowsElement = columnsElement;
+			newRowsElement.setType(StatisticsVisualizationElementType.ROWS, visualizationType);
+			StatisticsVisualizationElement newColumnsElement = rowsElement;
+			newColumnsElement.setType(StatisticsVisualizationElementType.COLUMNS, visualizationType);
+			removeComponent(rowsElement);
+			removeComponent(columnsElement);
+			addComponent(newRowsElement, getComponentIndex(switchRowsAndColumnsButton));
+			addComponent(newColumnsElement, getComponentIndex(switchRowsAndColumnsButton) + 1);
+			replaceComponent(rowsElement, newRowsElement);
+			replaceComponent(columnsElement, newColumnsElement);
+			rowsElement = newRowsElement;
+			columnsElement = newColumnsElement;
+		}, CssStyles.FORCE_CAPTION);
 		switchRowsAndColumnsButton.setDescription(I18nProperties.getCaption(Captions.statisticsExchange));
-		switchRowsAndColumnsButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				StatisticsVisualizationElement newRowsElement = columnsElement;
-				newRowsElement.setType(StatisticsVisualizationElementType.ROWS, visualizationType);
-				StatisticsVisualizationElement newColumnsElement = rowsElement;
-				newColumnsElement.setType(StatisticsVisualizationElementType.COLUMNS, visualizationType);
-				removeComponent(rowsElement);
-				removeComponent(columnsElement);
-				addComponent(newRowsElement, getComponentIndex(switchRowsAndColumnsButton));
-				addComponent(newColumnsElement, getComponentIndex(switchRowsAndColumnsButton) + 1);
-				replaceComponent(rowsElement, newRowsElement);
-				replaceComponent(columnsElement, newColumnsElement);		
-				rowsElement = newRowsElement;
-				columnsElement = newColumnsElement;
-			}
-		});
+
 		addComponent(switchRowsAndColumnsButton);
 		setExpandRatio(switchRowsAndColumnsButton, 0);
 

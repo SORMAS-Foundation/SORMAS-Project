@@ -31,6 +31,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -124,18 +125,12 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 
 	@SuppressWarnings("unchecked")
 	private HorizontalLayout buildButtonLayout(CaseIndexDto caze) {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setSpacing(false);
-		Button btnMerge = new Button(I18nProperties.getCaption(Captions.actionMerge));
-		btnMerge.setIcon(VaadinIcons.COMPRESS_SQUARE);
-		Button btnPick = new Button(I18nProperties.getCaption(Captions.actionPick));
-		btnPick.setIcon(VaadinIcons.CHECK);
-		Button btnHide = null;
-
 		TreeDataProvider<CaseIndexDto> dataProvider = (TreeDataProvider<CaseIndexDto>) getDataProvider();
 		TreeData<CaseIndexDto> data = dataProvider.getTreeData();
 
-		btnMerge.addClickListener(e -> {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setSpacing(false);
+		Button btnMerge = ButtonHelper.createIconButton(Captions.actionMerge, VaadinIcons.COMPRESS_SQUARE, e -> {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmChoice),
 					new Label(I18nProperties.getString(Strings.confirmationMergeCaseAndDeleteOther)),
 					I18nProperties.getCaption(Captions.actionConfirm), I18nProperties.getCaption(Captions.actionCancel),
@@ -158,8 +153,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 						}
 					});
 		});
-
-		btnPick.addClickListener(e -> {
+		Button btnPick = ButtonHelper.createIconButton(Captions.actionPick, VaadinIcons.CHECK, e -> {
 			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmChoice),
 					new Label(I18nProperties.getString(Strings.confirmationPickCaseAndDeleteOther)),
 					I18nProperties.getCaption(Captions.actionConfirm), I18nProperties.getCaption(Captions.actionCancel),
@@ -182,12 +176,13 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 					});
 		});
 
+		Button btnHide = null;
+
 		if (data.getParent(caze) == null) {
 			CssStyles.style(btnMerge, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
 			CssStyles.style(btnPick, CssStyles.HSPACE_RIGHT_5, ValoTheme.BUTTON_PRIMARY);
-			btnHide = new Button(I18nProperties.getCaption(Captions.actionHide));
-			btnHide.setIcon(VaadinIcons.CLOSE);
-			btnHide.addClickListener(e -> {
+
+			btnHide = ButtonHelper.createIconButton(Captions.actionHide, VaadinIcons.CLOSE, e -> {
 				hiddenUuidPairs.add(new String[] { caze.getUuid(), data.getChildren(caze).get(0).getUuid() });
 				dataProvider.getTreeData().removeItem(caze);
 				dataProvider.refreshAll();

@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.ui.VerticalLayout;
@@ -58,13 +59,12 @@ public class ContactsEpiCurveComponent extends AbstractEpiCurveComponent {
 			epiCurveLabel.setValue(I18nProperties.getCaption(Captions.dashboardFollowUpStatusChart));
 		}
 
-		PopupButton dataDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardData));
-		CssStyles.style(dataDropdown, CssStyles.BUTTON_SUBTLE);
-
 		VerticalLayout groupingLayout = new VerticalLayout();
 		groupingLayout.setMargin(true);
 		groupingLayout.setSizeUndefined();
-		dataDropdown.setContent(groupingLayout);
+
+		PopupButton dataDropdown = ButtonHelper.createPopupButton(Captions.dashboardData, groupingLayout,
+				CssStyles.BUTTON_SUBTLE);
 
 		OptionGroup dataSelect = new OptionGroup();
 		dataSelect.setWidth(100, Unit.PERCENTAGE);

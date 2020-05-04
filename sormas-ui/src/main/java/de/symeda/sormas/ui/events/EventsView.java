@@ -52,6 +52,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -111,10 +112,7 @@ public class EventsView extends AbstractView {
 		addComponent(gridLayout);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
-			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
-			exportButton.setId("export");
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(VaadinIcons.DOWNLOAD);
+			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
 			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
@@ -124,17 +122,14 @@ public class EventsView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
-			btnEnterBulkEditMode.setId("enterBulkEditMode");
-			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+
 			addHeaderComponent(btnEnterBulkEditMode);
 
-			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
-			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
-			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
@@ -155,11 +150,9 @@ public class EventsView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.eventNewEvent));
-			createButton.setId("createEvent");
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getEventController().create());
+			createButton = ButtonHelper.createIconButton(Captions.eventNewEvent, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getEventController().create(), ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(createButton);
 		}
 	}
@@ -193,27 +186,27 @@ public class EventsView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
+		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
 			criteria.eventStatus(null);
 			navigateTo(criteria);
-		});
-		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
-		statusAll.setId("statusAll");
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
+
 		statusFilterLayout.addComponent(statusAll);
+
 		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for(EventStatus status : EventStatus.values()) {
-			Button statusButton = new Button(status.toString(), e -> {
+			Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status, status.toString(), e -> {
 				criteria.eventStatus(status);
 				navigateTo(criteria);
-			});
-			statusButton.setId("status-button-" + status.name());
-			statusButton.setData(status);
-			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
+			statusButton.setData(status);
+
 			statusFilterLayout.addComponent(statusButton);
+
 			statusButtons.put(statusButton, status.toString());
 		}
 

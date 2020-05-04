@@ -35,18 +35,15 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskCriteria;
-import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.contact.*;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -132,17 +129,14 @@ public class TaskGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button allTasks = new Button(I18nProperties.getCaption(Captions.all), e -> processAssigneeFilterChange(null));
-			allTasks.setId("allTasks");
-			CssStyles.style(allTasks, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+			Button allTasks = ButtonHelper.createButton(Captions.all, e -> processAssigneeFilterChange(null), ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			allTasks.setCaptionAsHtml(true);
+
 			buttonFilterLayout.addComponent(allTasks);
 			statusButtons.put(allTasks, I18nProperties.getCaption(Captions.all));			
 
-			Button officerTasks = new Button(I18nProperties.getCaption(Captions.taskOfficerTasks), e -> processAssigneeFilterChange(OFFICER_TASKS));
-			initializeStatusButton(officerTasks, buttonFilterLayout, OFFICER_TASKS, I18nProperties.getCaption(Captions.taskOfficerTasks));
-			Button myTasks = new Button(I18nProperties.getCaption(Captions.taskMyTasks), e -> processAssigneeFilterChange(MY_TASKS));
-			initializeStatusButton(myTasks, buttonFilterLayout, MY_TASKS, I18nProperties.getCaption(Captions.taskMyTasks));
+			createAndAddStatusButton(Captions.taskOfficerTasks, OFFICER_TASKS, buttonFilterLayout);
+			Button myTasks = createAndAddStatusButton(Captions.taskMyTasks, MY_TASKS, buttonFilterLayout);
 
 			// Default filter for lab users (that don't have any other role) is "My tasks"
 			if ((UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) && UserProvider.getCurrent().getUserRoles().size() == 1) {
@@ -218,13 +212,15 @@ public class TaskGridComponent extends VerticalLayout {
 		tasksView.navigateTo(criteria);
 	}
 
-	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String status, String caption) {
+	private Button createAndAddStatusButton(String captionKey, String status, HorizontalLayout filterLayout) {
+		Button button = ButtonHelper.createButton(captionKey, e -> processAssigneeFilterChange(status), ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setData(status);
-		button.setId("status-button-" + status);
-		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setCaptionAsHtml(true);
+
 		filterLayout.addComponent(button);
-		statusButtons.put(button, caption);
+		statusButtons.put(button, button.getCaption());
+
+		return button;
 	}
 
 	public void reload(ViewChangeEvent event) {

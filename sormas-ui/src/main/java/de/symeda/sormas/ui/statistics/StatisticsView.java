@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -187,22 +188,21 @@ public class StatisticsView extends AbstractStatisticsView {
 		{
 			filtersSectionFooter.setSpacing(true);
 
-			Button addFilterButton = new Button(I18nProperties.getCaption(Captions.statisticsAddFilter), VaadinIcons.PLUS);
-			CssStyles.style(addFilterButton, ValoTheme.BUTTON_PRIMARY);
-			addFilterButton.addClickListener(e -> {
+			Button addFilterButton = ButtonHelper.createIconButton(Captions.statisticsAddFilter, VaadinIcons.PLUS, e -> {
 				filtersLayout.addComponent(createFilterComponentLayout());
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			filtersSectionFooter.addComponent(addFilterButton);
 
-			Button resetFiltersButton = new Button(I18nProperties.getCaption(Captions.statisticsResetFilters));
-			resetFiltersButton.addClickListener(e -> {
+			Button resetFiltersButton = ButtonHelper.createButton(Captions.statisticsResetFilters, e -> {
 				filtersLayout.removeAllComponents();
 				filterComponents.clear();
 			});
+
 			filtersSectionFooter.addComponent(resetFiltersButton);
 		}
-		filtersSectionLayout.addComponent(filtersSectionFooter);
 
+		filtersSectionLayout.addComponent(filtersSectionFooter);
 		statisticsLayout.addComponent(filtersSectionLayout);
 	}
 
@@ -213,13 +213,11 @@ public class StatisticsView extends AbstractStatisticsView {
 
 		StatisticsFilterComponent filterComponent = new StatisticsFilterComponent();
 
-		Button removeFilterButton = new Button(VaadinIcons.CLOSE);
-		removeFilterButton.setDescription(I18nProperties.getCaption(Captions.statisticsRemoveFilter));
-		CssStyles.style(removeFilterButton, CssStyles.FORCE_CAPTION);
-		removeFilterButton.addClickListener(e -> {
+		Button removeFilterButton = ButtonHelper.createIconButtonWithCaption("close", null, VaadinIcons.CLOSE, e -> {
 			filterComponents.remove(filterComponent);
 			filtersLayout.removeComponent(filterComponentLayout);
-		});
+		}, CssStyles.FORCE_CAPTION);
+		removeFilterButton.setDescription(I18nProperties.getCaption(Captions.statisticsRemoveFilter));
 
 		filterComponentLayout.addComponent(removeFilterButton);
 		filterComponents.add(filterComponent);
@@ -299,9 +297,7 @@ public class StatisticsView extends AbstractStatisticsView {
 	}
 
 	private void addGenerateButton(VerticalLayout statisticsLayout) {
-		Button generateButton = new Button(I18nProperties.getCaption(Captions.actionGenerate));
-		CssStyles.style(generateButton, ValoTheme.BUTTON_PRIMARY);
-		generateButton.addClickListener(e -> {
+		Button generateButton = ButtonHelper.createButton(Captions.actionGenerate, e -> {
 			// Check whether there is any invalid empty filter or grouping data
 			Notification errorNotification = null;
 			for (StatisticsFilterComponent filterComponent : filterComponents) {
@@ -338,18 +334,18 @@ public class StatisticsView extends AbstractStatisticsView {
 			} else {
 				resultsLayout.removeAllComponents();
 				switch (visualizationComponent.getVisualizationType()) {
-				case TABLE:
-					generateTable();
-					break;
-				case MAP:
-					generateMap();
-					break;
-				default:
-					generateChart();
-					break;
+					case TABLE:
+						generateTable();
+						break;
+					case MAP:
+						generateMap();
+						break;
+					default:
+						generateChart();
+						break;
 				}
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
 
 		statisticsLayout.addComponent(generateButton);
 	}
@@ -379,10 +375,9 @@ public class StatisticsView extends AbstractStatisticsView {
 			CssStyles.style(populationDataMissingLabel, CssStyles.VSPACE_TOP_4);
 		}
 
-		exportButton = new Button(I18nProperties.getCaption(Captions.export));
+		exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 		exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(VaadinIcons.TABLE);
+
 		resultsLayout.addComponent(exportButton);
 		resultsLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
 

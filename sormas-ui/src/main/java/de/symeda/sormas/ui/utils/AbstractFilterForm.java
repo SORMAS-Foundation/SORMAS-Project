@@ -61,25 +61,24 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected void addDefaultButtons() {
-		Button resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-		CssStyles.style(resetButton, FILTER_ITEM_STYLE);
+		Button resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
+
 		getContent().addComponent(resetButton, RESET_BUTTON_ID);
 
 		if (moreFiltersLayout != null) {
 			String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
-			Button showHideMoreButton = new Button(showMoreCaption, VaadinIcons.CHEVRON_DOWN);
-			CssStyles.style(showHideMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
-			showHideMoreButton.addClickListener(e -> {
-				boolean isShowMore = showHideMoreButton.getCaption().equals(showMoreCaption);
-				showHideMoreButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
-				showHideMoreButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
+			Button showHideMoreButton = ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
+				Button showHideButton = e.getButton();
+				boolean isShowMore = showHideButton.getCaption().equals(showMoreCaption);
+				showHideButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
+				showHideButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
 
 				if (isShowMore) {
 					getContent().getComponent(MORE_FILTERS_ID).setVisible(true);
 				} else {
 					getContent().getComponent(MORE_FILTERS_ID).setVisible(false);
 				}
-			});
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
 
 			getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
 		}
@@ -125,10 +124,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		doWithoutChangeHandler(() -> {
 			super.setValue(newFieldValue);
 
-			updateResetButtonState();
-
 			applyDependenciesOnNewValue(newFieldValue);
 
+			updateResetButtonState();
 			if(moreFiltersLayout != null) {
 				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout)
 						.anyMatch(f -> !f.isEmpty());

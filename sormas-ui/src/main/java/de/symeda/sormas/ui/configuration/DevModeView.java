@@ -77,6 +77,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 
@@ -164,9 +165,7 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 		});
 
-		Button generateButton = new Button(I18nProperties.getCaption(Captions.devModeGenerateCases));
-		CssStyles.style(generateButton, CssStyles.FORCE_CAPTION);
-		generateButton.addClickListener(e -> generateCases());
+		Button generateButton = ButtonHelper.createButton(Captions.devModeGenerateCases, e -> generateCases(), CssStyles.FORCE_CAPTION);
 		caseOptionsLayout.addComponent(generateButton);
 
 		caseGeneratorLayout.addComponent(caseOptionsLayout);
@@ -235,9 +234,7 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 		});
 
-		Button generateButton = new Button(I18nProperties.getCaption(Captions.devModeGenerateContacts));
-		CssStyles.style(generateButton, CssStyles.FORCE_CAPTION);
-		generateButton.addClickListener(e -> generateContacts());
+		Button generateButton = ButtonHelper.createButton(Captions.devModeGenerateContacts, e -> generateContacts(), CssStyles.FORCE_CAPTION);
 		contactOptionsFirstLineLayout.addComponent(generateButton);
 
 		contactGeneratorLayout.addComponent(contactOptionsFirstLineLayout);

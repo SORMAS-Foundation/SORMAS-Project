@@ -28,6 +28,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -96,12 +97,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		getContent().addComponent(geoButtons, GEO_BUTTONS_LOC);
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
-			Button geocodeButton = new Button(VaadinIcons.MAP_MARKER, e -> triggerGeocoding());
-			geocodeButton.setId("geocodeButton");
-			geocodeButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-			geocodeButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-			geocodeButton.addStyleName(ValoTheme.BUTTON_LARGE);
-			
+			Button geocodeButton = ButtonHelper.createIconButtonWithCaption("geocodeButton", null, VaadinIcons.MAP_MARKER,
+					e -> triggerGeocoding(), ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
+
 			geoButtons.addComponent(geocodeButton);
 			geoButtons.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
 		}

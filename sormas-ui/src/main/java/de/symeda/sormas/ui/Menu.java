@@ -45,6 +45,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.user.UserSettingsForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -90,19 +91,14 @@ public class Menu extends CssLayout {
         menuPart.addComponent(top);
 
         // button for toggling the visibility of the menu when on a small screen
-        final Button showMenu = new Button(I18nProperties.getCaption(Captions.menu), new Button.ClickListener() {
-            @Override
-            public void buttonClick(final Button.ClickEvent event) {
-                if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {
-                    menuPart.removeStyleName(VALO_MENU_VISIBLE);
-                } else {
-                    menuPart.addStyleName(VALO_MENU_VISIBLE);
-                }
+        final Button showMenu = ButtonHelper.createIconButton(Captions.menu, VaadinIcons.MENU, event -> {
+            if (menuPart.getStyleName().contains(VALO_MENU_VISIBLE)) {
+                menuPart.removeStyleName(VALO_MENU_VISIBLE);
+            } else {
+                menuPart.addStyleName(VALO_MENU_VISIBLE);
             }
-        });
-        showMenu.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        showMenu.addStyleName(VALO_MENU_TOGGLE);
-        showMenu.setIcon(VaadinIcons.MENU);
+        }, ValoTheme.BUTTON_PRIMARY, VALO_MENU_TOGGLE);
+
         menuPart.addComponent(showMenu);
 
         // container for the navigation buttons, which are added by addView()
@@ -193,16 +189,10 @@ public class Menu extends CssLayout {
 
     private void createViewButton(final String name, String caption,
             Resource icon) {
-        Button button = new Button(caption, new Button.ClickListener() {
 
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                navigator.navigateTo(name);
-
-            }
-        });
+        Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon, event -> navigator.navigateTo(name));
         button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
-        button.setIcon(icon);
+
         menuItemsLayout.addComponent(button);
         viewButtons.put(name, button);
     }

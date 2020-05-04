@@ -25,6 +25,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -77,11 +78,10 @@ public class ClinicalCourseView extends AbstractCaseView {
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			Button newClinicalVisitButton = new Button(I18nProperties.getCaption(Captions.clinicalVisitNewClinicalVisit));
-			CssStyles.style(newClinicalVisitButton, ValoTheme.BUTTON_PRIMARY);
-			newClinicalVisitButton.addClickListener(e -> {
+			Button newClinicalVisitButton = ButtonHelper.createButton(Captions.clinicalVisitNewClinicalVisit, e -> {
 				ControllerProvider.getClinicalCourseController().openClinicalVisitCreateForm(clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			headlineRow.addComponent(newClinicalVisitButton);
 
 			headlineRow.setComponentAlignment(newClinicalVisitButton, Alignment.MIDDLE_RIGHT);

@@ -130,21 +130,16 @@ public class CasesView extends AbstractView {
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) || UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
-			moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
-			moreButton.setId("more");
-			moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
 			moreLayout = new VerticalLayout();
 			moreLayout.setSpacing(true);
 			moreLayout.setMargin(true);
 			moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 			moreLayout.setWidth(250, Unit.PIXELS);
-			moreButton.setContent(moreLayout);
+
+			moreButton = ButtonHelper.createIconPopupButton(Captions.moreActions, VaadinIcons.ELLIPSIS_DOTS_V, moreLayout);
 		}
 
-		Button openGuideButton = new Button(I18nProperties.getCaption(Captions.caseOpenCasesGuide));
-		openGuideButton.setId("openCasesGuide");
-		openGuideButton.setIcon(VaadinIcons.QUESTION);
-		openGuideButton.addClickListener(e -> buildAndOpenCasesInstructions());
+		Button openGuideButton = ButtonHelper.createIconButton(Captions.caseOpenCasesGuide, VaadinIcons.QUESTION, e -> buildAndOpenCasesInstructions());
 		if (moreLayout != null) {
 			openGuideButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			openGuideButton.setWidth(100, Unit.PERCENTAGE);
@@ -156,41 +151,38 @@ public class CasesView extends AbstractView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			VerticalLayout importLayout = new VerticalLayout();
 			{
-				PopupButton importButton = new PopupButton(I18nProperties.getCaption(Captions.actionImport));
-				importButton.setId("import");
-				importButton.setIcon(VaadinIcons.UPLOAD);
 				importLayout.setSpacing(true);
 				importLayout.setMargin(true);
 				importLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 				importLayout.setWidth(250, Unit.PIXELS);
-				importButton.setContent(importLayout);
+
+				PopupButton importButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.UPLOAD, importLayout);
+
 				addHeaderComponent(importButton);
 			}
 			addImportButton(importLayout,
-					"lineListingImport", Captions.importLineListing,
+					Captions.importLineListing,
 					Strings.headingLineListingImport, LineListingImportLayout::new);
 			addImportButton(importLayout,
-					"extendedImport", Captions.importDetailed,
+					 Captions.importDetailed,
 					Strings.headingImportCases, CaseImportLayout::new);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
-			PopupButton exportPopupButton = new PopupButton(I18nProperties.getCaption(Captions.export));
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
-				exportPopupButton.setId("export");
-				exportPopupButton.setIcon(VaadinIcons.DOWNLOAD);
 				exportLayout.setSpacing(true);
 				exportLayout.setMargin(true);
 				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 				exportLayout.setWidth(250, Unit.PIXELS);
-				exportPopupButton.setContent(exportLayout);
-				addHeaderComponent(exportPopupButton);
 			}
+
+			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportPopupButton);
 
 			{
 				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", createFileNameWithCurrentDate("sormas_cases_", ".csv"));
-				addExportButton(streamResource, exportPopupButton, exportLayout, "basicExport", VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
+				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
 			{
@@ -211,13 +203,13 @@ public class CasesView extends AbstractView {
 							return caption;
 						},
 						createFileNameWithCurrentDate("sormas_cases_", ".csv"), null);
-				addExportButton(exportStreamResource, exportPopupButton, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
+				addExportButton(exportStreamResource, exportPopupButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(grid.getCriteria(),
 						createFileNameWithCurrentDate("sormas_case_management_", ".zip"));
-				addExportButton(caseManagementExportStreamResource, exportPopupButton, exportLayout, "caseManagementExport", VaadinIcons.FILE_TEXT, Captions.exportCaseManagement, Strings.infoCaseManagementExport);
+				addExportButton(caseManagementExportStreamResource, exportPopupButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.exportCaseManagement, Strings.infoCaseManagementExport);
 			}
 
 			{
@@ -236,18 +228,11 @@ public class CasesView extends AbstractView {
 							return caption;
 						},
 						createFileNameWithCurrentDate("sormas_samples_", ".csv"), null);
-				addExportButton(sampleExportStreamResource, exportPopupButton, exportLayout, "sampleExport", VaadinIcons.FILE_TEXT, Captions.exportSamples, Strings.infoSampleExport);
+				addExportButton(sampleExportStreamResource, exportPopupButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.exportSamples, Strings.infoSampleExport);
 			}
 
 			{
-				Button btnCustomCaseExport = new Button(I18nProperties.getCaption(Captions.exportCaseCustom));
-				btnCustomCaseExport.setId("customCaseExport");
-				btnCustomCaseExport.setDescription(I18nProperties.getString(Strings.infoCustomCaseExport));
-				btnCustomCaseExport.addStyleName(ValoTheme.BUTTON_PRIMARY);
-				btnCustomCaseExport.setIcon(VaadinIcons.FILE_TEXT);
-				btnCustomCaseExport.setWidth(100, Unit.PERCENTAGE);
-				exportLayout.addComponent(btnCustomCaseExport);
-				btnCustomCaseExport.addClickListener(e -> {
+				Button btnCustomCaseExport = ButtonHelper.createIconButton(Captions.exportCaseCustom, VaadinIcons.FILE_TEXT, e -> {
 					Window customExportWindow = VaadinUiUtil.createPopupWindow();
 					CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(
 							customExportWindow::close);
@@ -274,7 +259,10 @@ public class CasesView extends AbstractView {
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
 					customExportWindow.setContent(customExportsLayout);
 					UI.getCurrent().addWindow(customExportWindow);
-				});
+				}, ValoTheme.BUTTON_PRIMARY);
+				btnCustomCaseExport.setDescription(I18nProperties.getString(Strings.infoCustomCaseExport));
+				btnCustomCaseExport.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(btnCustomCaseExport);
 			}
 
 			{
@@ -289,26 +277,7 @@ public class CasesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
-			btnEnterBulkEditMode.setId("enterBulkEditMode");
-			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
-			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-			if (moreLayout != null) {
-				btnEnterBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
-				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
-				moreLayout.addComponent(btnEnterBulkEditMode);
-			} else {
-				addHeaderComponent(btnEnterBulkEditMode);
-			}
-
-			btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
-			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
-			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
-			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
-			addHeaderComponent(btnLeaveBulkEditMode);
-
-			btnEnterBulkEditMode.addClickListener(e -> {
+			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
 				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
 					VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.actionEnterBulkEditMode), new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)),
 							I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, (result) -> {
@@ -320,21 +289,33 @@ public class CasesView extends AbstractView {
 					enterBulkEditMode();
 				}
 			});
-			btnLeaveBulkEditMode.addClickListener(e -> {
+
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			if (moreLayout != null) {
+				btnEnterBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+				moreLayout.addComponent(btnEnterBulkEditMode);
+			} else {
+				addHeaderComponent(btnEnterBulkEditMode);
+			}
+
+			btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, e -> {
 				bulkOperationsDropdown.setVisible(false);
 				viewConfiguration.setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				this.filterForm.enableSearchAndReportingUser();
 				navigateTo(criteria);
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+
+			addHeaderComponent(btnLeaveBulkEditMode);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
-			Button mergeDuplicatesButton = new Button(I18nProperties.getCaption(Captions.caseMergeDuplicates));
-			mergeDuplicatesButton.setId("mergeDuplicates");
-			mergeDuplicatesButton.setIcon(VaadinIcons.COMPRESS_SQUARE);
-			mergeDuplicatesButton.addClickListener(e -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+			Button mergeDuplicatesButton = ButtonHelper.createIconButton(Captions.caseMergeDuplicates,
+					VaadinIcons.COMPRESS_SQUARE, e -> ControllerProvider.getCaseController().navigateToMergeCasesView());
+
 			if (moreLayout != null) {
 				mergeDuplicatesButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 				mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
@@ -344,10 +325,8 @@ public class CasesView extends AbstractView {
 			}
 		}
 
-		Button searchSpecificCaseButton = new Button(I18nProperties.getCaption(Captions.caseSearchSpecificCase));
-		searchSpecificCaseButton.setId("searchSpecificCase");
-		searchSpecificCaseButton.setIcon(VaadinIcons.SEARCH);
-		searchSpecificCaseButton.addClickListener(e -> buildAndOpenSearchSpecificCaseWindow());
+		Button searchSpecificCaseButton = ButtonHelper.createIconButton(Captions.caseSearchSpecificCase, VaadinIcons.SEARCH, e -> buildAndOpenSearchSpecificCaseWindow());
+
 		if (moreLayout != null) {
 			searchSpecificCaseButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
@@ -357,18 +336,14 @@ public class CasesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
-			lineListingButton = new Button(I18nProperties.getCaption(Captions.caseLineListing));
-			lineListingButton.setId("lineListing");
-			lineListingButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			lineListingButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			lineListingButton.addClickListener(e -> ControllerProvider.getCaseController().lineListing());
+			lineListingButton = ButtonHelper.createIconButton(Captions.caseLineListing, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getCaseController().lineListing(), ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(lineListingButton);
 
-			createButton = new Button(I18nProperties.getCaption(Captions.caseNewCase));
-			createButton.setId("create");
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getCaseController().create());
+			createButton = ButtonHelper.createIconButton(Captions.caseNewCase, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getCaseController().create(), ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(createButton);
 		}
 
@@ -378,18 +353,14 @@ public class CasesView extends AbstractView {
 		addComponent(gridLayout);
 	}
 
-	private void addImportButton(VerticalLayout importLayout, String buttonId, String captionKey,
+	private void addImportButton(VerticalLayout importLayout, String captionKey,
 								 String windowHeadingKey, Supplier<Component> windowContentSupplier) {
-		Button lineListingImportButton = new Button(I18nProperties.getCaption(captionKey));
-		lineListingImportButton.setId(buttonId);
-		lineListingImportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		lineListingImportButton.setIcon(VaadinIcons.UPLOAD);
-		lineListingImportButton.setWidth(100, Unit.PERCENTAGE);
-		lineListingImportButton.addClickListener(e -> {
+		Button lineListingImportButton = ButtonHelper.createIconButton(captionKey, VaadinIcons.UPLOAD, e -> {
 			Window popupWindow = VaadinUiUtil.showPopupWindow(windowContentSupplier.get());
 			popupWindow.setCaption(I18nProperties.getString(windowHeadingKey));
 			popupWindow.addCloseListener(c -> grid.reload());
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
+		lineListingImportButton.setWidth(100, Unit.PERCENTAGE);
 		importLayout.addComponent(lineListingImportButton);
 	}
 
@@ -450,26 +421,24 @@ public class CasesView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
+		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
 			criteria.investigationStatus(null);
 			navigateTo(criteria);
-		});
-		statusAll.setId("statusAll");
-		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
+
 		statusFilterLayout.addComponent(statusAll);
 		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for (InvestigationStatus status : InvestigationStatus.values()) {
-			Button statusButton = new Button(status.toString(), e -> {
+			Button statusButton = ButtonHelper.createButton(status.toString(), e -> {
 				criteria.investigationStatus(status);
 				navigateTo(criteria);
-			});
-			statusButton.setId("status-button-" + status.name());
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setData(status);
-			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			statusButton.setCaptionAsHtml(true);
+
 			statusFilterLayout.addComponent(statusButton);
 			statusButtons.put(statusButton, status.toString());
 		}

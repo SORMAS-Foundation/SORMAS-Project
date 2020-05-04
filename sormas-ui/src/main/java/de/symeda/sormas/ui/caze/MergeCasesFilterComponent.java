@@ -29,6 +29,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -123,6 +124,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		firstRowLayout.addComponent(tfReportingUser);
 		
 		cbIgnoreRegion = new CheckBox();
+		cbIgnoreRegion.setId(Captions.caseFilterWithDifferentRegion);
 		CssStyles.style(cbIgnoreRegion, CssStyles.CHECKBOX_FILTER_INLINE);
 		cbIgnoreRegion.setCaption(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
 		cbIgnoreRegion.addValueChangeListener(e -> {
@@ -207,26 +209,22 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		dfNewCaseDateTo.setEnabled(false);
 		secondRowLayout.addComponent(dfNewCaseDateTo);
 		
-		btnConfirmFilters = new Button(I18nProperties.getCaption(Captions.actionConfirmFilters));
-		btnConfirmFilters.setId("confirm");
-		CssStyles.style(btnConfirmFilters, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
-		btnConfirmFilters.addClickListener(event -> {
+		btnConfirmFilters = ButtonHelper.createButton(Captions.actionConfirmFilters, event -> {
 			try {
 				binder.writeBean(criteria);
 				filtersUpdatedCallback.run();
 			} catch (ValidationException e) {
 				// No validation needed
 			}
-		});
+		}, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+
 		secondRowLayout.addComponent(btnConfirmFilters);
 
-		btnResetFilters = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-		btnResetFilters.setId("reset");
-		CssStyles.style(btnResetFilters, CssStyles.FORCE_CAPTION);
-		btnResetFilters.addClickListener(event -> {
+		btnResetFilters = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(MergeCasesView.class).remove(CaseCriteria.class);
 			filtersUpdatedCallback.run();
-		});
+		}, CssStyles.FORCE_CAPTION);
+
 		secondRowLayout.addComponent(btnResetFilters);
 		
 		lblNumberOfDuplicates = new Label("");

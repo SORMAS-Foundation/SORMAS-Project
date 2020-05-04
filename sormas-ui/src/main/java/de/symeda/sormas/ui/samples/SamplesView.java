@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Date;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -65,35 +66,29 @@ public class SamplesView extends AbstractView {
 		addComponent(sampleListComponent);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
-			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export));
-			exportButton.setId("export");
-			exportButton.setIcon(VaadinIcons.DOWNLOAD);
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true); 
 			exportLayout.setMargin(true);
 			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 			exportLayout.setWidth(200, Unit.PIXELS);
-			exportButton.setContent(exportLayout);
+
+			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportButton);
 			
-			Button basicExportButton = new Button(I18nProperties.getCaption(Captions.exportBasic));
+			Button basicExportButton = ButtonHelper.createIconButton(Captions.exportBasic, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
-			basicExportButton.setId("basicExportButton");
-			basicExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			basicExportButton.setIcon(VaadinIcons.TABLE);
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
+
 			exportLayout.addComponent(basicExportButton);
 
 			StreamResource streamResource = new GridExportStreamResource(sampleListComponent.getGrid(), "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", SampleGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
-			Button extendedExportButton = new Button(I18nProperties.getCaption(Captions.exportDetailed));
-			extendedExportButton.setId("extendedExport");
+			Button extendedExportButton = ButtonHelper.createIconButton(Captions.exportDetailed, VaadinIcons.FILE_TEXT, null, ValoTheme.BUTTON_PRIMARY);
 			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
-			extendedExportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			extendedExportButton.setIcon(VaadinIcons.FILE_TEXT);
 			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
+
 			exportLayout.addComponent(extendedExportButton);
 			
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class, null,
@@ -114,17 +109,14 @@ public class SamplesView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
-			btnEnterBulkEditMode.setId("enterBulkEditMode");
-			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+
 			addHeaderComponent(btnEnterBulkEditMode);
 			
-			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
-			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
-			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE,null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(btnLeaveBulkEditMode);
 			
 			btnEnterBulkEditMode.addClickListener(e -> {

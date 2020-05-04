@@ -165,9 +165,9 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		this.applyingCriteria = applyingCriteria;
 	}
 	
-	protected void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, String buttonId,
+	protected void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout,
 			Resource icon, String captionKey, String descriptionKey) {
-		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
+		Button exportButton = ButtonHelper.createIconButton(captionKey, icon, e -> {
 			
 			Button button = e.getButton();
 			int buttonPos = exportLayout.getComponentIndex(button);
@@ -178,16 +178,12 @@ public abstract class AbstractView extends VerticalLayout implements View {
 				button.setEnabled(true);
 			});
 			exportPopupButton.setPopupVisible(false);
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
 
-		exportButton.setId(captionKey);
 		exportButton.setDisableOnClick(true);
-		
-		exportButton.setId(buttonId);
 		exportButton.setDescription(I18nProperties.getDescription(descriptionKey));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(icon);
 		exportButton.setWidth(100, Unit.PERCENTAGE);
+
 		exportLayout.addComponent(exportButton);
 
 		new FileDownloader(streamResource).extend(exportButton);

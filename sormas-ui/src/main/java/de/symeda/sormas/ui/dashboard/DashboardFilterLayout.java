@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -163,17 +164,15 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		CssStyles.style(dateFilterLayout, CssStyles.VSPACE_3);
 		addComponent(dateFilterLayout);
 
-		btnCurrentPeriod = new PopupButton();
-		CssStyles.style(btnCurrentPeriod, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+		btnCurrentPeriod = ButtonHelper.createIconPopupButton("currentPeriod", null,
+				new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
+				CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 
 		Label lblComparedTo = new Label(I18nProperties.getCaption(Captions.dashboardComparedTo));
 		CssStyles.style(lblComparedTo, CssStyles.VSPACE_TOP_4, CssStyles.LABEL_BOLD);
 
-		btnComparisonPeriod = new PopupButton();
-		CssStyles.style(btnComparisonPeriod, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
-
-		btnCurrentPeriod.setContent(new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()));
-		btnComparisonPeriod.setContent(createDateComparisonButtonsLayout());
+		btnComparisonPeriod = ButtonHelper.createIconPopupButton("comparisonPeriod", null, createDateComparisonButtonsLayout(),
+				ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 
 		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
 
@@ -199,11 +198,9 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		layout.setSpacing(true);
 
 		// Date filters
-		btnShowCustomPeriod = new Button(I18nProperties.getCaption(Captions.dashboardCustom));
-		initializeDateFilterButton(btnShowCustomPeriod, dateFilterButtons);
+		btnShowCustomPeriod = createAndAddDateFilterButton(Captions.dashboardCustom, I18nProperties.getCaption(Captions.dashboardCustom), dateFilterButtons);
 
-		btnToday = new Button(String.format(I18nProperties.getCaption(Captions.dashboardToday), DateHelper.formatLocalDate(new Date())));
-		initializeDateFilterButton(btnToday, dateFilterButtons);
+		btnToday = createAndAddDateFilterButton(Captions.dashboardToday, String.format(I18nProperties.getCaption(Captions.dashboardToday), DateHelper.formatLocalDate(new Date())), dateFilterButtons);
 		btnToday.addClickListener(e -> {
 			Date now = new Date();
 			Date from = DateHelper.getStartOfDay(now);
@@ -214,8 +211,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		btnYesterday = new Button(String.format(I18nProperties.getCaption(Captions.dashboardYesterday), DateHelper.formatLocalDate(DateHelper.subtractDays(new Date(), 1))));
-		initializeDateFilterButton(btnYesterday, dateFilterButtons);
+		btnYesterday = createAndAddDateFilterButton(Captions.dashboardYesterday, String.format(I18nProperties.getCaption(Captions.dashboardYesterday), DateHelper.formatLocalDate(DateHelper.subtractDays(new Date(), 1))), dateFilterButtons);
 		btnYesterday.addClickListener(e -> {
 			Date now = new Date();
 			Date from = DateHelper.getStartOfDay(DateHelper.subtractDays(now, 1));
@@ -226,8 +222,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		btnThisWeek = new Button(String.format(I18nProperties.getCaption(Captions.dashboardThisWeek), DateHelper.getEpiWeek(new Date()).toString(new Date())));
-		initializeDateFilterButton(btnThisWeek, dateFilterButtons);
+		btnThisWeek = createAndAddDateFilterButton(Captions.dashboardThisWeek, String.format(I18nProperties.getCaption(Captions.dashboardThisWeek), DateHelper.getEpiWeek(new Date()).toString(new Date())), dateFilterButtons);
 		btnThisWeek.addClickListener(e -> {
 			Date now = new Date();
 			Date from = DateHelper.getStartOfWeek(now);
@@ -238,8 +233,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		btnLastWeek = new Button(String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()));
-		initializeDateFilterButton(btnLastWeek, dateFilterButtons);
+		btnLastWeek = createAndAddDateFilterButton(Captions.dashboardLastWeek, String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()), dateFilterButtons);
 		btnLastWeek.addClickListener(e -> {
 			Date now = new Date();
 			Date from = DateHelper.getStartOfWeek(DateHelper.subtractWeeks(now, 1));
@@ -250,8 +244,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		btnThisYear = new Button(String.format(I18nProperties.getCaption(Captions.dashboardThisYear), DateHelper.buildPeriodString(DateHelper.getStartOfYear(new Date()), new Date())));
-		initializeDateFilterButton(btnThisYear, dateFilterButtons);
+		btnThisYear = createAndAddDateFilterButton(Captions.dashboardThisYear, String.format(I18nProperties.getCaption(Captions.dashboardThisYear), DateHelper.buildPeriodString(DateHelper.getStartOfYear(new Date()), new Date())), dateFilterButtons);
 		btnThisYear.addClickListener(e -> {
 			Date now = new Date();
 			Date from = DateHelper.getStartOfYear(now);
@@ -274,8 +267,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		customDateFilterLayout.setVisible(false);
 
 		// 'Apply custom filter' button
-		Button applyButton = new Button(I18nProperties.getCaption(Captions.dashboardApplyCustomFilter));
-		CssStyles.style(applyButton, CssStyles.FORCE_CAPTION, CssStyles.BUTTON_FILTER_LIGHT);
+		Button applyButton = ButtonHelper.createButton(Captions.dashboardApplyCustomFilter, null, CssStyles.FORCE_CAPTION, CssStyles.BUTTON_FILTER_LIGHT);
 		applyButton.setEnabled(false);
 
 		// Date & Epi Week filter
@@ -338,8 +330,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		layout.setSpacing(true);
 		layout.setMargin(true);
 
-		btnPeriodBefore = new Button();
-		initializeDateFilterButton(btnPeriodBefore, dateComparisonButtons);
+		btnPeriodBefore = createAndAddDateFilterButton(Captions.dashboardDayBefore, null, dateComparisonButtons);
 		btnPeriodBefore.addClickListener(e -> {
 			activeComparisonButton = btnPeriodBefore;
 			updateComparisonDates();
@@ -347,8 +338,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 
-		btnPeriodLastYear = new Button();
-		initializeDateFilterButton(btnPeriodLastYear, dateComparisonButtons);
+		btnPeriodLastYear = createAndAddDateFilterButton(Captions.dashboardSameDayLastYear, null, dateComparisonButtons);
 		btnPeriodLastYear.addClickListener(e -> {
 			activeComparisonButton = btnPeriodLastYear;
 			updateComparisonDates();
@@ -361,12 +351,14 @@ public class DashboardFilterLayout extends HorizontalLayout {
 		return layout;
 	}
 
-	private void initializeDateFilterButton(Button button, Set<Button> buttonSet) {
-		button.addClickListener(e -> {
-			changeCustomDateFilterPanelStyle(button, buttonSet);
-		});
-		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+	private Button createAndAddDateFilterButton(String id, String caption, Set<Button> buttonSet) {
+		Button button = ButtonHelper.createButtonWithCaption(id, caption, e -> {
+			changeCustomDateFilterPanelStyle(e.getButton(), buttonSet);
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+
 		buttonSet.add(button);
+
+		return button;
 	}
 
 	private void changeCustomDateFilterPanelStyle(Button activeFilterButton, Set<Button> buttonSet) {

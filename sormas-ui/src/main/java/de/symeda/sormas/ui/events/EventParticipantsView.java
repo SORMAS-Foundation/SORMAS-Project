@@ -37,6 +37,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventParticipantsView extends AbstractEventView {
@@ -93,14 +94,11 @@ public class EventParticipantsView extends AbstractEventView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
-			addButton = new Button(I18nProperties.getCaption(Captions.eventParticipantAddPerson));
-			addButton.setId("addPerson");
-			addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			addButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			addButton.addClickListener(e -> {
+			addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
 				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(),
 						r -> navigateTo(criteria));
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			topLayout.addComponent(addButton);
 			topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
 		}

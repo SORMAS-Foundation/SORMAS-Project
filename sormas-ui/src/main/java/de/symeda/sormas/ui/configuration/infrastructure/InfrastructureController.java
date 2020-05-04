@@ -45,6 +45,7 @@ import de.symeda.sormas.api.region.RegionIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -272,34 +273,28 @@ public class InfrastructureController {
 
 	private void extendEditComponentWithArchiveButton(CommitDiscardWrapperComponent<?> component, boolean isArchived, String uuid, InfrastructureType infrastructureType, FacilityType facilityType) {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)) {
-			Button archiveButton = new Button();
-			archiveButton.addStyleName(ValoTheme.BUTTON_LINK);
-			if (isArchived) {
-				archiveButton.setCaption(I18nProperties.getCaption(Captions.actionDearchive));
-			} else {
-				archiveButton.setCaption(I18nProperties.getCaption(Captions.actionArchive));
-			}
-			archiveButton.addClickListener(e -> {
-				if (!isArchived) {
-					if (InfrastructureType.REGION.equals(infrastructureType) && FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
-							InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
-							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))) {
-						showArchivingNotPossibleWindow(infrastructureType, false);
-						return;
-					}
-				} else {
-					if (InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
-							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
-							InfrastructureType.FACILITY.equals(infrastructureType) && FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
-							InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType) && FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))) {
-						showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
-						return;
-					}
-				}
-				
-				component.commit();
-				archiveOrDearchiveInfrastructure(!isArchived, uuid, infrastructureType, facilityType);
-			});
+			Button archiveButton = ButtonHelper.createButton(isArchived ? Captions.actionDearchive : Captions.actionArchive,
+					e -> {
+						if (!isArchived) {
+							if (InfrastructureType.REGION.equals(infrastructureType) && FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
+									InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
+									InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))) {
+								showArchivingNotPossibleWindow(infrastructureType, false);
+								return;
+							}
+						} else {
+							if (InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+									InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+									InfrastructureType.FACILITY.equals(infrastructureType) && FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+									InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType) && FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))) {
+								showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
+								return;
+							}
+						}
+
+						component.commit();
+						archiveOrDearchiveInfrastructure(!isArchived, uuid, infrastructureType, facilityType);
+					}, ValoTheme.BUTTON_LINK);
 
 			component.getButtonsPanel().addComponentAsFirst(archiveButton);
 			component.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);

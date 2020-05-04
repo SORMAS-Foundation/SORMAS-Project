@@ -29,6 +29,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -199,8 +200,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter() {
-		Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
-		applyButton.setId("applyDateFilter");
+		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
 		EpiWeekAndDateFilterComponent<ContactDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, ContactDateType.class, I18nProperties.getString(Strings.promptContactDateType), ContactDateType.REPORT_DATE);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));

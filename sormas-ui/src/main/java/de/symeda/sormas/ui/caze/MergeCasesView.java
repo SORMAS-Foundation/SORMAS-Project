@@ -22,6 +22,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -72,23 +73,16 @@ public class MergeCasesView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 		addComponent(gridLayout);
 
-		Button btnOpenGuide = new Button(I18nProperties.getCaption(Captions.caseOpenMergeGuide));
-		btnOpenGuide.setId("openMergeGuide");
-		btnOpenGuide.setIcon(VaadinIcons.QUESTION);
-		btnOpenGuide.addClickListener(e -> buildAndOpenMergeInstructions());
+		Button btnOpenGuide = ButtonHelper.createIconButton(Captions.caseOpenMergeGuide, VaadinIcons.QUESTION, e -> buildAndOpenMergeInstructions());
 		addHeaderComponent(btnOpenGuide);
 
-		Button btnCalculateCompleteness = new Button(I18nProperties.getCaption(Captions.caseCalculateCompleteness));
-		btnCalculateCompleteness.setId("calculateCompleteness");
-		btnCalculateCompleteness.setIcon(VaadinIcons.CALC);
-		btnCalculateCompleteness.addClickListener(e -> showCalculateCompletenessWindow());
+		Button btnCalculateCompleteness = ButtonHelper.createIconButton(Captions.caseCalculateCompleteness, VaadinIcons.CALC, e -> showCalculateCompletenessWindow());
+
 		addHeaderComponent(btnCalculateCompleteness);
 
-		Button btnBack = new Button(I18nProperties.getCaption(Captions.caseBackToDirectory));
-		btnBack.setId("backToDirectory");
-		btnBack.setIcon(VaadinIcons.ARROW_BACKWARD);
-		btnBack.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		btnBack.addClickListener(e -> ControllerProvider.getCaseController().navigateToIndex());
+		Button btnBack = ButtonHelper.createIconButton(Captions.caseBackToDirectory, VaadinIcons.ARROW_BACKWARD,
+				e -> ControllerProvider.getCaseController().navigateToIndex(), ValoTheme.BUTTON_PRIMARY);
+
 		addHeaderComponent(btnBack);
 	}
 

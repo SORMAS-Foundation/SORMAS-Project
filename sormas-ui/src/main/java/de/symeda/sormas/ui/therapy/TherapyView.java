@@ -48,6 +48,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -108,11 +109,10 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			Button newPrescriptionButton = new Button(I18nProperties.getCaption(Captions.prescriptionNewPrescription));
-			CssStyles.style(newPrescriptionButton, ValoTheme.BUTTON_PRIMARY);
-			newPrescriptionButton.addClickListener(e -> {
+			Button newPrescriptionButton = ButtonHelper.createButton(Captions.prescriptionNewPrescription, e -> {
 				ControllerProvider.getTherapyController().openPrescriptionCreateForm(prescriptionCriteria.getTherapy(), this::reloadPrescriptionGrid);
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			headlineRow.addComponent(newPrescriptionButton);
 
 			headlineRow.setComponentAlignment(newPrescriptionButton, Alignment.MIDDLE_RIGHT);
@@ -182,12 +182,11 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			Button newTreatmentButton = new Button(I18nProperties.getCaption(Captions.treatmentNewTreatment));
-			newTreatmentButton.addClickListener(e -> {
+			Button newTreatmentButton = ButtonHelper.createButton(Captions.treatmentNewTreatment, e -> {
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
 			});
-			headlineRow.addComponent(newTreatmentButton);
 
+			headlineRow.addComponent(newTreatmentButton);
 			headlineRow.setComponentAlignment(newTreatmentButton, Alignment.MIDDLE_RIGHT);
 		}
 		treatmentsHeader.addComponent(headlineRow);

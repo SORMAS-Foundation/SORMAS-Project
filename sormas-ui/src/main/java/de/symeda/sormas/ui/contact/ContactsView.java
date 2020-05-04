@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import de.symeda.sormas.api.contact.*;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -183,40 +184,34 @@ public class ContactsView extends AbstractView {
 
 		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType())
 				&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
-			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
-			importButton.setId("contactImport");
-			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			importButton.setIcon(VaadinIcons.UPLOAD);
-
-			importButton.addClickListener(e -> {
+			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new ContactsImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportContacts));
 				popupWindow.addCloseListener(c -> {
 					ContactGrid grid = (ContactGrid) this.grid;
 					grid.reload();
 				});
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(importButton);
 		}
 
 		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
-			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export));
-			exportButton.setId("contactExport");
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
-				exportButton.setIcon(VaadinIcons.DOWNLOAD);
 				exportLayout.setSpacing(true); 
 				exportLayout.setMargin(true);
 				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 				exportLayout.setWidth(200, Unit.PIXELS);
-				exportButton.setContent(exportLayout);
-				addHeaderComponent(exportButton);
 			}
+
+			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportButton);
+
 			{
 				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
 
-				addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
+				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
 				StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
@@ -236,7 +231,7 @@ public class ContactsView extends AbstractView {
 						},
 						createFileNameWithCurrentDate("sormas_contacts_", ".csv"), null);
 
-				addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+				addExportButton(extendedExportStreamResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
@@ -244,7 +239,7 @@ public class ContactsView extends AbstractView {
 						DownloadUtil.createContactVisitsExport(grid.getCriteria(),
 								createFileNameWithCurrentDate("sormas_contacts_follow_ups", ".csv"));
 
-				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout, null,
+				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout,
 						VaadinIcons.FILE_TEXT, Captions.exportFollowUp, Descriptions.descFollowUpExportButton);
 			}
 
@@ -261,20 +256,15 @@ public class ContactsView extends AbstractView {
 		}
 
 		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			{
-				btnEnterBulkEditMode.setId("enterBulkEditMode");
-				btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 				addHeaderComponent(btnEnterBulkEditMode);
 			}
 
-			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			{
-				btnLeaveBulkEditMode.setId("leaveBulkEditMode");
-				btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
 				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-				btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
 				addHeaderComponent(btnLeaveBulkEditMode);
 			}
 
@@ -298,11 +288,9 @@ public class ContactsView extends AbstractView {
 		}
 
 		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			Button btnNewContact = new Button(I18nProperties.getCaption(Captions.contactNewContact));
-			btnNewContact.setId("newContact");
-			btnNewContact.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			btnNewContact.setIcon(VaadinIcons.PLUS_CIRCLE);
-			btnNewContact.addClickListener(e -> ControllerProvider.getContactController().create());
+			Button btnNewContact = ButtonHelper.createIconButton(Captions.contactNewContact, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getContactController().create(), ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(btnNewContact);
 		}
 
@@ -344,33 +332,35 @@ public class ContactsView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
+		Button statusAll = ButtonHelper.createButton(I18nProperties.getCaption(Captions.all), e -> {
 			criteria.contactStatus(null);
 			navigateTo(criteria);
-		});
-		statusAll.setId("statusAll");
-		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+
+		statusAll.setCaptionAsHtml(true);
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			CssStyles.style(statusAll, CssStyles.FORCE_CAPTION);
 		}
-		statusAll.setCaptionAsHtml(true);
+
 		statusFilterLayout.addComponent(statusAll);
+
 		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for (ContactStatus status : ContactStatus.values()) {
-			Button statusButton = new Button(status.toString(), e -> {
+			Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status.toString(), status.toString(), e -> {
 				criteria.contactStatus(status);
 				navigateTo(criteria);
-			});
-			statusButton.setId("status-button-" + status.name());
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+
+			statusButton.setCaptionAsHtml(true);
 			statusButton.setData(status);
-			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 				CssStyles.style(statusButton, CssStyles.FORCE_CAPTION);
 			}
-			statusButton.setCaptionAsHtml(true);
+
 			statusFilterLayout.addComponent(statusButton);
+
 			statusButtons.put(statusButton, status.toString());
 		}
 
@@ -428,12 +418,10 @@ public class ContactsView extends AbstractView {
 				DateField followUpReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactFollowUpOverviewReferenceDate), LocalDate.now());
 				followUpReferenceDate.setId("followUpReferenceDate");
 
-				Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
-				minusDaysButton.setId("minusDaysButton");
-				CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-				minusDaysButton.addClickListener(e -> {
+				Button minusDaysButton = ButtonHelper.createButton(Captions.contactMinusDays, e -> {
 					followUpReferenceDate.setValue(followUpReferenceDate.getValue().minusDays(8));
-				});
+				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+
 				scrollLayout.addComponent(minusDaysButton);
 
 				followUpReferenceDate.addValueChangeListener(e -> {
@@ -451,18 +439,16 @@ public class ContactsView extends AbstractView {
 				});
 				scrollLayout.addComponent(followUpReferenceDate);
 
-				Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
-				plusDaysButton.setId("plusDaysButton");
-				CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-				plusDaysButton.addClickListener(e -> {
+				Button plusDaysButton = ButtonHelper.createButton(Captions.contactPlusDays, e -> {
 					followUpReferenceDate.setValue(followUpReferenceDate.getValue().plusDays(8));
-				});
+				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+
 				scrollLayout.addComponent(plusDaysButton);
 
 				actionButtonsLayout.addComponent(scrollLayout);
-
 			}
 		}
+
 		statusFilterLayout.addComponent(actionButtonsLayout);
 		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
