@@ -66,7 +66,7 @@ public class CaseEditAuthorization {
 	public boolean hasRole (UserRole userRoleName){
 		User user = userService.getCurrentUser();
         Set<UserRole> userRoles = user.getUserRoles();
-        return !userRoles.stream().filter(userRole -> userRole.name().equals(userRoleName.toString())).collect(Collectors.toList()).isEmpty();
+        return !userRoles.stream().filter(userRole -> userRole.name().equals(userRoleName.name())).collect(Collectors.toList()).isEmpty();
     }
 
     public boolean hasRole(Set<UserRole> typeRoles) {
