@@ -22,7 +22,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import org.junit.Test;
 
 public class PersonHelperTest {
@@ -92,13 +91,13 @@ public class PersonHelperTest {
 
 	@Test
 	public void testFormatBirthdateDE() throws Exception {
-		assertEquals("", PersonHelper.formatBirthdate(null, null, null, Language.DE));
-		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990, Language.DE));
-		assertEquals("7.1990", PersonHelper.formatBirthdate(null, 7, 1990, Language.DE));
-		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null, Language.DE));
-		assertEquals("5.7", PersonHelper.formatBirthdate(5, 7, null, Language.DE));
-		assertEquals("5", PersonHelper.formatBirthdate(5, null, null, Language.DE));
-		assertEquals("5..1990", PersonHelper.formatBirthdate(5, null, 1990, Language.DE));
-		assertEquals("5.7.1990", PersonHelper.formatBirthdate(5, 7, 1990, Language.DE));
+		assertEquals("", PersonHelper.formatBirthdate(null, null, null, Language.DE_DE));
+		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990, Language.DE_DE));
+		assertEquals("7.1990", PersonHelper.formatBirthdate(null, 7, 1990, Language.DE_DE));
+		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null, Language.DE_DE));
+		assertEquals("5.7", PersonHelper.formatBirthdate(5, 7, null, Language.DE_DE));
+		assertEquals("5", PersonHelper.formatBirthdate(5, null, null, Language.DE_DE));
+		assertEquals("5..1990", PersonHelper.formatBirthdate(5, null, 1990, Language.DE_DE));
+		assertEquals("5.7.1990", PersonHelper.formatBirthdate(5, 7, 1990, Language.DE_DE));
 	}
 }

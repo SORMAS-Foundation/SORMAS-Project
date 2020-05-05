@@ -1,5 +1,5 @@
 # Basics
-In general data access & syncrhonization is based on the following rules:
+In general data access & synchronisation is based on the following rules:
 
 * hospital informant: all data associated to the facility (cases)
 * community informant: all data associated to the community (cases)
@@ -41,7 +41,6 @@ In general data access & syncrhonization is based on the following rules:
 * lab users see all samples of their laboratory
 
 # Persons
-* all persons resident in the user's district
 * all persons of the cases the user can access
 * all persons of the contacts the user can access
 * all persons of the events the user can access

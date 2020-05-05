@@ -18,7 +18,6 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;

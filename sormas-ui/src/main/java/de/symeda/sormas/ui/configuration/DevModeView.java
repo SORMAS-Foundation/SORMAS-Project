@@ -485,16 +485,13 @@ public class DevModeView extends AbstractConfigurationView {
 			contact.setReportingUser(userReference);
 			contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
-			DistrictIndexDto district = random(districts);
-			if (config.getRegion() != null) {
-				contact.setRegion(config.getRegion());
-			} else {
+			if (districts != null) {
+				DistrictIndexDto district = random(districts);
 				contact.setRegion(district.getRegion());
-			}
-			if (config.getDistrict() != null) {
-				contact.setDistrict(config.getDistrict());
-			} else {
 				contact.setDistrict(district.toReference());
+			} else {
+				contact.setRegion(config.getRegion());
+				contact.setDistrict(config.getDistrict());
 			}
 
 			if (contact.getLastContactDate() != null && contact.getLastContactDate().after(contact.getReportDateTime())) {

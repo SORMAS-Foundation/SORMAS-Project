@@ -3,8 +3,6 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.utils.DateHelper;
-
 public class PrescriptionIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 9189039796173435070L;

@@ -17,17 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.FacadeProvider;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.simmetrics.metrics.StringMetrics;
+
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.simmetrics.metrics.StringMetrics;
-
-import java.util.Date;
 
 public final class PersonHelper {
 

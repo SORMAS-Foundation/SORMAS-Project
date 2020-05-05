@@ -11,7 +11,6 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Label;
 
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -20,7 +19,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.caze.CasePickOrCreateField;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;

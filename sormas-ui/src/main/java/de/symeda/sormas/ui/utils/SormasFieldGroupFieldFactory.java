@@ -1,17 +1,25 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Date;
+import java.util.List;
+
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
-import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractTextField;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.OptionGroup;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
@@ -19,9 +27,6 @@ import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
-
-import java.util.Date;
-import java.util.List;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 	private static final long serialVersionUID = 471700572643936674L;

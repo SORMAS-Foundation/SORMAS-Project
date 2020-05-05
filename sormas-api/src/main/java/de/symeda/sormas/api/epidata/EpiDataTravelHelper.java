@@ -19,7 +19,6 @@ package de.symeda.sormas.api.epidata;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
