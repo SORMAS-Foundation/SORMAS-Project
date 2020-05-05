@@ -238,6 +238,36 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return result;
 	}
 
+	/**
+	 * Returns a filter that can be used to retrieve all contacts with the specified person and disease
+	 * whose last contact date or report date (depending on availability) is within 30 days of the reference date.
+	 */
+	public Predicate buildRelevantContactsFilter(Person person, Disease disease, Date referenceDate, CriteriaBuilder cb, Root<Contact> from) {
+		Predicate filter = cb.and(
+				cb.equal(from.get(Contact.PERSON), person),
+				cb.equal(from.get(Contact.DISEASE), disease)
+				);
+
+		filter = and(cb, filter, 
+				or(cb,
+						cb.and(
+								cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
+								cb.greaterThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
+						cb.greaterThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
+						));
+
+		filter = and(cb, filter,
+				or(cb,
+						cb.and(
+								cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
+								cb.lessThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
+						cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
+						));
+
+
+		return filter;
+	}
+
 	public List<String> getDeletedUuidsSince(User user, Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -437,12 +467,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					contact.get(Contact.DISEASE));
 
 			result = em.createQuery(cq).getResultList();	
-//			for (DashboardContactDto dashboardContactDto : result) {
-//				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(dashboardContactDto.getUuid()), null);
-//				dashboardContactDto.setSymptomatic(lastVisit != null ? lastVisit.getSymptoms().getSymptomatic() : false);
-//				dashboardContactDto.setLastVisitStatus(lastVisit != null ? lastVisit.getVisitStatus() : null);
-//				dashboardContactDto.setLastVisitDateTime(lastVisit != null ? lastVisit.getVisitDateTime() : null);
-//			}
+			//			for (DashboardContactDto dashboardContactDto : result) {
+			//				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(dashboardContactDto.getUuid()), null);
+			//				dashboardContactDto.setSymptomatic(lastVisit != null ? lastVisit.getSymptoms().getSymptomatic() : false);
+			//				dashboardContactDto.setLastVisitStatus(lastVisit != null ? lastVisit.getVisitStatus() : null);
+			//				dashboardContactDto.setLastVisitDateTime(lastVisit != null ? lastVisit.getVisitDateTime() : null);
+			//			}
 		} else {
 			result = Collections.emptyList();
 		}
@@ -648,7 +678,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					}
 				}
 			} while (additionalVisitNeeded);
-			
+
 			contact.setFollowUpUntil(DateHelper8.toDate(untilDate));
 			if (changeStatus) {
 				// completed or still follow up?
@@ -765,7 +795,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.and(
 							cb.isNull(from.get(Contact.REGION)),
 							cb.equal(caze.join(Case.REGION, JoinType.LEFT).get(Region.UUID), contactCriteria.getRegion().getUuid())
-					)));
+							)));
 		}
 		if (contactCriteria.getDistrict() != null) {
 			filter = and(cb, filter, cb.or(
@@ -773,7 +803,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.and(
 							cb.isNull(from.get(Contact.DISTRICT)),
 							cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), contactCriteria.getDistrict().getUuid())
-					)));
+							)));
 		}
 		if (contactCriteria.getContactOfficer() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Contact.CONTACT_OFFICER, JoinType.LEFT).get(User.UUID),
@@ -913,7 +943,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));
 	}
-	
+
 	private Predicate buildDateFilter(CriteriaBuilder cb, Root<Contact> contact, Date from, Date to) {
 		return cb.and(
 				cb.greaterThanOrEqualTo(contact.get(Contact.FOLLOW_UP_UNTIL), from),

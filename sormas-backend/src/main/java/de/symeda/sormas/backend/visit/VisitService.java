@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.DashboardVisitDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -300,6 +301,38 @@ public class VisitService extends AbstractAdoService<Visit> {
 			Predicate dateFilter = cb.lessThan(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(followUpUntil, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
 			filter = cb.and(filter, dateFilter);
 		}
+
+		return filter;
+	}
+	
+
+
+	/**
+	 * Returns a filter that can be used to retrieve all contacts with the specified person and disease
+	 * whose last contact date or report date (depending on availability) is within 30 days of the reference date.
+	 */
+	public Predicate buildRelevantVisitsFilter(Person person, Disease disease, Date referenceDate, CriteriaBuilder cb, Root<Contact> from) {
+		Predicate filter = cb.and(
+				cb.equal(from.get(Contact.PERSON), person),
+				cb.equal(from.get(Contact.DISEASE), disease)
+				);
+
+		filter = and(cb, filter, 
+				or(cb,
+						cb.and(
+								cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
+								cb.greaterThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
+						cb.greaterThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
+						));
+
+		filter = and(cb, filter,
+				or(cb,
+						cb.and(
+								cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
+								cb.lessThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
+						cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
+						));
+
 
 		return filter;
 	}

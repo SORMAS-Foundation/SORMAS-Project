@@ -136,13 +136,14 @@ public class VisitFacadeEjb implements VisitFacade {
 
         SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
         Visit entity = fromDto(dto);
+        
         visitService.ensurePersisted(entity);
 
         onVisitChanged(existingVisit, entity);
 
         return toDto(entity);
     }
-
+    
     @Override
     public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
 
@@ -381,6 +382,8 @@ public class VisitFacadeEjb implements VisitFacade {
     }
 
     private void onVisitChanged(VisitDto existingVisit, Visit newVisit) {
+    	updateContactVisitAssociations(newVisit);
+    	
         // Send an email to all responsible supervisors when the contact has become
         // symptomatic
         boolean previousSymptomaticStatus = existingVisit != null
@@ -423,6 +426,10 @@ public class VisitFacadeEjb implements VisitFacade {
         }
 
         contactService.updateFollowUpUntilAndStatusByVisit(newVisit);
+    }
+
+    private void updateContactVisitAssociations(Visit visit) {
+    	
     }
 
     @LocalBean
