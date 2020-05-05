@@ -29,124 +29,49 @@ public class CaseEditAuthorization {
 
 	public Boolean caseEditAllowedCheck(String caseUuid) {
 
-		Case caze = caseService.getByUuid(caseUuid);
-		
+		Case caze = caseService.getByUuid(caseUuid);	
 		User user = userService.getCurrentUser();
-        Set<UserRole> userRoles = user.getUserRoles();
-
-        if (user.getUuid().equals(caze.getReportingUser().getUuid())){
+       
+        if (user.getUuid().equals(caseUuid)) {
             return true;
         }
 
-        if (hasRole(userRoles.stream().filter(UserRole::isSupervisor))) {
-            Region caseRegion = getCaseRegion(caze);
-            if (caseRegion != null) {
-                return caseRegion.equals(user.getRegion());
-            }
+        if (hasRole(UserRole.getSupervisorRoles())) {
+            return caze.getRegion().equals(user.getRegion());
         }
 
-        if ((hasRole(userRoles.stream().filter(UserRole::isOfficer)))) {
-            District caseDistrict = getCaseDistrict(caze);
-            if (caseDistrict != null) {
-                return caseDistrict.equals(user.getDistrict());
-            }
+        if (hasRole(UserRole.getOfficerRoles())) {
+            return caze.getDistrict().equals(user.getDistrict());
         }
 
-        if ((hasRole(userRoles.stream().filter(UserRole::isInformant )))) {
-            Facility caseHealthFacility = caze.getHealthFacility();
-            if (caseHealthFacility != null) {
-                return caseHealthFacility.equals(user.getHealthFacility());
-            }
+        if ((hasRole(UserRole.HOSPITAL_INFORMANT))) {
+            return caze.getHealthFacility().equals(user.getHealthFacility());
         }
 
-        if ((hasRole(userRoles.stream().filter(UserRole::isPortHealthUser)))) {
-            Region caseRegion = getCaseRegion(caze);
-            if (caseRegion != null) {
-                return caseRegion.equals(user.getRegion());
-            }
+        if ((hasRole(UserRole.COMMUNITY_INFORMANT))) {
+            return caze.getCommunity().equals(user.getCommunity());
         }
 
-        if ((hasRole(userRoles.stream().filter(UserRole::isNational)))) {
+        if ((hasRole(UserRole.POE_INFORMANT))) {
+            return caze.getPointOfEntry().equals(user.getPointOfEntry());
+        }
+
+        if (hasRole(UserRole.NATIONAL_USER)) {
             return true;
         }
-
+		
         return false;
     }
 
-    private static boolean hasRole(Stream<UserRole> userRoleStream) {
-        return !userRoleStream.collect(Collectors.toList()).isEmpty();
+	public boolean hasRole (UserRole userRoleName){
+		User user = userService.getCurrentUser();
+        Set<UserRole> userRoles = user.getUserRoles();
+        return !userRoles.stream().filter(userRole -> userRole.name().equals(userRoleName.toString())).collect(Collectors.toList()).isEmpty();
     }
 
-    public static Region getCaseRegion(Case caze) {
-
-        if (caze.getRegion() != null) {
-            return caze.getRegion();
-        }
-
-        final District caseDistrict = caze.getDistrict();
-        if (caseDistrict != null && caseDistrict.getRegion() != null) {
-            return caseDistrict.getRegion();
-        }
-
-        final Community caseCommunity = caze.getCommunity();
-        if (caseCommunity != null && caseCommunity.getDistrict() != null && caseCommunity.getDistrict().getRegion() != null) {
-            return caseCommunity.getDistrict().getRegion();
-        }
-
-        final Facility caseHealthFacility = caze.getHealthFacility();
-        if (caseHealthFacility != null) {
-            if (caseHealthFacility.getRegion() != null) {
-                return caseHealthFacility.getRegion();
-            }
-
-            final District district = caseHealthFacility.getDistrict();
-            if (district != null && district.getRegion() != null) {
-                return district.getRegion();
-            }
-            final Community community = caseHealthFacility.getCommunity();
-            if (community != null && community.getDistrict() != null && community.getDistrict().getRegion() != null) {
-                return community.getDistrict().getRegion();
-            }
-        }
-
-        final PointOfEntry casePointOfEntry = caze.getPointOfEntry();
-        if (casePointOfEntry != null) {
-            if (casePointOfEntry.getRegion() != null) {
-                return casePointOfEntry.getRegion();
-            }
-
-            if (casePointOfEntry.getDistrict() != null && casePointOfEntry.getDistrict().getRegion() != null) {
-                return casePointOfEntry.getDistrict().getRegion();
-            }
-        }
-
-        return null;
-    }
-
-    public static District getCaseDistrict(Case caze) {
-
-        if (caze.getDistrict() != null) {
-            return caze.getDistrict();
-        }
-
-        final Community caseCommunity = caze.getCommunity();
-        if (caseCommunity != null && caseCommunity.getDistrict() != null) {
-            return caseCommunity.getDistrict();
-        }
-
-        final Facility caseHealthFacility = caze.getHealthFacility();
-        if (caseHealthFacility != null) {
-            if (caseHealthFacility.getDistrict() != null) {
-                return caseHealthFacility.getDistrict();
-            }
-            if (caseHealthFacility.getCommunity() != null && caseHealthFacility.getCommunity().getDistrict() != null) {
-                return caseHealthFacility.getCommunity().getDistrict();
-            }
-        }
-
-        if (caze.getPointOfEntry() != null) {
-            return caze.getPointOfEntry().getDistrict();
-        }
-        return null;
+    public boolean hasRole(Set<UserRole> typeRoles) {
+    	User user = userService.getCurrentUser();
+        Set<UserRole> userRoles = user.getUserRoles();
+        return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
     }
 }

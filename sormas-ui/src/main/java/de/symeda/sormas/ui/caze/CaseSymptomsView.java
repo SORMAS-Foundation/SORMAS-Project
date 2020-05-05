@@ -19,7 +19,10 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.symptoms.SymptomsForm;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class CaseSymptomsView extends AbstractCaseView {
@@ -41,6 +44,14 @@ public class CaseSymptomsView extends AbstractCaseView {
     		return;
     	}
 
-    	setSubComponent(ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode()));
+//    	setSubComponent(ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode()));
+    	
+    	CommitDiscardWrapperComponent<SymptomsForm> caseSymptomsComponent = ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode());
+    	setSubComponent(caseSymptomsComponent);
+    	
+    	Boolean isCaseEditAllowed = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
+		if (!isCaseEditAllowed) {
+			getComponent(getComponentIndex(caseSymptomsComponent)).setEnabled(false);
+		}
     }
 }

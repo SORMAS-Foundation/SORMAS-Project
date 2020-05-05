@@ -17,63 +17,47 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
 
-@Stateless
+@Stateless (name = "ContactEditAuthorization")
 @LocalBean
 public class ContactEditAuthorization {
 	
+	@EJB
 	private UserService userService;
+	@EJB
 	private CaseService caseService;
+	@EJB
 	private CaseEditAuthorization caseEditAuthorization;
+	@EJB
+	private ContactService contactService;
 	
-    public boolean isContactEditAllowed(Contact contact){
+    public boolean isContactEditAllowed(String contactUuid){
 
     	User user = userService.getCurrentUser();
-        Set<UserRole> userRoles = user.getUserRoles();
-    	
-        Case caseofContact = caseService.getByUuid(contact.getUuid()); 
-        		
+    	Contact contact = contactService.getByUuid(contactUuid);
+
         if (user.getUuid().equals(contact.getReportingUser().getUuid())){
             return true;
         }
 
-        if (caseEditAuthorization.caseEditAllowedCheck(caseofContact.getUuid())){
-            return true;
-        }
-
-        if ((!userRoles.stream().filter(UserRole::isSupervisor).collect(Collectors.toList()).isEmpty())) {
-            Boolean contactRegion = checkMatchRegionForUserAndContact(contact, user);
-            if (contactRegion != null) return contactRegion;
-        }
-
-        if ((!userRoles.stream().filter(UserRole::isOfficer).collect(Collectors.toList()).isEmpty())) {
-            District contactDistrict = contact.getDistrict();
-            if (contactDistrict != null) {
-                return  contactDistrict.equals(user.getDistrict());
+        if (contact.getUuid() != null) {       
+            Case caseofContact = caseService.getByUuid(contact.getUuid());
+            if (caseofContact != null && caseEditAuthorization.caseEditAllowedCheck(contact.getUuid())) {
+                return true;
             }
         }
 
-        if ((!userRoles.stream().filter(UserRole::isPortHealthUser).collect(Collectors.toList()).isEmpty())) {
-            Boolean contactRegion = checkMatchRegionForUserAndContact(contact, user);
-            if (contactRegion != null) return contactRegion;
+        if (caseEditAuthorization.hasRole(UserRole.getSupervisorRoles())) {
+            return contact.getRegion().equals(user.getRegion());
         }
 
-        if ((!userRoles.stream().filter(UserRole::isNational).collect(Collectors.toList()).isEmpty())) {
+        if (caseEditAuthorization.hasRole(UserRole.getOfficerRoles())) {
+            return contact.getDistrict().equals(user.getDistrict());
+        }
+
+        if (caseEditAuthorization.hasRole(UserRole.NATIONAL_USER)) {
             return true;
         }
 
         return false;
-    }
-
-    private static Boolean checkMatchRegionForUserAndContact(Contact contact, User user) {
-        Region contactRegion = contact.getRegion();
-        if (contactRegion != null) {
-            return contactRegion.equals(user.getRegion());
-        }
-
-        final District contactDistrict = contact.getDistrict();
-        if (contactDistrict !=null && contactDistrict.getRegion()!=null){
-            return contactDistrict.getRegion().equals(user.getRegion());
-        }
-        return null;
     }
 }
