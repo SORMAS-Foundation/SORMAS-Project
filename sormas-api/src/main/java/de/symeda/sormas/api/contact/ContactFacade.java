@@ -55,7 +55,10 @@ public interface ContactFacade {
 
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
-	
+
+	List<ContactIndexDetailedDto> getIndexDetailedList(ContactCriteria contactCriteria, Integer first, Integer max,
+															  List<SortProperty> sortProperties);
+
 	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 
 	List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);

@@ -374,6 +374,7 @@ public interface Captions {
 	String contactChooseSourceCase = "contactChooseSourceCase";
 	String contactContactsList = "contactContactsList";
 	String contactContactsOverview = "contactContactsOverview";
+	String contactDetailedOverview = "contactDetailedOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
 	String contactCreateNew = "contactCreateNew";
 	String ContactExport_address = "ContactExport.address";
