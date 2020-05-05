@@ -207,6 +207,11 @@ public class ContactVisitsView extends AbstractContactView {
 		
 		grid.reload();
 //		updateActiveStatusButtonCaption();
+		
+		Boolean isContactEditAllowed = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
+		if (!isContactEditAllowed) {
+			getComponent(getComponentIndex(gridLayout)).setEnabled(false);
+		}
 	}
 
 }
