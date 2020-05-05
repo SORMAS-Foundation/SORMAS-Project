@@ -18,18 +18,18 @@ public class LanguageTest {
 		assertThat(Language.fromLocaleString("en-GH"), is(Language.EN_GH));
 		assertThat(Language.fromLocaleString("EN_gh"), is(Language.EN_GH));
 
-		assertThat(Language.fromLocaleString("de-DE"), is(Language.DE));
-		assertThat(Language.fromLocaleString("DE_de"), is(Language.DE));
+		assertThat(Language.fromLocaleString("de-DE"), is(Language.DE_DE));
+		assertThat(Language.fromLocaleString("DE_de"), is(Language.DE_DE));
 		
 		assertThat(Language.fromLocaleString("es-EC"), is(Language.ES_EC));
 
-		assertThat(Language.fromLocaleString("fi-FI"), is(Language.FI));
+		assertThat(Language.fromLocaleString("fi-FI"), is(Language.FI_FI));
 	
 		// at the moment only defined fallbacks are supported
 
-		assertThat(Language.fromLocaleString("de"), is(Language.DE));
-		assertThat(Language.fromLocaleString("DE"), is(Language.DE));
-		assertThat(Language.fromLocaleString("fi"), is(Language.FI));
+		assertThat(Language.fromLocaleString("de"), is(Language.DE_DE));
+		assertThat(Language.fromLocaleString("DE"), is(Language.DE_DE));
+		assertThat(Language.fromLocaleString("fi"), is(Language.FI_FI));
 		assertThat(Language.fromLocaleString("es"), is(Language.ES_EC));
 		
 		//default fallback is en
