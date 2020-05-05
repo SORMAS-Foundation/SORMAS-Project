@@ -11,8 +11,7 @@ import de.symeda.sormas.app.backend.user.User;
 
 public class ContactEditAuthorization {
 
-    public static boolean isContactEditAllowed(Contact contact){
-
+    public static boolean isContactEditAllowed(Contact contact) {
         User user = ConfigProvider.getUser();
 
         if (user.getUuid().equals(contact.getReportingUser().getUuid())){
@@ -20,17 +19,17 @@ public class ContactEditAuthorization {
         }
 
         if (contact.getCaseUuid() != null) {
-            Case caseofContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
-            if (caseofContact != null && CaseEditAuthorization.isCaseEditAllowed(caseofContact)) {
+            Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+            if (caseOfContact != null && CaseEditAuthorization.isCaseEditAllowed(caseOfContact)) {
                 return true;
             }
         }
 
-        if (ConfigProvider.hasRole(UserRole.getSupervisorRoles())) {
+        if (contact.getRegion() != null && ConfigProvider.hasRole(UserRole.getSupervisorRoles())) {
             return contact.getRegion().equals(user.getRegion());
         }
 
-        if (ConfigProvider.hasRole(UserRole.getOfficerRoles())) {
+        if (contact.getDistrict() != null && ConfigProvider.hasRole(UserRole.getOfficerRoles())) {
             return contact.getDistrict().equals(user.getDistrict());
         }
 
