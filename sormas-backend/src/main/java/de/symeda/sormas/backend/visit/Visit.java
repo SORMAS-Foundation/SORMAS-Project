@@ -18,13 +18,16 @@
 package de.symeda.sormas.backend.visit;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
@@ -34,6 +37,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -58,6 +62,7 @@ public class Visit extends AbstractDomainObject {
 	
 	private Person person;
 	private Disease disease;
+	private List<Contact> contacts;
 	private Date visitDateTime;
 	private User visitUser;
 	private VisitStatus visitStatus;
@@ -75,6 +80,14 @@ public class Visit extends AbstractDomainObject {
 	}
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+
+	@ManyToMany(mappedBy = Contact.VISITS, fetch = FetchType.LAZY)
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
 	}
 	
 	@Temporal(TemporalType.TIMESTAMP)

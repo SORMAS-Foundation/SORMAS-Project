@@ -4175,4 +4175,23 @@ ALTER TABLE symptoms_history ADD COLUMN lossofsmell varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (205, 'Added symptoms loss of taste and loss of smell #1936');
 
+-- 2020-05-05 Added table for contact-visit association #1329
+CREATE TABLE contacts_visits(
+	contact_id bigint NOT NULL,
+	visit_id bigint NOT NULL,
+	sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE contacts_visits OWNER TO sormas_user;
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT unq_contacts_visits_0 UNIQUE (contact_id, visit_id);
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT fk_contacts_visits_contact_id FOREIGN KEY (contact_id) REFERENCES contact(id);
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT fk_contacts_visits_visit_id FOREIGN KEY (visit_id) REFERENCES visit(id);
+
+CREATE TABLE contacts_visits_history (LIKE contacts_visits);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON contacts_visits
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
+ALTER TABLE contacts_visits_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (206, 'Added table for contact-visit association #1329');
+
 -- *** Insert new sql commands BEFORE this line ***

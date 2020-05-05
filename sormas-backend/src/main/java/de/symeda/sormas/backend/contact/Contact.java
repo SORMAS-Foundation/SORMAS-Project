@@ -24,7 +24,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -48,6 +51,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
 @Audited
@@ -56,6 +60,7 @@ public class Contact extends CoreAdo {
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	public static final String TABLE_NAME = "contact";
+	public static final String CONTACTS_VISITS_TABLE_NAME = "contacts_visits";
 	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
@@ -104,6 +109,7 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String VISITS = "visits";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -161,6 +167,7 @@ public class Contact extends CoreAdo {
 	private String quarantineHomeSupplyEnsuredComment;
 
 	private List<Task> tasks;
+	private List<Visit> visits;
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
@@ -335,6 +342,18 @@ public class Contact extends CoreAdo {
 	}
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
+	}
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+			  name = CONTACTS_VISITS_TABLE_NAME, 
+			  joinColumns = @JoinColumn(name = "contact_id"), 
+			  inverseJoinColumns = @JoinColumn(name = "visit_id"))
+	public List<Visit> getVisits() {
+		return visits;
+	}
+	public void setVisits(List<Visit> visits) {
+		this.visits = visits;
 	}
 
 	public Double getReportLat() {
