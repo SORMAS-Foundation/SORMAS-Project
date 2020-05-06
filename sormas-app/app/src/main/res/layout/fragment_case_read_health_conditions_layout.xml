@@ -172,6 +172,31 @@
                 app:value="@{data.cardiovascularDiseaseIncludingHypertension}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/healthConditions_obesity"
+                app:value="@={data.obesity}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/healthConditions_currentSmoker"
+                app:value="@={data.currentSmoker}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/healthConditions_formerSmoker"
+                app:value="@={data.formerSmoker}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/healthConditions_asthma"
+                app:value="@={data.asthma}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/healthConditions_sickleCellDisease"
+                app:value="@={data.sickleCellDisease}"
+                style="@style/ControlSingleColumnStyle" />
+
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/healthConditions_otherConditions"
                 app:value="@{data.otherConditions}"
