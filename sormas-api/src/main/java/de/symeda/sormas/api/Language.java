@@ -12,8 +12,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum Language {
 	
 	EN(new Locale("en"), "M/d/yyyy", "M/d/yyyy h:mm a", "M/d"),
-	EN_NG(new Locale("en", "NG"), "M/d/yyyy", "M/d/yyyy h:mm a", "M/d"),
-	EN_GH(new Locale("en", "GH"), "M/d/yyyy", "M/d/yyyy h:mm a", "M/d"),
+	EN_NG(new Locale("en", "NG"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "M/d"),
+	EN_GH(new Locale("en", "GH"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "M/d"),
 	FR_FR(new Locale("fr", "FR"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
 	DE_DE(new Locale("de", "DE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
 	ES_EC(new Locale("es", "EC"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
