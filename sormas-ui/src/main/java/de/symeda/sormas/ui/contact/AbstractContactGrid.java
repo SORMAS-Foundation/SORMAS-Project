@@ -129,7 +129,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 				.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.findPrefixCaption(column.getId(),
+			column.setCaption(I18nProperties.findPrefixCaptionWithDefault(column.getId(), column.getCaption(),
 					ContactIndexDto.I18N_PREFIX, PersonDto.I18N_PREFIX, LocationDto.I18N_PREFIX));
 		}
 	}

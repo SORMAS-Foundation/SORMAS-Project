@@ -11,6 +11,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 import javax.ejb.EJB;
@@ -191,9 +192,7 @@ public class ContactListCriteriaBuilder {
 		return filter;
 	}
 
-	private static class ContactJoins {
-		private Root<Contact> contact;
-
+	private static class ContactJoins extends AbstractDomainObjectJoins<Contact> {
 		private Join<Contact, Person> contactPerson;
 
 		private Join<Contact, Case> contactCase;
@@ -206,7 +205,7 @@ public class ContactListCriteriaBuilder {
 		private Join<Contact, User> reportingUser;
 
 		public ContactJoins(Root<Contact> contact) {
-			this.contact = contact;
+			super(contact);
 		}
 
 		public Join<Contact, Person> getContactPerson() {
@@ -244,21 +243,9 @@ public class ContactListCriteriaBuilder {
 		public Join<Contact, User> getReportingUser() {
 			return getOrCreate(reportingUser, Contact.REPORTING_USER, JoinType.LEFT);
 		}
-
-		private <T> Join<Contact, T> getOrCreate(Join<Contact, T> join, String attribute, JoinType joinType) {
-			return getOrCreate(join, attribute, joinType, contact);
-		}
-
-		private <P, T> Join<P, T> getOrCreate(Join<P, T> join, String attribute, JoinType joinType, From<?, P> parent) {
-			if (join != null) {
-				return join;
-			}
-
-			return join = parent.join(attribute, joinType);
-		}
 	}
 
-	interface OrderExpressionProvider {
+	private interface OrderExpressionProvider {
 		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins);
 	}
 }

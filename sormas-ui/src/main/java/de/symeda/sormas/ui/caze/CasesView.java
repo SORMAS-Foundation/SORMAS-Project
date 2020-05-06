@@ -17,13 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.function.Supplier;
-
-import de.symeda.sormas.ui.utils.*;
-import org.vaadin.hene.popupbutton.PopupButton;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
@@ -45,9 +38,9 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
@@ -85,12 +78,29 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsLayout;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
+import de.symeda.sormas.ui.contact.ContactsView;
+import de.symeda.sormas.ui.contact.ContactsViewType;
 import de.symeda.sormas.ui.dashboard.DateFilterOption;
+import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.vaadin.hene.popupbutton.PopupButton;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.function.Supplier;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -111,9 +121,9 @@ public class CasesView extends AbstractView {
 	public static final int BULK_EDIT_MODE_WARNING_THRESHOLD = 1000;
 
 	private CaseCriteria criteria;
-	private ViewConfiguration viewConfiguration;
+	private CasesViewConfiguration viewConfiguration;
 
-	private CaseGrid grid;    
+	private AbstractCaseGrid<?> grid;
 	private Button createButton;
 	private Button lineListingButton;
 	private HashMap<Button, String> statusButtons;
@@ -164,13 +174,20 @@ public class CasesView extends AbstractView {
 	public CasesView() {
 		super(VIEW_NAME);
 
-		viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
+		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
+		if (viewConfiguration.getViewType() == null) {
+			viewConfiguration.setViewType(CasesViewType.DEFAULT);
+		}
+
 		criteria = ViewModelProviders.of(CasesView.class).get(CaseCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
-		grid = new CaseGrid(criteria);
+		grid = CasesViewType.DEFAULT.equals(viewConfiguration.getViewType())
+				? new CaseGrid(criteria)
+				: new CaseGridDetailed(criteria);
+
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -182,7 +199,25 @@ public class CasesView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
-		
+
+		OptionGroup caseViewSwitcher = new OptionGroup();
+		CssStyles.style(caseViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		caseViewSwitcher.addItem(CasesViewType.DEFAULT);
+		caseViewSwitcher.setItemCaption(CasesViewType.DEFAULT,
+				I18nProperties.getCaption(Captions.caseDefaultView));
+
+		caseViewSwitcher.addItem(CasesViewType.DETAILED);
+		caseViewSwitcher.setItemCaption(CasesViewType.DETAILED,
+				I18nProperties.getCaption(Captions.caseDetailedView));
+
+		caseViewSwitcher.setValue(viewConfiguration.getViewType());
+		caseViewSwitcher.addValueChangeListener(e -> {
+			viewConfiguration.setViewType((CasesViewType)e.getProperty().getValue());
+			SormasUI.get().getNavigator().navigateTo(CasesView.VIEW_NAME);
+		});
+
+		addHeaderComponent(caseViewSwitcher);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) || UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
 			moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
 			moreButton.setId("more");
@@ -220,21 +255,21 @@ public class CasesView extends AbstractView {
 				importButton.setContent(importLayout);
 				addHeaderComponent(importButton);
 			}
-			addImportButton(importLayout, 
-					"lineListingImport", Captions.importLineListing, 
+			addImportButton(importLayout,
+					"lineListingImport", Captions.importLineListing,
 					Strings.headingLineListingImport, LineListingImportLayout::new);
-			addImportButton(importLayout, 
-					"extendedImport", Captions.importDetailed, 
+			addImportButton(importLayout,
+					"extendedImport", Captions.importDetailed,
 					Strings.headingImportCases, CaseImportLayout::new);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
-			PopupButton exportPopupButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
+			PopupButton exportPopupButton = new PopupButton(I18nProperties.getCaption(Captions.export));
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportPopupButton.setId("export");
 				exportPopupButton.setIcon(VaadinIcons.DOWNLOAD);
-				exportLayout.setSpacing(true); 
+				exportLayout.setSpacing(true);
 				exportLayout.setMargin(true);
 				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 				exportLayout.setWidth(250, Unit.PIXELS);
@@ -244,12 +279,12 @@ public class CasesView extends AbstractView {
 
 			{
 				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_cases", createFileNameWithCurrentDate("sormas_cases_", ".csv"));
-				
+
 				addExportButton(streamResource, exportPopupButton, exportLayout, "basicExport", VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 			}
 
 			{
-				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE, 
+				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, CaseExportType.CASE_SURVEILLANCE,
 						(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null, I18nProperties.getUserLanguage()),
 						(propertyId,type) -> {
 							String caption = I18nProperties.findPrefixCaption(propertyId,
@@ -266,14 +301,14 @@ public class CasesView extends AbstractView {
 							return caption;
 						},
 						createFileNameWithCurrentDate("sormas_cases_", ".csv"), null);
-				
+
 				addExportButton(exportStreamResource, exportPopupButton, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) { 
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				StreamResource caseManagementExportStreamResource = DownloadUtil.createCaseManagementExportResource(grid.getCriteria(),
 						createFileNameWithCurrentDate("sormas_case_management_", ".zip"));
-				
+
 				addExportButton(caseManagementExportStreamResource, exportPopupButton, exportLayout, "caseManagementExport", VaadinIcons.FILE_TEXT, Captions.exportCaseManagement, Strings.infoCaseManagementExport);
 			}
 
@@ -293,7 +328,7 @@ public class CasesView extends AbstractView {
 							return caption;
 						},
 						createFileNameWithCurrentDate("sormas_samples_", ".csv"), null);
-				
+
 				addExportButton(sampleExportStreamResource, exportPopupButton, exportLayout, "sampleExport", VaadinIcons.FILE_TEXT, Captions.exportSamples, Strings.infoSampleExport);
 			}
 
@@ -311,7 +346,7 @@ public class CasesView extends AbstractView {
 							customExportWindow::close);
 					customExportsLayout.setExportCallback(
 							(exportConfig) -> {
-								Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null, 
+								Page.getCurrent().open(DownloadUtil.createCsvExportStreamResource(CaseExportDto.class, null,
 										(Integer start, Integer max) -> FacadeProvider.getCaseFacade().getExportList(grid.getCriteria(), null, start, max, exportConfig, I18nProperties.getUserLanguage()),
 										(propertyId,type) -> {
 											String caption = I18nProperties.findPrefixCaption(propertyId,
@@ -330,7 +365,7 @@ public class CasesView extends AbstractView {
 							});
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
-					customExportWindow.setContent(customExportsLayout);				
+					customExportWindow.setContent(customExportsLayout);
 					UI.getCurrent().addWindow(customExportWindow);
 				});
 			}
@@ -341,7 +376,7 @@ public class CasesView extends AbstractView {
 				warningLabel.setWidth(100, Unit.PERCENTAGE);
 				exportLayout.addComponent(warningLabel);
 				warningLabel.setVisible(false);
-	
+
 				exportPopupButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
 			}
 		}
@@ -368,7 +403,7 @@ public class CasesView extends AbstractView {
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				if (grid.getItemCount() > BULK_EDIT_MODE_WARNING_THRESHOLD) {
-					VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.actionEnterBulkEditMode), new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)), 
+					VaadinUiUtil.showConfirmationPopup(I18nProperties.getCaption(Captions.actionEnterBulkEditMode), new Label(String.format(I18nProperties.getString(Strings.confirmationEnterBulkEditMode), BULK_EDIT_MODE_WARNING_THRESHOLD)),
 							I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, (result) -> {
 								if (result.booleanValue() == true) {
 									enterBulkEditMode();
@@ -402,7 +437,7 @@ public class CasesView extends AbstractView {
 				addHeaderComponent(mergeDuplicatesButton);
 			}
 		}
-		
+
 		Button searchSpecificCaseButton = new Button(I18nProperties.getCaption(Captions.caseSearchSpecificCase));
 		searchSpecificCaseButton.setId("searchSpecificCase");
 		searchSpecificCaseButton.setIcon(VaadinIcons.SEARCH);
@@ -422,7 +457,7 @@ public class CasesView extends AbstractView {
 			lineListingButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			lineListingButton.addClickListener(e -> ControllerProvider.getCaseController().lineListing());
 			addHeaderComponent(lineListingButton);
-			
+
 			createButton = new Button(I18nProperties.getCaption(Captions.caseNewCase));
 			createButton.setId("create");
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -457,12 +492,12 @@ public class CasesView extends AbstractView {
 		window.setWidth(1024, Unit.PIXELS);
 		window.setCaption(I18nProperties.getString(Strings.headingCasesGuide));
 	}
-	
+
 	private void buildAndOpenSearchSpecificCaseWindow() {
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getCaption(Captions.caseSearchSpecificCase));
 		window.setWidth(768, Unit.PIXELS);
-		
+
 		SearchSpecificCaseLayout layout = new SearchSpecificCaseLayout(() -> window.close());
 		window.setContent(layout);
 		UI.getCurrent().addWindow(window);
@@ -577,7 +612,7 @@ public class CasesView extends AbstractView {
 				criteria.presentCondition(((PresentCondition)e.getProperty().getValue()));
 				navigateTo(criteria);
 			});
-			secondFilterRowLayout.addComponent(presentConditionFilter);      
+			secondFilterRowLayout.addComponent(presentConditionFilter);
 
 			UserDto user = UserProvider.getCurrent().getUser();
 
@@ -588,11 +623,11 @@ public class CasesView extends AbstractView {
 				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 				regionFilter.addValueChangeListener(e -> {
 					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-					
+
 					if (!DataHelper.equal(region, criteria.getRegion())) {
 						criteria.district(null);
 					}
-					
+
 					criteria.region(region);
 					navigateTo(criteria);
 				});
@@ -610,7 +645,7 @@ public class CasesView extends AbstractView {
 					criteria.healthFacility(null);
 					criteria.pointOfEntry(null);
 				}
-				
+
 				criteria.district(district);
 				navigateTo(criteria);
 			});
@@ -672,7 +707,7 @@ public class CasesView extends AbstractView {
 				grid.reload();
 			});
 			secondFilterRowLayout.addComponent(reportingUserFilter);
-			
+
 			quarantineToFilter = new PopupDateField();
 			quarantineToFilter.setWidth(200, Unit.PIXELS);
 			quarantineToFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.QUARANTINE_TO));
@@ -779,12 +814,12 @@ public class CasesView extends AbstractView {
 					navigateTo(criteria);
 				} else {
 					if (dateFilterOption == DateFilterOption.DATE) {
-						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingDateFilter), 
+						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingDateFilter),
 								I18nProperties.getString(Strings.messageMissingDateFilter), Type.WARNING_MESSAGE, false);
 						notification.setDelayMsec(-1);
 						notification.show(Page.getCurrent());
 					} else {
-						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingEpiWeekFilter), 
+						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
 								I18nProperties.getString(Strings.messageMissingEpiWeekFilter), Type.WARNING_MESSAGE, false);
 						notification.setDelayMsec(-1);
 						notification.show(Page.getCurrent());
@@ -863,7 +898,7 @@ public class CasesView extends AbstractView {
 
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				bulkOperationsDropdown = new MenuBar();	
+				bulkOperationsDropdown = new MenuBar();
 				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
 
 				Command changeCommand = mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.asMultiSelect().getSelectedItems());
@@ -946,7 +981,7 @@ public class CasesView extends AbstractView {
 		searchField.setValue(criteria.getNameUuidEpidNumberLike());
 		presentConditionFilter.setValue(criteria.getPresentCondition());
 		regionFilter.setValue(criteria.getRegion());
-		
+
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
@@ -956,8 +991,8 @@ public class CasesView extends AbstractView {
 		} else {
 			districtFilter.setEnabled(false);
 		}
-		districtFilter.setValue(criteria.getDistrict());		
-		
+		districtFilter.setValue(criteria.getDistrict());
+
 		if (facilityFilter != null) {
 			if (criteria.getDistrict() != null) {
 				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(criteria.getDistrict(), true));
@@ -965,7 +1000,7 @@ public class CasesView extends AbstractView {
 			} else {
 				facilityFilter.setEnabled(false);
 			}
-			
+
 			facilityFilter.setValue(criteria.getHealthFacility());
 		}
 		if (pointOfEntryFilter != null) {
@@ -1018,7 +1053,7 @@ public class CasesView extends AbstractView {
 				.anyMatch(f -> !f.isEmpty());
 		if (hasExpandedFilter) {
 			setFiltersExpanded(true);
-		}		    
+		}
 
 		applyingCriteria = false;
 	}
@@ -1037,7 +1072,7 @@ public class CasesView extends AbstractView {
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton)
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}

@@ -34,7 +34,6 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   ContactClassification contactClassification, ContactStatus contactStatus,
 								   FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
-
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String districtName, String city, String address, String postalCode, String phone,
 								   String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName) {
