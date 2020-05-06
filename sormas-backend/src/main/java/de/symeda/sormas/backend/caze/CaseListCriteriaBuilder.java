@@ -13,7 +13,6 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 import javax.ejb.EJB;
@@ -24,8 +23,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -99,7 +96,7 @@ public class CaseListCriteriaBuilder {
 		return cq;
 	}
 
-	private List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseJoins joins) {
+	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseJoins joins) {
 		return Arrays.asList(
 				root.get(AbstractDomainObject.ID), root.get(Case.UUID), root.get(Case.EPID_NUMBER), root.get(Case.EXTERNAL_ID),
 				joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME), root.get(Case.DISEASE),
@@ -184,54 +181,6 @@ public class CaseListCriteriaBuilder {
 				return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 			default:
 				return getIndexOrders(sortProperty, caze, joins);
-		}
-	}
-
-
-	static class CaseJoins extends AbstractDomainObjectJoins<Case> {
-		private Join<Case, Person> person;
-		private Join<Case, Region> region;
-		private Join<Case, District> district;
-		private Join<Case, Facility> facility;
-		private Join<Case, PointOfEntry> pointOfEntry;
-		private Join<Case, User> surveillanceOfficer;
-		private Join<Person, Location> address;
-		private Join<Case, User> reportingUser;
-
-		public CaseJoins(Root<Case> caze) {
-			super(caze);
-		}
-
-		public Join<Case, Person> getPerson() {
-			return getOrCreate(person, Case.PERSON, JoinType.LEFT);
-		}
-
-		public Join<Case, Region> getRegion() {
-			return getOrCreate(region, Case.REGION, JoinType.LEFT);
-		}
-
-		public Join<Case, District> getDistrict() {
-			return getOrCreate(district, Case.DISTRICT, JoinType.LEFT);
-		}
-
-		public Join<Case, Facility> getFacility() {
-			return getOrCreate(facility, Case.HEALTH_FACILITY, JoinType.LEFT);
-		}
-
-		public Join<Case, PointOfEntry> getPointOfEntry() {
-			return getOrCreate(pointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT);
-		}
-
-		public Join<Case, User> getSurveillanceOfficer() {
-			return getOrCreate(surveillanceOfficer, Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
-		}
-
-		public Join<Person, Location> getAddress() {
-			return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getPerson());
-		}
-
-		public Join<Case, User> getReportingUser() {
-			return getOrCreate(reportingUser, Case.REPORTING_USER, JoinType.LEFT);
 		}
 	}
 

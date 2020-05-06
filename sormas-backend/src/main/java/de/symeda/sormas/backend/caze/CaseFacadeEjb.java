@@ -17,60 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
-import javax.validation.constraints.NotNull;
-
-import de.symeda.sormas.api.*;
-import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import de.symeda.sormas.api.CaseMeasure;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -213,6 +171,49 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
@@ -1037,25 +1038,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<CaseIndexDto> cq, Root<Case> root) {
-		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> district = root.join(Case.DISTRICT, JoinType.LEFT);
-		Join<Case, Facility> facility = root.join(Case.HEALTH_FACILITY, JoinType.LEFT);
-		Join<Case, PointOfEntry> pointOfEntry = root.join(Case.POINT_OF_ENTRY, JoinType.LEFT);
-		Join<Case, User> surveillanceOfficer = root.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
-
-		cq.multiselect(root.get(AbstractDomainObject.ID), root.get(Case.UUID), root.get(Case.EPID_NUMBER), root.get(Case.EXTERNAL_ID),
-				person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME), root.get(Case.DISEASE),
-				root.get(Case.DISEASE_DETAILS), root.get(Case.CASE_CLASSIFICATION), root.get(Case.INVESTIGATION_STATUS),
-				person.get(Person.PRESENT_CONDITION), root.get(Case.REPORT_DATE),
-				root.get(AbstractDomainObject.CREATION_DATE), region.get(Region.UUID), district.get(District.UUID),
-				district.get(District.NAME), facility.get(Facility.UUID), facility.get(Facility.NAME),
-				root.get(Case.HEALTH_FACILITY_DETAILS), pointOfEntry.get(PointOfEntry.UUID),
-				pointOfEntry.get(PointOfEntry.NAME), root.get(Case.POINT_OF_ENTRY_DETAILS),
-				surveillanceOfficer.get(User.UUID), root.get(Case.OUTCOME), person.get(Person.APPROXIMATE_AGE),
-				person.get(Person.APPROXIMATE_AGE_TYPE), person.get(Person.BIRTHDATE_DD),
-				person.get(Person.BIRTHDATE_MM), person.get(Person.BIRTHDATE_YYYY), person.get(Person.SEX),
-				root.get(Case.QUARANTINE_TO), root.get(Case.COMPLETENESS));
+		cq.multiselect(listQueryBuilder.getCaseIndexSelections(root, new CaseJoins(root)));
 	}
 
 	public String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean includeSharedCases) {
