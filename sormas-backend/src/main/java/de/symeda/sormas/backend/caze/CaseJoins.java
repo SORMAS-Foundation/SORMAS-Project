@@ -28,34 +28,67 @@ class CaseJoins extends AbstractDomainObjectJoins<Case> {
 	}
 
 	public Join<Case, Person> getPerson() {
-		return getOrCreate(person, Case.PERSON, JoinType.LEFT);
+		return getOrCreate(person, Case.PERSON, JoinType.LEFT, this::setPerson);
+	}
+
+	private void setPerson(Join<Case, Person> person) {
+		this.person = person;
 	}
 
 	public Join<Case, Region> getRegion() {
-		return getOrCreate(region, Case.REGION, JoinType.LEFT);
+		return getOrCreate(region, Case.REGION, JoinType.LEFT, this::setRegion);
+	}
+
+	private void setRegion(Join<Case, Region> region) {
+		this.region = region;
 	}
 
 	public Join<Case, District> getDistrict() {
-		return getOrCreate(district, Case.DISTRICT, JoinType.LEFT);
+		return getOrCreate(district, Case.DISTRICT, JoinType.LEFT, this::setDistrict);
+	}
+
+	private void setDistrict(Join<Case, District> district) {
+		this.district = district;
 	}
 
 	public Join<Case, Facility> getFacility() {
-		return getOrCreate(facility, Case.HEALTH_FACILITY, JoinType.LEFT);
+		return getOrCreate(facility, Case.HEALTH_FACILITY, JoinType.LEFT, this::setFacility);
+	}
+
+	private void setFacility(Join<Case, Facility> facility) {
+		this.facility = facility;
 	}
 
 	public Join<Case, PointOfEntry> getPointOfEntry() {
-		return getOrCreate(pointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT);
+		return getOrCreate(pointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT, this::setPointOfEntry);
+	}
+
+	private void setPointOfEntry(Join<Case, PointOfEntry> pointOfEntry) {
+		this.pointOfEntry = pointOfEntry;
 	}
 
 	public Join<Case, User> getSurveillanceOfficer() {
-		return getOrCreate(surveillanceOfficer, Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+		return getOrCreate(surveillanceOfficer, Case.SURVEILLANCE_OFFICER, JoinType.LEFT, this::setSurveillanceOfficer);
+	}
+
+	private void setSurveillanceOfficer(Join<Case, User> surveillanceOfficer) {
+		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
 	public Join<Person, Location> getAddress() {
-		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getPerson());
+		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setAddress);
+	}
+
+	private void setAddress(Join<Person, Location> address) {
+		this.address = address;
 	}
 
 	public Join<Case, User> getReportingUser() {
-		return getOrCreate(reportingUser, Case.REPORTING_USER, JoinType.LEFT);
+		return getOrCreate(reportingUser, Case.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
 	}
+
+	private void setReportingUser(Join<Case, User> reportingUser) {
+		this.reportingUser = reportingUser;
+	}
+
 }

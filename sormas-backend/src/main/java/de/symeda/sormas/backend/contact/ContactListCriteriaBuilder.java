@@ -22,7 +22,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -209,39 +208,75 @@ public class ContactListCriteriaBuilder {
 		}
 
 		public Join<Contact, Person> getContactPerson() {
-			return getOrCreate(contactPerson, Contact.PERSON, JoinType.LEFT);
+			return getOrCreate(contactPerson, Contact.PERSON, JoinType.LEFT, this::setContactPerson);
+		}
+
+		private void setContactPerson(Join<Contact, Person> contactPerson) {
+			this.contactPerson = contactPerson;
 		}
 
 		public Join<Contact, Case> getContactCase() {
-			return getOrCreate(contactCase, Contact.CAZE, JoinType.LEFT);
+			return getOrCreate(contactCase, Contact.CAZE, JoinType.LEFT, this::setContactCase);
+		}
+
+		private void setContactCase(Join<Contact, Case> contactCase) {
+			this.contactCase = contactCase;
 		}
 
 		public Join<Case, Person> getContactCasePerson() {
-			return getOrCreate(contactCasePerson, Case.PERSON, JoinType.LEFT, getContactCase());
+			return getOrCreate(contactCasePerson, Case.PERSON, JoinType.LEFT, getContactCase(), this::setContactCasePerson);
+		}
+
+		private void setContactCasePerson(Join<Case, Person> contactCasePerson) {
+			this.contactCasePerson = contactCasePerson;
 		}
 
 		public Join<Case, Region> getContactCaseRegion() {
-			return getOrCreate(contactCaseRegion, Case.REGION, JoinType.LEFT, getContactCase());
+			return getOrCreate(contactCaseRegion, Case.REGION, JoinType.LEFT, getContactCase(), this::setContactCaseRegion);
+		}
+
+		private void setContactCaseRegion(Join<Case, Region> contactCaseRegion) {
+			this.contactCaseRegion = contactCaseRegion;
 		}
 
 		public Join<Case, District> getContactCaseDistrict() {
-			return getOrCreate(contactCaseDistrict, Case.DISTRICT, JoinType.LEFT, getContactCase());
+			return getOrCreate(contactCaseDistrict, Case.DISTRICT, JoinType.LEFT, getContactCase(), this::setContactCaseDistrict);
+		}
+
+		private void setContactCaseDistrict(Join<Case, District> contactCaseDistrict) {
+			this.contactCaseDistrict = contactCaseDistrict;
 		}
 
 		public Join<Contact, User> getContactOfficer() {
-			return getOrCreate(contactOfficer, Contact.CONTACT_OFFICER, JoinType.LEFT);
+			return getOrCreate(contactOfficer, Contact.CONTACT_OFFICER, JoinType.LEFT, this::setContactOfficer);
+		}
+
+		private void setContactOfficer(Join<Contact, User> contactOfficer) {
+			this.contactOfficer = contactOfficer;
 		}
 
 		public Join<Person, Location> getAddress() {
-			return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getContactPerson());
+			return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getContactPerson(), this::setAddress);
+		}
+
+		private void setAddress(Join<Person, Location> address) {
+			this.address = address;
 		}
 
 		public Join<Contact, District> getDistrict() {
-			return getOrCreate(district, Contact.DISTRICT, JoinType.LEFT);
+			return getOrCreate(district, Contact.DISTRICT, JoinType.LEFT, this::setDistrict);
+		}
+
+		private void setDistrict(Join<Contact, District> district) {
+			this.district = district;
 		}
 
 		public Join<Contact, User> getReportingUser() {
-			return getOrCreate(reportingUser, Contact.REPORTING_USER, JoinType.LEFT);
+			return getOrCreate(reportingUser, Contact.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
+		}
+
+		private void setReportingUser(Join<Contact, User> reportingUser) {
+			this.reportingUser = reportingUser;
 		}
 	}
 
