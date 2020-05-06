@@ -27,6 +27,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
@@ -77,6 +78,17 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 			setCriteria(criteria);
 		}
 
+		initColumns();
+
+		addItemClickListener(e -> {
+			if ((e.getColumn() != null && ContactIndexDto.UUID.equals(e.getColumn().getId()))
+					|| e.getMouseEventDetails().isDoubleClick()) {
+				ControllerProvider.getContactController().navigateToData(e.getItem().getUuid());
+			}
+		});
+	}
+
+	protected void initColumns() {
 		Column<IndexDTO, String> diseaseShortColumn = addColumn(entry ->
 				DiseaseHelper.toString(entry.getDisease(), entry.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
@@ -113,21 +125,13 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<ContactIndexDto, Date>) getColumn(
-				ContactIndexDto.FOLLOW_UP_UNTIL))
+		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL))
 				.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.findPrefixCaption(column.getId(),
 					ContactIndexDto.I18N_PREFIX, PersonDto.I18N_PREFIX, LocationDto.I18N_PREFIX));
 		}
-
-		addItemClickListener(e -> {
-			if ((e.getColumn() != null && ContactIndexDto.UUID.equals(e.getColumn().getId()))
-					|| e.getMouseEventDetails().isDoubleClick()) {
-				ControllerProvider.getContactController().navigateToData(e.getItem().getUuid());
-			}
-		});
 	}
 
 	protected Stream<String> getColumnList() {

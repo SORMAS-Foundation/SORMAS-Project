@@ -585,7 +585,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public List<ContactIndexDetailedDto> getIndexDetailedList(ContactCriteria contactCriteria, Integer first, Integer max,
 											  List<SortProperty> sortProperties) {
-		CriteriaQuery<ContactIndexDetailedDto> query = listCriteriaBuilder.buildIndexDetaildCriteria(contactCriteria, sortProperties);
+		CriteriaQuery<ContactIndexDetailedDto> query = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties);
 
 		if (first != null && max != null) {
 			return em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
