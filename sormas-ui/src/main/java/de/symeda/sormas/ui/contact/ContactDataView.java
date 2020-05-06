@@ -168,10 +168,7 @@ public class ContactDataView extends AbstractContactView {
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
 
-		Boolean isContactEditAllowed = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
-		if (!isContactEditAllowed) {
-			getComponent(getComponentIndex(container)).setEnabled(false);
-		}
+		setContactEditPermission(container);
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {

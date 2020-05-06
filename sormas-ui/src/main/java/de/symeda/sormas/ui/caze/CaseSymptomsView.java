@@ -43,15 +43,9 @@ public class CaseSymptomsView extends AbstractCaseView {
     		ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
     		return;
     	}
-
-//    	setSubComponent(ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode()));
     	
     	CommitDiscardWrapperComponent<SymptomsForm> caseSymptomsComponent = ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode());
-    	setSubComponent(caseSymptomsComponent);
-    	
-    	Boolean isCaseEditAllowed = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
-		if (!isCaseEditAllowed) {
-			getComponent(getComponentIndex(caseSymptomsComponent)).setEnabled(false);
-		}
+    	setSubComponent(caseSymptomsComponent);    	
+    	setCaseEditPermission(caseSymptomsComponent);
     }
 }

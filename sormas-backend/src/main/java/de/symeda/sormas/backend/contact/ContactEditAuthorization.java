@@ -46,15 +46,16 @@ public class ContactEditAuthorization {
             }
         }
 
-        if (caseEditAuthorization.hasRole(UserRole.getSupervisorRoles())) {
-            return contact.getRegion().equals(user.getRegion());
+        if (userService.hasRole(UserRole.getSupervisorRoles())) {
+            return  contact.getRegion()!=null ? (contact.getRegion().equals(user.getRegion())) : 
+            	(contact.getDistrict().getRegion()!=null ? contact.getDistrict().getRegion().equals(user.getRegion()) : false);
         }
 
-        if (caseEditAuthorization.hasRole(UserRole.getOfficerRoles())) {
-            return contact.getDistrict().equals(user.getDistrict());
+        if (userService.hasRole(UserRole.getOfficerRoles())) {
+            return contact.getDistrict()!=null ? contact.getDistrict().equals(user.getDistrict()) : false;
         }
 
-        if (caseEditAuthorization.hasRole(UserRole.NATIONAL_USER)) {
+        if (userService.hasRole(UserRole.NATIONAL_USER)) {
             return true;
         }
 

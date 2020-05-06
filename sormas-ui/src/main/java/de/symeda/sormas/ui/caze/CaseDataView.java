@@ -114,9 +114,6 @@ public class CaseDataView extends AbstractCaseView {
 			
 		}
 		
-		Boolean isCaseEditAllowed  = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
-		if (!isCaseEditAllowed){
-    		getComponent(getComponentIndex(container)).setEnabled(false);
-    	}		
+		setCaseEditPermission(container);
 	}
 }

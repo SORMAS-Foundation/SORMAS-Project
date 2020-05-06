@@ -36,42 +36,30 @@ public class CaseEditAuthorization {
             return true;
         }
 
-        if (hasRole(UserRole.getSupervisorRoles())) {
+        if (userService.hasRole(UserRole.getSupervisorRoles())) {
             return caze.getRegion().equals(user.getRegion());
         }
 
-        if (hasRole(UserRole.getOfficerRoles())) {
+        if (userService.hasRole(UserRole.getOfficerRoles())) {
             return caze.getDistrict().equals(user.getDistrict());
         }
 
-        if ((hasRole(UserRole.HOSPITAL_INFORMANT))) {
+        if ((userService.hasRole(UserRole.HOSPITAL_INFORMANT))) {
             return caze.getHealthFacility().equals(user.getHealthFacility());
         }
 
-        if ((hasRole(UserRole.COMMUNITY_INFORMANT))) {
+        if ((userService.hasRole(UserRole.COMMUNITY_INFORMANT))) {
             return caze.getCommunity().equals(user.getCommunity());
         }
 
-        if ((hasRole(UserRole.POE_INFORMANT))) {
+        if ((userService.hasRole(UserRole.POE_INFORMANT))) {
             return caze.getPointOfEntry().equals(user.getPointOfEntry());
         }
 
-        if (hasRole(UserRole.NATIONAL_USER)) {
+        if (userService.hasRole(UserRole.NATIONAL_USER)) {
             return true;
         }
 		
         return false;
-    }
-
-	public boolean hasRole (UserRole userRoleName){
-		User user = userService.getCurrentUser();
-        Set<UserRole> userRoles = user.getUserRoles();
-        return !userRoles.stream().filter(userRole -> userRole.name().equals(userRoleName.name())).collect(Collectors.toList()).isEmpty();
-    }
-
-    public boolean hasRole(Set<UserRole> typeRoles) {
-    	User user = userService.getCurrentUser();
-        Set<UserRole> userRoles = user.getUserRoles();
-        return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
     }
 }

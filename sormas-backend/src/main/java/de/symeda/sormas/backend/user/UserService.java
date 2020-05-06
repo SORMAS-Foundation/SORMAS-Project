@@ -19,6 +19,8 @@ package de.symeda.sormas.backend.user;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -308,4 +310,14 @@ public class UserService extends AbstractAdoService<User> {
 		cq.select(cb.count(from));
 		return em.createQuery(cq).getSingleResult();
 	}
+	
+	public boolean hasRole (UserRole userRoleName){
+        Set<UserRole> userRoles = getCurrentUser().getUserRoles();
+        return !userRoles.stream().filter(userRole -> userRole.name().equals(userRoleName.name())).collect(Collectors.toList()).isEmpty();
+    }
+	
+	public boolean hasRole(Set<UserRole> typeRoles) {
+        Set<UserRole> userRoles = getCurrentUser().getUserRoles();
+        return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
+    }
 }
