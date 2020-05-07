@@ -380,9 +380,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	public void setNameReadOnly(boolean readOnly) {
+	public void setPersonalDetailsReadOnly(boolean readOnly) {
 		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
 		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
+		getField(PersonDto.SEX).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
 	}
 
 	public void setDiseaseReadOnly(boolean readOnly) {
