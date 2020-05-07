@@ -28,6 +28,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import com.vaadin.v7.data.validator.RegexpValidator;
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -180,6 +181,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 	}
 
+	private boolean areFieldsValid(String... propertyIds){
+		return Stream.of(propertyIds).allMatch(p -> getField(p).isValid());
+	}
+
 	private void setConvertedValue(String propertyId, Object value) {
 		((AbstractField<?>) getField(propertyId)).setConvertedValue(value);
 	}
@@ -228,16 +233,21 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 	
 	private void updateLeafletMapContent() {
-		Double lat = getConvertedValue(LocationDto.LATITUDE);
-		Double lon = getConvertedValue(LocationDto.LONGITUDE);
-		GeoLatLon coordinates;
-		if (ObjectUtils.allNotNull(lat, lon)) {
-			coordinates = new GeoLatLon(lat, lon);
-		} else {
-			coordinates = null;
+		if(areFieldsValid(LocationDto.LATITUDE, LocationDto.LONGITUDE)) {
+			Double lat = getConvertedValue(LocationDto.LATITUDE);
+			Double lon = getConvertedValue(LocationDto.LONGITUDE);
+			GeoLatLon coordinates;
+			if (ObjectUtils.allNotNull(lat, lon)) {
+				coordinates = new GeoLatLon(lat, lon);
+			} else {
+				coordinates = null;
+			}
+			leafletMapPopup.setEnabled(coordinates != null);
+			leafletMapPopup.setCoordinates(coordinates);
 		}
-		leafletMapPopup.setEnabled(coordinates != null);
-		leafletMapPopup.setCoordinates(coordinates);
+		else {
+			leafletMapPopup.setEnabled(false);
+		}
 	}
 
 	@Override
