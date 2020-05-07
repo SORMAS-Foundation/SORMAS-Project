@@ -20,7 +20,9 @@ package de.symeda.sormas.backend.visit;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -128,16 +130,12 @@ public class VisitService extends AbstractAdoService<Visit> {
 	 */
 	public List<Visit> getAllByContact(Contact contact) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Visit> cq = cb.createQuery(getElementClass());
-		Root<Visit> from = cq.from(getElementClass());
+		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+		Root<Visit> visitRoot = cq.from(Visit.class);
 
-		Predicate filter = buildVisitFilter(contact, null, cb, from);
-
-		cq.where(filter);
-		cq.orderBy(cb.asc(from.get(Visit.VISIT_DATE_TIME)));
-
-		List<Visit> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		cq.where(cb.isMember(contact, visitRoot.get(Visit.CONTACTS)));
+		
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<DashboardVisitDto> getDashboardVisitsByContact(Contact contact, Date fromDate, Date toDate) {
@@ -305,35 +303,33 @@ public class VisitService extends AbstractAdoService<Visit> {
 		return filter;
 	}
 	
-
+	public Set<Visit> getAllRelevantVisits(Person person, Disease disease, Date startDate, Date endDate) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+        Root<Visit> visitRoot = cq.from(Visit.class);
+        
+        cq.where(buildRelevantVisitsFilter(person, disease, startDate, endDate, cb, visitRoot));
+        
+        return new HashSet<>(em.createQuery(cq).getResultList());
+	}
 
 	/**
-	 * Returns a filter that can be used to retrieve all contacts with the specified person and disease
-	 * whose last contact date or report date (depending on availability) is within 30 days of the reference date.
+	 * Returns a filter that can be used to retrieve all visits with the specified person and disease
+	 * whose visit date is after the start date and before the end date.
 	 */
-	public Predicate buildRelevantVisitsFilter(Person person, Disease disease, Date referenceDate, CriteriaBuilder cb, Root<Contact> from) {
+	public Predicate buildRelevantVisitsFilter(Person person, Disease disease, Date startDate, Date endDate, CriteriaBuilder cb, Root<Visit> from) {
+		startDate = DateHelper.getStartOfDay(startDate);
+		endDate = DateHelper.getEndOfDay(endDate);
+		
 		Predicate filter = cb.and(
-				cb.equal(from.get(Contact.PERSON), person),
-				cb.equal(from.get(Contact.DISEASE), disease)
+				cb.equal(from.get(Visit.PERSON), person),
+				cb.equal(from.get(Visit.DISEASE), disease)
 				);
-
-		filter = and(cb, filter, 
-				or(cb,
-						cb.and(
-								cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
-								cb.greaterThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
-						cb.greaterThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
-						));
-
+		
 		filter = and(cb, filter,
-				or(cb,
-						cb.and(
-								cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
-								cb.lessThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
-						cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
-						));
-
-
+				cb.greaterThanOrEqualTo(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(startDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET)),
+				cb.lessThanOrEqualTo(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(endDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET)));
+		
 		return filter;
 	}
 

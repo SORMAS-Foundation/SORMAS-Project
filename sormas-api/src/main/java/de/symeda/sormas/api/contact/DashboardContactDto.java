@@ -19,6 +19,7 @@ package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -39,10 +40,12 @@ public class DashboardContactDto implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private Disease disease;
+	private Map<VisitStatus, Long> visitStatusMap;
 	
 	public DashboardContactDto(String uuid, Date reportDate, ContactStatus contactStatus,
 			ContactClassification contactClassification, FollowUpStatus followUpStatus,
-			Date followUpUntil, Disease disease) {
+			Date followUpUntil, Disease disease, Boolean symptomatic, VisitStatus lastVisitStatus,
+			Date lastVisitDateTime) {
 		this.uuid = uuid;
 		this.reportDate = reportDate;
 		this.contactStatus = contactStatus;
@@ -50,6 +53,9 @@ public class DashboardContactDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
+		this.symptomatic = symptomatic;
+		this.lastVisitStatus = lastVisitStatus;
+		this.lastVisitDateTime = lastVisitDateTime;
 	}
 
 	public String getUuid() {
@@ -130,6 +136,14 @@ public class DashboardContactDto implements Serializable {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public Map<VisitStatus, Long> getVisitStatusMap() {
+		return visitStatusMap;
+	}
+
+	public void setVisitStatusMap(Map<VisitStatus, Long> visitStatusMap) {
+		this.visitStatusMap = visitStatusMap;
 	}
 	
 }

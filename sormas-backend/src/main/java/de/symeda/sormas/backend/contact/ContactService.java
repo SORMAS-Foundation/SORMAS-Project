@@ -18,19 +18,25 @@
 package de.symeda.sormas.backend.contact;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -40,6 +46,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.query.Query;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -56,7 +63,6 @@ import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -238,32 +244,54 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return result;
 	}
 
+	public Set<Contact> getAllRelevantContacts(Person person, Disease disease, Date referenceDate) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
+		Root<Contact> contactRoot = cq.from(Contact.class);
+
+		Predicate filter = and(cb,
+				createDefaultFilter(cb, contactRoot),
+				buildRelevantContactsFilter(person, disease, referenceDate, cb, contactRoot)
+				);
+		cq.where(filter);
+
+		return new HashSet<>(em.createQuery(cq).getResultList());
+	}
+
 	/**
 	 * Returns a filter that can be used to retrieve all contacts with the specified person and disease
-	 * whose last contact date or report date (depending on availability) is within 30 days of the reference date.
+	 * whose last contact date or report date (depending on availability) is before the reference date and, if available,
+	 * whose follow-up until date is after the reference date, including an offset to allow some tolerance.
 	 */
-	public Predicate buildRelevantContactsFilter(Person person, Disease disease, Date referenceDate, CriteriaBuilder cb, Root<Contact> from) {
-		Predicate filter = cb.and(
+	private Predicate buildRelevantContactsFilter(Person person, Disease disease, Date referenceDate, CriteriaBuilder cb, Root<Contact> from) {
+		Date referenceDateStart = DateHelper.getStartOfDay(referenceDate);
+		Date referenceDateEnd = DateHelper.getEndOfDay(referenceDate);
+
+		Predicate filter = and(cb, 
 				cb.equal(from.get(Contact.PERSON), person),
 				cb.equal(from.get(Contact.DISEASE), disease)
 				);
 
 		filter = and(cb, filter, 
 				or(cb,
-						cb.and(
+						and(cb,
 								cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
-								cb.greaterThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
-						cb.greaterThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
+								cb.lessThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), DateHelper.addDays(referenceDateEnd, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
+						cb.lessThanOrEqualTo(from.get(Contact.LAST_CONTACT_DATE), DateHelper.addDays(referenceDateEnd, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
 						));
 
 		filter = and(cb, filter,
 				or(cb,
-						cb.and(
-								cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
-								cb.lessThan(from.get(Contact.REPORT_DATE_TIME), DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
-						cb.lessThan(from.get(Contact.LAST_CONTACT_DATE), DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
-						));
-
+						// If the contact does not have a follow-up until date, use the last contact/contact report date as a fallback
+						and(cb,
+								cb.isNull(from.get(Contact.FOLLOW_UP_UNTIL)),
+								or(cb,
+										and(cb,
+												cb.isNull(from.get(Contact.LAST_CONTACT_DATE)),
+												cb.greaterThanOrEqualTo(from.get(Contact.REPORT_DATE_TIME), DateHelper.subtractDays(referenceDateStart, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
+										cb.greaterThanOrEqualTo(from.get(Contact.LAST_CONTACT_DATE), DateHelper.subtractDays(referenceDateStart, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))
+										)),
+						cb.greaterThanOrEqualTo(from.get(Contact.FOLLOW_UP_UNTIL), DateHelper.subtractDays(referenceDateStart, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))));
 
 		return filter;
 	}
@@ -400,11 +428,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<DashboardContactDto> getContactsForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardContactDto> cq = cb.createQuery(DashboardContactDto.class);
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
 		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
+		Fetch<Contact, Visit> visitJoin = contact.fetch(Contact.VISITS);
 
 		Predicate filter = createDefaultFilter(cb, contact);
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
@@ -454,7 +484,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
-		List<DashboardContactDto> result;
+		List<Object[]> resultList;
+		List<DashboardContactDto> contactList = new ArrayList<>();
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
@@ -464,20 +495,24 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					contact.get(Contact.CONTACT_CLASSIFICATION),
 					contact.get(Contact.FOLLOW_UP_STATUS),
 					contact.get(Contact.FOLLOW_UP_UNTIL),
-					contact.get(Contact.DISEASE));
+					contact.get(Contact.DISEASE),
+					contact.get(Contact.VISITS));
 
-			result = em.createQuery(cq).getResultList();	
-			//			for (DashboardContactDto dashboardContactDto : result) {
-			//				Visit lastVisit = visitService.getLastVisitByContact(getByUuid(dashboardContactDto.getUuid()), null);
-			//				dashboardContactDto.setSymptomatic(lastVisit != null ? lastVisit.getSymptoms().getSymptomatic() : false);
-			//				dashboardContactDto.setLastVisitStatus(lastVisit != null ? lastVisit.getVisitStatus() : null);
-			//				dashboardContactDto.setLastVisitDateTime(lastVisit != null ? lastVisit.getVisitDateTime() : null);
-			//			}
-		} else {
-			result = Collections.emptyList();
+			TypedQuery<Object[]> query = em.createQuery(cq);
+			System.out.println(query.unwrap(Query.class).getQueryString());
+			resultList = em.createQuery(cq).getResultList();
+			for (Object[] result : resultList) {
+				Optional<Visit> lastVisit = ((Set<Visit>) result[7]).stream().sorted((v1, v2) -> v1.getVisitDateTime().after(v2.getVisitDateTime()) ? 1 : v2.getVisitDateTime().after(v1.getVisitDateTime()) ? - 1 : 0).findFirst();
+				DashboardContactDto dashboardContact = new DashboardContactDto(
+						(String) result[0], (Date) result[1], (ContactStatus) result[2], (ContactClassification) result[3], (FollowUpStatus) result[4], (Date) result[5], (Disease) result[6],
+						lastVisit.orElse(null).getSymptoms().getSymptomatic(), lastVisit.orElse(null).getVisitStatus(), lastVisit.orElse(null).getVisitDateTime());
+				dashboardContact.setVisitStatusMap(((Set<Visit>) result[7]).stream().collect(Collectors.groupingBy(Visit::getVisitStatus, Collectors.counting())));
+				
+				contactList.add(dashboardContact);
+			}
 		}
 
-		return result;
+		return contactList;
 	}
 
 	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, User user) {
@@ -702,30 +737,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public List<Contact> getAllByVisit(Visit visit) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
-		Root<Contact> from = cq.from(getElementClass());
+		CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
+		Root<Visit> visitRoot = cq.from(Visit.class);
 
-		Predicate filter = createActiveContactsFilter(cb, from);
-		filter = cb.and(filter, cb.equal(from.get(Contact.PERSON), visit.getPerson()));
-		filter = cb.and(filter, cb.equal(from.get(Contact.DISEASE), visit.getDisease()));
+		cq.select(visitRoot.get(Visit.CONTACTS));
 
-		Predicate dateStartFilter = cb.or(
-				cb.and(cb.isNotNull(from.get(Contact.LAST_CONTACT_DATE)),
-						cb.lessThan(from.get(Contact.LAST_CONTACT_DATE),
-								DateHelper.addDays(visit.getVisitDateTime(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET))),
-				cb.lessThan(from.get(Contact.REPORT_DATE_TIME),
-						DateHelper.addDays(visit.getVisitDateTime(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET)));
-
-		Predicate dateEndFilter = cb.greaterThan(from.get(Contact.FOLLOW_UP_UNTIL),
-				DateHelper.subtractDays(visit.getVisitDateTime(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-
-		filter = cb.and(filter, dateStartFilter);
-		filter = cb.and(filter, dateEndFilter);
-
-		cq.where(filter);
-
-		List<Contact> resultList = em.createQuery(cq).getResultList();
-		return resultList;
+		return em.createQuery(cq).getResultList();
 	}
 
 	/**

@@ -4194,4 +4194,18 @@ ALTER TABLE contacts_visits_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (206, 'Added table for contact-visit association #1329');
 
+WITH ids AS 
+(SELECT c.id AS contact_id, v.id AS visit_id FROM contact c, visit v WHERE c.person_id = v.person_id AND c.disease = v.disease AND
+CASE 
+WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime > (c.lastcontactdate - interval '30' day)
+ELSE v.visitdatetime > (c.reportdatetime - interval '30' day)
+END
+AND
+CASE
+WHEN c.followupuntil IS NOT NULL THEN v.visitdatetime < (c.followupuntil + interval '30' day)
+WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime < (c.lastcontactdate + interval '30' day)
+ELSE v.visitdatetime < (c.reportdatetime - interval '30' day)
+END)
+INSERT INTO contacts_visits (contact_id, visit_id) SELECT contact_id, visit_id FROM ids;
+
 -- *** Insert new sql commands BEFORE this line ***

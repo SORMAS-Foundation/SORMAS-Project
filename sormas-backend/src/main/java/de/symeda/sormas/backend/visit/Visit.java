@@ -18,7 +18,7 @@
 package de.symeda.sormas.backend.visit;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,6 +27,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -49,6 +50,7 @@ public class Visit extends AbstractDomainObject {
 	private static final long serialVersionUID = -5731538672268784234L;
 
 	public static final String TABLE_NAME = "visit";
+	public static final String CONTACTS_VISITS_TABLE_NAME = "contacts_visits";
 	
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
@@ -59,10 +61,11 @@ public class Visit extends AbstractDomainObject {
 	public static final String SYMPTOMS = "symptoms";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String CONTACTS = "contacts";
 	
 	private Person person;
 	private Disease disease;
-	private List<Contact> contacts;
+	private Set<Contact> contacts;
 	private Date visitDateTime;
 	private User visitUser;
 	private VisitStatus visitStatus;
@@ -82,11 +85,15 @@ public class Visit extends AbstractDomainObject {
 		this.person = person;
 	}
 
-	@ManyToMany(mappedBy = Contact.VISITS, fetch = FetchType.LAZY)
-	public List<Contact> getContacts() {
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+			  name = CONTACTS_VISITS_TABLE_NAME, 
+			  joinColumns = @JoinColumn(name = "visit_id"), 
+			  inverseJoinColumns = @JoinColumn(name = "contact_id"))
+	public Set<Contact> getContacts() {
 		return contacts;
 	}
-	public void setContacts(List<Contact> contacts) {
+	public void setContacts(Set<Contact> contacts) {
 		this.contacts = contacts;
 	}
 	
