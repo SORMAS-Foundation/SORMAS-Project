@@ -199,7 +199,9 @@ public class SymptomsDto extends EntityDto {
 	public static final String SKIN_ULCERS = "skinUlcers";
 	public static final String INABILITY_TO_WALK = "inabilityToWalk";
 	public static final String IN_DRAWING_OF_CHEST_WALL = "inDrawingOfChestWall";
-	
+	public static final String OTHER_COMPLICATIONS = "otherComplications";
+	public static final String OTHER_COMPLICATIONS_TEXT = "otherComplicationsText";
+
 	public static final String WEIGHT = "weight";
 
 	// Fields are declared in the order they should appear in the import template
@@ -428,7 +430,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
 			UNDEFINED, OTHER})
 	private SymptomState lossSkinTurgor;
-	@Diseases({CORONAVIRUS})
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState lymphadenopathy;
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
 	private SymptomState lymphadenopathyAxillary;
@@ -669,18 +671,23 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState acuteRespiratoryDistressSyndrome;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState pneumoniaClinicalOrRadiologic;
-	@Diseases({CORONAVIRUS})
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState lossOfTaste;
-	@Diseases({CORONAVIRUS})
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState lossOfSmell;
-	@Diseases({CORONAVIRUS})
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState wheezing;
-	@Diseases({CORONAVIRUS})
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState skinUlcers;
-	@Diseases({CORONAVIRUS})
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState inabilityToWalk;
-	@Diseases({CORONAVIRUS})
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState inDrawingOfChestWall;
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	public SymptomState otherComplications;
+	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@DependantOn(OTHER_COMPLICATIONS)
+	public String otherComplicationsText;
 
 	private Integer weight;
 	
@@ -1250,6 +1257,16 @@ public class SymptomsDto extends EntityDto {
 		return inDrawingOfChestWall;
 	}
 
+	@Order(273)
+	public SymptomState getOtherComplications() {
+		return otherComplications;
+	}
+
+	@Order(274)
+	public String getOtherComplicationsText() {
+		return otherComplicationsText;
+	}
+
 	public Integer getWeight() {
 		return weight;
 	}
@@ -1794,5 +1811,11 @@ public class SymptomsDto extends EntityDto {
 	}
 	public void setInDrawingOfChestWall(SymptomState inDrawingOfChestWall) {
 		this.inDrawingOfChestWall = inDrawingOfChestWall;
+	}
+	public void setOtherComplications(SymptomState otherComplications) {
+		this.otherComplications = otherComplications;
+	}
+	public void setOtherComplicationsText(String otherComplicationsText) {
+		this.otherComplicationsText = otherComplicationsText;
 	}
 }

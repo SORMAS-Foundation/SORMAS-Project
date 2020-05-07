@@ -219,6 +219,8 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setSkinUlcers(source.getSkinUlcers());
         target.setInabilityToWalk(source.getInabilityToWalk());
         target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
+        target.setOtherComplications(source.getOtherComplications());
+        target.setOtherComplicationsText(source.getOtherComplicationsText());
     }
 
     @Override
@@ -384,5 +386,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setSkinUlcers(source.getSkinUlcers());
         target.setInabilityToWalk(source.getInabilityToWalk());
         target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
+        target.setOtherComplications(source.getOtherComplications());
+        target.setOtherComplicationsText(source.getOtherComplicationsText());
     }
 }

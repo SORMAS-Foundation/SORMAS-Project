@@ -219,6 +219,9 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState acuteRespiratoryDistressSyndrome;
 	private SymptomState pneumoniaClinicalOrRadiologic;
 
+	private SymptomState otherComplications;
+	private String otherComplicationsText;
+
 	// when adding new fields make sure to extend toHumanString
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -1652,6 +1655,24 @@ public class Symptoms extends AbstractDomainObject {
 		this.coughWithHeamoptysis = coughWithHeamoptysis;
 	}
 
+	@Enumerated
+	public SymptomState getOtherComplications() {
+		return otherComplications;
+	}
+
+	public void setOtherComplications(SymptomState otherComplications) {
+		this.otherComplications = otherComplications;
+	}
+
+	@Column(length = 255)
+	public String getOtherComplicationsText() {
+		return otherComplicationsText;
+	}
+
+	public void setOtherComplicationsText(String otherComplicationsText) {
+		this.otherComplicationsText = otherComplicationsText;
+	}
+
 	public String toHumanString(boolean includeOnset, Language language) {
 		StringBuilder string = new StringBuilder();
 
@@ -1803,6 +1824,7 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, skinUlcers, SymptomsDto.SKIN_ULCERS);
 		appendYesSymptom(string, inabilityToWalk, SymptomsDto.INABILITY_TO_WALK);
 		appendYesSymptom(string, inDrawingOfChestWall, SymptomsDto.IN_DRAWING_OF_CHEST_WALL);
+		appendNotNullValue(string, otherComplicationsText, SymptomsDto.OTHER_COMPLICATIONS_TEXT);
 
 		// symptomsComments;
 

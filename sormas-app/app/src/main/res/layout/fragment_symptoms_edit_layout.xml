@@ -1222,6 +1222,19 @@
                 app:value="@={data.shock}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_otherComplications"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.otherComplications}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/symptoms_otherComplicationsText"
+                app:value="@={data.otherComplicationsText}"
+                app:softRequired="true"
+                style="@style/ControlSingleColumnStyle" />
+
             <!-- comments, etc. -->
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField

@@ -4183,6 +4183,8 @@ ALTER TABLE symptoms ADD COLUMN wheezing varchar(255);
 ALTER TABLE symptoms ADD COLUMN skinUlcers varchar(255);
 ALTER TABLE symptoms ADD COLUMN inabilityToWalk varchar(255);
 ALTER TABLE symptoms ADD COLUMN inDrawingOfChestWall varchar(255);
+ALTER TABLE symptoms ADD COLUMN otherComplications varchar(255);
+ALTER TABLE symptoms ADD COLUMN otherComplicationsText varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN coughWithSputum varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN coughWithHeamoptysis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN lymphadenopathy varchar(255);
@@ -4190,6 +4192,8 @@ ALTER TABLE symptoms_history ADD COLUMN wheezing varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN skinUlcers varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN inabilityToWalk varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN inDrawingOfChestWall varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN otherComplications varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN otherComplicationsText varchar(255);
 
 ALTER TABLE healthconditions ADD COLUMN obesity varchar(255);
 ALTER TABLE healthconditions ADD COLUMN currentSmoker varchar(255);

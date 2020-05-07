@@ -213,7 +213,9 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setSkinUlcers(source.getSkinUlcers());
 		target.setInabilityToWalk(source.getInabilityToWalk());
 		target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
-		
+		target.setOtherComplications(source.getOtherComplications());
+		target.setOtherComplicationsText(source.getOtherComplicationsText());
+
 		return symptoms;
 	}
 	
@@ -391,6 +393,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setSkinUlcers(source.getSkinUlcers());
 		target.setInabilityToWalk(source.getInabilityToWalk());
 		target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
+		target.setOtherComplications(source.getOtherComplications());
+		target.setOtherComplicationsText(source.getOtherComplicationsText());
 
 		return target;
 	}

@@ -387,6 +387,10 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState inabilityToWalk;
     @Enumerated(EnumType.STRING)
     private SymptomState inDrawingOfChestWall;
+    @Enumerated(EnumType.STRING)
+    private SymptomState otherComplications;
+    @Column(length = 255)
+    private String otherComplicationsText;
 
     @Override
     public String getI18nPrefix() {
@@ -1679,5 +1683,21 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setInDrawingOfChestWall(SymptomState inDrawingOfChestWall) {
         this.inDrawingOfChestWall = inDrawingOfChestWall;
+    }
+
+    public SymptomState getOtherComplications() {
+        return otherComplications;
+    }
+
+    public void setOtherComplications(SymptomState otherComplications) {
+        this.otherComplications = otherComplications;
+    }
+
+    public String getOtherComplicationsText() {
+        return otherComplicationsText;
+    }
+
+    public void setOtherComplicationsText(String otherComplicationsText) {
+        this.otherComplicationsText = otherComplicationsText;
     }
 }
