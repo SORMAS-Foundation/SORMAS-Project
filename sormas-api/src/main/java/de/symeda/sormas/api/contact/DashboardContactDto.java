@@ -19,6 +19,7 @@ package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
@@ -40,12 +41,11 @@ public class DashboardContactDto implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private Disease disease;
-	private Map<VisitStatus, Long> visitStatusMap;
+	private Map<VisitStatus, Long> visitStatusMap = new HashMap<>();
 	
 	public DashboardContactDto(String uuid, Date reportDate, ContactStatus contactStatus,
 			ContactClassification contactClassification, FollowUpStatus followUpStatus,
-			Date followUpUntil, Disease disease, Boolean symptomatic, VisitStatus lastVisitStatus,
-			Date lastVisitDateTime) {
+			Date followUpUntil, Disease disease) {
 		this.uuid = uuid;
 		this.reportDate = reportDate;
 		this.contactStatus = contactStatus;
@@ -53,9 +53,6 @@ public class DashboardContactDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
-		this.symptomatic = symptomatic;
-		this.lastVisitStatus = lastVisitStatus;
-		this.lastVisitDateTime = lastVisitDateTime;
 	}
 
 	public String getUuid() {
@@ -74,7 +71,7 @@ public class DashboardContactDto implements Serializable {
 		this.reportDate = reportDate;
 	}
 
-	public Boolean isSymptomatic() {
+	public Boolean getSymptomatic() {
 		return symptomatic;
 	}
 
@@ -144,6 +141,31 @@ public class DashboardContactDto implements Serializable {
 
 	public void setVisitStatusMap(Map<VisitStatus, Long> visitStatusMap) {
 		this.visitStatusMap = visitStatusMap;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DashboardContactDto other = (DashboardContactDto) obj;
+		if (uuid == null) {
+			if (other.uuid != null)
+				return false;
+		} else if (!uuid.equals(other.uuid))
+			return false;
+		return true;
 	}
 	
 }

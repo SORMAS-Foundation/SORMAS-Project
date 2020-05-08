@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import com.vaadin.icons.VaadinIcons;
@@ -109,12 +110,12 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		contactClassificationConfirmed = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.PRIMARY);
 		contactClassificationNotAContact = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CountElementStyle.POSITIVE);
 		newContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNew), CountElementStyle.NEUTRAL);
-//		symptomaticContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSymptomatic), CountElementStyle.CRITICAL);
+		symptomaticContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSymptomatic), CountElementStyle.CRITICAL);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationUnconfirmed);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationConfirmed);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationNotAContact);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, newContacts);
-//		firstComponent.addComponentToCountLayout(allContactsCountLayout, symptomaticContacts);
+		firstComponent.addComponentToCountLayout(allContactsCountLayout, symptomaticContacts);
 		firstComponent.addComponentToContent(allContactsCountLayout);
 
 		contactClassificationUnconfirmedLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CssStyles.SVG_FILL_MINOR);
@@ -140,7 +141,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 						|| c.getReportDate().equals(dashboardDataProvider.getFromDate()))
 				.count();
 		int newContactsPercentage = contactsCount == 0 ? 0 : (int) ((newContactsCount * 100.0f) / contactsCount);
-		int symptomaticContactsCount = (int) contacts.stream().filter(c -> c.isSymptomatic()).count();
+		int symptomaticContactsCount = (int) contacts.stream().filter(c -> Boolean.TRUE.equals(c.getSymptomatic())).count();
 		int symptomaticContactsPercentage = contactsCount == 0 ? 0 : (int) ((symptomaticContactsCount * 100.0f) / contactsCount);
 		int contactClassificationUnconfirmedCount = (int) contacts.stream().filter(c -> c.getContactClassification() == ContactClassification.UNCONFIRMED).count();
 		int contactClassificationUnconfirmedPercentage = contactsCount == 0 ? 0 : (int) ((contactClassificationUnconfirmedCount * 100.0f) / contactsCount);
@@ -184,7 +185,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by case count
 			for (int i = 0; i < (visibleDiseasesCount <= sortedDiseaseList.size() ? visibleDiseasesCount : sortedDiseaseList.size()); i++) {
-				
+
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousContacts.stream().filter(c -> c.getDisease() == mapEntry.getKey()).count();
 				DashboardStatisticsDiseaseElement diseaseElement = new DashboardStatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
@@ -209,7 +210,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 		// Content
 		secondComponent.addMainContent();
-		
+
 		CssLayout visitStatusCountLayout = secondComponent.createCountLayout(true);
 		cooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardCooperative), CountElementStyle.POSITIVE);
 		secondComponent.addComponentToCountLayout(visitStatusCountLayout, cooperativeContacts);
@@ -313,7 +314,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 		// Visit status of last visit
 		thirdComponent.addMainContent();
-		
+
 		followUpCompleted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCompletedFollowUp), CssStyles.SVG_FILL_POSITIVE);
 		followUpCompleted.setDescription(FollowUpStatus.COMPLETED.getDescription());
 		followUpCanceled = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCanceledFollowUp), CssStyles.SVG_FILL_IMPORTANT);
@@ -326,7 +327,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		thirdComponent.addComponentToContent(followUpCanceled);
 		thirdComponent.addComponentToContent(lostToFollowUp);
 		thirdComponent.addComponentToContent(contactStatusConverted);
-	
+
 		subComponentsLayout.addComponent(thirdComponent, THIRD_LOC);
 	}
 
@@ -374,7 +375,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		fourthComponent.addComponentToContent(separator);
 		missedVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardMissed), CssStyles.SVG_FILL_CRITICAL);
 		fourthComponent.addComponentToContent(missedVisits);
-		
+
 		subComponentsLayout.addComponent(fourthComponent, FOURTH_LOC);
 	}
 
@@ -386,27 +387,39 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		Map<VisitStatus, Long> previousVisitStatusMap = new HashMap<>();
 		int doneEssentialVisitsCount = 0;	// only visits that needed to be done, i.e. at most the amount of follow-up days
 		int previousDoneEssentialVisitsCount = 0;
-		
+
 		Date now = new Date();
 		int totalFollowUpDays = 0;
 		int previousTotalFollowUpDays = 0;
 		for (DashboardContactDto contact : contacts) {
-			visitStatusMap.putAll(contact.getVisitStatusMap());
+			for (VisitStatus visitStatus : contact.getVisitStatusMap().keySet()) {
+				Long value = 0L;
+				if (visitStatusMap.containsKey(visitStatus)) {
+					value = visitStatusMap.get(visitStatus);
+				}
+				visitStatusMap.put(visitStatus, value + contact.getVisitStatusMap().get(visitStatus));
+			}
 			if (contact.getFollowUpUntil() != null) {
 				int contactFollowUpDays = Math.min(DateHelper.getDaysBetween(contact.getReportDate(), now), DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
 				totalFollowUpDays += contactFollowUpDays;
 				Long visitCount = contact.getVisitStatusMap().values().stream().reduce(0L, Long::sum);
-				doneEssentialVisitsCount += visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount;
+				doneEssentialVisitsCount += (visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount);
 			}
 		}
 
 		for (DashboardContactDto contact : previousContacts) {
-			previousVisitStatusMap.putAll(contact.getVisitStatusMap());
+			for (VisitStatus visitStatus : contact.getVisitStatusMap().keySet()) {
+				Long value = 0L;
+				if (previousVisitStatusMap.containsKey(visitStatus)) {
+					value = previousVisitStatusMap.get(visitStatus);
+				}
+				previousVisitStatusMap.put(visitStatus, value + contact.getVisitStatusMap().get(visitStatus));
+			}
 			if (contact.getFollowUpUntil() != null) {
 				int contactFollowUpDays = Math.min(DateHelper.getDaysBetween(contact.getReportDate(), now), DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
 				previousTotalFollowUpDays += contactFollowUpDays;
 				Long visitCount = contact.getVisitStatusMap().values().stream().reduce(0L, Long::sum);
-				previousDoneEssentialVisitsCount += visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount;
+				previousDoneEssentialVisitsCount += (visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount);
 			}
 		}
 
@@ -414,13 +427,13 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		fourthComponent.updateCountLabel(visitsCount.intValue());
 
 		int missedVisitsCount = totalFollowUpDays - doneEssentialVisitsCount;
-		int unavailableVisitsCount = visitStatusMap.get(VisitStatus.UNAVAILABLE).intValue();
-		int uncooperativeVisitsCount = visitStatusMap.get(VisitStatus.UNCOOPERATIVE).intValue();
-		int cooperativeVisitsCount = visitStatusMap.get(VisitStatus.COOPERATIVE).intValue();
+		int unavailableVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0L).intValue();
+		int uncooperativeVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0L).intValue();
+		int cooperativeVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0L).intValue();
 		int previousMissedVisitsCount = previousTotalFollowUpDays - previousDoneEssentialVisitsCount;
-		int previousUnavailableVisitsCount = previousVisitStatusMap.get(VisitStatus.UNAVAILABLE).intValue();
-		int previousUncooperativeVisitsCount = previousVisitStatusMap.get(VisitStatus.UNCOOPERATIVE).intValue();
-		int previousCooperativeVisitsCount = previousVisitStatusMap.get(VisitStatus.COOPERATIVE).intValue();
+		int previousUnavailableVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0L).intValue();
+		int previousUncooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0L).intValue();
+		int previousCooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0L).intValue();
 		int missedVisitsPercentage = totalFollowUpDays == 0 ? 0 : (int) ((missedVisitsCount * 100.0f) / totalFollowUpDays);
 		int unavailableVisitsPercentage = visitsCount == 0 ? 0 : (int) ((unavailableVisitsCount * 100.0f) / visitsCount);
 		int uncooperativeVisitsPercentage = visitsCount == 0 ? 0 : (int) ((uncooperativeVisitsCount * 100.0f) / visitsCount);

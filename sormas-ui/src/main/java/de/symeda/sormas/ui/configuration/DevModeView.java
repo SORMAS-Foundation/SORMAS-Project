@@ -529,6 +529,7 @@ public class DevModeView extends AbstractConfigurationView {
 						fillEntity(visit, date);
 						visit.setVisitUser(userReference);
 						visit.setVisitDateTime(DateHelper8.toDate(date));
+						visit.setDisease(contact.getDisease());
 						if (visit.getVisitStatus() == null) {
 							visit.setVisitStatus(VisitStatus.COOPERATIVE);
 						}

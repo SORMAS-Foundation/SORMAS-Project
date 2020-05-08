@@ -25,18 +25,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -46,7 +43,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.query.Query;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -428,13 +424,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<DashboardContactDto> getContactsForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> contact = cq.from(getElementClass());
 		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
-		Fetch<Contact, Visit> visitJoin = contact.fetch(Contact.VISITS);
+		Join<Contact, Visit> visitJoin = contact.join(Contact.VISITS, JoinType.LEFT);
+		Join<Visit, Symptoms> symptomsJoin = visitJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 		Predicate filter = createDefaultFilter(cb, contact);
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
@@ -484,8 +480,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
-		List<Object[]> resultList;
-		List<DashboardContactDto> contactList = new ArrayList<>();
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
@@ -496,23 +490,72 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					contact.get(Contact.FOLLOW_UP_STATUS),
 					contact.get(Contact.FOLLOW_UP_UNTIL),
 					contact.get(Contact.DISEASE),
-					contact.get(Contact.VISITS));
+					symptomsJoin.get(Symptoms.SYMPTOMATIC),
+					visitJoin.get(Visit.VISIT_STATUS),
+					visitJoin.get(Visit.VISIT_DATE_TIME));
 
-			TypedQuery<Object[]> query = em.createQuery(cq);
-			System.out.println(query.unwrap(Query.class).getQueryString());
-			resultList = em.createQuery(cq).getResultList();
-			for (Object[] result : resultList) {
-				Optional<Visit> lastVisit = ((Set<Visit>) result[7]).stream().sorted((v1, v2) -> v1.getVisitDateTime().after(v2.getVisitDateTime()) ? 1 : v2.getVisitDateTime().after(v1.getVisitDateTime()) ? - 1 : 0).findFirst();
-				DashboardContactDto dashboardContact = new DashboardContactDto(
-						(String) result[0], (Date) result[1], (ContactStatus) result[2], (ContactClassification) result[3], (FollowUpStatus) result[4], (Date) result[5], (Disease) result[6],
-						lastVisit.orElse(null).getSymptoms().getSymptomatic(), lastVisit.orElse(null).getVisitStatus(), lastVisit.orElse(null).getVisitDateTime());
-				dashboardContact.setVisitStatusMap(((Set<Visit>) result[7]).stream().collect(Collectors.groupingBy(Visit::getVisitStatus, Collectors.counting())));
-				
-				contactList.add(dashboardContact);
+			List<Object[]> resultList = em.createQuery(cq).getResultList();
+
+			if (!resultList.isEmpty()) {
+				List<Object[]> contactsAndVisits = resultList.stream()
+						.map(r -> new Object[] {
+								new DashboardContactDto((String) r[0], (Date) r[1], (ContactStatus) r[2], (ContactClassification) r[3], 
+										(FollowUpStatus) r[4], (Date) r[5], (Disease) r[6]), 
+								r[8] != null ? new DashboardVisit((Boolean) r[7], (VisitStatus) r[8], (Date) r[9]) : null})
+						.collect(Collectors.toList());
+
+				Map<DashboardContactDto, List<DashboardVisit>> contactVisitsMap = contactsAndVisits.stream()
+						.filter(e -> e[1] != null)
+						.collect(Collectors.groupingBy(e -> (DashboardContactDto) e[0], Collectors.mapping(e -> (DashboardVisit) e[1], Collectors.toList())));
+
+				for (DashboardContactDto dashboardContact : contactVisitsMap.keySet()) {
+					List<DashboardVisit> visits = contactVisitsMap.get(dashboardContact);
+
+					DashboardVisit lastVisit = visits.stream().max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime())).orElse(null);
+
+					if (lastVisit != null) {
+						dashboardContact.setLastVisitDateTime(lastVisit.getVisitDateTime());
+						dashboardContact.setLastVisitStatus(lastVisit.getVisitStatus());
+						dashboardContact.setSymptomatic(lastVisit.getSymptomatic());
+						dashboardContact.setVisitStatusMap(visits.stream()
+								.collect(Collectors.groupingBy(DashboardVisit::getVisitStatus, Collectors.counting())));
+					}
+				}
+
+				List<DashboardContactDto> contactList = new ArrayList<>(contactVisitsMap.keySet());
+				contactList.addAll(contactsAndVisits.stream()
+						.filter(e -> e[1] == null)
+						.map(e -> (DashboardContactDto) e[0])
+						.collect(Collectors.toList()));
+				return contactList;
 			}
 		}
 
-		return contactList;
+		return Collections.emptyList();
+	}
+
+	private final class DashboardVisit {
+		private final Boolean symptomatic;
+		private final VisitStatus visitStatus;
+		private final Date visitDateTime;
+
+		public DashboardVisit(Boolean symptomatic, VisitStatus visitStatus, Date visitDateTime) {
+			this.symptomatic = symptomatic;
+			this.visitStatus = visitStatus;
+			this.visitDateTime = visitDateTime;
+		}
+
+		public Boolean getSymptomatic() {
+			return symptomatic;
+		}
+
+		public VisitStatus getVisitStatus() {
+			return visitStatus;
+		}
+
+		public Date getVisitDateTime() {
+			return visitDateTime;
+		}
 	}
 
 	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, User user) {
@@ -963,7 +1006,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	private Predicate buildDateFilter(CriteriaBuilder cb, Root<Contact> contact, Date from, Date to) {
 		return cb.and(
-				cb.greaterThanOrEqualTo(contact.get(Contact.FOLLOW_UP_UNTIL), from),
+				cb.or(
+						cb.and(
+								cb.isNotNull(contact.get(Contact.FOLLOW_UP_UNTIL)),
+								cb.greaterThanOrEqualTo(contact.get(Contact.FOLLOW_UP_UNTIL), from)
+								),
+						cb.or(
+								cb.and(
+										cb.isNotNull(contact.get(Contact.LAST_CONTACT_DATE)),
+										cb.greaterThanOrEqualTo(contact.get(Contact.LAST_CONTACT_DATE), from)
+										),
+								cb.greaterThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), from)
+								)
+						),
 				cb.or(
 						cb.and(
 								cb.isNotNull(contact.get(Contact.LAST_CONTACT_DATE)),
