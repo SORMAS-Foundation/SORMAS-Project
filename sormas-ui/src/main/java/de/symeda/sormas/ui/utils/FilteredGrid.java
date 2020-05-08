@@ -1,16 +1,20 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.Collections;
-
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
-
+import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.BaseCriteria;
 
+import java.util.Collections;
+import java.util.function.Consumer;
+
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
+
+	public static final String EDIT_BTN_ID = "edit";
 
 	private static final long serialVersionUID = 8116377533153377424L;
 
@@ -27,7 +31,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	public void setCriteria(C criteria) {
 		this.criteria = criteria;
-		if (!inEagerMode) { 
+		if (!inEagerMode) {
 			getFilteredDataProvider().setFilter(criteria);
 		}
 	}
@@ -62,8 +66,21 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	public int getItemCount() {
 		return getDataProvider().size(new Query<>());
 	}
-	
-	public T getFirstItem () {
+
+	public T getFirstItem() {
 		return getDataProvider().fetch(new Query<>(0, 1, Collections.emptyList(), null, null)).findFirst().orElse(null);
+	}
+
+	protected void addEditColumn(Consumer<ItemClick<T>> handler) {
+		Column<T, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
+		editColumn.setId(EDIT_BTN_ID);
+		editColumn.setSortable(false);
+		editColumn.setWidth(20);
+
+		addItemClickListener(e -> {
+			if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
+				handler.accept(e);
+			}
+		});
 	}
 }
