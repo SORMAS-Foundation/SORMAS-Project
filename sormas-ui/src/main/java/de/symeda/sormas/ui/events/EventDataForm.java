@@ -38,6 +38,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -47,6 +48,8 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.StringLengthValidator;
+import de.symeda.sormas.ui.utils.ValidationConstants;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -99,7 +102,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		DateField eventDate = addField(EventDto.EVENT_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
-		addField(EventDto.EVENT_DESC, TextArea.class).setRows(2);
+		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
+		descriptionField.setRows(2);
+		descriptionField.addValidator(new StringLengthValidator(ValidationConstants.TEXT_AREA_MAX_LENGTH));
 		addField(EventDto.EVENT_LOCATION, LocationEditForm.class).setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
