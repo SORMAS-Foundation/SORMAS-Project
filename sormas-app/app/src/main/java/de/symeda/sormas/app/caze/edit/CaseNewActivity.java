@@ -138,9 +138,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         Case _case;
         if (!DataHelper.isNullOrEmpty(contactUuid)) {
             Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-            _person = sourceContact.getPerson();
-            _case = DatabaseHelper.getCaseDao().build(_person,
-                    DatabaseHelper.getCaseDao().queryUuidBasic(sourceContact.getCaseUuid()));
+            _case = DatabaseHelper.getCaseDao().build(sourceContact);
         } else if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
             EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
             _case = DatabaseHelper.getCaseDao().build(eventParticipant);

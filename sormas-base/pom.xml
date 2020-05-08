@@ -533,6 +533,7 @@
 						<pushHotfixes>true</pushHotfixes>
 						<useReleaseProfile>false</useReleaseProfile>
 						<noDeploy>true</noDeploy>
+						<noHotfixBuild>true</noHotfixBuild>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<updateDependencies>true</updateDependencies>
 					</configuration>
