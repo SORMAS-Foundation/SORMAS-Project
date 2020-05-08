@@ -21,9 +21,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityCriteria;
@@ -40,8 +38,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> {
 
 	private static final long serialVersionUID = 4488941182432777837L;
-
-	public static final String EDIT_BTN_ID = "edit";
 
 	public FacilitiesGrid(FacilityCriteria criteria, Class<? extends AbstractFacilitiesView> viewClass) {
 		super(FacilityDto.class);
@@ -62,16 +58,8 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 				FacilityDto.LATITUDE, FacilityDto.LONGITUDE, FacilityDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			Column<FacilityDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-			editColumn.setId(EDIT_BTN_ID);
-			editColumn.setWidth(20);
-
-			addItemClickListener(e -> {
-				if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editHealthFacility(e.getItem().getUuid());
-				}
-			});
-		}	
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editHealthFacility(e.getItem().getUuid()));
+		}
 		
 		for(Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
