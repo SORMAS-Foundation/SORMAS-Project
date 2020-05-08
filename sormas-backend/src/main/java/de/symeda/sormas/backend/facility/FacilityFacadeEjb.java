@@ -379,9 +379,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			if (dto.getDistrict() == null) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 			}
-			if (dto.getCommunity() == null) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCommunity));
-			}
 		}
 
 		facility = fillOrBuildEntity(dto, facility);

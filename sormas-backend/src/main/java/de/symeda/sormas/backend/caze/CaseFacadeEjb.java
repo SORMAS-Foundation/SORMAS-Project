@@ -60,6 +60,7 @@ import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.*;
+import de.symeda.sormas.api.facility.FacilityDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1223,22 +1224,23 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCommunityInDistrict));
 		}
 		if (caze.getHealthFacility() != null) {
+			FacilityDto healthFacility = facilityFacade.getByUuid(caze.getHealthFacility().getUuid());
+
 			if (caze.getCommunity() == null
-					&& facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict() != null
-					&& !facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getDistrict()
+					&& healthFacility.getDistrict() != null
+					&& !healthFacility.getDistrict()
 					.equals(caze.getDistrict())) {
 				throw new ValidationRuntimeException(
 						I18nProperties.getValidationError(Validations.noFacilityInDistrict));
 			}
 			if (caze.getCommunity() != null
-					&& facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity() != null
-					&& !caze.getCommunity()
-					.equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getCommunity())) {
+					&& healthFacility.getCommunity() != null
+					&& !caze.getCommunity().equals(healthFacility.getCommunity())) {
 				throw new ValidationRuntimeException(
 						I18nProperties.getValidationError(Validations.noFacilityInCommunity));
 			}
-			if (facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion() != null && !caze.getRegion()
-					.equals(facilityFacade.getByUuid(caze.getHealthFacility().getUuid()).getRegion())) {
+			if (healthFacility.getRegion() != null && !caze.getRegion()
+					.equals(healthFacility.getRegion())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInRegion));
 			}
 			if (FacilityHelper.isOtherOrNoneHealthFacility(caze.getHealthFacility().getUuid()) && StringUtils.isEmpty(caze.getHealthFacilityDetails())) {
