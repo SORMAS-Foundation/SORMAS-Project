@@ -100,6 +100,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 				column.setHeaderCaption("");
+				column.setSortable(false);
 			} else {
 				column.setHeaderCaption(I18nProperties.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX,
 						column.getPropertyId().toString(), column.getHeaderCaption()));

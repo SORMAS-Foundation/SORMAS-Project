@@ -42,8 +42,6 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 
 	private static final long serialVersionUID = -1L;
 
-	private static final String EDIT_BTN_ID = "edit";
-
 	@SuppressWarnings("unchecked")
 	public UserGrid() {
 		super(UserDto.class);
@@ -61,9 +59,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 				});
 		setDataProvider(dataProvider);
 
-		Column<UserDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(20);
+		addEditColumn(e -> ControllerProvider.getUserController().edit(e.getItem()));
 
 		setColumns(EDIT_BTN_ID, UserDto.UUID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, 
 				UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT, UserDto.HEALTH_FACILITY);
@@ -77,13 +73,6 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			column.setCaption(I18nProperties.getPrefixCaption(
 					UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-
-		addItemClickListener(e ->  {
-			if ((e.getColumn() != null && EDIT_BTN_ID.equals(e.getColumn().getId()))
-					|| e.getMouseEventDetails().isDoubleClick()) {
-				ControllerProvider.getUserController().edit(e.getItem());
-			}
-		});
 	}
 
 	public void reload() {
