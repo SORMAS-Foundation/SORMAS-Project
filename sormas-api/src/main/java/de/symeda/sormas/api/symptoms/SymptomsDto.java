@@ -22,12 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DependantOn;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.Order;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 
 import static de.symeda.sormas.api.Disease.*;
 
@@ -37,57 +32,72 @@ public class SymptomsDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Symptoms";
 
+	//Symptoms
 	public static final String ABDOMINAL_PAIN = "abdominalPain";
-	public static final String ALTERED_CONSCIOUSNESS = "alteredConsciousness";
+	public static final String ABNORMAL_LUNG_XRAY_FINDINGS = "abnormalLungXrayFindings";
+	public static final String ACUTE_RESPIRATORY_DISTRESS_SYNDROME = "acuteRespiratoryDistressSyndrome";
+	public static final String AEROPHOBIA = "aerophobia";
+	public static final String AGITATION = "agitation";
 	public static final String ANOREXIA_APPETITE_LOSS = "anorexiaAppetiteLoss";
+	public static final String ANXIETY_STATES = "anxietyStates";
+	public static final String ASCENDING_FLACCID_PARALYSIS = "ascendingFlaccidParalysis";
 	public static final String BACKACHE = "backache";
 	public static final String BEDRIDDEN = "bedridden";
 	public static final String BILATERAL_CATARACTS = "bilateralCataracts";
 	public static final String BLACKENING_DEATH_OF_TISSUE = "blackeningDeathOfTissue";
 	public static final String BLEEDING_VAGINA = "bleedingVagina";
+	public static final String BLOODY_BLACK_STOOL = "bloodyBlackStool";
 	public static final String BLOOD_IN_STOOL = "bloodInStool";
 	public static final String BLOOD_PRESSURE_DIASTOLIC = "bloodPressureDiastolic";
 	public static final String BLOOD_PRESSURE_SYSTOLIC = "bloodPressureSystolic";
 	public static final String BLOOD_URINE = "bloodUrine";
-	public static final String BLOODY_BLACK_STOOL = "bloodyBlackStool";
-		
 	public static final String BUBOES_GROIN_ARMPIT_NECK = "buboesGroinArmpitNeck";
 	public static final String BULGING_FONTANELLE = "bulgingFontanelle";
 	public static final String CHEST_PAIN = "chestPain";
-
 	public static final String CHILLS_SWEATS = "chillsSweats";
-	public static final String CONFUSED_DISORIENTED = "confusedDisoriented";
+	public static final String COMA = "coma";
 	public static final String CONGENITAL_GLAUCOMA = "congenitalGlaucoma";
 	public static final String CONGENITAL_HEART_DISEASE = "congenitalHeartDisease";
-	public static final String CONGENITAL_HEART_DISEASE_TYPE = "congenitalHeartDiseaseType";
 	public static final String CONGENITAL_HEART_DISEASE_DETAILS = "congenitalHeartDiseaseDetails";
+	public static final String CONGENITAL_HEART_DISEASE_TYPE = "congenitalHeartDiseaseType";
+	public static final String CONJUNCTIVAL_INJECTION = "conjunctivalInjection";
 	public static final String CONJUNCTIVITIS = "conjunctivitis";
+	public static final String CONVULSION = "convulsion";
 	public static final String COUGH = "cough";
-	public static final String COUGH_WITH_SPUTUM = "coughWithSputum";
-	public static final String COUGH_WITH_HEAMOPTYSIS = "coughWithHeamoptysis";
 	public static final String COUGHING_BLOOD = "coughingBlood";
+	public static final String COUGH_WITH_HEAMOPTYSIS = "coughWithHeamoptysis";
+	public static final String COUGH_WITH_SPUTUM = "coughWithSputum";
 	public static final String DARK_URINE = "darkUrine";
 	public static final String DEHYDRATION = "dehydration";
+	public static final String DELIRIUM = "delirium";
 	public static final String DEVELOPMENTAL_DELAY = "developmentalDelay";
 	public static final String DIARRHEA = "diarrhea";
 	public static final String DIFFICULTY_BREATHING = "difficultyBreathing";
 	public static final String DIGESTED_BLOOD_VOMIT = "digestedBloodVomit";
-	public static final String EYE_PAIN_LIGHT_SENSITIVE = "eyePainLightSensitive";
+	public static final String DYSPHAGIA = "dysphagia";
+	public static final String ERRATIC_BEHAVIOUR = "erraticBehaviour";
+	public static final String EXCESS_SALIVATION = "excessSalivation";
+	public static final String EXCITATION = "excitation";
 	public static final String EYES_BLEEDING = "eyesBleeding";
+	public static final String EYE_PAIN_LIGHT_SENSITIVE = "eyePainLightSensitive";
 	public static final String FATIGUE_WEAKNESS = "fatigueWeakness";
 	public static final String FEVER = "fever";
 	public static final String FLUID_IN_LUNG_CAVITY = "fluidInLungCavity";
+	public static final String FLUID_IN_LUNG_CAVITY_AUSCULTATION = "fluidInLungCavityAuscultation";
+	public static final String FLUID_IN_LUNG_CAVITY_XRAY = "fluidInLungCavityXray";
 	public static final String GLASGOW_COMA_SCALE = "glasgowComaScale";
 	public static final String GUMS_BLEEDING = "gumsBleeding";
 	public static final String HEADACHE = "headache";
 	public static final String HEARINGLOSS = "hearingloss";
 	public static final String HEART_RATE = "heartRate";
 	public static final String HEIGHT = "height";
-	public static final String HEMORRHAGIC_SYNDROME = "hemorrhagicSyndrome";
 	public static final String HICCUPS = "hiccups";
-	public static final String HYPERGLYCEMIA = "hyperglycemia";
-	public static final String HYPOGLYCEMIA = "hypoglycemia";
+	public static final String HYDROPHOBIA = "hydrophobia";
+	public static final String HYPERACTIVITY = "hyperactivity";
+	public static final String INABILITY_TO_WALK = "inabilityToWalk";
 	public static final String INJECTION_SITE_BLEEDING = "injectionSiteBleeding";
+	public static final String INSOMNIA = "insomnia";
+	public static final String IN_DRAWING_OF_CHEST_WALL = "inDrawingOfChestWall";
 	public static final String JAUNDICE = "jaundice";
 	public static final String JAUNDICE_WITHIN_24_HOURS_OF_BIRTH = "jaundiceWithin24HoursOfBirth";
 	public static final String JOINT_PAIN = "jointPain";
@@ -110,13 +120,14 @@ public class SymptomsDto extends EntityDto {
 	public static final String LESIONS_SOLES_FEET = "lesionsSolesFeet";
 	public static final String LESIONS_THAT_ITCH = "lesionsThatItch";
 	public static final String LESIONS_THORAX = "lesionsThorax";
-	public static final String LOSS_SKIN_TURGOR = "lossSkinTurgor";	
+	public static final String LOSS_OF_SMELL = "lossOfSmell";
+	public static final String LOSS_OF_TASTE = "lossOfTaste";
+	public static final String LOSS_SKIN_TURGOR = "lossSkinTurgor";
 	public static final String LYMPHADENOPATHY = "lymphadenopathy";
 	public static final String LYMPHADENOPATHY_AXILLARY = "lymphadenopathyAxillary";
 	public static final String LYMPHADENOPATHY_CERVICAL = "lymphadenopathyCervical";
 	public static final String LYMPHADENOPATHY_INGUINAL = "lymphadenopathyInguinal";
-	public static final String MALAISE = "malaise";	
-	public static final String MENINGEAL_SIGNS = "meningealSigns";
+	public static final String MALAISE = "malaise";
 	public static final String MENINGOENCEPHALITIS = "meningoencephalitis";
 	public static final String MICROCEPHALY = "microcephaly";
 	public static final String MID_UPPER_ARM_CIRCUMFERENCE = "midUpperArmCircumference";
@@ -127,7 +138,8 @@ public class SymptomsDto extends EntityDto {
 	public static final String OEDEMA_FACE_NECK = "oedemaFaceNeck";
 	public static final String OEDEMA_LOWER_EXTREMITY = "oedemaLowerExtremity";
 	public static final String ONSET_DATE = "onsetDate";
-	public static final String ONSET_SYMPTOM = "onsetSymptom";	
+	public static final String ONSET_SYMPTOM = "onsetSymptom";
+	public static final String OPISTHOTONUS = "opisthotonus";
 	public static final String ORAL_ULCERS = "oralUlcers";
 	public static final String OTHER_HEMORRHAGIC_SYMPTOMS = "otherHemorrhagicSymptoms";
 	public static final String OTHER_HEMORRHAGIC_SYMPTOMS_TEXT = "otherHemorrhagicSymptomsText";
@@ -137,10 +149,14 @@ public class SymptomsDto extends EntityDto {
 	public static final String PAINFUL_LYMPHADENITIS = "painfulLymphadenitis";
 	public static final String PALPABLE_LIVER = "palpableLiver";
 	public static final String PALPABLE_SPLEEN = "palpableSpleen";
+	public static final String PARALYSIS = "paralysis";
+	public static final String PARASTHESIA_AROUND_WOUND = "paresthesiaAroundWound";
+	public static final String PARESIS = "paresis";
 	public static final String PATIENT_ILL_LOCATION = "patientIllLocation";
 	public static final String PHARYNGEAL_ERYTHEMA = "pharyngealErythema";
 	public static final String PHARYNGEAL_EXUDATE = "pharyngealExudate";
 	public static final String PIGMENTARY_RETINOPATHY = "pigmentaryRetinopathy";
+	public static final String PNEUMONIA_CLINICAL_OR_RADIOLOGIC = "pneumoniaClinicalOrRadiologic";
 	public static final String PURPURIC_RASH = "purpuricRash";
 	public static final String RADIOLUCENT_BONE_DISEASE = "radiolucentBoneDisease";
 	public static final String RAPID_BREATHING = "rapidBreathing";
@@ -148,12 +164,10 @@ public class SymptomsDto extends EntityDto {
 	public static final String REFUSAL_FEEDOR_DRINK = "refusalFeedorDrink";
 	public static final String RESPIRATORY_RATE = "respiratoryRate";
 	public static final String RUNNY_NOSE = "runnyNose";
-	public static final String SEIZURES = "seizures";
-	public static final String SEPSIS = "sepsis";
-	public static final String SHOCK = "shock";
 	public static final String SIDE_PAIN = "sidePain";
 	public static final String SKIN_BRUISING = "skinBruising";
 	public static final String SKIN_RASH = "skinRash";
+	public static final String SKIN_ULCERS = "skinUlcers";
 	public static final String SORE_THROAT = "soreThroat";
 	public static final String SPLENOMEGALY = "splenomegaly";
 	public static final String STOMACH_BLEEDING = "stomachBleeding";
@@ -167,42 +181,24 @@ public class SymptomsDto extends EntityDto {
 	public static final String TREMOR = "tremor";
 	public static final String UNEXPLAINED_BLEEDING = "unexplainedBleeding";
 	public static final String UNILATERAL_CATARACTS = "unilateralCataracts";
-	public static final String VOMITING = "vomiting";	
-	public static final String HYDROPHOBIA = "hydrophobia";	
-	public static final String OPISTHOTONUS = "opisthotonus";
-	public static final String ANXIETY_STATES = "anxietyStates";
-	public static final String DELIRIUM = "delirium";
 	public static final String UPROARIOUSNESS = "uproariousness";
-	public static final String PARASTHESIA_AROUND_WOUND = "paresthesiaAroundWound";
-	public static final String EXCESS_SALIVATION = "excessSalivation";
-	public static final String INSOMNIA = "insomnia";
-	public static final String PARALYSIS = "paralysis";
-	public static final String EXCITATION = "excitation";
-	public static final String DYSPHAGIA = "dysphagia";
-	public static final String AEROPHOBIA = "aerophobia";
-	public static final String HYPERACTIVITY = "hyperactivity";
-	public static final String PARESIS = "paresis";
-	public static final String AGITATION = "agitation";
-	public static final String ASCENDING_FLACCID_PARALYSIS = "ascendingFlaccidParalysis";
-	public static final String ERRATIC_BEHAVIOUR = "erraticBehaviour";
-	public static final String COMA = "coma";
-	public static final String CONVULSION = "convulsion";
-	public static final String FLUID_IN_LUNG_CAVITY_AUSCULTATION = "fluidInLungCavityAuscultation";
-	public static final String FLUID_IN_LUNG_CAVITY_XRAY = "fluidInLungCavityXray";
-	public static final String ABNORMAL_LUNG_XRAY_FINDINGS = "abnormalLungXrayFindings";
-	public static final String CONJUNCTIVAL_INJECTION = "conjunctivalInjection";
-	public static final String ACUTE_RESPIRATORY_DISTRESS_SYNDROME = "acuteRespiratoryDistressSyndrome";
-	public static final String PNEUMONIA_CLINICAL_OR_RADIOLOGIC = "pneumoniaClinicalOrRadiologic";
-	public static final String LOSS_OF_TASTE = "lossOfTaste";
-	public static final String LOSS_OF_SMELL = "lossOfSmell";
+	public static final String VOMITING = "vomiting";
 	public static final String WHEEZING = "wheezing";
-	public static final String SKIN_ULCERS = "skinUlcers";
-	public static final String INABILITY_TO_WALK = "inabilityToWalk";
-	public static final String IN_DRAWING_OF_CHEST_WALL = "inDrawingOfChestWall";
-	public static final String OTHER_COMPLICATIONS = "otherComplications";
-	public static final String OTHER_COMPLICATIONS_TEXT = "otherComplicationsText";
 
 	public static final String WEIGHT = "weight";
+
+	// Complications
+	public static final String ALTERED_CONSCIOUSNESS = "alteredConsciousness";
+	public static final String CONFUSED_DISORIENTED = "confusedDisoriented";
+	public static final String HEMORRHAGIC_SYNDROME = "hemorrhagicSyndrome";
+	public static final String HYPERGLYCEMIA = "hyperglycemia";
+	public static final String HYPOGLYCEMIA = "hypoglycemia";
+	public static final String MENINGEAL_SIGNS = "meningealSigns";
+	public static final String OTHER_COMPLICATIONS = "otherComplications";
+	public static final String OTHER_COMPLICATIONS_TEXT = "otherComplicationsText";
+	public static final String SEIZURES = "seizures";
+	public static final String SEPSIS = "sepsis";
+	public static final String SHOCK = "shock";
 
 	// Fields are declared in the order they should appear in the import template
 	
@@ -213,41 +209,30 @@ public class SymptomsDto extends EntityDto {
 	}
 
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CHOLERA, YELLOW_FEVER,
-			DENGUE, PLAGUE, POLIO, ANTHRAX, CORONAVIRUS, UNSPECIFIED_VHF, UNDEFINED,
-			OTHER})
+			DENGUE, PLAGUE, POLIO, ANTHRAX, CORONAVIRUS, UNSPECIFIED_VHF, UNDEFINED,OTHER})
 	private SymptomState abdominalPain;
-	// complications
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
-			MEASLES, POLIO, UNSPECIFIED_VHF, RABIES, UNDEFINED, OTHER})
-	@Outbreaks
-	private SymptomState alteredConsciousness;
 
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, CSM, CHOLERA,
-			POLIO, YELLOW_FEVER, UNSPECIFIED_VHF, UNDEFINED, OTHER})
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, CSM, CHOLERA, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState anorexiaAppetiteLoss;
-	@Diseases({AFP, GUINEA_WORM, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF,UNDEFINED, OTHER})
 	private SymptomState backache;
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
 	private SymptomState bedridden;
 	@Diseases({AFP, GUINEA_WORM, PLAGUE, POLIO, UNDEFINED, OTHER})
 	private SymptomState blackeningDeathOfTissue;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState bleedingVagina;
-	@Diseases({AFP, CHOLERA, GUINEA_WORM, POLIO, YELLOW_FEVER, ANTHRAX,
-			UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Diseases({AFP, CHOLERA, GUINEA_WORM, POLIO, YELLOW_FEVER, ANTHRAX,	UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState bloodInStool;
 	private Integer bloodPressureDiastolic;
 	private Integer bloodPressureSystolic;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState bloodUrine;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState bloodyBlackStool;
 
@@ -260,17 +245,12 @@ public class SymptomsDto extends EntityDto {
 			POLIO, ANTHRAX, CORONAVIRUS, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState chestPain;
-	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, PLAGUE, ANTHRAX, POLIO, CORONAVIRUS,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, PLAGUE, ANTHRAX, POLIO, CORONAVIRUS, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState chillsSweats;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
-			MEASLES, PLAGUE, POLIO, UNSPECIFIED_VHF, RABIES, CORONAVIRUS, UNDEFINED,
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, MEASLES, MONKEYPOX, POLIO, UNSPECIFIED_VHF, UNDEFINED,
 			OTHER})
-	@Outbreaks
-	private SymptomState confusedDisoriented;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, MEASLES, MONKEYPOX,
-			POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState conjunctivitis;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, MEASLES, MONKEYPOX,
 			PLAGUE, POLIO, ANTHRAX, UNSPECIFIED_VHF, UNDEFINED, OTHER})
@@ -280,36 +260,29 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState coughWithSputum;
 	@Diseases({CORONAVIRUS})
 	private SymptomState coughWithHeamoptysis;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, PLAGUE, POLIO,
-			UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, PLAGUE, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@Outbreaks
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState coughingBlood;
-	@Diseases({AFP, GUINEA_WORM, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState darkUrine;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, CHOLERA, POLIO,
-			UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, CHOLERA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState dehydration;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
-			MEASLES, PLAGUE, POLIO, ANTHRAX, CORONAVIRUS, UNSPECIFIED_VHF, UNDEFINED,
-			OTHER})
+			MEASLES, PLAGUE, POLIO, ANTHRAX, CORONAVIRUS, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState diarrhea;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, MEASLES, PLAGUE,
 			POLIO, UNSPECIFIED_VHF, RABIES, ANTHRAX, CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState difficultyBreathing;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState digestedBloodVomit;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, MEASLES,
-			DENGUE, MONKEYPOX, POLIO, UNSPECIFIED_VHF, UNDEFINED,
-			OTHER})
+			DENGUE, MONKEYPOX, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState eyePainLightSensitive;
-	@Diseases({AFP, GUINEA_WORM, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState eyesBleeding;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
@@ -322,45 +295,26 @@ public class SymptomsDto extends EntityDto {
 			UNSPECIFIED_VHF, RABIES, ANTHRAX, CORONAVIRUS, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState fever;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState fluidInLungCavity;
 	private Integer glasgowComaScale;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, YELLOW_FEVER,
-			DENGUE, UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, YELLOW_FEVER, DENGUE, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState gumsBleeding;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, YELLOW_FEVER,
-			DENGUE, MONKEYPOX, PLAGUE, POLIO, UNSPECIFIED_VHF, RABIES,
-			ANTHRAX, CORONAVIRUS, UNDEFINED, OTHER})
+			DENGUE, MONKEYPOX, PLAGUE, POLIO, UNSPECIFIED_VHF, RABIES, ANTHRAX, CORONAVIRUS, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState headache;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			CONGENITAL_RUBELLA, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, CONGENITAL_RUBELLA, UNDEFINED, OTHER})
 	private SymptomState hearingloss;
 	private Integer heartRate;
 	private Integer height;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, YELLOW_FEVER,
-			DENGUE, PLAGUE, UNSPECIFIED_VHF, UNDEFINED, OTHER})
-	@Outbreaks
-	private SymptomState hemorrhagicSyndrome;
-	@Diseases({AFP, EVD, GUINEA_WORM, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState hiccups;
-	@Diseases({AFP, CSM, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
-	@Outbreaks
-	private SymptomState hyperglycemia;
-	@Diseases({AFP, CSM, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
-	@Outbreaks
-	private SymptomState hypoglycemia;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState injectionSiteBleeding;
-	@Diseases({AFP, GUINEA_WORM, YELLOW_FEVER, LASSA, POLIO,
-			UNSPECIFIED_VHF, CONGENITAL_RUBELLA, UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, YELLOW_FEVER, LASSA, POLIO, UNSPECIFIED_VHF, CONGENITAL_RUBELLA, UNDEFINED, OTHER})
 	private SymptomState jaundice;
 	@Diseases({CONGENITAL_RUBELLA})
 	private YesNoUnknown jaundiceWithin24HoursOfBirth;
@@ -370,19 +324,16 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState jointPain;
 	@Diseases({AFP, GUINEA_WORM, MEASLES, POLIO, UNDEFINED, OTHER})
 	private SymptomState kopliksSpots;
-	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, ANTHRAX, POLIO, UNDEFINED,
-			OTHER})
+	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, ANTHRAX, POLIO, UNDEFINED, OTHER})
 	/** Vesiculopustular rash */
 	private SymptomState lesions;
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
 	@DependantOn(LESIONS)
 	private Boolean lesionsAllOverBody;
-	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, ANTHRAX, POLIO, UNDEFINED,
-			OTHER})
+	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, ANTHRAX, POLIO, UNDEFINED, OTHER})
 	@DependantOn(LESIONS)
 	private Boolean lesionsArms;
-	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, ANTHRAX, POLIO, UNDEFINED,
-			OTHER})
+	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, ANTHRAX, POLIO, UNDEFINED, OTHER})
 	@DependantOn(LESIONS)
 	private SymptomState lesionsDeepProfound;
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
@@ -427,8 +378,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
 	@DependantOn(LESIONS)
 	private Boolean lesionsThorax;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState lossSkinTurgor;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState lymphadenopathy;
@@ -438,13 +388,8 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState lymphadenopathyCervical;
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
 	private SymptomState lymphadenopathyInguinal;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState malaise;
-	@Diseases({AFP, CSM, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			RABIES, UNDEFINED, OTHER})
-	@Outbreaks
-	private SymptomState meningealSigns;
 	private Integer midUpperArmCircumference;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
 			MEASLES, YELLOW_FEVER, DENGUE, MONKEYPOX, PLAGUE, POLIO, CORONAVIRUS,
@@ -459,27 +404,22 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({AFP, CSM, GUINEA_WORM, POLIO, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState neckStiffness;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, YELLOW_FEVER,
-			UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState noseBleeding;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState oedemaFaceNeck;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState oedemaLowerExtremity;
 	@Outbreaks
 	private Date onsetDate;
 	private String onsetSymptom;
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
 	private SymptomState oralUlcers;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, PLAGUE, POLIO,
-			UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, PLAGUE, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState otherHemorrhagicSymptoms;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, PLAGUE, POLIO,
-			UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, PLAGUE, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(OTHER_HEMORRHAGIC_SYMPTOMS)
 	private String otherHemorrhagicSymptomsText;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
@@ -493,58 +433,34 @@ public class SymptomsDto extends EntityDto {
 	@Outbreaks
 	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
 	private String otherNonHemorrhagicSymptomsText;
-	@Diseases({AFP, GUINEA_WORM, NEW_INFLUENZA, MEASLES, POLIO,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, NEW_INFLUENZA, MEASLES, POLIO, UNDEFINED, OTHER})
 	private SymptomState otitisMedia;
 	@Diseases({AFP, GUINEA_WORM, PLAGUE, POLIO, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState painfulLymphadenitis;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState palpableLiver;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState palpableSpleen;
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
 	private String patientIllLocation;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState pharyngealErythema;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState pharyngealExudate;
-	@Diseases({AFP, DENGUE, GUINEA_WORM, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, DENGUE, GUINEA_WORM, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState rapidBreathing;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, DENGUE, POLIO,
-			UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, DENGUE, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState redBloodVomit;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, CSM, CHOLERA,
-			POLIO, UNSPECIFIED_VHF, RABIES, UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, CSM, CHOLERA, POLIO, UNSPECIFIED_VHF, RABIES, UNDEFINED, OTHER})
 	private SymptomState refusalFeedorDrink;
 	private Integer respiratoryRate;
-	@Diseases({AFP, GUINEA_WORM, NEW_INFLUENZA, MEASLES, POLIO, CORONAVIRUS,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, NEW_INFLUENZA, MEASLES, POLIO, CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState runnyNose;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
-			MEASLES, POLIO, UNSPECIFIED_VHF, RABIES, CORONAVIRUS, UNDEFINED, OTHER})
-	@Outbreaks
-	private SymptomState seizures;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
-			MEASLES, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
-	@Outbreaks
-	private SymptomState sepsis;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
-			MEASLES, PLAGUE, ANTHRAX, POLIO, UNSPECIFIED_VHF, UNDEFINED,
-			OTHER})
-	@Outbreaks
-	private SymptomState shock;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState sidePain;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState skinBruising;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, MEASLES,
@@ -555,25 +471,20 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, MEASLES, MONKEYPOX,
 			ANTHRAX, POLIO, CORONAVIRUS, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState soreThroat;
-	@Diseases({AFP, GUINEA_WORM, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, POLIO, YELLOW_FEVER, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@DependantOn(UNEXPLAINED_BLEEDING)
 	private SymptomState stomachBleeding;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState sunkenEyesFontanelle;
-	@Diseases({AFP, DENGUE, GUINEA_WORM, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, DENGUE, GUINEA_WORM, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState swollenGlands;
 	private Boolean symptomatic;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
 			MEASLES, DENGUE, MONKEYPOX, PLAGUE, POLIO, UNSPECIFIED_VHF,
 			CONGENITAL_RUBELLA, CORONAVIRUS, UNDEFINED, OTHER})
 	private String symptomsComments;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
-			MEASLES, YELLOW_FEVER, DENGUE, MONKEYPOX, PLAGUE,
-			UNSPECIFIED_VHF, CONGENITAL_RUBELLA, POLIO, RABIES, CORONAVIRUS, UNDEFINED,
-			OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA, MEASLES, YELLOW_FEVER, DENGUE, MONKEYPOX,
+			PLAGUE, UNSPECIFIED_VHF, CONGENITAL_RUBELLA, POLIO, RABIES, CORONAVIRUS, UNDEFINED, OTHER})
 	@Outbreaks
 	private Float temperature;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
@@ -581,11 +492,9 @@ public class SymptomsDto extends EntityDto {
 			UNSPECIFIED_VHF, CONGENITAL_RUBELLA, POLIO, CORONAVIRUS, UNDEFINED, OTHER})
 	@Outbreaks
 	private TemperatureSource temperatureSource;
-	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState throbocytopenia;
-	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF,
-			UNDEFINED, OTHER})
+	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState tremor;
 	@Diseases({CONGENITAL_RUBELLA})
 	private SymptomState bilateralCataracts;
@@ -683,13 +592,71 @@ public class SymptomsDto extends EntityDto {
 	private SymptomState inabilityToWalk;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState inDrawingOfChestWall;
-	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
-	public SymptomState otherComplications;
-	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
-	@DependantOn(OTHER_COMPLICATIONS)
-	public String otherComplicationsText;
 
 	private Integer weight;
+
+	// complications
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
+			MEASLES, POLIO, UNSPECIFIED_VHF, RABIES, UNDEFINED, OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState alteredConsciousness;
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
+			MEASLES, PLAGUE, POLIO, UNSPECIFIED_VHF, RABIES, CORONAVIRUS, UNDEFINED, OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState confusedDisoriented;
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, POLIO, YELLOW_FEVER, DENGUE, PLAGUE, UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState hemorrhagicSyndrome;
+
+	@Diseases({AFP, CSM, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState hyperglycemia;
+
+	@Diseases({AFP, CSM, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState hypoglycemia;
+
+	@Diseases({AFP, CSM, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, RABIES, UNDEFINED, OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState meningealSigns;
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA, MEASLES, POLIO, UNSPECIFIED_VHF,
+			GUINEA_WORM, RABIES, YELLOW_FEVER, DENGUE, PLAGUE, ANTHRAX, CORONAVIRUS, UNDEFINED, OTHER})
+	@Complication
+	public SymptomState otherComplications;
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA, MEASLES, POLIO, UNSPECIFIED_VHF,
+			GUINEA_WORM, RABIES, YELLOW_FEVER, DENGUE, PLAGUE, ANTHRAX, CORONAVIRUS, UNDEFINED, OTHER})
+	@DependantOn(OTHER_COMPLICATIONS)
+	@Complication
+	public String otherComplicationsText;
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
+			MEASLES, POLIO, UNSPECIFIED_VHF, RABIES, CORONAVIRUS, UNDEFINED, OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState seizures;
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA, MEASLES, POLIO, UNSPECIFIED_VHF, UNDEFINED,
+			OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState sepsis;
+
+	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
+			MEASLES, PLAGUE, ANTHRAX, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
+	@Outbreaks
+	@Complication
+	private SymptomState shock;
 	
 	@Order(0)
 	public Float getTemperature() {
