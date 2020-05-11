@@ -31,7 +31,7 @@ public class DashboardContactDto implements Serializable {
 
 	public static final String I18N_PREFIX = "Contact";
 	
-	private String uuid;
+	private long id;
 	private Date reportDate;
 	private Boolean symptomatic;
 	private VisitStatus lastVisitStatus;
@@ -43,10 +43,10 @@ public class DashboardContactDto implements Serializable {
 	private Disease disease;
 	private Map<VisitStatus, Long> visitStatusMap = new HashMap<>();
 	
-	public DashboardContactDto(String uuid, Date reportDate, ContactStatus contactStatus,
+	public DashboardContactDto(long id, Date reportDate, ContactStatus contactStatus,
 			ContactClassification contactClassification, FollowUpStatus followUpStatus,
 			Date followUpUntil, Disease disease) {
-		this.uuid = uuid;
+		this.id = id;
 		this.reportDate = reportDate;
 		this.contactStatus = contactStatus;
 		this.contactClassification = contactClassification;
@@ -55,12 +55,12 @@ public class DashboardContactDto implements Serializable {
 		this.disease = disease;
 	}
 
-	public String getUuid() {
-		return uuid;
+	public long getId() {
+		return id;
 	}
 	
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public void setId(long id) {
+		this.id = id;
 	}
 	
 	public Date getReportDate() {
@@ -147,7 +147,7 @@ public class DashboardContactDto implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 
@@ -160,10 +160,7 @@ public class DashboardContactDto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		DashboardContactDto other = (DashboardContactDto) obj;
-		if (uuid == null) {
-			if (other.uuid != null)
-				return false;
-		} else if (!uuid.equals(other.uuid))
+		if (id != other.id)
 			return false;
 		return true;
 	}

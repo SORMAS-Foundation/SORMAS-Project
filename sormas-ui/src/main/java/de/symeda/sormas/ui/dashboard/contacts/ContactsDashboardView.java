@@ -171,12 +171,12 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	}
 
 	private void updateCaseCountsAndSourceCasesLabels() {
-		List<String> contactUuids = dashboardDataProvider.getContacts().stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
+		List<Long> contactIds = dashboardDataProvider.getContacts().stream().map(dto -> dto.getId()).collect(Collectors.toList());
 		int[] counts;
-		if (contactUuids.isEmpty()) {
+		if (contactIds.isEmpty()) {
 			counts = new int[3];
 		} else {
-			counts = FacadeProvider.getContactFacade().getContactCountsByCasesForDashboard(contactUuids);
+			counts = FacadeProvider.getContactFacade().getContactCountsByCasesForDashboard(contactIds);
 		}
 
 		int minContactCount = counts[0];

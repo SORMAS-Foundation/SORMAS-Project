@@ -658,7 +658,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Case,Case> casePath, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date) {
 		Predicate dateFilter = greaterThanAndNotNull(cb, casePath.get(Case.CHANGE_DATE), date);
 
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);

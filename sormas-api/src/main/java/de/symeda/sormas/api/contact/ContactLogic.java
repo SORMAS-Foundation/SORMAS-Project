@@ -49,4 +49,12 @@ public final class ContactLogic {
 			return reportDate;
 		}
 	}
+	
+	public static Date getEndDate(Date lastContactDate, Date reportDate, Date followUpUntil) {
+		if (followUpUntil != null) {
+			return followUpUntil;
+		} else {
+			return getStartDate(lastContactDate, reportDate);
+		}
+	}
 }

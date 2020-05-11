@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.contact;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -64,6 +63,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
@@ -426,11 +426,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public List<DashboardContactDto> getContactsForDashboard(Region region, District district, Disease disease, Date from, Date to, User user) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		CriteriaQuery<DashboardContactDto> cq = cb.createQuery(DashboardContactDto.class);
 		Root<Contact> contact = cq.from(getElementClass());
 		Join<Contact, Case> caze = contact.join(Contact.CAZE, JoinType.LEFT);
-		Join<Contact, Visit> visitJoin = contact.join(Contact.VISITS, JoinType.LEFT);
-		Join<Visit, Symptoms> symptomsJoin = visitJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 		Predicate filter = createDefaultFilter(cb, contact);
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
@@ -482,84 +480,55 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (filter != null) {
 			cq.where(filter);
 			cq.multiselect(
-					contact.get(Contact.UUID),
+					contact.get(AbstractDomainObject.ID),
 					contact.get(Contact.REPORT_DATE_TIME),
 					contact.get(Contact.CONTACT_STATUS),
 					contact.get(Contact.CONTACT_CLASSIFICATION),
 					contact.get(Contact.FOLLOW_UP_STATUS),
 					contact.get(Contact.FOLLOW_UP_UNTIL),
-					contact.get(Contact.DISEASE),
-					symptomsJoin.get(Symptoms.SYMPTOMATIC),
-					visitJoin.get(Visit.VISIT_STATUS),
-					visitJoin.get(Visit.VISIT_DATE_TIME));
+					contact.get(Contact.DISEASE));
 
-			List<Object[]> resultList = em.createQuery(cq).getResultList();
+			List<DashboardContactDto> dashboardContacts = em.createQuery(cq).getResultList();
 
-			if (!resultList.isEmpty()) {
-				// Build list of arrays with size 2; index 0 = contact, index 1 = visit; one array per contact-visit association
-				List<Object[]> contactsAndVisits = resultList.stream()
-						.map(r -> new Object[] {
-								new DashboardContactDto((String) r[0], (Date) r[1], (ContactStatus) r[2], (ContactClassification) r[3], 
-										(FollowUpStatus) r[4], (Date) r[5], (Disease) r[6]), 
-								r[8] != null ? new DashboardVisit((Boolean) r[7], (VisitStatus) r[8], (Date) r[9]) : null})
-						.collect(Collectors.toList());
+			if (!dashboardContacts.isEmpty()) {
+				List<Long> dashboardContactIds = dashboardContacts.stream().map(d -> d.getId()).collect(Collectors.toList());
 
-				// Build a map with the contact as key and a list of all visits as value
-				Map<DashboardContactDto, List<DashboardVisit>> contactVisitsMap = contactsAndVisits.stream()
-						.filter(e -> e[1] != null)
-						.collect(Collectors.groupingBy(e -> (DashboardContactDto) e[0], Collectors.mapping(e -> (DashboardVisit) e[1], Collectors.toList())));
+				CriteriaQuery<DashboardVisit> visitsSq = cb.createQuery(DashboardVisit.class);
+				Root<Contact> visitsSqRoot = visitsSq.from(getElementClass());
+				Join<Contact, Visit> visitsJoin = visitsSqRoot.join(Contact.VISITS, JoinType.LEFT);
+				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+				visitsSq.where(and(cb,
+						contact.get(AbstractDomainObject.ID).in(dashboardContactIds),
+						cb.isNotEmpty(visitsSqRoot.get(Contact.VISITS)))
+						);
+				visitsSq.multiselect(
+						visitsSqRoot.get(AbstractDomainObject.ID),
+						visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
+						visitsJoin.get(Visit.VISIT_STATUS),
+						visitsJoin.get(Visit.VISIT_DATE_TIME));
+
+				List<DashboardVisit> contactVisits = em.createQuery(visitsSq).getResultList();
 
 				// Add visit information to the DashboardContactDtos
-				for (DashboardContactDto dashboardContact : contactVisitsMap.keySet()) {
-					List<DashboardVisit> visits = contactVisitsMap.get(dashboardContact);
+				for (DashboardContactDto dashboardContact : dashboardContacts) {
+					List<DashboardVisit> visits = contactVisits.stream().filter(v -> v.getContactId() == dashboardContact.getId()).collect(Collectors.toList());
 
 					DashboardVisit lastVisit = visits.stream().max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime())).orElse(null);
 
 					if (lastVisit != null) {
 						dashboardContact.setLastVisitDateTime(lastVisit.getVisitDateTime());
 						dashboardContact.setLastVisitStatus(lastVisit.getVisitStatus());
-						dashboardContact.setSymptomatic(lastVisit.getSymptomatic());
-						dashboardContact.setVisitStatusMap(visits.stream()
-								.collect(Collectors.groupingBy(DashboardVisit::getVisitStatus, Collectors.counting())));
+						dashboardContact.setSymptomatic(lastVisit.isSymptomatic());
+						dashboardContact.setVisitStatusMap(visits.stream().collect(Collectors.groupingBy(DashboardVisit::getVisitStatus, Collectors.counting())));
 					}
 				}
 
-				// Add all contacts from the map (i.e. contacts with at least one visit) to the result
-				List<DashboardContactDto> contactList = new ArrayList<>(contactVisitsMap.keySet());
-				// Add the remaining contacts (i.e. those without visits) to the result
-				contactList.addAll(contactsAndVisits.stream()
-						.filter(e -> e[1] == null)
-						.map(e -> (DashboardContactDto) e[0])
-						.collect(Collectors.toList()));
-				return contactList;
+				return dashboardContacts;
 			}
 		}
 
 		return Collections.emptyList();
-	}
-
-	private final class DashboardVisit {
-		private final Boolean symptomatic;
-		private final VisitStatus visitStatus;
-		private final Date visitDateTime;
-
-		public DashboardVisit(Boolean symptomatic, VisitStatus visitStatus, Date visitDateTime) {
-			this.symptomatic = symptomatic;
-			this.visitStatus = visitStatus;
-			this.visitDateTime = visitDateTime;
-		}
-
-		public Boolean getSymptomatic() {
-			return symptomatic;
-		}
-
-		public VisitStatus getVisitStatus() {
-			return visitStatus;
-		}
-
-		public Date getVisitDateTime() {
-			return visitDateTime;
-		}
 	}
 
 	public Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria, User user) {
@@ -742,53 +711,50 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else {
 			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()));
-			LocalDate untilDate = contact.isOverwriteFollowUpUntil() ? DateHelper8.toLocalDate(contact.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
+			LocalDate untilDate = contact.isOverwriteFollowUpUntil() || 
+					(contact.getFollowUpUntil() != null && DateHelper8.toLocalDate(contact.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration))) ? 
+							DateHelper8.toLocalDate(contact.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
 
-			Visit lastVisit = null;
-			boolean additionalVisitNeeded;
-			do {
-				additionalVisitNeeded = false;
-				lastVisit = visitService.getLastVisitByPerson(contact.getPerson(), disease, untilDate);
-				if (lastVisit != null) {
-					// if the last visit was not cooperative and happened at the last date of
-					// contact tracing ..
-					if (lastVisit.getVisitStatus() != VisitStatus.COOPERATIVE
-							&& DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
-						// .. we need to do an additional visit
-						additionalVisitNeeded = true;
-						untilDate = untilDate.plusDays(1);
-					}
-				}
-			} while (additionalVisitNeeded);
+							Visit lastVisit = null;
+							boolean additionalVisitNeeded;
+							do {
+								additionalVisitNeeded = false;
+								lastVisit = contact.getVisits().stream()
+										.max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime()))
+										.orElse(null);
+								if (lastVisit != null) {
+									// if the last visit was not cooperative and happened at the last date of
+									// contact tracing ..
+									if (lastVisit.getVisitStatus() != VisitStatus.COOPERATIVE
+											&& DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
+										// .. we need to do an additional visit
+										additionalVisitNeeded = true;
+										untilDate = untilDate.plusDays(1);
+									}
+								}
+							} while (additionalVisitNeeded);
 
-			contact.setFollowUpUntil(DateHelper8.toDate(untilDate));
-			if (changeStatus) {
-				// completed or still follow up?
-				if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), DateHelper8.toDate(untilDate))) {
-					contact.setFollowUpStatus(FollowUpStatus.COMPLETED);
-				} else {
-					contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
-				}
-			}
+							contact.setFollowUpUntil(DateHelper8.toDate(untilDate));
+							if (changeStatus) {
+								// completed or still follow up?
+								if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), DateHelper8.toDate(untilDate))) {
+									contact.setFollowUpStatus(FollowUpStatus.COMPLETED);
+								} else {
+									contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+								}
+							}
 		}
 
 		ensurePersisted(contact);
 	}
 
-	public void updateFollowUpUntilAndStatusByVisit(Visit visit) {
-		List<Contact> contacts = getByPersonAndDisease(visit.getPerson(), visit.getDisease());
-		for (Contact contact : contacts) {
-			updateFollowUpUntilAndStatus(contact);
-		}
-	}
-
-	@Deprecated
-	// TODO remove after refactoring
+	// Used only for testing; directly retrieve the contacts from the visit instead
 	public List<Contact> getAllByVisit(Visit visit) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
 		Root<Visit> visitRoot = cq.from(Visit.class);
 
+		cq.where(cb.equal(visitRoot.get(Visit.ID), visit.getId()));
 		cq.select(visitRoot.get(Visit.CONTACTS));
 
 		return em.createQuery(cq).getResultList();

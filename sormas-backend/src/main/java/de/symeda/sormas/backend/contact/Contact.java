@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -166,7 +167,7 @@ public class Contact extends CoreAdo {
 	private String quarantineHomeSupplyEnsuredComment;
 
 	private List<Task> tasks;
-	private Set<Visit> visits;
+	private Set<Visit> visits = new HashSet<>();
 	
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)

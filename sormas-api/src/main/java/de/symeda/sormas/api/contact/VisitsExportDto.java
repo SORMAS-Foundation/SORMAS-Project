@@ -6,9 +6,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class ContactVisitsExportDto implements Serializable {
+public class VisitsExportDto implements Serializable {
 
-    public static final String I18N_PREFIX = "ContactVisitExport";
+	private static final long serialVersionUID = 7066530434713936967L;
+
+	public static final String I18N_PREFIX = "ContactVisitExport";
 
     private Long personId;
     private Integer maximumFollowUpVisits;
@@ -18,9 +20,9 @@ public class ContactVisitsExportDto implements Serializable {
     private String lastName;
     private Date lastContactDate;
     private Date followUpUntil;
-    private List<ContactVisitsDetailsExportDto> visitDetails;
+    private List<VisitDetailsExportDto> visitDetails;
 
-    public ContactVisitsExportDto(String uuid, Long personId, String firstName, String lastName, Date lastContactDate, Date followUpUntil) {
+    public VisitsExportDto(String uuid, Long personId, String firstName, String lastName, Date lastContactDate, Date followUpUntil) {
         this.uuid = uuid;
         this.personId = personId;
         this.firstName = firstName;
@@ -73,21 +75,22 @@ public class ContactVisitsExportDto implements Serializable {
         this.lastName = lastName;
     }
 
-    public List<ContactVisitsDetailsExportDto> getVisitDetails() {
+    public List<VisitDetailsExportDto> getVisitDetails() {
         return visitDetails;
     }
 
-    public void setVisitDetails(List<ContactVisitsDetailsExportDto> visitDetails) {
+    public void setVisitDetails(List<VisitDetailsExportDto> visitDetails) {
         this.visitDetails = visitDetails;
     }
 
-    public static class ContactVisitsDetailsExportDto implements Serializable {
-
-        private Date visitDateTime;
+    public static class VisitDetailsExportDto implements Serializable {
+		private static final long serialVersionUID = -4677902897777543789L;
+		
+		private Date visitDateTime;
         private VisitStatus visitStatus;
         private String symptoms;
 
-        public ContactVisitsDetailsExportDto(Date visitDateTime, VisitStatus visitStatus, String symptoms) {
+        public VisitDetailsExportDto(Date visitDateTime, VisitStatus visitStatus, String symptoms) {
             this.visitDateTime = visitDateTime;
             this.visitStatus = visitStatus;
             this.symptoms = symptoms;

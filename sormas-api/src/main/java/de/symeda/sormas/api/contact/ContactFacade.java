@@ -58,7 +58,7 @@ public interface ContactFacade {
 	
 	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 
-	List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
+	List<VisitsExportDto> getVisitsExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 
 	long countMaximumFollowUps(ContactCriteria contactCriteria);
 	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
@@ -80,7 +80,7 @@ public interface ContactFacade {
 	List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 	
-	int[] getContactCountsByCasesForDashboard(List<String> contactUuids);
+	int[] getContactCountsByCasesForDashboard(List<Long> contactIds);
 	
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 

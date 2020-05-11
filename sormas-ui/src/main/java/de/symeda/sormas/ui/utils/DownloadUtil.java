@@ -86,7 +86,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactVisitsExportDto;
+import de.symeda.sormas.api.contact.VisitsExportDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -476,12 +476,12 @@ public final class DownloadUtil {
 				writer.writeNext(dayColumns.toArray(new String[columnNames.size()]));
 
 				int startIndex = 0;
-				List<ContactVisitsExportDto> exportRows =
-						FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria, 0,
+				List<VisitsExportDto> exportRows =
+						FacadeProvider.getContactFacade().getVisitsExportList(contactCriteria, 0,
 								DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				while (!exportRows.isEmpty()) {
 
-					for (ContactVisitsExportDto exportRow : exportRows) {
+					for (VisitsExportDto exportRow : exportRows) {
 						final List<String> values = new ArrayList<>();
 						values.add(exportRow.getUuid());
 						values.add(exportRow.getFirstName());
@@ -497,7 +497,7 @@ public final class DownloadUtil {
 
 					writer.flush();
 					startIndex += DETAILED_EXPORT_STEP_SIZE;
-					exportRows = FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria,
+					exportRows = FacadeProvider.getContactFacade().getVisitsExportList(contactCriteria,
 							startIndex, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				}
 			}

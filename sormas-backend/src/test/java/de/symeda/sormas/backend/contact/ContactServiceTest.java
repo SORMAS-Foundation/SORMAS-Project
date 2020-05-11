@@ -2,6 +2,8 @@ package de.symeda.sormas.backend.contact;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
@@ -17,6 +19,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.person.Person;
 
@@ -123,6 +126,32 @@ public class ContactServiceTest extends AbstractBeanTest {
 		
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
+	}
+
+	@Test
+	public void testUpdateFollowUpUntilAndStatus() throws Exception {
+		UserDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR);
+		Date today = DateHelper.getStartOfDay(new Date());
+		PersonDto person = creator.createPerson();
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), DateHelper.subtractDays(today, 22));
+		
+		// Changing the disease to one without follow-up should remove the follow-up until date and change the status
+		contact.setDisease(Disease.GUINEA_WORM);
+		contact = getContactFacade().saveContact(contact); // updateFollowUpUntilAndStatus is automatically called in onContactChanged during the save process
+		assertNull(contact.getFollowUpUntil());
+		assertThat(contact.getFollowUpStatus(), is(FollowUpStatus.NO_FOLLOW_UP));
+
+		// Adding an uncooperative visit on the last day of follow-up should prolong the follow-up
+		creator.createVisit(Disease.EVD, person.toReference(), DateHelper.subtractDays(today, 1), VisitStatus.UNCOOPERATIVE);
+		contact.setDisease(Disease.EVD);
+		contact = getContactFacade().saveContact(contact);
+		assertThat(DateHelper.getStartOfDay(contact.getFollowUpUntil()), is(today));
+		assertThat(contact.getFollowUpStatus(), is(FollowUpStatus.FOLLOW_UP));
+		
+		// Adding a cooperative visit on the last day of follow-up should complete the follow-up
+		creator.createVisit(Disease.EVD, person.toReference(), today, VisitStatus.COOPERATIVE);
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertThat(contact.getFollowUpStatus(), is(FollowUpStatus.COMPLETED));
 	}
 
 }

@@ -51,7 +51,7 @@ import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.ContactVisitsExportDto;
+import de.symeda.sormas.api.contact.VisitsExportDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -266,12 +266,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 	@Test
 	public void testGetContactCountsByCasesForDashboard() {
+		List<Long> ids;
 
-		List<String> uuids;
-
-		// test with some random uuid: returns 0,0,0
-		uuids = Arrays.asList("some-uuid");
-		int[] result = getContactFacade().getContactCountsByCasesForDashboard(uuids);
+		// test with some random id: returns 0,0,0
+		ids = Arrays.asList(5555L);
+		int[] result = getContactFacade().getContactCountsByCasesForDashboard(ids);
 		assertThat(result[0], equalTo(0));
 		assertThat(result[1], equalTo(0));
 		assertThat(result[2], equalTo(0));
@@ -335,62 +334,62 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	}
 
 	@Test
-	public void testGetContactVisitsExportList() {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		String userUuid = user.getUuid();
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf);
-		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference()
-				, caze, new Date(), new Date(), null);
-		VisitDto visit1 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
-		visit1.getSymptoms().setAbdominalPain(SymptomState.YES);
-		getVisitFacade().saveVisit(visit1);
-		VisitDto visit12 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
-		visit12.getSymptoms().setChestPain(SymptomState.YES);
-		getVisitFacade().saveVisit(visit12);
-
-		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
-		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference()
-				, caze, new Date(), null, null);
-		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
-		visit21.getSymptoms().setBackache(SymptomState.YES);
-		getVisitFacade().saveVisit(visit21);
-
-		final List<ContactVisitsExportDto> results = getContactFacade().getContactVisitsExportList(null, 0, 100, Language.EN);
-		assertNotNull(results);
-		assertEquals(2, results.size());
-
-		final ContactVisitsExportDto exportDto1 = results.get(0);
-		assertEquals("Contact", exportDto1.getFirstName());
-		assertEquals("Person", exportDto1.getLastName());
-		assertEquals(contact.getUuid(), exportDto1.getUuid());
-		final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitDetails = exportDto1.getVisitDetails();
-		assertNotNull(visitDetails);
-		assertEquals(2, visitDetails.size());
-		final ContactVisitsExportDto.ContactVisitsDetailsExportDto visitDetail11 = visitDetails.get(0);
-		assertEquals(VisitStatus.COOPERATIVE, visitDetail11.getVisitStatus());
-		assertNotNull(visitDetail11.getVisitDateTime());
-		assertEquals("Abdominal pain", visitDetail11.getSymptoms());
-		final ContactVisitsExportDto.ContactVisitsDetailsExportDto visitDetail12 = visitDetails.get(1);
-		assertEquals(VisitStatus.COOPERATIVE, visitDetail12.getVisitStatus());
-		assertNotNull(visitDetail12.getVisitDateTime());
-		assertEquals("Chest pain", visitDetail12.getSymptoms());
-
-		final ContactVisitsExportDto exportDto2 = results.get(1);
-		assertEquals("Contact2", exportDto2.getFirstName());
-		assertEquals("Person2", exportDto2.getLastName());
-		assertEquals(contact2.getUuid(), exportDto2.getUuid());
-		final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitDetails2 = exportDto2.getVisitDetails();
-		assertNotNull(visitDetails2);
-		assertEquals(1, visitDetails2.size());
-		final ContactVisitsExportDto.ContactVisitsDetailsExportDto visitDetail21 = visitDetails2.get(0);
-		assertEquals(VisitStatus.COOPERATIVE, visitDetail21.getVisitStatus());
-		assertNotNull(visitDetail21.getVisitDateTime());
-		assertEquals("Backache", visitDetail21.getSymptoms());
-	}
+			public void testGetVisitsExportList() {
+				RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+				UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+				String userUuid = user.getUuid();
+				PersonDto cazePerson = creator.createPerson("Case", "Person");
+				CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+						InvestigationStatus.PENDING, new Date(), rdcf);
+				PersonDto contactPerson = creator.createPerson("Contact", "Person");
+				ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference()
+						, caze, new Date(), new Date(), null);
+				VisitDto visit1 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+				visit1.getSymptoms().setAbdominalPain(SymptomState.YES);
+				getVisitFacade().saveVisit(visit1);
+				VisitDto visit12 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+				visit12.getSymptoms().setChestPain(SymptomState.YES);
+				getVisitFacade().saveVisit(visit12);
+		
+				PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
+				ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference()
+						, caze, new Date(), null, null);
+				VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+				visit21.getSymptoms().setBackache(SymptomState.YES);
+				getVisitFacade().saveVisit(visit21);
+		
+				final List<VisitsExportDto> results = getContactFacade().getVisitsExportList(null, 0, 100, Language.EN);
+				assertNotNull(results);
+				assertEquals(2, results.size());
+		
+				final VisitsExportDto exportDto1 = results.get(0);
+				assertEquals("Contact", exportDto1.getFirstName());
+				assertEquals("Person", exportDto1.getLastName());
+				assertEquals(contact.getUuid(), exportDto1.getUuid());
+				final List<VisitsExportDto.VisitDetailsExportDto> visitDetails = exportDto1.getVisitDetails();
+				assertNotNull(visitDetails);
+				assertEquals(2, visitDetails.size());
+				final VisitsExportDto.VisitDetailsExportDto visitDetail11 = visitDetails.get(0);
+				assertEquals(VisitStatus.COOPERATIVE, visitDetail11.getVisitStatus());
+				assertNotNull(visitDetail11.getVisitDateTime());
+				assertEquals("Abdominal pain", visitDetail11.getSymptoms());
+				final VisitsExportDto.VisitDetailsExportDto visitDetail12 = visitDetails.get(1);
+				assertEquals(VisitStatus.COOPERATIVE, visitDetail12.getVisitStatus());
+				assertNotNull(visitDetail12.getVisitDateTime());
+				assertEquals("Chest pain", visitDetail12.getSymptoms());
+		
+				final VisitsExportDto exportDto2 = results.get(1);
+				assertEquals("Contact2", exportDto2.getFirstName());
+				assertEquals("Person2", exportDto2.getLastName());
+				assertEquals(contact2.getUuid(), exportDto2.getUuid());
+				final List<VisitsExportDto.VisitDetailsExportDto> visitDetails2 = exportDto2.getVisitDetails();
+				assertNotNull(visitDetails2);
+				assertEquals(1, visitDetails2.size());
+				final VisitsExportDto.VisitDetailsExportDto visitDetail21 = visitDetails2.get(0);
+				assertEquals(VisitStatus.COOPERATIVE, visitDetail21.getVisitStatus());
+				assertNotNull(visitDetail21.getVisitDateTime());
+				assertEquals("Backache", visitDetail21.getSymptoms());
+			}
 
 	@Test
 	public void testCountMaximumFollowUps() {
