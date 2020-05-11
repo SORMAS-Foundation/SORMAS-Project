@@ -233,16 +233,21 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 	
 	private void updateLeafletMapContent() {
-		Double lat = getConvertedValue(LocationDto.LATITUDE);
-		Double lon = getConvertedValue(LocationDto.LONGITUDE);
-		GeoLatLon coordinates;
-		if (ObjectUtils.allNotNull(lat, lon)) {
-			coordinates = new GeoLatLon(lat, lon);
-		} else {
-			coordinates = null;
+		if(areFieldsValid(LocationDto.LATITUDE, LocationDto.LONGITUDE)) {
+			Double lat = getConvertedValue(LocationDto.LATITUDE);
+			Double lon = getConvertedValue(LocationDto.LONGITUDE);
+			GeoLatLon coordinates;
+			if (ObjectUtils.allNotNull(lat, lon)) {
+				coordinates = new GeoLatLon(lat, lon);
+			} else {
+				coordinates = null;
+			}
+			leafletMapPopup.setEnabled(coordinates != null);
+			leafletMapPopup.setCoordinates(coordinates);
 		}
-		leafletMapPopup.setEnabled(coordinates != null);
-		leafletMapPopup.setCoordinates(coordinates);
+		else {
+			leafletMapPopup.setEnabled(false);
+		}
 	}
 
 	@Override
