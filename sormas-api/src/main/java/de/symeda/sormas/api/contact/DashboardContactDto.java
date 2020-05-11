@@ -19,6 +19,8 @@ package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -39,6 +41,7 @@ public class DashboardContactDto implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private Disease disease;
+	private Map<VisitStatus, Long> visitStatusMap = new HashMap<>();
 	
 	public DashboardContactDto(String uuid, Date reportDate, ContactStatus contactStatus,
 			ContactClassification contactClassification, FollowUpStatus followUpStatus,
@@ -68,7 +71,7 @@ public class DashboardContactDto implements Serializable {
 		this.reportDate = reportDate;
 	}
 
-	public Boolean isSymptomatic() {
+	public Boolean getSymptomatic() {
 		return symptomatic;
 	}
 
@@ -130,6 +133,39 @@ public class DashboardContactDto implements Serializable {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public Map<VisitStatus, Long> getVisitStatusMap() {
+		return visitStatusMap;
+	}
+
+	public void setVisitStatusMap(Map<VisitStatus, Long> visitStatusMap) {
+		this.visitStatusMap = visitStatusMap;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DashboardContactDto other = (DashboardContactDto) obj;
+		if (uuid == null) {
+			if (other.uuid != null)
+				return false;
+		} else if (!uuid.equals(other.uuid))
+			return false;
+		return true;
 	}
 	
 }
