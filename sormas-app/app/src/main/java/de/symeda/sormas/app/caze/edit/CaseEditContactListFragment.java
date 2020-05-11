@@ -24,20 +24,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
 import de.symeda.sormas.app.contact.list.ContactListAdapter;
 import de.symeda.sormas.app.contact.list.ContactListViewModel;
+import de.symeda.sormas.app.contact.read.ContactReadActivity;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 
@@ -119,6 +122,11 @@ public class CaseEditContactListFragment extends BaseEditFragment<FragmentFormLi
     @Override
     public void onListItemClick(View view, int position, Object item) {
         Contact contact = (Contact) item;
-        ContactEditActivity.startActivity(getContext(), contact.getUuid(), ContactSection.CONTACT_INFO);
+
+        if (ContactEditAuthorization.isContactEditAllowed(contact)) {
+            ContactEditActivity.startActivity(getContext(), contact.getUuid(), ContactSection.CONTACT_INFO);
+        } else {
+            ContactReadActivity.startActivity(getContext(), contact.getUuid(), true);
+        }
     }
 }
