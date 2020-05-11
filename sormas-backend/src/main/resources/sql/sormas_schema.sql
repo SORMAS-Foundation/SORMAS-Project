@@ -4207,5 +4207,38 @@ ALTER TABLE healthconditions_history ADD COLUMN asthma varchar(255);
 ALTER TABLE healthconditions_history ADD COLUMN sickleCellDisease varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (206, 'Add new symptoms and health conditions #1824');
+                                                                                                                        
+-- 2020-05-05 Added table for contact-visit association #1329
+CREATE TABLE contacts_visits(
+	contact_id bigint NOT NULL,
+	visit_id bigint NOT NULL,
+	sys_period tstzrange NOT NULL
+);
 
+ALTER TABLE contacts_visits OWNER TO sormas_user;
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT unq_contacts_visits_0 UNIQUE (contact_id, visit_id);
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT fk_contacts_visits_contact_id FOREIGN KEY (contact_id) REFERENCES contact(id);
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT fk_contacts_visits_visit_id FOREIGN KEY (visit_id) REFERENCES visit(id);
+
+CREATE TABLE contacts_visits_history (LIKE contacts_visits);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON contacts_visits
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
+ALTER TABLE contacts_visits_history OWNER TO sormas_user;
+
+WITH ids AS 
+(SELECT c.id AS contact_id, v.id AS visit_id FROM contact c, visit v WHERE c.person_id = v.person_id AND c.disease = v.disease AND
+CASE 
+WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime >= (c.lastcontactdate - interval '30' day)
+ELSE v.visitdatetime >= (c.reportdatetime - interval '30' day)
+END
+AND
+CASE
+WHEN c.followupuntil IS NOT NULL THEN v.visitdatetime <= (c.followupuntil + interval '30' day)
+WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime <= (c.lastcontactdate + interval '30' day)
+ELSE v.visitdatetime <= (c.reportdatetime + interval '30' day)
+END)
+INSERT INTO contacts_visits (contact_id, visit_id) SELECT contact_id, visit_id FROM ids;
+
+INSERT INTO schema_version (version_number, comment) VALUES (207, 'Added table for contact-visit association #1329');
+                                                                                                                        
 -- *** Insert new sql commands BEFORE this line ***

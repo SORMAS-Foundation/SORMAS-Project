@@ -23,6 +23,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 
 public final class ContactLogic {
 
+	public static final int ALLOWED_CONTACT_DATE_OFFSET = 30;
+	
 	private ContactLogic() {
 		// Hide Utility Class Constructor
 	}

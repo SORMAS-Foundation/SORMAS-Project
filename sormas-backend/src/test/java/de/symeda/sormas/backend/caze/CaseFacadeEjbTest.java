@@ -111,7 +111,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
-				caze, new Date(), new Date());
+				caze, new Date(), new Date(), null);
 
 		// Follow-up status and duration should be set to the requirements for EVD
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
@@ -354,7 +354,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
-				caze, new Date(), new Date());
+				caze, new Date(), new Date(), null);
 		TaskDto task = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
 				caze.toReference(), null, null, new Date(), user.toReference());
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(),
@@ -578,7 +578,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		otherCase.setClinicianName("name");
 		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
 		ContactDto contact = creator.createContact(otherUserReference, otherUserReference, otherPersonReference,
-				otherCase, new Date(), new Date());
+				otherCase, new Date(), new Date(), null);
 		Region region = creator.createRegion("");
 		District district = creator.createDistrict("", region);
 		SampleDto sample = creator.createSample(otherCaseReference, otherUserReference,
