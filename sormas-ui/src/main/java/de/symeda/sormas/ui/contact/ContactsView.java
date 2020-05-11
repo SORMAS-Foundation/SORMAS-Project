@@ -116,6 +116,9 @@ public class ContactsView extends AbstractView {
 	private FilteredGrid<?, ContactCriteria> grid;
 	private VerticalLayout gridLayout;
 
+	private PopupButton moreButton;
+	private VerticalLayout moreLayout;
+
 	private MenuBar bulkOperationsDropdown;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
@@ -212,11 +215,23 @@ public class ContactsView extends AbstractView {
 		});
 		addHeaderComponent(contactsViewSwitcher);
 
+		moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
+		moreButton.setId("more");
+		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
+		moreLayout = new VerticalLayout();
+		moreLayout.setSpacing(true);
+		moreLayout.setMargin(true);
+		moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		moreLayout.setWidth(250, Unit.PIXELS);
+		moreButton.setContent(moreLayout);
+
+
 		if (viewConfiguration.getViewType().isContactOverview()
 				&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
 			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
 			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			importButton.setIcon(VaadinIcons.UPLOAD);
+			importButton.setWidth(100, Unit.PERCENTAGE);
 
 			importButton.addClickListener(e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new ContactsImportLayout());
@@ -227,7 +242,7 @@ public class ContactsView extends AbstractView {
 				});
 			});
 
-			addHeaderComponent(importButton);
+			moreLayout.addComponent(importButton);
 		}
 
 		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
@@ -294,7 +309,10 @@ public class ContactsView extends AbstractView {
 				btnEnterBulkEditMode.setId("enterBulkEditMode");
 				btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-				addHeaderComponent(btnEnterBulkEditMode);
+				btnEnterBulkEditMode.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+				moreLayout.addComponent(btnEnterBulkEditMode);
 			}
 
 			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
@@ -303,7 +321,9 @@ public class ContactsView extends AbstractView {
 				btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
 				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 				btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
-				addHeaderComponent(btnLeaveBulkEditMode);
+
+				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+				moreLayout.addComponent(btnLeaveBulkEditMode);
 			}
 
 			btnEnterBulkEditMode.addClickListener(e -> {
@@ -331,6 +351,10 @@ public class ContactsView extends AbstractView {
 			btnNewContact.setIcon(VaadinIcons.PLUS_CIRCLE);
 			btnNewContact.addClickListener(e -> ControllerProvider.getContactController().create());
 			addHeaderComponent(btnNewContact);
+		}
+
+		if(moreLayout.getComponentCount() > 0) {
+			addHeaderComponent(moreButton);
 		}
 
 		addComponent(gridLayout);

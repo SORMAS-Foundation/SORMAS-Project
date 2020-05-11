@@ -36,6 +36,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
@@ -200,47 +201,23 @@ public class CasesView extends AbstractView {
 
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
-		OptionGroup caseViewSwitcher = new OptionGroup();
-		CssStyles.style(caseViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		caseViewSwitcher.addItem(CasesViewType.DEFAULT);
-		caseViewSwitcher.setItemCaption(CasesViewType.DEFAULT,
-				I18nProperties.getCaption(Captions.caseDefaultView));
-
-		caseViewSwitcher.addItem(CasesViewType.DETAILED);
-		caseViewSwitcher.setItemCaption(CasesViewType.DETAILED,
-				I18nProperties.getCaption(Captions.caseDetailedView));
-
-		caseViewSwitcher.setValue(viewConfiguration.getViewType());
-		caseViewSwitcher.addValueChangeListener(e -> {
-			viewConfiguration.setViewType((CasesViewType)e.getProperty().getValue());
-			SormasUI.get().getNavigator().navigateTo(CasesView.VIEW_NAME);
-		});
-
-		addHeaderComponent(caseViewSwitcher);
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) || UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
-			moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
-			moreButton.setId("more");
-			moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
-			moreLayout = new VerticalLayout();
-			moreLayout.setSpacing(true);
-			moreLayout.setMargin(true);
-			moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			moreLayout.setWidth(250, Unit.PIXELS);
-			moreButton.setContent(moreLayout);
-		}
+		moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
+		moreButton.setId("more");
+		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
+		moreLayout = new VerticalLayout();
+		moreLayout.setSpacing(true);
+		moreLayout.setMargin(true);
+		moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		moreLayout.setWidth(250, Unit.PIXELS);
+		moreButton.setContent(moreLayout);
 
 		Button openGuideButton = new Button(I18nProperties.getCaption(Captions.caseOpenCasesGuide));
 		openGuideButton.setId("openCasesGuide");
 		openGuideButton.setIcon(VaadinIcons.QUESTION);
+		openGuideButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		openGuideButton.setWidth(100, Unit.PERCENTAGE);
+		moreLayout.addComponent(openGuideButton);
 		openGuideButton.addClickListener(e -> buildAndOpenCasesInstructions());
-		if (moreLayout != null) {
-			openGuideButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			openGuideButton.setWidth(100, Unit.PERCENTAGE);
-			moreLayout.addComponent(openGuideButton);
-		} else {
-			addHeaderComponent(openGuideButton);
-		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			VerticalLayout importLayout = new VerticalLayout();
@@ -386,13 +363,9 @@ public class CasesView extends AbstractView {
 			btnEnterBulkEditMode.setId("enterBulkEditMode");
 			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-			if (moreLayout != null) {
-				btnEnterBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
-				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
-				moreLayout.addComponent(btnEnterBulkEditMode);
-			} else {
-				addHeaderComponent(btnEnterBulkEditMode);
-			}
+			btnEnterBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+			btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+			moreLayout.addComponent(btnEnterBulkEditMode);
 
 			btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
 			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
@@ -428,27 +401,19 @@ public class CasesView extends AbstractView {
 			Button mergeDuplicatesButton = new Button(I18nProperties.getCaption(Captions.caseMergeDuplicates));
 			mergeDuplicatesButton.setId("mergeDuplicates");
 			mergeDuplicatesButton.setIcon(VaadinIcons.COMPRESS_SQUARE);
+			mergeDuplicatesButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
+			moreLayout.addComponent(mergeDuplicatesButton);
 			mergeDuplicatesButton.addClickListener(e -> ControllerProvider.getCaseController().navigateToMergeCasesView());
-			if (moreLayout != null) {
-				mergeDuplicatesButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-				mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
-				moreLayout.addComponent(mergeDuplicatesButton);
-			} else {
-				addHeaderComponent(mergeDuplicatesButton);
-			}
 		}
 
 		Button searchSpecificCaseButton = new Button(I18nProperties.getCaption(Captions.caseSearchSpecificCase));
 		searchSpecificCaseButton.setId("searchSpecificCase");
 		searchSpecificCaseButton.setIcon(VaadinIcons.SEARCH);
+		searchSpecificCaseButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
+		moreLayout.addComponent(searchSpecificCaseButton);
 		searchSpecificCaseButton.addClickListener(e -> buildAndOpenSearchSpecificCaseWindow());
-		if (moreLayout != null) {
-			searchSpecificCaseButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
-			moreLayout.addComponent(searchSpecificCaseButton);
-		} else {
-			addHeaderComponent(searchSpecificCaseButton);
-		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			lineListingButton = new Button(I18nProperties.getCaption(Captions.caseLineListing));
@@ -466,10 +431,39 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(createButton);
 		}
 
-		if (moreButton != null) {
-			addHeaderComponent(moreButton);
-		}
+		Button defaultVewButton = new Button(I18nProperties.getCaption(Captions.caseDefaultView));
+		defaultVewButton.setId("defaultVew");
+		defaultVewButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		defaultVewButton.setWidth(100, Unit.PERCENTAGE);
+		defaultVewButton.setVisible(viewConfiguration.getViewType() == CasesViewType.DETAILED);
+		moreLayout.addComponent(defaultVewButton);
+
+		Button detailedViewButton = new Button(I18nProperties.getCaption(Captions.caseDetailedView));
+		detailedViewButton.setId("detailedView");
+		detailedViewButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		detailedViewButton.setWidth(100, Unit.PERCENTAGE);
+		detailedViewButton.setVisible(viewConfiguration.getViewType() == CasesViewType.DEFAULT);
+		moreLayout.addComponent(detailedViewButton);
+
+		defaultVewButton.addClickListener(e -> {
+			changeViewType(CasesViewType.DEFAULT);
+			defaultVewButton.setVisible(false);
+			detailedViewButton.setVisible(true);
+		});
+		detailedViewButton.addClickListener(e -> {
+			changeViewType(CasesViewType.DETAILED);
+			defaultVewButton.setVisible(true);
+			detailedViewButton.setVisible(false);
+		});
+
+		addHeaderComponent(moreButton);
+
 		addComponent(gridLayout);
+	}
+
+	protected void changeViewType(CasesViewType type) {
+		viewConfiguration.setViewType(type);
+		SormasUI.get().getNavigator().navigateTo(CasesView.VIEW_NAME);
 	}
 
 	private void addImportButton(VerticalLayout importLayout, String buttonId, String captionKey,
