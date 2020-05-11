@@ -312,11 +312,10 @@ public class UserService extends AbstractAdoService<User> {
 	}
 	
 	public boolean hasRole (UserRole userRoleName){
-        Set<UserRole> userRoles = getCurrentUser().getUserRoles();
-        return !userRoles.stream().filter(userRole -> userRole.name().equals(userRoleName.name())).collect(Collectors.toList()).isEmpty();
+        return getCurrentUser().getUserRoles().contains(userRoleName);
     }
 	
-	public boolean hasRole(Set<UserRole> typeRoles) {
+	public boolean hasAnyRole(Set<UserRole> typeRoles) {
         Set<UserRole> userRoles = getCurrentUser().getUserRoles();
         return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
     }

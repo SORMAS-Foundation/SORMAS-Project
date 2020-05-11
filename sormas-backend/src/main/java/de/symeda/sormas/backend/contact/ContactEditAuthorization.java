@@ -30,28 +30,26 @@ public class ContactEditAuthorization {
 	@EJB
 	private ContactService contactService;
 	
-    public boolean isContactEditAllowed(String contactUuid){
+    public boolean isContactEditAllowed(Contact contact){
 
     	User user = userService.getCurrentUser();
-    	Contact contact = contactService.getByUuid(contactUuid);
 
         if (user.getUuid().equals(contact.getReportingUser().getUuid())){
             return true;
         }
 
         if (contact.getUuid() != null) {       
-            Case caseofContact = caseService.getByUuid(contact.getUuid());
-            if (caseofContact != null && caseEditAuthorization.caseEditAllowedCheck(contact.getUuid())) {
+            Case caseofContact = caseService.getByUuid(contact.getUuid());    
+            if (caseofContact != null && caseEditAuthorization.caseEditAllowedCheck(caseofContact)) {
                 return true;
             }
         }
 
-        if (userService.hasRole(UserRole.getSupervisorRoles())) {
-            return  contact.getRegion()!=null ? (contact.getRegion().equals(user.getRegion())) : 
-            	(contact.getDistrict().getRegion()!=null ? contact.getDistrict().getRegion().equals(user.getRegion()) : false);
+        if (userService.hasAnyRole(UserRole.getSupervisorRoles())) {
+            return  contact.getRegion()!=null ? contact.getRegion().equals(user.getRegion()) : false;
         }
 
-        if (userService.hasRole(UserRole.getOfficerRoles())) {
+        if (userService.hasAnyRole(UserRole.getOfficerRoles())) {
             return contact.getDistrict()!=null ? contact.getDistrict().equals(user.getDistrict()) : false;
         }
 

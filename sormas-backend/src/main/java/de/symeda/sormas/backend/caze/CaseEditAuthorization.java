@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 
 
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
@@ -27,20 +28,19 @@ public class CaseEditAuthorization {
 	@EJB
 	private CaseService caseService;
 
-	public Boolean caseEditAllowedCheck(String caseUuid) {
+	public Boolean caseEditAllowedCheck(Case caze) {
 
-		Case caze = caseService.getByUuid(caseUuid);	
 		User user = userService.getCurrentUser();
        
-        if (user.getUuid().equals(caseUuid)) {
+        if (DataHelper.equal(user.getUuid(), (caze.getUuid()))) {
             return true;
         }
 
-        if (userService.hasRole(UserRole.getSupervisorRoles())) {
+        if (userService.hasAnyRole(UserRole.getSupervisorRoles())) {
             return caze.getRegion().equals(user.getRegion());
         }
 
-        if (userService.hasRole(UserRole.getOfficerRoles())) {
+        if (userService.hasAnyRole(UserRole.getOfficerRoles())) {
             return caze.getDistrict().equals(user.getDistrict());
         }
 

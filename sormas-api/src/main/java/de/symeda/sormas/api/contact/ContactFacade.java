@@ -88,6 +88,6 @@ public interface ContactFacade {
 
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 	
-	Boolean isContactEditAllowed(String contactUuid);
+	boolean isContactEditAllowed(String contactUuid);
 
 }

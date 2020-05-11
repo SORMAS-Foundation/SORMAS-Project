@@ -2355,7 +2355,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 	
 	public Boolean isCaseEditAllowed(String caseUuid) {
-		return caseEditAuthorization.caseEditAllowedCheck(caseUuid);
+		Case caze = caseService.getByUuid(caseUuid);
+		return caseEditAuthorization.caseEditAllowedCheck(caze);
 	};
 	
 }

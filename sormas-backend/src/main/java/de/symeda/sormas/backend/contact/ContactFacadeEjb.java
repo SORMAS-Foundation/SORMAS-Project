@@ -1091,8 +1091,9 @@ public class ContactFacadeEjb implements ContactFacade {
     }
 
 	@Override
-	public Boolean isContactEditAllowed(String contactUuid) {		
-		return contactEditAuthorization.isContactEditAllowed(contactUuid);
+	public boolean isContactEditAllowed(String contactUuid) {		
+		Contact contact = contactService.getByUuid(contactUuid);
+		return contactEditAuthorization.isContactEditAllowed(contact);
 	}
 
 }
