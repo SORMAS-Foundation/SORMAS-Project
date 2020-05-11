@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.ItemClickListener;
@@ -30,6 +29,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -50,8 +50,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implements ItemClickListener<TaskIndexDto> {
-
-	private static final String EDIT_BTN_ID = "edit";
 	
 	@SuppressWarnings("unchecked")
 	public TaskGrid(TaskCriteria criteria) {
@@ -69,9 +67,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			setCriteria(criteria);
 		}
 		
-		Column<TaskIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(20);
+		addEditColumn(e -> ControllerProvider.getTaskController().edit(e.getItem(), this::reload));
 		
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {
@@ -95,9 +91,10 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
         		TaskIndexDto.SUGGESTED_START, TaskIndexDto.DUE_DATE,
         		TaskIndexDto.ASSIGNEE_USER, TaskIndexDto.ASSIGNEE_REPLY, 
         		TaskIndexDto.CREATOR_USER, TaskIndexDto.CREATOR_COMMENT, TaskIndexDto.TASK_STATUS);
-        
-		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.DUE_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
-		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.SUGGESTED_START)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+
+		Language userLanguage = I18nProperties.getUserLanguage();
+		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.DUE_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.SUGGESTED_START)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<TaskIndexDto, String>)getColumn(TaskIndexDto.CREATOR_COMMENT)).setRenderer(new ShortStringRenderer(50));
         
 		Column<TaskIndexDto, ReferenceDto> contextColumn = (Column<TaskIndexDto, ReferenceDto>) getColumn(TaskIndexDto.CONTEXT_REFERENCE);
@@ -180,9 +177,6 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			default:
 				throw new IndexOutOfBoundsException(task.getTaskContext().toString());
 			}
-		} else if (EDIT_BTN_ID.equals(event.getColumn().getId())
-			|| event.getMouseEventDetails().isDoubleClick()) {
-			ControllerProvider.getTaskController().edit(task, this::reload);
 		}
 	}
 	

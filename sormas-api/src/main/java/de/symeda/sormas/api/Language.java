@@ -1,24 +1,52 @@
 package de.symeda.sormas.api;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum Language {
+	
+	EN(new Locale("en"), "M/d/yyyy", "M/d/yyyy h:mm a", "M/d"),
+	EN_NG(new Locale("en", "NG"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
+	EN_GH(new Locale("en", "GH"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
+	FR(new Locale("fr", "FR"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
+	DE(new Locale("de", "DE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
+	ES_EC(new Locale("es", "EC"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
+	FI(new Locale("fi", "FI"), "dd.MM.yyyy", "dd.MM.yyyy H.mm", "dd.MM");
 
-	EN(new Locale("en"), new Locale("en")),
-	EN_NG(new Locale("en", "NG"), new Locale("en-NG")),
-	EN_GH(new Locale("en", "GH"), new Locale("en-GH")),
-	FR(new Locale("fr", "FR"), new Locale("fr-FR")),
-	DE(new Locale("de", "DE"), new Locale("de-DE")),
-	ES_EC(new Locale("es", "EC"), new Locale("es-EC")), FI(new Locale("fi", "FI"), new Locale("fi-FI"));
-
+	/**
+	 * Links locale strings to Languages 
+	 */
+	private static final Map<String, Language> languageLookup;
+	static {
+		languageLookup = new HashMap<>();
+		for (Language lang : Language.values()) {
+			Locale locale = lang.getLocale();
+			languageLookup.put(createKey(locale.getLanguage(), locale.getCountry()), lang);
+			
+			//add first Language enum as default for the plain language Locale
+			String langKey = createKey(locale.getLanguage(), "");
+			if (! languageLookup.containsKey(langKey)) {
+				languageLookup.put(langKey, lang);
+			}
+		}
+	}
+	
 	private Locale locale;
-	private Locale localeWithCountryCode;
+	private String dateFormat;
+	private String dateTimeFormat;
+	private String dayMonthFormat;
 
-	Language(Locale locale, Locale localeWithCountryCode) {
+	Language(Locale locale, String dateFormat, String dateTimeFormat, String dayMonthFormat) {
 		this.locale = locale;
-		this.localeWithCountryCode = localeWithCountryCode;
+		this.dateFormat = dateFormat;
+		this.dateTimeFormat = dateTimeFormat;
+		this.dayMonthFormat = dayMonthFormat;
 	}
 
 	public String toString() {
@@ -28,27 +56,50 @@ public enum Language {
 	public Locale getLocale() {
 		return locale;
 	}
-	
-	public Locale getLocaleWithCountryCode() {
-		return localeWithCountryCode;
+
+	public String getDateFormat() {
+		return dateFormat;
+	}
+
+	public String getDateTimeFormat() {
+		return dateTimeFormat;
+	}
+
+	public String getDayMonthFormat() {
+		return dayMonthFormat;
 	}
 
 	/**
 	 * @return EN when the locale does not fit any language
 	 */
 	public static Language fromLocaleString(String locale) {
-		switch (locale) {
-		case "en": return EN;
-		case "en-NG": return EN_NG;
-		case "en-GH": return EN_GH;
-		case "fr-FR": return FR;
-		case "de-DE": return DE;
-		case "es-EC": return ES_EC;
-		case "fi-FI":
-			return FI;
-		default:
+		if (StringUtils.isBlank(locale)) {
 			return EN;
 		}
+		
+		String key = createKey(locale.trim().split("[_-]"));
+		
+		Language language = languageLookup.get(key);
+		
+		if (language == null) {
+			LoggerFactory.getLogger(Language.class).warn("Unknown locale '{}'. Falling back to 'en'.", locale);
+			language = EN;
+		}
+		
+		return language;
 	}
 
+	private static String createKey(String ... localeComponents) {
+		//only language and country are factored in
+		StringBuilder sb = new StringBuilder(5);
+		sb.append(localeComponents[0].toLowerCase());
+		
+		if (localeComponents.length > 1) {
+			String c = localeComponents[1];
+			if (StringUtils.isNotEmpty(c)) {
+				sb.append('-').append(c.toUpperCase());
+			}
+		}
+		return sb.toString();
+	}
 }

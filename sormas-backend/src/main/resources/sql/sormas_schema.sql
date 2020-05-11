@@ -4066,9 +4066,11 @@ UPDATE contact SET overwritefollowupuntil = false;
 INSERT INTO schema_version (version_number, comment) VALUES (197, 'Make follow-up until editable #1680');
 
 -- 2020-04-15 Reworking of quarantine #1762
-UPDATE contact SET 	followupuntil = quarantineto WHERE quarantineto > followupuntil;
-ALTER TABLE contact DROP COLUMN quarantineto;
-ALTER TABLE contact_history DROP COLUMN quarantineto;
+
+-- 2020-04-29 #1891 keep the old quarantineto database colum
+-- UPDATE contact SET 	followupuntil = quarantineto WHERE quarantineto > followupuntil;
+-- ALTER TABLE contact DROP COLUMN quarantineto;
+-- ALTER TABLE contact_history DROP COLUMN quarantineto;
 
 ALTER TABLE contact ADD COLUMN quarantineordermeans varchar(255);
 ALTER TABLE contact_history ADD COLUMN quarantineordermeans varchar(255);
@@ -4100,8 +4102,8 @@ DROP FUNCTION export_database_join(text, text, text, text, text);
 INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code #1830');
 
 -- 2020-04-23 Re-introduce quarantine end date #1891
-ALTER TABLE contact ADD COLUMN quarantineto timestamp;
-ALTER TABLE contact_history ADD COLUMN quarantineto timestamp;
+ALTER TABLE contact ADD COLUMN IF NOT EXISTS quarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS quarantineto timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (201, 'Re-introduce quarantine end date #1891');
 
@@ -4154,18 +4156,95 @@ ALTER TABLE contact_history DROP COLUMN quarantineordermeans;
 INSERT INTO schema_version (version_number, comment) VALUES (202, 'Additional quarantine fields #1906');
 
 -- 2020-04-24 Add type of reporting to cases #1833
-
 ALTER TABLE cases ADD COLUMN reportingtype varchar(255);
 ALTER TABLE cases_history ADD COLUMN reportingtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (203, 'Add type of reporting to cases #1833');
 
 -- 2020-04-26 Add fieldSampleID to sample #1863
-
 ALTER TABLE samples ADD COLUMN fieldsampleid varchar(512);
 ALTER TABLE samples_history ADD COLUMN fieldsampleid varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (204, 'Add fieldSampleID to sample #1863');
 
+-- 2020-04-29 Added symptoms loss of taste and loss of smell #1936
+ALTER TABLE symptoms ADD COLUMN lossoftaste varchar(255);
+ALTER TABLE symptoms ADD COLUMN lossofsmell varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lossoftaste varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lossofsmell varchar(255);
 
+INSERT INTO schema_version (version_number, comment) VALUES (205, 'Added symptoms loss of taste and loss of smell #1936');
+
+-- 2020-05-05 Add new symptoms and health conditions #1824
+ALTER TABLE symptoms ADD COLUMN coughWithSputum varchar(255);
+ALTER TABLE symptoms ADD COLUMN coughWithHeamoptysis varchar(255);
+ALTER TABLE symptoms ADD COLUMN lymphadenopathy varchar(255);
+ALTER TABLE symptoms ADD COLUMN wheezing varchar(255);
+ALTER TABLE symptoms ADD COLUMN skinUlcers varchar(255);
+ALTER TABLE symptoms ADD COLUMN inabilityToWalk varchar(255);
+ALTER TABLE symptoms ADD COLUMN inDrawingOfChestWall varchar(255);
+ALTER TABLE symptoms ADD COLUMN otherComplications varchar(255);
+ALTER TABLE symptoms ADD COLUMN otherComplicationsText varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughWithSputum varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughWithHeamoptysis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lymphadenopathy varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN wheezing varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN skinUlcers varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN inabilityToWalk varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN inDrawingOfChestWall varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN otherComplications varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN otherComplicationsText varchar(255);
+
+ALTER TABLE healthconditions ADD COLUMN obesity varchar(255);
+ALTER TABLE healthconditions ADD COLUMN currentSmoker varchar(255);
+ALTER TABLE healthconditions ADD COLUMN formerSmoker varchar(255);
+ALTER TABLE healthconditions ADD COLUMN asthma varchar(255);
+ALTER TABLE healthconditions ADD COLUMN sickleCellDisease varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN obesity varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN currentSmoker varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN formerSmoker varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN asthma varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN sickleCellDisease varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (206, 'Add new symptoms and health conditions #1824');
+                                                                                                                        
+-- 2020-05-05 Added table for contact-visit association #1329
+CREATE TABLE contacts_visits(
+	contact_id bigint NOT NULL,
+	visit_id bigint NOT NULL,
+	sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE contacts_visits OWNER TO sormas_user;
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT unq_contacts_visits_0 UNIQUE (contact_id, visit_id);
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT fk_contacts_visits_contact_id FOREIGN KEY (contact_id) REFERENCES contact(id);
+ALTER TABLE ONLY contacts_visits ADD CONSTRAINT fk_contacts_visits_visit_id FOREIGN KEY (visit_id) REFERENCES visit(id);
+
+CREATE TABLE contacts_visits_history (LIKE contacts_visits);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON contacts_visits
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
+ALTER TABLE contacts_visits_history OWNER TO sormas_user;
+
+WITH ids AS 
+(SELECT c.id AS contact_id, v.id AS visit_id FROM contact c, visit v WHERE c.person_id = v.person_id AND c.disease = v.disease AND
+CASE 
+WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime >= (c.lastcontactdate - interval '30' day)
+ELSE v.visitdatetime >= (c.reportdatetime - interval '30' day)
+END
+AND
+CASE
+WHEN c.followupuntil IS NOT NULL THEN v.visitdatetime <= (c.followupuntil + interval '30' day)
+WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime <= (c.lastcontactdate + interval '30' day)
+ELSE v.visitdatetime <= (c.reportdatetime + interval '30' day)
+END)
+INSERT INTO contacts_visits (contact_id, visit_id) SELECT contact_id, visit_id FROM ids;
+
+INSERT INTO schema_version (version_number, comment) VALUES (207, 'Added table for contact-visit association #1329');
+
+-- 2020-05-11 Add additionalDetails to contact #1933
+ALTER TABLE contact ADD COLUMN additionaldetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN additionaldetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (208, '2020-05-11 Add additionalDetails to contact #1933');
+                                                                                                                        
 -- *** Insert new sql commands BEFORE this line ***

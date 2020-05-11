@@ -136,7 +136,12 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
-		PointOfEntry pointOfEntry = service.getByUuid(dto.getUuid());
+		
+		PointOfEntry pointOfEntry = null; 
+		
+		if(dto.getUuid()!= null) {
+			pointOfEntry = service.getByUuid(dto.getUuid());
+		}
 		
 		if (pointOfEntry == null && !getByName(dto.getName(), dto.getDistrict(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPointOfEntryAlreadyExists));
@@ -206,6 +211,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 				case PointOfEntry.LATITUDE:
 				case PointOfEntry.LONGITUDE:
 				case PointOfEntry.ACTIVE:
+				case PointOfEntry.EXTERNAL_ID:
 					expression = pointOfEntry.get(sortProperty.propertyName);
 					break;
 				case Facility.REGION:

@@ -18,6 +18,8 @@
 package de.symeda.sormas.backend.contact;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -31,22 +33,30 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
+import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.ContactVisitsExportDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -64,6 +74,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
@@ -76,7 +87,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
@@ -98,6 +109,41 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	}
 
 	@Test
+	public void testGetMatchingContacts(){
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
+				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.CORONAVIRUS, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact1 = creator.createContact(user.toReference(), user.toReference(),
+				contactPerson.toReference(), caze, new Date(), new Date(), null);
+		contact1.setContactClassification(ContactClassification.CONFIRMED);
+		getContactFacade().saveContact(contact1);
+		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(),
+				contactPerson.toReference(), caze, DateHelper.subtractDays(new Date(), 15), new Date(), null);
+		ContactDto contact3 = creator.createContact(user.toReference(), user.toReference(),
+				contactPerson.toReference(), caze, DateHelper.subtractDays(new Date(), 15),
+				DateHelper.subtractDays(new Date(), 31), null);
+
+		final ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
+		contactSimilarityCriteria.setDisease(Disease.CORONAVIRUS);
+		contactSimilarityCriteria.setPerson(new PersonReferenceDto(contactPerson.getUuid()));
+		contactSimilarityCriteria.setCaze(new CaseReferenceDto(caze.getUuid()));
+		contactSimilarityCriteria.setLastContactDate(new Date());
+		contactSimilarityCriteria.setReportDate(new Date());
+
+		final List<SimilarContactDto> matchingContacts = getContactFacade().getMatchingContacts(contactSimilarityCriteria);
+		Assert.assertNotNull(matchingContacts);
+		Assert.assertEquals(2, matchingContacts.size());
+		final SimilarContactDto similarContactDto1 = matchingContacts.get(0);
+		Assert.assertEquals(contact1.getUuid(), similarContactDto1.getUuid());
+		final SimilarContactDto similarContactDto2 = matchingContacts.get(1);
+		Assert.assertEquals(contact2.getUuid(), similarContactDto2.getUuid());
+	}
+
+	@Test
 	public void testUpdateContactStatus() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
@@ -107,7 +153,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		Date contactDate = new Date();
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, contactDate, contactDate);
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, contactDate, contactDate, null);
 
 		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
 		assertNull(contact.getResultingCase());
@@ -135,7 +181,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), contactOfficer.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		ContactDto contact = creator.createContact(user.toReference(), contactOfficer.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		getContactFacade().generateContactFollowUpTasks();
 
@@ -162,7 +208,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		MapCaseDto mapCaseDto = new MapCaseDto(caze.getUuid(), caze.getReportDate(), caze.getCaseClassification(), caze.getDisease(),
 				caze.getPerson().getUuid(), cazePerson.getFirstName(), cazePerson.getLastName(),
 				caze.getHealthFacility().getUuid(), 0d, 0d,
@@ -186,7 +232,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE);
 		TaskDto task = creator.createTask(TaskContext.CONTACT, TaskType.CONTACT_INVESTIGATION, TaskStatus.PENDING, null, contact.toReference(), null, new Date(), user.toReference());
 
@@ -212,7 +258,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, getContactFacade().getIndexList(null, 0, 100, null).size());
@@ -239,7 +285,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		// database contains the created contact
 		assertEquals(true, getContactFacade().isValidContactUuid(contact.getUuid()));
@@ -256,7 +302,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
 
 		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
@@ -269,7 +315,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
-		List<ContactExportDto> results = getContactFacade().getExportList(null, 0, 100);
+		List<ContactExportDto> results = getContactFacade().getExportList(null, 0, 100, Language.EN);
 
 		// Database should contain one contact, associated visit and task
 		assertEquals(1, results.size());
@@ -289,6 +335,99 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 	}
 
 	@Test
+	public void testGetContactVisitsExportList() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		String userUuid = user.getUuid();
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference()
+				, caze, new Date(), new Date(), null);
+		VisitDto visit1 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit1.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit1);
+		VisitDto visit12 = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit12.getSymptoms().setChestPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit12);
+
+		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
+		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference()
+				, caze, new Date(), null, null);
+		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit21.getSymptoms().setBackache(SymptomState.YES);
+		getVisitFacade().saveVisit(visit21);
+
+		final List<ContactVisitsExportDto> results = getContactFacade().getContactVisitsExportList(null, 0, 100, Language.EN);
+		assertNotNull(results);
+		assertEquals(2, results.size());
+
+		final ContactVisitsExportDto exportDto1 = results.get(0);
+		assertEquals("Contact", exportDto1.getFirstName());
+		assertEquals("Person", exportDto1.getLastName());
+		assertEquals(contact.getUuid(), exportDto1.getUuid());
+		final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitDetails = exportDto1.getVisitDetails();
+		assertNotNull(visitDetails);
+		assertEquals(2, visitDetails.size());
+		final ContactVisitsExportDto.ContactVisitsDetailsExportDto visitDetail11 = visitDetails.get(0);
+		assertEquals(VisitStatus.COOPERATIVE, visitDetail11.getVisitStatus());
+		assertNotNull(visitDetail11.getVisitDateTime());
+		assertEquals("Abdominal pain", visitDetail11.getSymptoms());
+		final ContactVisitsExportDto.ContactVisitsDetailsExportDto visitDetail12 = visitDetails.get(1);
+		assertEquals(VisitStatus.COOPERATIVE, visitDetail12.getVisitStatus());
+		assertNotNull(visitDetail12.getVisitDateTime());
+		assertEquals("Chest pain", visitDetail12.getSymptoms());
+
+		final ContactVisitsExportDto exportDto2 = results.get(1);
+		assertEquals("Contact2", exportDto2.getFirstName());
+		assertEquals("Person2", exportDto2.getLastName());
+		assertEquals(contact2.getUuid(), exportDto2.getUuid());
+		final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitDetails2 = exportDto2.getVisitDetails();
+		assertNotNull(visitDetails2);
+		assertEquals(1, visitDetails2.size());
+		final ContactVisitsExportDto.ContactVisitsDetailsExportDto visitDetail21 = visitDetails2.get(0);
+		assertEquals(VisitStatus.COOPERATIVE, visitDetail21.getVisitStatus());
+		assertNotNull(visitDetail21.getVisitDateTime());
+		assertEquals("Backache", visitDetail21.getSymptoms());
+	}
+
+	@Test
+	public void testCountMaximumFollowUps() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference()
+				, caze, new Date(), new Date(), null);
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+
+		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
+		creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference()
+				, caze, new Date(), new Date(), null);
+		VisitDto visit21 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit21.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit21);
+		VisitDto visit22 = creator.createVisit(caze.getDisease(), contactPerson2.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		visit22.getSymptoms().setAgitation(SymptomState.YES);
+		getVisitFacade().saveVisit(visit22);
+
+		PersonDto contactPerson3 = creator.createPerson("Contact3", "Person3");
+		creator.createContact(user.toReference(), user.toReference(), contactPerson3.toReference()
+				, caze, new Date(), new Date(), null);
+		for (int i=0;i<10;i++){
+			creator.createVisit(caze.getDisease(), contactPerson3.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		}
+
+		assertEquals(10, getContactFacade().countMaximumFollowUps(null));
+	}
+
+	@Test
 	public void testArchiveOrDearchiveContact() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
@@ -297,7 +436,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date());
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
@@ -323,5 +462,59 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		assertEquals(1, getContactFacade().getAllActiveUuids().size());
 		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
+	}
+
+	@Test
+	public void testUpdateContactVisitAssociations() throws Exception {
+		UserDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto person = creator.createPerson();
+		VisitDto visit = creator.createVisit(Disease.EVD, person.toReference());
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+		Contact contactEntity = getContactService().getByUuid(contact.getUuid());
+		Visit visitEntity = getVisitService().getByUuid(visit.getUuid());
+		
+		// Saved contact should have visit association
+		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(1));
+		
+		// Updating the contact but not changing the report date or last contact date should not alter the association
+		contact.setDescription("Description");
+		getContactFacade().saveContact(contact);
+		
+		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(1));
+		
+		// Changing the report date to a value beyond the threshold should remove the association
+		contact.setReportDateTime(DateHelper.addDays(visit.getVisitDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 20));
+		getContactFacade().saveContact(contact);
+		
+		assertThat(getVisitService().getAllByContact(contactEntity), empty());
+		
+		// Changing the report date back to a value in the threshold should re-add the association
+		contact.setReportDateTime(new Date());
+		getContactFacade().saveContact(contact);
+		
+		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(1));
+		
+		// Adding another contact that matches the visit person, disease and time frame should increase the collection size
+		ContactDto contact2 = creator.createContact(user.toReference(), person.toReference());
+		
+		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(2));
+		
+		// Adding another contact with the same person and disease, but an incompatible time frame should not increase the collection size
+		creator.createContact(user.toReference(), person.toReference(), DateHelper.addDays(visit.getVisitDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
+		
+		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(2));
+		
+		// Adding another contact that is compatible to the time frame, but has a different person and/or disease should not increase the collection size
+		PersonDto person2 = creator.createPerson();
+		creator.createContact(user.toReference(), person2.toReference());
+		creator.createContact(user.toReference(), person.toReference(), Disease.CSM);
+		
+		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(2));
+		
+		// Changing the contact disease should decrease the collection size
+		contact2.setDisease(Disease.CSM);
+		getContactFacade().saveContact(contact2);
+		
+		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(1));
 	}
 }

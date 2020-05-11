@@ -49,6 +49,7 @@ public final class I18nProperties {
 
 	private static I18nProperties getInstance(Language language) {
 		if (language == null) {
+			Language defaultLanguage = getDefaultLanguage();
 			if (defaultLanguage != null) {
 				language = defaultLanguage;
 			} else {
@@ -67,21 +68,32 @@ public final class I18nProperties {
 
 	public static Language setUserLanguage(Language language) {
 		if (language == null) {
-			language = defaultLanguage;
+			language = getDefaultLanguage();
 		}
 		userLanguage.set(language);
-		
+
 		return language;
+	}
+
+	public static Language getUserLanguage() {
+		Language language = userLanguage.get();
+		return language == null ? getDefaultLanguage() : language;
 	}
 
 	public static void removeUserLanguage() {
 		userLanguage.remove();
 	}
-	
+
 	public static void setDefaultLanguage(Language language) {
-		if (language != null) {
-			defaultLanguage = language;
+		defaultLanguage = language;
+	}
+
+	private static Language getDefaultLanguage() {
+		if (defaultLanguage == null) {
+			defaultLanguage = Language.EN;
 		}
+
+		return defaultLanguage;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -97,7 +109,7 @@ public final class I18nProperties {
 	/**
 	 * Retrieves the property by adding an additional string in between the class name and the property name,
 	 * e.g. Disease.Short.EVD or FollowUpStatus.Desc.NO_FOLLOW_UP
-	 * 
+	 * <p>
 	 * Does fallback to enum caption without addition.
 	 */
 	public static String getEnumCaption(Enum<?> value, String addition) {
@@ -138,12 +150,29 @@ public final class I18nProperties {
 	public static String getPrefixCaption(String prefix, String key, String defaultValue) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance(userLanguage.get()).captionProperties.getString(prefix+"."+key);
+			result = getInstance(userLanguage.get()).captionProperties.getString(prefix + "." + key);
 		}
 		if (result == null) {
 			result = getCaption(key, defaultValue);
 		}
 		return result;
+	}
+
+	/**
+	 * Iterates through the prefixes to determines the caption for the specified propertyId.
+	 *
+	 * @return
+	 */
+	public static String findPrefixCaption(String propertyId, String ... prefixes) {
+
+		for (String prefix : prefixes) {
+			final String caption = I18nProperties.getPrefixCaption(prefix, propertyId, null);
+			if (caption != null) {
+				return caption;
+			}
+		}
+
+		return propertyId;
 	}
 
 	public static String getDescription(String key) {
@@ -179,7 +208,7 @@ public final class I18nProperties {
 	/**
 	 * Uses <param>key</param> as default value
 	 */
-	public static String getValidationError(String key, Object ...formatArgs) {
+	public static String getValidationError(String key, Object... formatArgs) {
 		String result = getInstance(userLanguage.get()).validationProperties.getString(key, null);
 		if (result != null) {
 			return String.format(result, formatArgs);
@@ -190,10 +219,10 @@ public final class I18nProperties {
 		}
 	}
 
-	public static String getPrefixValidationError(String prefix, String key, Object ...formatArgs) {
+	public static String getPrefixValidationError(String prefix, String key, Object... formatArgs) {
 		String result = null;
 		if (prefix != null) {
-			result = getInstance(userLanguage.get()).validationProperties.getString(prefix+"."+key);
+			result = getInstance(userLanguage.get()).validationProperties.getString(prefix + "." + key);
 			if (result != null) {
 				return String.format(result, result);
 			}
@@ -217,11 +246,11 @@ public final class I18nProperties {
 
 	private I18nProperties(Language language) {
 
-		this.captionProperties = loadProperties("captions", language.getLocaleWithCountryCode());
-		this.descriptionProperties = loadProperties("descriptions", language.getLocaleWithCountryCode());
-		this.enumProperties = loadProperties("enum", language.getLocaleWithCountryCode());
-		this.validationProperties = loadProperties("validations", language.getLocaleWithCountryCode());
-		this.stringProperties = loadProperties("strings", language.getLocaleWithCountryCode());
+		this.captionProperties = loadProperties("captions", language.getLocale());
+		this.descriptionProperties = loadProperties("descriptions", language.getLocale());
+		this.enumProperties = loadProperties("enum", language.getLocale());
+		this.validationProperties = loadProperties("validations", language.getLocale());
+		this.stringProperties = loadProperties("strings", language.getLocale());
 	}
 
 	public static ResourceBundle loadProperties(String propertiesGroup, Locale locale) {
@@ -229,12 +258,13 @@ public final class I18nProperties {
 	}
 
 	public static class UTF8Control extends Control {
+		private static final char LOCALE_SEP = '-';
+
 		public java.util.ResourceBundle newBundle
-		(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-				throws IllegalAccessException, InstantiationException, IOException
-		{
+				(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
+				throws IllegalAccessException, InstantiationException, IOException {
 			// The below is a copy of the default implementation.
-			String bundleName = normalizeCountryCode(toBundleName(baseName, locale));
+			String bundleName = toBundleName(baseName, locale);
 			String resourceName = toResourceName(bundleName, "properties");
 			try (Reader reader = loadResource(loader, resourceName, reload)) {
 				if (reader == null) {
@@ -245,33 +275,105 @@ public final class I18nProperties {
 			}
 		}
 
-		static String normalizeCountryCode(String bundleName) {
-			int splitPos = bundleName.lastIndexOf("-") + 1;
-			if (splitPos > 0) {
-				//Uppercase countryCode
-				// A simple "replace" does not work here because the country code could be identical to the language code
-				String countryCode = bundleName.substring(splitPos).toUpperCase();
-				return bundleName.substring(0, splitPos) + countryCode;
-			} else {
-				return bundleName;
-			}
-		}
+
+        /**
+         * Converts the given <code>baseName</code> and <code>locale</code>
+         * to the bundle name. This method is called from the default
+         * implementation of the {@link #newBundle(String, Locale, String,
+         * ClassLoader, boolean) newBundle} and {@link #needsReload(String,
+         * Locale, String, ClassLoader, ResourceBundle, long) needsReload}
+         * methods.
+         * 
+         * <p>In contrast to <code>ResourceBundle.Control::toBundleName</code> 
+         * '-' instead of '_' is used to separate the Locale components:</p>
+         *
+         * <p>This implementation returns the following value:
+         * <pre>
+         *     baseName + "_" + language + "-" + script + "-" + country + "-" + variant
+         * </pre>
+         * where <code>language</code>, <code>script</code>, <code>country</code>,
+         * and <code>variant</code> are the language, script, country, and variant
+         * values of <code>locale</code>, respectively. Final component values that
+         * are empty Strings are omitted along with the preceding '-'.  When the
+         * script is empty, the script value is omitted along with the preceding '_'.
+         * If all of the values are empty strings, then <code>baseName</code>
+         * is returned.
+         *
+         * <p>For example, if <code>baseName</code> is
+         * <code>"baseName"</code> and <code>locale</code> is
+         * <code>Locale("ja",&nbsp;"",&nbsp;"XX")</code>, then
+         * <code>"baseName_ja-&thinsp;-XX"</code> is returned. If the given
+         * locale is <code>Locale("en")</code>, then
+         * <code>"baseName_en"</code> is returned.
+         *
+         * <p>Overriding this method allows applications to use different
+         * conventions in the organization and packaging of localized
+         * resources.
+         *
+         * @param baseName
+         *        the base name of the resource bundle, a fully
+         *        qualified class name
+         * @param locale
+         *        the locale for which a resource bundle should be
+         *        loaded
+         * @return the bundle name for the resource bundle
+         * @exception NullPointerException
+         *        if <code>baseName</code> or <code>locale</code>
+         *        is <code>null</code>
+         */
+		@Override
+        public  String toBundleName(String baseName, Locale locale) {
+            if (locale == Locale.ROOT) {
+                return baseName;
+            }
+
+            String language = locale.getLanguage();
+            String script = locale.getScript();
+            String country = locale.getCountry();
+            String variant = locale.getVariant();
+
+            if (language == "" && country == "" && variant == "") {
+                return baseName;
+            }
+
+            StringBuilder sb = new StringBuilder(baseName);
+            sb.append('_');
+            if (script != "") {
+                if (variant != "") {
+                    sb.append(language).append(LOCALE_SEP).append(script).append(LOCALE_SEP).append(country).append(LOCALE_SEP).append(variant);
+                } else if (country != "") {
+                    sb.append(language).append(LOCALE_SEP).append(script).append(LOCALE_SEP).append(country);
+                } else {
+                    sb.append(language).append(LOCALE_SEP).append(script);
+                }
+            } else {
+                if (variant != "") {
+                    sb.append(language).append(LOCALE_SEP).append(country).append(LOCALE_SEP).append(variant);
+                } else if (country != "") {
+                    sb.append(language).append(LOCALE_SEP).append(country);
+                } else {
+                    sb.append(language);
+                }
+            }
+            return sb.toString();
+
+        }
 
 		private Reader loadResource(ClassLoader loader, String resourceName, boolean reload) throws IOException {
-			
+
 			URL url = loader.getResource(resourceName);
 			if (url == null) {
 				return null;
 			}
-			
+
 			URLConnection connection = url.openConnection();
-			
+
 			if (reload) {
 				connection.setUseCaches(false);
 			}
-			
+
 			return new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
 		}
 	}
-	
+
 }

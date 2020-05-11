@@ -79,6 +79,7 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -127,14 +128,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		DateField startDateField = new DateField();
 		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeCaseStartDate));
-		startDateField.setDateFormat(DateHelper.getLocalDatePattern());
+		startDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		startDateField.setLenient(true);
 		caseGeneratorConfigBinder.bind(startDateField, CaseGenerationConfig::getStartDate, CaseGenerationConfig::setStartDate);
 		caseOptionsLayout.addComponent(startDateField);
 
 		DateField endDateField = new DateField();
 		endDateField.setCaption(I18nProperties.getCaption(Captions.devModeCaseEndDate));
-		endDateField.setDateFormat(DateHelper.getLocalDatePattern());
+		endDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		endDateField.setLenient(true);
 		caseGeneratorConfigBinder.bind(endDateField, CaseGenerationConfig::getEndDate, CaseGenerationConfig::setEndDate);
 		caseOptionsLayout.addComponent(endDateField);
@@ -198,14 +199,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		DateField startDateField = new DateField();
 		startDateField.setCaption(I18nProperties.getCaption(Captions.devModeContactStartDate));
-		startDateField.setDateFormat(DateHelper.getLocalDatePattern());
+		startDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		startDateField.setLenient(true);
 		contactGeneratorConfigBinder.bind(startDateField, ContactGenerationConfig::getStartDate, ContactGenerationConfig::setStartDate);
 		contactOptionsFirstLineLayout.addComponent(startDateField);
 
 		DateField endDateField = new DateField();
 		endDateField.setCaption(I18nProperties.getCaption(Captions.devModeContactEndDate));
-		endDateField.setDateFormat(DateHelper.getLocalDatePattern());
+		endDateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		endDateField.setLenient(true);
 		contactGeneratorConfigBinder.bind(endDateField, ContactGenerationConfig::getEndDate, ContactGenerationConfig::setEndDate);
 		contactOptionsFirstLineLayout.addComponent(endDateField);
@@ -276,7 +277,7 @@ public class DevModeView extends AbstractConfigurationView {
 	private static Random random() {
 		return ThreadLocalRandom.current();
 	}
-	
+
 	private static boolean randomPercent(int p) {
 		return random().nextInt(100) <=p;
 	}
@@ -288,7 +289,7 @@ public class DevModeView extends AbstractConfigurationView {
 	private static <T> T random(T[] a) {
 		return a[random().nextInt(a.length)];
 	}
-	
+
 	private static Date randomDate(LocalDateTime referenceDateTime) {
 		return Date.from(referenceDateTime.plusMinutes(random().nextInt(60*24*5))
 				.atZone(ZoneId.systemDefault()).toInstant());
@@ -358,7 +359,7 @@ public class DevModeView extends AbstractConfigurationView {
 	private Map<Method, Optional<Method>> getters = new HashMap<>();
 
 	private List<Method> setters(Class<? extends EntityDto> entityClass) {
-		return setters.computeIfAbsent(entityClass, c -> 
+		return setters.computeIfAbsent(entityClass, c ->
 				Arrays.stream(c.getDeclaredMethods())
 					.filter(method -> method.getName().startsWith("set") && method.getParameterTypes().length == 1)
 					.collect(Collectors.toList()));
@@ -392,14 +393,14 @@ public class DevModeView extends AbstractConfigurationView {
 			if (disease == null) {
 				disease = random(diseases);
 			}
-			
+
 			LocalDateTime referenceDateTime = getReferenceDateTime(i, config.getCaseCount(), baseOffset, disease, config.getStartDate(), daysBetween);
 
 			// person
 			PersonDto person = PersonDto.build();
 			fillEntity(person, referenceDateTime);
 			setPersonName(person);
-			
+
 			CaseDataDto caze = CaseDataDto.build(person.toReference(), disease);
 			fillEntity(caze, referenceDateTime);
 			caze.setDisease(disease); // reset
@@ -484,16 +485,13 @@ public class DevModeView extends AbstractConfigurationView {
 			contact.setReportingUser(userReference);
 			contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
-			DistrictIndexDto district = random(districts);
-			if (config.getRegion() != null) {
-				contact.setRegion(config.getRegion());
-			} else {
+			if (districts != null) {
+				DistrictIndexDto district = random(districts);
 				contact.setRegion(district.getRegion());
-			}
-			if (config.getDistrict() != null) {
-				contact.setDistrict(config.getDistrict());
-			} else {
 				contact.setDistrict(district.toReference());
+			} else {
+				contact.setRegion(config.getRegion());
+				contact.setDistrict(config.getDistrict());
 			}
 
 			if (contact.getLastContactDate() != null && contact.getLastContactDate().after(contact.getReportDateTime())) {
@@ -505,7 +503,7 @@ public class DevModeView extends AbstractConfigurationView {
 
 			FacadeProvider.getPersonFacade().savePerson(person);
 			contact = FacadeProvider.getContactFacade().saveContact(contact);
-			
+
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())) {
 				contact.setFollowUpStatus(random(FollowUpStatus.values()));
 			} else {
@@ -531,6 +529,7 @@ public class DevModeView extends AbstractConfigurationView {
 						fillEntity(visit, date);
 						visit.setVisitUser(userReference);
 						visit.setVisitDateTime(DateHelper8.toDate(date));
+						visit.setDisease(contact.getDisease());
 						if (visit.getVisitStatus() == null) {
 							visit.setVisitStatus(VisitStatus.COOPERATIVE);
 						}
@@ -540,7 +539,7 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 		}
 	}
-	
+
 	private LocalDateTime getReferenceDateTime(int i, int count, float baseOffset, Disease disease, LocalDate startDate, int daysBetween) {
 		float x = (float) i / count;
 		x += baseOffset;
@@ -550,7 +549,7 @@ public class DevModeView extends AbstractConfigurationView {
 
 		return startDate.atStartOfDay().plusMinutes((int) (x * 60 * 24 * daysBetween));
 	}
-	
+
 	private void setPersonName(PersonDto person) {
 		Sex sex = Sex.values()[random().nextInt(2)];
 		person.setSex(sex);

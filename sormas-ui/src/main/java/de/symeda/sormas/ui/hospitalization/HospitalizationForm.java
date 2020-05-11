@@ -27,8 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import com.vaadin.server.UserError;
-import com.vaadin.v7.data.validator.DateRangeValidator;
-import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;

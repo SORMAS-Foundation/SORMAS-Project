@@ -38,6 +38,7 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 
@@ -91,7 +92,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 		Calendar calendar = Calendar.getInstance();
 		for (Date date : filteredDates) {
 			if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-				String label = DateHelper.formatLocalShortDate(date);
+				String label = DateFormatHelper.formatDate(date);
 				newLabels.add(label);
 			} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
 				calendar.setTime(date);
@@ -145,7 +146,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getCaseCountPerClassification(caseCriteria, false);
+						.getCaseCountPerClassification(caseCriteria, true, true);
 
 				Long confirmedCount = caseCounts.get(CaseClassification.CONFIRMED);
 				Long probableCount = caseCounts.get(CaseClassification.PROBABLE);
@@ -211,7 +212,7 @@ public class SurveillanceEpiCurveComponent extends AbstractEpiCurveComponent {
 				}
 
 				Map<PresentCondition, Long> caseCounts = FacadeProvider.getCaseFacade()
-						.getCaseCountPerPersonCondition(caseCriteria, false);
+						.getCaseCountPerPersonCondition(caseCriteria, true, true);
 
 				Long aliveCount = caseCounts.get(PresentCondition.ALIVE);
 				Long deadCount = caseCounts.get(PresentCondition.DEAD);

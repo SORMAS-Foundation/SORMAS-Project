@@ -375,6 +375,7 @@ public interface Captions {
 	String contactContactsList = "contactContactsList";
 	String contactContactsOverview = "contactContactsOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
+	String contactCreateNew = "contactCreateNew";
 	String ContactExport_address = "ContactExport.address";
 	String ContactExport_addressDistrict = "ContactExport.addressDistrict";
 	String ContactExport_addressRegion = "ContactExport.addressRegion";
@@ -384,6 +385,7 @@ public interface Captions {
 	String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	String ContactExport_lastName = "ContactExport.lastName";
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
+	String contactFollowUpDay = "contactFollowUpDay";
 	String contactFollowUpOverviewReferenceDate = "contactFollowUpOverviewReferenceDate";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	String contactLostToFollowUp = "contactLostToFollowUp";
@@ -398,6 +400,7 @@ public interface Captions {
 	String contactRelated = "contactRelated";
 	String contactRemoveCase = "contactRemoveCase";
 	String contactResumeFollowUp = "contactResumeFollowUp";
+	String contactSelect = "contactSelect";
 	String creationDate = "creationDate";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
@@ -688,6 +691,7 @@ public interface Captions {
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
 	String exportDetailed = "exportDetailed";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";
+	String exportFollowUp = "exportFollowUp";
 	String exportInfrastructureData = "exportInfrastructureData";
 	String exportNewExportConfiguration = "exportNewExportConfiguration";
 	String exportSamples = "exportSamples";
@@ -968,6 +972,7 @@ public interface Captions {
 	String Sample_caseRegion = "Sample.caseRegion";
 	String Sample_comment = "Sample.comment";
 	String Sample_diseaseShort = "Sample.diseaseShort";
+	String Sample_fieldSampleID = "Sample.fieldSampleID";
 	String Sample_lab = "Sample.lab";
 	String Sample_labDetails = "Sample.labDetails";
 	String Sample_labSampleID = "Sample.labSampleID";
@@ -1196,6 +1201,8 @@ public interface Captions {
 	String Symptoms_lesionsSolesFeet = "Symptoms.lesionsSolesFeet";
 	String Symptoms_lesionsThatItch = "Symptoms.lesionsThatItch";
 	String Symptoms_lesionsThorax = "Symptoms.lesionsThorax";
+	String Symptoms_lossOfSmell = "Symptoms.lossOfSmell";
+	String Symptoms_lossOfTaste = "Symptoms.lossOfTaste";
 	String Symptoms_lossSkinTurgor = "Symptoms.lossSkinTurgor";
 	String Symptoms_lymphadenopathyAxillary = "Symptoms.lymphadenopathyAxillary";
 	String Symptoms_lymphadenopathyCervical = "Symptoms.lymphadenopathyCervical";
@@ -1391,7 +1398,10 @@ public interface Captions {
 	String View_users = "View.users";
 	String View_users_sub = "View.users.sub";
 	String Visit = "Visit";
+	String Visit_disease = "Visit.disease";
 	String Visit_person = "Visit.person";
+	String Visit_reportLat = "Visit.reportLat";
+	String Visit_reportLon = "Visit.reportLon";
 	String Visit_symptoms = "Visit.symptoms";
 	String Visit_visitDateTime = "Visit.visitDateTime";
 	String Visit_visitRemarks = "Visit.visitRemarks";

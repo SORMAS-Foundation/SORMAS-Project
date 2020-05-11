@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.clinicalcourse;
 
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.*;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
@@ -25,37 +26,32 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 	
 	private static final String HTML_LAYOUT =
 			h3(I18nProperties.getString(Strings.headingHealthConditions)) +
-			fluidRow(
-					fluidColumn(6, 0, locs(
-							HealthConditionsDto.TUBERCULOSIS, HealthConditionsDto.ASPLENIA,
-							HealthConditionsDto.HEPATITIS, HealthConditionsDto.DIABETES,
-							HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV,
-							HealthConditionsDto.HIV, HealthConditionsDto.HIV_ART, 
-							HealthConditionsDto.CONGENITAL_SYPHILIS, HealthConditionsDto.DOWN_SYNDROME)),
-					fluidColumn(6, 0, locs(
-							HealthConditionsDto.CHRONIC_LIVER_DISEASE, HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY,
-							HealthConditionsDto.CHRONIC_HEART_FAILURE, HealthConditionsDto.CHRONIC_PULMONARY_DISEASE, 
-							HealthConditionsDto.CHRONIC_KIDNEY_DISEASE, HealthConditionsDto.CHRONIC_NEUROLOGIC_CONDITION,
-							HealthConditionsDto.CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION))
+					fluidRow(
+							fluidColumn(6, 0, locs(
+									TUBERCULOSIS, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV, HIV,
+									HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME, CHRONIC_LIVER_DISEASE,
+									MALIGNANCY_CHEMOTHERAPY)),
+							fluidColumn(6, 0, locs(
+									CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
+									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
+									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE))
 					) +
-			loc(HealthConditionsDto.OTHER_CONDITIONS);
+					loc(OTHER_CONDITIONS);
 	
 	public HealthConditionsForm(UserRight editOrCreateUserRight) {
-		super(HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX, editOrCreateUserRight);
+		super(HealthConditionsDto.class, I18N_PREFIX, editOrCreateUserRight);
 	}
 	
 	@Override
 	protected void addFields() {
-		addFields(HealthConditionsDto.TUBERCULOSIS, HealthConditionsDto.ASPLENIA, HealthConditionsDto.HEPATITIS,
-				HealthConditionsDto.DIABETES, HealthConditionsDto.HIV, HealthConditionsDto.HIV_ART,
-				HealthConditionsDto.CHRONIC_LIVER_DISEASE, HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY,
-				HealthConditionsDto.CHRONIC_HEART_FAILURE, HealthConditionsDto.CHRONIC_PULMONARY_DISEASE,
-				HealthConditionsDto.CHRONIC_KIDNEY_DISEASE, HealthConditionsDto.CHRONIC_NEUROLOGIC_CONDITION,
-				HealthConditionsDto.DOWN_SYNDROME, HealthConditionsDto.CONGENITAL_SYPHILIS,
-				HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV, HealthConditionsDto.CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION);
-		addField(HealthConditionsDto.OTHER_CONDITIONS, TextArea.class).setRows(3);
+		addFields(TUBERCULOSIS, ASPLENIA, HEPATITIS, DIABETES, HIV, HIV_ART, CHRONIC_LIVER_DISEASE,
+				MALIGNANCY_CHEMOTHERAPY, CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE,
+				CHRONIC_KIDNEY_DISEASE, CHRONIC_NEUROLOGIC_CONDITION, DOWN_SYNDROME, CONGENITAL_SYPHILIS,
+				IMMUNODEFICIENCY_OTHER_THAN_HIV, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION, OBESITY,
+				CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE);
+		addField(OTHER_CONDITIONS, TextArea.class).setRows(3);
 		
-		FieldHelper.setVisibleWhen(getFieldGroup(), HealthConditionsDto.HIV_ART, HealthConditionsDto.HIV, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
 	}
     
 	@Override

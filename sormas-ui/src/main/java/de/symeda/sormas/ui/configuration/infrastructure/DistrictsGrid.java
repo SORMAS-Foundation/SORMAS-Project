@@ -21,9 +21,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -40,8 +38,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriteria> {
 
 	private static final long serialVersionUID = -4437531618828715458L;
-
-	public static final String EDIT_BTN_ID = "edit";
 	
 	public DistrictsGrid(DistrictCriteria criteria) {
 		super(DistrictIndexDto.class);
@@ -62,15 +58,7 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 				DistrictIndexDto.EXTERNAL_ID, DistrictIndexDto.POPULATION, DistrictIndexDto.GROWTH_RATE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			Column<DistrictIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-			editColumn.setId(EDIT_BTN_ID);
-			editColumn.setWidth(20);
-
-			addItemClickListener(e -> {
-				if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editDistrict(e.getItem().getUuid());
-				}
-			});
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getItem().getUuid()));
 		}	
 		
 		for(Column<?, ?> column : getColumns()) {

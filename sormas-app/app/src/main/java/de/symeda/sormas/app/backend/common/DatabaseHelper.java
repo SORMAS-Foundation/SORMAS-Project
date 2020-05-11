@@ -127,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 199;
+	public static final int DATABASE_VERSION = 202;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1507,6 +1507,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 198:
 					currentVersion = 198;
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN fieldSampleID varchar(512);");
+				case 199:
+					currentVersion = 199;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lossOfTaste varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lossOfSmell varchar(255);");
+				case 200:
+					currentVersion = 200;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN coughWithSputum varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN coughWithHeamoptysis varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lymphadenopathy varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN wheezing varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN skinUlcers varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN inabilityToWalk varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN inDrawingOfChestWall varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN otherComplications varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN otherComplicationsText varchar(255);");
+
+					getDao(Symptoms.class).executeRaw("ALTER TABLE healthconditions ADD COLUMN obesity varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE healthconditions ADD COLUMN currentSmoker varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE healthconditions ADD COLUMN formerSmoker varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE healthconditions ADD COLUMN asthma varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE healthconditions ADD COLUMN sickleCellDisease varchar(255);");
+				case 201:
+					currentVersion = 201;
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN additionalDetails varchar(512);");
 
 					// ATTENTION: break should only be done after last version
 					break;

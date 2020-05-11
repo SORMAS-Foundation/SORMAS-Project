@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.39.0-SNAPSHOT</version>
+	<version>1.40.0-SNAPSHOT</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -533,6 +533,7 @@
 						<pushHotfixes>true</pushHotfixes>
 						<useReleaseProfile>false</useReleaseProfile>
 						<noDeploy>true</noDeploy>
+						<noHotfixBuild>true</noHotfixBuild>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<updateDependencies>true</updateDependencies>
 					</configuration>
@@ -572,7 +573,14 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
-	</repositories>
+	</repositories>	
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>gradle</id>
+			<url>https://repo.gradle.org/gradle/libs-releases-local/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<profiles>
 		<profile>

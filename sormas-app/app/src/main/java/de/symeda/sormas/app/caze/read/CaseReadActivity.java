@@ -20,6 +20,7 @@ package de.symeda.sormas.app.caze.read;
 
 import android.content.Context;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseSection;
@@ -84,7 +86,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
         if (caze != null && caze.isUnreferredPortHealthCase()) {
             menuItems.set(CaseSection.SAMPLES.ordinal(), null);
         }
-        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isUnreferredPortHealthCase())  ||
+        if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) || (caze != null && caze.isUnreferredPortHealthCase()) ||
                 (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
             menuItems.set(CaseSection.CONTACTS.ordinal(), null);
         }
@@ -161,8 +163,25 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
+
         getEditMenu().setTitle(R.string.action_edit_case);
+
         return result;
+    }
+
+    @Override
+    protected void processActionbarMenu() {
+        super.processActionbarMenu();
+        final Case selectedCase = DatabaseHelper.getCaseDao().queryUuidBasic(getRootUuid());
+        final MenuItem editMenu = getEditMenu();
+
+        if (editMenu != null) {
+            if (CaseEditAuthorization.isCaseEditAllowed(selectedCase) || (getActiveFragment() != null && getActiveFragment() instanceof CaseReadContactListFragment)) {
+                editMenu.setVisible(true);
+            } else {
+                editMenu.setVisible(false);
+            }
+        }
     }
 
     @Override
@@ -173,6 +192,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
     @Override
     public void goToEditView() {
         CaseSection section = CaseSection.fromOrdinal(getActivePage().getPosition());
+
         CaseEditActivity.startActivity(CaseReadActivity.this, getRootUuid(), section);
     }
 }

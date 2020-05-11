@@ -34,10 +34,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactRelation;
-import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.*;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -140,53 +137,94 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
-		ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE, caze != null ? caze.getDisease() : null, caze != null);
+		ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE, caze != null ?
+				caze.getDisease() : null, caze != null);
 		createForm.setValue(createNewContact(caze));
-		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
+				new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
 
-		createComponent.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!createForm.getFieldGroup().isModified()) {
-					final ContactDto dto = createForm.getValue();
-					final PersonDto person = PersonDto.build();
-					person.setFirstName(createForm.getPersonFirstName());
-					person.setLastName(createForm.getPersonLastName());
-					person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-					person.setBirthdateMM(createForm.getBirthdateMM());
-					person.setBirthdateDD(createForm.getBirthdateDD());
-					person.setSex(createForm.getSex());
+		createComponent.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				final ContactDto dto = createForm.getValue();
+				final PersonDto person = PersonDto.build();
+				person.setFirstName(createForm.getPersonFirstName());
+				person.setLastName(createForm.getPersonLastName());
+				person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+				person.setBirthdateMM(createForm.getBirthdateMM());
+				person.setBirthdateDD(createForm.getBirthdateDD());
+				person.setSex(createForm.getSex());
 
-					ControllerProvider.getPersonController().selectOrCreatePerson(
-							person,
-							I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact),
-							selectedPerson -> {
-								if (selectedPerson != null) {
-									dto.setPerson(selectedPerson);
+				ControllerProvider.getPersonController().selectOrCreatePerson(
+						person,
+						I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact),
+						selectedPerson -> {
+							if (selectedPerson != null) {
+								dto.setPerson(selectedPerson);
 
-									// set the contact person's address to the one of the case when it is currently empty and
-									// the relationship with the case has been set to living in the same household
-									if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-										PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-										if (personDto.getAddress().isEmptyLocation()) {
-											CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-											personDto.getAddress().setRegion(caseDto.getRegion());
-											personDto.getAddress().setDistrict(caseDto.getDistrict());
-											personDto.getAddress().setCommunity(caseDto.getCommunity());
-										}
-										FacadeProvider.getPersonFacade().savePerson(personDto);
+								// set the contact person's address to the one of the case when it is currently
+								// empty and
+								// the relationship with the case has been set to living in the same household
+								if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
+									PersonDto personDto =
+											FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
+									if (personDto.getAddress().isEmptyLocation()) {
+										CaseDataDto caseDto =
+												FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
+										personDto.getAddress().setRegion(caseDto.getRegion());
+										personDto.getAddress().setDistrict(caseDto.getDistrict());
+										personDto.getAddress().setCommunity(caseDto.getCommunity());
 									}
-
-									FacadeProvider.getContactFacade().saveContact(dto);
-									Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.WARNING_MESSAGE);
-									editData(dto.getUuid());
+									FacadeProvider.getPersonFacade().savePerson(personDto);
 								}
-							});
-				}
+
+								selectOrCreateContact(dto, person,
+										I18nProperties.getString(Strings.infoSelectOrCreateContact),
+										selectedContactUuid -> {
+											if (selectedContactUuid != null) {
+												editData(selectedContactUuid);
+											}
+										});
+							}
+						});
 			}
 		});
 
 		return createComponent;
+	}
+
+	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, String infoText, Consumer<String> resultConsumer) {
+		ContactSelectionField contactSelect = new ContactSelectionField(contact, infoText, personDto.getFirstName(), personDto.getLastName());
+		contactSelect.setWidth(1024, Unit.PIXELS);
+
+		if (contactSelect.hasMatches()) {
+			// TODO add user right parameter
+			final CommitDiscardWrapperComponent<ContactSelectionField> component = new CommitDiscardWrapperComponent<>(contactSelect);
+			component.addCommitListener(() -> {
+				final SimilarContactDto selectedContact = contactSelect.getValue();
+				if (selectedContact != null) {
+					if (resultConsumer != null) {
+						resultConsumer.accept(selectedContact.getUuid());
+					}
+				} else {
+					createNewContact(contact, resultConsumer);
+				}
+			});
+
+			contactSelect.setSelectionChangeCallback((commitAllowed) -> {
+				component.getCommitButton().setEnabled(commitAllowed);
+			});
+
+			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateContact));
+			contactSelect.selectBestMatch();
+		} else {
+			createNewContact(contact, resultConsumer);
+		}
+	}
+
+	private void createNewContact(ContactDto contact, Consumer<String> resultConsumer) {
+		final ContactDto savedContact = FacadeProvider.getContactFacade().saveContact(contact);
+		Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.WARNING_MESSAGE);
+		resultConsumer.accept(savedContact.getUuid());
 	}
 
 	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {

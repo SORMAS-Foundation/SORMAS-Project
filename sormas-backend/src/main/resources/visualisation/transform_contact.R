@@ -30,12 +30,14 @@ caseClass = paste("Classification", c(
 	"SUSPECT",
 	"PROBABLE",
 	"CONFIRMED"), sep=("."))
+	
+# see CountElementStyle.POSITIVE and styles.css count-element
 caseClassColor = c(
-	"#17bd27", 
-	"#706c67", 
-	"#a88732", 
-	"#db890f", 
-	"#f70707")
+	"#32CD32", # positive
+	"#808080", # minor
+	"#c8aa00", # relevant
+	"#be6900", # important
+	"#c80000") # critical
 
 hierarchical= "T" == substr(HIERARCHICAL, 1, 1)
 defaultFont="font-family:'Open Sans', sans-serif, 'Source Sans Pro'"
@@ -119,8 +121,8 @@ highRiskProximity = paste("ContactProximity", c(
 		"CLOTHES_OR_OTHER",
 		"PHYSICAL_CONTACT"), sep=("."))
 elist$label = NA
-elist$label[elist$contactproximity %in% highRiskProximity] = 1 
-elist$label[!(elist$contactproximity %in% highRiskProximity)] = 2
+elist$label[elist$contactproximity %in% highRiskProximity] = "1" 
+elist$label[!(elist$contactproximity %in% highRiskProximity)] = "2"
 #drop contactproximity
 elist$contactproximity <- NULL
 
@@ -160,9 +162,9 @@ avertarIcon <- function(color, code = c( "f007")) {
 }
 g = visNetwork(nodesS, edgesS,  main = list(text = "Disease network diagram", style = mainStyle),
               submain = list(text = "The arrows indicate the direction of transmission", style = submainStyle), 
-              footer = list(text = "Double click on the icon to open the associated case or contact data", style = footerStyle), 
+              #footer = list(text = "Double click on the icon to open the associated case or contact data", style = footerStyle), 
               background = "white", annot = T, width = "100%" ) %>%
-  visEdges(arrows = "to", color = "black", smooth = TRUE) %>% 
+  visEdges(arrows = "to", color = "black", smooth = list(type="continuous")) %>%
   visOptions(selectedBy = "Classification", highlightNearest = TRUE, nodesIdSelection = FALSE)
 for (i in 1:length(caseClass)) {
 	  g = visGroups(graph = g, groupname = caseClass[i], size = 10, shape = "icon", icon = avertarIcon(caseClassColor[i]))
@@ -177,7 +179,7 @@ g = g %>%
     visPhysics(hierarchicalRepulsion = list(damping=0.26))
   } else {
     g = g %>% 
-  	visPhysics(solver = "barnesHut", barnesHut = list(damping=0.26))
+  	visPhysics(solver = "barnesHut", barnesHut = list(damping=0.26, avoidOverlap=0.2))
   }	
 
   g = g %>% 

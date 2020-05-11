@@ -427,12 +427,12 @@ public class StartupShutdownService {
 		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
 		String versionString = entityManager.createNativeQuery("SHOW server_version").getSingleResult().toString();
 		if (!versionString.matches(versionRegexp)) {
-			logger.warn("Your PostgreSQL Version (" + versionString + ") is currently not supported.");
+			logger.warn("Your PostgreSQL Version ({}) is currently not supported.", versionString);
 		}
 
 		// Check setting "max_prepared_transactions"
 		int maxPreparedTransactions =
-			Integer.valueOf(entityManager.createNativeQuery("select current_setting('max_prepared_transactions')").getSingleResult().toString());
+			Integer.parseInt(entityManager.createNativeQuery("select current_setting('max_prepared_transactions')").getSingleResult().toString());
 		if (maxPreparedTransactions < 1) {
 			errors.add("max_prepared_transactions is not set. A value of at least 64 is recommended.");
 		} else if (maxPreparedTransactions < 64) {
