@@ -4240,5 +4240,11 @@ END)
 INSERT INTO contacts_visits (contact_id, visit_id) SELECT contact_id, visit_id FROM ids;
 
 INSERT INTO schema_version (version_number, comment) VALUES (207, 'Added table for contact-visit association #1329');
+
+-- 2020-05-11 Add additionalDetails to contact #1933
+ALTER TABLE contact ADD COLUMN additionaldetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN additionaldetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (208, '2020-05-11 Add additionalDetails to contact #1933');
                                                                                                                         
 -- *** Insert new sql commands BEFORE this line ***
