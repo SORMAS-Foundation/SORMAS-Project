@@ -260,6 +260,20 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_cough_with_sputum"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.coughWithSputum}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_cough_with_heamoptysis"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.coughWithHeamoptysis}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_darkUrine"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -292,6 +306,13 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.difficultyBreathing}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_lymphadenopathy"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.lymphadenopathy}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -870,6 +891,34 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_wheezing"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.wheezing}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_skinUlcers"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.skinUlcers}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_inabilityToWalk"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.inabilityToWalk}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_inDrawingOfChestWall"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.inDrawingOfChestWall}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_otherHemorrhagicSymptoms"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -1171,6 +1220,19 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.shock}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_otherComplications"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.otherComplications}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/symptoms_otherComplicationsText"
+                app:value="@={data.otherComplicationsText}"
+                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <!-- comments, etc. -->

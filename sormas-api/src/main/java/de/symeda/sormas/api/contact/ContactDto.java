@@ -83,6 +83,7 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -142,6 +143,7 @@ public class ContactDto extends EntityDto {
 	private String quarantineHomePossibleComment;
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
+	private String additionalDetails;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -506,4 +508,11 @@ public class ContactDto extends EntityDto {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 	
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
+	}
 }
