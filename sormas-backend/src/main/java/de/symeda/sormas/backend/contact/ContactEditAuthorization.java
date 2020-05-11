@@ -8,6 +8,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -34,7 +35,7 @@ public class ContactEditAuthorization {
 
     	User user = userService.getCurrentUser();
 
-        if (user.getUuid().equals(contact.getReportingUser().getUuid())){
+        if (DataHelper.equal(user.getUuid(), (contact.getReportingUser().getUuid()))){
             return true;
         }
 
@@ -46,11 +47,11 @@ public class ContactEditAuthorization {
         }
 
         if (userService.hasAnyRole(UserRole.getSupervisorRoles())) {
-            return  contact.getRegion()!=null ? contact.getRegion().equals(user.getRegion()) : false;
+            return  DataHelper.equal(contact.getRegion(), (user.getRegion()));
         }
 
         if (userService.hasAnyRole(UserRole.getOfficerRoles())) {
-            return contact.getDistrict()!=null ? contact.getDistrict().equals(user.getDistrict()) : false;
+            return DataHelper.equal(contact.getDistrict(), (user.getDistrict()));
         }
 
         if (userService.hasRole(UserRole.NATIONAL_USER)) {

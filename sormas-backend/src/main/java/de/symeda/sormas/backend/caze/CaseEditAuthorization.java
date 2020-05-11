@@ -37,23 +37,23 @@ public class CaseEditAuthorization {
         }
 
         if (userService.hasAnyRole(UserRole.getSupervisorRoles())) {
-            return caze.getRegion().equals(user.getRegion());
+            return DataHelper.equal(caze.getRegion(), (user.getRegion()));
         }
 
         if (userService.hasAnyRole(UserRole.getOfficerRoles())) {
-            return caze.getDistrict().equals(user.getDistrict());
+            return DataHelper.equal(caze.getDistrict(), (user.getDistrict()));
         }
 
         if ((userService.hasRole(UserRole.HOSPITAL_INFORMANT))) {
-            return caze.getHealthFacility().equals(user.getHealthFacility());
+            return DataHelper.equal(caze.getHealthFacility(), (user.getHealthFacility()));
         }
 
         if ((userService.hasRole(UserRole.COMMUNITY_INFORMANT))) {
-            return caze.getCommunity().equals(user.getCommunity());
+            return DataHelper.equal(caze.getCommunity(), (user.getCommunity()));
         }
 
         if ((userService.hasRole(UserRole.POE_INFORMANT))) {
-            return caze.getPointOfEntry().equals(user.getPointOfEntry());
+            return DataHelper.equal(caze.getPointOfEntry(), (user.getPointOfEntry()));
         }
 
         if (userService.hasRole(UserRole.NATIONAL_USER)) {
