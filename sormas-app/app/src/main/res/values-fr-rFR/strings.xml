@@ -246,6 +246,7 @@
     <string name="error_synchronization">La synchronisation a échoué. Veuillez réessayer plus tard.</string>
     <string name="error_server_communication">Impossible de communiquer avec le serveur SORMAS. Réessayez plus tard.</string>
     <string name="error_no_pathogentest_labuser">le test de l\'agent pathogène n\'a pas d\'utilisateur en laboratoire</string>
+    <string name="heading_additional_details">General comment</string>
     <string name="heading_additional_medical_information">Informations médicales supplémentaires</string>
     <string name="heading_animal_contacts">Contacts avec les animaux</string>
     <string name="heading_app_download_failed">Échec du téléchargement de l\'application</string>
