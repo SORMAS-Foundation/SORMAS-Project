@@ -181,10 +181,6 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 	}
 
-	private boolean areFieldsValid(String... propertyIds){
-		return Stream.of(propertyIds).allMatch(p -> getField(p).isValid());
-	}
-
 	private void setConvertedValue(String propertyId, Object value) {
 		((AbstractField<?>) getField(propertyId)).setConvertedValue(value);
 	}
