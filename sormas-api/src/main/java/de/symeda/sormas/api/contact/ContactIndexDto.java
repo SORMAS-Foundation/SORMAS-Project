@@ -23,7 +23,6 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 
 public class ContactIndexDto implements Serializable {
 
@@ -33,7 +32,8 @@ public class ContactIndexDto implements Serializable {
 	
 	public static final String UUID = "uuid";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
-	public static final String PERSON = "person";
+	public static final String PERSON_FIRST_NAME = "firstName";
+	public static final String PERSON_LAST_NAME = "lastName";
 	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
 	public static final String REGION_UUID = "regionUuid";
@@ -49,7 +49,8 @@ public class ContactIndexDto implements Serializable {
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 
 	private String uuid;
-	private PersonReferenceDto person;
+	private String firstName;
+	private String lastName;
 	private CaseReferenceDto caze;
 	private Disease disease;
 	private String diseaseDetails;
@@ -66,14 +67,15 @@ public class ContactIndexDto implements Serializable {
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	
-	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
-			Disease disease, String diseaseDetails, String casePersonUuid, String caseFirstName, String caseLastName, String regionUuid,
-			String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
-			ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus, 
-			Date followUpUntil, String contactOfficerUuid, Date reportDateTime,
-			CaseClassification caseClassification) {
+	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
+						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
+						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
+						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
+						   Date followUpUntil, String contactOfficerUuid, Date reportDateTime,
+						   CaseClassification caseClassification) {
 		this.uuid = uuid;
-		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
+		this.firstName = personFirstName;
+		this.lastName = personLastName;
 		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
@@ -97,11 +99,17 @@ public class ContactIndexDto implements Serializable {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
-	public PersonReferenceDto getPerson() {
-		return person;
+	public String getFirstName() {
+		return firstName;
 	}
-	public void setPerson(PersonReferenceDto person) {
-		this.person = person;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	public CaseReferenceDto getCaze() {
 		return caze;
