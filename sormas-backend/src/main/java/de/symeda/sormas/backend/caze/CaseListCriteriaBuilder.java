@@ -42,18 +42,18 @@ public class CaseListCriteriaBuilder {
 	@EJB
 	private CaseService caseService;
 
-	public CriteriaQuery<CaseIndexDto> buildIndexCriteria(CaseCriteria contactCriteria, List<SortProperty> sortProperties) {
+	public CriteriaQuery<CaseIndexDto> buildIndexCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
 		return buildIndexCriteria(CaseIndexDto.class,
 				this::getCaseIndexSelections,
-				contactCriteria,
+				caseCriteria,
 				this::getIndexOrders,
 				sortProperties);
 	}
 
-	public CriteriaQuery<CaseIndexDetailedDto> buildIndexDetailedCriteria(CaseCriteria contactCriteria, List<SortProperty> sortProperties) {
+	public CriteriaQuery<CaseIndexDetailedDto> buildIndexDetailedCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
 		return buildIndexCriteria(CaseIndexDetailedDto.class,
-				this::getContactIndexDetailedSelections,
-				contactCriteria,
+				this::getCaseIndexDetailedSelections,
+				caseCriteria,
 				this::getIndexDetailOrders,
 				sortProperties);
 	}
@@ -157,7 +157,7 @@ public class CaseListCriteriaBuilder {
 		}
 	}
 
-	private List<Selection<?>> getContactIndexDetailedSelections(Root<Case> caze, CaseJoins joins) {
+	private List<Selection<?>> getCaseIndexDetailedSelections(Root<Case> caze, CaseJoins joins) {
 		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, joins));
 
 		selections.addAll(Arrays.asList(
