@@ -321,7 +321,7 @@ public class CaseController {
 		createForm.setSymptoms(symptoms);
 
 		if (convertedContact != null || convertedEventParticipant != null) {
-			createForm.setNameReadOnly(true);
+			createForm.setPersonalDetailsReadOnly(true);
 			createForm.setDiseaseReadOnly(true);
 		}
 		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(

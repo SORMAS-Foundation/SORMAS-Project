@@ -138,6 +138,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case Community.NAME:
+				case Community.EXTERNAL_ID:
 					expression = community.get(sortProperty.propertyName);
 					break;
 				case District.REGION:

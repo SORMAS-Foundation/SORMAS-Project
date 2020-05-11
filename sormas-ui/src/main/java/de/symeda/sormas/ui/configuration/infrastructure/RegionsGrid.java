@@ -21,9 +21,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -40,8 +38,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 
 	private static final long serialVersionUID = 6289713952342575369L;
-
-	public static final String EDIT_BTN_ID = "edit";
 
 	public RegionsGrid(RegionCriteria criteria) {
 		super(RegionIndexDto.class);
@@ -62,18 +58,12 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 				RegionIndexDto.GROWTH_RATE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			Column<RegionIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-			editColumn.setId(EDIT_BTN_ID);
-			editColumn.setWidth(20);
-
-			addItemClickListener(e -> {
-				if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editRegion(e.getItem().getUuid());
-				}
+			addEditColumn(e -> {
+				ControllerProvider.getInfrastructureController().editRegion(e.getItem().getUuid());
 			});
 		}
-		
-		for(Column<?, ?> column : getColumns()) {
+
+		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
 					RegionIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}

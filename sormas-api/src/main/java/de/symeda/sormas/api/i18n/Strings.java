@@ -383,6 +383,7 @@ public interface Strings {
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
 	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
+	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";

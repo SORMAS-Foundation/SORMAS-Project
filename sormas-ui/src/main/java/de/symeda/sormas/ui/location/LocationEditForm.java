@@ -28,7 +28,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import com.vaadin.v7.data.validator.RegexpValidator;
+import de.symeda.sormas.ui.utils.MaxLengthValidator;
+import de.symeda.sormas.ui.utils.ValidationConstants;
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -196,7 +197,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	@Override
 	protected void addFields() {
-		addField(LocationDto.ADDRESS, TextArea.class).setRows(5);
+		TextArea addressField = addField(LocationDto.ADDRESS, TextArea.class);
+		addressField.setRows(5);
+		addressField.addValidator(new MaxLengthValidator(ValidationConstants.TEXT_FIELD_MAX_LENGTH));
+
 		addField(LocationDto.DETAILS, TextField.class);
 		addField(LocationDto.CITY, TextField.class);
 		addField(LocationDto.POSTAL_CODE, TextField.class);
