@@ -300,6 +300,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private PopulationDataFacadeEjbLocal populationDataFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private CaseEditAuthorization caseEditAuthorization;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -2361,4 +2363,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 	}
+	
+	public Boolean isCaseEditAllowed(String caseUuid) {
+		Case caze = caseService.getByUuid(caseUuid);
+		return caseEditAuthorization.caseEditAllowedCheck(caze);
+	};
+	
 }

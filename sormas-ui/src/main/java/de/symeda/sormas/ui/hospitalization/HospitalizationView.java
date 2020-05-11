@@ -19,8 +19,11 @@ package de.symeda.sormas.ui.hospitalization;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
+import de.symeda.sormas.ui.person.PersonEditForm;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
@@ -41,6 +44,9 @@ public class HospitalizationView extends AbstractCaseView {
     		return;
     	}
 		
-		setSubComponent(ControllerProvider.getCaseController().getHospitalizationComponent(getCaseRef().getUuid(), getViewMode()));
+    	CommitDiscardWrapperComponent<HospitalizationForm> hospitalizationForm = ControllerProvider.getCaseController().getHospitalizationComponent(getCaseRef().getUuid(), getViewMode()); 
+    	
+    	setSubComponent(hospitalizationForm);
+		setCaseEditPermission(hospitalizationForm);    	
 	}
 }

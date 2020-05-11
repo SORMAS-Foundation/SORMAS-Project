@@ -87,5 +87,7 @@ public interface ContactFacade {
 	void validate(ContactDto contact) throws ValidationRuntimeException;
 
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
+	
+	boolean isContactEditAllowed(String contactUuid);
 
 }

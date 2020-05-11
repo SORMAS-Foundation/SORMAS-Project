@@ -151,6 +151,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private ContactEditAuthorization contactEditAuthorization;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -1164,6 +1166,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {
 
+	}
+
+	@Override
+	public boolean isContactEditAllowed(String contactUuid) {		
+		Contact contact = contactService.getByUuid(contactUuid);
+		return contactEditAuthorization.isContactEditAllowed(contact);
 	}
 
 }

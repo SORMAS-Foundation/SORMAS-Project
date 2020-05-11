@@ -92,11 +92,11 @@ public class CaseDataView extends AbstractCaseView {
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, CASE_LOC);
-
+		
 		TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
-
+					   
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.isUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
@@ -114,5 +114,6 @@ public class CaseDataView extends AbstractCaseView {
 			
 		}
 		
+		setCaseEditPermission(container);
 	}
 }

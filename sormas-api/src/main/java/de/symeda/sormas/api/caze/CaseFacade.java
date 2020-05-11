@@ -112,4 +112,6 @@ public interface CaseFacade {
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
 	
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
+	
+	Boolean isCaseEditAllowed(String caseUuid);
 }

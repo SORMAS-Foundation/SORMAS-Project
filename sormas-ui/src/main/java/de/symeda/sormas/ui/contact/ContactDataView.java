@@ -68,7 +68,7 @@ public class ContactDataView extends AbstractContactView {
 
 		String htmlLayout = LayoutUtil.fluidRow(
 				LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC), 
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
 				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
 				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC)
 				);
@@ -101,7 +101,8 @@ public class ContactDataView extends AbstractContactView {
 			HorizontalLayout buttonsLayout = new HorizontalLayout();
 			buttonsLayout.setSpacing(true);
 
-			Button chooseCaseButton = new Button(I18nProperties.getCaption(contactDto.getCaze() == null ? Captions.contactChooseSourceCase : Captions.contactChangeCase));
+			Button chooseCaseButton = new Button(I18nProperties.getCaption(
+					contactDto.getCaze() == null ? Captions.contactChooseSourceCase : Captions.contactChangeCase));
 			CssStyles.style(chooseCaseButton, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_2);
 			buttonsLayout.addComponent(chooseCaseButton);
 			Button removeCaseButton = new Button(I18nProperties.getCaption(Captions.contactRemoveCase));
@@ -115,7 +116,7 @@ public class ContactDataView extends AbstractContactView {
 						I18nProperties.getString(Strings.headingDiscardUnsavedChanges),
 						new Label(I18nProperties.getString(Strings.confirmationContactSourceCaseDiscardUnsavedChanges)),
 						I18nProperties.getString(Strings.yes),
-						I18nProperties.getString(Strings.no),
+						I18nProperties.getString(Strings.no), 
 						480,
 						confirmed -> {
 							if (confirmed) {
@@ -127,11 +128,11 @@ public class ContactDataView extends AbstractContactView {
 										ContactDto contactToChange = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 										contactToChange.setCaze(selectedCase.toReference());
 										FacadeProvider.getContactFacade().saveContact(contactToChange);
-										layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()), CASE_LOC);
+										layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()),CASE_LOC);
 										removeCaseButton.setVisible(true);
 										chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
 										ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
-										new Notification(null, I18nProperties.getString(Strings.messageContactCaseChanged), Type.TRAY_NOTIFICATION, false).show(Page.getCurrent());
+										new Notification(null,I18nProperties.getString(Strings.messageContactCaseChanged),Type.TRAY_NOTIFICATION, false).show(Page.getCurrent());
 									}
 								});
 							}
@@ -139,24 +140,23 @@ public class ContactDataView extends AbstractContactView {
 
 			});
 			removeCaseButton.addClickListener(e -> {
-				VaadinUiUtil.showConfirmationPopup(
-						I18nProperties.getString(Strings.headingRemoveCaseFromContact), 
-						new Label(I18nProperties.getString(Strings.confirmationContactSourceCaseDiscardUnsavedChanges)), 
-						I18nProperties.getString(Strings.yes), 
-						I18nProperties.getString(Strings.no),
-						480,
-						confirmed -> {
+				VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingRemoveCaseFromContact),
+						new Label(I18nProperties.getString(Strings.confirmationContactSourceCaseDiscardUnsavedChanges)),
+						I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 480, confirmed -> {
 							if (confirmed) {
 								editComponent.discard();
 								layout.removeComponent(CASE_LOC);
 								((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(null);
-								ContactDto contactToChange = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+								ContactDto contactToChange = FacadeProvider.getContactFacade()
+										.getContactByUuid(getContactRef().getUuid());
 								contactToChange.setCaze(null);
 								FacadeProvider.getContactFacade().saveContact(contactToChange);
 								removeCaseButton.setVisible(false);
-								chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChooseSourceCase));
+								chooseCaseButton
+										.setCaption(I18nProperties.getCaption(Captions.contactChooseSourceCase));
 								ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
-								new Notification(null, I18nProperties.getString(Strings.messageContactCaseRemoved), Type.TRAY_NOTIFICATION, false).show(Page.getCurrent());
+								new Notification(null, I18nProperties.getString(Strings.messageContactCaseRemoved),
+										Type.TRAY_NOTIFICATION, false).show(Page.getCurrent());
 							}
 						});
 			});
@@ -167,6 +167,8 @@ public class ContactDataView extends AbstractContactView {
 		TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
+
+		setContactEditPermission(container);
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {
