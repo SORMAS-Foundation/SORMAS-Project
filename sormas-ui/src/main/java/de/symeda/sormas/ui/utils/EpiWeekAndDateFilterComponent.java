@@ -34,9 +34,9 @@ import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.dashboard.DateFilterOption;
 
 public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends HorizontalLayout {
 
@@ -90,7 +90,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 				if (fillAutomatically) {
 					dateToFilter.setValue(c.getTime());
 				}
-			} else {
+			} else if (getComponentIndex(dateFromFilter) != -1) {
 				int newIndex = getComponentIndex(dateFromFilter);
 				removeComponent(dateFromFilter);
 				removeComponent(dateToFilter);

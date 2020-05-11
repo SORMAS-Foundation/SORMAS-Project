@@ -76,6 +76,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -805,6 +806,7 @@ public class CasesView extends AbstractView {
 					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 					NewCaseDateType newCaseDateType = (NewCaseDateType) weekAndDateFilter.getDateTypeSelector().getValue();
 					criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
+					criteria.dateFilterOption(dateFilterOption);
 					navigateTo(criteria);
 				} else {
 					if (dateFilterOption == DateFilterOption.DATE) {
@@ -1023,17 +1025,13 @@ public class CasesView extends AbstractView {
 		withoutResponsibleOfficerFilter.setValue(criteria.isWithoutResponsibleOfficer());
 
 		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getNewCaseDateType());
+		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
 		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
 		Date newCaseDateTo = criteria.getNewCaseDateTo();
-		// Reconstruct date/epi week choice
-		if ((newCaseDateFrom != null && newCaseDateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo)))
-				|| (newCaseDateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(newCaseDateFrom)).equals(newCaseDateFrom))
-				|| (newCaseDateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(newCaseDateTo)).equals(newCaseDateTo))) {
-			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
+		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
 			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(newCaseDateFrom));
 			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(newCaseDateTo));
 		} else {
-			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
 			weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 			weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 		}

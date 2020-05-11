@@ -211,6 +211,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 				case PointOfEntry.LATITUDE:
 				case PointOfEntry.LONGITUDE:
 				case PointOfEntry.ACTIVE:
+				case PointOfEntry.EXTERNAL_ID:
 					expression = pointOfEntry.get(sortProperty.propertyName);
 					break;
 				case Facility.REGION:

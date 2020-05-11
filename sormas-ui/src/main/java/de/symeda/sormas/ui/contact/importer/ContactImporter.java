@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.ui.contact.ContactSelectionField;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -87,8 +89,8 @@ public class ContactImporter extends DataImporter {
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
-		final ContactDto newContact = caze != null ? ContactDto.build(caze) : ContactDto.build();
-		newContact.setReportingUser(currentUser);
+		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
+		newContactTemp.setReportingUser(currentUser);
 
 		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true,
 				new Function<ImportCellData, Exception>() {
@@ -97,7 +99,7 @@ public class ContactImporter extends DataImporter {
 						// If the cell entry is not empty, try to insert it into the current contact or person object
 						if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
 							try {
-								insertColumnEntryIntoData(newContact, newPersonTemp, importColumnInformation.getValue(),
+								insertColumnEntryIntoData(newContactTemp, newPersonTemp, importColumnInformation.getValue(),
 										importColumnInformation.getEntityPropertyPath());
 							} catch (ImportErrorException | InvalidColumnException e) {
 								return e;
@@ -108,12 +110,12 @@ public class ContactImporter extends DataImporter {
 				});
 
 		// try to assign the contact to an existing case
-		if (caze == null && newContact.getCaseIdExternalSystem() != null) {
+		if (caze == null && newContactTemp.getCaseIdExternalSystem() != null) {
 			CaseDataDto existingCase = FacadeProvider.getCaseFacade()
-					.getCaseDataByUuid(newContact.getCaseIdExternalSystem().trim().toUpperCase());
+					.getCaseDataByUuid(newContactTemp.getCaseIdExternalSystem().trim().toUpperCase());
 			if (existingCase != null) {
-				newContact.assignCase(existingCase);
-				newContact.setCaseIdExternalSystem(null);
+				newContactTemp.assignCase(existingCase);
+				newContactTemp.setCaseIdExternalSystem(null);
 			}
 		}
 
@@ -121,7 +123,7 @@ public class ContactImporter extends DataImporter {
 		if (!contactHasImportError) {
 			try {
 				FacadeProvider.getPersonFacade().validate(newPersonTemp);
-				FacadeProvider.getContactFacade().validate(newContact);
+				FacadeProvider.getContactFacade().validate(newContactTemp);
 			} catch (ValidationRuntimeException e) {
 				contactHasImportError = true;
 				writeImportError(values, e.getMessage());
@@ -137,21 +139,18 @@ public class ContactImporter extends DataImporter {
 				ContactImportConsumer consumer = new ContactImportConsumer();
 				ImportSimilarityResultOption resultOption = null;
 
-				ContactImportLock LOCK = new ContactImportLock();
+				ContactImportLock personSelectLock = new ContactImportLock();
 				// We need to pause the current thread to prevent the import from continuing until the user has acted
-				synchronized (LOCK) {
+				synchronized (personSelectLock) {
 					// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
 					// to allow the importer to resume
-					handleSimilarity(newPerson, new Consumer<ContactImportSimilarityResult>() {
-						@Override
-						public void accept(ContactImportSimilarityResult result) {
-							consumer.onImportResult(result, LOCK);
-						}
+					handleSimilarity(newPerson, result -> {
+						consumer.onImportResult(result, personSelectLock);
 					});
 
 					try {
-						if (!LOCK.wasNotified) {
-							LOCK.wait();
+						if (!personSelectLock.wasNotified) {
+							personSelectLock.wait();
 						}
 					} catch (InterruptedException e) {
 						logger.error("InterruptedException when trying to perform LOCK.wait() in contact import: "
@@ -177,8 +176,36 @@ public class ContactImporter extends DataImporter {
 				} else if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
-					PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
-					newContact.setPerson(savedPerson.toReference());
+					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
+					newContactTemp.setPerson(savedPerson.toReference());
+
+					ContactDto newContact = newContactTemp;
+
+					final ContactImportLock contactSelectLock = new ContactImportLock();
+					synchronized (contactSelectLock) {
+
+						handleContactSimilarity(newContactTemp, savedPerson, result -> consumer.onImportResult(result, contactSelectLock));
+
+						try {
+							if (!contactSelectLock.wasNotified) {
+								contactSelectLock.wait();
+							}
+						} catch (InterruptedException e) {
+							logger.error("InterruptedException when trying to perform LOCK.wait() in contact import: "
+									+ e.getMessage());
+							throw e;
+						}
+
+						if (consumer.result != null) {
+							resultOption = consumer.result.getResultOption();
+						}
+
+						if (ImportSimilarityResultOption.PICK.equals(resultOption)) {
+							newContact = FacadeProvider.getContactFacade()
+									.getContactByUuid(consumer.result.getMatchingContact().getUuid());
+						}
+					}
+
 					FacadeProvider.getContactFacade().saveContact(newContact);
 
 					consumer.result = null;
@@ -198,46 +225,77 @@ public class ContactImporter extends DataImporter {
 	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
 	 */
 	protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-		currentUI.accessSynchronously(new Runnable() {
-			@Override
-			public void run() {
-				PersonSelectionField personSelect = new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContactImport));
-				personSelect.setWidth(1024, Unit.PIXELS);
 
-				if (personSelect.hasMatches()) {
-					final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
-					component.addCommitListener(new CommitListener() {
-						@Override
-						public void onCommit() {
-							PersonIndexDto person = personSelect.getValue();
-							if (person == null) {
-								resultConsumer.accept(
-										new ContactImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
-							} else {
-								resultConsumer.accept(
-										new ContactImportSimilarityResult(person, ImportSimilarityResultOption.PICK));
-							}
-						}
-					});
+		currentUI.accessSynchronously(() -> {
+			PersonSelectionField personSelect = new PersonSelectionField(newPerson,
+					I18nProperties.getString(Strings.infoSelectOrCreatePersonForContactImport));
+			personSelect.setWidth(1024, Unit.PIXELS);
 
-					component.addDiscardListener(new DiscardListener() {
-						@Override
-						public void onDiscard() {
-							resultConsumer.accept(
-									new ContactImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
-						}
-					});
+			if (personSelect.hasMatches()) {
+				final CommitDiscardWrapperComponent<PersonSelectionField> component =
+						new CommitDiscardWrapperComponent<>(personSelect);
+				component.addCommitListener(() -> {
+					PersonIndexDto person = personSelect.getValue();
+					if (person == null) {
+						resultConsumer.accept(
+								new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+					} else {
+						resultConsumer.accept(
+								new ContactImportSimilarityResult(person, null, ImportSimilarityResultOption.PICK));
+					}
+				});
 
-					personSelect.setSelectionChangeCallback((commitAllowed) -> {
-						component.getCommitButton().setEnabled(commitAllowed);
-					});
+				component.addDiscardListener(() -> resultConsumer.accept(
+						new ContactImportSimilarityResult(null, null,  ImportSimilarityResultOption.SKIP)));
 
-					VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
-					
-					personSelect.selectBestMatch();
-				} else {
-					resultConsumer.accept(new ContactImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
-				}
+				personSelect.setSelectionChangeCallback((commitAllowed) -> {
+					component.getCommitButton().setEnabled(commitAllowed);
+				});
+
+				VaadinUiUtil.showModalPopupWindow(component,
+						I18nProperties.getString(Strings.headingPickOrCreatePerson));
+
+				personSelect.selectBestMatch();
+			} else {
+				resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+			}
+		});
+	}
+
+	protected void handleContactSimilarity(ContactDto newContact, PersonDto person, Consumer<ContactImportSimilarityResult> resultConsumer) {
+
+		currentUI.accessSynchronously(() -> {
+			ContactSelectionField contactSelection = new ContactSelectionField(newContact,
+					I18nProperties.getString(Strings.infoSelectOrCreateContactImport), person.getFirstName(), person.getLastName());
+			contactSelection.setWidth(1024, Unit.PIXELS);
+
+			if (contactSelection.hasMatches()) {
+				final CommitDiscardWrapperComponent<ContactSelectionField> component =
+						new CommitDiscardWrapperComponent<>(contactSelection);
+				component.addCommitListener(() -> {
+					SimilarContactDto similarContactDto = contactSelection.getValue();
+					if (similarContactDto == null) {
+						resultConsumer.accept(
+								new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+					} else {
+						resultConsumer.accept(
+								new ContactImportSimilarityResult(null, similarContactDto, ImportSimilarityResultOption.PICK));
+					}
+				});
+
+				component.addDiscardListener(() -> resultConsumer.accept(
+						new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP)));
+
+				contactSelection.setSelectionChangeCallback((commitAllowed) -> {
+					component.getCommitButton().setEnabled(commitAllowed);
+				});
+
+				VaadinUiUtil.showModalPopupWindow(component,
+						I18nProperties.getString(Strings.headingPickOrCreateContact));
+
+				contactSelection.selectBestMatch();
+			} else {
+				resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 			}
 		});
 	}
