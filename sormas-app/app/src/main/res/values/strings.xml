@@ -256,6 +256,7 @@
     <string name="error_server_communication">Could not communicate with SORMAS server. Try again later.</string>
     <string name="error_no_pathogentest_labuser">the pathogen test has no lab user</string>
 
+    <string name="heading_additional_details">General comment</string>
     <string name="heading_additional_medical_information">Additional Medical Information</string>
     <string name="heading_animal_contacts">Animal Contacts</string>
     <string name="heading_app_download_failed">App download failed</string>

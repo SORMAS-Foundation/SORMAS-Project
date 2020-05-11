@@ -29,6 +29,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class ContactCriteria extends BaseCriteria implements Serializable {
@@ -46,6 +47,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date reportDateFrom;
 	private Date reportDateTo;
+	// Used to re-construct whether users have filtered by epi weeks or dates
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
 	/**
@@ -67,7 +70,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Boolean quarantineOrderedVerbally;
 	private Boolean quarantineOrderedOfficialDocument;
 	private Boolean quarantineNotOrdered;
-	
+
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
 	}
@@ -148,7 +151,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.followUpStatus = followUpStatus;
 		return this;
 	}
-	
+
 	public ContactCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo) {
 		this.reportDateFrom = reportDateFrom;
 		this.reportDateTo = reportDateTo;
@@ -172,7 +175,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public Date getReportDateTo() {
 		return reportDateTo;
 	}
-	
+
 	public ContactCriteria lastContactDateBetween(Date lastContactDateFrom, Date lastContactDateTo) {
 		this.lastContactDateFrom = lastContactDateFrom;
 		this.lastContactDateTo = lastContactDateTo;
@@ -196,7 +199,16 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public Date getLastContactDateTo() {
 		return lastContactDateTo;
 	}
-	
+
+	public ContactCriteria dateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
+	}
+
 	public ContactCriteria followUpUntilBetween(Date followUpUntilFrom, Date followUpUntilTo) {
 		this.followUpUntilFrom = followUpUntilFrom;
 		this.followUpUntilTo = followUpUntilTo;
@@ -207,7 +219,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.followUpUntilFrom = followUpUntilFrom;
 		return this;
 	}
-	
+
 	public Date getFollowUpUntilFrom() {
 		return followUpUntilFrom;
 	}
@@ -216,11 +228,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.followUpUntilTo = followUpUntilTo;
 		return this;
 	}
-	
+
 	public Date getFollowUpUntilTo() {
 		return followUpUntilTo;
 	}
-	
+
 	public Boolean getFollowUpUntilToPrecise() {
 		return followUpUntilToPrecise;
 	}
@@ -234,12 +246,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
 	}
-	
+
 	public ContactCriteria deleted(Boolean deleted) {
 		this.deleted = deleted;
 		return this;
@@ -249,7 +261,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public Boolean getDeleted() {
 		return deleted;
 	}
-	
+
 	/**
 	 * returns all entries that match ALL of the passed words
 	 */
@@ -307,11 +319,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.onlyQuarantineHelpNeeded = onlyQuarantineHelpNeeded;
 		return this;
 	}
-	
+
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
-	
+
 	public ContactCriteria quarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 		return this;
@@ -343,5 +355,5 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.quarantineNotOrdered = quarantineNotOrdered;
 		return this;
 	}
-	
+
 }

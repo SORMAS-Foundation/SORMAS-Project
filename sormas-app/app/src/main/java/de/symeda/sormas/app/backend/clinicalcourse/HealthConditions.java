@@ -73,6 +73,16 @@ public class HealthConditions extends AbstractDomainObject {
     private YesNoUnknown immunodeficiencyOtherThanHiv;
     @Enumerated(EnumType.STRING)
     private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown obesity;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown currentSmoker;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown formerSmoker;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown asthma;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown sickleCellDisease;
 
     public YesNoUnknown getTuberculosis() {
         return tuberculosis;
@@ -208,6 +218,46 @@ public class HealthConditions extends AbstractDomainObject {
 
     public void setCardiovascularDiseaseIncludingHypertension(YesNoUnknown cardiovascularDiseaseIncludingHypertension) {
         this.cardiovascularDiseaseIncludingHypertension = cardiovascularDiseaseIncludingHypertension;
+    }
+
+    public YesNoUnknown getObesity() {
+        return obesity;
+    }
+
+    public void setObesity(YesNoUnknown obesity) {
+        this.obesity = obesity;
+    }
+
+    public YesNoUnknown getCurrentSmoker() {
+        return currentSmoker;
+    }
+
+    public void setCurrentSmoker(YesNoUnknown currentSmoker) {
+        this.currentSmoker = currentSmoker;
+    }
+
+    public YesNoUnknown getFormerSmoker() {
+        return formerSmoker;
+    }
+
+    public void setFormerSmoker(YesNoUnknown formerSmoker) {
+        this.formerSmoker = formerSmoker;
+    }
+
+    public YesNoUnknown getAsthma() {
+        return asthma;
+    }
+
+    public void setAsthma(YesNoUnknown asthma) {
+        this.asthma = asthma;
+    }
+
+    public YesNoUnknown getSickleCellDisease() {
+        return sickleCellDisease;
+    }
+
+    public void setSickleCellDisease(YesNoUnknown sickleCellDisease) {
+        this.sickleCellDisease = sickleCellDisease;
     }
 
     @Override

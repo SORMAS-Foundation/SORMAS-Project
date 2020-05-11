@@ -4175,6 +4175,39 @@ ALTER TABLE symptoms_history ADD COLUMN lossofsmell varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (205, 'Added symptoms loss of taste and loss of smell #1936');
 
+-- 2020-05-05 Add new symptoms and health conditions #1824
+ALTER TABLE symptoms ADD COLUMN coughWithSputum varchar(255);
+ALTER TABLE symptoms ADD COLUMN coughWithHeamoptysis varchar(255);
+ALTER TABLE symptoms ADD COLUMN lymphadenopathy varchar(255);
+ALTER TABLE symptoms ADD COLUMN wheezing varchar(255);
+ALTER TABLE symptoms ADD COLUMN skinUlcers varchar(255);
+ALTER TABLE symptoms ADD COLUMN inabilityToWalk varchar(255);
+ALTER TABLE symptoms ADD COLUMN inDrawingOfChestWall varchar(255);
+ALTER TABLE symptoms ADD COLUMN otherComplications varchar(255);
+ALTER TABLE symptoms ADD COLUMN otherComplicationsText varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughWithSputum varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughWithHeamoptysis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN lymphadenopathy varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN wheezing varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN skinUlcers varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN inabilityToWalk varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN inDrawingOfChestWall varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN otherComplications varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN otherComplicationsText varchar(255);
+
+ALTER TABLE healthconditions ADD COLUMN obesity varchar(255);
+ALTER TABLE healthconditions ADD COLUMN currentSmoker varchar(255);
+ALTER TABLE healthconditions ADD COLUMN formerSmoker varchar(255);
+ALTER TABLE healthconditions ADD COLUMN asthma varchar(255);
+ALTER TABLE healthconditions ADD COLUMN sickleCellDisease varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN obesity varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN currentSmoker varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN formerSmoker varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN asthma varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN sickleCellDisease varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (206, 'Add new symptoms and health conditions #1824');
+                                                                                                                        
 -- 2020-05-05 Added table for contact-visit association #1329
 CREATE TABLE contacts_visits(
 	contact_id bigint NOT NULL,
@@ -4206,6 +4239,6 @@ ELSE v.visitdatetime <= (c.reportdatetime + interval '30' day)
 END)
 INSERT INTO contacts_visits (contact_id, visit_id) SELECT contact_id, visit_id FROM ids;
 
-INSERT INTO schema_version (version_number, comment) VALUES (206, 'Added table for contact-visit association #1329');
-
+INSERT INTO schema_version (version_number, comment) VALUES (207, 'Added table for contact-visit association #1329');
+                                                                                                                        
 -- *** Insert new sql commands BEFORE this line ***
