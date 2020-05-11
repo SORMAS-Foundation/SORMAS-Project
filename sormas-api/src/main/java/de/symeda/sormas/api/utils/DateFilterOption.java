@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.api.utils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 

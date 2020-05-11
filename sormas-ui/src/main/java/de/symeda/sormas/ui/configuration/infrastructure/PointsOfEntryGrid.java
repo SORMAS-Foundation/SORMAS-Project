@@ -4,9 +4,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -24,8 +22,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntryCriteria> {
 
 	private static final long serialVersionUID = -650914769265620769L;
-	
-	public static final String EDIT_BTN_ID = "edit";
 
 	public PointsOfEntryGrid(PointOfEntryCriteria criteria) {
 		super(PointOfEntryDto.class);
@@ -33,7 +29,7 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(PointsOfEntryView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
-		
+
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
@@ -41,49 +37,43 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 			setLazyDataProvider();
 			setCriteria(criteria);
 		}
-		
+
 		setColumns(PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE, PointOfEntryDto.REGION,
 				PointOfEntryDto.DISTRICT, PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE,
 				PointOfEntryDto.EXTERNAL_ID, PointOfEntryDto.ACTIVE);
-		
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			Column<PointOfEntryDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-			editColumn.setId(EDIT_BTN_ID);
-			editColumn.setWidth(20);
 
-			addItemClickListener(e -> {
-				if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editPointOfEntry(e.getItem().getUuid());
-				}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			addEditColumn(e -> {
+				ControllerProvider.getInfrastructureController().editPointOfEntry(e.getItem().getUuid());
 			});
 		}
-		
+
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
 					PointOfEntryDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-		
+
 		getColumn(PointOfEntryDto.ACTIVE).setRenderer(new BooleanRenderer());
 	}
 
 	public void reload() {
 		getDataProvider().refreshAll();
 	}
-	
+
 	public void setLazyDataProvider() {
 		DataProvider<PointOfEntryDto, PointOfEntryCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getPointOfEntryFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
+								.collect(Collectors.toList())).stream(),
 				query -> {
 					return (int) FacadeProvider.getPointOfEntryFacade().count(
-						query.getFilter().orElse(null));
+							query.getFilter().orElse(null));
 				});
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
-	
+
 	public void setEagerDataProvider() {
 		ListDataProvider<PointOfEntryDto> dataProvider = DataProvider.fromStream(FacadeProvider.getPointOfEntryFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);

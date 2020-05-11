@@ -122,6 +122,7 @@ public class RegionFacadeEjb implements RegionFacade {
 				case Region.NAME:
 				case Region.EPID_CODE:
 				case Region.GROWTH_RATE:
+				case Region.EXTERNAL_ID:
 					expression = region.get(sortProperty.propertyName);
 					break;
 				default:

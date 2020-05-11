@@ -182,11 +182,59 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/healthConditions_cardiovascularDiseaseIncludingHypertension"
-                app:useAbbreviations="true"
-                app:value="@={data.cardiovascularDiseaseIncludingHypertension}"
-                style="@style/ControlSingleColumnStyle" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/healthConditions_cardiovascularDiseaseIncludingHypertension"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:useAbbreviations="true"
+                    app:value="@{data.cardiovascularDiseaseIncludingHypertension}" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_obesity"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:useAbbreviations="true"
+                    app:value="@={data.obesity}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_currentSmoker"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:useAbbreviations="true"
+                    app:value="@={data.currentSmoker}" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_formerSmoker"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:useAbbreviations="true"
+                    app:value="@={data.formerSmoker}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_asthma"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:useAbbreviations="true"
+                    app:value="@={data.asthma}" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_sickleCellDisease"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:useAbbreviations="true"
+                    app:value="@={data.sickleCellDisease}" />
+            </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/healthConditions_otherConditions"

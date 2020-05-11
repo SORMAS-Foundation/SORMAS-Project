@@ -46,9 +46,8 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 
 		setColumns(EDIT_BTN_ID, ClinicalVisitIndexDto.VISIT_DATE_TIME, ClinicalVisitIndexDto.VISITING_PERSON, ClinicalVisitIndexDto.TEMPERATURE,
 				ClinicalVisitIndexDto.BLOOD_PRESSURE, ClinicalVisitIndexDto.HEART_RATE, ClinicalVisitIndexDto.VISIT_REMARKS);
-		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-		getColumn(EDIT_BTN_ID).setWidth(20);
-		getColumn(EDIT_BTN_ID).setHeaderCaption("");
+
+		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 		getColumn(ClinicalVisitIndexDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));

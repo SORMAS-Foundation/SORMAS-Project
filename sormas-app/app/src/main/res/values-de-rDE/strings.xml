@@ -246,6 +246,7 @@
     <string name="error_synchronization">Synchronisierung fehlgeschlagen. Bitte versuchen Sie es später erneut.</string>
     <string name="error_server_communication">Konnte nicht mit dem SORMAS Server kommunizieren. Versuchen Sie es später erneut.</string>
     <string name="error_no_pathogentest_labuser">der Erregertest hat keinen Labornutzer</string>
+    <string name="heading_additional_details">Allgemeiner Kommentar</string>
     <string name="heading_additional_medical_information">Zusätzliche medizinische Informationen</string>
     <string name="heading_animal_contacts">Tierkontakte</string>
     <string name="heading_app_download_failed">App-Download fehlgeschlagen</string>

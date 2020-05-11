@@ -356,9 +356,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		if (person != null) {
 			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
 			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
 			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
 		} else {
@@ -380,9 +380,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	public void setNameReadOnly(boolean readOnly) {
+	public void setPersonalDetailsReadOnly(boolean readOnly) {
 		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
 		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
+		getField(PersonDto.SEX).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
 	}
 
 	public void setDiseaseReadOnly(boolean readOnly) {

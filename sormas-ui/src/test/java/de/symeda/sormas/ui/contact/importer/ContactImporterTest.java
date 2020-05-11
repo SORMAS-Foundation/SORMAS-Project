@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.contact.ContactDto;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -78,7 +79,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 					}
 				}
 				resultConsumer.accept(new ContactImportSimilarityResult(
-						entries.get(0),
+						entries.get(0), null,
 						ImportSimilarityResultOption.PICK));
 			}
 		};
@@ -95,7 +96,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 			@Override
 			protected void handleSimilarity(PersonDto newPerson,
 					Consumer<ContactImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ContactImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
+				resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
 			}
 		};
 		importResult = contactImporter.runImport();
@@ -111,7 +112,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 			@Override
 			protected void handleSimilarity(PersonDto newPerson,
 					Consumer<ContactImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ContactImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+				resultConsumer.accept(new ContactImportSimilarityResult(null, null,  ImportSimilarityResultOption.CREATE));
 			}
 		};
 		importResult = contactImporter.runImport();
@@ -172,7 +173,11 @@ public class ContactImporterTest extends AbstractBeanTest {
 		}
 
 		protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-			resultConsumer.accept(new ContactImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
+			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+		}
+
+		protected void handleContactSimilarity(ContactDto newContact, PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
+			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 		}
 
 		protected Writer createErrorReportWriter() {
