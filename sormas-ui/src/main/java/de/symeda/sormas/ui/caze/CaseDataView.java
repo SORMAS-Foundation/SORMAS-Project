@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
@@ -54,12 +53,12 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String SAMPLES_LOC = "samples";
 
 	public CaseDataView() {
-		super(VIEW_NAME);
+		super(VIEW_NAME, false);
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	protected void initView(String params) {
+
 		setHeightUndefined();
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
@@ -113,6 +112,5 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 			
 		}
-		
 	}
 }
