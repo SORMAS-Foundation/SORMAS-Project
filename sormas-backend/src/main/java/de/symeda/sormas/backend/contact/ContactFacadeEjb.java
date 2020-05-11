@@ -250,6 +250,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	private void updateContactVisitAssociations(ContactDto existingContact, Contact contact) {
 		if (existingContact != null && existingContact.getReportDateTime() == contact.getReportDateTime()
 				&& existingContact.getLastContactDate() == contact.getLastContactDate()
+				&& existingContact.getFollowUpUntil() == contact.getFollowUpUntil()
 				&& existingContact.getDisease() == contact.getDisease()) {
 			return;
 		}
@@ -260,14 +261,6 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-		//    	Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
-		//    	contact.setVisits(visitService.getAllRelevantVisits(contact.getPerson(), contact.getDisease(), contactStartDate, 
-		//    			contact.getFollowUpUntil() != null ? contact.getFollowUpUntil() : contactStartDate));
-
-		//    	// TODO wie kriege ich den Kontakt aus den Visits, zu denen er nicht mehr gehört? Reicht das so?
-		//    	// TODO oder kann ich am Ende vielleicht sogar hier die gleiche Logik benutzen wie bei den Visits?
-		//    	contact.setVisits(null);
-		//
 		Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 		for (Visit visit : visitService.getAllRelevantVisits(contact.getPerson(), contact.getDisease(), contactStartDate,
 				contact.getFollowUpUntil() != null ? contact.getFollowUpUntil() : contactStartDate)) {

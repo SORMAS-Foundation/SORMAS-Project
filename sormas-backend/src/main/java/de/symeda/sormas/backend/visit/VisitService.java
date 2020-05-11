@@ -128,6 +128,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 	/**
 	 * All visits of the contact person with the same disease and within lastContactDate and followUpUntil
 	 */
+	@Deprecated
+	// TODO remove after refactoring
 	public List<Visit> getAllByContact(Contact contact) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);

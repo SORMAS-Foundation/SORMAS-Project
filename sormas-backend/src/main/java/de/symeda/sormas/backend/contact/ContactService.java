@@ -435,7 +435,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = createDefaultFilter(cb, contact);
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
 
-		// Date filter
 		Predicate dateFilter = buildDateFilter(cb, contact, from, to);
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
@@ -497,6 +496,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			List<Object[]> resultList = em.createQuery(cq).getResultList();
 
 			if (!resultList.isEmpty()) {
+				// Build list of arrays with size 2; index 0 = contact, index 1 = visit; one array per contact-visit association
 				List<Object[]> contactsAndVisits = resultList.stream()
 						.map(r -> new Object[] {
 								new DashboardContactDto((String) r[0], (Date) r[1], (ContactStatus) r[2], (ContactClassification) r[3], 
@@ -504,10 +504,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 								r[8] != null ? new DashboardVisit((Boolean) r[7], (VisitStatus) r[8], (Date) r[9]) : null})
 						.collect(Collectors.toList());
 
+				// Build a map with the contact as key and a list of all visits as value
 				Map<DashboardContactDto, List<DashboardVisit>> contactVisitsMap = contactsAndVisits.stream()
 						.filter(e -> e[1] != null)
 						.collect(Collectors.groupingBy(e -> (DashboardContactDto) e[0], Collectors.mapping(e -> (DashboardVisit) e[1], Collectors.toList())));
 
+				// Add visit information to the DashboardContactDtos
 				for (DashboardContactDto dashboardContact : contactVisitsMap.keySet()) {
 					List<DashboardVisit> visits = contactVisitsMap.get(dashboardContact);
 
@@ -522,7 +524,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					}
 				}
 
+				// Add all contacts from the map (i.e. contacts with at least one visit) to the result
 				List<DashboardContactDto> contactList = new ArrayList<>(contactVisitsMap.keySet());
+				// Add the remaining contacts (i.e. those without visits) to the result
 				contactList.addAll(contactsAndVisits.stream()
 						.filter(e -> e[1] == null)
 						.map(e -> (DashboardContactDto) e[0])
@@ -778,6 +782,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 	}
 
+	@Deprecated
+	// TODO remove after refactoring
 	public List<Contact> getAllByVisit(Visit visit) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(Contact.class);
