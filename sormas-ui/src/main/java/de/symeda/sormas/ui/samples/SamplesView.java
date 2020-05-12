@@ -101,7 +101,7 @@ public class SamplesView extends AbstractView {
 					},
 					createFileNameWithCurrentDate("sormas_samples_", ".csv"), null);
 
-			addExportButton(extendedExportStreamResource, exportButton, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
+			addExportButton(extendedExportStreamResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {

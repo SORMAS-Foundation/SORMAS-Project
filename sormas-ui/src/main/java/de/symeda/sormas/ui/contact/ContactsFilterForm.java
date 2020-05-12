@@ -24,10 +24,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.dashboard.DateFilterOption;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -165,22 +165,20 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		// Date/Epi week filter
 		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
 		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter = (EpiWeekAndDateFilterComponent<NewCaseDateType>) dateFilterLayout.getComponent(0);
+
 		ContactDateType contactDateType = newValue.getReportDateFrom() != null ? ContactDateType.REPORT_DATE
 				: newValue.getLastContactDateFrom() != null ? ContactDateType.LAST_CONTACT_DATE : null;
 		weekAndDateFilter.getDateTypeSelector().setValue(contactDateType);
+		weekAndDateFilter.getDateFilterOptionFilter().setValue(newValue.getDateFilterOption());
 		Date dateFrom = contactDateType == ContactDateType.REPORT_DATE ? newValue.getReportDateFrom()
 				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? newValue.getLastContactDateFrom() : null;
 		Date dateTo = contactDateType == ContactDateType.REPORT_DATE ? newValue.getReportDateTo()
 				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? newValue.getLastContactDateTo() : null;
-		// Reconstruct date/epi week choice
-		if ((dateFrom != null && dateTo != null && (DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(dateFrom)).equals(dateFrom) && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(dateTo)).equals(dateTo)))
-				|| (dateFrom != null && DateHelper.getEpiWeekStart(DateHelper.getEpiWeek(dateFrom)).equals(dateFrom))
-				|| (dateTo != null && DateHelper.getEpiWeekEnd(DateHelper.getEpiWeek(dateTo)).equals(dateTo))) {
-			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.EPI_WEEK);
-			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(dateFrom));
-			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(dateTo));
+
+		if (DateFilterOption.EPI_WEEK.equals(newValue.getDateFilterOption())) {
+			weekAndDateFilter.getWeekFromFilter().setValue(dateFrom == null ? null : DateHelper.getEpiWeek(dateFrom));
+			weekAndDateFilter.getWeekToFilter().setValue(dateTo == null ? null : DateHelper.getEpiWeek(dateTo));
 		} else {
-			weekAndDateFilter.getDateFilterOptionFilter().setValue(DateFilterOption.DATE);
 			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
 			weekAndDateFilter.getDateToFilter().setValue(dateTo);
 		}
@@ -230,6 +228,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					criteria.reportDateBetween(fromDate, toDate);
 					criteria.lastContactDateBetween(null, null);
 				}
+				criteria.dateFilterOption(dateFilterOption);
 
 				fireValueChange(true);
 			} else {
@@ -257,7 +256,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		return dateFilterRowLayout;
 	}
 
-	public void setSearchFieldEnabled(boolean enabled){
+	public void setSearchFieldEnabled(boolean enabled) {
 		this.getField(ContactCriteria.NAME_UUID_CASE_LIKE).setEnabled(enabled);
 	}
 }
