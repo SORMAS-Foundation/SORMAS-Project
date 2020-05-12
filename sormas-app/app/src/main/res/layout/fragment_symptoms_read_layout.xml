@@ -233,6 +233,14 @@
                 app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/symptoms_otherComplications"
+                style="@style/ControlSingleColumnStyle"
+                app:appendValue="@{data.otherComplicationsText}"
+                app:goneIfEmpty="@{data.otherComplicationsText}"
+                app:value="@{data.otherComplications}"
+                app:valueFormat="@{@string/two_strings_with_hyphen_format}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/symptoms_symptomsComments"
                 app:value="@{data.symptomsComments}"
                 app:goneIfEmpty="@{data.symptomsComments}"

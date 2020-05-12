@@ -17,8 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.util.Date;
+import java.util.HashMap;
+
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -58,19 +64,13 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.util.Date;
-import java.util.HashMap;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -97,7 +97,7 @@ public class CaseContactsView extends AbstractCaseView {
 	private Button activeStatusButton;
 
 	public CaseContactsView() {
-		super(VIEW_NAME);
+		super(VIEW_NAME, false);
 		setSizeFull();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
@@ -358,8 +358,7 @@ public class CaseContactsView extends AbstractCaseView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	protected void initView(String params) {
 
 		criteria.caze(getCaseRef());
 
@@ -378,7 +377,6 @@ public class CaseContactsView extends AbstractCaseView {
 			setSubComponent(gridLayout);
 		}
 
-		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);

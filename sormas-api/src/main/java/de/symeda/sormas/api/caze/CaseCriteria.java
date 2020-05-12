@@ -30,6 +30,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class CaseCriteria extends BaseCriteria implements Cloneable {
@@ -67,6 +68,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date creationDateFrom;
 	private Date creationDateTo;
 	private NewCaseDateType newCaseDateType;
+	// Used to re-construct whether users have filtered by epi weeks or dates
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private PersonReferenceDto person;
 	private Boolean mustHaveNoGeoCoordinates;
 	private Boolean mustBePortHealthCaseWithoutFacility;
@@ -189,6 +192,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public NewCaseDateType getNewCaseDateType() {
 		return newCaseDateType;
+	}
+
+	public CaseCriteria dateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
 	}
 
 	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {

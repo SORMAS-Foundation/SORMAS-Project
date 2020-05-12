@@ -108,6 +108,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String CLASSIFIED_BY_SYSTEM_LOC = "classifiedBySystemLoc";
 	private static final String ASSIGN_NEW_EPID_NUMBER_LOC = "assignNewEpidNumberLoc";
 	private static final String EPID_NUMBER_WARNING_LOC = "epidNumberWarningLoc";
+	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 
 	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 
@@ -148,7 +149,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 			fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
 			fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
-			fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
 			loc(MEDICAL_INFORMATION_LOC) +
 			fluidRowLocs(CaseDataDto.PREGNANT, "") +
 			fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
@@ -160,7 +160,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
 			fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
 			loc(PAPER_FORM_DATES_LOC) +
-			fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE);
+					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE,
+							CaseDataDto.NATIONAL_LEVEL_DATE)
+					+ loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 
 	private final PersonDto person;
 	private final Disease disease;
@@ -307,7 +309,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.REPORT_LON, TextField.class).setConverter(new StringToAngularLocationConverter());
 		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 
-		addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class).setRows(3);
+		Label generalCommentLabel = new Label(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
+		generalCommentLabel.addStyleName(H3);
+		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
+
+		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
+		additionalDetails.setRows(3);
+		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		addFields(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES,
 				CaseDataDto.VACCINATION_INFO_SOURCE, CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR,

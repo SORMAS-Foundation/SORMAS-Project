@@ -30,6 +30,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class ContactCriteria extends BaseCriteria implements Serializable {
@@ -60,6 +61,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date reportDateFrom;
 	private Date reportDateTo;
+	// Used to re-construct whether users have filtered by epi weeks or dates
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
 	/**
@@ -219,6 +222,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public Date getLastContactDateTo() {
 		return lastContactDateTo;
+	}
+
+	public ContactCriteria dateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
 	}
 
 	public ContactCriteria followUpUntilBetween(Date followUpUntilFrom, Date followUpUntilTo) {

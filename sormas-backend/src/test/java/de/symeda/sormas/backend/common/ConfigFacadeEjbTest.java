@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -79,5 +82,14 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest  {
 			fail();
 		} catch (IllegalArgumentException e) { }
 
+	}
+
+	@Test
+	public void testNormalizeLocaleString() throws Exception {
+		assertThat(ConfigFacadeEjb.normalizeLocaleString("  "), isEmptyString());
+		assertThat(ConfigFacadeEjb.normalizeLocaleString("en"), is("en"));
+		assertThat(ConfigFacadeEjb.normalizeLocaleString("En"), is("en"));
+		assertThat(ConfigFacadeEjb.normalizeLocaleString("en-CA"), is("en-CA"));
+		assertThat(ConfigFacadeEjb.normalizeLocaleString("en-cA"), is("en-CA"));
 	}	
 }

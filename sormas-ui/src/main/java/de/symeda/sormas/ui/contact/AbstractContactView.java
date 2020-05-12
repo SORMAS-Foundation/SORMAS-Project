@@ -79,4 +79,11 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 	public ContactReferenceDto getContactRef() {
 		return contactRef;
 	}
+	
+	public void setContactEditPermission(Component component) {
+		Boolean isContactEditAllowed = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
+		if (!isContactEditAllowed) {
+			getComponent(getComponentIndex(component)).setEnabled(false);
+		}
+	}
 }

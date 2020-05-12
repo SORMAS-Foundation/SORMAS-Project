@@ -322,7 +322,7 @@ public class CaseController {
 		createForm.setSymptoms(symptoms);
 
 		if (convertedContact != null || convertedEventParticipant != null) {
-			createForm.setNameReadOnly(true);
+			createForm.setPersonalDetailsReadOnly(true);
 			createForm.setDiseaseReadOnly(true);
 		}
 		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(
@@ -498,7 +498,7 @@ public class CaseController {
 		return editView;
 	}
 
-	public void showBulkCaseDataEditComponent(Collection<CaseIndexDto> selectedCases) {
+	public void showBulkCaseDataEditComponent(Collection<? extends CaseIndexDto> selectedCases) {
 		if (selectedCases.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
@@ -592,7 +592,7 @@ public class CaseController {
 		});
 	}
 
-	private void bulkEdit(Collection<CaseIndexDto> selectedCases, CaseBulkEditData updatedCaseBulkEditData,
+	private void bulkEdit(Collection<? extends CaseIndexDto> selectedCases, CaseBulkEditData updatedCaseBulkEditData,
 			boolean diseaseChange, boolean classificationChange, boolean investigationStatusChange,
 			boolean outcomeChange, boolean surveillanceOfficerChange, CaseFacade caseFacade) {
 		for (CaseIndexDto indexDto : selectedCases) {
@@ -604,7 +604,7 @@ public class CaseController {
 		}
 	}
 
-	private void bulkEditWithHealthFacilities(Collection<CaseIndexDto> selectedCases,
+	private void bulkEditWithHealthFacilities(Collection<? extends CaseIndexDto> selectedCases,
 			CaseBulkEditData updatedCaseBulkEditData, boolean diseaseChange, boolean classificationChange,
 			boolean investigationStatusChange, boolean outcomeChange, boolean surveillanceOfficerChange,
 			Boolean doTransfer) {
@@ -934,7 +934,7 @@ public class CaseController {
 						+ diseaseCriteria.getDisease().toString());
 	}
 
-	public void deleteAllSelectedItems(Collection<CaseIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
@@ -953,7 +953,7 @@ public class CaseController {
 		}
 	}
 
-	public void archiveAllSelectedItems(Collection<CaseIndexDto> selectedRows, Runnable callback) {
+	public void archiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)
@@ -976,7 +976,7 @@ public class CaseController {
 		}
 	}
 
-	public void dearchiveAllSelectedItems(Collection<CaseIndexDto> selectedRows, Runnable callback) {
+	public void dearchiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoCasesSelected),
 					I18nProperties.getString(Strings.messageNoCasesSelected), Type.WARNING_MESSAGE, false)

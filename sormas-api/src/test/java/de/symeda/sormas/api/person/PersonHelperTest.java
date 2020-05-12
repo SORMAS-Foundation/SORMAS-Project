@@ -22,7 +22,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import org.junit.Test;
 
 public class PersonHelperTest {

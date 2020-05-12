@@ -63,10 +63,9 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 		setColumns(EDIT_BTN_ID, PrescriptionIndexDto.PRESCRIPTION_TYPE, PrescriptionIndexDto.PRESCRIPTION_DATE, 
 				PrescriptionIndexDto.PRESCRIPTION_PERIOD, PrescriptionIndexDto.FREQUENCY, PrescriptionIndexDto.DOSE, 
 				PrescriptionIndexDto.ROUTE, PrescriptionIndexDto.PRESCRIBING_CLINICIAN, DOCUMENT_TREATMENT_BTN_ID);
-		
-		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-		getColumn(EDIT_BTN_ID).setWidth(20);
-		getColumn(EDIT_BTN_ID).setHeaderCaption("");
+
+		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
+
 		getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
 		getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));

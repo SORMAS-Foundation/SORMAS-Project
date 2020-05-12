@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.ItemClickListener;
@@ -51,8 +50,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implements ItemClickListener<TaskIndexDto> {
-
-	private static final String EDIT_BTN_ID = "edit";
 	
 	@SuppressWarnings("unchecked")
 	public TaskGrid(TaskCriteria criteria) {
@@ -70,9 +67,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			setCriteria(criteria);
 		}
 		
-		Column<TaskIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(20);
+		addEditColumn(e -> ControllerProvider.getTaskController().edit(e.getItem(), this::reload));
 		
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {
@@ -182,9 +177,6 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			default:
 				throw new IndexOutOfBoundsException(task.getTaskContext().toString());
 			}
-		} else if (EDIT_BTN_ID.equals(event.getColumn().getId())
-			|| event.getMouseEventDetails().isDoubleClick()) {
-			ControllerProvider.getTaskController().edit(task, this::reload);
 		}
 	}
 	

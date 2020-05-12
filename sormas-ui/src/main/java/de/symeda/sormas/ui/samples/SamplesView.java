@@ -85,12 +85,6 @@ public class SamplesView extends AbstractView {
 			StreamResource streamResource = new GridExportStreamResource(sampleListComponent.getGrid(), "sormas_samples", "sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", SampleGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
-
-			Button extendedExportButton = ButtonHelper.createIconButton(Captions.exportDetailed, VaadinIcons.FILE_TEXT, null, ValoTheme.BUTTON_PRIMARY);
-			extendedExportButton.setDescription(I18nProperties.getString(Strings.infoDetailedExport));
-			extendedExportButton.setWidth(100, Unit.PERCENTAGE);
-
-			exportLayout.addComponent(extendedExportButton);
 			
 			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(SampleExportDto.class, null,
 					(Integer start, Integer max) -> FacadeProvider.getSampleFacade().getExportList(sampleListComponent.getGrid().getCriteria(), start, max),
@@ -105,8 +99,9 @@ public class SamplesView extends AbstractView {
 						}
 						return caption;
 					},
-					"sormas_samples_" + DateHelper.formatDateForExport(new Date()) + ".csv", null);
-			new FileDownloader(extendedExportStreamResource).extend(extendedExportButton);
+					createFileNameWithCurrentDate("sormas_samples_", ".csv"), null);
+
+			addExportButton(extendedExportStreamResource, exportButton, exportLayout, "extendedExport", VaadinIcons.FILE_TEXT, Captions.exportDetailed, Strings.infoDetailedExport);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {

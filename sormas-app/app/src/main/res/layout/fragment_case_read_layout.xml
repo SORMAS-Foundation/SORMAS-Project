@@ -373,14 +373,6 @@
                     app:value="@{data.quarantineHelpNeeded}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_additionalDetails"
-                    app:value="@{data.additionalDetails}"
-                    app:singleLine="false"
-                    app:maxLines="3"
-                    app:textArea="true"
-                    style="@style/ControlSingleColumnStyle" />
-
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 
                 <TextView
@@ -504,6 +496,24 @@
                     android:id="@+id/caseData_districtLevelDate"
                     app:value="@{data.districtLevelDate}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_additional_details"
+                    style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_additionalDetails"
+                    app:value="@{data.additionalDetails}"
+                    app:showCaption="false"
+                    app:singleLine="false"
+                    app:maxLines="3"
+                    app:textArea="true"
+                    style="@style/ControlSingleColumnStyle" />
+
 
             </LinearLayout>
 

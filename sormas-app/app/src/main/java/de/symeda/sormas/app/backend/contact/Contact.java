@@ -174,6 +174,8 @@ public class Contact extends AbstractDomainObject {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@Column(length = 512)
 	private String quarantineHomeSupplyEnsuredComment;
+	@Column(length = 512)
+	private String additionalDetails;
 
 	public Person getPerson() {
 		return person;
@@ -552,5 +554,13 @@ public class Contact extends AbstractDomainObject {
 
 	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+	}
+
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
 	}
 }

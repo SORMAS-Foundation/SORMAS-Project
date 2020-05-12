@@ -405,6 +405,26 @@
 
                     </LinearLayout>
 
+                    <ImageView style="@style/FullHorizontalDividerStyle" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/heading_additional_details"
+                        style="@style/SubHeadingStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/contact_additionalDetails"
+                        app:showCaption="false"
+                        app:value="@={data.additionalDetails}"
+                        app:inputType="textMultiLine"
+                        app:textAlignment="gravity"
+                        app:gravity="top|start"
+                        app:singleLine="false"
+                        app:maxLines="3"
+                        app:textArea="true"
+                        style="@style/ControlSingleColumnStyle" />
+
                 </LinearLayout>
 
             </LinearLayout>

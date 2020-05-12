@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.therapy;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -70,7 +69,7 @@ public class TherapyView extends AbstractCaseView {
 	private TextField treatmentTextFilter;
 
 	public TherapyView() {
-		super(VIEW_NAME);
+		super(VIEW_NAME, false);
 
 		prescriptionCriteria = ViewModelProviders.of(TherapyView.class).get(PrescriptionCriteria.class);
 		treatmentCriteria = ViewModelProviders.of(TherapyView.class).get(TreatmentCriteria.class);
@@ -250,9 +249,8 @@ public class TherapyView extends AbstractCaseView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
-		
+	protected void initView(String params) {
+
 		VerticalLayout container = new VerticalLayout();
 		container.setSpacing(false);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -279,5 +277,4 @@ public class TherapyView extends AbstractCaseView {
 		reloadPrescriptionGrid();
 		reloadTreatmentGrid();
 	}
-
 }
