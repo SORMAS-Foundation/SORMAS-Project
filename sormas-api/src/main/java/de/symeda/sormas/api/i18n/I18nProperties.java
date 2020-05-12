@@ -175,6 +175,23 @@ public final class I18nProperties {
 		return propertyId;
 	}
 
+	/**
+	 * Iterates through the prefixes to determines the caption for the specified propertyId.
+	 *
+	 * @return
+	 */
+	public static String findPrefixCaptionWithDefault(String propertyId, String defaultValue, String ... prefixes) {
+
+		for (String prefix : prefixes) {
+			final String caption = I18nProperties.getPrefixCaption(prefix, propertyId, null);
+			if (caption != null) {
+				return caption;
+			}
+		}
+
+		return defaultValue;
+	}
+
 	public static String getDescription(String key) {
 		return getInstance(userLanguage.get()).descriptionProperties.getString(key);
 	}

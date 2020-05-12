@@ -204,14 +204,31 @@ public class TestDataCreator {
 		
 		return treatment;
 	}
+	
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null);
+	}
+	
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease);
+	}
+	
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Date reportDateTime) {
+		return createContact(reportingUser, null, contactPerson, null, reportDateTime, null, null);
+	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze) {
-		return createContact(reportingUser, null, contactPerson, caze, new Date(), null);
+		return createContact(reportingUser, null, contactPerson, caze, new Date(), null, null);
 	}
 	
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate) {
-		ContactDto contact = ContactDto.build(caze);
+			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease) {
+		ContactDto contact;
+		if (caze != null) {
+			contact = ContactDto.build(caze);
+		} else {
+			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
+		}
 		contact.setReportingUser(reportingUser);
 		contact.setContactOfficer(contactOfficer);
 		contact.setPerson(contactPerson);
@@ -254,10 +271,18 @@ public class TestDataCreator {
 
 		return task;
 	}
+	
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person) {
+		return createVisit(disease, person, new Date(), VisitStatus.COOPERATIVE);
+	}
+	
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime) {
+		return createVisit(disease, person, visitDateTime, VisitStatus.COOPERATIVE);
+	}
 
-	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime,
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime,
 			VisitStatus visitStatus) {
-		VisitDto visit = VisitDto.build(contactPerson, disease);
+		VisitDto visit = VisitDto.build(person, disease);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
 		visit = beanTest.getVisitFacade().saveVisit(visit);

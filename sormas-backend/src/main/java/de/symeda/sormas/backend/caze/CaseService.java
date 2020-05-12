@@ -213,7 +213,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Person, Location> casePersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 
 		Predicate filter = createActiveCasesFilter(cb, caze);
-		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, caze, false));
+		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, caze, new CaseUserFilterCriteria()
+				.excludeSharedCases(true).excludeCasesFromContacts(true)));
 		filter = AbstractAdoService.and(cb, filter, createCaseRelevanceFilter(cb, caze, from, to));
 
 		if (region != null) {
@@ -712,7 +713,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return dateFilter;
 	}
 
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, boolean includeSharedCases) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
 		// National users can access all cases in the system
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -781,18 +782,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		// get all cases based on the user's contact association
-		Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
-		Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
-		contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot));
-		contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
-		filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+		if (userFilterCriteria == null || !userFilterCriteria.isExcludeCasesFromContacts()) {
+			Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
+			Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
+			contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot));
+			contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
+			filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+		}
 
 		// users can only be assigned to a task when they have also access to the case
 		//Join<Case, Task> tasksJoin = from.join(Case.TASKS, JoinType.LEFT);
 		//filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
 
 		// all users (without specific restrictions) get access to cases that have been made available to the whole country
-		if (includeSharedCases && !featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
+		if ((userFilterCriteria == null || !userFilterCriteria.isExcludeSharedCases()) && !featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			filter = or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
 		}
 
@@ -818,7 +821,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath) {
-		return createUserFilter(cb, cq, casePath, true);
+		return createUserFilter(cb, cq, casePath, null);
 	}
 
 	/**

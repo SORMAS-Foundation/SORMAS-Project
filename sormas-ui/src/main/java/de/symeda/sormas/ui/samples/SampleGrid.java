@@ -22,10 +22,8 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -48,8 +46,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 @SuppressWarnings("serial")
 public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
-	public static final String EDIT_BTN_ID = "edit";
-
 	private static final String PATHOGEN_TEST_RESULT = Captions.Sample_pathogenTestResult;
 	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
@@ -69,9 +65,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			setCriteria(criteria);
 		}
 
-		Column<SampleIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(20);
+		addEditColumn(e -> ControllerProvider.getSampleController().navigateToData(e.getItem().getUuid()));
 
 		Column<SampleIndexDto, String> diseaseShortColumn = addColumn(sample -> 
 		DiseaseHelper.toString(sample.getDisease(), sample.getDiseaseDetails()));
@@ -119,12 +113,6 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			column.setCaption(I18nProperties.getPrefixCaption(
 					SampleIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-
-		addItemClickListener(e -> {
-			if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
-				ControllerProvider.getSampleController().navigateToData(e.getItem().getUuid());
-			}
-		});
 	}
 
 	public void reload() {
