@@ -183,7 +183,6 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 		super.enter(event);
 
-		CaseReferenceDto caseRef = getCaseRef();
 		if (caseRef == null) {
 			// NOOP: opening a case centric view without a case defaults to another view
 		} else {
