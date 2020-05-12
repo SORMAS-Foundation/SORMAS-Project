@@ -119,6 +119,8 @@ public interface Captions {
 	String caseConfirmCase = "caseConfirmCase";
 	String caseContacts = "caseContacts";
 	String caseCreateCase = "caseCreateCase";
+	String caseDefaultView = "caseDefaultView";
+	String caseDetailedView = "caseDetailedView";
 	String CaseData = "CaseData";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_caseClassification = "CaseData.caseClassification";
@@ -374,6 +376,7 @@ public interface Captions {
 	String contactChooseSourceCase = "contactChooseSourceCase";
 	String contactContactsList = "contactContactsList";
 	String contactContactsOverview = "contactContactsOverview";
+	String contactDetailedOverview = "contactDetailedOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
 	String contactCreateNew = "contactCreateNew";
 	String ContactExport_address = "ContactExport.address";
@@ -852,6 +855,7 @@ public interface Captions {
 	String Person_birthdateDD = "Person.birthdateDD";
 	String Person_birthdateMM = "Person.birthdateMM";
 	String Person_birthdateYYYY = "Person.birthdateYYYY";
+	String Person_ageAndBirthDate = "ageAndBirthDate";
 	String Person_birthWeight = "Person.birthWeight";
 	String Person_burialConductor = "Person.burialConductor";
 	String Person_burialDate = "Person.burialDate";

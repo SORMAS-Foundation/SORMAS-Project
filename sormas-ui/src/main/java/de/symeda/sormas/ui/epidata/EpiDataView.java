@@ -17,35 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
-import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
 public class EpiDataView extends AbstractCaseView {
-	
+
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
-	
+
 	public EpiDataView() {
-		super(VIEW_NAME);
+		super(VIEW_NAME, true);
 	}
-	
+
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
-		
-    	if (getViewMode() == ViewMode.SIMPLE) {
-    		ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
-    		return;
-    	}
-		
-    	CommitDiscardWrapperComponent<EpiDataForm> epidDataForm = ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode());
-    	
+	protected void initView(String params) {
+
+		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
+			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode());
 		setSubComponent(epidDataForm);
 		setCaseEditPermission(epidDataForm);
 	}

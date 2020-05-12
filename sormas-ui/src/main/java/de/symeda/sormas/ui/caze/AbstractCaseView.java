@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
@@ -61,11 +62,12 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	private CaseReferenceDto caseRef = null;
 	private Boolean hasOutbreak;
 
-	private ViewConfiguration viewConfiguration;
+	private final ViewConfiguration viewConfiguration;
+	private final boolean redirectSimpleModeToCaseDataView;
 	private final OptionGroup viewModeToggle;
 	private final Property.ValueChangeListener viewModeToggleListener;
 
-	protected AbstractCaseView(String viewName) {
+	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
 		super(viewName);
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
@@ -74,7 +76,8 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class, initViewConfiguration);
 		}
 
-		viewConfiguration = ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class);
+		this.viewConfiguration = ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class);
+		this.redirectSimpleModeToCaseDataView = redirectSimpleModeToCaseDataView;
 
 		viewModeToggle = new OptionGroup();
 		CssStyles.style(viewModeToggle, 
@@ -174,7 +177,31 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 				? DataHelper.toStringNullable(caze.getDisease())
 						: DataHelper.toStringNullable(caze.getDiseaseDetails()));
 	}
-	
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+
+		super.enter(event);
+
+		if (caseRef == null) {
+			// NOOP: opening a case centric view without a case defaults to another view
+		} else {
+			if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
+				ControllerProvider.getCaseController().navigateToCase(caseRef.getUuid());
+			} else {
+				initView(event.getParameters().trim());
+			}
+		}
+	}
+
+	/**
+	 * We be called by {@link #enter(ViewChangeEvent)}, when a case is selected and the view shall show its specific content.
+	 * 
+	 * @param params
+	 *            The URL parameters String
+	 */
+	protected abstract void initView(String params);
+
 	@Override
 	protected void setSubComponent(Component newComponent) {
 		super.setSubComponent(newComponent);

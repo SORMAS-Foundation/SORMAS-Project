@@ -44,7 +44,9 @@ public interface CaseFacade {
 	long count(CaseCriteria caseCriteria);
 	
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
-	
+
+	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 	List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);

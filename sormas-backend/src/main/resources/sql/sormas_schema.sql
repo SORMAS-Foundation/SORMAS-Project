@@ -4102,8 +4102,10 @@ DROP FUNCTION export_database_join(text, text, text, text, text);
 INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code #1830');
 
 -- 2020-04-23 Re-introduce quarantine end date #1891
-ALTER TABLE contact ADD COLUMN IF NOT EXISTS quarantineto timestamp;
-ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS quarantineto timestamp;
+-- 2020-05-11 #1952: Was needed for #1891 to make sure existing SORMAS systems
+-- pre and schema version 198 were correctly updated. No removed due to incompatibility with PostgreSQL 9.5
+-- ALTER TABLE contact ADD COLUMN IF NOT EXISTS quarantineto timestamp;
+-- ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS quarantineto timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (201, 'Re-introduce quarantine end date #1891');
 
