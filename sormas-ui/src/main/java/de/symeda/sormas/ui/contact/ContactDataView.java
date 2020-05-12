@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -40,6 +42,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
+import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -56,6 +59,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String CASE_LOC = "case";
 	public static final String CASE_BUTTONS_LOC = "caseButtons";
 	public static final String TASKS_LOC = "tasks";
+	public static final String SAMPLES_LOC = "samples";
 
 	public ContactDataView() {
 		super(VIEW_NAME);
@@ -70,7 +74,8 @@ public class ContactDataView extends AbstractContactView {
 				LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
 				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC), 
 				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC)
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC)
 				);
 
 		VerticalLayout container = new VerticalLayout();
@@ -167,6 +172,23 @@ public class ContactDataView extends AbstractContactView {
 		TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
+			VerticalLayout sampleLocLayout = new VerticalLayout();
+			sampleLocLayout.setMargin(false);
+			sampleLocLayout.setSpacing(false);
+
+			SampleListComponent sampleList = new SampleListComponent(getContactRef());
+			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
+			sampleLocLayout.addComponent(sampleList);
+
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+				sampleLocLayout.addComponent(new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges), ContentMode.HTML));
+			}
+
+			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
+
+		}
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {

@@ -26,6 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -41,7 +42,19 @@ public class SampleListComponent extends VerticalLayout {
 	private SampleList list;
 	private Button createButton;
 
+	public SampleListComponent(ContactReferenceDto contactRef) {
+		createSampleListComponent(new SampleList(contactRef),
+				e -> ControllerProvider.getSampleController().create(contactRef,
+				() -> SormasUI.refreshView()));
+	}
+
 	public SampleListComponent(CaseReferenceDto caseRef) {
+		createSampleListComponent(new SampleList(caseRef),
+				e -> ControllerProvider.getSampleController().create(caseRef,
+				() -> SormasUI.refreshView()));
+	}
+
+	private void createSampleListComponent(SampleList sampleList, Button.ClickListener clickListener) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -52,7 +65,7 @@ public class SampleListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		list = new SampleList(caseRef); 
+		list = sampleList;
 		addComponent(list);
 		list.reload();
 
@@ -64,9 +77,7 @@ public class SampleListComponent extends VerticalLayout {
 			createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> {
-				ControllerProvider.getSampleController().create(caseRef, () -> SormasUI.refreshView());
-			});
+			createButton.addClickListener(clickListener);
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}

@@ -30,16 +30,13 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.*;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,11 +64,6 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.MessageType;
-import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -110,6 +102,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private UserService userService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -212,33 +206,65 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
-		Root<Sample> sample = cq.from(Sample.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
+		final Root<Sample> sample = cq.from(Sample.class);
 
-		Join<Sample, Sample> referredSample = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
-		Join<Sample, Facility> lab = sample.join(Sample.LAB, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Case, Person> cazePerson = caze.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
+		final QueryContext qc = new QueryContext(cb, cq, sample);
 
-		cq.multiselect(sample.get(Sample.UUID), 
-				caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
-				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
-				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SAMPLE_PURPOSE), sample.get(Sample.SPECIMEN_CONDITION), 
-				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 
-				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
-				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
-				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), sample.get(Sample.PATHOGEN_TEST_RESULT), 
+		sampleService.buildJoins(qc, sampleCriteria);
+
+		final Join<Sample, Sample> referredSample      = qc.getJoin(Sample.class, Sample.class);
+
+		final Join<Sample, Facility> lab               = qc.getJoin(Sample.class, Facility.class);
+
+		final Join<Sample, Case> caze                  = qc.getJoin(Sample.class, Case.class);
+		final Join<Case, Person> casePerson            = qc.getJoin(Case.class, Person.class);
+		final Join<Case, Region> caseRegion            = qc.getJoin(Case.class, Region.class);
+		final Join<Case, District> caseDistrict        = qc.getJoin(Case.class, District.class);
+
+		final Join<Sample, Contact> contact            = qc.getJoin(Sample.class, Contact.class);
+		final Join<Contact, Region> contactRegion      = qc.getJoin(Contact.class, Region.class);
+		final Join<Contact, District> contactDistrict  = qc.getJoin(Contact.class, District.class);
+		final Join<Contact, Case> contactCase          = qc.getJoin(Contact.class, Case.class);
+		final Join<Case, Region> contactCaseRegion     = qc.getJoin(Case.class, Region.class, "contactCaseRegion");
+		final Join<Case, District> contactCaseDistrict = qc.getJoin(Case.class, District.class, "contactCaseDistrict");
+
+		final Expression diseaseSelect = qc.addExpression("disease",
+				cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE)));
+		final Expression diseaseDetailsSelect = qc.addExpression("diseaseDetails", cb.selectCase().when(cb.isNotNull(caze),
+				caze.get(Case.DISEASE_DETAILS)).otherwise(contact.get(Contact.DISEASE_DETAILS)));
+
+		final Expression regionSelect = qc.addExpression("region", cb.selectCase().when(cb.isNotNull(caseRegion),
+				caseRegion.get(Region.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactRegion),
+				contactRegion.get(Region.UUID)).otherwise(contactCaseRegion.get(Region.UUID))));
+
+		final Expression districtSelect = qc.addExpression("district", cb.selectCase().when(cb.isNotNull(caseDistrict),
+				caseDistrict.get(District.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactDistrict),
+				contactDistrict.get(District.UUID)).otherwise(contactCaseDistrict.get(District.UUID))));
+		final Expression districtNameSelect = qc.addExpression("districtName", cb.selectCase().when(cb.isNotNull(caseDistrict),
+				caseDistrict.get(District.NAME)).otherwise(cb.selectCase().when(cb.isNotNull(contactDistrict),
+				contactDistrict.get(District.NAME)).otherwise(contactCaseDistrict.get(District.NAME))));
+
+		cq.multiselect(sample.get(Sample.UUID),
+				caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME),
+				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED),
+				sample.get(Sample.RECEIVED_DATE),
+				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SAMPLE_PURPOSE),
+				sample.get(Sample.SPECIMEN_CONDITION),
+				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID),
+				caze.get(Case.UUID), casePerson.get(Person.FIRST_NAME), casePerson.get(Person.LAST_NAME),
+				diseaseSelect, diseaseDetailsSelect,
+				regionSelect, districtSelect, districtNameSelect,
+				sample.get(Sample.PATHOGEN_TEST_RESULT),
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
 
-		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
+		Predicate filter = sampleService.createUserFilter(qc);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, qc);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-		}		
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -264,18 +290,18 @@ public class SampleFacadeEjb implements SampleFacade {
 					expression = sample.get(sortProperty.propertyName);
 					break;
 				case SampleIndexDto.DISEASE:
-					expression = caze.get(Case.DISEASE);
+					expression = diseaseSelect;
 					break;
 				case SampleIndexDto.EPID_NUMBER:
 					expression = caze.get(Case.EPID_NUMBER);
 					break;
 				case SampleIndexDto.ASSOCIATED_CASE:
-					expression = cazePerson.get(Person.LAST_NAME);
+					expression = casePerson.get(Person.LAST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = cazePerson.get(Person.FIRST_NAME);
+					expression = casePerson.get(Person.FIRST_NAME);
 					break;
 				case SampleIndexDto.CASE_DISTRICT:
-					expression = caseDistrict.get(District.NAME);
+					expression = districtSelect;
 					break;
 				case SampleIndexDto.LAB:
 					expression = lab.get(Facility.NAME);
@@ -291,31 +317,39 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			List<SampleIndexDto> resultList =
+					em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			return resultList;
 		} else {
-			return em.createQuery(cq).getResultList();
+			List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
+			return resultList;
 		}
 	}
-	
+
 	@Override
 	public void validate(SampleDto sample) throws ValidationRuntimeException {
-		if (sample.getAssociatedCase() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCase));
+		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseOrContact));
 		}
 		if (sample.getSampleDateTime() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)));
 		}
 		if (sample.getReportDateTime() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORT_DATE_TIME)));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORT_DATE_TIME)));
 		}
 		if (sample.getSampleMaterial() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
 		}
 		if (sample.getSamplePurpose() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
 		}
 		if (sample.getLab() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
 	}
 	
@@ -385,7 +419,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, new QueryContext(cb, cq, sample));
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
 			Join<Case, Case> casePath = sample.join(Sample.ASSOCIATED_CASE);
@@ -485,19 +519,22 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public long count(SampleCriteria sampleCriteria) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Sample> root = cq.from(Sample.class);
-		Predicate filter = sampleService.createUserFilter(cb, cq, root);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Sample> root = cq.from(Sample.class);
+		final QueryContext qc = new QueryContext(cb, cq, root);
+		sampleService.buildJoins(qc, sampleCriteria);
+		Predicate filter = sampleService.createUserFilter(qc);
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, root);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, qc);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
 			cq.where(filter);
 		}
 		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
+		Long count = em.createQuery(cq).getSingleResult();
+		return count;
 	}
 
 	@Override
@@ -536,6 +573,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
+		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
@@ -579,6 +617,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
+		target.setAssociatedContact(ContactFacadeEjb.toReferenceDto(source.getAssociatedContact()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
@@ -630,19 +669,31 @@ public class SampleFacadeEjb implements SampleFacade {
 				newSample.setPathogenTestResultChangeDate(latestPathogenTestDate);
 			}
 		}
-		
-		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
-		
+
+		if (newSample.getAssociatedCase() != null) {
+			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
+		}
+
 		// Send an email to the lab user when a sample has been shipped to his lab
 		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
 			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
 
 			for (User recipient : messageRecipients) {
 				try {
-					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-						String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
-							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
-							MessageType.EMAIL, MessageType.SMS);
+					String messageContent = null;
+					if (newSample.getAssociatedCase() != null) {
+						messageContent =
+								String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
+								DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid()));
+					} else if (newSample.getAssociatedContact() != null){
+						messageContent =
+								String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOT_CONTACT),
+								DataHelper.getShortUuid(newSample.getAssociatedContact().getUuid()));
+					}
+					messagingService.sendMessage(recipient,
+							I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED),
+							messageContent, MessageType.EMAIL, MessageType.SMS);
+
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the shipment of a lab sample. "
 							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));

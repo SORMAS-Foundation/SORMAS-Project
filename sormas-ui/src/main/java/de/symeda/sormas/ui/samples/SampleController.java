@@ -36,6 +36,7 @@ import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -76,18 +77,24 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
-		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
-		createForm.setValue(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
+		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
+	}
 
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if( !createForm.getFieldGroup().isModified()) {
-					SampleDto dto = createForm.getValue();
-					FacadeProvider.getSampleFacade().saveSample(dto);
-					callback.run();
-				}
+	public void create(ContactReferenceDto contactRef, Runnable callback) {
+		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+	}
+
+	private void crateSample(Runnable callback, SampleDto sampleDto) {
+		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
+		createForm.setValue(sampleDto);
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<>(createForm,
+				createForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				SampleDto dto = createForm.getValue();
+				FacadeProvider.getSampleFacade().saveSample(dto);
+				callback.run();
 			}
 		});
 

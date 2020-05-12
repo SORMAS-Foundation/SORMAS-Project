@@ -63,7 +63,7 @@ public interface Validations {
 	String specifyLastName = "specifyLastName";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
 	String userNameNotUnique = "userNameNotUnique";
-	String validCase = "validCase";
+	String validCaseOrContact = "validCaseOrContact";
 	String validCommunity = "validCommunity";
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";

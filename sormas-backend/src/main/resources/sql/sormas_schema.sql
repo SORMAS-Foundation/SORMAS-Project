@@ -4208,4 +4208,10 @@ ALTER TABLE healthconditions_history ADD COLUMN sickleCellDisease varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (206, 'Add new symptoms and health conditions #1824');
 
+-- 2020-05-07 Add samples to contacts #1753
+ALTER TABLE samples ADD COLUMN associatedcontact_id bigint;
+ALTER TABLE samples ADD CONSTRAINT fk_samples_associatedcontact_id FOREIGN KEY (associatedcontact_id) REFERENCES contact (id);
+ALTER TABLE samples ALTER COLUMN associatedcase_id DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (207, '-- 2020-05-07 Add samples to contacts #1753');
 -- *** Insert new sql commands BEFORE this line ***

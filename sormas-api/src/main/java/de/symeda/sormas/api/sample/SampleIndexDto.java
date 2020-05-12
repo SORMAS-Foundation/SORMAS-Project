@@ -83,13 +83,17 @@ public class SampleIndexDto implements Serializable {
 			String caseDistrictUuid, String caseDistrictName, PathogenTestResultType pathogenTestResult,
 			Boolean additionalTestingRequested, Boolean additionalTestPerformed) {
 		this.uuid = uuid;
-		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
+		if(associatedCaseUuid != null) {
+			this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
+		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.caseRegionUuid = caseRegionUuid;
-		this.caseDistrict = new DistrictReferenceDto(caseDistrictUuid, caseDistrictName);
+		if (caseDistrictUuid != null) {
+			this.caseDistrict = new DistrictReferenceDto(caseDistrictUuid, caseDistrictName);
+		}
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
