@@ -444,6 +444,7 @@
     <string name="message_report_not_sent">Raportin lähettäminen ei tällä hetkellä onnistu.</string>
     <string name="message_report_sent">Ongelmaraportti lähetetty onnistuneesti.</string>
     <string name="message_save_error">%1$s ei pystytty tallentamaan, johtuen sisäisestä virheestä.</string>
+    <string name="message_edit_forbidden">Sinulla ei ole oikeuksia muokata tämän alueen tietuetta.</string>
     <string name="message_save_success">%1$s tallennettu onnistuneesti.</string>
     <string name="message_settings_saved">Sovelluksen asetuksia on muutettu.</string>
     <string name="message_settings_server_url">Tervetuloa! Aloita syöttämällä SORMAS-palvelimesi URL. Myöhemmin voit sisäänkirjautua käyttäjätunnuksella ja salasanallasi.</string>

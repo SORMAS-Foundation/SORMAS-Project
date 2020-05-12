@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
@@ -462,6 +463,10 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		for (Validator validator : validators) {
 			getField(fieldOrPropertyId).addValidator(validator);
 		}
+	}
+
+	protected boolean areFieldsValid(String... propertyIds){
+		return Stream.of(propertyIds).allMatch(p -> getField(p).isValid());
 	}
 
 	protected String getPropertyI18nPrefix() {

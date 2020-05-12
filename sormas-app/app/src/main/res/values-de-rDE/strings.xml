@@ -253,7 +253,7 @@
     <string name="heading_app_downloading">Lade herunter</string>
     <string name="heading_app_update_required">App-Update erforderlich</string>
     <string name="heading_burial">Bestattung</string>
-    <string name="heading_burials_visited">Besuchte Bestattungen</string>
+    <string name="heading_burials_visited">Besuch Bestattungen</string>
     <string name="heading_case_disease_changed">Fall-Krankheit hat sich geändert</string>
     <string name="heading_case_edit">Fall bearbeiten</string>
     <string name="heading_case_new">Neuer Fall</string>
@@ -387,7 +387,7 @@
     <string name="indicator_soft_required">*</string>
     <string name="indicator_warning">WARNUNG</string>
     <string name="info_add_cases_before_report_submit">Sind Sie sicher, dass Sie diese Fallnummern für die ausgewählte Epi-Woche einreichen möchten?</string>
-    <string name="info_app_download">Lade neue SORMAS Version herunter... Abhängig von Ihrer Internetverbindung kann dies eine Weile dauern.</string>
+    <string name="info_app_download">Lade neue SORMAS-Version herunter... Abhängig von Ihrer Internetverbindung kann dies eine Weile dauern.</string>
     <string name="info_create_person">Wenn Sie <b>keine</b> Person finden konnten, die Ihren eingetragenen persönlichen Daten gleicht, klicken Sie auf den \"Erstellen\" Button.</string>
     <string name="info_epidemiological_info">Bitte geben Sie an, ob einer der folgenden Punkte für den/die Patient*in während des Inkubationszeitraums oder der Erkrankung relevant ist.</string>
     <string name="info_initial_synchronization">Initialisiere Synchronisierung mit SORMAS Server.\nDas Laden der Infrastrukturdaten wird einige Minuten dauern.</string>
@@ -415,7 +415,7 @@
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Bereits im Speicherprozess..</string>
     <string name="message_case_infrastructure_data_changed">Sie haben die Infrastrukturdaten dieses Falls geändert. Möchten Sie den Fall an die neue Gesundheitseinrichtung übertragen (die Daten des Krankenhausaufenthaltes werden aktualisiert) oder nur die Daten bearbeiten, um einen Fehler zu korrigieren?</string>
-    <string name="message_download_app_failed">Der Download der neuen SORMAS Version ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie die bestmögliche Internetverbindung haben und versuchen Sie es erneut oder informieren Sie einen Verantwortlichen, wenn Sie diesen Fehler trotz einer guten Internetverbindung immer wieder erhalten.</string>
+    <string name="message_download_app_failed">Der Download der neuen SORMAS-Version ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie die bestmögliche Internetverbindung haben und versuchen Sie es erneut oder informieren Sie einen Verantwortlichen, wenn Sie diesen Fehler trotz einer guten Internetverbindung immer wieder erhalten.</string>
     <string name="message_empty_password">Bitte geben Sie ein Passwort ein.</string>
     <string name="message_empty_username">Bitte geben Sie einen Benutzernamen ein.</string>
     <string name="message_encryption">SORMAS setzt voraus, dass die Geräteverschlüsselung auf Ihrem Gerät aktiviert wird, um die Datensicherheit zu gewährleisten.\n\nBitte beachten Sie, dass Sie die Anwendung nicht verwenden können, solange die Geräteverschlüsselung deaktiviert ist.</string>
@@ -445,6 +445,7 @@
     <string name="message_report_not_sent">Bericht kann momentan nicht gesendet werden.</string>
     <string name="message_report_sent">Problembericht erfolgreich gesendet.</string>
     <string name="message_save_error">%1$s konnte aufgrund eines internen Fehlers nicht gespeichert werden.</string>
+    <string name="message_edit_forbidden">Sie haben keine Berechtigung, die Einträge aus diesem Zuständigkeitsbereich zu bearbeiten.</string>
     <string name="message_save_success">%1$s erfolgreich gespeichert.</string>
     <string name="message_settings_saved">Anwendungseinstellungen wurden geändert.</string>
     <string name="message_settings_server_url">Willkommen! Bitte geben Sie zuerst die URL Ihres SORMAS Servers ein, danach können Sie sich mit Ihrem Benutzernamen und Passwort anmelden.</string>
@@ -453,7 +454,7 @@
     <string name="message_sync_success">Synchronisierung erfolgreich.</string>
     <string name="message_task_reply_required">Eine Antwort des Beauftragten ist erforderlich, wenn der Aufgabenstatus auf \"nicht ausführbar\" gesetzt ist.</string>
     <string name="message_unsynchronized_changes">Es gibt nicht synchronisierte Änderungen auf Ihrem Gerät.\nWenn Sie fortfahren, werden diese verloren gehen und können sie nicht wiederherstellt werden.</string>
-    <string name="message_update_app_required">Eine neue Version der SORMAS App ist verfügbar. Es wird dringend empfohlen, sie herunterzuladen, indem Sie auf die \'Herunterladen\'-Schaltfläche unten klicken.</string>
+    <string name="message_update_app_required">Eine neue Version der SORMAS-App ist verfügbar. Es wird dringend empfohlen, sie herunterzuladen, indem Sie auf die \'Herunterladen\'-Schaltfläche unten klicken.</string>
     <string name="message_version_too_new">Konnte nicht synchronisieren, da die App-Version neuer ist als die Server-Version.</string>
     <string name="message_weekly_report_submitted">Vielen Dank, dass Sie Ihren wöchentlichen Bericht eingereicht haben.</string>
     <string name="message_case_numbers_submitted">Vielen Dank, dass Sie Ihre gesammelten Fall-Nummern eingereicht haben.</string>
@@ -466,7 +467,7 @@
     <string name="notification_channel_case_changes_name">Wichtige Falländerungen</string>
     <string name="notification_channel_case_changes_description">Erhalten Sie eine Benachrichtigung, wenn sich wichtige Details Ihrer Fälle geändert haben</string>
     <string name="synclog_server">Server: </string>
-    <string name="synclog_yours">Yours: </string>
+    <string name="synclog_yours">Ihre: </string>
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
     <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
     <string name="time_future_almost_two_years">innerhalb von fast zwei Jahren</string>
