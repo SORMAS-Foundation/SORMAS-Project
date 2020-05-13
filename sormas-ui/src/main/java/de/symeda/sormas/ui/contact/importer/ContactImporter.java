@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.ui.contact.ContactSelectionField;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -21,6 +19,7 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -34,6 +33,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.ui.contact.ContactSelectionField;
 import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportCellData;
@@ -43,8 +43,6 @@ import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
 import de.symeda.sormas.ui.person.PersonSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**

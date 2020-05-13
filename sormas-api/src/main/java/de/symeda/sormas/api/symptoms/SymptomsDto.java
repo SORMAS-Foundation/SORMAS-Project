@@ -17,14 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.symptoms;
 
+import static de.symeda.sormas.api.Disease.*;
+
 import java.util.Date;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.utils.*;
-
-import static de.symeda.sormas.api.Disease.*;
 
 public class SymptomsDto extends EntityDto {
 
