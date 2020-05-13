@@ -35,7 +35,7 @@ public class ContactEditAuthorization {
 
     	User user = userService.getCurrentUser();
 
-        if (DataHelper.equal(user.getUuid(), (contact.getReportingUser().getUuid()))){
+        if (contact.getReportingUser()!=null && DataHelper.equal(user.getUuid(), (contact.getReportingUser().getUuid()))){
             return true;
         }
 
