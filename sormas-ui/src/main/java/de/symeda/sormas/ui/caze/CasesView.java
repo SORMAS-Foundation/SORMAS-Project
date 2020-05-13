@@ -54,6 +54,8 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -65,6 +67,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -145,6 +148,7 @@ public class CasesView extends AbstractView {
 	private ComboBox presentConditionFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
+	private ComboBox communityFilter;
 	private ComboBox facilityFilter;
 	private ComboBox pointOfEntryFilter;
 	private ComboBox officerFilter;
@@ -634,6 +638,7 @@ public class CasesView extends AbstractView {
 				DistrictReferenceDto district = (DistrictReferenceDto)e.getProperty().getValue();
 
 				if (!DataHelper.equal(district, criteria.getDistrict())) {
+					criteria.setCommunity(null);
 					criteria.healthFacility(null);
 					criteria.pointOfEntry(null);
 				}
@@ -642,6 +647,23 @@ public class CasesView extends AbstractView {
 				navigateTo(criteria);
 			});
 			secondFilterRowLayout.addComponent(districtFilter);
+
+			communityFilter = new ComboBox();
+			communityFilter.setWidth(140, Unit.PIXELS);
+			communityFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY));
+			communityFilter.addValueChangeListener(e -> {
+				CommunityReferenceDto community = (CommunityReferenceDto) e.getProperty().getValue();
+
+				if (!DataHelper.equal(community, criteria.getCommunity())) {
+					criteria.healthFacility(null);
+				}
+
+				criteria.setCommunity(community);
+
+				navigateTo(criteria);
+			});
+
+			secondFilterRowLayout.addComponent(communityFilter);
 
 			if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				facilityFilter = new ComboBox();
@@ -986,8 +1008,23 @@ public class CasesView extends AbstractView {
 		}
 		districtFilter.setValue(criteria.getDistrict());
 
+
+		if (user.getDistrict() != null && user.getCommunity() == null) {
+			communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
+			communityFilter.setEnabled(true);
+		} else if(criteria.getDistrict() != null) {
+			communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid()));
+			communityFilter.setEnabled(true);
+		} else {
+			communityFilter.setEnabled(false);
+		}
+		communityFilter.setValue(criteria.getCommunity());
+
 		if (facilityFilter != null) {
-			if (criteria.getDistrict() != null) {
+			if(criteria.getCommunity() != null){
+				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(criteria.getCommunity(), true));
+				facilityFilter.setEnabled(true);
+			} else if (criteria.getDistrict() != null) {
 				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(criteria.getDistrict(), true));
 				facilityFilter.setEnabled(true);
 			} else {

@@ -26,6 +26,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -56,6 +57,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private PresentCondition presentCondition;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	private FacilityReferenceDto healthFacility;
 	private PointOfEntryReferenceDto pointOfEntry;
 	private UserReferenceDto surveillanceOfficer;
@@ -141,6 +143,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public DistrictReferenceDto getDistrict() {
 		return district;
+	}
+
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
 	}
 
 	/**
