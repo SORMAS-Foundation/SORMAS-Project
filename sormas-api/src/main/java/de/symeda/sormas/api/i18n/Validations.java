@@ -62,6 +62,7 @@ public interface Validations {
 	String specifyFirstName = "specifyFirstName";
 	String specifyLastName = "specifyLastName";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
+	String textTooLong = "textTooLong";
 	String userNameNotUnique = "userNameNotUnique";
 	String validCase = "validCase";
 	String validDisease = "validDisease";
@@ -79,5 +80,4 @@ public interface Validations {
 	String visitDate = "visitDate";
 	String visitStatus = "visitStatus";
 	String visitSymptoms = "visitSymptoms";
-	String textTooLong = "textTooLong";
 }
