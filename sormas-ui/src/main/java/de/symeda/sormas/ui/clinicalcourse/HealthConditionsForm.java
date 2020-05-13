@@ -9,6 +9,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
 
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -50,6 +51,13 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				IMMUNODEFICIENCY_OTHER_THAN_HIV, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION, OBESITY,
 				CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE);
 		addField(OTHER_CONDITIONS, TextArea.class).setRows(3);
+
+		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
+			Field<?> field = getFieldGroup().getField(propertyId);
+			if (isFieldHiddenForCurrentCountry(propertyId)) {
+				field.setVisible(false);
+			}
+		}
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
 	}

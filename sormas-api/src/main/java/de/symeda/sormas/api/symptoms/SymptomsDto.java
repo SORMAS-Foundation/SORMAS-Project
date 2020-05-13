@@ -253,12 +253,14 @@ public class SymptomsDto extends EntityDto {
 			OTHER})
 	private SymptomState conjunctivitis;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, MEASLES, MONKEYPOX,
-			PLAGUE, POLIO, ANTHRAX, UNSPECIFIED_VHF, UNDEFINED, OTHER})
+			PLAGUE, POLIO, ANTHRAX, UNSPECIFIED_VHF, CORONAVIRUS, UNDEFINED, OTHER})
 	@Outbreaks
 	private SymptomState cough;
 	@Diseases({CORONAVIRUS})
+	@HideForCountries
 	private SymptomState coughWithSputum;
 	@Diseases({CORONAVIRUS})
+	@HideForCountries
 	private SymptomState coughWithHeamoptysis;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, PLAGUE, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	@Outbreaks
@@ -381,6 +383,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({AFP, GUINEA_WORM, LASSA, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER})
 	private SymptomState lossSkinTurgor;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountries
 	private SymptomState lymphadenopathy;
 	@Diseases({AFP, GUINEA_WORM, MONKEYPOX, POLIO, UNDEFINED, OTHER})
 	private SymptomState lymphadenopathyAxillary;
@@ -466,6 +469,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, MEASLES,
 			DENGUE, POLIO, UNSPECIFIED_VHF, UNDEFINED, OTHER, CORONAVIRUS})
 	@Outbreaks
+	@HideForCountries
 	/** Maculopapular rash */
 	private SymptomState skinRash;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, MEASLES, MONKEYPOX,
@@ -524,6 +528,7 @@ public class SymptomsDto extends EntityDto {
 	private String congenitalHeartDiseaseDetails;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, YELLOW_FEVER, DENGUE, PLAGUE,
 			UNSPECIFIED_VHF, UNDEFINED, POLIO, OTHER, CORONAVIRUS})
+	@HideForCountries
 	private SymptomState unexplainedBleeding;
 	@Diseases({AFP, EVD, GUINEA_WORM, LASSA, NEW_INFLUENZA, CSM, CHOLERA,
 			MEASLES, YELLOW_FEVER, DENGUE, MONKEYPOX, PLAGUE, ANTHRAX,
@@ -585,12 +590,16 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
 	private SymptomState lossOfSmell;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountries
 	private SymptomState wheezing;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountries
 	private SymptomState skinUlcers;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountries
 	private SymptomState inabilityToWalk;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountries
 	private SymptomState inDrawingOfChestWall;
 
 	private Integer weight;

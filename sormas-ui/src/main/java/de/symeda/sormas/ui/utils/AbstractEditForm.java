@@ -18,7 +18,9 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,8 +51,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.ui.UserProvider;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
 		
@@ -533,12 +537,33 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				}
 			}
 
+			if (isFieldHiddenForCurrentCountry(propertyId)) {
+				diseaseVisibility = false;
+			}
+
 			if (diseaseVisibility && outbreakVisibility) {
 				visibleAllowedFields.add(field);
 			} else {
 				field.setVisible(false);
 			}
 		}
+	}
+
+	protected boolean isFieldHiddenForCurrentCountry(Object propertyId) {
+		try {
+			final java.lang.reflect.Field declaredField =
+					getType().getDeclaredField(propertyId.toString());
+			final Predicate<String> currentCountryIsHiddenForField =
+					country -> FacadeProvider.getConfigFacade().getCountryLocale().startsWith(country);
+			if (declaredField.isAnnotationPresent(HideForCountries.class) &&
+					Arrays.asList(declaredField.getAnnotation(HideForCountries.class).countries())
+							.stream().anyMatch(currentCountryIsHiddenForField)) {
+				return true;
+			}
+		} catch (NoSuchFieldException e) {
+			LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+		}
+		return false;
 	}
 
 	/**

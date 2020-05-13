@@ -2,6 +2,7 @@ package de.symeda.sormas.api.clinicalcourse;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -43,6 +44,7 @@ public class HealthConditionsDto extends EntityDto {
 	private YesNoUnknown chronicLiverDisease;
 	private YesNoUnknown malignancyChemotherapy;
 	private YesNoUnknown chronicHeartFailure;
+	@HideForCountries
 	private YesNoUnknown chronicPulmonaryDisease;
 	private YesNoUnknown chronicKidneyDisease;
 	private YesNoUnknown chronicNeurologicCondition;
@@ -50,10 +52,15 @@ public class HealthConditionsDto extends EntityDto {
 	private YesNoUnknown congenitalSyphilis;
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
+	@HideForCountries
 	private YesNoUnknown obesity;
+	@HideForCountries
 	private YesNoUnknown currentSmoker;
+	@HideForCountries
 	private YesNoUnknown formerSmoker;
+	@HideForCountries
 	private YesNoUnknown asthma;
+	@HideForCountries
 	private YesNoUnknown sickleCellDisease;
 	private String otherConditions;
 	

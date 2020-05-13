@@ -19,6 +19,7 @@
 package de.symeda.sormas.app;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,8 +28,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 
@@ -87,7 +94,28 @@ public class BaseFragment extends Fragment {
 
     protected boolean isVisibleAllowed(Class<?> dtoClass, Disease disease, ControlPropertyField field) {
         String propertyId = field.getSubPropertyId();
-        return Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
+        final boolean definedOrMissingForDisease = Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
+        final boolean fieldHiddenForCurrentCountry = isFieldHiddenForCurrentCountry(propertyId, dtoClass);
+        return definedOrMissingForDisease && !fieldHiddenForCurrentCountry;
+    }
+
+    protected boolean isFieldHiddenForCurrentCountry(Object propertyId, Class<?> dtoClass) {
+        try {
+            final java.lang.reflect.Field declaredField =
+                    dtoClass.getDeclaredField(propertyId.toString());
+            if (declaredField.isAnnotationPresent(HideForCountries.class)) {
+                final List<String> hideForCountries = Arrays.asList(declaredField.getAnnotation(HideForCountries.class).countries());
+                for (String country : hideForCountries) {
+                    if (ConfigProvider.getServerLocale().toLowerCase().startsWith(country)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (NoSuchFieldException e) {
+            Log.w(e.getMessage(), e.getLocalizedMessage(), e);
+            return false;
+        }
+        return false;
     }
 
     protected void setVisibleWhen(final ControlPropertyField targetField, ControlPropertyField sourceField, final Object sourceValue) {
