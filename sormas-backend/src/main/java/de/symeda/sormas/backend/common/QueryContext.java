@@ -9,18 +9,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class QueryContext {
+public class QueryContext<ADO extends AbstractDomainObject> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private CriteriaQuery<?> query;
     private CriteriaBuilder criteriaBuilder;
-    private From<?, ?> root;
+    private From<ADO, ADO> root;
     private Map<String, Join<?, ?>> joins;
     private Map<String, Expression<?>> subqueryExpressions;
     private Map<String, Path<?>> paths;
 
 
-    public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ?> root) {
+    public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<ADO, ADO> root) {
         this.root = root;
         this.joins = new HashMap<>();
         this.subqueryExpressions = new HashMap<>();
@@ -44,7 +44,7 @@ public class QueryContext {
                                             final String alias) {
         final String joinEntitySimpleName = joinEntity.getSimpleName();
         final String joinWithEntitySimpleName = joinWithEntity.getSimpleName();
-        final Join<JE, JWE> existingJoin = (Join<JE, JWE>) getJoin(joinEntity, joinWithEntity, alias);
+        final Join<JE, JWE> existingJoin = getJoin(joinEntity, joinWithEntity, alias);
         if (existingJoin == null) {
             final String joinName =
                     joinEntitySimpleName + joinWithEntitySimpleName + (StringUtils.isNotEmpty(alias) ? alias : "");

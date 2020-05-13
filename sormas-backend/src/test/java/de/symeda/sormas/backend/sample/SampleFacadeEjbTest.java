@@ -25,14 +25,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.sample.*;
+import de.symeda.sormas.api.utils.SortProperty;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -63,7 +62,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 		
-		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(null, 0, 100, null);
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null);
 		
 		// List should have one entry
 		assertEquals(2, sampleIndexDtos.size());
@@ -76,19 +75,41 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	public void testGetIndexListForContactSamples() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person1");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 
-		ContactDto contact = creator.createContact(user.toReference(), cazePerson.toReference(), caze);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person2");
+		ContactDto contact = creator.createContact(user.toReference(), contactPerson.toReference(), caze);
 		SampleDto cazeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		SampleDto sample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		SampleDto referredSample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		sample.setReferredTo(referredSample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 
-		assertEquals(3, getSampleFacade().count(null));
-		assertEquals(3, getSampleFacade().getIndexList(null, 0, 100, null).size());
+		assertEquals(3, getSampleFacade().count(new SampleCriteria()));
+
+		final ArrayList<SortProperty> sortProperties = new ArrayList<>();
+		sortProperties.add(new SortProperty(SampleDto.SAMPLE_DATE_TIME));
+		final List<SampleIndexDto> sampleList1 = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100,
+				sortProperties);
+		assertEquals(3, sampleList1.size());
+
+		final SampleIndexDto sample11 = sampleList1.get(0);
+		Assert.assertEquals(cazeSample.getUuid(), sample11.getUuid());
+		Assert.assertEquals(caze.getUuid(), sample11.getAssociatedCase().getUuid());
+		Assert.assertTrue(sample11.getAssociatedCase().getCaption().startsWith("Case PERSON1"));
+
+		final SampleIndexDto sample12 = sampleList1.get(1);
+		Assert.assertEquals(sample.getUuid(), sample12.getUuid());
+		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
+		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
+
+		final SampleIndexDto sample13 = sampleList1.get(2);
+		Assert.assertEquals(referredSample.getUuid(), sample13.getUuid());
+		Assert.assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
+		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
+
 		assertEquals(2, getSampleFacade().getIndexList(new SampleCriteria().sampleSearchType(SampleSearchType.CONTACT), 0, 100, null).size());
 		assertEquals(1, getSampleFacade().getIndexList(new SampleCriteria().sampleSearchType(SampleSearchType.CASE), 0, 100, null).size());
 	}

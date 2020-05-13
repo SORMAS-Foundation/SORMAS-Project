@@ -224,6 +224,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Join<Case, District> caseDistrict        = qc.getJoin(Case.class, District.class);
 
 		final Join<Sample, Contact> contact            = qc.getJoin(Sample.class, Contact.class);
+		final Join<Contact, Person> contactPerson           = qc.getJoin(Contact.class, Person.class);
 		final Join<Contact, Region> contactRegion      = qc.getJoin(Contact.class, Region.class);
 		final Join<Contact, District> contactDistrict  = qc.getJoin(Contact.class, District.class);
 		final Join<Contact, Case> contactCase          = qc.getJoin(Contact.class, Case.class);
@@ -254,6 +255,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SPECIMEN_CONDITION),
 				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID),
 				caze.get(Case.UUID), casePerson.get(Person.FIRST_NAME), casePerson.get(Person.LAST_NAME),
+				contact.get(Contact.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
 				diseaseSelect, diseaseDetailsSelect,
 				regionSelect, districtSelect, districtNameSelect,
 				sample.get(Sample.PATHOGEN_TEST_RESULT),

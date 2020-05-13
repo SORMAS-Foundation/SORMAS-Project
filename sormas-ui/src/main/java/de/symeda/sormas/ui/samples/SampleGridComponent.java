@@ -47,12 +47,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.sample.*;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -88,6 +83,7 @@ public class SampleGridComponent extends VerticalLayout {
 	private Button resetButton;
 	MenuBar bulkOperationsDropdown;
 	private ComboBox relevanceStatusFilter;
+	private ComboBox sampleTypeFilter;
 
 	private VerticalLayout gridLayout;
 
@@ -106,7 +102,6 @@ public class SampleGridComponent extends VerticalLayout {
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
-
 		grid = new SampleGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -136,7 +131,7 @@ public class SampleGridComponent extends VerticalLayout {
 			criteria.pathogenTestResult(((PathogenTestResultType)e.getProperty().getValue()));
 			samplesView.navigateTo(criteria);
 		});
-		filterLayout.addComponent(testResultFilter);        
+		filterLayout.addComponent(testResultFilter);
 
 		specimenConditionFilter = new ComboBox();
 		specimenConditionFilter.setWidth(140, Unit.PIXELS);
@@ -314,6 +309,19 @@ public class SampleGridComponent extends VerticalLayout {
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
+
+			sampleTypeFilter = new ComboBox();
+			sampleTypeFilter.setWidth(140, Unit.PERCENTAGE);
+			sampleTypeFilter.setNullSelectionAllowed(false);
+			sampleTypeFilter.addItems((Object[]) SampleSearchType.values());
+			sampleTypeFilter.setItemCaption(SampleSearchType.ALL, I18nProperties.getEnumCaption(SampleSearchType.ALL));
+			sampleTypeFilter.setItemCaption(SampleSearchType.CASE, I18nProperties.getEnumCaption(SampleSearchType.CASE));
+			sampleTypeFilter.setItemCaption(SampleSearchType.CONTACT, I18nProperties.getEnumCaption(SampleSearchType.CONTACT));
+			sampleTypeFilter.addValueChangeListener(e -> {
+				criteria.sampleSearchType(((SampleSearchType)e.getProperty().getValue()));
+				samplesView.navigateTo(criteria);
+			});
+			actionButtonsLayout.addComponent(sampleTypeFilter);
 		}
 		shipmentFilterLayout.addComponent(actionButtonsLayout);
 		shipmentFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
@@ -352,6 +360,9 @@ public class SampleGridComponent extends VerticalLayout {
 		updateStatusButtons();
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
+		if (sampleTypeFilter != null) {
+			sampleTypeFilter.setValue(criteria.getSampleSearchType());
 		}
 		testResultFilter.setValue(criteria.getPathogenTestResult());
 		specimenConditionFilter.setValue(criteria.getSpecimenCondition());

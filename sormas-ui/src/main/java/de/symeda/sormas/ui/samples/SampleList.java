@@ -40,10 +40,10 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	private final SampleCriteria sampleCriteria = new SampleCriteria();
 
-	public SampleList(ContactReferenceDto ccontactRef) {
+	public SampleList(ContactReferenceDto contactRef) {
 		super(5);
 
-		sampleCriteria.contact(ccontactRef);
+		sampleCriteria.contact(contactRef);
 	}
 
 	public SampleList(CaseReferenceDto caseRef) {
