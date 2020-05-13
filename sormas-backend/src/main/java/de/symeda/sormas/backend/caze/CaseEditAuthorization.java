@@ -32,7 +32,7 @@ public class CaseEditAuthorization {
 
 		User user = userService.getCurrentUser();
        
-        if (DataHelper.equal(user.getUuid(), (caze.getUuid()))) {
+        if (caze.getReportingUser()!=null && DataHelper.equal(user.getUuid(), (caze.getReportingUser().getUuid()))) {
             return true;
         }
 
