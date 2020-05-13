@@ -8,7 +8,6 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.v7.ui.renderers.DateRenderer;
-import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -45,10 +44,9 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 		
 		setColumns(EDIT_BTN_ID, TreatmentIndexDto.TREATMENT_TYPE, TreatmentIndexDto.TREATMENT_DATE_TIME,
 				TreatmentIndexDto.DOSE, TreatmentIndexDto.ROUTE, TreatmentIndexDto.EXECUTING_CLINICIAN);
-		
-		getColumn(EDIT_BTN_ID).setRenderer(new HtmlRenderer());
-		getColumn(EDIT_BTN_ID).setWidth(20);
-		getColumn(EDIT_BTN_ID).setHeaderCaption("");
+
+		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
+
 		Language userLanguage = I18nProperties.getUserLanguage();
 		getColumn(TreatmentIndexDto.TREATMENT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		

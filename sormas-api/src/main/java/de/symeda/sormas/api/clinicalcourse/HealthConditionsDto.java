@@ -2,6 +2,7 @@ package de.symeda.sormas.api.clinicalcourse;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -28,7 +29,12 @@ public class HealthConditionsDto extends EntityDto {
 	public static final String OTHER_CONDITIONS = "otherConditions";
 	public static final String IMMUNODEFICIENCY_OTHER_THAN_HIV = "immunodeficiencyOtherThanHiv";
 	public static final String CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION = "cardiovascularDiseaseIncludingHypertension";
-	
+	public static final String OBESITY = "obesity";
+	public static final String CURRENT_SMOKER = "currentSmoker";
+	public static final String FORMER_SMOKER = "formerSmoker";
+	public static final String ASTHMA = "asthma";
+	public static final String SICKLE_CELL_DISEASE = "sickleCellDisease";
+
 	private YesNoUnknown tuberculosis;
 	private YesNoUnknown asplenia;
 	private YesNoUnknown hepatitis;
@@ -38,6 +44,7 @@ public class HealthConditionsDto extends EntityDto {
 	private YesNoUnknown chronicLiverDisease;
 	private YesNoUnknown malignancyChemotherapy;
 	private YesNoUnknown chronicHeartFailure;
+	@HideForCountries
 	private YesNoUnknown chronicPulmonaryDisease;
 	private YesNoUnknown chronicKidneyDisease;
 	private YesNoUnknown chronicNeurologicCondition;
@@ -45,6 +52,16 @@ public class HealthConditionsDto extends EntityDto {
 	private YesNoUnknown congenitalSyphilis;
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
+	@HideForCountries
+	private YesNoUnknown obesity;
+	@HideForCountries
+	private YesNoUnknown currentSmoker;
+	@HideForCountries
+	private YesNoUnknown formerSmoker;
+	@HideForCountries
+	private YesNoUnknown asthma;
+	@HideForCountries
+	private YesNoUnknown sickleCellDisease;
 	private String otherConditions;
 	
 	public static HealthConditionsDto build() {
@@ -166,11 +183,45 @@ public class HealthConditionsDto extends EntityDto {
 		this.congenitalSyphilis = congenitalSyphilis;
 	}
 	@Order(26)
+	public YesNoUnknown getObesity() {
+		return obesity;
+	}
+	public void setObesity(YesNoUnknown obesity) {
+		this.obesity = obesity;
+	}
+	@Order(27)
+	public YesNoUnknown getCurrentSmoker() {
+		return currentSmoker;
+	}
+	public void setCurrentSmoker(YesNoUnknown currentSmoker) {
+		this.currentSmoker = currentSmoker;
+	}
+	@Order(28)
+	public YesNoUnknown getFormerSmoker() {
+		return formerSmoker;
+	}
+	public void setFormerSmoker(YesNoUnknown formerSmoker) {
+		this.formerSmoker = formerSmoker;
+	}
+	@Order(29)
+	public YesNoUnknown getAsthma() {
+		return asthma;
+	}
+	public void setAsthma(YesNoUnknown asthma) {
+		this.asthma = asthma;
+	}
+	@Order(30)
+	public YesNoUnknown getSickleCellDisease() {
+		return sickleCellDisease;
+	}
+	public void setSickleCellDisease(YesNoUnknown sickleCellDisease) {
+		this.sickleCellDisease = sickleCellDisease;
+	}
+	@Order(31)
 	public String getOtherConditions() {
 		return otherConditions;
 	}
 	public void setOtherConditions(String otherConditions) {
 		this.otherConditions = otherConditions;
 	}
-	
 }

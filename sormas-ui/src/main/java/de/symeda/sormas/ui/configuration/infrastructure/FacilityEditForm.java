@@ -81,7 +81,6 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		if (!laboratory) {
 			region.setRequired(true);
 			district.setRequired(true);
-			community.setRequired(true);
 		}
 
 		region.addValueChangeListener(e -> {

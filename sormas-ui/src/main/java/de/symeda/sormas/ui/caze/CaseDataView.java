@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
@@ -54,12 +53,12 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String SAMPLES_LOC = "samples";
 
 	public CaseDataView() {
-		super(VIEW_NAME);
+		super(VIEW_NAME, false);
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	protected void initView(String params) {
+
 		setHeightUndefined();
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
@@ -92,11 +91,11 @@ public class CaseDataView extends AbstractCaseView {
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, CASE_LOC);
-
+		
 		TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
-
+					   
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.isUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
@@ -113,6 +112,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 			
 		}
-		
+
+		setCaseEditPermission(container);
 	}
 }

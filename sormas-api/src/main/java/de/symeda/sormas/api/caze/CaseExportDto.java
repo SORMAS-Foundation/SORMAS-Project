@@ -73,6 +73,7 @@ public class CaseExportDto implements Serializable {
 	public static final String ASSOCIATED_WITH_OUTBREAK = "associatedWithOutbreak";
 	public static final String BURIAL_INFO = "burialInfo";
 	public static final String ADDRESS_GPS_COORDINATES = "addressGpsCoordinates";
+	public static final String TRAVELED = "traveled";
 	public static final String TRAVEL_HISTORY = "travelHistory";
 	public static final String NUMBER_OF_PRESCRIPTIONS = "numberOfPrescriptions";
 	public static final String NUMBER_OF_TREATMENTS = "numberOfTreatments";
@@ -631,6 +632,10 @@ public class CaseExportDto implements Serializable {
 		return occupationType;
 	}
 
+	@Order(69)
+	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE})
+	@ExportProperty(TRAVELED)
+	@ExportGroup(ExportGroupType.EPIDEMIOLOGICAL)
 	public YesNoUnknown getTraveled() {
 		return traveled;
 	}

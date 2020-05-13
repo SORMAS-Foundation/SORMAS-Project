@@ -270,7 +270,7 @@ public class ContactController {
 		return editComponent;
 	}
 
-	public void showBulkContactDataEditComponent(Collection<ContactIndexDto> selectedContacts, String caseUuid) {
+	public void showBulkContactDataEditComponent(Collection<? extends ContactIndexDto> selectedContacts, String caseUuid) {
 		if (selectedContacts.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -327,7 +327,7 @@ public class ContactController {
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	public void deleteAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -345,7 +345,7 @@ public class ContactController {
 		}
 	}
 
-	public void cancelFollowUpOfAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+	public void cancelFollowUpOfAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -368,7 +368,7 @@ public class ContactController {
 		}
 	}
 
-	public void setAllSelectedItemsToLostToFollowUp(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+	public void setAllSelectedItemsToLostToFollowUp(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());

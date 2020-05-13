@@ -30,6 +30,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -122,7 +123,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				districts = districts.stream().filter(district -> !activeUuids.contains(district.getUuid())).collect(Collectors.toList());
 
 				for (District district : districts) {
-					resultList.add(new FeatureConfigurationIndexDto(null, district.getRegion().getUuid(), district.getRegion().getName(), 
+					resultList.add(new FeatureConfigurationIndexDto(DataHelper.createUuid(), district.getRegion().getUuid(), district.getRegion().getName(), 
 							district.getUuid(), district.getName(), criteria.getDisease(), false, null));
 				}
 			}

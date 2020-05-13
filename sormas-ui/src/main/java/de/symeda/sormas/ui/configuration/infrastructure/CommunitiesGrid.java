@@ -21,9 +21,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -40,8 +38,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteria> {
 
 	private static final long serialVersionUID = 3355810665696318673L;
-
-	public static final String EDIT_BTN_ID = "edit";
 	
 	public CommunitiesGrid(CommunityCriteria criteria) {
 		super(CommunityDto.class);
@@ -61,16 +57,8 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			Column<CommunityDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-			editColumn.setId(EDIT_BTN_ID);
-			editColumn.setWidth(20);
-
-			addItemClickListener(e -> {
-				if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
-					ControllerProvider.getInfrastructureController().editCommunity(e.getItem().getUuid());
-				}
-			});
-		}	
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(e.getItem().getUuid()));
+		}
 		
 		for(Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(

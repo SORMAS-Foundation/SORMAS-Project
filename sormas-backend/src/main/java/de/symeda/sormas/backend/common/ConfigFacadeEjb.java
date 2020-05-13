@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -122,26 +123,34 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public String getCountryName() {
 		String countryName = getProperty(COUNTRY_NAME, "");
 		if (countryName.isEmpty()) {
-			logger.warn("No country name is specified in sormas.properties.");
+			logger.info("No country name is specified in sormas.properties.");
 		}
 		return countryName;
 	}
 
 	/**
-	 * Returns the locale in lower case
+	 * Returns the locale
 	 */
 	@Override
 	public String getCountryLocale() {
-		String locale = getProperty(COUNTRY_LOCALE, Locale.getDefault().toString());
-		if (locale != null) {
+		String locale = getProperty(COUNTRY_LOCALE, Language.EN.getLocale().toString());
+		return normalizeLocaleString(locale);
+	}
+
+	static String normalizeLocaleString(String locale) {
+		locale = locale.trim();
+		int pos = Math.max(locale.indexOf('-'), locale.indexOf('_'));
+		if (pos < 0) {
 			locale = locale.toLowerCase();
+		} else {
+			locale = locale.substring(0, pos).toLowerCase(Locale.ENGLISH) + '-' + locale.substring(pos + 1).toUpperCase(Locale.ENGLISH);
 		}
 		return locale;
 	}
 	
 	@Override
 	public boolean isGermanServer() {
-		return getCountryLocale().toLowerCase().startsWith("de");
+		return getCountryLocale().startsWith("de");
 	}
 	
 	@Override

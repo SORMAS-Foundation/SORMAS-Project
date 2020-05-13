@@ -21,7 +21,7 @@ import de.symeda.sormas.api.visit.ExternalVisitDto;
 @RolesAllowed("REST_EXTERNAL_VISITS_USER")
 public class ExternalVisitsResource extends EntityDtoResource {
 
-	public static final String EXTERNAL_VISITS_API_VERSION = "1.37.0";
+	public static final String EXTERNAL_VISITS_API_VERSION = "1.40.0";
 
     @GET
     @Path("/contact/{contactUuid}/isValid")

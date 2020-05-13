@@ -268,6 +268,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return newCase;
     }
 
+    public Case build(Contact contact) {
+        Case newCase = build(contact.getPerson());
+        newCase.setDisease(contact.getDisease());
+        newCase.setDiseaseDetails(contact.getDiseaseDetails());
+        return newCase;
+    }
+
     public Case build(EventParticipant eventParticipant) {
         Case newCase = build(eventParticipant.getPerson());
         Event event = eventParticipant.getEvent();

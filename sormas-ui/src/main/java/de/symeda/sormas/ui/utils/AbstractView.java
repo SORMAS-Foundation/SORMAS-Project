@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
+import com.vaadin.navigator.Navigator;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.SormasUI;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.View;
@@ -122,7 +124,9 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		}
 		applyingCriteria = true;
 
-		String state = getUI().getNavigator().getState();
+		Navigator navigator = SormasUI.get().getNavigator();
+
+		String state = navigator.getState();
 		int paramsIndex = state.lastIndexOf('?');
 		if (paramsIndex >= 0) {
 			state = state.substring(0, paramsIndex);
@@ -135,8 +139,8 @@ public abstract class AbstractView extends VerticalLayout implements View {
 				state += "?" + params;
 			}
 		}
-		
-		getUI().getNavigator().navigateTo(state);
+
+		navigator.navigateTo(state);
 
 		applyingCriteria = false;
 	}
