@@ -29,6 +29,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 
 public class PersonDto extends EntityDto {
@@ -98,9 +99,11 @@ public class PersonDto extends EntityDto {
 
 	@Outbreaks
 	@Required
+	@PersonalData
 	private String firstName;
 	@Outbreaks
 	@Required
+	@PersonalData
 	private String lastName;
 	private String nickname;
 	private String mothersName;
@@ -109,6 +112,7 @@ public class PersonDto extends EntityDto {
 	@Outbreaks
 	private Sex sex;
 	@Outbreaks
+	@PersonalData
 	private Integer birthdateDD;
 	@Outbreaks
 	private Integer birthdateMM;

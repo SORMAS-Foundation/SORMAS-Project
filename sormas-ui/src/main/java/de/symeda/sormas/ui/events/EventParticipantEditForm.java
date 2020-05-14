@@ -54,8 +54,9 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			// workaround to stop initialization until event is set
 			return;
 		}
-    	
-		PersonEditForm pef = new PersonEditForm(event.getDisease(), event.getDiseaseDetails(), UserRight.EVENTPARTICIPANT_EDIT, null);
+
+//		// TODO - jurisdiction
+		PersonEditForm pef = new PersonEditForm(event.getDisease(), event.getDiseaseDetails(), UserRight.EVENTPARTICIPANT_EDIT, null, true);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
 		getContent().addComponent(pef, EventParticipantDto.PERSON);

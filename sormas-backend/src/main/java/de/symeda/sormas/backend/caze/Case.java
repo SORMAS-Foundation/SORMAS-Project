@@ -49,6 +49,7 @@ import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
@@ -214,6 +215,7 @@ public class Case extends CoreAdo {
 	private Case duplicateOf;
 	
 	private CaseOrigin caseOrigin;
+	@PersonalData
 	private PointOfEntry pointOfEntry;
 	private String pointOfEntryDetails;
 	

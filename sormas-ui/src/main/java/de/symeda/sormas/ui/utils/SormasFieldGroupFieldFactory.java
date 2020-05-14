@@ -33,8 +33,11 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 
 	private final UserRight editOrCreateUserRight;
 
-	SormasFieldGroupFieldFactory(UserRight editOrCreateUserRight) {
+	private final FieldVisibilityChecker fieldVisibilityChecker;
+
+	SormasFieldGroupFieldFactory(UserRight editOrCreateUserRight, FieldVisibilityChecker fieldVisibilityChecker) {
 		this.editOrCreateUserRight = editOrCreateUserRight;
+		this.fieldVisibilityChecker = fieldVisibilityChecker;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -82,7 +85,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) field;
 		} 
 		else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationEditForm(editOrCreateUserRight);
+			return (T) new LocationEditForm(editOrCreateUserRight, fieldVisibilityChecker);
 		} 
 		else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new HealthConditionsForm(editOrCreateUserRight);

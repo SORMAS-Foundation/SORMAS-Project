@@ -47,6 +47,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
@@ -74,11 +75,11 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 					+
 			fluidRow(
 					fluidColumnLocCss(VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
-			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
-			;		
+			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
 
 	public HospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX, editOrCreateUserRight);
+		super(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX, editOrCreateUserRight,
+				new FieldVisibilityChecker().addOutbreak(viewMode));
 		this.caze = caze;
 		this.viewMode = viewMode;
 		addFields();
@@ -110,7 +111,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField = addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 
-		initializeVisibilitiesAndAllowedVisibilities(null, viewMode);
+		initializeVisibilitiesAndAllowedVisibilities();
 
 		if (isVisibleAllowed(HospitalizationDto.ISOLATION_DATE)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), HospitalizationDto.ISOLATION_DATE, HospitalizationDto.ISOLATED, Arrays.asList(YesNoUnknown.YES), true);

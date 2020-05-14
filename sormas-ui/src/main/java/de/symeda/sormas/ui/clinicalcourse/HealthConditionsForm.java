@@ -19,12 +19,13 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
 
 public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> {
-		
-		private static final long serialVersionUID = 1L;
-		
-	
+
+	private static final long serialVersionUID = 1L;
+
+
 	private static final String HTML_LAYOUT =
 			h3(I18nProperties.getString(Strings.headingHealthConditions)) +
 					fluidRow(
@@ -38,11 +39,11 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE))
 					) +
 					loc(OTHER_CONDITIONS);
-	
+
 	public HealthConditionsForm(UserRight editOrCreateUserRight) {
-		super(HealthConditionsDto.class, I18N_PREFIX, editOrCreateUserRight);
+		super(HealthConditionsDto.class, I18N_PREFIX, editOrCreateUserRight, new FieldVisibilityChecker().addCurrentCountry());
 	}
-	
+
 	@Override
 	protected void addFields() {
 		addFields(TUBERCULOSIS, ASPLENIA, HEPATITIS, DIABETES, HIV, HIV_ART, CHRONIC_LIVER_DISEASE,
@@ -52,19 +53,14 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE);
 		addField(OTHER_CONDITIONS, TextArea.class).setRows(3);
 
-		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
-			Field<?> field = getFieldGroup().getField(propertyId);
-			if (isFieldHiddenForCurrentCountry(propertyId)) {
-				field.setVisible(false);
-			}
-		}
-		
+		initializeVisibilitiesAndAllowedVisibilities();
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
 	}
-    
+
 	@Override
 	protected String createHtmlLayout() {
-		 return HTML_LAYOUT;
+		return HTML_LAYOUT;
 	}
 
 }

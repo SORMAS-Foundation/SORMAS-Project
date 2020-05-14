@@ -74,6 +74,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
@@ -186,8 +187,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
     public SymptomsForm(CaseDataDto caze, Disease disease, PersonDto person, SymptomsContext symptomsContext,
 						UserRight editOrCreateUserRight, ViewMode viewMode) {
-        // TODO add user right parameter
-        super(SymptomsDto.class, I18N_PREFIX, editOrCreateUserRight);
+
+        super(SymptomsDto.class, I18N_PREFIX, editOrCreateUserRight,
+                new FieldVisibilityChecker().addDisease(disease).addOutbreak(viewMode).addCurrentCountry());
+
         this.caze = caze;
         this.disease = disease;
         this.person = person;
@@ -307,7 +310,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
         // Set initial visibilities
 
-        initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
+        initializeVisibilitiesAndAllowedVisibilities();
 
         if (symptomsContext != SymptomsContext.CLINICAL_VISIT) {
             setVisible(false, BLOOD_PRESSURE_SYSTOLIC, BLOOD_PRESSURE_DIASTOLIC, HEART_RATE,

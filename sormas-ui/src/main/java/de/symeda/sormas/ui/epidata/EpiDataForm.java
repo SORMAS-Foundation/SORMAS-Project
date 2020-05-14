@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
@@ -137,7 +138,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final ViewMode viewMode;
 	
 	public EpiDataForm(Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, editOrCreateUserRight);
+		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, editOrCreateUserRight, new FieldVisibilityChecker().addDisease(disease));
 		this.disease = disease;
 		this.viewMode = viewMode;
 		addFields();
@@ -192,7 +193,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 				EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_SOURCE_OTHER, 
 				EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE);
 
-		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
+		initializeVisibilitiesAndAllowedVisibilities();
 		
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.SICK_DEAD_ANIMALS_DETAILS, EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION), EpiDataDto.SICK_DEAD_ANIMALS, Arrays.asList(YesNoUnknown.YES), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EpiDataDto.EATING_RAW_ANIMALS_DETAILS), EpiDataDto.EATING_RAW_ANIMALS, Arrays.asList(YesNoUnknown.YES), true);

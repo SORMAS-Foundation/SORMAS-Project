@@ -432,12 +432,12 @@ public class CaseController {
 	}
 
 	public CommitDiscardWrapperComponent<? extends Component> getCaseCombinedEditComponent(final String caseUuid,
-			final ViewMode viewMode) {
+			final ViewMode viewMode, boolean isInJurisdiction) {
 
 		CaseDataDto caze = findCase(caseUuid);
 		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
 
-		CaseDataForm caseEditForm = new CaseDataForm(person, caze.getDisease(), UserRight.CASE_EDIT, viewMode);
+		CaseDataForm caseEditForm = new CaseDataForm(person, caze.getDisease(), UserRight.CASE_EDIT, viewMode, isInJurisdiction);
 		caseEditForm.setValue(caze);
 
 		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, UserRight.CASE_EDIT, viewMode);
@@ -471,11 +471,11 @@ public class CaseController {
 	}
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid,
-			final ViewMode viewMode) {
+			final ViewMode viewMode, boolean isInJurisdiction) {
 		CaseDataDto caze = findCase(caseUuid);
 		CaseDataForm caseEditForm = new CaseDataForm(
 				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(),
-				UserRight.CASE_EDIT, viewMode);
+				UserRight.CASE_EDIT, viewMode, isInJurisdiction);
 		caseEditForm.setValue(caze);
 
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(

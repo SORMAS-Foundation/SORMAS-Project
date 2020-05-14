@@ -46,6 +46,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -154,6 +155,7 @@ public class CaseDataDto extends EntityDto {
 	private Date reportDate;
 	@Outbreaks
 	@Required
+	@PersonalData
 	private UserReferenceDto reportingUser;
 	private Date regionLevelDate;
 	private Date nationalLevelDate;
@@ -186,11 +188,14 @@ public class CaseDataDto extends EntityDto {
 	@Required
 	private DistrictReferenceDto district;
 	@Outbreaks
+	@PersonalData
 	private CommunityReferenceDto community;
 	@Outbreaks
 	@Required
+	@PersonalData
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
+	@PersonalData
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
@@ -238,7 +243,9 @@ public class CaseDataDto extends EntityDto {
 	private String creationVersion;
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
+	@PersonalData
 	private PointOfEntryReferenceDto pointOfEntry;
+	@PersonalData
 	private String pointOfEntryDetails;
 	private String additionalDetails;
 	private String externalID;

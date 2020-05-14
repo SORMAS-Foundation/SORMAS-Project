@@ -17,13 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -44,39 +37,48 @@ import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.HideForCountries;
-import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.ui.UserProvider;
-import org.slf4j.LoggerFactory;
 
-public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
-		
-		private static final long serialVersionUID = 1L;
-		
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public abstract class AbstractEditForm<DTO extends EntityDto> extends CustomField<DTO> implements CommitHandler {// implements DtoEditForm<DTO> {
+
+	private static final long serialVersionUID = 1L;
 
 	private final BeanFieldGroup<DTO> fieldGroup;
 
+	private final Class<DTO> type;
 	private final String propertyI18nPrefix;
+	protected final FieldVisibilityChecker fieldVisibilityChecker;
 
-	private Class<DTO> type;
 	private boolean hideValidationUntilNextCommit = false;
 	private List<Field<?>> customFields = new ArrayList<>();
 	private List<Field<?>> visibleAllowedFields = new ArrayList<>();
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, true);
+		this(type, propertyI18nPrefix, editOrCreateUserRight, true, null);
 	}
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields) {
+		this(type, propertyI18nPrefix, editOrCreateUserRight, addFields, null);
+	}
+
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, FieldVisibilityChecker fieldVisibilityCecker) {
+		this(type, propertyI18nPrefix, editOrCreateUserRight, true, fieldVisibilityCecker);
+	}
+
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields, FieldVisibilityChecker fieldVisibilityChecker) {
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
+		this.fieldVisibilityChecker = fieldVisibilityChecker;
 
 		fieldGroup = new BeanFieldGroup<DTO>(type) {
 
@@ -86,7 +88,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				field.setBuffered(isBuffered());
 				if (!isEnabled()) {
 					field.setEnabled(false);
-				}			
+				}
 
 				if (field.getPropertyDataSource().isReadOnly()) {
 					field.setReadOnly(true);
@@ -98,7 +100,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 		fieldGroup.addCommitHandler(this);
 
-		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory(editOrCreateUserRight));
+		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory(editOrCreateUserRight, fieldVisibilityChecker));
 
 		setWidth(900, Unit.PIXELS);
 		setHeightUndefined();
@@ -118,13 +120,13 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static CommitDiscardWrapperComponent<VerticalLayout> buildCommitDiscardWrapper(AbstractEditForm ...wrappedForms) {
+	public static CommitDiscardWrapperComponent<VerticalLayout> buildCommitDiscardWrapper(AbstractEditForm... wrappedForms) {
 		VerticalLayout formsLayout = new VerticalLayout();
 		if (wrappedForms.length > 0) { // not perfect, but necessary to make this work in grid views like CaseDataView
 			formsLayout.setWidth(wrappedForms[0].getWidth(), wrappedForms[0].getWidthUnits());
 		}
 		FieldGroup[] fieldGroups = new FieldGroup[wrappedForms.length];
-		for (int i=0; i<wrappedForms.length; i++) {
+		for (int i = 0; i < wrappedForms.length; i++) {
 			formsLayout.addComponent(wrappedForms[i]);
 			wrappedForms[i].setWidth(100, Unit.PERCENTAGE);
 			fieldGroups[i] = wrappedForms[i].getFieldGroup();
@@ -151,11 +153,12 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 	@Override
 	protected CustomLayout getContent() {
-		return (CustomLayout)super.getContent();
+		return (CustomLayout) super.getContent();
 	}
 
 	protected abstract String createHtmlLayout();
-	protected abstract void addFields();	
+
+	protected abstract void addFields();
 
 	@Override
 	public void setValue(DTO newFieldValue) throws com.vaadin.v7.data.Property.ReadOnlyException, ConversionException {
@@ -194,14 +197,14 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			hideValidationUntilNextCommit = false;
 			for (Field<?> field : getFieldGroup().getFields()) {
 				if (field instanceof AbstractField) {
-					AbstractField<?> abstractField = (AbstractField<?>)field;
+					AbstractField<?> abstractField = (AbstractField<?>) field;
 					abstractField.setValidationVisible(true);
 				}
 			}
 
 			for (Field<?> field : customFields) {
 				if (field instanceof AbstractField) {
-					AbstractField<?> abstractField = (AbstractField<?>)field;
+					AbstractField<?> abstractField = (AbstractField<?>) field;
 					abstractField.setValidationVisible(true);
 				}
 			}
@@ -224,7 +227,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		} catch (CommitException e) {
 			if (e.getInvalidFields().size() > 0) {
 				throw new InvalidValueException(
-						e.getInvalidFields().keySet().stream().map(f -> f.getCaption()).collect(Collectors.joining(", ")), 
+						e.getInvalidFields().keySet().stream().map(f -> f.getCaption()).collect(Collectors.joining(", ")),
 						e.getInvalidFields().values().stream().toArray(InvalidValueException[]::new));
 			} else {
 				throw new SourceException(this, e);
@@ -248,14 +251,14 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		return this.fieldGroup;
 	}
 
-	protected void addFields(String ...properties) {
-		for (String property: properties) {
+	protected void addFields(String... properties) {
+		for (String property : properties) {
 			addField(property);
 		}
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected <T extends Field> void addFields(Class<T> fieldType, String ...properties) {
+	protected <T extends Field> void addFields(Class<T> fieldType, String... properties) {
 		for (String property : properties) {
 			addField(property, fieldType);
 		}
@@ -293,7 +296,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		});
 		return field;
 	}
-	
+
 	protected ComboBox addInfrastructureField(String fieldId) {
 		ComboBox field = addField(fieldId, ComboBox.class);
 		// Make sure that the ComboBox still contains a pre-selected inactive infrastructure entity
@@ -306,18 +309,18 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		return field;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	protected <T extends Field> T addField(String propertyId) {
 		return (T) addField(propertyId, Field.class);
 	}
 
 	@SuppressWarnings("rawtypes")
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType) {
-		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
+		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 		formatField(field, propertyId);
 		field.setId(propertyId);
-		getContent().addComponent(field, propertyId);	
-		addDefaultAdditionalValidators(field);	
+		getContent().addComponent(field, propertyId);
+		addDefaultAdditionalValidators(field);
 		return field;
 	}
 
@@ -327,11 +330,11 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	 * -1 for no restriction at all
 	 */
 	protected <T extends Field> T addDateField(String propertyId, Class<T> fieldType, int allowedDaysInFuture) {
-		T field = getFieldGroup().buildAndBind(propertyId, (Object)propertyId, fieldType);
+		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 		formatField(field, propertyId);
 		field.setId(propertyId);
-		getContent().addComponent(field, propertyId);	
-		addFutureDateValidator(field, allowedDaysInFuture);	
+		getContent().addComponent(field, propertyId);
+		addFutureDateValidator(field, allowedDaysInFuture);
 		return field;
 	}
 
@@ -342,7 +345,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		field.setCaption(caption);
 
 		if (field instanceof AbstractField) {
-			AbstractField abstractField = (AbstractField)field;
+			AbstractField abstractField = (AbstractField) field;
 			abstractField.setDescription(I18nProperties.getPrefixDescription(
 					getPropertyI18nPrefix(), propertyId, abstractField.getDescription()));
 
@@ -387,24 +390,24 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			// try to get the field from the layout
 			Component component = getContent().getComponent(fieldOrPropertyId);
 			if (component instanceof Field<?>) {
-				field = (Field<?>)component;
+				field = (Field<?>) component;
 			}
 		}
 		return field;
 	}
 
 	protected void styleAsOptionGroupHorizontal(List<String> fields) {
-		for(String field : fields) {
-			CssStyles.style((OptionGroup)getFieldGroup().getField(field), ValoTheme.OPTIONGROUP_HORIZONTAL);
+		for (String field : fields) {
+			CssStyles.style((OptionGroup) getFieldGroup().getField(field), ValoTheme.OPTIONGROUP_HORIZONTAL);
 		}
 	}
 
-	protected void setReadOnly(boolean readOnly, String ...fieldOrPropertyIds) {
+	protected void setReadOnly(boolean readOnly, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			getField(propertyId).setReadOnly(readOnly);
 		}
 	}
-	
+
 	@Override
 	public void clear() {
 		// clear the fields instead of the form itself
@@ -412,8 +415,8 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 			field.clear();
 		}
 	}
-	
-	protected void setVisible(boolean visible, String ...fieldOrPropertyIds) {
+
+	protected void setVisible(boolean visible, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			if (visible == false || isVisibleAllowed(propertyId)) {
 				getField(propertyId).setVisible(visible);
@@ -421,7 +424,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 	}
 
-	protected void setVisibleClear(boolean visible, String ...fieldOrPropertyIds) {
+	protected void setVisibleClear(boolean visible, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			if (visible == false || isVisibleAllowed(propertyId)) {
 				Field<?> field = getField(propertyId);
@@ -433,20 +436,20 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 	}
 
-	protected void discard(String ...propertyIds) {
+	protected void discard(String... propertyIds) {
 		for (String propertyId : propertyIds) {
 			getField(propertyId).discard();
 		}
 	}
 
-	protected void setRequired(boolean required, String ...fieldOrPropertyIds) {
+	protected void setRequired(boolean required, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			Field<?> field = getField(propertyId);
 			field.setRequired(required);
 		}
 	}
 
-	protected void setSoftRequired(boolean required, String ...fieldOrPropertyIds) {
+	protected void setSoftRequired(boolean required, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
 			Field<?> field = getField(propertyId);
 			if (required) {
@@ -457,7 +460,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 	}
 
-	protected void addFieldListeners(String fieldOrPropertyId, ValueChangeListener ...listeners) {
+	protected void addFieldListeners(String fieldOrPropertyId, ValueChangeListener... listeners) {
 		for (ValueChangeListener listener : listeners) {
 			getField(fieldOrPropertyId).addValueChangeListener(listener);
 		}
@@ -469,7 +472,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 		}
 	}
 
-	protected boolean areFieldsValid(String... propertyIds){
+	protected boolean areFieldsValid(String... propertyIds) {
 		return Stream.of(propertyIds).allMatch(p -> getField(p).isValid());
 	}
 
@@ -479,11 +482,11 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 	public void hideValidationUntilNextCommit() {
 
-		this.hideValidationUntilNextCommit  = true;
+		this.hideValidationUntilNextCommit = true;
 
 		for (Field<?> field : getFieldGroup().getFields()) {
 			if (field instanceof AbstractField) {
-				AbstractField<?> abstractField = (AbstractField<?>)field;
+				AbstractField<?> abstractField = (AbstractField<?>) field;
 				if (!abstractField.isInvalidCommitted()) {
 					abstractField.setValidationVisible(false);
 				}
@@ -492,7 +495,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 
 		for (Field<?> field : customFields) {
 			if (field instanceof AbstractField) {
-				AbstractField<?> abstractField = (AbstractField<?>)field;
+				AbstractField<?> abstractField = (AbstractField<?>) field;
 				if (!abstractField.isInvalidCommitted()) {
 					abstractField.setValidationVisible(false);
 				}
@@ -513,57 +516,23 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	}
 
 	/**
-	 * Sets the initial visibilities based on annotations and builds a list of all fields in a form that are allowed to be visible - 
+	 * Sets the initial visibilities based on annotations and builds a list of all fields in a form that are allowed to be visible -
 	 * this is either because the @Diseases and @Outbreaks annotations are not relevant or at least one of these annotations are present on the respective field.
-	 * 
-	 * @param disease	Not null if the @Diseases annotation should be taken into account
-	 * @param viewMode	Not null if the @Outbreaks annotation should be taken into account
 	 */
-	protected void initializeVisibilitiesAndAllowedVisibilities(Disease disease, ViewMode viewMode) {
+	protected void initializeVisibilitiesAndAllowedVisibilities() {
+		if(fieldVisibilityChecker == null){
+			throw new RuntimeException("Visibility checker is not set!");
+		}
+
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			Field<?> field = getFieldGroup().getField(propertyId);
-			boolean diseaseVisibility = true;
-			boolean outbreakVisibility = true;
 
-			if (disease != null) {
-				if (!Diseases.DiseasesConfiguration.isDefinedOrMissing(getType(), (String) propertyId, disease)) {
-					diseaseVisibility = false;
-				}
-			}
-
-			if (viewMode != null && viewMode == ViewMode.SIMPLE) {
-				if (!Outbreaks.OutbreaksConfiguration.isDefined(getType(), (String) propertyId)) {
-					outbreakVisibility = false;
-				}
-			}
-
-			if (isFieldHiddenForCurrentCountry(propertyId)) {
-				diseaseVisibility = false;
-			}
-
-			if (diseaseVisibility && outbreakVisibility) {
+			if (fieldVisibilityChecker.isVisible(getType(), propertyId.toString())) {
 				visibleAllowedFields.add(field);
 			} else {
 				field.setVisible(false);
 			}
 		}
-	}
-
-	protected boolean isFieldHiddenForCurrentCountry(Object propertyId) {
-		try {
-			final java.lang.reflect.Field declaredField =
-					getType().getDeclaredField(propertyId.toString());
-			final Predicate<String> currentCountryIsHiddenForField =
-					country -> FacadeProvider.getConfigFacade().getCountryLocale().startsWith(country);
-			if (declaredField.isAnnotationPresent(HideForCountries.class) &&
-					Arrays.asList(declaredField.getAnnotation(HideForCountries.class).countries())
-							.stream().anyMatch(currentCountryIsHiddenForField)) {
-				return true;
-			}
-		} catch (NoSuchFieldException e) {
-			LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
-		}
-		return false;
 	}
 
 	/**
@@ -577,7 +546,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 	protected boolean isVisibleAllowed(String propertyId) {
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
 	}
-	
+
 	protected boolean isGermanServer() {
 		return FacadeProvider.getConfigFacade().isGermanServer();
 	}

@@ -22,6 +22,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class LocationDto extends EntityDto {
 
@@ -43,14 +44,23 @@ public class LocationDto extends EntityDto {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@PersonalData
 	private CommunityReferenceDto community;
+	@PersonalData
 	private String address;
+	@PersonalData
 	private String details;
+	@PersonalData
 	private String city;
+	@PersonalData
 	private AreaType areaType;
+	@PersonalData
 	private Double latitude;
+	@PersonalData
 	private Double longitude;
+	@PersonalData
 	private Float latLonAccuracy;
+	@PersonalData
 	private String postalCode;
 	
 	public String getAddress() {
