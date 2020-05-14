@@ -60,6 +60,7 @@ import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.*;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -1143,6 +1144,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);
+
+		final ContactReferenceDto fromContactReference = dto.getFromContactReference();
+		if (fromContactReference != null) {
+			final Contact fromContact = contactService.getByUuid(fromContactReference.getUuid());
+			final Case finalCaze = caze;
+			fromContact.getSamples().forEach(sample -> {
+				sample.setAssociatedCase(finalCaze);
+			});
+		}
 
 		// Set version number on a new case
 		if (caze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {

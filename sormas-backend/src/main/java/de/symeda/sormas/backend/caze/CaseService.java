@@ -624,11 +624,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			contactService.ensurePersisted(contact);
 		}
 
-		// Mark all samples associated with this case as deleted
-		List<Sample> samples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), null);
-		for (Sample sample : samples) {
-			sampleService.delete(sample);
-		}
+		caze.getSamples().stream()
+				.filter(sample -> sample.getAssociatedContact() == null)
+				.forEach(sample -> sampleService.delete(sample));
 
 		// Delete all tasks associated with this case
 		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())));

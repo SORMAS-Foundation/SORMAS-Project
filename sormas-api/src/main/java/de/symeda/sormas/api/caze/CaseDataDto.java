@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -256,6 +257,7 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private ReportingType reportingType;
+	private ContactReferenceDto fromContactReference;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -278,6 +280,7 @@ public class CaseDataDto extends EntityDto {
 	
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
+		cazeData.setFromContactReference(new ContactReferenceDto(contact.getUuid()));
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
 			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
@@ -898,5 +901,13 @@ public class CaseDataDto extends EntityDto {
 
 	public void setReportingType(ReportingType reportingType) {
 		this.reportingType = reportingType;
+	}
+
+	public ContactReferenceDto getFromContactReference() {
+		return fromContactReference;
+	}
+
+	public void setFromContactReference(ContactReferenceDto fromContactReference) {
+		this.fromContactReference = fromContactReference;
 	}
 }
