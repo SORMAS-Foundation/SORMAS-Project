@@ -45,11 +45,12 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
@@ -138,7 +139,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final ViewMode viewMode;
 	
 	public EpiDataForm(Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, editOrCreateUserRight, new FieldVisibilityChecker().addDisease(disease));
+		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, editOrCreateUserRight,
+				new FieldVisibilityCheckers()
+						.add(new DiseaseFieldVisibilityChecker(disease)));
 		this.disease = disease;
 		this.viewMode = viewMode;
 		addFields();

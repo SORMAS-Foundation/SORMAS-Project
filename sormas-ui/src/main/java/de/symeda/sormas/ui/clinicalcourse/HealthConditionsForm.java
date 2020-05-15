@@ -9,17 +9,18 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
 
-import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
 
 public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> {
 
@@ -41,7 +42,9 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 					loc(OTHER_CONDITIONS);
 
 	public HealthConditionsForm(UserRight editOrCreateUserRight) {
-		super(HealthConditionsDto.class, I18N_PREFIX, editOrCreateUserRight, new FieldVisibilityChecker().addCurrentCountry());
+		super(HealthConditionsDto.class, I18N_PREFIX, editOrCreateUserRight,
+				new FieldVisibilityCheckers()
+						.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())));
 	}
 
 	@Override

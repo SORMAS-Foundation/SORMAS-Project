@@ -21,6 +21,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
@@ -33,11 +34,11 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 
 	private final UserRight editOrCreateUserRight;
 
-	private final FieldVisibilityChecker fieldVisibilityChecker;
+	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 
-	SormasFieldGroupFieldFactory(UserRight editOrCreateUserRight, FieldVisibilityChecker fieldVisibilityChecker) {
+	SormasFieldGroupFieldFactory(UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers) {
 		this.editOrCreateUserRight = editOrCreateUserRight;
-		this.fieldVisibilityChecker = fieldVisibilityChecker;
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -85,7 +86,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) field;
 		} 
 		else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationEditForm(editOrCreateUserRight, fieldVisibilityChecker);
+			return (T) new LocationEditForm(editOrCreateUserRight, fieldVisibilityCheckers);
 		} 
 		else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new HealthConditionsForm(editOrCreateUserRight);

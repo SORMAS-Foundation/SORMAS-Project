@@ -42,6 +42,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends CustomFiel
 
 	private final Class<DTO> type;
 	private final String propertyI18nPrefix;
-	protected final FieldVisibilityChecker fieldVisibilityChecker;
+	protected final FieldVisibilityCheckers fieldVisibilityCheckers;
 
 	private boolean hideValidationUntilNextCommit = false;
 	private List<Field<?>> customFields = new ArrayList<>();
@@ -71,14 +72,14 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends CustomFiel
 		this(type, propertyI18nPrefix, editOrCreateUserRight, addFields, null);
 	}
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, FieldVisibilityChecker fieldVisibilityCecker) {
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCecker) {
 		this(type, propertyI18nPrefix, editOrCreateUserRight, true, fieldVisibilityCecker);
 	}
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields, FieldVisibilityChecker fieldVisibilityChecker) {
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields, FieldVisibilityCheckers fieldVisibilityCheckers) {
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
-		this.fieldVisibilityChecker = fieldVisibilityChecker;
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 
 		fieldGroup = new BeanFieldGroup<DTO>(type) {
 
@@ -100,7 +101,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends CustomFiel
 
 		fieldGroup.addCommitHandler(this);
 
-		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory(editOrCreateUserRight, fieldVisibilityChecker));
+		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory(editOrCreateUserRight, fieldVisibilityCheckers));
 
 		setWidth(900, Unit.PIXELS);
 		setHeightUndefined();
@@ -520,14 +521,14 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends CustomFiel
 	 * this is either because the @Diseases and @Outbreaks annotations are not relevant or at least one of these annotations are present on the respective field.
 	 */
 	protected void initializeVisibilitiesAndAllowedVisibilities() {
-		if(fieldVisibilityChecker == null){
+		if(fieldVisibilityCheckers == null){
 			throw new RuntimeException("Visibility checker is not set!");
 		}
 
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			Field<?> field = getFieldGroup().getField(propertyId);
 
-			if (fieldVisibilityChecker.isVisible(getType(), propertyId.toString())) {
+			if (fieldVisibilityCheckers.isVisible(getType(), propertyId.toString())) {
 				visibleAllowedFields.add(field);
 			} else {
 				field.setVisible(false);

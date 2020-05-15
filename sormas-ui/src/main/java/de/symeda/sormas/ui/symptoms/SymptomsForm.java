@@ -55,6 +55,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -69,12 +70,15 @@ import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
@@ -189,7 +193,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 						UserRight editOrCreateUserRight, ViewMode viewMode) {
 
         super(SymptomsDto.class, I18N_PREFIX, editOrCreateUserRight,
-                new FieldVisibilityChecker().addDisease(disease).addOutbreak(viewMode).addCurrentCountry());
+                new FieldVisibilityCheckers()
+                        .add(new DiseaseFieldVisibilityChecker(disease))
+                        .add(new OutbreakFieldVisibilityChecker(viewMode))
+                        .add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())));
 
         this.caze = caze;
         this.disease = disease;

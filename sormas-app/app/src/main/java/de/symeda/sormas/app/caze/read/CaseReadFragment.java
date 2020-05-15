@@ -28,9 +28,13 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.PersonalDataFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -48,7 +52,12 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
     private Case record;
 
     public static CaseReadFragment newInstance(Case activityRootData) {
-        return newInstance(CaseReadFragment.class, null, activityRootData);
+        CaseReadFragment fragment = newInstance(CaseReadFragment.class, null, activityRootData);
+        fragment.setFieldVisibilityCheckers(new FieldVisibilityCheckers()
+                .add(new DiseaseFieldVisibilityChecker(activityRootData.getDisease()))
+                .add(new PersonalDataFieldVisibilityChecker(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)))
+        );
+        return fragment;
     }
 
     private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {

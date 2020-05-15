@@ -19,14 +19,24 @@
 package de.symeda.sormas.app.person.read;
 
 import android.os.Bundle;
+import android.view.View;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.PersonalDataFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
@@ -39,15 +49,25 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 
     private Person record;
     private AbstractDomainObject rootData;
+    private boolean birthDayVisibility = true;
 
     // Instance methods
 
     public static PersonReadFragment newInstance(Case activityRootData) {
-        return newInstance(PersonReadFragment.class, null, activityRootData);
+        PersonReadFragment fragment = newInstance(PersonReadFragment.class, null, activityRootData);
+        fragment.setFieldVisibilityCheckers(new FieldVisibilityCheckers()
+                .add(new DiseaseFieldVisibilityChecker(activityRootData.getDisease()))
+                .add(new PersonalDataFieldVisibilityChecker(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData))));
+        return fragment;
     }
 
     public static PersonReadFragment newInstance(Contact activityRootData) {
-        return newInstance(PersonReadFragment.class, null, activityRootData);
+        PersonReadFragment fragment = newInstance(PersonReadFragment.class, null, activityRootData);
+        fragment.setFieldVisibilityCheckers(new FieldVisibilityCheckers()
+                .add(new DiseaseFieldVisibilityChecker(activityRootData.getDisease()))
+                .add(new PersonalDataFieldVisibilityChecker(ConfigProvider::hasUserRight, ContactEditAuthorization.isContactEditAllowed(activityRootData))));
+
+        return fragment;
     }
 
     public static void setUpFieldVisibilities(BaseReadFragment fragment, FragmentPersonReadLayoutBinding contentBinding, AbstractDomainObject rootData) {
@@ -60,8 +80,10 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
             rootDisease = ((Event) rootData).getDisease();
         }
 
-        if (rootDisease != null) {
-            fragment.setVisibilityByDisease(PersonDto.class, rootDisease, contentBinding.mainContent);
+            fragment.setVisibilityByDisease(PersonDto.class, null, contentBinding.mainContent);
+
+        if (!fragment.isVisibleAllowed(LocationDto.class, LocationDto.ADDRESS)) {
+            contentBinding.personAddress.setVisibility(View.GONE);
         }
 
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
@@ -90,7 +112,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
     @Override
     public void onLayoutBinding(FragmentPersonReadLayoutBinding contentBinding) {
         contentBinding.setData(record);
-
+        contentBinding.setBirthDayVisibility(isVisibleAllowed(PersonDto.class, PersonDto.BIRTH_DATE_DD));
     }
 
     @Override

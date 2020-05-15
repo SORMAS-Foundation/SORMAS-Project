@@ -28,7 +28,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.MaxLengthValidator;
 import de.symeda.sormas.ui.utils.ValidationConstants;
 import org.apache.commons.lang3.ObjectUtils;
@@ -90,8 +90,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private MapPopupView leafletMapPopup;
 
-	public LocationEditForm(UserRight editOrCreateUserRight, FieldVisibilityChecker fieldVisibilityChecker) {
-		super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight, fieldVisibilityChecker);
+	public LocationEditForm(UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers) {
+		super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight, fieldVisibilityCheckers);
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() &&
 				isVisibleAllowed(LocationDto.LATITUDE) && isVisibleAllowed(LocationDto.LONGITUDE)) {

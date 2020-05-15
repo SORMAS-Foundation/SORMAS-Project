@@ -35,6 +35,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -45,6 +46,8 @@ import static android.view.View.VISIBLE;
 public class BaseFragment extends Fragment {
 
     private FirebaseAnalytics firebaseAnalytics;
+
+    private FieldVisibilityCheckers fieldVisibilityCheckers;
 
     public BaseActivity getBaseActivity() {
         return (BaseActivity) getActivity();
@@ -80,6 +83,10 @@ public class BaseFragment extends Fragment {
         super.onPause();
     }
 
+    public void setFieldVisibilityCheckers(FieldVisibilityCheckers fieldVisibilityCheckers) {
+        this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+    }
+
     public void setVisibilityByDisease(Class<?> dtoClass, Disease disease, ViewGroup viewGroup) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
@@ -92,11 +99,20 @@ public class BaseFragment extends Fragment {
         }
     }
 
-    protected boolean isVisibleAllowed(Class<?> dtoClass, Disease disease, ControlPropertyField field) {
+    public boolean isVisibleAllowed(Class<?> dtoClass, Disease disease, ControlPropertyField field) {
         String propertyId = field.getSubPropertyId();
-        final boolean definedOrMissingForDisease = Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
-        final boolean fieldHiddenForCurrentCountry = isFieldHiddenForCurrentCountry(propertyId, dtoClass);
-        return definedOrMissingForDisease && !fieldHiddenForCurrentCountry;
+//        final boolean definedOrMissingForDisease = Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
+//        final boolean fieldHiddenForCurrentCountry = isFieldHiddenForCurrentCountry(propertyId, dtoClass);
+//        return definedOrMissingForDisease && !fieldHiddenForCurrentCountry;
+        return isVisibleAllowed(dtoClass, propertyId);
+    }
+
+    public boolean isVisibleAllowed(Class<?> dtoClass, String propertyId) {
+        if(fieldVisibilityCheckers == null){
+            return true;
+        }
+
+        return fieldVisibilityCheckers.isVisible(dtoClass, propertyId);
     }
 
     protected boolean isFieldHiddenForCurrentCountry(Object propertyId, Class<?> dtoClass) {

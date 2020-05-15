@@ -85,6 +85,9 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.PersonalDataFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -92,7 +95,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -174,7 +177,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	public CaseDataForm(PersonDto person, Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode, boolean isInJurisdiction) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight,
-				new FieldVisibilityChecker().addDisease(disease).addOutbreak(viewMode).addPersonalData(isInJurisdiction)
+				new FieldVisibilityCheckers()
+						.add(new DiseaseFieldVisibilityChecker(disease))
+						.add(new OutbreakFieldVisibilityChecker(viewMode))
+						.add(new PersonalDataFieldVisibilityChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction))
 		);
 
 		this.person = person;

@@ -41,6 +41,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -75,7 +76,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     
     public UserEditForm(boolean create, UserRight editOrCreateUserRight) {
-        super(UserDto.class, UserDto.I18N_PREFIX, editOrCreateUserRight);
+        super(UserDto.class, UserDto.I18N_PREFIX, editOrCreateUserRight, new FieldVisibilityCheckers());
 
         setWidth(640, Unit.PIXELS);
         
