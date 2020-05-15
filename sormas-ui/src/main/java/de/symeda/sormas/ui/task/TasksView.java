@@ -32,6 +32,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
@@ -57,17 +58,14 @@ public class TasksView extends AbstractView {
         addComponent(taskListComponent);
         
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
-			btnEnterBulkEditMode.setId("enterBulkEditMode");
-			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+
 			addHeaderComponent(btnEnterBulkEditMode);
 			
-			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
-			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
-			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(btnLeaveBulkEditMode);
 			
 			btnEnterBulkEditMode.addClickListener(e -> {
@@ -88,11 +86,11 @@ public class TasksView extends AbstractView {
 		}
 		
     	if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
-	    	Button createButton = new Button(I18nProperties.getCaption(Captions.taskNewTask));
-	        createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-	        createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-	        createButton.addClickListener(e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload));
-	        addHeaderComponent(createButton);
+	    	Button createButton = ButtonHelper.createIconButton(Captions.taskNewTask, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload),
+					ValoTheme.BUTTON_PRIMARY);
+
+		    addHeaderComponent(createButton);
     	}
     }
 

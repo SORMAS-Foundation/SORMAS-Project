@@ -504,7 +504,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getPerson() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
-		if (caseCriteria.isMustHaveNoGeoCoordinates() != null && caseCriteria.isMustHaveNoGeoCoordinates() == true) {
+		if (caseCriteria.getMustHaveNoGeoCoordinates() != null && caseCriteria.getMustHaveNoGeoCoordinates() == true) {
 			Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 			filter = and(cb, filter, 
 					cb.and(
@@ -517,13 +517,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							)
 					);
 		}
-		if (caseCriteria.isMustBePortHealthCaseWithoutFacility() != null && caseCriteria.isMustBePortHealthCaseWithoutFacility() == true) {
+		if (caseCriteria.getMustBePortHealthCaseWithoutFacility() != null && caseCriteria.getMustBePortHealthCaseWithoutFacility() == true) {
 			filter = and(cb, filter,
 					cb.and(
 							cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY),
 							cb.isNull(from.join(Case.HEALTH_FACILITY, JoinType.LEFT))));
 		}
-		if (caseCriteria.isMustHaveCaseManagementData() != null && caseCriteria.isMustHaveCaseManagementData() == true) {
+		if (caseCriteria.getMustHaveCaseManagementData() != null && caseCriteria.getMustHaveCaseManagementData() == true) {
 			Subquery<Prescription> prescriptionSubquery = cq.subquery(Prescription.class);
 			Root<Prescription> prescriptionRoot = prescriptionSubquery.from(Prescription.class);
 			prescriptionSubquery.select(prescriptionRoot).where(cb.equal(prescriptionRoot.get(Prescription.THERAPY), from.get(Case.THERAPY)));
@@ -539,7 +539,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.exists(treatmentSubquery),
 							cb.exists(clinicalVisitSubquery)));
 		}
-		if(Boolean.TRUE.equals(caseCriteria.isWithoutResponsibleOfficer())){
+		if(Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())){
 			filter = and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
 		}
 		if (caseCriteria.getRelevanceStatus() != null) {

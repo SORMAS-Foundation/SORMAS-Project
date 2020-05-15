@@ -41,7 +41,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -118,44 +117,61 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		return viewSubTitleLabel;
 	}
 
-	public void navigateTo(BaseCriteria criteria) {
+	public boolean navigateTo(BaseCriteria criteria) {
+		return navigateTo(criteria, true);
+	}
+
+	public boolean navigateTo(BaseCriteria criteria, boolean force) {
 		if (applyingCriteria) {
-			return;
+			return false;
 		}
 		applyingCriteria = true;
 
 		Navigator navigator = SormasUI.get().getNavigator();
 
 		String state = navigator.getState();
-		int paramsIndex = state.lastIndexOf('?');
-		if (paramsIndex >= 0) {
-			state = state.substring(0, paramsIndex);
+		String newState = buildNavigationState(state, criteria);
+
+		boolean didNavigate = false;
+		if(!newState.equals(state) || force) {
+			navigator.navigateTo(newState);
+
+			didNavigate = true;
 		}
-		if (state.charAt(state.length()-1) != '/')
-			state += "/";
+		applyingCriteria = false;
+
+		return didNavigate;
+	}
+
+	private String buildNavigationState(String currentState, BaseCriteria criteria) {
+
+		String newState = currentState;
+		int paramsIndex = newState.lastIndexOf('?');
+		if (paramsIndex >= 0) {
+			newState = newState.substring(0, paramsIndex);
+		}
+
 		if (criteria != null) {
 			String params = criteria.toUrlParams();
 			if (!DataHelper.isNullOrEmpty(params)) {
-				state += "?" + params;
+				if (newState.charAt(newState.length()-1) != '/') {
+					newState += "/";
+				}
+
+				newState += "?" + params;
 			}
 		}
 
-		navigator.navigateTo(state);
-
-		applyingCriteria = false;
+		return newState;
 	}
 
 	public void setApplyingCriteria(boolean applyingCriteria) {
 		this.applyingCriteria = applyingCriteria;
 	}
-
-	protected boolean isGermanServer() {
-		return FacadeProvider.getConfigFacade().isGermanServer();
-	}
 	
-	protected void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, String buttonId,
+	protected void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout,
 			Resource icon, String captionKey, String descriptionKey) {
-		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
+		Button exportButton = ButtonHelper.createIconButton(captionKey, icon, e -> {
 			
 			Button button = e.getButton();
 			int buttonPos = exportLayout.getComponentIndex(button);
@@ -166,15 +182,12 @@ public abstract class AbstractView extends VerticalLayout implements View {
 				button.setEnabled(true);
 			});
 			exportPopupButton.setPopupVisible(false);
-		});
-		
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		exportButton.setDisableOnClick(true);
-		
-		exportButton.setId(buttonId);
 		exportButton.setDescription(I18nProperties.getDescription(descriptionKey));
-		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportButton.setIcon(icon);
 		exportButton.setWidth(100, Unit.PERCENTAGE);
+
 		exportLayout.addComponent(exportButton);
 
 		new FileDownloader(streamResource).extend(exportButton);

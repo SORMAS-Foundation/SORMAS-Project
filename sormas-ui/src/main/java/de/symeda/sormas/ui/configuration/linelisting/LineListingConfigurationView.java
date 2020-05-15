@@ -32,6 +32,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -58,12 +59,10 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 
 	private void buildView(Disease enteredDisease) {
 		if (region != null && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
-			Button btnBackToNationView = new Button(I18nProperties.getCaption(Captions.actionBackToNationOverview));
-			btnBackToNationView.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			btnBackToNationView.setIcon(VaadinIcons.ARROW_BACKWARD);
-			btnBackToNationView.addClickListener(e -> {
+			Button btnBackToNationView = ButtonHelper.createIconButton(Captions.actionBackToNationOverview, VaadinIcons.ARROW_BACKWARD, e -> {
 				SormasUI.get().getNavigator().navigateTo(LineListingConfigurationView.VIEW_NAME);
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(btnBackToNationView);
 		}
 

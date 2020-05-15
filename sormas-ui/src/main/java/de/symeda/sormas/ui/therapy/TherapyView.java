@@ -47,7 +47,9 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 
 @SuppressWarnings("serial")
 public class TherapyView extends AbstractCaseView {
@@ -91,27 +93,24 @@ public class TherapyView extends AbstractCaseView {
 
 			// Bulk operations
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				MenuBar bulkOperationsDropdown = new MenuBar();	
-				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
-
-				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getTherapyController().deleteAllSelectedPrescriptions(prescriptionGrid.getSelectedRows(), new Runnable() {
-						public void run() {
-							reloadPrescriptionGrid();
-						}
-					});
-				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
+				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+							ControllerProvider.getTherapyController().deleteAllSelectedPrescriptions(prescriptionGrid.getSelectedRows(), new Runnable() {
+								public void run() {
+									reloadPrescriptionGrid();
+								}
+							});
+						})
+				);
 
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			Button newPrescriptionButton = new Button(I18nProperties.getCaption(Captions.prescriptionNewPrescription));
-			CssStyles.style(newPrescriptionButton, ValoTheme.BUTTON_PRIMARY);
-			newPrescriptionButton.addClickListener(e -> {
+			Button newPrescriptionButton = ButtonHelper.createButton(Captions.prescriptionNewPrescription, e -> {
 				ControllerProvider.getTherapyController().openPrescriptionCreateForm(prescriptionCriteria.getTherapy(), this::reloadPrescriptionGrid);
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			headlineRow.addComponent(newPrescriptionButton);
 
 			headlineRow.setComponentAlignment(newPrescriptionButton, Alignment.MIDDLE_RIGHT);
@@ -165,28 +164,25 @@ public class TherapyView extends AbstractCaseView {
 
 			// Bulk operations
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				MenuBar bulkOperationsDropdown = new MenuBar();	
-				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
-
-				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getTherapyController().deleteAllSelectedTreatments(treatmentGrid.getSelectedRows(), new Runnable() {
-						public void run() {
-							reloadTreatmentGrid();
-						}
-					});
-				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
+				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+							ControllerProvider.getTherapyController().deleteAllSelectedTreatments(treatmentGrid.getSelectedRows(), new Runnable() {
+								public void run() {
+									reloadTreatmentGrid();
+								}
+							});
+						})
+				);
 
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			Button newTreatmentButton = new Button(I18nProperties.getCaption(Captions.treatmentNewTreatment));
-			newTreatmentButton.addClickListener(e -> {
+			Button newTreatmentButton = ButtonHelper.createButton(Captions.treatmentNewTreatment, e -> {
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
 			});
-			headlineRow.addComponent(newTreatmentButton);
 
+			headlineRow.addComponent(newTreatmentButton);
 			headlineRow.setComponentAlignment(newTreatmentButton, Alignment.MIDDLE_RIGHT);
 		}
 		treatmentsHeader.addComponent(headlineRow);

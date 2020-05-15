@@ -31,6 +31,8 @@ import de.symeda.sormas.api.utils.IgnoreForUrl;
 public class EventCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 2194071020732246594L;
+
+	public static String REPORTING_USER_ROLE = "reportingUserRole";
 	
 	private EventStatus eventStatus;
 	private Disease disease;
@@ -52,17 +54,23 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public Disease getDisease() {
 		return disease;
 	}
-	public EventCriteria disease(Disease disease) {
+
+	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public EventCriteria disease(Disease disease) {
+		setDisease(disease);
 		return this;
 	}
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
 	}
-	public EventCriteria reportingUserRole(UserRole reportingUserRole) {
+
+	public void setReportingUserRole(UserRole reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
-		return this;
 	}
+
 	public EventCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;

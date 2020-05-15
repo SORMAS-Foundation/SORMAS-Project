@@ -230,18 +230,15 @@ VerticalLayout implements Buffered {
 	 */
 	public Button getCommitButton() {
 		if (commitButton == null) {
-			commitButton = new Button(I18nProperties.getCaption(Captions.actionSave));
-			commitButton.setId("commit");
-			commitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-
-			commitButton.addClickListener(new ClickListener() { 
+			commitButton = ButtonHelper.createButtonWithCaption("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
 					commitAndHandle();
 				}
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
 		}
+
 		return commitButton;
 	}
 
@@ -253,10 +250,7 @@ VerticalLayout implements Buffered {
 	 */
 	public Button getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = new Button(I18nProperties.getCaption(Captions.actionDiscard));
-			discardButton.setId("discard");
-
-			discardButton.addClickListener(new ClickListener() {
+			discardButton = ButtonHelper.createButtonWithCaption("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -264,15 +258,13 @@ VerticalLayout implements Buffered {
 				}
 			});
 		}
+
 		return discardButton;
 	}
 
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
-			deleteButton = new Button(I18nProperties.getCaption(Captions.actionDelete));
-			deleteButton.setId("delete");
-			CssStyles.style(deleteButton, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
-			deleteButton.addClickListener(new ClickListener() {
+			deleteButton = ButtonHelper.createButtonWithCaption("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -282,7 +274,7 @@ VerticalLayout implements Buffered {
 						}
 					});
 				}
-			});
+			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 		}
 
 		return deleteButton;
