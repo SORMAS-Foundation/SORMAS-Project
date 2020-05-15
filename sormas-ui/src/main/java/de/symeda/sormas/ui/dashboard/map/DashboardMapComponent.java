@@ -1209,7 +1209,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			if (!showConfirmedContacts && contact.getContactClassification() != ContactClassification.UNCONFIRMED) {
 				continue;
 			}
-			if (dateTo != null && !(contact.getCaseReportDate() == dateTo || contact.getCaseReportDate().before(dateTo) || dateTo.after(contact.getCaseReportDate()))) {
+			Date referenceDate = contact.getCaseReportDate() != null ? contact.getCaseReportDate() : contact.getContactReportDate();
+			if (dateTo != null && !(referenceDate == dateTo || referenceDate.before(dateTo) || dateTo.after(referenceDate))) {
 				continue;
 			}
 
