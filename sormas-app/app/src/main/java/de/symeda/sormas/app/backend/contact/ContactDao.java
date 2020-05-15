@@ -50,12 +50,9 @@ import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.LocationService;
 
-/**
- * Created by Stefan Szczesny on 29.11.2016.
- */
 public class ContactDao extends AbstractAdoDao<Contact> {
 
-    public ContactDao(Dao<Contact,Long> innerDao) throws SQLException {
+    public ContactDao(Dao<Contact,Long> innerDao) {
         super(innerDao);
     }
 
@@ -262,7 +259,6 @@ public class ContactDao extends AbstractAdoDao<Contact> {
     }
 
     public int getContactCountByCaseUuid(String caseUuid) {
-
         try {
             return (int) queryBuilder().where().eq(Contact.CASE_UUID, caseUuid).countOf();
         } catch (SQLException e) {
