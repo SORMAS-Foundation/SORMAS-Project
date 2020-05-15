@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.function.Supplier;
+
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
@@ -26,12 +32,11 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
@@ -70,11 +75,6 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.function.Supplier;
 
 /**
  * A view for performing create-read-update-delete operations on products.

@@ -41,7 +41,6 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.AbstractDashboardStatisticsComponent;

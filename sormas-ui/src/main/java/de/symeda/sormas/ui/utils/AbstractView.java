@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
+import com.vaadin.navigator.Navigator;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.SormasUI;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.navigator.View;
@@ -125,12 +127,14 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		}
 		applyingCriteria = true;
 
-		String state = getUI().getNavigator().getState();
+		Navigator navigator = SormasUI.get().getNavigator();
+
+		String state = navigator.getState();
 		String newState = buildNavigationState(state, criteria);
 
 		boolean didNavigate = false;
 		if(!newState.equals(state) || force) {
-			getUI().getNavigator().navigateTo(newState);
+			navigator.navigateTo(newState);
 
 			didNavigate = true;
 		}

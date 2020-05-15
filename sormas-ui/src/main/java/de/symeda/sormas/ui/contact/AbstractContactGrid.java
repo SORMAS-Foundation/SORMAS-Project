@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +26,6 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
@@ -59,7 +57,6 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 
 	Class viewClass;
 
-	@SuppressWarnings("unchecked")
 	public <V extends View> AbstractContactGrid(Class<IndexDTO> beanType, ContactCriteria criteria, Class<V> viewClass) {
 		super(beanType);
 
@@ -185,9 +182,5 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 		setSelectionMode(SelectionMode.MULTI);
 	}
 
-	protected abstract List<IndexDTO> getGridData(ContactCriteria contactCriteria, Integer first, Integer max,
-												  List<SortProperty> sortProperties);
-
+	protected abstract List<IndexDTO> getGridData(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 }
-
-
