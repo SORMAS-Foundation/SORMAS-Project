@@ -24,6 +24,7 @@ import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -38,7 +39,7 @@ public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringD
 			fluidRowLocs(EpiDataGatheringDto.GATHERING_ADDRESS);
 	
 	public EpiDataGatheringEditForm(UserRight editOrCreateUserRight) {
-		super(EpiDataGatheringDto.class, EpiDataGatheringDto.I18N_PREFIX, editOrCreateUserRight);
+		super(EpiDataGatheringDto.class, EpiDataGatheringDto.I18N_PREFIX, editOrCreateUserRight, new FieldVisibilityCheckers());
 		
 		setWidth(540, Unit.PIXELS);
 	}	

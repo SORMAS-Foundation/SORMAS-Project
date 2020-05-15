@@ -43,6 +43,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -76,7 +77,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private Boolean isCreateForm = null;
 
 	public EventDataForm(boolean create, UserRight editOrCreateUserRight) {
-		super(EventDto.class, EventDto.I18N_PREFIX, editOrCreateUserRight);
+		super(EventDto.class, EventDto.I18N_PREFIX, editOrCreateUserRight, new FieldVisibilityCheckers());
 
 		isCreateForm = create;
 		if (create) {

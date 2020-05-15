@@ -55,7 +55,6 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			return;
 		}
 
-//		// TODO - jurisdiction
 		PersonEditForm pef = new PersonEditForm(event.getDisease(), event.getDiseaseDetails(), UserRight.EVENTPARTICIPANT_EDIT, null, true);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
