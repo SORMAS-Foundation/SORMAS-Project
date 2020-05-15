@@ -24,6 +24,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 
 import javax.ejb.Remote;
 import java.util.Date;
@@ -58,9 +59,9 @@ public interface ContactFacade {
 	
 	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 
-	List<VisitsExportDto> getVisitsExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
+	List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 
-	long countMaximumFollowUps(ContactCriteria contactCriteria);
+	long countMaximumFollowUpDays(ContactCriteria contactCriteria);
 	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 	
 	Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria);

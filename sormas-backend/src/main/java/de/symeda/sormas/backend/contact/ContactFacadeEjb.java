@@ -23,11 +23,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -38,7 +37,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -68,7 +66,6 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.VisitsExportDto;
 import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
@@ -89,9 +86,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
+import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -121,6 +119,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.backend.visit.VisitSummaryExportDetails;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
@@ -369,7 +368,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (!exportContacts.isEmpty()) {
 			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
 
-			CriteriaQuery<ExportVisit> visitsSq = cb.createQuery(ExportVisit.class);
+			CriteriaQuery<VisitSummaryExportDetails> visitsSq = cb.createQuery(VisitSummaryExportDetails.class);
 			Root<Contact> visitsSqRoot = visitsSq.from(Contact.class);
 			Join<Contact, Visit> visitsJoin = visitsSqRoot.join(Contact.VISITS, JoinType.LEFT);
 			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
@@ -384,17 +383,17 @@ public class ContactFacadeEjb implements ContactFacade {
 					visitsJoin.get(Visit.VISIT_STATUS),
 					visitSymptomsJoin
 					);
-		
-			List<ExportVisit> contactVisits = em.createQuery(visitsSq).getResultList();
-			
+
+			List<VisitSummaryExportDetails> contactVisits = em.createQuery(visitsSq).getResultList();
+
 			for (ContactExportDto exportContact : exportContacts) {
-				List<ExportVisit> visits = contactVisits.stream().filter(v -> v.getContactId() == exportContact.getId()).collect(Collectors.toList());
-				
-				ExportVisit lastCooperativeVisit = visits.stream()
+				List<VisitSummaryExportDetails> visits = contactVisits.stream().filter(v -> v.getContactId() == exportContact.getId()).collect(Collectors.toList());
+
+				VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
 						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
 						.max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime()))
 						.orElse(null);
-				
+
 				exportContact.setNumberOfVisits(visits.size());
 				if (lastCooperativeVisit != null) {
 					exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
@@ -424,15 +423,15 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<VisitsExportDto> getVisitsExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
+	public List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<VisitsExportDto> query = cb.createQuery(VisitsExportDto.class);
-		final Root<Contact> contactRoot = query.from(Contact.class);
+		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
+		final Root<Contact> contactRoot = cq.from(Contact.class);
 		final Join<Contact, Person> contactPerson = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
-		query.multiselect(
+		cq.multiselect(
 				contactRoot.get(Contact.UUID),
-				contactPerson.get(Person.ID),
+				contactRoot.get(Contact.ID),
 				contactPerson.get(Person.FIRST_NAME),
 				contactPerson.get(Person.LAST_NAME),
 				cb.<Date>selectCase().when(cb.isNotNull(contactRoot.get(Contact.LAST_CONTACT_DATE)),
@@ -440,123 +439,72 @@ public class ContactFacadeEjb implements ContactFacade {
 				.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
 				contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
-		final Subquery<Visit> visitSubquery = query.subquery(Visit.class);
-		final Root<Visit> visitSubqueryRoot = visitSubquery.from(Visit.class);
-		visitSubquery.select(visitSubqueryRoot.get(Visit.ID));
-		visitSubquery.where(cb.equal(visitSubqueryRoot.get(Visit.PERSON).get(Person.ID), contactPerson.get(Person.ID)));
+		cq.where(AbstractAdoService.and(cb, 
+				createContactFilter(contactCriteria, cb, contactRoot, contactService.createUserFilter(cb, cq, contactRoot)),
+				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
+		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
-		final Predicate contactsWithFollowUpVisitsPredicate = AbstractAdoService.and(cb,
-				createContactFilter(contactCriteria, cb, contactRoot,
-						contactService.createUserFilter(cb, query
-								, contactRoot)), cb.exists(visitSubquery));
+		List<VisitSummaryExportDto> exportVisits = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		query.where(contactsWithFollowUpVisitsPredicate);
+		if (!exportVisits.isEmpty()) {
+			List<String> exportVisitUuids = exportVisits.stream().map(e -> e.getUuid()).collect(Collectors.toList());
 
-		query.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
+			CriteriaQuery<VisitSummaryExportDetails> visitsSq = cb.createQuery(VisitSummaryExportDetails.class);
+			Root<Contact> visitsSqRoot = visitsSq.from(Contact.class);
+			Join<Contact, Visit> visitsJoin = visitsSqRoot.join(Contact.VISITS, JoinType.LEFT);
+			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-		final List<VisitsExportDto> resultList =
-				em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
+			visitsSq.where(ContactService.and(cb,
+					contactRoot.get(AbstractDomainObject.UUID).in(exportVisitUuids),
+					cb.isNotEmpty(visitsSqRoot.get(Contact.VISITS)))
+					);
+			visitsSq.multiselect(
+					visitsSqRoot.get(AbstractDomainObject.ID),
+					visitsJoin.get(Visit.VISIT_DATE_TIME),
+					visitsJoin.get(Visit.VISIT_STATUS),
+					visitSymptomsJoin
+					);
+			visitsSq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
 
-		fillDetailsOfVisits(cb, resultList, userLanguage);
+			List<VisitSummaryExportDetails> contactVisits = em.createQuery(visitsSq).getResultList();
 
-		return resultList;
-	}
-
-	private void fillDetailsOfVisits(CriteriaBuilder cb, List<VisitsExportDto> resultList, Language userLanguage) {
-
-		final Set<Long> personIds =
-				resultList.stream().map(contactVisitsExportDto -> contactVisitsExportDto.getPersonId()).collect(Collectors.toSet());
-
-		final Map<Long, List<VisitsExportDto.VisitDetailsExportDto>> visitDetailsMap = new HashMap<>();
-
-		final CriteriaQuery<Tuple> visitTupleQuery = cb.createQuery(Tuple.class);
-		final Root<Visit> visitRoot = visitTupleQuery.from(Visit.class);
-
-		visitTupleQuery.multiselect(
-				visitRoot.get(Visit.VISIT_DATE_TIME).alias(Visit.VISIT_DATE_TIME),
-				visitRoot.get(Visit.VISIT_STATUS).alias(Visit.VISIT_STATUS),
-				visitRoot.get(Visit.SYMPTOMS).alias(Visit.SYMPTOMS),
-				visitRoot.get(Visit.PERSON).get(Person.ID).alias(Visit.PERSON));
-
-		if (!personIds.isEmpty()) {
-			visitTupleQuery.where(visitRoot.get(Visit.PERSON).get(Person.ID).in(personIds));
-		}
-
-		visitTupleQuery.orderBy(cb.asc(visitRoot.get(Visit.VISIT_DATE_TIME)));
-
-		final List<Tuple> tupleResult = em.createQuery(visitTupleQuery).getResultList();
-
-		for (Tuple tuple : tupleResult) {
-			final Date visitDateTime = extractTupleValue(tuple, Visit.VISIT_DATE_TIME);
-			final VisitStatus visitStatus = extractTupleValue(tuple, Visit.VISIT_STATUS);
-			final Symptoms symptoms = extractTupleValue(tuple, Visit.SYMPTOMS);
-			final Long personId = extractTupleValue(tuple, Visit.PERSON);
-			final VisitsExportDto.VisitDetailsExportDto contactVisitsDetailsExportDto =
-					new VisitsExportDto.VisitDetailsExportDto(visitDateTime, visitStatus,
-							symptoms.toHumanString(true, userLanguage));
-			if (visitDetailsMap.containsKey(personId)) {
-				visitDetailsMap.get(personId).add(contactVisitsDetailsExportDto);
-			} else {
-				final List<VisitsExportDto.VisitDetailsExportDto> visitsDetails = new ArrayList<>();
-				visitsDetails.add(contactVisitsDetailsExportDto);
-				visitDetailsMap.put(personId, visitsDetails);
+			for (VisitSummaryExportDto exportVisit : exportVisits) {
+				exportVisit.setVisitDetails(contactVisits.stream()
+						.filter(v -> v.getContactId().equals(exportVisit.getContactId()))
+						.map(v -> new VisitSummaryExportDetailsDto(v.getVisitDateTime(), v.getVisitStatus(), v.getSymptoms().toHumanString(true, userLanguage)))
+						.collect(Collectors.toList()));
 			}
 		}
 
-		resultList.forEach(contactVisitsExportDto -> {
-			final Date startDate = DateHelper.subtractDays(contactVisitsExportDto.getLastContactDate(),
-					VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
-			final Date endDate = DateHelper.addDays(contactVisitsExportDto.getFollowUpUntil(),
-					VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
-			final List<VisitsExportDto.VisitDetailsExportDto> visitDetails =
-					visitDetailsMap.get(contactVisitsExportDto.getPersonId()).stream()
-					.filter(dto -> DateHelper.isBetween(dto.getVisitDateTime(), startDate, endDate))
-					.collect(Collectors.toList());
-			contactVisitsExportDto.setVisitDetails(visitDetails);
-		});
-	}
-
-	private <T extends Object> T extractTupleValue(Tuple tuple, String alias) {
-		final Object value = tuple.get(alias);
-		return value != null ? (T) value : null;
+		return exportVisits;
 	}
 
 	@Override
-	public long countMaximumFollowUps(ContactCriteria contactCriteria) {
+	public long countMaximumFollowUpDays(ContactCriteria contactCriteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> query = cb.createQuery(Long.class);
-		final Root<Contact> contactRoot = query.from(Contact.class);
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Contact> contactRoot = cq.from(Contact.class);
+		contactRoot.join(Contact.VISITS, JoinType.LEFT);
 
-		final Subquery<Long> visitSubquery = createVisitCountQuery(cb, query, contactRoot);
+		Predicate filter = createContactFilter(contactCriteria, cb, contactRoot, contactService.createUserFilter(cb, cq, contactRoot));
+		if (filter != null) {
+			cq.where(filter);
+		}
 
-		final Predicate contactsWithFollowUpVisitsPredicate = AbstractAdoService.and(cb,
-				createContactFilter(contactCriteria, cb, contactRoot,
-						contactService.createUserFilter(cb, query, contactRoot)), cb.exists(visitSubquery));
+		cq.select(contactRoot.get(AbstractDomainObject.ID));
+		List<Long> contactIds = em.createQuery(cq).getResultList();
 
-		query.where(contactsWithFollowUpVisitsPredicate);
-
-		query.select(cb.construct(Long.class, cb.max(visitSubquery.getSelection())));
-
-		Long singleResult = em.createQuery(query).getSingleResult();
-		return singleResult;
-	}
-
-	private Subquery<Long> createVisitCountQuery(CriteriaBuilder cb, CriteriaQuery<Long> query, Root<Contact> contactRoot) {
-		final Subquery<Long> visitSubquery = query.subquery(Long.class);
-		final Root<Visit> visitSubqueryRoot = visitSubquery.from(Visit.class);
-		visitSubquery.select(cb.count(visitSubqueryRoot.get(Visit.ID)));
-		final Predicate visitsOfCofContactPredicate = cb.equal(visitSubqueryRoot.get(Visit.PERSON).get(Person.ID),
-				contactRoot.get(Contact.PERSON).get(Person.ID));
-		final Predicate visitUntilNowPredicate = cb.lessThanOrEqualTo(visitSubqueryRoot.get(Visit.VISIT_DATE_TIME),
-				new Date());
-		final Predicate visitAfterOnsetPredicate =
-				cb.greaterThanOrEqualTo(visitSubqueryRoot.get(Visit.VISIT_DATE_TIME),
-						cb.<Date>selectCase().when(cb.isNotNull(contactRoot.get(Contact.LAST_CONTACT_DATE)),
-								contactRoot.get(Contact.LAST_CONTACT_DATE))
-						.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)));
-
-		visitSubquery.where(cb.and(visitsOfCofContactPredicate, visitUntilNowPredicate, visitAfterOnsetPredicate));
-		return visitSubquery;
+		if (!contactIds.isEmpty()) {
+			return contactIds.stream()
+					.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+					.entrySet()
+					.stream()
+					.max((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
+					.get()
+					.getValue();
+		} else {
+			return 0L;
+		}
 	}
 
 	@Override
@@ -577,9 +525,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate,
-			Integer first, Integer max,
-			List<SortProperty> sortProperties) {
+	public List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max, List<SortProperty> sortProperties) {
 		Date end = DateHelper.getEndOfDay(referenceDate);
 		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, 7));
 
@@ -635,36 +581,41 @@ public class ContactFacadeEjb implements ContactFacade {
 			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
 		}
 
-		List<ContactFollowUpDto> resultList =
-				em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<ContactFollowUpDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		// TODO: Refactor this to two individual queries (not one query per DTO) after general contact refactoring
-		for (ContactFollowUpDto followUpDto : resultList) {
-			List<Object[]> followUpInfoList = null;
-			CriteriaQuery<Object[]> followUpInfoCq = cb.createQuery(Object[].class);
-			Root<Visit> visitRoot = followUpInfoCq.from(Visit.class);
-			Join<Visit, Symptoms> symptomsJoin = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
+		if (!resultList.isEmpty()) {
+			List<String> contactUuids = resultList.stream().map(d -> d.getUuid()).collect(Collectors.toList());
 
-			followUpInfoCq.multiselect(visitRoot.get(Visit.VISIT_DATE_TIME), visitRoot.get(Visit.VISIT_STATUS),
-					symptomsJoin.get(Symptoms.SYMPTOMATIC));
+			CriteriaQuery<Object[]> visitsCq = cb.createQuery(Object[].class);
+			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
+			Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
+			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-			followUpInfoCq.where(
-					cb.and(
-							cb.equal(visitRoot.get(Visit.PERSON).get(Person.UUID), followUpDto.getPerson().getUuid()),
-							cb.equal(visitRoot.get(Visit.DISEASE), followUpDto.getDisease()),
-							cb.between(visitRoot.get(Visit.VISIT_DATE_TIME), start, end)
-							)
+			visitsCq.where(AbstractAdoService.and(cb,
+					contact.get(AbstractDomainObject.UUID).in(contactUuids),
+					cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)),
+					cb.between(visitsJoin.get(Visit.VISIT_DATE_TIME), start, end))
 					);
-
-			followUpInfoList = em.createQuery(followUpInfoCq).getResultList();
-
-			for (Object[] followUpInfo : followUpInfoList) {
-				int day = DateHelper.getDaysBetween(start, (Date) followUpInfo[0]);
-				VisitResult result = getVisitResult((VisitStatus) followUpInfo[1], (boolean) followUpInfo[2]);
-				followUpDto.getVisitResults()[day - 1] = result;
+			visitsCq.multiselect(
+					visitsCqRoot.get(Contact.UUID),
+					visitsJoin.get(Visit.VISIT_DATE_TIME),
+					visitsJoin.get(Visit.VISIT_STATUS),
+					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC)
+					);
+			
+			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
+			
+			for (ContactFollowUpDto followUpDto : resultList) {
+				List<Object[]> contactVisits = visits.stream().filter(v -> followUpDto.getUuid().equals((String) v[0])).collect(Collectors.toList());
+				
+				for (Object[] contactVisit : contactVisits) {
+					int day = DateHelper.getDaysBetween(start, (Date) contactVisit[1]);
+					VisitResult result = getVisitResult((VisitStatus) contactVisit[2], (boolean) contactVisit[3]);
+					followUpDto.getVisitResults()[day - 1] = result;
+				}
 			}
 		}
-
+		
 		return resultList;
 	}
 
@@ -698,7 +649,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		Root<Contact> visitCountRoot = visitCountSq.from(Contact.class);
 		visitCountSq.where(cb.equal(visitCountRoot.get(AbstractDomainObject.ID), contact.get(AbstractDomainObject.ID)));
 		visitCountSq.select(cb.size(visitCountRoot.get(Contact.VISITS)));
-		
+
 		cq.multiselect(contact.get(Contact.UUID), contactPerson.get(Person.UUID), contactPerson.get(Person.FIRST_NAME),
 				contactPerson.get(Person.LAST_NAME), contactCase.get(Case.UUID), contact.get(Contact.DISEASE),
 				contact.get(Contact.DISEASE_DETAILS), contactCasePerson.get(Person.UUID),
@@ -1141,7 +1092,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria) {
-
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarContactDto> cq = cb.createQuery(SimilarContactDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
@@ -1159,8 +1109,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		final Predicate userFilter = contactService.createUserFilter(cb, cq, contactRoot);
 
 		final PersonReferenceDto person = criteria.getPerson();
-		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) :
-			null;
+		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) : null;
 
 		final Disease disease = criteria.getDisease();
 		final Predicate diseaseFilter = disease != null ? cb.equal(contactRoot.get(Contact.DISEASE), disease) : null;

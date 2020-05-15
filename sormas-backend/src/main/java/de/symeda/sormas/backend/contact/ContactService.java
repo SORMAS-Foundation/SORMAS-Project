@@ -938,13 +938,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@Override
 	public void delete(Contact contact) {
-		// TODO: Visits can not be deleted here yet because they are not directly associated with a contact
-		// and could potentially be relevant for another contact as well. This logic needs to be revamped.
-		//		List<Visit> visits = visitService.getAllByContact(contact);
-		//		for (Visit visit : visits) {
-		//			visitService.delete(visit);
-		//		}
-
 		// Delete all tasks associated with this contact
 		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())));
 		for (Task task : tasks) {
