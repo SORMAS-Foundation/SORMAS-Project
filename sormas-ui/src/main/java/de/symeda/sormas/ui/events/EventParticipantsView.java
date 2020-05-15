@@ -37,7 +37,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 
 public class EventParticipantsView extends AbstractEventView {
 
@@ -74,17 +76,15 @@ public class EventParticipantsView extends AbstractEventView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
-
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getEventParticipantController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-					public void run() {
-						navigateTo(criteria);
-					}
-				});
-			};
-			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
+			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+							public void run() {
+								navigateTo(criteria);
+							}
+						});
+					})
+			);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -92,13 +92,11 @@ public class EventParticipantsView extends AbstractEventView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
-			addButton = new Button(I18nProperties.getCaption(Captions.eventParticipantAddPerson));
-			addButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			addButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			addButton.addClickListener(e -> {
+			addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
 				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(),
 						r -> navigateTo(criteria));
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			topLayout.addComponent(addButton);
 			topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
 		}

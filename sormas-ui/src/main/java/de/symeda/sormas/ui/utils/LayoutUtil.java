@@ -19,11 +19,10 @@ package de.symeda.sormas.ui.utils;
 
 /**
  * Zum einfacheren Erstellen von CustomLayouts.<br/>
- * 
+ * <p>
  * Ist weder performant noch gegen Injection abgesichert.
- * 
- * @author HReise
  *
+ * @author HReise
  */
 public final class LayoutUtil {
 
@@ -41,7 +40,7 @@ public final class LayoutUtil {
 
 		return sb.toString();
 	}
-	
+
 	public static String loc(String location) {
 		return locCss(null, location);
 	}
@@ -61,10 +60,19 @@ public final class LayoutUtil {
 	public static String inlineLocs(String... locations) {
 		return locsCss("inline-container", locations);
 	}
-	
+
+	public static String filterLocs(String... locations) {
+		return locsCss("filters-container", locations);
+	}
+
+	public static String filterLocsCss(String css, String... locations) {
+		return locsCss("filters-container" + " " + css, locations);
+	}
+
+
 	/**
 	 * Ein Html-Element
-	 * 
+	 *
 	 * @param cssClasses
 	 * @param meta
 	 * @return
@@ -83,19 +91,19 @@ public final class LayoutUtil {
 
 		return sb.toString();
 	}
-	
+
 	public static String div(String content) {
 		return divCss(null, content);
 	}
-	
+
 	public static String divCss(String cssClasses, String content) {
 		return element("div", cssClasses, content);
-	}	
-	
+	}
+
 	public static String divs(String... contents) {
 		return divsCss(null, contents);
 	}
-	
+
 	public static String divsCss(String cssClasses, String... contents) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<div ");
@@ -112,7 +120,7 @@ public final class LayoutUtil {
 
 		sb.append("</div>");
 		return sb.toString();
-	}	
+	}
 
 	public static String span(String content) {
 		return element("span", null, content);
@@ -149,24 +157,24 @@ public final class LayoutUtil {
 	private static int calcFluidColWidth(FluidColumn[] cols) {
 		int w;
 		switch (cols.length) {
-		case 1:
-			w = 12;
-			break;
-		case 2:
-			w = 6;
-			break;
-		case 3:
-			w = 4;
-			break;
-		case 4:
-			w = 3;
-			break;
-		case 5:
-		case 6:
-			w = 2;
-			break;
-		default:
-			w = 1;
+			case 1:
+				w = 12;
+				break;
+			case 2:
+				w = 6;
+				break;
+			case 3:
+				w = 4;
+				break;
+			case 4:
+				w = 3;
+				break;
+			case 5:
+			case 6:
+				w = 2;
+				break;
+			default:
+				w = 1;
 		}
 		return w;
 	}
@@ -174,7 +182,7 @@ public final class LayoutUtil {
 	public static String fluidRowLocs(String... locs) {
 		return fluidRowLocsCss(null, locs);
 	}
-	
+
 	public static String fluidRowLocsCss(String cssClasses, String... locs) {
 		FluidColumn[] cols = new FluidColumn[locs.length];
 		int w = calcFluidColWidth(cols);
@@ -200,7 +208,7 @@ public final class LayoutUtil {
 	public static String fluidRow(String... columns) {
 		return fluidRowCss(null, columns);
 	}
-	
+
 	public static String fluidRowCss(String cssClasses, String... columns) {
 
 		FluidColumn[] cols = new FluidColumn[columns.length];
@@ -258,7 +266,7 @@ public final class LayoutUtil {
 		return new FluidColumn(cssClasses, span, offset, loc, null);
 	}
 
-	
+
 	public static FluidColumn oneOfThreeCol(String loc) {
 		return fluidColumnLoc(4, 0, loc);
 	}
@@ -274,11 +282,11 @@ public final class LayoutUtil {
 	public static FluidColumn oneOfFourCol(String loc) {
 		return fluidColumnLoc(3, 0, loc);
 	}
-	
+
 	public static FluidColumn threeOfFourCol(String loc) {
 		return fluidColumnLoc(9, 0, loc);
 	}
-	
+
 	public static FluidColumn oneOfSixCol(String loc) {
 		return fluidColumnLoc(2, 0, loc);
 	}
@@ -286,9 +294,9 @@ public final class LayoutUtil {
 	public static final class FluidColumn {
 
 		private final String str;
-		
+
 		public FluidColumn(String cssClasses, int span, int offset,
-				int spanSmall, int offsetSmall, String location, String content) {
+						   int spanSmall, int offsetSmall, String location, String content) {
 
 			StringBuilder sb = new StringBuilder();
 			sb.append("<div ");
@@ -310,7 +318,7 @@ public final class LayoutUtil {
 			if (location != null) {
 				sb.append(" location='").append(location).append("'");
 			}
-			
+
 			sb.append(">");
 
 			if (content != null) {
@@ -323,7 +331,7 @@ public final class LayoutUtil {
 		}
 
 		public FluidColumn(String cssClasses, int span, int offset,
-				String location, String content) {
+						   String location, String content) {
 
 			StringBuilder sb = new StringBuilder();
 			sb.append("<div ");
@@ -345,7 +353,7 @@ public final class LayoutUtil {
 			if (location != null) {
 				sb.append(" location='").append(location).append("'");
 			}
-			
+
 			sb.append(">");
 
 			if (content != null) {

@@ -35,31 +35,19 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 
 @SuppressWarnings("serial")
 public class SampleGridComponent extends VerticalLayout {
@@ -77,15 +65,7 @@ public class SampleGridComponent extends VerticalLayout {
 	private Button activeStatusButton;
 
 	// Filter
-	private ComboBox testResultFilter;
-	private ComboBox specimenConditionFilter;
-	private ComboBox classificationFilter;
-	private ComboBox diseaseFilter;
-	private ComboBox regionFilter;
-	private ComboBox districtFilter;
-	private ComboBox labFilter;
-	TextField searchField;
-	private Button resetButton;
+	private SampleGridFilterForm filterForm;
 	MenuBar bulkOperationsDropdown;
 	private ComboBox relevanceStatusFilter;
 
@@ -126,121 +106,25 @@ public class SampleGridComponent extends VerticalLayout {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		filterForm = new SampleGridFilterForm();
+		filterForm.addValueChangeListener(e -> {
+			if(!samplesView.navigateTo(criteria, false)){
+				filterForm.updateResetButtonState();
+				grid.reload();
 
-		testResultFilter = new ComboBox();
-		testResultFilter.setWidth(140, Unit.PIXELS);
-		testResultFilter.setInputPrompt(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT));
-		testResultFilter.addItems((Object[])PathogenTestResultType.values());
-		testResultFilter.addValueChangeListener(e -> {
-			criteria.pathogenTestResult(((PathogenTestResultType)e.getProperty().getValue()));
-			samplesView.navigateTo(criteria);
-		});
-		filterLayout.addComponent(testResultFilter);        
-
-		specimenConditionFilter = new ComboBox();
-		specimenConditionFilter.setWidth(140, Unit.PIXELS);
-		specimenConditionFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SPECIMEN_CONDITION));
-		specimenConditionFilter.addItems((Object[])SpecimenCondition.values());
-		specimenConditionFilter.addValueChangeListener(e -> {
-			criteria.specimenCondition(((SpecimenCondition)e.getProperty().getValue()));
-			samplesView.navigateTo(criteria);
-		});
-		filterLayout.addComponent(specimenConditionFilter);        
-
-		classificationFilter = new ComboBox();
-		classificationFilter.setWidth(140, Unit.PIXELS);
-		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
-		classificationFilter.addItems((Object[])CaseClassification.values());
-		classificationFilter.addValueChangeListener(e -> {
-			criteria.caseClassification(((CaseClassification)e.getProperty().getValue()));
-			samplesView.navigateTo(criteria);
-		});
-		filterLayout.addComponent(classificationFilter);        
-
-		diseaseFilter = new ComboBox();
-		diseaseFilter.setWidth(140, Unit.PIXELS);
-		diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-		diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
-		diseaseFilter.addValueChangeListener(e -> {
-			criteria.disease(((Disease)e.getProperty().getValue()));
-			samplesView.navigateTo(criteria);
-		});
-		filterLayout.addComponent(diseaseFilter);        
-
-		regionFilter = new ComboBox();
-		if (user.getRegion() == null) {
-			regionFilter.setWidth(140, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-			regionFilter.addValueChangeListener(e -> {
-				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-				criteria.region(region);
-				samplesView.navigateTo(criteria);
-			});
-			filterLayout.addComponent(regionFilter);
-		}
-
-		districtFilter = new ComboBox();
-		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
-		districtFilter.addValueChangeListener(e -> {
-			criteria.district(((DistrictReferenceDto)e.getProperty().getValue()));
-			samplesView.navigateTo(criteria);
-		});
-
-		if (user.getRegion() != null) {
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
-			districtFilter.setEnabled(true);
-		} else {
-			regionFilter.addValueChangeListener(e -> {
-				RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-				districtFilter.removeAllItems();
-				if (region != null) {
-					districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-					districtFilter.setEnabled(true);
-				} else {
-					districtFilter.setEnabled(false);
+				//open sample if it's the only one
+				if (grid.getItemCount() == 1) {
+					ControllerProvider.getSampleController().navigateToData(grid.getFirstItem().getUuid());
+					Notification.show(I18nProperties.getString(Strings.messageSampleOpened) + " \"" + criteria.getCaseCodeIdLike() + "\"", Type.WARNING_MESSAGE);
 				}
-			});
-			districtFilter.setEnabled(false);
-		}
-		filterLayout.addComponent(districtFilter);
-
-		labFilter = new ComboBox();
-		labFilter.setWidth(140, Unit.PIXELS);
-		labFilter.setInputPrompt(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB));
-		labFilter.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
-		labFilter.addValueChangeListener(e -> {
-			criteria.laboratory(((FacilityReferenceDto)e.getProperty().getValue()));
-			samplesView.navigateTo(criteria);
-		});
-		filterLayout.addComponent(labFilter);
-
-		searchField = new TextField();
-		searchField.setWidth(200, Unit.PIXELS);
-		searchField.setNullRepresentation("");
-		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSamplesSearchField));
-		searchField.addTextChangeListener(e -> {
-			criteria.caseCodeIdLike(e.getText());
-			grid.reload();
-			
-			//open sample if it's the only one
-			if (grid.getItemCount() == 1) {
-				ControllerProvider.getSampleController().navigateToData(grid.getFirstItem().getUuid());
-				Notification.show(I18nProperties.getString(Strings.messageSampleOpened) + " \"" + criteria.getCaseCodeIdLike() + "\"", Type.WARNING_MESSAGE);
 			}
 		});
-		filterLayout.addComponent(searchField);
-
-		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-		resetButton.setVisible(false);
-		resetButton.addClickListener(event -> {
+		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
-			samplesView.navigateTo(null);
+			samplesView.navigateTo(null, true);
 		});
-		filterLayout.addComponent(resetButton);
+
+		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
 	}
@@ -257,21 +141,18 @@ public class SampleGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> processStatusChange(null));
-			CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+			Button statusAll = ButtonHelper.createButton(Captions.all, e -> processStatusChange(null), ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			statusAll.setCaptionAsHtml(true);
+
 			buttonFilterLayout.addComponent(statusAll);
+
 			statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 			activeStatusButton = statusAll;
 
-			Button notShippedButton = new Button(I18nProperties.getCaption(Captions.sampleNotShipped), e -> processStatusChange(NOT_SHIPPED));
-			initializeStatusButton(notShippedButton, buttonFilterLayout, NOT_SHIPPED, I18nProperties.getCaption(Captions.sampleNotShipped));
-			Button shippedButton = new Button(I18nProperties.getCaption(Captions.sampleShipped), e -> processStatusChange(SHIPPED));
-			initializeStatusButton(shippedButton, buttonFilterLayout, SHIPPED, I18nProperties.getCaption(Captions.sampleShipped));
-			Button receivedButton = new Button(I18nProperties.getCaption(Captions.sampleReceived), e -> processStatusChange(RECEIVED));
-			initializeStatusButton(receivedButton, buttonFilterLayout, RECEIVED, I18nProperties.getCaption(Captions.sampleReceived));
-			Button referredButton = new Button(I18nProperties.getCaption(Captions.sampleReferred), e -> processStatusChange(REFERRED));
-			initializeStatusButton(referredButton, buttonFilterLayout, REFERRED, I18nProperties.getCaption(Captions.sampleReferred));
+			createAndAddStatusButton(Captions.sampleNotShipped, NOT_SHIPPED, buttonFilterLayout);
+			createAndAddStatusButton(Captions.sampleShipped, SHIPPED, buttonFilterLayout);
+			createAndAddStatusButton(Captions.sampleReceived, RECEIVED, buttonFilterLayout);
+			createAndAddStatusButton(Captions.sampleReferred, REFERRED, buttonFilterLayout);
 		}
 
 		shipmentFilterLayout.addComponent(buttonFilterLayout);
@@ -282,6 +163,7 @@ public class SampleGridComponent extends VerticalLayout {
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
@@ -299,17 +181,16 @@ public class SampleGridComponent extends VerticalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				bulkOperationsDropdown = new MenuBar();	
-				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+							ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+								public void run() {
+									samplesView.navigateTo(criteria);
+								}
+							});
+						})
+				);
 
-				Command deleteCommand = selectedItem -> {
-					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-						public void run() {
-							samplesView.navigateTo(criteria);
-						}
-					});
-				};
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -347,20 +228,12 @@ public class SampleGridComponent extends VerticalLayout {
 		// TODO replace with Vaadin 8 databinding
 		samplesView.setApplyingCriteria(true);
 
-		resetButton.setVisible(criteria.hasAnyFilterActive());
-
 		updateStatusButtons();
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
-		testResultFilter.setValue(criteria.getPathogenTestResult());
-		specimenConditionFilter.setValue(criteria.getSpecimenCondition());
-		classificationFilter.setValue(criteria.getCaseClassification());
-		diseaseFilter.setValue(criteria.getDisease());
-		regionFilter.setValue(criteria.getRegion());
-		districtFilter.setValue(criteria.getDistrict());
-		labFilter.setValue(criteria.getLaboratory());
-		searchField.setValue(criteria.getCaseCodeIdLike());
+
+		filterForm.setValue(criteria);
 
 		samplesView.setApplyingCriteria(false);
 	}
@@ -391,12 +264,16 @@ public class SampleGridComponent extends VerticalLayout {
 		samplesView.navigateTo(criteria);
 	}
 
-	private void initializeStatusButton(Button button, HorizontalLayout filterLayout, String status, String caption) {
+	private void createAndAddStatusButton(String captionKey, String status, HorizontalLayout filterLayout) {
+		Button button = ButtonHelper.createButton(captionKey, e -> processStatusChange(status),
+				ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+
 		button.setData(status);
-		CssStyles.style(button, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 		button.setCaptionAsHtml(true);
+
 		filterLayout.addComponent(button);
-		statusButtons.put(button, caption);
+
+		statusButtons.put(button, button.getCaption());
 	}
 
 	private void updateStatusButtons() {
@@ -417,7 +294,7 @@ public class SampleGridComponent extends VerticalLayout {
 	}
 
 	public TextField getSearchField() {
-		return searchField;
+		return filterForm.getSearchField();
 	}
 
 	public MenuBar getBulkOperationsDropdown() {

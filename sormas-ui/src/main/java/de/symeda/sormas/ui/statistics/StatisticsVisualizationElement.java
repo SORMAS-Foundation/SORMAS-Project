@@ -56,10 +56,12 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 	
 	private void createAndAddComponents() {
 		displayedAttributeDropdown = new MenuBar();
+		displayedAttributeDropdown.setId("visualizationType");
 		displayedAttributeDropdown.setCaption(type.toString(visualizationType));
 		displayedAttributeItem = displayedAttributeDropdown.addItem(type.getEmptySelectionString(visualizationType), null);
 		
 		displayedSubAttributeDropdown = new MenuBar();
+		displayedSubAttributeDropdown.setId("displayedSubAttribute");
 		CssStyles.style(displayedSubAttributeDropdown, CssStyles.FORCE_CAPTION);
 		displayedSubAttributeItem = displayedSubAttributeDropdown.addItem(I18nProperties.getCaption(Captions.statisticsSpecifySelection), null);
 		
