@@ -45,7 +45,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	private Supplier<Boolean> createOrEditAllowedCallback;
 
 	public PathogenTestList(SampleReferenceDto sampleRef, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
-			Supplier<Boolean> createOrEditAllowedCallback) {
+							Supplier<Boolean> createOrEditAllowedCallback) {
 		super(5);
 
 		this.sampleRef = sampleRef;
@@ -71,18 +71,17 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		for (PathogenTestDto pathogenTest : getDisplayedEntries()) {
+		List<PathogenTestDto> displayedEntries = getDisplayedEntries();
+		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
+			PathogenTestDto pathogenTest = displayedEntries.get(i);
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
-				listEntry.addEditListener(new ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						if (createOrEditAllowedCallback.get()) {
-							ControllerProvider.getPathogenTestController().edit(pathogenTest, caseSampleCount,
-									PathogenTestList.this::reload, onSavedPathogenTest);
-						} else {
-							Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
-						}
+				listEntry.addEditListener(i, (ClickListener) event -> {
+					if (createOrEditAllowedCallback.get()) {
+						ControllerProvider.getPathogenTestController().edit(pathogenTest, caseSampleCount,
+								PathogenTestList.this::reload, onSavedPathogenTest);
+					} else {
+						Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
 					}
 				});
 			}

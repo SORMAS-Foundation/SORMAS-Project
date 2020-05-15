@@ -56,7 +56,10 @@ public interface ContactFacade {
 
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
-	
+
+	List<ContactIndexDetailedDto> getIndexDetailedList(ContactCriteria contactCriteria, Integer first, Integer max,
+															  List<SortProperty> sortProperties);
+
 	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 
 	List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
@@ -88,5 +91,7 @@ public interface ContactFacade {
 	void validate(ContactDto contact) throws ValidationRuntimeException;
 
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
+	
+	boolean isContactEditAllowed(String contactUuid);
 
 }

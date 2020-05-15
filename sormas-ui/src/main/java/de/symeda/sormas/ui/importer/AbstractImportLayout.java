@@ -17,6 +17,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
@@ -45,11 +46,12 @@ public class AbstractImportLayout extends VerticalLayout {
 		importGuideDownloader.extend(importGuideComponent.getButton());
 		addComponent(importGuideComponent);
 
-		Button dataDictionaryButton = new Button(I18nProperties.getCaption(Captions.importDownloadDataDictionary), VaadinIcons.FILE_TABLE);
-		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
+		Button dataDictionaryButton = ButtonHelper.createIconButton(Captions.importDownloadDataDictionary, VaadinIcons.FILE_TABLE, null,
+				ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_2);
+
 		FileDownloader dataDictionaryDownloader = new FileDownloader(dataDictionaryResource);
 		dataDictionaryDownloader.extend(dataDictionaryButton);
-		CssStyles.style(dataDictionaryButton, CssStyles.VSPACE_2);
+
 		addComponent(dataDictionaryButton);
 	}
 	

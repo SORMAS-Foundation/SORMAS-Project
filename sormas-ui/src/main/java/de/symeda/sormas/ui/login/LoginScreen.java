@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,9 +171,9 @@ public class LoginScreen extends CssLayout {
 
 			@Override
 			protected Button createLoginButton() {
-				Button loginButton = new Button(I18nProperties.getCaption(Captions.Login_doLogIn));
+				Button loginButton = ButtonHelper.createButton(Captions.Login_doLogIn, null, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
 				loginButton.setWidth(100, Unit.PERCENTAGE);
-				CssStyles.style(loginButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+
 				return loginButton;
 			}
 			

@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.importexport.DatabaseTableType;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
@@ -70,11 +71,13 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		headerLayout.addComponent(createSelectionButtonsLayout());
 		databaseExportLayout.addComponent(headerLayout);
 		databaseExportLayout.addComponent(createDatabaseTablesLayout());
-		Button exportButton = new Button(I18nProperties.getCaption(Captions.export), VaadinIcons.DOWNLOAD);
-		CssStyles.style(exportButton, ValoTheme.BUTTON_PRIMARY);
+
+		Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
+
 		StreamResource streamResource = DownloadUtil.createDatabaseExportStreamResource(this, "sormas_export_" + DateHelper.formatDateForExport(new Date()) + ".zip", "application/zip");
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
+
 		databaseExportLayout.addComponent(exportButton);
 		databaseExportLayout.setMargin(true);
 		databaseExportLayout.setSpacing(true);
@@ -92,18 +95,15 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		selectionButtonsLayout.setMargin(false);
 		selectionButtonsLayout.setSpacing(true);
 		
-		Button selectAll = new Button(I18nProperties.getCaption(Captions.actionSelectAll));
-		CssStyles.style(selectAll, ValoTheme.BUTTON_LINK);
-		selectAll.addClickListener(e -> {
+		Button selectAll = ButtonHelper.createButton(Captions.actionSelectAll, e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
 				checkBox.setValue(true);
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
+
 		selectionButtonsLayout.addComponent(selectAll);
 		
-		Button selectAllSormasData = new Button(I18nProperties.getCaption(Captions.exportSelectSormasData));
-		CssStyles.style(selectAllSormasData, ValoTheme.BUTTON_LINK);
-		selectAllSormasData.addClickListener(e -> {
+		Button selectAllSormasData = ButtonHelper.createButton(Captions.exportSelectSormasData, e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
 				if (databaseTableToggles.get(checkBox).getDatabaseTableType() == DatabaseTableType.SORMAS) {
 					checkBox.setValue(true);
@@ -111,16 +111,16 @@ public class DatabaseExportView extends AbstractStatisticsView {
 					checkBox.setValue(false);
 				}
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
+
 		selectionButtonsLayout.addComponent(selectAllSormasData);
 		
-		Button deselectAll = new Button (I18nProperties.getCaption(Captions.actionDeselectAll));
-		CssStyles.style(deselectAll, ValoTheme.BUTTON_LINK);
-		deselectAll.addClickListener(e -> {
+		Button deselectAll = ButtonHelper.createButton(Captions.actionDeselectAll, e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
 				checkBox.setValue(false);
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
+
 		selectionButtonsLayout.addComponent(deselectAll);
 		
 		return selectionButtonsLayout;

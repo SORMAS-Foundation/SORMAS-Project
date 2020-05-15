@@ -29,6 +29,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -98,12 +99,12 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		firstRowLayout.addComponent(dfCreationDateTo);
 
 		cbDisease = new ComboBox<>();
-		cbDisease.setId(CaseCriteria.DISEASE);
+		cbDisease.setId(CaseDataDto.DISEASE);
 		cbDisease.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbDisease, CssStyles.FORCE_CAPTION);
 		cbDisease.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 		cbDisease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
-		binder.bind(cbDisease, CaseCriteria.DISEASE);
+		binder.bind(cbDisease, CaseDataDto.DISEASE);
 		firstRowLayout.addComponent(cbDisease);
 
 		tfSearch = new TextField();
@@ -123,6 +124,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		firstRowLayout.addComponent(tfReportingUser);
 		
 		cbIgnoreRegion = new CheckBox();
+		cbIgnoreRegion.setId(Captions.caseFilterWithDifferentRegion);
 		CssStyles.style(cbIgnoreRegion, CssStyles.CHECKBOX_FILTER_INLINE);
 		cbIgnoreRegion.setCaption(I18nProperties.getCaption(Captions.caseFilterWithDifferentRegion));
 		cbIgnoreRegion.addValueChangeListener(e -> {
@@ -143,12 +145,12 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		cbRegion = new ComboBox<>();
 		cbDistrict = new ComboBox<>();
 
-		cbRegion.setId(CaseCriteria.REGION);
+		cbRegion.setId(CaseDataDto.REGION);
 		cbRegion.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbRegion, CssStyles.FORCE_CAPTION);
 		cbRegion.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 		cbRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		binder.bind(cbRegion, CaseCriteria.REGION);
+		binder.bind(cbRegion, CaseDataDto.REGION);
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
 			cbDistrict.clear();
@@ -164,11 +166,11 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 			cbRegion.setEnabled(false);
 		}
 
-		cbDistrict.setId(CaseCriteria.DISTRICT);
+		cbDistrict.setId(CaseDataDto.DISTRICT);
 		cbDistrict.setWidth(200, Unit.PIXELS);
 		CssStyles.style(cbDistrict, CssStyles.FORCE_CAPTION);
 		cbDistrict.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-		binder.bind(cbDistrict, CaseCriteria.DISTRICT);
+		binder.bind(cbDistrict, CaseDataDto.DISTRICT);
 		secondRowLayout.addComponent(cbDistrict);
 
 		cbNewCaseDateType = new ComboBox<>();
@@ -207,26 +209,22 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		dfNewCaseDateTo.setEnabled(false);
 		secondRowLayout.addComponent(dfNewCaseDateTo);
 		
-		btnConfirmFilters = new Button(I18nProperties.getCaption(Captions.actionConfirmFilters));
-		btnConfirmFilters.setId("confirm");
-		CssStyles.style(btnConfirmFilters, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
-		btnConfirmFilters.addClickListener(event -> {
+		btnConfirmFilters = ButtonHelper.createButton(Captions.actionConfirmFilters, event -> {
 			try {
 				binder.writeBean(criteria);
 				filtersUpdatedCallback.run();
 			} catch (ValidationException e) {
 				// No validation needed
 			}
-		});
+		}, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_PRIMARY);
+
 		secondRowLayout.addComponent(btnConfirmFilters);
 
-		btnResetFilters = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-		btnResetFilters.setId("reset");
-		CssStyles.style(btnResetFilters, CssStyles.FORCE_CAPTION);
-		btnResetFilters.addClickListener(event -> {
+		btnResetFilters = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(MergeCasesView.class).remove(CaseCriteria.class);
 			filtersUpdatedCallback.run();
-		});
+		}, CssStyles.FORCE_CAPTION);
+
 		secondRowLayout.addComponent(btnResetFilters);
 		
 		lblNumberOfDuplicates = new Label("");

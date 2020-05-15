@@ -48,6 +48,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +131,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	private EntityManager em;
 
 	@EJB
-	private ContactService contactService;	
+	private ContactService contactService;
+
+	@EJB
+	private ContactListCriteriaBuilder listCriteriaBuilder;
+
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -149,6 +154,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private ContactEditAuthorization contactEditAuthorization;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -354,8 +361,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactRegion.get(Region.NAME),
 				contactDistrict.get(District.NAME));
 
-		Predicate filter = createContactFilter(contactCriteria, cb, contact, 
-				contactService.createUserFilter(cb, cq, contact));
+        Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -406,24 +412,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		return exportContacts;
 	}
 
-	private Predicate createContactFilter(ContactCriteria contactCriteria, CriteriaBuilder cb, Root<Contact> contact,
-			Predicate userFilter) {
-		Predicate filter = null;
+    @Override
+    public List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first,
+                                                                   int max, Language userLanguage) {
 
-		// Only use user filter if no restricting case is specified
-		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			filter = userFilter;
-		}
-
-		if (contactCriteria != null) {
-			Predicate criteriaFilter = contactService.buildCriteriaFilter(contactCriteria, cb, contact);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-		}
-		return filter;
-	}
-
-	@Override
-	public List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
@@ -513,8 +505,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> root = cq.from(Contact.class);
 
-		Predicate filter = createContactFilter(contactCriteria, cb, root, contactService.createUserFilter(cb, cq,
-				root));
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, root, cq);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -543,8 +534,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contact.get(Contact.DISEASE));
 
 		// Only use user filter if no restricting case is specified
-		Predicate filter = createContactFilter(contactCriteria, cb, contact, contactService.createUserFilter(cb, cq,
-				contact));
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -632,18 +622,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		return VisitResult.NOT_SYMPTOMATIC;
 	}
 
-	@Override
-	public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
-			List<SortProperty> sortProperties) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ContactIndexDto> cq = cb.createQuery(ContactIndexDto.class);
-		Root<Contact> contact = cq.from(Contact.class);
-		Join<Contact, Person> contactPerson = contact.join(Contact.PERSON, JoinType.LEFT);
-		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
-		Join<Case, Person> contactCasePerson = contactCase.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, Region> contactCaseRegion = contactCase.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> contactCaseDistrict = contactCase.join(Case.DISTRICT, JoinType.LEFT);
-		Join<Contact, User> contactOfficer = contact.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
+    @Override
+    public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
+                                              List<SortProperty> sortProperties) {
+		CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, sortProperties);
 
 		Subquery<Integer> visitCountSq = cq.subquery(Integer.class);
 		Root<Contact> visitCountRoot = visitCountSq.from(Contact.class);
@@ -662,61 +644,15 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactOfficer.get(User.UUID), contact.get(Contact.REPORT_DATE_TIME),
 				contactCase.get(Case.CASE_CLASSIFICATION), visitCountSq);
 
-		Predicate filter = createContactFilter(contactCriteria, cb, contact, contactService.createUserFilter(cb, cq,
-				contact));
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case ContactIndexDto.UUID:
-				case ContactIndexDto.LAST_CONTACT_DATE:
-				case ContactIndexDto.CONTACT_PROXIMITY:
-				case ContactIndexDto.CONTACT_CATEGORY:
-				case ContactIndexDto.CONTACT_CLASSIFICATION:
-				case ContactIndexDto.CONTACT_STATUS:
-				case ContactIndexDto.FOLLOW_UP_STATUS:
-				case ContactIndexDto.FOLLOW_UP_UNTIL:
-				case ContactIndexDto.REPORT_DATE_TIME:
-				case ContactIndexDto.DISEASE:
-				case ContactIndexDto.CASE_CLASSIFICATION:
-					expression = contact.get(sortProperty.propertyName);
-					break;
-				case ContactIndexDto.PERSON:
-					expression = contactPerson.get(Person.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = contactPerson.get(Person.LAST_NAME);
-					break;
-				case ContactIndexDto.CAZE:
-					expression = contactCasePerson.get(Person.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = contactCasePerson.get(Person.LAST_NAME);
-					break;
-				case ContactIndexDto.REGION_UUID:
-					expression = contactCaseRegion.get(Region.NAME);
-					break;
-				case ContactIndexDto.DISTRICT_UUID:
-					expression = contactCaseDistrict.get(District.NAME);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-			cq.orderBy(order);
-		} else {
-			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
-		}
+	@Override
+	public List<ContactIndexDetailedDto> getIndexDetailedList(ContactCriteria contactCriteria, Integer first, Integer max,
+															  List<SortProperty> sortProperties) {
+		CriteriaQuery<ContactIndexDetailedDto> query = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties);
 
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			return em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			return em.createQuery(cq).getResultList();
+			return em.createQuery(query).getResultList();
 		}
 	}
 
@@ -841,6 +777,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		return target;
 	}
@@ -967,6 +904,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		return target;
 	}
@@ -1133,6 +1071,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {
 
+	}
+
+	@Override
+	public boolean isContactEditAllowed(String contactUuid) {		
+		Contact contact = contactService.getByUuid(contactUuid);
+		return contactEditAuthorization.isContactEditAllowed(contact);
 	}
 
 }

@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.therapy;
 
+import java.util.List;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.BeanItemContainer;
@@ -8,7 +10,7 @@ import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.v7.ui.renderers.DateRenderer;
-import com.vaadin.v7.ui.renderers.HtmlRenderer;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -24,8 +26,6 @@ import de.symeda.sormas.ui.utils.GridButtonRenderer;
 import de.symeda.sormas.ui.utils.PeriodDtoConverter;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import java.util.List;
 
 @SuppressWarnings("serial")
 public class PrescriptionGrid extends Grid implements V7AbstractGrid<PrescriptionCriteria> {

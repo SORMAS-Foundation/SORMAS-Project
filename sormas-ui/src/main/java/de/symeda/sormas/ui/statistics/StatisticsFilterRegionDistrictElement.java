@@ -34,15 +34,15 @@ public class StatisticsFilterRegionDistrictElement extends StatisticsFilterEleme
 	StatisticsFilterValuesElement regionElement;
 	StatisticsFilterValuesElement districtElement;
 
-	public StatisticsFilterRegionDistrictElement() {
+	public StatisticsFilterRegionDistrictElement(int rowIndex) {
 		setSpacing(true);
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 
 		regionElement = new StatisticsFilterValuesElement(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION),
-				StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, this);
+				StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, this, rowIndex);
 		districtElement = new StatisticsFilterValuesElement(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT),
-				StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, this);
+				StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.DISTRICT, this, rowIndex);
 
 		addComponent(regionElement);
 		addComponent(districtElement);

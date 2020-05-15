@@ -444,6 +444,7 @@
     <string name="message_report_not_sent">No se puede enviar el informe en este momento.</string>
     <string name="message_report_sent">Informe de problemas enviado correctamente.</string>
     <string name="message_save_error">%1$s no se pudo guardar debido a un error interno.</string>
+    <string name="message_edit_forbidden">No tiene permiso para editar el registro de esta jurisdicción.</string>
     <string name="message_save_success">%1$s guardado correctamente.</string>
     <string name="message_settings_saved">La configuración de la aplicación se ha cambiado.</string>
     <string name="message_settings_server_url">¡Bienvenido! Comience introduciendo la URL de su servidor SORMAS. Después podrá iniciar sesión con su nombre de usuario y contraseña.</string>
@@ -552,8 +553,8 @@
     <string name="value_visit_time_unknown">Tiempo de visita N/D</string>
     <string name="value_visiting_person_unknown">Médico asistente N/D</string>
     <string name="value_investigation_status_unknown">Estado de la investigación N/D</string>
-    <string name="sample_not_found">Could not find sample</string>
-    <string name="no_camera_permission">No camera permission</string>
-    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
-    <string name="scan_field_sample_id">Scan field sample id</string>
+    <string name="sample_not_found">No se pudo encontrar la muestra</string>
+    <string name="no_camera_permission">No tiene permiso la cámara</string>
+    <string name="permission_camera_rationale">El acceso a la cámara es necesario para la detección</string>
+    <string name="scan_field_sample_id">Escanear id de muestra de campo</string>
 </resources>

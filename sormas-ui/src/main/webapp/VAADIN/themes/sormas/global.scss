@@ -1,35 +1,35 @@
 
 @mixin sormas-global {
-	
+
   .v-caption {
     text-transform: uppercase;
 	/*display: block; #792 unclear why this was needed */
     padding-bottom: 0.1em;
-    
+
     &.v-caption-caption-hidden {
       display: none;
     }
-    
+
     &.v-caption-caption-overflow {
       margin-right : -1000px;
     }
   }
-  
+
   .force-caption {
 	margin-top: 1.5em;
 	margin-bottom: 16px;
   }
- 
+
   .force-caption-checkbox {
   	margin-top: 2.2em;
 	margin-bottom: 16px;
   }
-  
+
   /* like bootstrap grid with free columns */
   .inline-container {
     margin-left: -15px;
     margin-right: -15px;
-    
+
   	> div {
   	  padding-left: 15px;
   	  padding-right: 15px;
@@ -37,13 +37,30 @@
   	  vertical-align: top;
   	}
   }
- 
+
+  .filters-container {
+    margin-left: -8px;
+    margin-right: -8px;
+    white-space: nowrap;
+    font-size: 0;
+    > * {
+      display: inline-block;
+      vertical-align: top;
+      font-size: 12px;
+
+      .filter-item {
+        margin-left: 8px;
+        margin-right: 8px;
+      }
+    }
+  }
+
   .hide-errorindicator {
   	.v-errorindicator {
   	  display: none;
   	}
   }
-  
+
   .v-widget.v-textfield,
   .v-widget.v-textarea,
   .v-widget.v-select,
@@ -52,7 +69,7 @@
   .v-widget.v-select-optiongroup {
   	margin-bottom: 16px;
   }
- 
+
   .badge {
   	padding: 2px 9px 2px;
   	margin-left: 5px;
@@ -64,7 +81,7 @@
   	-moz-border-radius: 9px;
   	border-radius: 9px;
   }
-  
+
   /** HEADER STYLES **/
 
   h1, .h1 {
@@ -80,17 +97,17 @@
   h3, .h3 {
     color: $s-secondary-color;
     font-weight: 600;
-  }   
-    
+  }
+
   h4, .h4 {
     color: $s-secondary-color;
     font-weight: 600;
   }
-  
+
 
 
   /** CUSTOM STYLES **/
-	
+
   .vspace-0 {
 	margin-bottom: 64px;
   }
@@ -102,7 +119,7 @@
   }
   .vspace-3 {
 	margin-bottom: 16px;
-  }	
+  }
   .vspace-4 {
 	margin-bottom: 6px;
   }
@@ -112,7 +129,7 @@
   .vspace-none {
   	margin-bottom: 0 !important;
   }
-  
+
   .vspace-top-0 {
     margin-top: 64px;
   }
@@ -134,7 +151,7 @@
   .vspace-top-none {
   	margin-top: 0 !important;
   }
- 
+
   .hspace-left-0 {
   	margin-left: 64px;
   }
@@ -156,7 +173,7 @@
   .hspace-left-none {
   	margin-left: 0 !important;
   }
- 
+
   .hspace-right-0 {
   	margin-right: 64px;
   }
@@ -178,7 +195,7 @@
   .hspace-right-none {
   	margin-right: 0 !important;
   }
- 
+
   .indent-left-1 {
   	margin-left: 15px;
   }
@@ -188,15 +205,15 @@
   .indent-left-3 {
  	margin-left: 45px;
   }
-  
+
   .vertical-rule {
 	border-right: 1px solid #CDD8EC;
   }
-  
+
   .text-bold {
   	font-weight: bold;
   }
-	
+
   // for aligning in bootstrap grid
   .align-right {
   	text-align: right;
@@ -214,19 +231,19 @@
   .background-sub-criteria {
   	background: $s-highlight-slightly-subtle-color;
   }
- 
+
   .background-suspect-criteria {
-    background: $s-relevant-transparent-color;	
+    background: $s-relevant-transparent-color;
   }
- 
+
   .background-probable-criteria {
-    background: $s-important-transparent-color;	
+    background: $s-important-transparent-color;
   }
- 
+
   .background-confirmed-criteria {
-    background: $s-critical-transparent-color;	
+    background: $s-critical-transparent-color;
   }
-  
+
   .background-not-a-case-criteria {
   	background: $s-highlight-color;
   }
@@ -235,29 +252,29 @@
 	border-radius: 8px;
 	padding: 8px;
   }
- 
+
   .root-component {
     min-width: 640px;
 	max-width: 1280px;
   }
   .main-component {
     min-width: 640px;
-    margin-bottom: 24px;   
+    margin-bottom: 24px;
   }
   .side-component {
     min-width: 420px;
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 12px 20px;
-    margin-bottom: 24px;    
+    margin-bottom: 24px;
   }
- 
+
   .spacing-small {
   	.v-spacing {
   	  width: 4px;
   	}
   }
- 
+
   .no-border {
   	border: none;
   }

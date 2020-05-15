@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.function.Consumer;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Button;
@@ -51,9 +52,7 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 		searchField.setWidth(400, Unit.PIXELS);
 		filterLayout.addComponent(searchField);
 
-		Button searchButton = new Button(I18nProperties.getCaption(Captions.caseSearchCase));
-		CssStyles.style(searchButton, ValoTheme.BUTTON_PRIMARY);
-		searchButton.addClickListener(e -> {
+		Button searchButton = ButtonHelper.createButton(Captions.caseSearchCase, e -> {
 			if (StringUtils.isNotEmpty(searchField.getValue())) {
 				criteria.setSourceCaseInfoLike(searchField.getValue());
 				grid.setCases(FacadeProvider.getCaseFacade().getIndexList(criteria, null, null, null));
@@ -61,7 +60,8 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 				criteria.setSourceCaseInfoLike(null);
 				grid.clearCases();
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		filterLayout.addComponent(searchButton);
 
 		mainLayout.addComponent(filterLayout);

@@ -21,6 +21,19 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DateHelper8;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -100,7 +113,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * A view for performing create-read-update-delete operations on products.
- *
+ * <p>
  * See also {@link CaseController} for fetching the data, the actual CRUD
  * operations and controlling the view based on events from outside.
  */
@@ -116,38 +129,16 @@ public class ContactsView extends AbstractView {
 	private FilteredGrid<?, ContactCriteria> grid;
 	private VerticalLayout gridLayout;
 
+	private PopupButton moreButton;
+	private VerticalLayout moreLayout;
+
 	private MenuBar bulkOperationsDropdown;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
 	// Filters
-	private HorizontalLayout firstFilterRowLayout;
-	private HorizontalLayout secondFilterRowLayout;
-	private HorizontalLayout thirdFilterRowLayout;
-	private HorizontalLayout dateFilterRowLayout;
-	private ComboBox classificationFilter;
-	private ComboBox diseaseFilter;
-	private ComboBox caseClassificationFilter;
-	private ComboBox regionFilter;
-	private ComboBox districtFilter;
-	private ComboBox officerFilter;
-	private ComboBox followUpStatusFilter;
-	private ComboBox reportedByFilter;
-	private PopupDateField followUpUntilToFilter;
-	private CheckBox onlyHighPriorityContacts;
-	private TextField searchField;
-	private Button resetButton;
-	private EpiWeekAndDateFilterComponent<ContactDateType> weekAndDateFilter;
-	private Button expandFiltersButton;
-	private Button collapseFiltersButton;
+	private ContactsFilterForm filterForm;
 	private ComboBox relevanceStatusFilter;
-	private ComboBox categoryFilter;
-	private CheckBox onlyQuarantineHelpNeeded;
-	private ComboBox quarantineTypeFilter;
-	private PopupDateField quarantineToFilter;
-	private CheckBox quarantineOrderedVerballyFilter;
-	private CheckBox quarantineOrderedOfficialDocumentFilter;
-	private CheckBox quarantineNotOrderedFilter;
 
 	public ContactsView() {
 		super(VIEW_NAME);
@@ -167,7 +158,9 @@ public class ContactsView extends AbstractView {
 			grid = new ContactFollowUpGrid(criteria, new Date(), getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
-			grid = new ContactGrid(criteria, getClass());
+			grid = ContactsViewType.DETAILED_OVERVIEW.equals(viewConfiguration.getViewType())
+					? new ContactGridDetailed(criteria, getClass())
+					: new ContactGrid(criteria, getClass());
 		}
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -184,10 +177,15 @@ public class ContactsView extends AbstractView {
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		OptionGroup contactsViewSwitcher = new OptionGroup();
+		contactsViewSwitcher.setId("contactsViewSwitcher");
 		CssStyles.style(contactsViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		contactsViewSwitcher.addItem(ContactsViewType.CONTACTS_OVERVIEW);
 		contactsViewSwitcher.setItemCaption(ContactsViewType.CONTACTS_OVERVIEW,
 				I18nProperties.getCaption(Captions.contactContactsOverview));
+
+		contactsViewSwitcher.addItem(ContactsViewType.DETAILED_OVERVIEW);
+		contactsViewSwitcher.setItemCaption(ContactsViewType.DETAILED_OVERVIEW,
+				I18nProperties.getCaption(Captions.contactDetailedOverview));
 
 		contactsViewSwitcher.addItem(ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW);
 		contactsViewSwitcher.setItemCaption(ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW,
@@ -195,55 +193,64 @@ public class ContactsView extends AbstractView {
 
 		contactsViewSwitcher.setValue(viewConfiguration.getViewType());
 		contactsViewSwitcher.addValueChangeListener(e -> {
-			if (ContactsViewType.CONTACTS_OVERVIEW.equals(e.getProperty().getValue())) {
-				viewConfiguration.setViewType(ContactsViewType.CONTACTS_OVERVIEW);
+			ContactsViewType viewType = (ContactsViewType) e.getProperty().getValue();
+
+			viewConfiguration.setViewType(viewType);
+			if (viewType.isContactOverview()) {
 				SormasUI.get().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			} else {
-				viewConfiguration.setViewType(ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW);
 				SormasUI.get().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}
 		});
 		addHeaderComponent(contactsViewSwitcher);
 
-		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType())
-				&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
-			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
-			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			importButton.setIcon(VaadinIcons.UPLOAD);
+		moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
+		moreButton.setId("more");
+		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
+		moreLayout = new VerticalLayout();
+		moreLayout.setSpacing(true);
+		moreLayout.setMargin(true);
+		moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+		moreLayout.setWidth(250, Unit.PIXELS);
+		moreButton.setContent(moreLayout);
 
-			importButton.addClickListener(e -> {
+
+		if (viewConfiguration.getViewType().isContactOverview()
+				&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
+			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new ContactsImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportContacts));
 				popupWindow.addCloseListener(c -> {
-					ContactGrid grid = (ContactGrid) this.grid;
+					AbstractContactGrid<?> grid = (AbstractContactGrid<?>) this.grid;
 					grid.reload();
 				});
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+			importButton.setWidth(100, Unit.PERCENTAGE);
 
-			addHeaderComponent(importButton);
+			moreLayout.addComponent(importButton);
 		}
 
-		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
-			PopupButton exportButton = new PopupButton(I18nProperties.getCaption(Captions.export)); 
+		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
-				exportButton.setIcon(VaadinIcons.DOWNLOAD);
-				exportLayout.setSpacing(true); 
+				exportLayout.setSpacing(true);
 				exportLayout.setMargin(true);
 				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 				exportLayout.setWidth(200, Unit.PIXELS);
-				exportButton.setContent(exportLayout);
-				addHeaderComponent(exportButton);
 			}
+
+			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportButton);
+
 			{
 				StreamResource streamResource = new GridExportStreamResource(grid, "sormas_contacts", createFileNameWithCurrentDate("sormas_contacts_", ".csv"));
 
-				addExportButton(streamResource, exportButton, exportLayout, null, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
+				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 			}
 			{
 				StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(ContactExportDto.class, null,
 						(Integer start, Integer max) -> FacadeProvider.getContactFacade().getExportList(grid.getCriteria(), start, max, I18nProperties.getUserLanguage()),
-						(propertyId,type) -> {
+						(propertyId, type) -> {
 							String caption = I18nProperties.getPrefixCaption(ContactExportDto.I18N_PREFIX, propertyId,
 									I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, propertyId,
 											I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId,
@@ -258,7 +265,7 @@ public class ContactsView extends AbstractView {
 						},
 						createFileNameWithCurrentDate("sormas_contacts_", ".csv"), null);
 
-				addExportButton(extendedExportStreamResource, exportButton, exportLayout, null, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
+				addExportButton(extendedExportStreamResource, exportButton, exportLayout, VaadinIcons.FILE_TEXT, Captions.exportDetailed, Descriptions.descDetailedExportButton);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
@@ -266,13 +273,14 @@ public class ContactsView extends AbstractView {
 						DownloadUtil.createVisitsExportStreamResource(grid.getCriteria(),
 								createFileNameWithCurrentDate("sormas_contacts_follow_ups", ".csv"));
 
-				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout, null,
+				addExportButton(followUpVisitsExportStreamResource, exportButton, exportLayout,
 						VaadinIcons.FILE_TEXT, Captions.exportFollowUp, Descriptions.descFollowUpExportButton);
 			}
 
 			// Warning if no filters have been selected
 			{
 				Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
+				warningLabel.setId("contactWarningLabel");
 				warningLabel.setWidth(100, Unit.PERCENTAGE);
 				exportLayout.addComponent(warningLabel);
 				warningLabel.setVisible(false);
@@ -281,22 +289,22 @@ public class ContactsView extends AbstractView {
 			}
 		}
 
-		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
+		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			{
-				btnEnterBulkEditMode.setId("enterBulkEditMode");
-				btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-				addHeaderComponent(btnEnterBulkEditMode);
+				btnEnterBulkEditMode.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+				moreLayout.addComponent(btnEnterBulkEditMode);
 			}
 
-			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
+			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			{
-				btnLeaveBulkEditMode.setId("leaveBulkEditMode");
-				btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
 				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-				btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
-				addHeaderComponent(btnLeaveBulkEditMode);
+				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+
+				moreLayout.addComponent(btnLeaveBulkEditMode);
 			}
 
 			btnEnterBulkEditMode.addClickListener(e -> {
@@ -304,26 +312,28 @@ public class ContactsView extends AbstractView {
 				viewConfiguration.setInEagerMode(true);
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
-				searchField.setEnabled(false);
-				((ContactGrid) grid).setEagerDataProvider();
-				((ContactGrid) grid).reload();
+				filterForm.setSearchFieldEnabled(false);
+				((AbstractContactGrid<?>) grid).setEagerDataProvider();
+				((AbstractContactGrid<?>) grid).reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
 				viewConfiguration.setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				searchField.setEnabled(true);
+				filterForm.setSearchFieldEnabled(true);
 				navigateTo(criteria);
 			});
 		}
 
-		if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			Button btnNewContact = new Button(I18nProperties.getCaption(Captions.contactNewContact));
-			btnNewContact.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			btnNewContact.setIcon(VaadinIcons.PLUS_CIRCLE);
-			btnNewContact.addClickListener(e -> ControllerProvider.getContactController().create());
+		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+			Button btnNewContact = ButtonHelper.createIconButton(Captions.contactNewContact, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getContactController().create(), ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(btnNewContact);
+		}
+
+		if(moreLayout.getComponentCount() > 0) {
+			addHeaderComponent(moreButton);
 		}
 
 		addComponent(gridLayout);
@@ -335,314 +345,22 @@ public class ContactsView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
-		firstFilterRowLayout = new HorizontalLayout();
-		firstFilterRowLayout.setMargin(false);
-		firstFilterRowLayout.setSpacing(true);
-		firstFilterRowLayout.setSizeUndefined();
-		{
-			classificationFilter = new ComboBox();
-			classificationFilter.setWidth(140, Unit.PIXELS);
-			classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
-			classificationFilter.addItems((Object[]) ContactClassification.values());
-			classificationFilter.addValueChangeListener(e -> {
-				criteria.contactClassification((ContactClassification) e.getProperty().getValue());
-				navigateTo(criteria);
-			});
-			firstFilterRowLayout.addComponent(classificationFilter);
-
-			diseaseFilter = new ComboBox();
-			diseaseFilter.setWidth(140, Unit.PIXELS);
-			diseaseFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISEASE));
-			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
-			diseaseFilter.addValueChangeListener(e -> {
-				criteria.disease(((Disease)e.getProperty().getValue()));
-				navigateTo(criteria);
-			});
-			firstFilterRowLayout.addComponent(diseaseFilter);
-
-			caseClassificationFilter = new ComboBox();
-			caseClassificationFilter.setWidth(140, Unit.PIXELS);
-			caseClassificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
-			caseClassificationFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
-			caseClassificationFilter.addItems((Object[]) CaseClassification.values());
-			caseClassificationFilter.addValueChangeListener(e -> {
-				criteria.caseClassification(((CaseClassification) e.getProperty().getValue()));
-				navigateTo(criteria);
-			});
-			firstFilterRowLayout.addComponent(caseClassificationFilter);
-
-			if (isGermanServer()) {
-				categoryFilter = new ComboBox();
-				categoryFilter.setWidth(140, Unit.PIXELS);
-				categoryFilter.setInputPrompt(
-						I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CATEGORY));
-				categoryFilter.addItems((Object[]) ContactCategory.values());
-				categoryFilter.addValueChangeListener(e -> {
-					criteria.contactCategory(((ContactCategory) e.getProperty().getValue()));
-					navigateTo(criteria);
-				});
-				firstFilterRowLayout.addComponent(categoryFilter);
-			}
-
-			followUpStatusFilter = new ComboBox();
-			followUpStatusFilter.setWidth(140, Unit.PIXELS);
-			followUpStatusFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.FOLLOW_UP_STATUS));
-			followUpStatusFilter.addItems((Object[])FollowUpStatus.values());
-			followUpStatusFilter.addValueChangeListener(e -> {
-				criteria.followUpStatus(((FollowUpStatus)e.getProperty().getValue()));
-				navigateTo(criteria);
-			});
-			firstFilterRowLayout.addComponent(followUpStatusFilter);
-
-			searchField = new TextField();
-			searchField.setWidth(200, Unit.PIXELS);
-			searchField.setNullRepresentation("");
-			searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
-			searchField.addTextChangeListener(e -> {
-				criteria.nameUuidCaseLike(e.getText());
+		filterForm = new ContactsFilterForm();
+		filterForm.addValueChangeListener(e -> {
+			if (!navigateTo(criteria, false)) {
+				filterForm.updateResetButtonState();
 				if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 					((ContactFollowUpGrid) grid).reload();
 				} else {
-					((ContactGrid) grid).reload();
+					((AbstractContactGrid<?>) grid).reload();
 				}
-			});
-			firstFilterRowLayout.addComponent(searchField);
-
-			addShowMoreOrLessFiltersButtons(firstFilterRowLayout);
-
-			resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-			resetButton.setVisible(false);
-			resetButton.addClickListener(event -> {
-				ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
-				navigateTo(null);
-			});
-			firstFilterRowLayout.addComponent(resetButton);
-		}
-		filterLayout.addComponent(firstFilterRowLayout);
-
-		secondFilterRowLayout = new HorizontalLayout();
-		secondFilterRowLayout.setMargin(false);
-		secondFilterRowLayout.setSpacing(true);
-		secondFilterRowLayout.setSizeUndefined();
-		{
-			UserDto user = UserProvider.getCurrent().getUser();
-			regionFilter = new ComboBox();
-			if (user.getRegion() == null) {
-				regionFilter.setWidth(240, Unit.PIXELS);
-				regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
-				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-				regionFilter.addValueChangeListener(e -> {
-					RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-					if (region != null) {
-						officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.CONTACT_OFFICER));
-					} else {
-						officerFilter.removeAllItems();
-					}
-					criteria.region(region);
-					navigateTo(criteria);
-				});
-				secondFilterRowLayout.addComponent(regionFilter);
 			}
-
-			districtFilter = new ComboBox();
-			districtFilter.setWidth(240, Unit.PIXELS);
-			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
-			districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
-			districtFilter.addValueChangeListener(e -> {
-				DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-				criteria.district(district);
-				navigateTo(criteria);
-			});
-
-			if (user.getRegion() != null && user.getDistrict() == null) {	
-				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
-				districtFilter.setEnabled(true);
-			} else {
-				regionFilter.addValueChangeListener(e -> {
-					RegionReferenceDto region = (RegionReferenceDto)e.getProperty().getValue();
-					districtFilter.removeAllItems();
-					if (region != null) {
-						districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-						districtFilter.setEnabled(true);
-					} else {
-						districtFilter.setEnabled(false);
-					}
-				});
-				districtFilter.setEnabled(false);
-			}
-			secondFilterRowLayout.addComponent(districtFilter);
-
-			Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-			infoLabel.setSizeUndefined();
-			infoLabel.setDescription(I18nProperties.getString(Strings.infoContactsViewRegionDistrictFilter), ContentMode.HTML);
-			CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
-			secondFilterRowLayout.addComponent(infoLabel);
-
-			officerFilter = new ComboBox();
-			officerFilter.setWidth(140, Unit.PIXELS);
-			officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
-			officerFilter.addValueChangeListener(e -> {
-				UserReferenceDto officer = (UserReferenceDto) e.getProperty().getValue();
-				criteria.contactOfficer(officer);
-				navigateTo(criteria);
-			});
-			if (user.getRegion() != null) {
-				officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
-			}
-			secondFilterRowLayout.addComponent(officerFilter);
-
-			reportedByFilter = new ComboBox();
-			reportedByFilter.setWidth(140, Unit.PIXELS);
-			reportedByFilter.setInputPrompt(I18nProperties.getString(Strings.reportedBy));
-			reportedByFilter.addItems((Object[]) UserRole.values());
-			reportedByFilter.addValueChangeListener(e -> {
-				criteria.reportingUserRole((UserRole) e.getProperty().getValue());
-				navigateTo(criteria);
-			});
-			secondFilterRowLayout.addComponent(reportedByFilter);
-
-			followUpUntilToFilter = new PopupDateField();
-			followUpUntilToFilter.setWidth(200, Unit.PIXELS);
-			followUpUntilToFilter.setInputPrompt(
-					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL));
-			followUpUntilToFilter.addValueChangeListener(e -> {
-				criteria.followUpUntilTo((Date) e.getProperty().getValue());
-				criteria.followUpUntilToPrecise(e.getProperty().getValue() != null);
-				navigateTo(criteria);
-			});
-			secondFilterRowLayout.addComponent(followUpUntilToFilter);
-		}
-		filterLayout.addComponent(secondFilterRowLayout);
-		secondFilterRowLayout.setVisible(false);
-
-		thirdFilterRowLayout = new HorizontalLayout();
-		thirdFilterRowLayout.setMargin(false);
-		thirdFilterRowLayout.setSpacing(true);
-		thirdFilterRowLayout.setSizeUndefined();
-		{
-			quarantineTypeFilter = new ComboBox();
-			quarantineTypeFilter.setWidth(140, Unit.PIXELS);
-			quarantineTypeFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE));
-			quarantineTypeFilter.addItems((Object[]) QuarantineType.values());
-			quarantineTypeFilter.addValueChangeListener(e -> {
-				criteria.quarantineType(((QuarantineType) e.getProperty().getValue()));
-				navigateTo(criteria);
-			});
-			thirdFilterRowLayout.addComponent(quarantineTypeFilter);
-
-			quarantineToFilter = new PopupDateField();
-			quarantineToFilter.setWidth(200, Unit.PIXELS);
-			quarantineToFilter.setInputPrompt(
-					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO));
-			quarantineToFilter.addValueChangeListener(e -> {
-				criteria.quarantineTo((Date) e.getProperty().getValue());
-				navigateTo(criteria);
-			});
-			thirdFilterRowLayout.addComponent(quarantineToFilter);
-
-			if (isGermanServer()) {
-				quarantineOrderedVerballyFilter = new CheckBox();
-				quarantineOrderedVerballyFilter.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_VERBALLY));
-				CssStyles.style(quarantineOrderedVerballyFilter, CssStyles.CHECKBOX_FILTER_INLINE);
-				quarantineOrderedVerballyFilter.addValueChangeListener(e -> {
-					criteria.quarantineOrderedVerbally((Boolean) e.getProperty().getValue());
-					navigateTo(criteria);
-				});
-				thirdFilterRowLayout.addComponent(quarantineOrderedVerballyFilter);
-
-				quarantineOrderedOfficialDocumentFilter = new CheckBox();
-				quarantineOrderedOfficialDocumentFilter.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT));
-				CssStyles.style(quarantineOrderedOfficialDocumentFilter, CssStyles.CHECKBOX_FILTER_INLINE);
-				quarantineOrderedOfficialDocumentFilter.addValueChangeListener(e -> {
-					criteria.quarantineOrderedOfficialDocument((Boolean) e.getProperty().getValue());
-					navigateTo(criteria);
-				});
-				thirdFilterRowLayout.addComponent(quarantineOrderedOfficialDocumentFilter);
-
-				quarantineNotOrderedFilter = new CheckBox();
-				quarantineNotOrderedFilter.setCaption(I18nProperties.getCaption(Captions.contactQuarantineNotOrdered));
-				CssStyles.style(quarantineNotOrderedFilter, CssStyles.CHECKBOX_FILTER_INLINE);
-				quarantineNotOrderedFilter.addValueChangeListener(e -> {
-					criteria.quarantineNotOrdered((Boolean) e.getProperty().getValue());
-					navigateTo(criteria);
-				});
-				thirdFilterRowLayout.addComponent(quarantineNotOrderedFilter);
-			}
-
-			onlyQuarantineHelpNeeded = new CheckBox();
-			onlyQuarantineHelpNeeded.setCaption(I18nProperties.getCaption(Captions.contactOnlyQuarantineHelpNeeded));
-			CssStyles.style(onlyQuarantineHelpNeeded, CssStyles.CHECKBOX_FILTER_INLINE);
-			onlyQuarantineHelpNeeded.addValueChangeListener(e -> {
-				criteria.onlyQuarantineHelpNeeded((Boolean) e.getProperty().getValue());
-				navigateTo(criteria);
-			});
-			thirdFilterRowLayout.addComponent(onlyQuarantineHelpNeeded);
-
-			onlyHighPriorityContacts = new CheckBox();
-			onlyHighPriorityContacts.setCaption(I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts));
-			CssStyles.style(onlyHighPriorityContacts, CssStyles.CHECKBOX_FILTER_INLINE);
-			onlyHighPriorityContacts.addValueChangeListener(e -> {
-				criteria.onlyHighPriorityContacts((Boolean) e.getProperty().getValue());
-				navigateTo(criteria);
-			});
-			thirdFilterRowLayout.addComponent(onlyHighPriorityContacts);
-		}
-		filterLayout.addComponent(thirdFilterRowLayout);
-		thirdFilterRowLayout.setVisible(false);
-
-		dateFilterRowLayout = new HorizontalLayout();
-		dateFilterRowLayout.setSpacing(true);
-		dateFilterRowLayout.setSizeUndefined();
-		{
-			Button applyButton = new Button(I18nProperties.getCaption(Captions.actionApplyDateFilter));
-
-			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, ContactDateType.class, I18nProperties.getString(Strings.promptContactDateType), ContactDateType.REPORT_DATE);
-			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
-			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
-			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateFrom));
-			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateTo));
-			dateFilterRowLayout.addComponent(weekAndDateFilter);
-			dateFilterRowLayout.addComponent(applyButton);
-
-			applyButton.addClickListener(e -> {
-				DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
-				Date fromDate, toDate;
-				if (dateFilterOption == DateFilterOption.DATE) {
-					fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
-					toDate = DateHelper.getEndOfDay(weekAndDateFilter.getDateToFilter().getValue());
-				} else {
-					fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
-					toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
-				}
-				if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
-					applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-					ContactDateType contactDateType = (ContactDateType) weekAndDateFilter.getDateTypeSelector().getValue();
-					if (contactDateType == ContactDateType.LAST_CONTACT_DATE) {
-						criteria.lastContactDateBetween(fromDate, toDate);
-						criteria.reportDateBetween(null, null);
-					} else {
-						criteria.reportDateBetween(fromDate, toDate);
-						criteria.lastContactDateBetween(null, null);
-					}
-					criteria.dateFilterOption(dateFilterOption);
-					navigateTo(criteria);
-				} else {
-					if (dateFilterOption == DateFilterOption.DATE) {
-						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingDateFilter), 
-								I18nProperties.getString(Strings.messageMissingDateFilter), Type.WARNING_MESSAGE, false);
-						notification.setDelayMsec(-1);
-						notification.show(Page.getCurrent());
-					} else {
-						Notification notification = new Notification(I18nProperties.getString(Strings.headingMissingEpiWeekFilter), 
-								I18nProperties.getString(Strings.messageMissingEpiWeekFilter), Type.WARNING_MESSAGE, false);
-						notification.setDelayMsec(-1);
-						notification.show(Page.getCurrent());
-					}
-				}
-			});
-		}
-		filterLayout.addComponent(dateFilterRowLayout);
-		dateFilterRowLayout.setVisible(false);
+		});
+		filterForm.addResetHandler(e -> {
+			ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
+			navigateTo(null, true);
+		});
+		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
 	}
@@ -656,31 +374,35 @@ public class ContactsView extends AbstractView {
 
 		statusButtons = new HashMap<>();
 
-		Button statusAll = new Button(I18nProperties.getCaption(Captions.all), e -> {
+		Button statusAll = ButtonHelper.createButton(I18nProperties.getCaption(Captions.all), e -> {
 			criteria.contactStatus(null);
 			navigateTo(criteria);
-		});
-		CssStyles.style(statusAll, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+
+		statusAll.setCaptionAsHtml(true);
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			CssStyles.style(statusAll, CssStyles.FORCE_CAPTION);
 		}
-		statusAll.setCaptionAsHtml(true);
+
 		statusFilterLayout.addComponent(statusAll);
+
 		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
 		for (ContactStatus status : ContactStatus.values()) {
-			Button statusButton = new Button(status.toString(), e -> {
+			Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status.toString(), status.toString(), e -> {
 				criteria.contactStatus(status);
 				navigateTo(criteria);
-			});
+			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+
+			statusButton.setCaptionAsHtml(true);
 			statusButton.setData(status);
-			CssStyles.style(statusButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 				CssStyles.style(statusButton, CssStyles.FORCE_CAPTION);
 			}
-			statusButton.setCaptionAsHtml(true);
+
 			statusFilterLayout.addComponent(statusButton);
+
 			statusButtons.put(statusButton, status.toString());
 		}
 
@@ -688,8 +410,9 @@ public class ContactsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
@@ -704,23 +427,19 @@ public class ContactsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (ContactsViewType.CONTACTS_OVERVIEW.equals(viewConfiguration.getViewType()) && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				bulkOperationsDropdown = new MenuBar();	
-				MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
-
-				Command changeCommand = mi -> ControllerProvider.getContactController().showBulkContactDataEditComponent(((ContactGrid) grid).asMultiSelect().getSelectedItems(), null);
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, changeCommand);
-
-				Command cancelFollowUpCommand = mi -> ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(((ContactGrid) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, cancelFollowUpCommand);
-
-				Command lostToFollowUpCommand = mi -> ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(((ContactGrid) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, lostToFollowUpCommand);
-
-				Command deleteCommand = mi -> ControllerProvider.getContactController().deleteAllSelectedItems(((ContactGrid) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-				bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H,
+								mi -> ControllerProvider.getContactController().showBulkContactDataEditComponent(((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(), null)),
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE,
+								mi -> ControllerProvider.getContactController().cancelFollowUpOfAllSelectedItems(((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK,
+								mi -> ControllerProvider.getContactController().setAllSelectedItemsToLostToFollowUp(((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH,
+								mi -> ControllerProvider.getContactController().deleteAllSelectedItems(((AbstractContactGrid<?>) grid).asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)))
+				);
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -734,12 +453,12 @@ public class ContactsView extends AbstractView {
 				scrollLayout.setMargin(false);
 
 				DateField followUpReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactFollowUpOverviewReferenceDate), LocalDate.now());
+				followUpReferenceDate.setId("followUpReferenceDate");
 
-				Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
-				CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-				minusDaysButton.addClickListener(e -> {
+				Button minusDaysButton = ButtonHelper.createButton(Captions.contactMinusDays, e -> {
 					followUpReferenceDate.setValue(followUpReferenceDate.getValue().minusDays(8));
-				});
+				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+
 				scrollLayout.addComponent(minusDaysButton);
 
 				followUpReferenceDate.addValueChangeListener(e -> {
@@ -757,17 +476,16 @@ public class ContactsView extends AbstractView {
 				});
 				scrollLayout.addComponent(followUpReferenceDate);
 
-				Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
-				CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-				plusDaysButton.addClickListener(e -> {
+				Button plusDaysButton = ButtonHelper.createButton(Captions.contactPlusDays, e -> {
 					followUpReferenceDate.setValue(followUpReferenceDate.getValue().plusDays(8));
-				});
+				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+
 				scrollLayout.addComponent(plusDaysButton);
 
 				actionButtonsLayout.addComponent(scrollLayout);
-
 			}
 		}
+
 		statusFilterLayout.addComponent(actionButtonsLayout);
 		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
@@ -828,31 +546,6 @@ public class ContactsView extends AbstractView {
 		}
 	}
 
-	private void addShowMoreOrLessFiltersButtons(HorizontalLayout parentLayout) {
-		expandFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowMoreFilters), VaadinIcons.CHEVRON_DOWN);
-		CssStyles.style(expandFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		collapseFiltersButton = new Button(I18nProperties.getCaption(Captions.actionShowLessFilters), VaadinIcons.CHEVRON_UP);
-		CssStyles.style(collapseFiltersButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-
-		expandFiltersButton.addClickListener(e -> setFiltersExpanded(true));
-
-		collapseFiltersButton.addClickListener(e -> setFiltersExpanded(false));
-
-		parentLayout.addComponent(expandFiltersButton);
-		parentLayout.addComponent(collapseFiltersButton);
-		parentLayout.setComponentAlignment(expandFiltersButton, Alignment.TOP_LEFT);
-		parentLayout.setComponentAlignment(collapseFiltersButton, Alignment.TOP_LEFT);
-		collapseFiltersButton.setVisible(false);
-	}
-
-	public void setFiltersExpanded(boolean expanded) {
-		expandFiltersButton.setVisible(!expanded);
-		collapseFiltersButton.setVisible(expanded);
-		secondFilterRowLayout.setVisible(expanded);
-		thirdFilterRowLayout.setVisible(expanded);
-		dateFilterRowLayout.setVisible(expanded);
-	}
-
 	public void enter(ViewChangeEvent event) {
 		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {
@@ -860,75 +553,20 @@ public class ContactsView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
-
-		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-			((ContactFollowUpGrid) grid).reload();
-		} else {
-			((ContactGrid) grid).reload();
-		}
 	}
 
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		resetButton.setVisible(criteria.hasAnyFilterActive());
-
 		updateStatusButtons();
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
-		classificationFilter.setValue(criteria.getContactClassification());
-		diseaseFilter.setValue(criteria.getDisease());
-		regionFilter.setValue(criteria.getRegion());
-		districtFilter.setValue(criteria.getDistrict());
-		officerFilter.setValue(criteria.getContactOfficer());
-		followUpStatusFilter.setValue(criteria.getFollowUpStatus());
-		reportedByFilter.setValue(criteria.getReportingUserRole());
-		followUpUntilToFilter.setValue(criteria.getFollowUpUntilTo());
-		onlyHighPriorityContacts.setValue(criteria.getOnlyHighPriorityContacts());
-		onlyQuarantineHelpNeeded.setValue(criteria.getOnlyQuarantineHelpNeeded());
-		quarantineTypeFilter.setValue(criteria.getQuarantineType());
-		if (isGermanServer()) {
-			quarantineOrderedVerballyFilter.setValue(criteria.getQuarantineOrderedVerbally());
-			quarantineOrderedOfficialDocumentFilter.setValue(criteria.getQuarantineOrderedOfficialDocument());
-			quarantineNotOrderedFilter.setValue(criteria.getQuarantineNotOrdered());
-		}
-		quarantineToFilter.setValue(criteria.getQuarantineTo());
-		searchField.setValue(criteria.getNameUuidCaseLike());
-		if (categoryFilter != null) {
-			categoryFilter.setValue(criteria.getContactCategory());
-		}
-		caseClassificationFilter.setValue(criteria.getCaseClassification());
 
-		ContactDateType contactDateType = criteria.getReportDateFrom() != null ? ContactDateType.REPORT_DATE 
-				: criteria.getLastContactDateFrom() != null ? ContactDateType.LAST_CONTACT_DATE : null;
-		weekAndDateFilter.getDateTypeSelector().setValue(contactDateType);
-		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
-		Date dateFrom = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateFrom()
-				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateFrom() : null;
-				Date dateTo = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateTo() 
-						: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateTo() : null;
-						if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
-							weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(dateFrom));
-							weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(dateTo));
-						} else {
-							weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
-							weekAndDateFilter.getDateToFilter().setValue(dateTo);
-						}
+		filterForm.setValue(criteria);
 
-						boolean hasExpandedFilter = FieldHelper.streamFields(secondFilterRowLayout)
-								.anyMatch(f -> !f.isEmpty());
-						hasExpandedFilter |= FieldHelper.streamFields(thirdFilterRowLayout)
-								.anyMatch(f -> !f.isEmpty());
-						hasExpandedFilter |=  FieldHelper.streamFields(dateFilterRowLayout)
-								.filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter())
-								.anyMatch(f -> !f.isEmpty());
-						if (hasExpandedFilter) {
-							setFiltersExpanded(true);
-						}	
-
-						applyingCriteria = false;
+		applyingCriteria = false;
 	}
 
 	private void updateStatusButtons() {
@@ -941,7 +579,7 @@ public class ContactsView extends AbstractView {
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) 
+			activeStatusButton.setCaption(statusButtons.get(activeStatusButton)
 					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
