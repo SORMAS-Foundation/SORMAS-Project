@@ -112,27 +112,6 @@ public class CasesView extends AbstractView {
 	private CaseFilterForm filterForm;
 
 	// Filters
-	private ComboBox caseOriginFilter;
-	private ComboBox outcomeFilter;
-	private ComboBox diseaseFilter;
-	private ComboBox classificationFilter;
-	private TextField searchField;
-	private ComboBox presentConditionFilter;
-	private ComboBox regionFilter;
-	private ComboBox districtFilter;
-	private ComboBox communityFilter;
-	private ComboBox facilityFilter;
-	private ComboBox pointOfEntryFilter;
-	private ComboBox officerFilter;
-	private ComboBox reportedByFilter;
-	private TextField reportingUserFilter;
-	private PopupDateField quarantineToFilter;
-	private CheckBox casesWithoutGeoCoordsFilter;
-	private CheckBox portHealthCasesWithoutFacilityFilter;
-	private CheckBox casesWithCaseManagementData;
-	private CheckBox excludeSharedCases;
-	private CheckBox withoutResponsibleOfficerFilter;
-	private EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter;
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
