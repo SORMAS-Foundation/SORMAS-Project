@@ -561,7 +561,7 @@ public abstract class AbstractEditForm <DTO extends EntityDto> extends CustomFie
 				return true;
 			}
 		} catch (NoSuchFieldException e) {
-			LoggerFactory.getLogger(getClass()).error(e.getMessage(), e);
+			// This exception is fine because it should only happen for UUID fields
 		}
 		return false;
 	}
