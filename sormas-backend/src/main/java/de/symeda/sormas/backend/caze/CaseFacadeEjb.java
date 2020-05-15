@@ -2127,9 +2127,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Contact contact : contacts) {
 			if (cloning) {
 				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
+				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
 				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false);
-
 			} else {
 				// simply move existing entities to the merge target
 				contact.setCaze(leadCase);
