@@ -74,11 +74,10 @@ public final class VaadinUiUtil {
 		Label contentLabel = new Label(contentText);
 		contentLabel.setWidth(100, Unit.PERCENTAGE);
 		popupLayout.addComponent(contentLabel);
-		Button okayButton = new Button(I18nProperties.getCaption(Captions.actionOkay));
-		okayButton.addClickListener(e -> {
+		Button okayButton = ButtonHelper.createButton(Captions.actionOkay, e -> {
 			window.close();
-		});
-		CssStyles.style(okayButton, ValoTheme.BUTTON_PRIMARY);
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		popupLayout.addComponent(okayButton);
 		popupLayout.setComponentAlignment(okayButton, Alignment.BOTTOM_RIGHT);
 

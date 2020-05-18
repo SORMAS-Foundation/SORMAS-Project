@@ -203,10 +203,9 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 				String referredButtonCaption = referredFromLab == null
 						? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " (" +DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
 						: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
-				Button referredButton = new Button(referredButtonCaption);
-				referredButton.addStyleName(ValoTheme.BUTTON_LINK);
-				referredButton.addStyleName(VSPACE_NONE);
-				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));
+				Button referredButton = ButtonHelper.createButtonWithCaption("referredFrom", referredButtonCaption,
+						event -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()), ValoTheme.BUTTON_LINK, VSPACE_NONE);
+
 				reportInfoLayout.addComponent(referredButton);
 			}
 

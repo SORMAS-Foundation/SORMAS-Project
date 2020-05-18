@@ -42,6 +42,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ReportsView extends AbstractView {
@@ -89,6 +90,7 @@ public class ReportsView extends AbstractView {
 		int week = prevEpiWeek.getWeek();
 
 		yearFilter = new ComboBox();
+		yearFilter.setId(Strings.year);
 		yearFilter.setWidth(200, Unit.PIXELS);
 		yearFilter.setNullSelectionAllowed(false);
 		yearFilter.addItems(DateHelper.getYearsToNow());
@@ -102,6 +104,7 @@ public class ReportsView extends AbstractView {
 		filterLayout.addComponent(yearFilter);
 
 		epiWeekFilter = new ComboBox();
+		epiWeekFilter.setId(Strings.epiWeek);
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
 		epiWeekFilter.setNullSelectionAllowed(false);
 		updateEpiWeeks(year, week);
@@ -111,13 +114,13 @@ public class ReportsView extends AbstractView {
 		});
 		filterLayout.addComponent(epiWeekFilter);
 
-		Button lastWeekButton = new Button(String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()));
-		lastWeekButton.addStyleName(CssStyles.FORCE_CAPTION);
-		lastWeekButton.addClickListener(e -> {
-			EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
-			yearFilter.select(epiWeek.getYear());
-			epiWeekFilter.select(epiWeek.getWeek());
-		});
+		Button lastWeekButton = ButtonHelper.createButtonWithCaption(Captions.dashboardLastWeek, String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()),
+				e -> {
+					EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
+					yearFilter.select(epiWeek.getYear());
+					epiWeekFilter.select(epiWeek.getWeek());
+				}, CssStyles.FORCE_CAPTION);
+
 		filterLayout.addComponent(lastWeekButton);
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);

@@ -44,6 +44,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -106,12 +107,11 @@ public class ContactDataView extends AbstractContactView {
 			HorizontalLayout buttonsLayout = new HorizontalLayout();
 			buttonsLayout.setSpacing(true);
 
-			Button chooseCaseButton = new Button(I18nProperties.getCaption(
-					contactDto.getCaze() == null ? Captions.contactChooseSourceCase : Captions.contactChangeCase));
-			CssStyles.style(chooseCaseButton, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_2);
+			Button chooseCaseButton = ButtonHelper.createButton(
+					contactDto.getCaze() == null ? Captions.contactChooseSourceCase : Captions.contactChangeCase, null, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_2);
 			buttonsLayout.addComponent(chooseCaseButton);
-			Button removeCaseButton = new Button(I18nProperties.getCaption(Captions.contactRemoveCase));
-			CssStyles.style(removeCaseButton, ValoTheme.BUTTON_LINK);
+			Button removeCaseButton = ButtonHelper.createButton(Captions.contactRemoveCase, null, ValoTheme.BUTTON_LINK);
+
 			if (contactDto.getCaze() != null) {
 				buttonsLayout.addComponent(removeCaseButton);
 			}

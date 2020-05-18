@@ -383,8 +383,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			cq.multiselect(contact.get(Contact.UUID), contact.get(Contact.CONTACT_CLASSIFICATION),
 					contact.get(Contact.REPORT_LAT), contact.get(Contact.REPORT_LON),
 					contactPersonAddress.get(Location.LATITUDE), contactPersonAddress.get(Location.LONGITUDE),
-					symptoms.get(Symptoms.ONSET_DATE), caze.get(Case.REPORT_DATE), person.get(Person.FIRST_NAME),
-					person.get(Person.LAST_NAME), casePerson.get(Person.FIRST_NAME), casePerson.get(Person.LAST_NAME));
+					symptoms.get(Symptoms.ONSET_DATE), caze.get(Case.REPORT_DATE), contact.get(Contact.REPORT_DATE_TIME),
+					person.get(Person.FIRST_NAME), person.get(Person.LAST_NAME), casePerson.get(Person.FIRST_NAME),
+					casePerson.get(Person.LAST_NAME));
 
 			result = em.createQuery(cq).getResultList();
 			// #1274 Temporarily disabled because it severely impacts the performance of the Dashboard

@@ -7,12 +7,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
-import com.vaadin.v7.ui.AbstractSelect;
-import com.vaadin.v7.ui.AbstractTextField;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.*;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -72,18 +67,20 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			}
 		}
 		else if (Boolean.class.isAssignableFrom(type)) {
-			OptionGroup field = createBooleanField(OptionGroup.class);
-			CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL);
-			return (T) field;
+			fieldType = CheckBox.class.isAssignableFrom(fieldType)
+					? (Class<T>)CheckBox.class
+					: (Class<T>)OptionGroup.class;
+
+			return createBooleanField(fieldType);
 		}
 		else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 			AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 			field.setNullSelectionAllowed(true);
 			return (T) field;
-		} 
+		}
 		else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(editOrCreateUserRight);
-		} 
+		}
 		else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new HealthConditionsForm(editOrCreateUserRight);
 		}
@@ -91,7 +88,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			DateTimeField field = new DateTimeField();
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
-		} 
+		}
 		else if (DateField.class.isAssignableFrom(fieldType)) {
 			DateField field = super.createField(type, DateField.class);
 			field.setDateFormat(DateFormatHelper.getDateFormatPattern());
@@ -101,7 +98,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		}
 		else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new PreviousHospitalizationsField();
-		} 
+		}
 		else if (EpiDataBurialsField.class.isAssignableFrom(fieldType)) {
 			return (T) new EpiDataBurialsField();
 		}
@@ -144,6 +141,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			s.setItemCaption(Boolean.TRUE, I18nProperties.getEnumCaption(YesNoUnknown.YES));
 			s.addItem(Boolean.FALSE);
 			s.setItemCaption(Boolean.FALSE, I18nProperties.getEnumCaption(YesNoUnknown.NO));
+
+			CssStyles.style(s, ValoTheme.OPTIONGROUP_HORIZONTAL);
+
 			return (T) s;
 		} else {
 			return super.createBooleanField(fieldType);
