@@ -732,6 +732,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 										additionalVisitNeeded = true;
 										untilDate = untilDate.plusDays(1);
 									}
+									// if the last visit was cooperative and happened at the last date of contact tracing,
+									// revert the follow-up until date back to the original
+									if (!contact.isOverwriteFollowUpUntil() && lastVisit.getVisitStatus() == VisitStatus.COOPERATIVE
+											&& DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(beginDate.plusDays(followUpDuration))) {
+										additionalVisitNeeded = false;
+										untilDate = beginDate.plusDays(followUpDuration);
+									}
 								}
 							} while (additionalVisitNeeded);
 

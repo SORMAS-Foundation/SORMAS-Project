@@ -213,4 +213,5 @@ public class ContactIndexDto implements Serializable {
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(uuid);
 	}
+	
 }
