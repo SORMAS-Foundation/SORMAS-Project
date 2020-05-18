@@ -82,6 +82,9 @@ public class SampleGridComponent extends VerticalLayout {
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
+		if (criteria.getSampleSearchType() == null) {
+			criteria.sampleSearchType(SampleSearchType.ALL);
+		}
 		grid = new SampleGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -193,6 +196,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 			sampleTypeFilter = new ComboBox();
 			sampleTypeFilter.setWidth(140, Unit.PERCENTAGE);
+			sampleTypeFilter.setId("sampleTypeFilter");
 			sampleTypeFilter.setNullSelectionAllowed(false);
 			sampleTypeFilter.addItems((Object[]) SampleSearchType.values());
 			sampleTypeFilter.setItemCaption(SampleSearchType.ALL, I18nProperties.getEnumCaption(SampleSearchType.ALL));
@@ -237,6 +241,11 @@ public class SampleGridComponent extends VerticalLayout {
 		samplesView.setApplyingCriteria(true);
 
 		updateStatusButtons();
+
+		if (sampleTypeFilter != null) {
+			sampleTypeFilter.setValue(criteria.getSampleSearchType());
+		}
+
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
