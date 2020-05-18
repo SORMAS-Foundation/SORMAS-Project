@@ -546,11 +546,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate,
-			Integer first, Integer max,
-			List<SortProperty> sortProperties) {
+	public List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, int interval,
+														   Integer first, Integer max,
+														   List<SortProperty> sortProperties) {
 		Date end = DateHelper.getEndOfDay(referenceDate);
-		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, 7));
+		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, interval));
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactFollowUpDto> cq = cb.createQuery(ContactFollowUpDto.class);
@@ -608,6 +608,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// TODO: Refactor this to two individual queries (not one query per DTO) after general contact refactoring
 		for (ContactFollowUpDto followUpDto : resultList) {
+			followUpDto.initVisitSize(interval+1);
 			List<Object[]> followUpInfoList = null;
 			CriteriaQuery<Object[]> followUpInfoCq = cb.createQuery(Object[].class);
 			Root<Visit> visitRoot = followUpInfoCq.from(Visit.class);

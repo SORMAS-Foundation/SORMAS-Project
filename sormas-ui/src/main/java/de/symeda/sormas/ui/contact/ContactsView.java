@@ -152,6 +152,13 @@ public class ContactsView extends AbstractView {
 	private CheckBox quarantineOrderedOfficialDocumentFilter;
 	private CheckBox quarantineNotOrderedFilter;
 
+	private int rangeInterval = 14;
+	private boolean fromWasUpdated;
+	private boolean toWasUpdated;
+	private boolean buttonPreviousOrNextClick = false;
+	private Date newToDate;
+
+
 	public ContactsView() {
 		super(VIEW_NAME);
 
@@ -166,8 +173,8 @@ public class ContactsView extends AbstractView {
 
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			criteria.reportDateTo(DateHelper.getEndOfDay(new Date()));
-			criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 7)));
-			grid = new ContactFollowUpGrid(criteria, new Date(), getClass());
+			criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 4)));
+			grid = new ContactFollowUpGrid(criteria, new Date(),rangeInterval, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = ContactsViewType.DETAILED_OVERVIEW.equals(viewConfiguration.getViewType())
@@ -764,39 +771,69 @@ public class ContactsView extends AbstractView {
 				HorizontalLayout scrollLayout = new HorizontalLayout();
 				scrollLayout.setMargin(false);
 
-				DateField followUpReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactFollowUpOverviewReferenceDate), LocalDate.now());
+                DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactToFollowUpOverviewReferenceDate), LocalDate.now());
+                LocalDate fromReferenceLocal = DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()),rangeInterval-1));
+                DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactFromFollowUpOverviewReferenceDate), fromReferenceLocal);
 
-				Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
+                Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
 				CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 				minusDaysButton.addClickListener(e -> {
-					followUpReferenceDate.setValue(followUpReferenceDate.getValue().minusDays(8));
+					rangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+					toWasUpdated = false;
+					fromWasUpdated = false;
+					buttonPreviousOrNextClick = true;
+
+					toReferenceDate.setValue(toReferenceDate.getValue().minusDays(rangeInterval));
+					fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(rangeInterval));
 				});
 				scrollLayout.addComponent(minusDaysButton);
 
-				followUpReferenceDate.addValueChangeListener(e -> {
-					Date newDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+				fromReferenceDate.addValueChangeListener(e -> {
+					Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
 
 					applyingCriteria = true;
+					criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
+					fromWasUpdated = true;
 
-					((ContactFollowUpGrid) grid).setReferenceDate(newDate);
-					criteria.reportDateTo(DateHelper.getEndOfDay(newDate));
-					criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(newDate, 7)));
-
+					if (!buttonPreviousOrNextClick){
+						toWasUpdated = true;
+						rangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDate.getValue()));
+					}
 					applyingCriteria = false;
-
-					((ContactFollowUpGrid) grid).reload();
+					reloadGrid();
 				});
-				scrollLayout.addComponent(followUpReferenceDate);
+				scrollLayout.addComponent(fromReferenceDate);
+
+				toReferenceDate.addValueChangeListener(e -> {
+					newToDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+
+					applyingCriteria = true;
+					criteria.reportDateTo(DateHelper.getEndOfDay(newToDate));
+					toWasUpdated = true;
+
+					if (!buttonPreviousOrNextClick){
+						rangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), newToDate);
+						fromWasUpdated = true;
+					}
+					applyingCriteria = false;
+					reloadGrid();
+				});
+				scrollLayout.addComponent(toReferenceDate);
 
 				Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
 				CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 				plusDaysButton.addClickListener(e -> {
-					followUpReferenceDate.setValue(followUpReferenceDate.getValue().plusDays(8));
+                    rangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+					toWasUpdated = false;
+					fromWasUpdated = false;
+					buttonPreviousOrNextClick = true;
+
+                    fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(rangeInterval));
+					toReferenceDate.setValue(toReferenceDate.getValue().plusDays(rangeInterval));
 				});
 				scrollLayout.addComponent(plusDaysButton);
 
 				actionButtonsLayout.addComponent(scrollLayout);
-
 			}
 		}
 		statusFilterLayout.addComponent(actionButtonsLayout);
@@ -804,6 +841,14 @@ public class ContactsView extends AbstractView {
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return statusFilterLayout;
+	}
+
+	private void reloadGrid(){
+		if (toWasUpdated && fromWasUpdated){
+			((ContactFollowUpGrid) grid).addVisitColumns(newToDate, rangeInterval);
+			((ContactFollowUpGrid) grid).reload();
+			buttonPreviousOrNextClick = false;
+		}
 	}
 
 	private HorizontalLayout createFollowUpLegend() {
@@ -938,7 +983,7 @@ public class ContactsView extends AbstractView {
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
 		Date dateFrom = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateFrom()
 				: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateFrom() : null;
-				Date dateTo = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateTo() 
+				Date dateTo = contactDateType == ContactDateType.REPORT_DATE ? criteria.getReportDateTo()
 						: contactDateType == ContactDateType.LAST_CONTACT_DATE ? criteria.getLastContactDateTo() : null;
 						if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
 							weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(dateFrom));
