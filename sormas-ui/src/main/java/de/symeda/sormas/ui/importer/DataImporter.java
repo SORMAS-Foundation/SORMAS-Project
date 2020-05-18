@@ -130,7 +130,7 @@ public abstract class DataImporter {
 				@Override
 				public void run() {
 					try {
-						currentUI.setPollInterval(50);
+						currentUI.setPollInterval(300);
 
 						ImportResultStatus importResult = runImport();
 
@@ -195,7 +195,7 @@ public abstract class DataImporter {
 								currentUI.setPollInterval(-1);
 							}
 						});
-					} 
+					}
 			}
 		};
 		

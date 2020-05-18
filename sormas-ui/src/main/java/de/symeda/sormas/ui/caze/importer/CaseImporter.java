@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -520,8 +521,7 @@ public class CaseImporter extends DataImporter {
 				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 				component.getCommitButton().setEnabled(false);
 
-				Button skipButton = new Button(I18nProperties.getCaption(Captions.actionSkip));
-				skipButton.addClickListener(e -> {
+				Button skipButton = ButtonHelper.createButton(Captions.actionSkip, e -> {
 					component.removeDiscardListener(discardListener);
 					component.discard();
 					resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));

@@ -89,6 +89,7 @@ import de.symeda.sormas.ui.map.LeafletMapUtil;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.map.MarkerIcon;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -288,12 +289,10 @@ public class DashboardMapComponent extends VerticalLayout {
 		mapHeaderLayout.setExpandRatio(mapLabel, 1);
 
 		// "Expand" and "Collapse" buttons
-		Button expandMapButton = new Button("", VaadinIcons.EXPAND);
-		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
-		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);
-		Button collapseMapButton = new Button("", VaadinIcons.COMPRESS);
-		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
-		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
+		Button expandMapButton = ButtonHelper.createIconButtonWithCaption("expandMap", "", VaadinIcons.EXPAND, null,
+				CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
+		Button collapseMapButton = ButtonHelper.createIconButtonWithCaption("collapseMap", "", VaadinIcons.COMPRESS, null,
+				CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
 
 		expandMapButton.addClickListener(e -> {
 			externalExpandListener.accept(true);
@@ -320,23 +319,19 @@ public class DashboardMapComponent extends VerticalLayout {
 		CssStyles.style(mapFooterLayout, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
 
 		// Map key dropdown button
-		legendDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardMapKey));
-		CssStyles.style(legendDropdown, CssStyles.BUTTON_SUBTLE);
+		legendDropdown = ButtonHelper.createPopupButton(Captions.dashboardMapKey, null, CssStyles.BUTTON_SUBTLE);
 		legendDropdown.setContent(createLegend());
+
 		mapFooterLayout.addComponent(legendDropdown);
 		mapFooterLayout.setComponentAlignment(legendDropdown, Alignment.MIDDLE_RIGHT);
 		mapFooterLayout.setExpandRatio(legendDropdown, 1);
 
 		// Layers dropdown button
-		PopupButton layersDropdown = new PopupButton(I18nProperties.getCaption(Captions.dashboardMapLayers));
+		VerticalLayout layersLayout = new VerticalLayout();
 		{
-			CssStyles.style(layersDropdown, CssStyles.BUTTON_SUBTLE);
-
-			VerticalLayout layersLayout = new VerticalLayout();
 			layersLayout.setMargin(true);
 			layersLayout.setSpacing(false);
 			layersLayout.setSizeUndefined();
-			layersDropdown.setContent(layersLayout);
 
 			// Add check boxes and apply button
 			{
@@ -364,6 +359,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					showCasesLayout.setMargin(false);
 					showCasesLayout.setSpacing(false);
 					CheckBox showCasesCheckBox = new CheckBox();
+					showCasesCheckBox.setId(Captions.dashboardShowCases);
 					showCasesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowCases));
 					showCasesCheckBox.setValue(showCases);
 					showCasesCheckBox.addValueChangeListener(e -> {
@@ -388,9 +384,12 @@ public class DashboardMapComponent extends VerticalLayout {
 				mapCaseDisplayModeSelect.setEnabled(showCases);
 
 				CheckBox showConfirmedContactsCheckBox = new CheckBox();
+				showConfirmedContactsCheckBox.setId(Captions.dashboardShowConfirmedContacts);
 				CheckBox showUnconfirmedContactsCheckBox = new CheckBox();
+				showUnconfirmedContactsCheckBox.setId(Captions.dashboardShowUnconfirmedContacts);
 
 				CheckBox showContactsCheckBox = new CheckBox();
+				showContactsCheckBox.setId(Captions.dashboardShowContacts);
 				showContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowContacts));
 				showContactsCheckBox.setValue(showContacts);
 				showContactsCheckBox.addValueChangeListener(e -> {
@@ -424,6 +423,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				showUnconfirmedContactsCheckBox.setEnabled(showContacts);
 
 				CheckBox showEventsCheckBox = new CheckBox();
+				showEventsCheckBox.setId(Captions.dashboardShowEvents);
 				CssStyles.style(showEventsCheckBox, CssStyles.VSPACE_3);
 				showEventsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowEvents));
 				showEventsCheckBox.setValue(showEvents);
@@ -450,6 +450,7 @@ public class DashboardMapComponent extends VerticalLayout {
 						showRegionsLayout.setMargin(false);
 						showRegionsLayout.setSpacing(false);
 						CheckBox showRegionsCheckBox = new CheckBox();
+						showRegionsCheckBox.setId(Captions.dashboardShowRegions);
 						showRegionsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowRegions));
 						showRegionsCheckBox.setValue(showRegions);
 						showRegionsCheckBox.addValueChangeListener(e -> {
@@ -474,6 +475,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				}
 
 				CheckBox hideOtherCountriesCheckBox = new CheckBox();
+				hideOtherCountriesCheckBox.setId(Captions.dashboardHideOtherCountries);
 				hideOtherCountriesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardHideOtherCountries));
 				hideOtherCountriesCheckBox.setValue(hideOtherCountries);
 				hideOtherCountriesCheckBox.addValueChangeListener(e -> {
@@ -485,6 +487,9 @@ public class DashboardMapComponent extends VerticalLayout {
 				createPeriodFilters(layersLayout);
 			}
 		}
+
+		PopupButton layersDropdown = ButtonHelper.createPopupButton(Captions.dashboardMapLayers, layersLayout, CssStyles.BUTTON_SUBTLE);
+
 		mapFooterLayout.addComponent(layersDropdown);
 		mapFooterLayout.setComponentAlignment(layersDropdown, Alignment.MIDDLE_RIGHT);
 
@@ -501,11 +506,38 @@ public class DashboardMapComponent extends VerticalLayout {
 	
 	private void createPeriodFilters (VerticalLayout layersLayout) {
 		cmbPeriodType = new ComboBox();
+		cmbPeriodType.setId("periodType");
 		cmbPeriodFilter = new ComboBox();
+		cmbPeriodFilter.setId("periodFilter");
 		
-		Button btnBack = new Button(VaadinIcons.CHEVRON_LEFT);
-		Button btnForward = new Button(VaadinIcons.CHEVRON_RIGHT);
-		
+		Button btnBack = ButtonHelper.createIconButtonWithCaption("periodBack", null, VaadinIcons.CHEVRON_LEFT, e -> {
+			Date curDate = (Date) cmbPeriodFilter.getValue();
+			int curDateIndex = ((List<?>)cmbPeriodFilter.getItemIds()).indexOf(curDate);
+
+			if (curDateIndex <= 0)
+				return;
+
+			int prevDateIndex = curDateIndex - 1;
+			Date prevDate = (Date) ((List<?>)cmbPeriodFilter.getItemIds()).get(prevDateIndex);
+
+			cmbPeriodFilter.setValue(prevDate);
+		}, ValoTheme.BUTTON_BORDERLESS);
+		btnBack.setEnabled(false);
+
+		Button btnForward = ButtonHelper.createIconButtonWithCaption("periodForward", null, VaadinIcons.CHEVRON_RIGHT, e -> {
+			Date curDate = (Date) cmbPeriodFilter.getValue();
+			int curDateIndex = ((List<?>)cmbPeriodFilter.getItemIds()).indexOf(curDate);
+
+			if (curDateIndex >= cmbPeriodFilter.size() - 1)
+				return;
+
+			int nextDateIndex = curDateIndex + 1;
+			Date nextDate = (Date) ((List<?>)cmbPeriodFilter.getItemIds()).get(nextDateIndex);
+
+			cmbPeriodFilter.setValue(nextDate);
+		}, ValoTheme.BUTTON_BORDERLESS);
+		btnForward.setEnabled(false);
+
 		cmbPeriodType.addItems(MapPeriodType.values());
 		cmbPeriodType.setInputPrompt(I18nProperties.getString(Strings.promptFilterByPeriod));
 		cmbPeriodType.setWidth(132, Unit.PIXELS);
@@ -565,37 +597,6 @@ public class DashboardMapComponent extends VerticalLayout {
 		cmbPeriodFilter.addItemSetChangeListener(e -> {
 			cmbPeriodFilter.setEnabled(cmbPeriodFilter.size() > 0);
 			btnForward.setEnabled(cmbPeriodFilter.size() > 0);
-		});
-		
-		
-		CssStyles.style(btnBack, ValoTheme.BUTTON_BORDERLESS);
-		btnBack.setEnabled(false);
-		btnBack.addClickListener(e -> {
-			Date curDate = (Date) cmbPeriodFilter.getValue();
-			int curDateIndex = ((List<?>)cmbPeriodFilter.getItemIds()).indexOf(curDate);
-			
-			if (curDateIndex <= 0)
-				return;
-				
-			int prevDateIndex = curDateIndex - 1;
-			Date prevDate = (Date) ((List<?>)cmbPeriodFilter.getItemIds()).get(prevDateIndex);
-			
-			cmbPeriodFilter.setValue(prevDate);
-		});
-		
-		CssStyles.style(btnForward, ValoTheme.BUTTON_BORDERLESS);
-		btnForward.setEnabled(false);
-		btnForward.addClickListener(e -> {
-			Date curDate = (Date) cmbPeriodFilter.getValue();
-			int curDateIndex = ((List<?>)cmbPeriodFilter.getItemIds()).indexOf(curDate);
-			
-			if (curDateIndex >= cmbPeriodFilter.size() - 1)
-				return;
-				
-			int nextDateIndex = curDateIndex + 1;
-			Date nextDate = (Date) ((List<?>)cmbPeriodFilter.getItemIds()).get(nextDateIndex);
-			
-			cmbPeriodFilter.setValue(nextDate);
 		});
 
 		HorizontalLayout periodSelectionLayout = new HorizontalLayout();
@@ -1209,7 +1210,8 @@ public class DashboardMapComponent extends VerticalLayout {
 			if (!showConfirmedContacts && contact.getContactClassification() != ContactClassification.UNCONFIRMED) {
 				continue;
 			}
-			if (dateTo != null && !(contact.getCaseReportDate() == dateTo || contact.getCaseReportDate().before(dateTo) || dateTo.after(contact.getCaseReportDate()))) {
+			Date referenceDate = contact.getCaseReportDate() != null ? contact.getCaseReportDate() : contact.getContactReportDate();
+			if (dateTo != null && !(referenceDate == dateTo || referenceDate.before(dateTo) || dateTo.after(referenceDate))) {
 				continue;
 			}
 
@@ -1263,14 +1265,13 @@ public class DashboardMapComponent extends VerticalLayout {
 	}
 
 	private void showEventMarkers(List<DashboardEventDto> events) {
-
 		clearEventMarkers();
 
 		List<LeafletMarker> eventMarkers = new ArrayList<LeafletMarker>();
 
 		for (DashboardEventDto event : events) {
 			MarkerIcon icon;
-			switch(event.getEventStatus()) {
+			switch (event.getEventStatus()) {
 			case CONFIRMED:
 				icon = MarkerIcon.EVENT_OUTBREAK;
 				break;
@@ -1281,7 +1282,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				continue;
 			}
 			
-			if (dateTo != null && !(event.getEventDate() == dateTo || event.getEventDate().before(dateTo) || dateTo.after(event.getEventDate()))) {
+			if (dateTo != null && event.getEventDate() != null && !(event.getEventDate() == dateTo || event.getEventDate().before(dateTo) || dateTo.after(event.getEventDate()))) {
 				continue;
 			}
 

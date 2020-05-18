@@ -42,6 +42,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -81,18 +82,22 @@ public class LineListingLayout extends VerticalLayout {
 		HorizontalLayout sharedInformationBar = new HorizontalLayout();
 		sharedInformationBar.addStyleName(CssStyles.SPACING_SMALL);
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
+		disease.setId("lineListingDisease");
 		disease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 		sharedInformationBar.addComponent(disease);
 		diseaseDetails = new TextField(
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE_DETAILS));
+		diseaseDetails.setId("lineListingDiseaseDetails");
 		diseaseDetails.setVisible(false);
 		sharedInformationBar.addComponent(diseaseDetails);
 		disease.addValueChangeListener(event -> diseaseDetails.setVisible(Disease.OTHER.equals(disease.getValue())));
 
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
+		region.setId("lineListingRegion");
 		sharedInformationBar.addComponent(region);
 
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
+		district.setId("lineListingDistrict");
 		district.addValueChangeListener(e -> setEpidNumberPrefixes());
 		sharedInformationBar.addComponent(district);
 
@@ -120,7 +125,7 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponentLabel.addStyleName(CssStyles.H3);
 		lineComponent.addComponent(lineComponentLabel);
 
-		CaseLineLayout line = new CaseLineLayout(true, lineComponent);
+		CaseLineLayout line = new CaseLineLayout(lineComponent, 0);
 		line.setBean(new CaseLineDto());
 		caseLines.add(line);
 		lineComponent.addComponent(line);
@@ -137,11 +142,8 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		HorizontalLayout actionBar = new HorizontalLayout();
-		Button addLine = new Button(I18nProperties.getCaption(Captions.lineListingAddLine));
-		addLine.setIcon(VaadinIcons.PLUS);
-		addLine.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		addLine.addClickListener(e -> {
-			CaseLineLayout newLine = new CaseLineLayout(false, lineComponent);
+		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
+			CaseLineLayout newLine = new CaseLineLayout(lineComponent, caseLines.size() + 1);
 			DistrictReferenceDto districtReferenceDto = (DistrictReferenceDto) district.getValue();
 			updateCommunityAndFacility(districtReferenceDto, newLine);
 			CaseLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
@@ -163,7 +165,8 @@ public class LineListingLayout extends VerticalLayout {
 			if (caseLines.size() > 1) {
 				caseLines.get(0).getDelete().setEnabled(true);
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		actionBar.addComponent(addLine);
 		actionBar.setComponentAlignment(addLine, Alignment.MIDDLE_LEFT);
 
@@ -174,17 +177,14 @@ public class LineListingLayout extends VerticalLayout {
 		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		cancelButton = new Button(I18nProperties.getCaption(Captions.actionDiscard));
+		cancelButton = ButtonHelper.createButton(Captions.actionDiscard, event -> closeWindow());
 
-		cancelButton.addClickListener(event -> closeWindow());
 		buttonsPanel.addComponent(cancelButton);
 		buttonsPanel.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(cancelButton, 1);
 
-		saveButton = new Button(I18nProperties.getCaption(Captions.actionSave));
-		saveButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> save(), ValoTheme.BUTTON_PRIMARY);
 
-		saveButton.addClickListener(event -> save());
 		buttonsPanel.addComponent(saveButton);
 		buttonsPanel.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(saveButton, 0);
@@ -354,7 +354,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		private Button delete;
 
-		public CaseLineLayout(boolean firstLine, VerticalLayout lineComponent) {
+		public CaseLineLayout(VerticalLayout lineComponent, int lineIndex) {
 
 			addStyleName(CssStyles.SPACING_SMALL);
 			setMargin(false);
@@ -368,13 +368,16 @@ public class LineListingLayout extends VerticalLayout {
 			binder.forField(district).asRequired().bind(CaseLineDto.DISTRICT);
 
 			dateOfReport = new DateField();
+			dateOfReport.setId("lineListingDateOfReport_" + lineIndex);
 			dateOfReport.setWidth(100, Unit.PIXELS);
 			binder.forField(dateOfReport).asRequired().bind(CaseLineDto.DATE_OF_REPORT);
 			dateOfReport.addValueChangeListener(e -> setEpidNumberPrefix(this, dateOfReport.getValue()));
 			epidNumber = new TextField();
+			epidNumber.setId("lineListingEpidNumber_" + lineIndex);
 			epidNumber.setWidth(160, Unit.PIXELS);
 			binder.forField(epidNumber).bind(CaseLineDto.EPID_NUMBER);
 			community = new ComboBox<>();
+			community.setId("lineListingCommunity_" + lineIndex);
 			community.addStyleName(CssStyles.SOFT_REQUIRED);
 			community.addValueChangeListener(e -> {
 				FieldHelper.removeItems(facility);
@@ -387,12 +390,14 @@ public class LineListingLayout extends VerticalLayout {
 			});
 			binder.forField(community).bind(CaseLineDto.COMMUNITY);
 			facility = new ComboBox<>();
+			facility.setId("lineListingFacility_" + lineIndex);
 			facility.setWidth(364, Unit.PIXELS);
 			facility.addValueChangeListener(e -> {
 				updateFacilityFields(facility, facilityDetails);
 			});
 			binder.forField(facility).asRequired().bind(CaseLineDto.FACILITY);
 			facilityDetails = new TextField();
+			facilityDetails.setId("lineListingFacilityDetails_" + lineIndex);
 			facilityDetails.setVisible(false);
 			updateFacilityFields(facility, facilityDetails);
 			binder.forField(facilityDetails)
@@ -401,17 +406,21 @@ public class LineListingLayout extends VerticalLayout {
 					.bind(CaseLineDto.FACILITIY_DETAILS);
 
 			firstname = new TextField();
+			firstname.setId("lineListingFirstName_" + lineIndex);
 			binder.forField(firstname).asRequired().bind(CaseLineDto.FIRST_NAME);
 			lastname = new TextField();
+			firstname.setId("lineListingLastName_" + lineIndex);
 			binder.forField(lastname).asRequired().bind(CaseLineDto.LAST_NAME);
 
 			dateOfBirthYear = new ComboBox<>();
+			dateOfBirthYear.setId("lineListingDateOfBirthYear_" + lineIndex);
 			dateOfBirthYear.setEmptySelectionAllowed(true);
 			dateOfBirthYear.setItems(DateHelper.getYearsToNow());
 			dateOfBirthYear.setWidth(80, Unit.PIXELS);
 			dateOfBirthYear.addStyleName(CssStyles.CAPTION_OVERFLOW);
 			binder.forField(dateOfBirthYear).bind(CaseLineDto.DATE_OF_BIRTH_YYYY);
 			dateOfBirthMonth = new ComboBox<>();
+			dateOfBirthMonth.setId("lineListingDateOfBirthMonth_" + lineIndex);
 			dateOfBirthMonth.setEmptySelectionAllowed(true);
 			dateOfBirthMonth.setItems(DateHelper.getMonthsInYear());
 			dateOfBirthMonth.setPageLength(12);
@@ -419,6 +428,7 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfBirthMonth.setWidth(120, Unit.PIXELS);
 			binder.forField(dateOfBirthMonth).bind(CaseLineDto.DATE_OF_BIRTH_MM);
 			dateOfBirthDay = new ComboBox<>();
+			dateOfBirthDay.setId("lineListingDateOfBirthDay_" + lineIndex);
 			dateOfBirthDay.setEmptySelectionAllowed(true);
 			dateOfBirthDay.setWidth(80, Unit.PIXELS);
 			binder.forField(dateOfBirthDay).bind(CaseLineDto.DATE_OF_BIRTH_DD);
@@ -432,14 +442,15 @@ public class LineListingLayout extends VerticalLayout {
 			});
 
 			sex = new ComboBox<>();
+			sex.setId("lineListingSex_" + lineIndex);
 			sex.setItems(Sex.values());
 			sex.setWidth(100, Unit.PIXELS);
 			binder.forField(sex).bind(CaseLineDto.SEX);
 			dateOfOnset = new DateField();
+			dateOfOnset.setId("lineListingDateOfOnSet_" + lineIndex);
 			dateOfOnset.setWidth(100, Unit.PIXELS);
 			binder.forField(dateOfOnset).bind(CaseLineDto.DATE_OF_ONSET);
-			delete = new Button(VaadinIcons.TRASH);
-			delete.addClickListener(event -> {
+			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
 				lineComponent.removeComponent(this);
 				caseLines.remove(this);
 				caseLines.get(0).formatAsFirstLine();
@@ -455,7 +466,7 @@ public class LineListingLayout extends VerticalLayout {
 			addComponents(community, facility, facilityDetails, firstname, lastname, dateOfBirthYear, dateOfBirthMonth,
 					dateOfBirthDay, sex, dateOfOnset, delete);
 
-			if (firstLine) {
+			if (lineIndex == 0) {
 				formatAsFirstLine();
 			} else {
 				formatAsOtherLine();

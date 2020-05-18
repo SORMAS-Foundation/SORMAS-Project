@@ -43,23 +43,23 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 
 	private final TaskCriteria taskCriteria = new TaskCriteria();
 	private final TaskContext context;
-	
+
 	public TaskList(TaskContext context, ReferenceDto entityRef) {
 		super(5);
 		this.context = context;
 
 		switch (context) {
-		case CASE:
-			taskCriteria.caze((CaseReferenceDto) entityRef);
-			break;
-		case CONTACT:
-			taskCriteria.contact((ContactReferenceDto) entityRef);
-			break;
-		case EVENT:
-			taskCriteria.event((EventReferenceDto) entityRef);
-			break;
-		default:
-			throw new IndexOutOfBoundsException(context.toString());
+			case CASE:
+				taskCriteria.caze((CaseReferenceDto) entityRef);
+				break;
+			case CONTACT:
+				taskCriteria.contact((ContactReferenceDto) entityRef);
+				break;
+			case EVENT:
+				taskCriteria.event((EventReferenceDto) entityRef);
+				break;
+			default:
+				throw new IndexOutOfBoundsException(context.toString());
 		}
 	}
 
@@ -77,18 +77,16 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 			listLayout.addComponent(noTasksLabel);
 		}
 	}
-	
+
 	@Override
 	protected void drawDisplayedEntries() {
-		for (TaskIndexDto task : getDisplayedEntries()) {
+		List<TaskIndexDto> displayedEntries = getDisplayedEntries();
+
+		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
+			TaskIndexDto task = displayedEntries.get(i);
 			TaskListEntry listEntry = new TaskListEntry(task);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT)) {
-				listEntry.addEditListener(new ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						ControllerProvider.getTaskController().edit(listEntry.getTask(), TaskList.this::reload);		
-					}
-				});
+				listEntry.addEditListener(i, (ClickListener) event -> ControllerProvider.getTaskController().edit(listEntry.getTask(), TaskList.this::reload));
 			}
 			listLayout.addComponent(listEntry);
 		}

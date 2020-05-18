@@ -36,6 +36,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -117,15 +118,11 @@ public class DashboardNetworkComponent extends VerticalLayout {
 //			mapHeaderLayout.setComponentAlignment(diagramLabel, Alignment.BOTTOM_LEFT);
 //			mapHeaderLayout.setExpandRatio(diagramLabel, 1);
 //		}
-		expandMapButton = new Button(I18nProperties.getString(Strings.infoDisplayNetworkDiagram), VaadinIcons.EXPAND);
-		CssStyles.style(expandMapButton, CssStyles.BUTTON_SUBTLE);
-		expandMapButton.addStyleName(CssStyles.VSPACE_NONE);
-		collapseMapButton = new Button("", VaadinIcons.COMPRESS);
-		CssStyles.style(collapseMapButton, CssStyles.BUTTON_SUBTLE);
-		collapseMapButton.addStyleName(CssStyles.VSPACE_NONE);
+		expandMapButton = ButtonHelper.createIconButtonWithCaption(Strings.infoDisplayNetworkDiagram, I18nProperties.getString(Strings.infoDisplayNetworkDiagram), VaadinIcons.EXPAND,
+				e -> expandMap(true), CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
+		collapseMapButton = ButtonHelper.createIconButtonWithCaption("", "", VaadinIcons.COMPRESS,
+				e -> expandMap(false), CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
 
-		expandMapButton.addClickListener(e -> expandMap(true));
-		collapseMapButton.addClickListener(e -> expandMap(false));
 		mapHeaderLayout.addComponent(expandMapButton);
 		mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);
 

@@ -38,6 +38,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
@@ -138,14 +139,16 @@ public class SampleListEntry extends HorizontalLayout {
 		}
 	}
 
-	public void addEditListener(ClickListener editClickListener) {
+	public void addEditListener(int rowIndex, ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = new Button(VaadinIcons.PENCIL);
-			CssStyles.style(editButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+			editButton = ButtonHelper.createIconButtonWithCaption("edit-sample-" + rowIndex, null, VaadinIcons.PENCIL, null,
+					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
 			setExpandRatio(editButton, 0);
 		}
+
 		editButton.addClickListener(editClickListener);
 	}
 
