@@ -33,6 +33,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -61,12 +62,10 @@ public class SampleListComponent extends VerticalLayout {
 		componentHeader.addComponent(tasksHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.sampleNewSample));
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> {
+			createButton = ButtonHelper.createIconButton(Captions.sampleNewSample, VaadinIcons.PLUS_CIRCLE, e -> {
 				ControllerProvider.getSampleController().create(caseRef, () -> SormasUI.refreshView());
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}

@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.MaxLengthValidator;
 import de.symeda.sormas.ui.utils.ValidationConstants;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.vaadin.icons.VaadinIcons;

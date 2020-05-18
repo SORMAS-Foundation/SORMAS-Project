@@ -91,6 +91,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.PersonalDataFieldVisi
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -202,19 +203,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS, CaseDataDto.CLINICIAN_NAME,
 				CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
 
-		// Button to automatically assign a new epid number
-		Button assignNewEpidNumberButton = new Button(I18nProperties.getCaption(Captions.actionAssignNewEpidNumber));
-		style(assignNewEpidNumberButton, ValoTheme.BUTTON_DANGER, FORCE_CAPTION);
-		getContent().addComponent(assignNewEpidNumberButton, ASSIGN_NEW_EPID_NUMBER_LOC);
-		assignNewEpidNumberButton.setVisible(false);
-
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
 		style(epidField, ERROR_COLOR_PRIMARY);
 
-		assignNewEpidNumberButton.addClickListener(e -> {
+		// Button to automatically assign a new epid number
+		Button assignNewEpidNumberButton = ButtonHelper.createButton(Captions.actionAssignNewEpidNumber, e -> {
 			epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue().toReference()));
-		});
+		}, ValoTheme.BUTTON_DANGER, FORCE_CAPTION);
+
+		getContent().addComponent(assignNewEpidNumberButton, ASSIGN_NEW_EPID_NUMBER_LOC);
+		assignNewEpidNumberButton.setVisible(false);
 
 		Label epidNumberWarningLabel = new Label(I18nProperties.getString(Strings.messageEpidNumberWarning));
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
@@ -450,11 +449,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade()
 				.getByDisease(disease);
 		if (disease != Disease.OTHER && diseaseClassificationCriteria != null) {
-			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.info), VaadinIcons.INFO_CIRCLE);
-			style(classificationRulesButton, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
-			classificationRulesButton.addClickListener(e -> {
+			Button classificationRulesButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
 				ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria);
-			});
+			}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 
 			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 		}

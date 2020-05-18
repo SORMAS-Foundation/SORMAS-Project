@@ -375,9 +375,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	@Transactional(value = TxType.REQUIRES_NEW)
 	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage) {
-		Boolean previousCaseManagementDataCriteria = caseCriteria.isMustHaveCaseManagementData();
+		Boolean previousCaseManagementDataCriteria = caseCriteria.getMustHaveCaseManagementData();
 		if (CaseExportType.CASE_MANAGEMENT == exportType) {
-			caseCriteria.mustHaveCaseManagementData(Boolean.TRUE);
+			caseCriteria.setMustHaveCaseManagementData(Boolean.TRUE);
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -666,7 +666,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		}
 
-		caseCriteria.mustHaveCaseManagementData(previousCaseManagementDataCriteria);
+		caseCriteria.setMustHaveCaseManagementData(previousCaseManagementDataCriteria);
 
 		return resultList;
 	}
@@ -2127,9 +2127,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		for (Contact contact : contacts) {
 			if (cloning) {
 				ContactDto newContact = ContactDto.build(leadCase.toReference(), leadCase.getDisease(), leadCase.getDiseaseDetails());
+				newContact.setPerson(new PersonReferenceDto(contact.getPerson().getUuid()));
 				fillDto(newContact, ContactFacadeEjb.toDto(contact), cloning);
 				contactFacade.saveContact(newContact, false);
-
 			} else {
 				// simply move existing entities to the merge target
 				contact.setCaze(leadCase);

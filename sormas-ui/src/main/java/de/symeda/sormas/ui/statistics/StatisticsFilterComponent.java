@@ -39,25 +39,27 @@ public class StatisticsFilterComponent extends VerticalLayout {
 	private StatisticsCaseSubAttribute selectedSubAttribute;
 	private StatisticsFilterElement filterElement;
 
-	public StatisticsFilterComponent() {
+	public StatisticsFilterComponent(int rowIndex) {
 		setSpacing(true);
 		setMargin(false);
 
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 
-		addComponent(createFilterAttributeElement());
+		addComponent(createFilterAttributeElement(rowIndex));
 	}
 
-	private HorizontalLayout createFilterAttributeElement() {
+	private HorizontalLayout createFilterAttributeElement(int rowIndex) {
 		HorizontalLayout filterAttributeLayout = new HorizontalLayout();
 		filterAttributeLayout.setSpacing(true);
 		filterAttributeLayout.setWidth(100, Unit.PERCENTAGE);
 
 		MenuBar filterAttributeDropdown = new MenuBar();
+		filterAttributeDropdown.setId(Captions.statisticsAttribute + "-" + rowIndex);
 		filterAttributeDropdown.setCaption(I18nProperties.getCaption(Captions.statisticsAttribute));
 		MenuItem filterAttributeItem = filterAttributeDropdown.addItem(I18nProperties.getCaption(Captions.statisticsAttributeSelect), null);
 		MenuBar filterSubAttributeDropdown = new MenuBar();
+		filterSubAttributeDropdown.setId(Captions.statisticsAttributeSpecification + "-" + rowIndex);
 		filterSubAttributeDropdown.setCaption(I18nProperties.getCaption(Captions.statisticsAttributeSpecification));
 		MenuItem filterSubAttributeItem = filterSubAttributeDropdown.addItem(SPECIFY_YOUR_SELECTION, null);
 
@@ -96,7 +98,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 									}
 									selectedSubItem.setStyleName("selected-filter");
 									
-									updateFilterElement();
+									updateFilterElement(rowIndex);
 								};
 
 								filterSubAttributeItem.addItem(subAttribute.toString(), subAttributeCommand);
@@ -113,7 +115,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 					} else {
 						filterAttributeLayout.removeComponent(filterSubAttributeDropdown);
 					}
-					updateFilterElement();
+					updateFilterElement(rowIndex);
 				};
 
 				filterAttributeItem.addItem(attribute.toString(), attributeCommand);
@@ -125,7 +127,7 @@ public class StatisticsFilterComponent extends VerticalLayout {
 		return filterAttributeLayout;
 	}
 
-	private void updateFilterElement() {
+	private void updateFilterElement(int rowIndex) {
 		
 		if (filterElement != null) {
 			removeComponent(filterElement);
@@ -133,14 +135,14 @@ public class StatisticsFilterComponent extends VerticalLayout {
 		}
 		
 		if (selectedSubAttribute == StatisticsCaseSubAttribute.DATE_RANGE) {
-			filterElement = new StatisticsFilterDateRangeElement();
+			filterElement = new StatisticsFilterDateRangeElement(rowIndex);
 		} else if (selectedAttribute == StatisticsCaseAttribute.REGION_DISTRICT) {
-			filterElement = new StatisticsFilterRegionDistrictElement();
+			filterElement = new StatisticsFilterRegionDistrictElement(rowIndex);
 		} else if (selectedAttribute.getSubAttributes().length == 0 
 				|| selectedSubAttribute != null) {
 			filterElement = new StatisticsFilterValuesElement(
 					selectedAttribute.toString() + (selectedSubAttribute != null ? " (" + selectedSubAttribute.toString() + ")" : ""), 
-					selectedAttribute, selectedSubAttribute);
+					selectedAttribute, selectedSubAttribute, rowIndex);
 		}
 
 		if (filterElement != null) {

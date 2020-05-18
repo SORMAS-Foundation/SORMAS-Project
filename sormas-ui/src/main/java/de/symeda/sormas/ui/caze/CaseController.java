@@ -90,6 +90,7 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -664,17 +665,13 @@ public class CaseController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
 			boolean archived = FacadeProvider.getCaseFacade().isArchived(caze.getUuid());
-			Button archiveCaseButton = new Button();
-			archiveCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
-			if (archived) {
-				archiveCaseButton.setCaption(I18nProperties.getCaption(Captions.actionDearchive));
-			} else {
-				archiveCaseButton.setCaption(I18nProperties.getCaption(Captions.actionArchive));
-			}
-			archiveCaseButton.addClickListener(e -> {
-				editView.commit();
-				archiveOrDearchiveCase(caze.getUuid(), !archived);
-			});
+			Button archiveCaseButton = ButtonHelper.createButton(
+					archived ? Captions.actionDearchive : Captions.actionArchive,
+					e -> {
+						editView.commit();
+						archiveOrDearchiveCase(caze.getUuid(), !archived);
+					},
+					ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveCaseButton);
 			editView.getButtonsPanel().setComponentAlignment(archiveCaseButton, Alignment.BOTTOM_LEFT);
@@ -682,9 +679,7 @@ public class CaseController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE)
 				&& caze.isUnreferredPortHealthCase()) {
-			Button btnReferToFacility = new Button();
-			btnReferToFacility.setCaption(I18nProperties.getCaption(Captions.caseReferToFacility));
-			btnReferToFacility.addClickListener(e -> {
+			Button btnReferToFacility = ButtonHelper.createButton(Captions.caseReferToFacility, e -> {
 				editView.commit();
 				CaseDataDto caseDto = findCase(caze.getUuid());
 				referFromPointOfEntry(caseDto);
@@ -861,10 +856,10 @@ public class CaseController {
 			}
 		});
 
-		Button btnCancel = new Button(I18nProperties.getCaption(Captions.actionCancel));
-		btnCancel.addClickListener(e -> {
+		Button btnCancel = ButtonHelper.createButton(Captions.actionCancel, e -> {
 			window.close();
 		});
+
 		view.getButtonsPanel().replaceComponent(view.getDiscardButton(), btnCancel);
 	}
 

@@ -75,6 +75,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -472,70 +473,57 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
         addListenerForOnsetFields(onsetSymptom, onsetDateField);
 
-        Button clearAllButton = new Button(I18nProperties.getCaption(Captions.actionClearAll));
-        clearAllButton.addStyleName(ValoTheme.BUTTON_LINK);
+        Button clearAllButton = ButtonHelper.createButton(Captions.actionClearAll, event -> {
+			for (Object symptomId : unconditionalSymptomFieldIds) {
+				getFieldGroup().getField(symptomId).setValue(null);
+			}
+			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
+				getFieldGroup().getField(symptomId).setValue(null);
+			}
+			for (Object symptomId : lesionsFieldIds) {
+				getFieldGroup().getField(symptomId).setValue(null);
+			}
+			for (Object symptomId : lesionsLocationFieldIds) {
+				getFieldGroup().getField(symptomId).setValue(null);
+			}
+			for (Object symptomId : monkeypoxImageFieldIds) {
+				getFieldGroup().getField(symptomId).setValue(null);
+			}
+		}, ValoTheme.BUTTON_LINK);
 
-        clearAllButton.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                for (Object symptomId : unconditionalSymptomFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-                for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-                for (Object symptomId : lesionsFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-                for (Object symptomId : lesionsLocationFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-                for (Object symptomId : monkeypoxImageFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-            }
-        });
+        Button setEmptyToNoButton = ButtonHelper.createButton(Captions.symptomsSetClearedToNo, event -> {
+			for (Object symptomId : unconditionalSymptomFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(SymptomState.NO);
+				}
+			}
+			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(SymptomState.NO);
+				}
+			}
+			for (Object symptomId : lesionsFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(SymptomState.NO);
+				}
+			}
+			for (Object symptomId : monkeypoxImageFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(SymptomState.NO);
+				}
+			}
+		}, ValoTheme.BUTTON_LINK);
 
-        Button setEmptyToNoButton = new Button(I18nProperties.getCaption(Captions.symptomsSetClearedToNo));
-        setEmptyToNoButton.addStyleName(ValoTheme.BUTTON_LINK);
-
-        setEmptyToNoButton.addClickListener(new ClickListener() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public void buttonClick(ClickEvent event) {
-                for (Object symptomId : unconditionalSymptomFieldIds) {
-                    Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-                    if (symptom.isVisible() && symptom.getValue() == null) {
-                        symptom.setValue(SymptomState.NO);
-                    }
-                }
-                for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-                    Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-                    if (symptom.isVisible() && symptom.getValue() == null) {
-                        symptom.setValue(SymptomState.NO);
-                    }
-                }
-                for (Object symptomId : lesionsFieldIds) {
-                    Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-                    if (symptom.isVisible() && symptom.getValue() == null) {
-                        symptom.setValue(SymptomState.NO);
-                    }
-                }
-                for (Object symptomId : monkeypoxImageFieldIds) {
-                    Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-                    if (symptom.isVisible() && symptom.getValue() == null) {
-                        symptom.setValue(SymptomState.NO);
-                    }
-                }
-            }
-        });
-
-        // Complications heading - not displayed for Rubella (dirty, should be made generic)
-        Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
-        CssStyles.style(complicationsHeading, CssStyles.H3);
-        if (disease != Disease.CONGENITAL_RUBELLA) {
-            getContent().addComponent(complicationsHeading, COMPLICATIONS_HEADING);
-        }
+		// Complications heading - not displayed for Rubella (dirty, should be made generic)
+		Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
+		CssStyles.style(complicationsHeading, CssStyles.H3);
+		if (disease != Disease.CONGENITAL_RUBELLA) {
+			getContent().addComponent(complicationsHeading, COMPLICATIONS_HEADING);
+		}
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.addComponent(clearAllButton);

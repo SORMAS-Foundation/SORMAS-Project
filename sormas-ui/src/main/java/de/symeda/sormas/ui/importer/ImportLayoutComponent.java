@@ -8,6 +8,7 @@ import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ImportLayoutComponent extends VerticalLayout {
@@ -28,8 +29,8 @@ public class ImportLayoutComponent extends VerticalLayout {
 		addComponent(infoTextLabel);
 
 		if (buttonCaption != null) {
-			button = new Button(buttonCaption, buttonIcon);
-			CssStyles.style(button, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
+			button = ButtonHelper.createIconButtonWithCaption("import-step-" + step, buttonCaption, buttonIcon, null, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
+
 			addComponent(button);
 		}
 	}

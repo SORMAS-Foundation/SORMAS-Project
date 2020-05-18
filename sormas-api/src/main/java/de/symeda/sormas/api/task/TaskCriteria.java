@@ -49,13 +49,17 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private Date statusChangeDateTo;
 	private EntityRelevanceStatus relevanceStatus;
 
-	public TaskCriteria taskStatus(TaskStatus taskStatus) {
-		this.taskStatus = taskStatus;
-		return this;
-	}
-	
 	public TaskStatus getTaskStatus() {
 		return taskStatus;
+	}
+
+	public void setTaskStatus(TaskStatus taskStatus) {
+		this.taskStatus = taskStatus;
+	}
+
+	public TaskCriteria taskStatus(TaskStatus taskStatus) {
+		setTaskStatus(taskStatus);
+		return this;
 	}
 
 	public TaskCriteria taskType(TaskType taskType) {
