@@ -43,18 +43,10 @@ public final class ContactLogic {
 	}
 	
 	public static Date getStartDate(Date lastContactDate, Date reportDate) {
-		if (lastContactDate != null) {
-			return lastContactDate;
-		} else {
-			return reportDate;
-		}
+		return lastContactDate != null ? lastContactDate : reportDate;
 	}
 	
 	public static Date getEndDate(Date lastContactDate, Date reportDate, Date followUpUntil) {
-		if (followUpUntil != null) {
-			return followUpUntil;
-		} else {
-			return getStartDate(lastContactDate, reportDate);
-		}
+		return followUpUntil != null ? followUpUntil : lastContactDate != null ? lastContactDate : reportDate;
 	}
 }

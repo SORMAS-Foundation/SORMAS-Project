@@ -47,7 +47,7 @@ public class EntityId {
 	/**
 	 * Returns the object ID to differentiate various entity types and instances of the same entity type.
 	 * <p/>
-	 * Uses {@link #getClass()} and {@link #getId()} in the default mode.
+	 * Uses {@link #getClass()} and {@link #getUuid()} in the default mode.
 	 * @return
 	 */
 	public static EntityId getOidFromHasUuid(HasUuid hasUuid) {

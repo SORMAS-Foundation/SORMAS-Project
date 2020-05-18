@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.visit;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class VisitSummaryExportDto implements Serializable {
     private String lastName;
     private Date lastContactDate;
     private Date followUpUntil;
-    private List<VisitSummaryExportDetailsDto> visitDetails;
+    private List<VisitSummaryExportDetailsDto> visitDetails = new ArrayList<>();
 
     public VisitSummaryExportDto(String uuid, Long contactId, String firstName, String lastName, Date lastContactDate, Date followUpUntil) {
         this.uuid = uuid;

@@ -373,26 +373,28 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (!exportContacts.isEmpty()) {
 			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
 
-			CriteriaQuery<VisitSummaryExportDetails> visitsSq = cb.createQuery(VisitSummaryExportDetails.class);
-			Root<Contact> visitsSqRoot = visitsSq.from(Contact.class);
-			Join<Contact, Visit> visitsJoin = visitsSqRoot.join(Contact.VISITS, JoinType.LEFT);
+			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
+			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
+			Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
 			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-			visitsSq.where(ContactService.and(cb,
+			visitsCq.where(ContactService.and(cb,
 					contact.get(AbstractDomainObject.ID).in(exportContactIds),
-					cb.isNotEmpty(visitsSqRoot.get(Contact.VISITS)))
+					cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)))
 					);
-			visitsSq.multiselect(
-					visitsSqRoot.get(AbstractDomainObject.ID),
+			visitsCq.multiselect(
+					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
 					visitsJoin.get(Visit.VISIT_STATUS),
 					visitSymptomsJoin
 					);
 
-			List<VisitSummaryExportDetails> contactVisits = em.createQuery(visitsSq).getResultList();
+			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
 
+			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
+			// doesn't seem to be possible and using a native query is not an option because of user filters
 			for (ContactExportDto exportContact : exportContacts) {
-				List<VisitSummaryExportDetails> visits = contactVisits.stream().filter(v -> v.getContactId() == exportContact.getId()).collect(Collectors.toList());
+				List<VisitSummaryExportDetails> visits = visitSummaries.stream().filter(v -> v.getContactId() == exportContact.getId()).collect(Collectors.toList());
 
 				VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
 						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
@@ -433,39 +435,35 @@ public class ContactFacadeEjb implements ContactFacade {
 				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
-		List<VisitSummaryExportDto> exportVisits = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<VisitSummaryExportDto> visitSummaries = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		if (!exportVisits.isEmpty()) {
-			List<String> exportVisitUuids = exportVisits.stream().map(e -> e.getUuid()).collect(Collectors.toList());
+		if (!visitSummaries.isEmpty()) {
+			List<String> visitSummaryUuids = visitSummaries.stream().map(e -> e.getUuid()).collect(Collectors.toList());
 
-			CriteriaQuery<VisitSummaryExportDetails> visitsSq = cb.createQuery(VisitSummaryExportDetails.class);
-			Root<Contact> visitsSqRoot = visitsSq.from(Contact.class);
-			Join<Contact, Visit> visitsJoin = visitsSqRoot.join(Contact.VISITS, JoinType.LEFT);
+			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
+			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
+			Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
 			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-			visitsSq.where(ContactService.and(cb,
-					contactRoot.get(AbstractDomainObject.UUID).in(exportVisitUuids),
-					cb.isNotEmpty(visitsSqRoot.get(Contact.VISITS)))
+			visitsCq.where(ContactService.and(cb,
+					contactRoot.get(AbstractDomainObject.UUID).in(visitSummaryUuids),
+					cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)))
 					);
-			visitsSq.multiselect(
-					visitsSqRoot.get(AbstractDomainObject.ID),
+			visitsCq.multiselect(
+					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
 					visitsJoin.get(Visit.VISIT_STATUS),
 					visitSymptomsJoin
 					);
-			visitsSq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
+			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
 
-			List<VisitSummaryExportDetails> contactVisits = em.createQuery(visitsSq).getResultList();
-
-			for (VisitSummaryExportDto exportVisit : exportVisits) {
-				exportVisit.setVisitDetails(contactVisits.stream()
-						.filter(v -> v.getContactId().equals(exportVisit.getContactId()))
-						.map(v -> new VisitSummaryExportDetailsDto(v.getVisitDateTime(), v.getVisitStatus(), v.getSymptoms().toHumanString(true, userLanguage)))
-						.collect(Collectors.toList()));
-			}
+			List<VisitSummaryExportDetails> visitSummaryDetails = em.createQuery(visitsCq).getResultList();
+			
+			Map<Long, VisitSummaryExportDto> visitSummaryMap = visitSummaries.stream().collect(Collectors.toMap(VisitSummaryExportDto::getContactId, Function.identity()));
+			visitSummaryDetails.stream().forEach(v -> visitSummaryMap.get(v.getContactId()).getVisitDetails().add(new VisitSummaryExportDetailsDto(v.getVisitDateTime(), v.getVisitStatus(), v.getSymptoms().toHumanString(true, userLanguage))));
 		}
-
-		return exportVisits;
+		
+		return visitSummaries;
 	}
 
 	@Override
@@ -592,15 +590,12 @@ public class ContactFacadeEjb implements ContactFacade {
 			
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			
-			for (ContactFollowUpDto followUpDto : resultList) {
-				List<Object[]> contactVisits = visits.stream().filter(v -> followUpDto.getUuid().equals((String) v[0])).collect(Collectors.toList());
-				
-				for (Object[] contactVisit : contactVisits) {
-					int day = DateHelper.getDaysBetween(start, (Date) contactVisit[1]);
-					VisitResult result = getVisitResult((VisitStatus) contactVisit[2], (boolean) contactVisit[3]);
-					followUpDto.getVisitResults()[day - 1] = result;
-				}
-			}
+			Map<String, ContactFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(ContactFollowUpDto::getUuid, Function.identity()));
+			visits.stream().forEach(v -> {
+				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
+				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
+				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
+			});
 		}
 		
 		return resultList;

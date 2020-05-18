@@ -494,22 +494,22 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			if (!dashboardContacts.isEmpty()) {
 				List<Long> dashboardContactIds = dashboardContacts.stream().map(d -> d.getId()).collect(Collectors.toList());
 
-				CriteriaQuery<DashboardVisit> visitsSq = cb.createQuery(DashboardVisit.class);
-				Root<Contact> visitsSqRoot = visitsSq.from(getElementClass());
-				Join<Contact, Visit> visitsJoin = visitsSqRoot.join(Contact.VISITS, JoinType.LEFT);
+				CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
+				Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
+				Join<Contact, Visit> visitsJoin = visitsCqRoot.join(Contact.VISITS, JoinType.LEFT);
 				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-				visitsSq.where(and(cb,
+				visitsCq.where(and(cb,
 						contact.get(AbstractDomainObject.ID).in(dashboardContactIds),
-						cb.isNotEmpty(visitsSqRoot.get(Contact.VISITS)))
+						cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)))
 						);
-				visitsSq.multiselect(
-						visitsSqRoot.get(AbstractDomainObject.ID),
+				visitsCq.multiselect(
+						visitsCqRoot.get(AbstractDomainObject.ID),
 						visitSymptomsJoin.get(Symptoms.SYMPTOMATIC),
 						visitsJoin.get(Visit.VISIT_STATUS),
 						visitsJoin.get(Visit.VISIT_DATE_TIME));
 
-				List<DashboardVisit> contactVisits = em.createQuery(visitsSq).getResultList();
+				List<DashboardVisit> contactVisits = em.createQuery(visitsCq).getResultList();
 
 				// Add visit information to the DashboardContactDtos
 				for (DashboardContactDto dashboardContact : dashboardContacts) {

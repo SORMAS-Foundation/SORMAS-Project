@@ -260,6 +260,20 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	public long count(VisitCriteria visitCriteria) {
+		if (visitCriteria == null || visitCriteria.getContact() == null) {
+			return 0L; // Retrieving a list count independent of a contact is not possible
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Visit> root = cq.from(Visit.class);
+		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, root));
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
 	@Transactional(value = Transactional.TxType.REQUIRES_NEW)
 	public List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria,
 			VisitExportType exportType, int first, int max,

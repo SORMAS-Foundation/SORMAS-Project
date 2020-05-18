@@ -45,6 +45,8 @@ public interface VisitFacade {
 	void deleteVisit(String visitUuid);
 	
 	List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	
+	long count(VisitCriteria visitCriteria);
 
 	List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria, VisitExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration);
 	
