@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -90,6 +89,7 @@ import de.symeda.sormas.ui.map.LeafletMapUtil;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.map.MarkerIcon;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -1265,14 +1265,13 @@ public class DashboardMapComponent extends VerticalLayout {
 	}
 
 	private void showEventMarkers(List<DashboardEventDto> events) {
-
 		clearEventMarkers();
 
 		List<LeafletMarker> eventMarkers = new ArrayList<LeafletMarker>();
 
 		for (DashboardEventDto event : events) {
 			MarkerIcon icon;
-			switch(event.getEventStatus()) {
+			switch (event.getEventStatus()) {
 			case CONFIRMED:
 				icon = MarkerIcon.EVENT_OUTBREAK;
 				break;
@@ -1283,7 +1282,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				continue;
 			}
 			
-			if (dateTo != null && !(event.getEventDate() == dateTo || event.getEventDate().before(dateTo) || dateTo.after(event.getEventDate()))) {
+			if (dateTo != null && event.getEventDate() != null && !(event.getEventDate() == dateTo || event.getEventDate().before(dateTo) || dateTo.after(event.getEventDate()))) {
 				continue;
 			}
 

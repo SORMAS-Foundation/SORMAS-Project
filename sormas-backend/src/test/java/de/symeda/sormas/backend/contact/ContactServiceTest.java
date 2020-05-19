@@ -3,25 +3,36 @@ package de.symeda.sormas.backend.contact;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.util.DateHelper8;
 
 public class ContactServiceTest extends AbstractBeanTest {
 
@@ -129,29 +140,42 @@ public class ContactServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateFollowUpUntilAndStatus() throws Exception {
-		UserDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR);
-		Date today = DateHelper.getStartOfDay(new Date());
-		PersonDto person = creator.createPerson();
-		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), DateHelper.subtractDays(today, 22));
-		
-		// Changing the disease to one without follow-up should remove the follow-up until date and change the status
-		contact.setDisease(Disease.GUINEA_WORM);
-		contact = getContactFacade().saveContact(contact); // updateFollowUpUntilAndStatus is automatically called in onContactChanged during the save process
-		assertNull(contact.getFollowUpUntil());
-		assertThat(contact.getFollowUpStatus(), is(FollowUpStatus.NO_FOLLOW_UP));
+	public void testUpdateFollowUpUntilAndStatus() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
+				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
-		// Adding an uncooperative visit on the last day of follow-up should prolong the follow-up
-		creator.createVisit(Disease.EVD, person.toReference(), DateHelper.subtractDays(today, 1), VisitStatus.UNCOOPERATIVE);
-		contact.setDisease(Disease.EVD);
-		contact = getContactFacade().saveContact(contact);
-		assertThat(DateHelper.getStartOfDay(contact.getFollowUpUntil()), is(today));
-		assertThat(contact.getFollowUpStatus(), is(FollowUpStatus.FOLLOW_UP));
-		
-		// Adding a cooperative visit on the last day of follow-up should complete the follow-up
-		creator.createVisit(Disease.EVD, person.toReference(), today, VisitStatus.COOPERATIVE);
+		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), DateUtils.addDays(new Date(), 21), VisitStatus.UNAVAILABLE);
+
+		// Follow-up until should be increased by one day
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
-		assertThat(contact.getFollowUpStatus(), is(FollowUpStatus.COMPLETED));
+		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21 + 1), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+
+		visit.setVisitStatus(VisitStatus.COOPERATIVE);
+		visit = getVisitFacade().saveVisit(visit);
+
+		// Follow-up until should be back at the original date and follow-up should be completed
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertEquals(FollowUpStatus.COMPLETED, contact.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
+		
+		PersonDto person2 = creator.createPerson();
+		ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
+		contact2.setContactStatus(ContactStatus.CONVERTED);
+		contact2 = getContactFacade().saveContact(contact2);
+		
+		// Follow-up should be canceled when contact is converted to a case and should have a generated follow-up comment
+		assertThat(contact2.getFollowUpStatus(), is(FollowUpStatus.CANCELED));
+		assertNotNull(contact2.getFollowUpComment());
 	}
 
 }
