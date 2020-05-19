@@ -137,6 +137,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		caseDataDto.setReportingUser(user.toReference());
 		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);
 
+		getCaseFacade().setSampleAssociations(contact.toReference(), caseConvertedFromContact.toReference());
+
 		final SampleCriteria samplesConnectedToConvertedCaseCriteria = new SampleCriteria().caze(caseConvertedFromContact.toReference());
 		assertEquals(2, getSampleFacade().count(samplesConnectedToConvertedCaseCriteria));
 
