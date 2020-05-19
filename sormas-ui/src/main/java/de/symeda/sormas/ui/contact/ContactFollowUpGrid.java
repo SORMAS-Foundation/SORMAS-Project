@@ -36,13 +36,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		super(ContactFollowUpDto.class);
 		setSizeFull();
 		
-		setDataProvider(referenceDate, interval-1);
-		setCriteria(criteria);
-
 		setColumns(ContactFollowUpDto.UUID, ContactFollowUpDto.PERSON, ContactFollowUpDto.CONTACT_OFFICER,
 				ContactFollowUpDto.LAST_CONTACT_DATE, ContactFollowUpDto.REPORT_DATE_TIME, ContactFollowUpDto.FOLLOW_UP_UNTIL);
 
-		addVisitColumns(referenceDate, interval);
+		addVisitColumns(referenceDate, interval, criteria);
 
 		((Column<ContactFollowUpDto, String>) getColumn(ContactFollowUpDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
@@ -62,9 +59,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		});
 	}
 
-	public void addVisitColumns(Date referenceDate, int interval) {
+	public void addVisitColumns(Date referenceDate, int interval, ContactCriteria criteria) {
 
 		setDataProvider(referenceDate, interval-1);
+		setCriteria(criteria);
 		dates.forEach(date -> removeColumn(DateFormatHelper.formatDate(date)));
 
 		setDates(referenceDate, interval);
