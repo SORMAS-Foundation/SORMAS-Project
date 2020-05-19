@@ -86,7 +86,6 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactVisitsExportDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -112,6 +111,7 @@ import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
+import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
 
 public final class DownloadUtil {
@@ -442,7 +442,7 @@ public final class DownloadUtil {
 		}
 	}
 
-	public static StreamResource createContactVisitsExport(ContactCriteria contactCriteria,
+	public static StreamResource createVisitsExportStreamResource(ContactCriteria contactCriteria,
 														   final String exportFileName) {
 		StreamResource extendedStreamResource = new StreamResource(() -> new DelayedInputStream((out) -> {
 			try (CSVWriter writer = CSVUtils.createCSVWriter(
@@ -458,8 +458,7 @@ public final class DownloadUtil {
 				dayColumns.add("");
 				dayColumns.add("");
 
-				final long maximumFollowUps =
-						FacadeProvider.getContactFacade().countMaximumFollowUps(contactCriteria);
+				final long maximumFollowUps = FacadeProvider.getContactFacade().countMaximumFollowUpDays(contactCriteria);
 
 				for (int index = 0; index < maximumFollowUps; index++) {
 					columnNames.add(I18nProperties.getPrefixCaption(VisitDto.I18N_PREFIX, VisitDto.VISIT_DATE_TIME));
@@ -476,12 +475,12 @@ public final class DownloadUtil {
 				writer.writeNext(dayColumns.toArray(new String[columnNames.size()]));
 
 				int startIndex = 0;
-				List<ContactVisitsExportDto> exportRows =
-						FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria, 0,
+				List<VisitSummaryExportDto> exportRows =
+						FacadeProvider.getContactFacade().getVisitSummaryExportList(contactCriteria, 0,
 								DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				while (!exportRows.isEmpty()) {
 
-					for (ContactVisitsExportDto exportRow : exportRows) {
+					for (VisitSummaryExportDto exportRow : exportRows) {
 						final List<String> values = new ArrayList<>();
 						values.add(exportRow.getUuid());
 						values.add(exportRow.getFirstName());
@@ -497,7 +496,7 @@ public final class DownloadUtil {
 
 					writer.flush();
 					startIndex += DETAILED_EXPORT_STEP_SIZE;
-					exportRows = FacadeProvider.getContactFacade().getContactVisitsExportList(contactCriteria,
+					exportRows = FacadeProvider.getContactFacade().getVisitSummaryExportList(contactCriteria,
 							startIndex, DETAILED_EXPORT_STEP_SIZE, I18nProperties.getUserLanguage());
 				}
 			}

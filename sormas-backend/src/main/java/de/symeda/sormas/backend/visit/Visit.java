@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.visit;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -65,7 +66,7 @@ public class Visit extends AbstractDomainObject {
 	
 	private Person person;
 	private Disease disease;
-	private Set<Contact> contacts;
+	private Set<Contact> contacts = new HashSet<>();
 	private Date visitDateTime;
 	private User visitUser;
 	private VisitStatus visitStatus;

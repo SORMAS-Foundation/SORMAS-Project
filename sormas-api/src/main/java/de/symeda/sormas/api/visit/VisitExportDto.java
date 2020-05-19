@@ -15,7 +15,9 @@ import java.util.Date;
 
 public class VisitExportDto implements Serializable {
 
-    public static final String I18N_PREFIX = "VisitExport";
+	private static final long serialVersionUID = 6432390815000039126L;
+
+	public static final String I18N_PREFIX = "VisitExport";
 
     private Long id;
     private String uuid;

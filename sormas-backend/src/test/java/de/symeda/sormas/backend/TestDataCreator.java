@@ -91,6 +91,10 @@ public class TestDataCreator {
 	public UserDto createUser(RDCF rdcf, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
+	
+	public UserDto createUser(RDCFEntities rdcf, String firstName, String lastName, UserRole... roles) {
+		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
+	}
 
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
 			String lastName, UserRole... roles) {
@@ -224,10 +228,14 @@ public class TestDataCreator {
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
 			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease) {
 		ContactDto contact;
+		
 		if (caze != null) {
 			contact = ContactDto.build(caze);
 		} else {
 			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
+			RDCF rdcf = createRDCF();
+			contact.setRegion(rdcf.region);
+			contact.setDistrict(rdcf.district);
 		}
 		contact.setReportingUser(reportingUser);
 		contact.setContactOfficer(contactOfficer);
@@ -270,6 +278,10 @@ public class TestDataCreator {
 		task = beanTest.getTaskFacade().saveTask(task);
 
 		return task;
+	}
+	
+	public VisitDto createVisit(PersonReferenceDto person) {
+		return createVisit(Disease.EVD, person);
 	}
 	
 	public VisitDto createVisit(Disease disease, PersonReferenceDto person) {
