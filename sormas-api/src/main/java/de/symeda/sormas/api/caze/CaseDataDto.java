@@ -257,7 +257,7 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private ReportingType reportingType;
-	private ContactReferenceDto fromContactReference;
+	private ContactReferenceDto sourceContact;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -280,7 +280,7 @@ public class CaseDataDto extends EntityDto {
 	
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
-		cazeData.setFromContactReference(new ContactReferenceDto(contact.getUuid()));
+		cazeData.setSourceContact(new ContactReferenceDto(contact.getUuid()));
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
 			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
@@ -903,11 +903,11 @@ public class CaseDataDto extends EntityDto {
 		this.reportingType = reportingType;
 	}
 
-	public ContactReferenceDto getFromContactReference() {
-		return fromContactReference;
+	public ContactReferenceDto getSourceContact() {
+		return sourceContact;
 	}
 
-	public void setFromContactReference(ContactReferenceDto fromContactReference) {
-		this.fromContactReference = fromContactReference;
+	public void setSourceContact(ContactReferenceDto sourceContact) {
+		this.sourceContact = sourceContact;
 	}
 }

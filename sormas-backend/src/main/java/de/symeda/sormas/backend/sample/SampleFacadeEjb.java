@@ -85,6 +85,14 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
 
+	public static final String CONTACT_CASE_REGION = "contactCaseRegion";
+	public static final String CONTACT_CASE_DISTRICT = "contactCaseDistrict";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String DISTRICT_NAME = "districtName";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -224,26 +232,26 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Join<Case, District> caseDistrict        = qc.getJoin(Case.class, District.class);
 
 		final Join<Sample, Contact> contact            = qc.getJoin(Sample.class, Contact.class);
-		final Join<Contact, Person> contactPerson           = qc.getJoin(Contact.class, Person.class);
+		final Join<Contact, Person> contactPerson      = qc.getJoin(Contact.class, Person.class);
 		final Join<Contact, Region> contactRegion      = qc.getJoin(Contact.class, Region.class);
 		final Join<Contact, District> contactDistrict  = qc.getJoin(Contact.class, District.class);
 		final Join<Contact, Case> contactCase          = qc.getJoin(Contact.class, Case.class);
-		final Join<Case, Region> contactCaseRegion     = qc.getJoin(Case.class, Region.class, "contactCaseRegion");
-		final Join<Case, District> contactCaseDistrict = qc.getJoin(Case.class, District.class, "contactCaseDistrict");
+		final Join<Case, Region> contactCaseRegion     = qc.getJoin(Case.class, Region.class, CONTACT_CASE_REGION);
+		final Join<Case, District> contactCaseDistrict = qc.getJoin(Case.class, District.class, CONTACT_CASE_DISTRICT);
 
-		final Expression diseaseSelect = qc.addExpression("disease",
+		final Expression diseaseSelect = qc.addExpression(DISEASE,
 				cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE)));
-		final Expression diseaseDetailsSelect = qc.addExpression("diseaseDetails", cb.selectCase().when(cb.isNotNull(caze),
+		final Expression diseaseDetailsSelect = qc.addExpression(DISEASE_DETAILS, cb.selectCase().when(cb.isNotNull(caze),
 				caze.get(Case.DISEASE_DETAILS)).otherwise(contact.get(Contact.DISEASE_DETAILS)));
 
-		final Expression regionSelect = qc.addExpression("region", cb.selectCase().when(cb.isNotNull(caseRegion),
+		final Expression regionSelect = qc.addExpression(REGION, cb.selectCase().when(cb.isNotNull(caseRegion),
 				caseRegion.get(Region.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactRegion),
 				contactRegion.get(Region.UUID)).otherwise(contactCaseRegion.get(Region.UUID))));
 
-		final Expression districtSelect = qc.addExpression("district", cb.selectCase().when(cb.isNotNull(caseDistrict),
+		final Expression districtSelect = qc.addExpression(DISTRICT, cb.selectCase().when(cb.isNotNull(caseDistrict),
 				caseDistrict.get(District.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactDistrict),
 				contactDistrict.get(District.UUID)).otherwise(contactCaseDistrict.get(District.UUID))));
-		final Expression districtNameSelect = qc.addExpression("districtName", cb.selectCase().when(cb.isNotNull(caseDistrict),
+		final Expression districtNameSelect = qc.addExpression(DISTRICT_NAME, cb.selectCase().when(cb.isNotNull(caseDistrict),
 				caseDistrict.get(District.NAME)).otherwise(cb.selectCase().when(cb.isNotNull(contactDistrict),
 				contactDistrict.get(District.NAME)).otherwise(contactCaseDistrict.get(District.NAME))));
 
@@ -302,7 +310,7 @@ public class SampleFacadeEjb implements SampleFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = casePerson.get(Person.FIRST_NAME);
 					break;
-				case SampleIndexDto.CASE_DISTRICT:
+				case SampleIndexDto.DISTRICT:
 					expression = districtSelect;
 					break;
 				case SampleIndexDto.LAB:

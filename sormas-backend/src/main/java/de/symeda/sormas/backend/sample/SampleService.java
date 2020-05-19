@@ -32,8 +32,8 @@ import javax.persistence.criteria.*;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleSearchType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -44,8 +44,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -324,10 +322,10 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 
 		Predicate filter = null;
-		final SampleSearchType sampleSearchType = criteria.getSampleSearchType();
-		if (sampleSearchType == SampleSearchType.CASE) {
+		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
+		if (sampleAssociationType == SampleAssociationType.CASE) {
 			filter = and(cb, filter, cb.isNotNull(caze));
-		} else if (sampleSearchType == SampleSearchType.CONTACT) {
+		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
 			filter = and(cb, filter, cb.isNotNull(contact));
 		}
 

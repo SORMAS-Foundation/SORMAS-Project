@@ -71,7 +71,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetIndexListBySampleSearchType() {
+	public void testGetIndexListBySampleAssociationType() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person1");
@@ -109,8 +109,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
 		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
 
-		assertEquals(2, getSampleFacade().getIndexList(new SampleCriteria().sampleSearchType(SampleSearchType.CONTACT), 0, 100, null).size());
-		assertEquals(1, getSampleFacade().getIndexList(new SampleCriteria().sampleSearchType(SampleSearchType.CASE), 0, 100, null).size());
+		assertEquals(2, getSampleFacade().getIndexList(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT), 0, 100, null).size());
+		assertEquals(1, getSampleFacade().getIndexList(new SampleCriteria().sampleAssociationType(SampleAssociationType.CASE), 0, 100, null).size());
 	}
 
 	@Test

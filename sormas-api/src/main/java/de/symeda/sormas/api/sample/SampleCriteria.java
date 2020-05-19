@@ -58,7 +58,7 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private Boolean deleted = Boolean.FALSE;
 	private String caseCodeIdLike;
 	private EntityRelevanceStatus relevanceStatus;
-	private SampleSearchType sampleSearchType;
+	private SampleAssociationType sampleAssociationType;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -161,12 +161,12 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		this.specimenCondition = specimenCondition;
 	}
 
-	public SampleSearchType getSampleSearchType() {
-		return sampleSearchType;
+	public SampleAssociationType getSampleAssociationType() {
+		return sampleAssociationType;
 	}
 
-	public SampleCriteria sampleSearchType(SampleSearchType sampleSearchType) {
-		this.sampleSearchType = sampleSearchType;
+	public SampleCriteria sampleAssociationType(SampleAssociationType sampleAssociationType) {
+		this.sampleAssociationType = sampleAssociationType;
 		return this;
 	}
 

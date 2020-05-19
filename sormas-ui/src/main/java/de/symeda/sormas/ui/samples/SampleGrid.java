@@ -31,7 +31,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleSearchType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -87,7 +87,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		setColumns(EDIT_BTN_ID, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.EPID_NUMBER,
 				SampleIndexDto.ASSOCIATED_CASE, SampleIndexDto.ASSOCIATED_CONTACT, DISEASE_SHORT,
-				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED,
+				SampleIndexDto.DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED,
 				SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
 				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_PURPOSE, PATHOGEN_TEST_RESULT,
 				SampleIndexDto.ADDITIONAL_TESTING_STATUS);
@@ -113,10 +113,10 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			removeColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 		}
 
-		if (criteria.getSampleSearchType() == SampleSearchType.CASE) {
+		if (criteria.getSampleAssociationType() == SampleAssociationType.CASE) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
 		}
-		if (criteria.getSampleSearchType() == SampleSearchType.CONTACT) {
+		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		}

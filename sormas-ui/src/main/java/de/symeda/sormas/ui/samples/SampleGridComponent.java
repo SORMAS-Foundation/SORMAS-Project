@@ -28,10 +28,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.*;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -82,8 +79,8 @@ public class SampleGridComponent extends VerticalLayout {
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
-		if (criteria.getSampleSearchType() == null) {
-			criteria.sampleSearchType(SampleSearchType.ALL);
+		if (criteria.getSampleAssociationType() == null) {
+			criteria.sampleAssociationType(SampleAssociationType.ALL);
 		}
 		grid = new SampleGrid(criteria);
 		gridLayout = new VerticalLayout();
@@ -198,12 +195,12 @@ public class SampleGridComponent extends VerticalLayout {
 			sampleTypeFilter.setWidth(140, Unit.PERCENTAGE);
 			sampleTypeFilter.setId("sampleTypeFilter");
 			sampleTypeFilter.setNullSelectionAllowed(false);
-			sampleTypeFilter.addItems((Object[]) SampleSearchType.values());
-			sampleTypeFilter.setItemCaption(SampleSearchType.ALL, I18nProperties.getEnumCaption(SampleSearchType.ALL));
-			sampleTypeFilter.setItemCaption(SampleSearchType.CASE, I18nProperties.getEnumCaption(SampleSearchType.CASE));
-			sampleTypeFilter.setItemCaption(SampleSearchType.CONTACT, I18nProperties.getEnumCaption(SampleSearchType.CONTACT));
+			sampleTypeFilter.addItems((Object[]) SampleAssociationType.values());
+			sampleTypeFilter.setItemCaption(SampleAssociationType.ALL, I18nProperties.getEnumCaption(SampleAssociationType.ALL));
+			sampleTypeFilter.setItemCaption(SampleAssociationType.CASE, I18nProperties.getEnumCaption(SampleAssociationType.CASE));
+			sampleTypeFilter.setItemCaption(SampleAssociationType.CONTACT, I18nProperties.getEnumCaption(SampleAssociationType.CONTACT));
 			sampleTypeFilter.addValueChangeListener(e -> {
-				criteria.sampleSearchType(((SampleSearchType)e.getProperty().getValue()));
+				criteria.sampleAssociationType(((SampleAssociationType)e.getProperty().getValue()));
 				samplesView.navigateTo(criteria);
 			});
 			actionButtonsLayout.addComponent(sampleTypeFilter);
@@ -243,7 +240,7 @@ public class SampleGridComponent extends VerticalLayout {
 		updateStatusButtons();
 
 		if (sampleTypeFilter != null) {
-			sampleTypeFilter.setValue(criteria.getSampleSearchType());
+			sampleTypeFilter.setValue(criteria.getSampleAssociationType());
 		}
 
 		if (relevanceStatusFilter != null) {

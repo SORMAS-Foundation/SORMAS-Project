@@ -4253,6 +4253,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (208, '2020-05-11 Ad
 ALTER TABLE samples ADD COLUMN associatedcontact_id bigint;
 ALTER TABLE samples ADD CONSTRAINT fk_samples_associatedcontact_id FOREIGN KEY (associatedcontact_id) REFERENCES contact (id);
 ALTER TABLE samples ALTER COLUMN associatedcase_id DROP NOT NULL;
+ALTER TABLE samples_history ADD COLUMN associatedcontact_id bigint;
+ALTER TABLE samples_history ALTER COLUMN associatedcase_id DROP NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (209, '-- 2020-05-07 Add samples to contacts #1753');
+INSERT INTO schema_version (version_number, comment) VALUES (209, '2020-05-07 Add samples to contacts #1753');
 -- *** Insert new sql commands BEFORE this line ***
