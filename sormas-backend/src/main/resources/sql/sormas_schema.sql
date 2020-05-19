@@ -4247,6 +4247,14 @@ INSERT INTO schema_version (version_number, comment) VALUES (207, 'Added table f
 ALTER TABLE contact ADD COLUMN additionaldetails varchar(512);
 ALTER TABLE contact_history ADD COLUMN additionaldetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (208, '2020-05-11 Add additionalDetails to contact #1933');
+INSERT INTO schema_version (version_number, comment) VALUES (208, 'Add additionalDetails to contact #1933');
+
+-- 2020-05-18 Add Trimester and Postpartum selection to case #1981
+ALTER TABLE cases ADD COLUMN postpartum varchar(255);
+ALTER TABLE cases ADD COLUMN trimester varchar(255);
+ALTER TABLE cases_history ADD COLUMN postpartum varchar(255);
+ALTER TABLE cases_history ADD COLUMN trimester varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (209, 'Add Trimester and Postpartum selection to case #1981');
                                                                                                                         
 -- *** Insert new sql commands BEFORE this line ***
