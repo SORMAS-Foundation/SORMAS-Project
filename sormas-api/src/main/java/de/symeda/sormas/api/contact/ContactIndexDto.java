@@ -66,13 +66,14 @@ public class ContactIndexDto implements Serializable {
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
+	private int visitCount;
 	
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
 						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, Date reportDateTime,
-						   CaseClassification caseClassification) {
+						   CaseClassification caseClassification, int visitCount) {
 		this.uuid = uuid;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
@@ -90,7 +91,8 @@ public class ContactIndexDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
-		this.setCaseClassification(caseClassification);
+		this.caseClassification = caseClassification;
+		this.visitCount = visitCount;
 	}
 	
 	public String getUuid() {
@@ -201,8 +203,15 @@ public class ContactIndexDto implements Serializable {
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 	}
+	public int getVisitCount() {
+		return visitCount;
+	}
+	public void setVisitCount(int visitCount) {
+		this.visitCount = visitCount;
+	}
 
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(uuid);
 	}
+	
 }
