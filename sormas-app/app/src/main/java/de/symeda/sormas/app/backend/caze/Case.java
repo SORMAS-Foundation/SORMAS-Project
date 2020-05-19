@@ -39,6 +39,7 @@ import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -279,6 +280,10 @@ public class Case extends AbstractDomainObject {
     private String quarantineHomeSupplyEnsuredComment;
     @Enumerated(EnumType.STRING)
     private ReportingType reportingType;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown postpartum;
+    @Enumerated(EnumType.STRING)
+    private Trimester trimester;
 
 
     public boolean isUnreferredPortHealthCase() {
@@ -873,5 +878,21 @@ public class Case extends AbstractDomainObject {
 
     public void setReportingType(ReportingType reportingType) {
         this.reportingType = reportingType;
+    }
+
+    public YesNoUnknown getPostpartum() {
+        return postpartum;
+    }
+
+    public void setPostpartum(YesNoUnknown postpartum) {
+        this.postpartum = postpartum;
+    }
+
+    public Trimester getTrimester() {
+        return trimester;
+    }
+
+    public void setTrimester(Trimester trimester) {
+        this.trimester = trimester;
     }
 }

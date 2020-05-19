@@ -150,7 +150,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
 			fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 			loc(MEDICAL_INFORMATION_LOC) +
-			fluidRowLocs(CaseDataDto.PREGNANT, "") +
+					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "")
+					+
 			fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
 			fluidRowLocs(CaseDataDto.VACCINE, "") +
 			fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
@@ -172,6 +173,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private DateField quarantineTo;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
+	private OptionGroup pregnant;
+	private OptionGroup trimester;
 	
 	public CaseDataForm(PersonDto person, Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
@@ -298,7 +301,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 		
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
-			CheckBox cbSharedToCountry = addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
+			addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
 			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 		
@@ -318,9 +321,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		additionalDetails.setRows(3);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		addFields(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES,
-				CaseDataDto.VACCINATION_INFO_SOURCE, CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR,
-				CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.VACCINATION_DATE);
+		pregnant = addField(CaseDataDto.PREGNANT, OptionGroup.class);
+		pregnant.addValueChangeListener(e -> handleTrimesterField());
+		addField(CaseDataDto.POSTPARTUM, OptionGroup.class);
+		trimester = addField(CaseDataDto.TRIMESTER, OptionGroup.class);
+		trimester.setVisible(false);
+
+		addFields(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
+				CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
+				CaseDataDto.VACCINATION_DATE);
 
 		// Set initial visibilities
 
@@ -342,7 +351,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// dynamically setting the visibility
 
 		if (isVisibleAllowed(CaseDataDto.PREGNANT)) {
-			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT);
+			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM);
 		}
 		if (isVisibleAllowed(CaseDataDto.VACCINATION_DOSES)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION,
@@ -516,6 +525,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(false, CaseDataDto.EXTERNAL_ID);
 			}
 		});
+	}
+
+	private void handleTrimesterField() {
+		if (YesNoUnknown.YES.equals(pregnant.getValue())) {
+			trimester.setVisible(true);
+		} else {
+			trimester.setVisible(false);
+			trimester.clear();
+		}
 	}
 
 	private void updateQuarantineFields() {

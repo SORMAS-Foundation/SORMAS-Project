@@ -42,6 +42,7 @@
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
         <variable name="vaccinationClass" type="Class" />
+        <variable name="trimesterClass" type="Class" />
     </data>
 
     <ScrollView
@@ -394,6 +395,20 @@
                     android:id="@+id/caseData_pregnant"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:value="@={data.pregnant}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_trimester"
+                    app:enumClass="@{trimesterClass}"
+                    app:dependencyParentField="@{caseDataPregnant}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:value="@={data.trimester}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_postpartum"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.postpartum}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
