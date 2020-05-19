@@ -21,10 +21,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.*;
 
 @SuppressWarnings("serial")
 public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, ContactCriteria> {
@@ -35,7 +32,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	public <V extends View> ContactFollowUpGrid(ContactCriteria criteria, Date referenceDate, int interval, Class<V> viewClass) {
 		super(ContactFollowUpDto.class);
 		setSizeFull();
-		
+
+		Date fromDate = DateHelper.subtractDays(referenceDate, interval - 1);
+		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
+
 		setColumns(ContactFollowUpDto.UUID, ContactFollowUpDto.PERSON, ContactFollowUpDto.CONTACT_OFFICER,
 				ContactFollowUpDto.LAST_CONTACT_DATE, ContactFollowUpDto.REPORT_DATE_TIME, ContactFollowUpDto.FOLLOW_UP_UNTIL);
 

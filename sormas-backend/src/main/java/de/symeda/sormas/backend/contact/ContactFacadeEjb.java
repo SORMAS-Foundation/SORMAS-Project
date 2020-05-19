@@ -571,6 +571,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<ContactFollowUpDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		if (!resultList.isEmpty()) {
+
 			List<String> contactUuids = resultList.stream().map(d -> d.getUuid()).collect(Collectors.toList());
 
 			CriteriaQuery<Object[]> visitsCq = cb.createQuery(Object[].class);
@@ -591,8 +592,10 @@ public class ContactFacadeEjb implements ContactFacade {
 					);
 
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
-
 			Map<String, ContactFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(ContactFollowUpDto::getUuid, Function.identity()));
+			resultMap.values().stream().forEach(contactFollowUpDto -> {
+				contactFollowUpDto.initVisitSize(interval + 1);
+			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
 				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
