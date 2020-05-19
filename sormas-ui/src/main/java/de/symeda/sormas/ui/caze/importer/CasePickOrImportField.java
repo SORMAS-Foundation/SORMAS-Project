@@ -89,6 +89,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			caseInfoLayout.addComponent(districtField);
 
 			Label facilityField = new Label();
+			facilityField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 			facilityField.setValue(FacilityHelper.buildFacilityString(null,
 					importedCase.getHealthFacility() != null ? importedCase.getHealthFacility().toString() : "",
 					importedCase.getHealthFacilityDetails()));

@@ -381,9 +381,28 @@
                     android:text="@string/heading_additional_medical_information"
                     style="@style/SubHeadingStyle" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_pregnant"
+                        app:value="@{data.pregnant}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_postpartum"
+                        app:value="@{data.postpartum}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_pregnant"
-                    app:value="@{data.pregnant}"
+                    android:id="@+id/caseData_trimester"
+                    app:dependencyParentField="@{caseDataPregnant}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:value="@{data.trimester}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

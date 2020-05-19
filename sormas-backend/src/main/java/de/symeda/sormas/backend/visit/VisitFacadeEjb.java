@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
@@ -60,7 +60,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.api.visit.DashboardVisitDto;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -69,7 +68,6 @@ import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
-import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
@@ -125,7 +123,8 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public List<VisitDto> getAllActiveVisitsAfter(Date date) {
-		return visitService.getAllActiveVisitsAfter(date).stream().map(c -> toDto(c))
+		return visitService.getAllActiveVisitsAfter(date).stream()
+				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
 
@@ -137,17 +136,14 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
-		return toDto(visitService.getLastVisitByContact(contact, null));
+		return toDto(contact.getVisits().stream()
+				.max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime()))
+				.orElse(null));
 	}
 
 	@Override
 	public VisitDto getVisitByUuid(String uuid) {
 		return toDto(visitService.getByUuid(uuid));
-	}
-
-	@Override
-	public VisitReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(visitService.getByUuid(uuid));
 	}
 
 	@Override
@@ -169,15 +165,14 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
-
 		final String contactUuid = dto.getContactUuid();
 		final Contact contact = contactService.getByUuid(contactUuid);
 		final PersonReferenceDto contactPerson = new PersonReferenceDto(contact.getPerson().getUuid());
 		final Disease disease = contact.getDisease();
 		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
 
-		final VisitDto visitDto = VisitDto.build(contactPerson, disease, dto.getVisitDateTime(), currentUser, dto.getVisitStatus(), dto.getVisitRemarks(), dto.getSymptoms(), dto
-				.getReportLat(), dto.getReportLon(), dto.getReportLatLonAccuracy());
+		final VisitDto visitDto = VisitDto.build(contactPerson, disease, dto.getVisitDateTime(), currentUser, dto.getVisitStatus(), 
+				dto.getVisitRemarks(), dto.getSymptoms(), dto.getReportLat(), dto.getReportLon(), dto.getReportLatLonAccuracy());
 
 		saveVisit(visitDto);
 
@@ -216,20 +211,6 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus) {
-		Contact contact = contactService.getByReferenceDto(contactRef);
-
-		return visitService.getVisitCount(contact, null);
-	}
-
-	@Override
-	public List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to) {
-		Contact contact = contactService.getByReferenceDto(contactRef);
-
-		return visitService.getDashboardVisitsByContact(contact, from, to);
-	}
-
-	@Override
 	public List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		if (visitCriteria == null || visitCriteria.getContact() == null) {
 			return new ArrayList<>(); // Retrieving an index list independent of a contact is not possible
@@ -238,15 +219,13 @@ public class VisitFacadeEjb implements VisitFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
 		Root<Visit> visit = cq.from(Visit.class);
-
 		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 		cq.multiselect(visit.get(Visit.UUID), visit.get(Visit.VISIT_DATE_TIME), visit.get(Visit.VISIT_STATUS),
 				visit.get(Visit.VISIT_REMARKS), visit.get(Visit.DISEASE), symptoms.get(Symptoms.SYMPTOMATIC),
 				symptoms.get(Symptoms.TEMPERATURE), symptoms.get(Symptoms.TEMPERATURE_SOURCE));
 
-		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visit);
-		cq.where(filter);
+		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -281,6 +260,20 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	public long count(VisitCriteria visitCriteria) {
+		if (visitCriteria == null || visitCriteria.getContact() == null) {
+			return 0L; // Retrieving a list count independent of a contact is not possible
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Visit> root = cq.from(Visit.class);
+		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, root));
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
 	@Transactional(value = Transactional.TxType.REQUIRES_NEW)
 	public List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria,
 			VisitExportType exportType, int first, int max,
@@ -299,9 +292,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				visitRoot.get(Visit.VISIT_DATE_TIME), visitRoot.get(Visit.VISIT_STATUS),
 				visitRoot.get(Visit.VISIT_REMARKS), visitRoot.get(Visit.REPORT_LAT), visitRoot.get(Visit.REPORT_LON));
 
-
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot));
-
 		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
 
 		List<VisitExportDto> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY,
@@ -316,8 +307,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
 				Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
 				symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(VisitExportDto::getSymptomsId).collect(Collectors.toList())));
-				symptomsList =
-						em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 
@@ -331,23 +321,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	@Override
-	public long count(VisitCriteria visitCriteria) {
-		if (visitCriteria == null || visitCriteria.getContact() == null) {
-			return 0L; // Retrieving a list count independent of a contact is not possible
-		}
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Visit> root = cq.from(Visit.class);
-		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, root);
-		cq.where(filter);
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
-
 	public Visit fromDto(@NotNull VisitDto source) {
-
 		final String visitUuid = source.getUuid();
 		Visit target = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
 		if (target == null) {
@@ -378,6 +352,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		if (source == null) {
 			return null;
 		}
+		
 		VisitReferenceDto target = new VisitReferenceDto(source.getUuid(), source.toString());
 		return target;
 	}
@@ -414,7 +389,10 @@ public class VisitFacadeEjb implements VisitFacade {
 		if (newVisit.getContacts() != null && previousSymptomaticStatus == false && Boolean.TRUE.equals(newVisit.getSymptoms().getSymptomatic())) {
 			for (Contact contact : newVisit.getContacts()) {
 				// Skip if there is already a symptomatic visit for this contact
-				if (visitService.getSymptomaticCountByContact(contact) > 1) {
+				if (contact.getVisits().stream()
+						.filter(v -> !v.equals(newVisit))
+						.filter(v -> Boolean.TRUE.equals(v.getSymptoms().getSymptomatic()))
+						.count() > 0) {
 					continue;
 				}
 
@@ -459,7 +437,11 @@ public class VisitFacadeEjb implements VisitFacade {
 			return;
 		}
 
-		visit.setContacts(contactService.getAllRelevantContacts(visit.getPerson(), visit.getDisease(), visit.getVisitDateTime()));
+		Set<Contact> contacts = contactService.getAllRelevantContacts(visit.getPerson(), visit.getDisease(), visit.getVisitDateTime());
+		visit.setContacts(contacts);
+		for (Contact contact : contacts) {
+			contact.getVisits().add(visit);
+		}
 	}
 
 	@LocalBean

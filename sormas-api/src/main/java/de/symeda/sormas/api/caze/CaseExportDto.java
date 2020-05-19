@@ -161,6 +161,9 @@ public class CaseExportDto implements Serializable {
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
+	private YesNoUnknown postpartum;
+	private Trimester trimester;
+
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex, YesNoUnknown pregnant,
@@ -180,7 +183,8 @@ public class CaseExportDto implements Serializable {
 						 String occupationFacilityUuid, String occupationFacilityDetails, YesNoUnknown traveled,
 						 YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
 						 //Date onsetDate,
-						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate, VaccinationInfoSource vaccinationInfoSource) {
+			Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
+			VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester) {
 		this.id = id;
 		this.personId = personId;
 		this.personAddressId = personAddressId;
@@ -238,6 +242,8 @@ public class CaseExportDto implements Serializable {
 		this.vaccinationDoses = vaccinationDoses;
 		this.vaccinationDate = vaccinationDate;
 		this.vaccinationInfoSource = vaccinationInfoSource;
+		this.postpartum = postpartum;
+		this.trimester = trimester;
 	}
 
 	public CaseReferenceDto toReference() {
@@ -345,6 +351,22 @@ public class CaseExportDto implements Serializable {
 	}
 
 	@Order(14)
+	@ExportTarget(caseExportTypes = { CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.TRIMESTER)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	@Order(15)
+	@ExportTarget(caseExportTypes = { CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.POSTPARTUM)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public YesNoUnknown getPostpartum() {
+		return postpartum;
+	}
+
+	@Order(16)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(PersonDto.APPROXIMATE_AGE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
@@ -352,7 +374,7 @@ public class CaseExportDto implements Serializable {
 		return approximateAge;
 	}
 
-	@Order(15)
+	@Order(17)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(AGE_GROUP)
 	@ExportGroup(ExportGroupType.PERSON)
@@ -360,7 +382,7 @@ public class CaseExportDto implements Serializable {
 		return ageGroup;
 	}
 
-	@Order(16)
+	@Order(18)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(PersonDto.BIRTH_DATE)
 	@ExportGroup(ExportGroupType.SENSITIVE)
@@ -920,6 +942,14 @@ public class CaseExportDto implements Serializable {
 
 	public void setPregnant(YesNoUnknown pregnant) {
 		this.pregnant = pregnant;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
+	}
+
+	public void setPostpartum(YesNoUnknown postpartum) {
+		this.postpartum = postpartum;
 	}
 
 	public void setApproximateAge(String age) {
