@@ -238,7 +238,8 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, dto.getAssociatedCase(), dto);
+				ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE,
+						dto.getAssociatedCase() != null ? dto.getAssociatedCase() : dto.getAssociatedContact(), dto);
 			}
 		});
 		requestTaskComponent.getCancelButton().addClickListener(new ClickListener() {

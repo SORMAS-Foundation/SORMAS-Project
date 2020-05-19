@@ -25,6 +25,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.*;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -156,12 +158,16 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 		addValueChangeListener(e -> {
 			Disease disease = null;
-			if (getValue().getAssociatedCase() != null) {
+			final CaseReferenceDto associatedCase = getValue().getAssociatedCase();
+			if (associatedCase != null) {
 				disease =
-						FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getAssociatedCase().getUuid()).getDisease();
-			} else if (getValue().getAssociatedContact() != null) {
-				disease =
-						FacadeProvider.getContactFacade().getContactByUuid(getValue().getAssociatedContact().getUuid()).getDisease();
+						FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid()).getDisease();
+			} else {
+				final ContactReferenceDto associatedContact = getValue().getAssociatedContact();
+				if (associatedContact != null) {
+					disease =
+							FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid()).getDisease();
+				}
 			}
 
 			FieldHelper.setRequiredWhen(getFieldGroup(), received, Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));

@@ -371,7 +371,14 @@ public class SampleDto extends EntityDto {
 	}
 
 	public static SampleDto buildReferral(UserReferenceDto userRef, SampleDto referredSample) {
-		SampleDto sample = build(userRef, referredSample.getAssociatedCase());
+		final SampleDto sample;
+		final CaseReferenceDto associatedCase = referredSample.getAssociatedCase();
+		if (associatedCase != null) {
+			sample = build(userRef, associatedCase);
+		} else {
+			final ContactReferenceDto associatedContact = referredSample.getAssociatedContact();
+			sample = build(userRef, associatedContact);
+		}
 		sample.setSampleDateTime(referredSample.getSampleDateTime());
 		sample.setSampleMaterial(referredSample.getSampleMaterial());
 		sample.setSampleMaterialText(referredSample.getSampleMaterialText());

@@ -28,7 +28,9 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -81,8 +83,9 @@ public class SampleDataView extends AbstractSampleView {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(getSampleRef().getUuid());
 
 		Disease disease = null;
-		if (sampleDto.getAssociatedCase() != null) {
-			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sampleDto.getAssociatedCase().getUuid());
+		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
+		if (associatedCase != null) {
+			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 
 			disease = caseDto.getDisease();
 
@@ -90,8 +93,9 @@ public class SampleDataView extends AbstractSampleView {
 			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(caseInfoLayout, CASE_LOC);
 		}
-		if (sampleDto.getAssociatedContact() != null) {
-			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(sampleDto.getAssociatedContact().getUuid());
+		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
+		if (associatedContact != null) {
+			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
 
 			disease = contactDto.getDisease();
 
