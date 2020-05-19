@@ -725,11 +725,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 								}
 
 
-				if (contact.getFollowUpStatus() != FollowUpStatus.COMPLETED && contact.getContactStatus() == ContactStatus.CONVERTED) {
-					// Cancel follow-up if the contact was converted to a case
-					contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-					contact.setFollowUpComment(I18nProperties.getString(Strings.messageSystemFollowUpCanceled));
-				}
+								if (contact.getFollowUpStatus() != FollowUpStatus.COMPLETED && contact.getContactStatus() == ContactStatus.CONVERTED) {
+									// Cancel follow-up if the contact was converted to a case
+									contact.setFollowUpStatus(FollowUpStatus.CANCELED);
+									contact.setFollowUpComment(I18nProperties.getString(Strings.messageSystemFollowUpCanceled));
+								}
 							}
 		}
 
