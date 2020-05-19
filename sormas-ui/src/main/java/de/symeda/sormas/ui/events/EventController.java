@@ -100,9 +100,10 @@ public class EventController {
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
-		EventDataForm eventCreateForm = new EventDataForm(true, UserRight.EVENT_CREATE);
+		EventDataForm eventCreateForm = new EventDataForm(true);
 		eventCreateForm.setValue(createNewEvent());
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -121,9 +122,10 @@ public class EventController {
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
 		EventDto event = findEvent(eventUuid);
-		EventDataForm eventEditForm = new EventDataForm(false, UserRight.EVENT_EDIT);
+		EventDataForm eventEditForm = new EventDataForm(false);
 		eventEditForm.setValue(event);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, eventEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT), eventEditForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {

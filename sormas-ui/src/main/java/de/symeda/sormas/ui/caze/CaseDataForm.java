@@ -176,8 +176,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private OptionGroup pregnant;
 	private OptionGroup trimester;
 	
-	public CaseDataForm(PersonDto person, Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
+	public CaseDataForm(PersonDto person, Disease disease, ViewMode viewMode) {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 		this.person = person;
 		this.disease = disease;
 		this.viewMode = viewMode;

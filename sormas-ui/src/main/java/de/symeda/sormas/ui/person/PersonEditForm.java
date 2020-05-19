@@ -60,7 +60,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -145,8 +144,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private boolean initialized = false;
 
 
-	public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight);
+	public PersonEditForm(Disease disease, String diseaseDetails, ViewMode viewMode) {
+		super(PersonDto.class, PersonDto.I18N_PREFIX);
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.viewMode = viewMode;

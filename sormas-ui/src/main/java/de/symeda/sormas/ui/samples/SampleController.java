@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Collection;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -34,6 +36,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -60,8 +63,6 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-import java.util.Collection;
-
 public class SampleController {
 
 	public SampleController() {
@@ -78,9 +79,10 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
-		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
+		SampleEditForm createForm = new SampleEditForm();
 		createForm.setValue(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -97,10 +99,11 @@ public class SampleController {
 	}
 
 	public void createReferral(SampleDto sample) {
-		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
+		SampleEditForm createForm = new SampleEditForm();
 		SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
 		createView.addCommitListener(new CommitListener() {
 			@Override
@@ -127,11 +130,12 @@ public class SampleController {
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
-		SampleEditForm form = new SampleEditForm(UserRight.SAMPLE_EDIT);
+		SampleEditForm form = new SampleEditForm();
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, 
+				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT), form.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override

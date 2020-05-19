@@ -93,7 +93,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private CheckBox healthFacilityCheckbox;
 
 	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict) {
-		super(CaseBulkEditData.class, CaseDataDto.I18N_PREFIX, null);
+		super(CaseBulkEditData.class, CaseDataDto.I18N_PREFIX);
 		this.singleSelectedDistrict = singleSelectedDistrict;
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();

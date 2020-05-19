@@ -60,7 +60,7 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 	private CheckBox contactOfficerCheckBox;
 	
 	public BulkContactDataForm(DistrictReferenceDto singleSelectedDistrict) {
-		super(ContactBulkEditData.class, ContactDto.I18N_PREFIX, null);
+		super(ContactBulkEditData.class, ContactDto.I18N_PREFIX);
 		this.singleSelectedDistrict = singleSelectedDistrict;
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();

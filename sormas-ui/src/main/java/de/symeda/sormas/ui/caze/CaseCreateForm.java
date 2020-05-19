@@ -54,7 +54,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
@@ -86,8 +85,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(PersonDto.SEX)) +
 			fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
 
-	public CaseCreateForm(UserRight editOrCreateUserRight) {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
+	public CaseCreateForm() {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 
 		setWidth(720, Unit.PIXELS);
 

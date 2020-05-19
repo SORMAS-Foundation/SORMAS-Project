@@ -126,10 +126,11 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			entry.setUuid(DataHelper.createUuid());
 		}
 		
-		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm(UserRight.CASE_EDIT);
+		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm();
 		editForm.setValue(entry);
 
-		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT), editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityGathering));

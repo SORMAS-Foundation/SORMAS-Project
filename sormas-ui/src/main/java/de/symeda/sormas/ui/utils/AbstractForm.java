@@ -1,27 +1,29 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
-import com.vaadin.v7.ui.*;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
+	
 	protected final String propertyI18nPrefix;
 	private final BeanFieldGroup<T> fieldGroup;
 	private Class<T> type;
 	private List<Field<?>> customFields = new ArrayList<>();
 
-	protected AbstractForm(Class<T> type, String propertyI18nPrefix, UserRight editOrCreateUserRight) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, true);
+	protected AbstractForm(Class<T> type, String propertyI18nPrefix) {
+		this(type, propertyI18nPrefix, true);
 	}
 
-	protected AbstractForm(Class<T> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields) {
+	protected AbstractForm(Class<T> type, String propertyI18nPrefix, boolean addFields) {
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 
@@ -43,15 +45,11 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 			}
 		};
 
-		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory(editOrCreateUserRight));
+		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory());
 		setHeightUndefined();
 
 		if (addFields) {
 			addFields();
-		}
-
-		if (editOrCreateUserRight != null && !UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
-			fieldGroup.setReadOnly(true);
 		}
 	}
 
@@ -269,4 +267,5 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
 	}
+	
 }
