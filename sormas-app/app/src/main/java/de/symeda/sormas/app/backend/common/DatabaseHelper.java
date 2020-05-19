@@ -1533,7 +1533,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN additionalDetails varchar(512);");
 				case 202:
 					currentVersion = 202;
-					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN associatedcontact_id bigint REFERENCES contact (id);");
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN associatedContact_id bigint REFERENCES contact (id);");
 
 						// ATTENTION: break should only be done after last version
 					break;
