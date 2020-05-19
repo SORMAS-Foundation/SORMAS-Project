@@ -394,6 +394,7 @@ public class CaseController {
 			// set resulting case on contact and save it
 			updatedContact.setResultingCase(resultCase.toReference());
 			FacadeProvider.getContactFacade().saveContact(updatedContact);
+			FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), resultCase.toReference());
 		}
 	}
 

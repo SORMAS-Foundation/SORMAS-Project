@@ -1103,15 +1103,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caze = fillOrBuildEntity(dto, caze);
 
-		final ContactReferenceDto fromContactReference = dto.getSourceContact();
-		if (fromContactReference != null) {
-			final Contact fromContact = contactService.getByUuid(fromContactReference.getUuid());
-			final Case finalCaze = caze;
-			fromContact.getSamples().forEach(sample -> {
-				sample.setAssociatedCase(finalCaze);
-			});
-		}
-
 		// Set version number on a new case
 		if (caze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
 			caze.setCreationVersion(InfoProvider.get().getVersion());
@@ -1123,6 +1114,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return toDto(caze);
+	}
+
+	public void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef) {
+		if (sourceContact != null) {
+			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
+			final Case caze = caseService.getByUuid(cazeRef.getUuid());
+			contact.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
+		}
 	}
 
 	@Override
