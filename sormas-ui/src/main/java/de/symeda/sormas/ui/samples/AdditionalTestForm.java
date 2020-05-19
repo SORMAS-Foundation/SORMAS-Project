@@ -14,7 +14,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -43,8 +42,8 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 
 	private final SampleDto sample;
 
-	public AdditionalTestForm(SampleDto sample, boolean create, UserRight editOrCreateUserRight) {
-		super(AdditionalTestDto.class, AdditionalTestDto.I18N_PREFIX, editOrCreateUserRight);
+	public AdditionalTestForm(SampleDto sample, boolean create) {
+		super(AdditionalTestDto.class, AdditionalTestDto.I18N_PREFIX);
 
 		this.sample = sample;
 		setWidth(600, Unit.PIXELS);

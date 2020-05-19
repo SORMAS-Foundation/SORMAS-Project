@@ -39,8 +39,6 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -68,7 +66,6 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -185,10 +182,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
     private List<String> lesionsLocationFieldIds;
     private List<String> monkeypoxImageFieldIds;
 
-    public SymptomsForm(CaseDataDto caze, Disease disease, PersonDto person, SymptomsContext symptomsContext,
-						UserRight editOrCreateUserRight, ViewMode viewMode) {
+    public SymptomsForm(CaseDataDto caze, Disease disease, PersonDto person, SymptomsContext symptomsContext, ViewMode viewMode) {
         // TODO add user right parameter
-        super(SymptomsDto.class, I18N_PREFIX, editOrCreateUserRight);
+        super(SymptomsDto.class, I18N_PREFIX);
         this.caze = caze;
         this.disease = disease;
         this.person = person;

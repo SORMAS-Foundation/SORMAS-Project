@@ -48,7 +48,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -97,10 +96,11 @@ public class UserController {
 	}
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
-		UserEditForm userEditForm = new UserEditForm(false, UserRight.USER_EDIT);
+		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT), userEditForm.getFieldGroup());
 
 		// Add reset password button
 		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);        
@@ -123,9 +123,10 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent() {
 
-		UserEditForm createForm = new UserEditForm(true, UserRight.USER_CREATE);
+		UserEditForm createForm = new UserEditForm(true);
 		createForm.setValue(UserDto.build());
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override

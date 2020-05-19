@@ -51,9 +51,10 @@ public class TaskController {
 	}
 
 	public void create(TaskContext context, ReferenceDto entityRef, Runnable callback) {
-		TaskEditForm createForm = new TaskEditForm(true, UserRight.TASK_CREATE);
+		TaskEditForm createForm = new TaskEditForm(true);
 		createForm.setValue(createNewTask(context, entityRef));
-		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -70,14 +71,15 @@ public class TaskController {
 	}
 
 	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample) {
-		TaskEditForm createForm = new TaskEditForm(true, UserRight.TASK_CREATE);
+		TaskEditForm createForm = new TaskEditForm(true);
 		TaskDto taskDto = createNewTask(context, entityRef);
 		taskDto.setTaskType(TaskType.SAMPLE_COLLECTION);
 		taskDto.setCreatorComment(sample.getNoTestPossibleReason());
 		taskDto.setAssigneeUser(sample.getReportingUser());
 		createForm.setValue(taskDto);
 
-		final CommitDiscardWrapperComponent<TaskEditForm> createView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<TaskEditForm> createView = new CommitDiscardWrapperComponent<TaskEditForm>(createForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE), createForm.getFieldGroup());
 		createView.addCommitListener(new CommitListener() {
 			@Override
 			public void onCommit() {
@@ -95,9 +97,10 @@ public class TaskController {
 		// get fresh data
 		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
 
-		TaskEditForm form = new TaskEditForm(false, UserRight.TASK_EDIT);
+		TaskEditForm form = new TaskEditForm(false);
 		form.setValue(newDto);
-		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(form, 
+				UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT), form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditTask));
 

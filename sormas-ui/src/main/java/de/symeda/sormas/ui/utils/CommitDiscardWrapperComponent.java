@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
 import com.vaadin.event.Action.Notifier;
@@ -51,8 +52,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 
 
-public class CommitDiscardWrapperComponent<C extends Component> extends
-VerticalLayout implements Buffered {
+public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements Buffered {
 
 	private static final long serialVersionUID = 1L;
 
@@ -100,7 +100,14 @@ VerticalLayout implements Buffered {
 	}
 
 	public CommitDiscardWrapperComponent(C component, FieldGroup ...fieldGroups) {
+		this(component, null, fieldGroups);
+	}
+
+	public CommitDiscardWrapperComponent(C component, Boolean isEditingAllowed, FieldGroup ...fieldGroups) {
 		setWrappedComponent(component, fieldGroups);
+		if (isEditingAllowed != null) {
+			setEnabled(isEditingAllowed);
+		}
 	}
 
 	protected void setWrappedComponent(C component, FieldGroup ...fieldGroups) {
@@ -167,8 +174,8 @@ VerticalLayout implements Buffered {
 
 		if (fieldGroups != null) {
 			return Arrays.stream(fieldGroups)
-			.map(FieldGroup::getFields)
-			.flatMap(Collection::stream);
+					.map(FieldGroup::getFields)
+					.flatMap(Collection::stream);
 		} else {
 			return Stream.empty();
 		}
@@ -314,7 +321,7 @@ VerticalLayout implements Buffered {
 					}
 				});
 			}
-			
+
 			try {
 				for (FieldGroup fieldGroup : fieldGroups) {
 					fieldGroup.commit();
@@ -526,21 +533,21 @@ VerticalLayout implements Buffered {
 		} catch (IllegalStateException e) {
 			super.setEnabled(readOnly);
 		}
-//
-//		getWrappedComponent().setReadOnly(readOnly);
-//		if (fieldGroups != null) {
-//			for (FieldGroup fieldGroup : fieldGroups) {
-//				fieldGroup.setReadOnly(readOnly);
-//			}
-//		}
-//
-//		buttonsPanel.setVisible(!readOnly);
+		//
+		//		getWrappedComponent().setReadOnly(readOnly);
+		//		if (fieldGroups != null) {
+		//			for (FieldGroup fieldGroup : fieldGroups) {
+		//				fieldGroup.setReadOnly(readOnly);
+		//			}
+		//		}
+		//
+		//		buttonsPanel.setVisible(!readOnly);
 	}
 
-//	@Override
-//	public boolean isReadOnly() {
-//		return getWrappedComponent().isReadOnly();
-//	}
+	//	@Override
+	//	public boolean isReadOnly() {
+	//		return getWrappedComponent().isReadOnly();
+	//	}
 
 	protected static class ClickShortcut extends Button.ClickShortcut {
 		private static final long serialVersionUID = 1L;
@@ -613,4 +620,5 @@ VerticalLayout implements Buffered {
 			contentPanel.setHeight(100, Unit.PERCENTAGE);
 		}
 	}
+
 }

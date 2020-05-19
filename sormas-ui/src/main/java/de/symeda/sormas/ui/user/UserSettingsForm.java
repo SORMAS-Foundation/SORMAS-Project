@@ -17,7 +17,7 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 			loc(UserDto.LANGUAGE);
 	
 	public UserSettingsForm() {
-		super(UserDto.class, UserDto.I18N_PREFIX, null);
+		super(UserDto.class, UserDto.I18N_PREFIX);
 		
 		setWidth(480, Unit.PIXELS);
 	}

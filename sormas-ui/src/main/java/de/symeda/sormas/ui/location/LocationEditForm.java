@@ -90,8 +90,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private MapPopupView leafletMapPopup;
 
-	public LocationEditForm(UserRight editOrCreateUserRight) {
-		super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight);
+	public LocationEditForm() {
+		super(LocationDto.class, LocationDto.I18N_PREFIX);
 		
 		HorizontalLayout geoButtons = new HorizontalLayout();
 		geoButtons.setMargin(false);
