@@ -5,9 +5,13 @@ import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -22,6 +26,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -66,13 +71,16 @@ public class ContactListCriteriaBuilder {
 				joins.getContactPerson().get(Person.FIRST_NAME), joins.getContactPerson().get(Person.LAST_NAME),
 				joins.getContactCase().get(Case.UUID), contact.get(Contact.DISEASE), contact.get(Contact.DISEASE_DETAILS),
 				joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
-				joins.getContactCaseRegion().get(Region.UUID), joins.getContactCaseDistrict().get(District.UUID),
+				joins.getRegion().get(Region.UUID), joins.getDistrict().get(District.UUID),
 				contact.get(Contact.LAST_CONTACT_DATE),
 				contact.get(Contact.CONTACT_CATEGORY), contact.get(Contact.CONTACT_PROXIMITY),
 				contact.get(Contact.CONTACT_CLASSIFICATION), contact.get(Contact.CONTACT_STATUS),
 				contact.get(Contact.FOLLOW_UP_STATUS), contact.get(Contact.FOLLOW_UP_UNTIL),
-				joins.getContactOfficer().get(User.UUID), contact.get(Contact.REPORT_DATE_TIME),
-				joins.getContactCase().get(Case.CASE_CLASSIFICATION));
+				joins.getContactOfficer().get(User.UUID), joins.getReportingUser().get(User.UUID), contact.get(Contact.REPORT_DATE_TIME),
+				joins.getContactCase().get(Case.CASE_CLASSIFICATION),
+				joins.getContactCaseReportingUser().get(User.UUID), joins.getContactCaseRegion().get(Region.UUID), joins.getContactCaseDistrict().get(District.UUID),
+				joins.getContactCaseCommunity().get(Community.UUID), joins.getContactCaseHealthFacility().get(Facility.UUID), joins.getContactCasePointOfEntry().get(PointOfEntry.UUID)
+				);
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
@@ -101,10 +109,10 @@ public class ContactListCriteriaBuilder {
 				expressions.add(joins.getContactCasePerson().get(Person.LAST_NAME));
 				break;
 			case ContactIndexDto.REGION_UUID:
-				expressions.add(joins.getContactCaseRegion().get(Region.NAME));
+				expressions.add(joins.getRegion().get(Region.NAME));
 				break;
 			case ContactIndexDto.DISTRICT_UUID:
-				expressions.add(joins.getContactCaseDistrict().get(District.NAME));
+				expressions.add(joins.getDistrict().get(District.NAME));
 				break;
 			default:
 				throw new IllegalArgumentException(sortProperty.propertyName);
@@ -120,7 +128,7 @@ public class ContactListCriteriaBuilder {
 				joins.getDistrict().get(District.NAME),
 				joins.getAddress().get(Location.CITY), joins.getAddress().get(Location.ADDRESS), joins.getAddress().get(Location.POSTAL_CODE),
 				joins.getContactPerson().get(Person.PHONE),
-				joins.getReportingUser().get(User.UUID), joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME)
+				joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME)
 		));
 
 		return indexSelection;
@@ -191,20 +199,27 @@ public class ContactListCriteriaBuilder {
 		return filter;
 	}
 
-	private static class ContactJoins extends AbstractDomainObjectJoins<Contact> {
+	private static class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 		private Join<Contact, Person> contactPerson;
-
+		//		private CaseJoins<Contact> caseJoins;
 		private Join<Contact, Case> contactCase;
 		private Join<Case, Person> contactCasePerson;
+		private Join<Case, User> contactCaseReportingUser;
 		private Join<Case, Region> contactCaseRegion;
 		private Join<Case, District> contactCaseDistrict;
+		private Join<Case, Community> contactCaseCommunity;
+		private Join<Case, Facility> contactCaseHealthFacility;
+		private Join<Case, PointOfEntry> contactCasePointOfEntry;
 		private Join<Contact, User> contactOfficer;
 		private Join<Person, Location> address;
+		private Join<Contact, Region> region;
 		private Join<Contact, District> district;
 		private Join<Contact, User> reportingUser;
 
 		public ContactJoins(Root<Contact> contact) {
 			super(contact);
+
+//			this.caseJoins = new CaseJoins<>(contact.join(Contact.CAZE));
 		}
 
 		public Join<Contact, Person> getContactPerson() {
@@ -231,6 +246,14 @@ public class ContactListCriteriaBuilder {
 			this.contactCasePerson = contactCasePerson;
 		}
 
+		public Join<Case, User> getContactCaseReportingUser() {
+			return getOrCreate(contactCaseReportingUser, Case.REPORTING_USER, JoinType.LEFT, getContactCase(), this::setContactCaseReportingUser);
+		}
+
+		private void setContactCaseReportingUser(Join<Case, User> contactCaseReportingUser) {
+			this.contactCaseReportingUser = contactCaseReportingUser;
+		}
+
 		public Join<Case, Region> getContactCaseRegion() {
 			return getOrCreate(contactCaseRegion, Case.REGION, JoinType.LEFT, getContactCase(), this::setContactCaseRegion);
 		}
@@ -247,6 +270,30 @@ public class ContactListCriteriaBuilder {
 			this.contactCaseDistrict = contactCaseDistrict;
 		}
 
+		public Join<Case, Community> getContactCaseCommunity() {
+			return getOrCreate(contactCaseCommunity, Case.COMMUNITY, JoinType.LEFT, getContactCase(), this::setContactCaseCommunity);
+		}
+
+		private void setContactCaseCommunity(Join<Case, Community> contactCaseCommunity) {
+			this.contactCaseCommunity = contactCaseCommunity;
+		}
+
+		public Join<Case, Facility> getContactCaseHealthFacility() {
+			return getOrCreate(contactCaseHealthFacility, Case.HEALTH_FACILITY, JoinType.LEFT, getContactCase(), this::setContactCaseHealthFacility);
+		}
+
+		private void setContactCaseHealthFacility(Join<Case, Facility> contactCaseHealthFacility) {
+			this.contactCaseHealthFacility = contactCaseHealthFacility;
+		}
+
+		public Join<Case, PointOfEntry> getContactCasePointOfEntry() {
+			return getOrCreate(contactCasePointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT, getContactCase(), this::setContactCasePointOfEntry);
+		}
+
+		private void setContactCasePointOfEntry(Join<Case, PointOfEntry> contactCasePointOfEntry) {
+			this.contactCasePointOfEntry = contactCasePointOfEntry;
+		}
+
 		public Join<Contact, User> getContactOfficer() {
 			return getOrCreate(contactOfficer, Contact.CONTACT_OFFICER, JoinType.LEFT, this::setContactOfficer);
 		}
@@ -261,6 +308,14 @@ public class ContactListCriteriaBuilder {
 
 		private void setAddress(Join<Person, Location> address) {
 			this.address = address;
+		}
+
+		public Join<Contact, Region> getRegion() {
+			return getOrCreate(region, Contact.REGION, JoinType.LEFT, this::setRegion);
+		}
+
+		private void setRegion(Join<Contact, Region> region) {
+			this.region = region;
 		}
 
 		public Join<Contact, District> getDistrict() {

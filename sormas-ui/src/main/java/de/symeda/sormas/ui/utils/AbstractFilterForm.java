@@ -10,6 +10,7 @@ import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.*;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.stream.Stream;
@@ -27,7 +28,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	private boolean skipChangeEvents;
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
-		super(type, propertyI18nPrefix, null, true);
+		super(type, propertyI18nPrefix, null,
+				new SormasFieldGroupFieldFactory(null, null, null), true);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
@@ -127,7 +129,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			applyDependenciesOnNewValue(newFieldValue);
 
 			updateResetButtonState();
-			if(moreFiltersLayout != null) {
+			if (moreFiltersLayout != null) {
 				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout)
 						.anyMatch(f -> !f.isEmpty());
 				moreFiltersLayout.setVisible(hasExpandedFilter);
@@ -146,7 +148,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		return FieldHelper.streamFields(layout);
 	}
 
-	protected void applyDependenciesOnNewValue(T newValue){
+	protected void applyDependenciesOnNewValue(T newValue) {
 
 	}
 

@@ -28,6 +28,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.MaxLengthValidator;
 import de.symeda.sormas.ui.utils.ValidationConstants;
@@ -91,11 +92,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private MapPopupView leafletMapPopup;
 
-	public LocationEditForm(UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers) {
-		super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight, fieldVisibilityCheckers);
+	public LocationEditForm(UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() &&
-				isVisibleAllowed(LocationDto.LATITUDE) && isVisibleAllowed(LocationDto.LONGITUDE)) {
+				isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
 			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
 		}
 	}
@@ -134,6 +135,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
 
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -157,10 +159,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		geoButtonLayout.setMargin(false);
 		geoButtonLayout.setSpacing(false);
 
-		Button geocodeButton = new Button(VaadinIcons.MAP_MARKER, e -> triggerGeocoding());
-		geocodeButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		geocodeButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-		geocodeButton.addStyleName(ValoTheme.BUTTON_LARGE);
+		Button geocodeButton = ButtonHelper.createIconButtonWithCaption("geocodeButton", null, VaadinIcons.MAP_MARKER,
+				e -> triggerGeocoding(), ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
 
 		geoButtonLayout.addComponent(geocodeButton);
 		geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
@@ -178,7 +178,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 
 	private void updateLeafletMapContent() {
-		if(leafletMapPopup == null){
+		if (leafletMapPopup == null) {
 			return;
 		}
 

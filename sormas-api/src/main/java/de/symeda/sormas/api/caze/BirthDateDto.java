@@ -17,6 +17,10 @@ public class BirthDateDto implements Serializable {
 		return birthdateDD;
 	}
 
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
+	}
+
 	public Integer getBirthdateMM() {
 		return birthdateMM;
 	}

@@ -191,11 +191,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	
 	@Override
 	public void deleteReport(String reportUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade
-				.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-				.contains(UserRight.AGGREGATE_REPORT_EDIT)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to edit aggregate reports.");
+		if (!userService.hasRight(UserRight.AGGREGATE_REPORT_EDIT)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit aggregate reports.");
 		}
 
 		AggregateReport aggregateReport = service.getByUuid(reportUuid);

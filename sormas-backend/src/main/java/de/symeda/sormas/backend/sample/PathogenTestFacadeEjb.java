@@ -177,9 +177,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@Override
 	public void deletePathogenTest(String pathogenTestUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.PATHOGEN_TEST_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete pathogen tests.");
+		if (!userService.hasRight(UserRight.PATHOGEN_TEST_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete pathogen tests.");
 		}
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);

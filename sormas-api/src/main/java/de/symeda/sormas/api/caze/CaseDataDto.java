@@ -155,7 +155,6 @@ public class CaseDataDto extends EntityDto {
 	private Date reportDate;
 	@Outbreaks
 	@Required
-	@PersonalData
 	private UserReferenceDto reportingUser;
 	private Date regionLevelDate;
 	private Date nationalLevelDate;

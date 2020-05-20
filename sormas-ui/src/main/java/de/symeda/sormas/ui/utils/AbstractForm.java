@@ -17,11 +17,8 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	private Class<T> type;
 	private List<Field<?>> customFields = new ArrayList<>();
 
-	protected AbstractForm(Class<T> type, String propertyI18nPrefix, UserRight editOrCreateUserRight) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, true);
-	}
-
-	protected AbstractForm(Class<T> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields) {
+	protected AbstractForm(Class<T> type, String propertyI18nPrefix, UserRight editOrCreateUserRight,
+						   SormasFieldGroupFieldFactory fieldFactory, boolean addFields) {
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 
@@ -43,7 +40,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 			}
 		};
 
-		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory(editOrCreateUserRight));
+		fieldGroup.setFieldFactory(fieldFactory);
 		setHeightUndefined();
 
 		if (addFields) {

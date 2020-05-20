@@ -16,47 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.utils.fieldvisibility;
+package de.symeda.sormas.api.utils.fieldaccess;
+
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FieldVisibilityCheckers {
+public class FieldAccessCheckers {
 	private List<Checker> checkers = new ArrayList<>();
-	private List<FieldBasedChecker> fieldBasedCheckers = new ArrayList<>();
 
-	public FieldVisibilityCheckers() {
-	}
-
-	public boolean isVisible(Class<?> parentType, String propertyId) {
-		if (!isPropertyVisible(parentType, propertyId)) {
-			return false;
-		}
-
-		Field declaredField = getDeclaredField(parentType, propertyId);
+	public boolean isAccessible(Class<?> parentType, String fieldName) {
+		Field declaredField = getDeclaredField(parentType, fieldName);
 		if (declaredField == null) {
 			return true;
 		}
 
-		return isFieldVisible(declaredField);
+		return isAccessible(declaredField);
 	}
 
-	public FieldVisibilityCheckers add(Checker checker) {
-		this.checkers.add(checker);
-
-		return this;
-	}
-
-	public FieldVisibilityCheckers add(FieldBasedChecker checker) {
-		this.fieldBasedCheckers.add(checker);
-
-		return this;
-	}
-
-	private boolean isPropertyVisible(Class<?> parentType, String propertyId) {
+	public boolean isAccessible(Field field) {
 		for (Checker checker : checkers) {
-			if (!checker.isVisible(parentType, propertyId)) {
+			if (!checker.isAccessible(field)) {
 				return false;
 			}
 		}
@@ -64,14 +46,20 @@ public class FieldVisibilityCheckers {
 		return true;
 	}
 
-	private boolean isFieldVisible(Field field) {
-		for (FieldBasedChecker checker : fieldBasedCheckers) {
-			if (!checker.isVisible(field)) {
+	public boolean hasRigths() {
+		for (Checker checker : checkers) {
+			if (!checker.hasRight()) {
 				return false;
 			}
 		}
 
 		return true;
+	}
+
+	public FieldAccessCheckers add(Checker checker) {
+		checkers.add(checker);
+
+		return this;
 	}
 
 	private Field getDeclaredField(Class<?> parentType, String propertyId) {
@@ -83,10 +71,8 @@ public class FieldVisibilityCheckers {
 	}
 
 	public interface Checker {
-		boolean isVisible(Class<?> parentType, String propertyId);
-	}
+		boolean isAccessible(Field field);
 
-	public interface FieldBasedChecker {
-		boolean isVisible(Field field);
+		boolean hasRight();
 	}
 }

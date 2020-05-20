@@ -168,9 +168,8 @@ public class EventFacadeEjb implements EventFacade {
 	
 	@Override
 	public void deleteEvent(String eventUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.EVENT_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete events.");
+		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
 
 		eventService.delete(eventService.getByUuid(eventUuid));

@@ -27,20 +27,19 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private String phone;
 	private UserReferenceDto reportingUser;
 
-	public ContactIndexDetailedDto(String uuid, String personUuid, String firstName, String lastName,
-								   Disease disease, String diseaseDetails,
-								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid,
-								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
-								   ContactClassification contactClassification, ContactStatus contactStatus,
-								   FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid, Date reportDateTime,
-								   CaseClassification caseClassification,
-								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
-								   String districtName, String city, String address, String postalCode, String phone,
-								   String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName) {
-		super(uuid, personUuid, firstName, lastName, disease, diseaseDetails, caseFirstName, caseLastName,
+	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName, String cazeUuid, Disease disease, String diseaseDetails,
+								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid, Date lastContactDate,
+								   ContactCategory contactCategory, ContactProximity contactProximity, ContactClassification contactClassification,
+								   ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid,
+								   String reportingUserUuid, Date reportDateTime, CaseClassification caseClassification,
+								   String caseReportingUserUid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType, String districtName, String city, String address, String postalCode, String phone,
+								   String reportingUserFirstName, String reportingUserLastName
+	) {
+		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
 				regionUuid, districtUuid, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
-				followUpStatus, followUpUntil, contactOfficerUuid, reportDateTime, caseClassification);
-
+				followUpStatus, followUpUntil, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
+				caseReportingUserUid, caseRegionUui, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.districtName = districtName;
@@ -48,7 +47,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.address = address;
 		this.postalCode = postalCode;
 		this.phone = phone;
-		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName,  null);
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 	}
 
 	public Sex getSex() {

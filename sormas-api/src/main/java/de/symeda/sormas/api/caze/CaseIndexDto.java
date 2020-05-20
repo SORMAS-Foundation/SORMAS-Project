@@ -26,6 +26,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class CaseIndexDto implements Serializable {
 
@@ -63,7 +64,9 @@ public class CaseIndexDto implements Serializable {
 	private String uuid;
 	private String epidNumber;
 	private String externalID;
+	@PersonalData
 	private String personFirstName;
+	@PersonalData
 	private String personLastName;
 	private Disease disease;
 	private String diseaseDetails;
@@ -71,12 +74,20 @@ public class CaseIndexDto implements Serializable {
 	private InvestigationStatus investigationStatus;
 	private PresentCondition presentCondition;
 	private Date reportDate;
+	private String reportingUserUuid;
 	private Date creationDate;
 	private String regionUuid;
 	private String districtUuid;
 	private String districtName;
+	@PersonalData
+	private String communityUuid;
+	@PersonalData
 	private String healthFacilityUuid;
+	@PersonalData
 	private String healthFacilityName;
+	@PersonalData
+	private String pointOfEntryUuid;
+	@PersonalData
 	private String pointOfEntryName;
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
@@ -87,8 +98,8 @@ public class CaseIndexDto implements Serializable {
 
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
 						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
-						PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid,
-						String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
+						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
+						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo, Float completeness) {
 		this.id = id;
@@ -103,12 +114,15 @@ public class CaseIndexDto implements Serializable {
 		this.investigationStatus = investigationStatus;
 		this.presentCondition = presentCondition;
 		this.reportDate = reportDate;
+		this.reportingUserUuid = reportingUserUuid;
 		this.creationDate = creationDate;
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
 		this.districtName = districtName;
+		this.communityUuid = communityUuid;
 		this.healthFacilityUuid = healthFacilityUuid;
 		this.healthFacilityName = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacilityName, healthFacilityDetails);
+		this.pointOfEntryUuid = pointOfEntryUuid;
 		this.pointOfEntryName = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 		this.outcome = outcome;
@@ -190,6 +204,14 @@ public class CaseIndexDto implements Serializable {
 		this.reportDate = reportDate;
 	}
 
+	public String getReportingUserUuid() {
+		return reportingUserUuid;
+	}
+
+	public void setReportingUserUuid(String reportingUserUuid) {
+		this.reportingUserUuid = reportingUserUuid;
+	}
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -230,6 +252,14 @@ public class CaseIndexDto implements Serializable {
 		this.districtName = districtName;
 	}
 
+	public String getCommunityUuid() {
+		return communityUuid;
+	}
+
+	public void setCommunityUuid(String communityUuid) {
+		this.communityUuid = communityUuid;
+	}
+
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
@@ -252,6 +282,14 @@ public class CaseIndexDto implements Serializable {
 
 	public void setHealthFacilityName(String healthFacilityName) {
 		this.healthFacilityName = healthFacilityName;
+	}
+
+	public String getPointOfEntryUuid() {
+		return pointOfEntryUuid;
+	}
+
+	public void setPointOfEntryUuid(String pointOfEntryUuid) {
+		this.pointOfEntryUuid = pointOfEntryUuid;
 	}
 
 	public String getPointOfEntryName() {

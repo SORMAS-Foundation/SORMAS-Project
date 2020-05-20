@@ -52,6 +52,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
+import de.symeda.sormas.backend.caze.CaseEditAuthorization;
+import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,6 +160,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private ContactEditAuthorization contactEditAuthorization;
+	@EJB
+	private CaseEditAuthorization caseEditAuthorization;
+	@EJB
+	private PseudonymizationService pseudonymizationService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -179,7 +185,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return contactService.getAllActiveContactsAfter(date).stream()
-				.map(c -> toDto(c))
+				.map(c -> convertToDto(c))
 				.collect(Collectors.toList());
 	}
 
@@ -187,7 +193,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	public List<ContactDto> getByUuids(List<String> uuids) {
 		return contactService.getByUuids(uuids)
 				.stream()
-				.map(c -> toDto(c))
+				.map(c -> convertToDto(c))
 				.collect(Collectors.toList());
 	}
 
@@ -204,7 +210,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto getContactByUuid(String uuid) {
-		return toDto(contactService.getByUuid(uuid));
+		return convertToDto(contactService.getByUuid(uuid));
 	}
 
 	@Override
@@ -297,9 +303,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public void deleteContact(String contactUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.CONTACT_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete contacts.");
+		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
 		}
 
 		Contact contact = contactService.getByUuid(contactUuid);
@@ -364,9 +369,9 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactPerson.get(Person.OCCUPATION_FACILITY_DETAILS),
 				contactRegion.get(Region.NAME),
 				contactDistrict.get(District.NAME)
-				);
+		);
 
-        Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -394,9 +399,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		return resultList;
 	}
 
-    @Override
-    public List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first,
-                                                                   int max, Language userLanguage) {
+	@Override
+	public List<ContactVisitsExportDto> getContactVisitsExportList(ContactCriteria contactCriteria, int first,
+																   int max, Language userLanguage) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<ContactVisitsExportDto> query = cb.createQuery(ContactVisitsExportDto.class);
@@ -410,7 +415,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactPerson.get(Person.LAST_NAME),
 				cb.<Date>selectCase().when(cb.isNotNull(contactRoot.get(Contact.LAST_CONTACT_DATE)),
 						contactRoot.get(Contact.LAST_CONTACT_DATE))
-				.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
+						.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
 				contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
 		final Subquery<Visit> visitSubquery = query.subquery(Visit.class);
@@ -418,7 +423,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		visitSubquery.select(visitSubqueryRoot.get(Visit.ID));
 		visitSubquery.where(cb.equal(visitSubqueryRoot.get(Visit.PERSON).get(Person.ID), contactPerson.get(Person.ID)));
 
-        final Predicate contactsWithFollowUpVisitsPredicate = AbstractAdoService.and(cb,
+		final Predicate contactsWithFollowUpVisitsPredicate = AbstractAdoService.and(cb,
 				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, query), cb.exists(visitSubquery));
 
 		query.where(contactsWithFollowUpVisitsPredicate);
@@ -481,8 +486,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
 			final List<ContactVisitsExportDto.ContactVisitsDetailsExportDto> visitDetails =
 					visitDetailsMap.get(contactVisitsExportDto.getPersonId()).stream()
-					.filter(dto -> DateHelper.isBetween(dto.getVisitDateTime(), startDate, endDate))
-					.collect(Collectors.toList());
+							.filter(dto -> DateHelper.isBetween(dto.getVisitDateTime(), startDate, endDate))
+							.collect(Collectors.toList());
 			contactVisitsExportDto.setVisitDetails(visitDetails);
 		});
 	}
@@ -500,7 +505,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		final Subquery<Long> visitSubquery = createVisitCountQuery(cb, query, contactRoot);
 
-        final Predicate contactsWithFollowUpVisitsPredicate = AbstractAdoService.and(cb,
+		final Predicate contactsWithFollowUpVisitsPredicate = AbstractAdoService.and(cb,
 				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, query), cb.exists(visitSubquery));
 
 		query.where(contactsWithFollowUpVisitsPredicate);
@@ -523,7 +528,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				cb.greaterThanOrEqualTo(visitSubqueryRoot.get(Visit.VISIT_DATE_TIME),
 						cb.<Date>selectCase().when(cb.isNotNull(contactRoot.get(Contact.LAST_CONTACT_DATE)),
 								contactRoot.get(Contact.LAST_CONTACT_DATE))
-						.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)));
+								.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
 		visitSubquery.where(cb.and(visitsOfCofContactPredicate, visitUntilNowPredicate, visitAfterOnsetPredicate));
 		return visitSubquery;
@@ -547,8 +552,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate,
-			Integer first, Integer max,
-			List<SortProperty> sortProperties) {
+														   Integer first, Integer max,
+														   List<SortProperty> sortProperties) {
 		Date end = DateHelper.getEndOfDay(referenceDate);
 		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, 7));
 
@@ -577,24 +582,24 @@ public class ContactFacadeEjb implements ContactFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case ContactFollowUpDto.UUID:
-				case ContactFollowUpDto.LAST_CONTACT_DATE:
-				case ContactFollowUpDto.REPORT_DATE_TIME:
-				case ContactFollowUpDto.FOLLOW_UP_UNTIL:
-					expression = contact.get(sortProperty.propertyName);
-					break;
-				case ContactFollowUpDto.PERSON:
-					expression = contactPerson.get(Person.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = contactPerson.get(Person.LAST_NAME);
-					break;
-				case ContactFollowUpDto.CONTACT_OFFICER:
-					expression = contactOfficer.get(User.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = contactOfficer.get(User.LAST_NAME);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
+					case ContactFollowUpDto.UUID:
+					case ContactFollowUpDto.LAST_CONTACT_DATE:
+					case ContactFollowUpDto.REPORT_DATE_TIME:
+					case ContactFollowUpDto.FOLLOW_UP_UNTIL:
+						expression = contact.get(sortProperty.propertyName);
+						break;
+					case ContactFollowUpDto.PERSON:
+						expression = contactPerson.get(Person.FIRST_NAME);
+						order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+						expression = contactPerson.get(Person.LAST_NAME);
+						break;
+					case ContactFollowUpDto.CONTACT_OFFICER:
+						expression = contactOfficer.get(User.FIRST_NAME);
+						order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+						expression = contactOfficer.get(User.LAST_NAME);
+						break;
+					default:
+						throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
@@ -621,8 +626,8 @@ public class ContactFacadeEjb implements ContactFacade {
 							cb.equal(visitRoot.get(Visit.PERSON).get(Person.UUID), followUpDto.getPerson().getUuid()),
 							cb.equal(visitRoot.get(Visit.DISEASE), followUpDto.getDisease()),
 							cb.between(visitRoot.get(Visit.VISIT_DATE_TIME), start, end)
-							)
-					);
+					)
+			);
 
 			followUpInfoList = em.createQuery(followUpInfoCq).getResultList();
 
@@ -649,28 +654,40 @@ public class ContactFacadeEjb implements ContactFacade {
 		return VisitResult.NOT_SYMPTOMATIC;
 	}
 
-    @Override
-    public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
-                                              List<SortProperty> sortProperties) {
+	@Override
+	public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
+											  List<SortProperty> sortProperties) {
 		CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, sortProperties);
 
+		List<ContactIndexDto> dtos;
 		if (first != null && max != null) {
-            return em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
-        } else {
-            return em.createQuery(query).getResultList();
-        }
-    }
+			dtos = em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			dtos = em.createQuery(query).getResultList();
+		}
+
+		pseudonymizationService.pseudonymizeDtoCollection(ContactIndexDto.class, dtos,
+				c -> contactEditAuthorization.isInJurisdiction(c), null);
+
+		return dtos;
+	}
 
 	@Override
 	public List<ContactIndexDetailedDto> getIndexDetailedList(ContactCriteria contactCriteria, Integer first, Integer max,
 															  List<SortProperty> sortProperties) {
 		CriteriaQuery<ContactIndexDetailedDto> query = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties);
 
+		List<ContactIndexDetailedDto> dtos;
 		if (first != null && max != null) {
-			return em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
+			dtos = em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			return em.createQuery(query).getResultList();
+			dtos = em.createQuery(query).getResultList();
 		}
+
+		pseudonymizationService.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos,
+				c -> contactEditAuthorization.isInJurisdiction(c), null);
+
+		return dtos;
 	}
 
 	@Override
@@ -702,7 +719,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			counts[0] = caseContactCounts.stream().min((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
 			counts[1] = caseContactCounts.stream().max((l1, l2) -> l1.compareTo(l2)).orElse(0L).intValue();
-			counts[2] =  caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
+			counts[2] = caseContactCounts.stream().reduce(0L, (a, b) -> a + b).intValue() / caseIds.size();
 
 			return counts;
 		}
@@ -815,8 +832,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, Disease disease,
-			Date from, Date to) {
+															 DistrictReferenceDto districtRef, Disease disease,
+															 Date from, Date to) {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 		User user = userService.getCurrentUser();
@@ -850,6 +867,18 @@ public class ContactFacadeEjb implements ContactFacade {
 		User user = userService.getCurrentUser();
 
 		return contactService.getFollowUpUntilCount(contactCriteria, user);
+	}
+
+	private ContactDto convertToDto(Contact source) {
+		ContactDto dto = toDto(source);
+		boolean isInJurisdiction = contactEditAuthorization.isContactEditAllowed(source);
+		pseudonymizationService.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
+			if (c.getCaze() != null) {
+				pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), caseEditAuthorization.caseEditAllowedCheck(source.getCaze()), null);
+			}
+		});
+
+		return dto;
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact source) {
@@ -1066,7 +1095,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		final PersonReferenceDto person = criteria.getPerson();
 		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) :
-			null;
+				null;
 
 		final Disease disease = criteria.getDisease();
 		final Predicate diseaseFilter = disease != null ? cb.equal(contactRoot.get(Contact.DISEASE), disease) : null;
@@ -1093,7 +1122,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public boolean isContactEditAllowed(String contactUuid) {		
+	public boolean isContactEditAllowed(String contactUuid) {
 		Contact contact = contactService.getByUuid(contactUuid);
 		return contactEditAuthorization.isContactEditAllowed(contact);
 	}

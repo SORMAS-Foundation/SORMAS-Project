@@ -17,32 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.Validator.InvalidValueException;
-import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitHandler;
-import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.CustomField;
-import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.Disease;
@@ -50,45 +35,48 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
 
 	private static final long serialVersionUID = 1L;
 
 	protected final FieldVisibilityCheckers fieldVisibilityCheckers;
+	protected final FieldAccessCheckers fieldAccessCheckers;
 
 	private boolean hideValidationUntilNextCommit = false;
 	private List<Field<?>> visibleAllowedFields = new ArrayList<>();
+	private List<Field<?>> editableAllowedFields = new ArrayList<>();
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, true, null);
+		this(type, propertyI18nPrefix, editOrCreateUserRight, true, null, null);
 	}
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, addFields, null);
+		this(type, propertyI18nPrefix, editOrCreateUserRight, addFields, null, null);
 	}
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCecker) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, true, fieldVisibilityCecker);
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers) {
+		this(type, propertyI18nPrefix, editOrCreateUserRight, true, fieldVisibilityCheckers, null);
 	}
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields, FieldVisibilityCheckers fieldVisibilityCheckers) {
-		super(type, propertyI18nPrefix, editOrCreateUserRight, addFields);
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(type, propertyI18nPrefix, editOrCreateUserRight, new SormasFieldGroupFieldFactory(editOrCreateUserRight, fieldVisibilityCheckers, fieldAccessCheckers), false);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
 
 		getFieldGroup().addCommitHandler(this);
 		setWidth(900, Unit.PIXELS);
+
+		if (addFields) {
+			addFields();
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -270,6 +258,12 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected void setReadOnly(boolean readOnly, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
+			setReadonly(readOnly, propertyId);
+		}
+	}
+
+	protected void setReadonly(boolean readOnly, String propertyId) {
+		if (readOnly || isEditableAllowed(propertyId)) {
 			getField(propertyId).setReadOnly(readOnly);
 		}
 	}
@@ -386,7 +380,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	 * this is either because the @Diseases and @Outbreaks annotations are not relevant or at least one of these annotations are present on the respective field.
 	 */
 	protected void initializeVisibilitiesAndAllowedVisibilities() {
-		if(fieldVisibilityCheckers == null){
+		if (fieldVisibilityCheckers == null) {
 			throw new RuntimeException("Visibility checker is not set!");
 		}
 
@@ -411,6 +405,37 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected boolean isVisibleAllowed(String propertyId) {
 		return isVisibleAllowed(getFieldGroup().getField(propertyId));
+	}
+
+	/**
+	 * Sets the initial enabled states based on annotations and builds a list of all fields in a form
+	 * that are allowed to be enabled based on access rights
+	 */
+	protected void initializeAccessAndAllowedAccesses() {
+		if (fieldAccessCheckers == null) {
+			throw new RuntimeException("Field access checker is not set!");
+		}
+		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
+			Field<?> field = getFieldGroup().getField(propertyId);
+
+			if (fieldAccessCheckers.isAccessible(getType(), propertyId.toString())) {
+				editableAllowedFields.add(field);
+			} else {
+				field.setReadOnly(true);
+			}
+		}
+	}
+
+	/**
+	 * Returns true if the enabledAllowedFields list is either empty (because all fields are allowed to be enabled) or contains
+	 * the given field. This needs to be called before EVERY setEnabled or setEnabledWhen call.
+	 */
+	protected boolean isEditableAllowed(Field<?> field) {
+		return editableAllowedFields.isEmpty() || editableAllowedFields.contains(field);
+	}
+
+	protected boolean isEditableAllowed(String propertyId) {
+		return isEditableAllowed(getFieldGroup().getField(propertyId));
 	}
 
 	protected boolean isGermanServer() {

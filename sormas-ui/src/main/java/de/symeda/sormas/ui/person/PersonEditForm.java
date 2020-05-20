@@ -63,6 +63,8 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.PersonalDataFieldVisibilityChecker;
@@ -146,15 +148,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
 									loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 
-	private boolean initialized = false;
-
-
 	public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, ViewMode viewMode, boolean isInJurisdiction) {
-		super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight,
+		super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight, false,
 				new FieldVisibilityCheckers()
 						.add(new DiseaseFieldVisibilityChecker(disease))
-						.add(new OutbreakFieldVisibilityChecker(viewMode))
-						.add(new PersonalDataFieldVisibilityChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction))
+						.add(new OutbreakFieldVisibilityChecker(viewMode)),
+				new FieldAccessCheckers()
+						.add(new PersonalDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction))
 		);
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
@@ -167,17 +167,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
 
-		initialized = true;
 		addFields();
 	}
 
 	@Override
 	protected void addFields() {
-		if (!initialized) {
-			// vars have to be set first
-			return;
-		}
-
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
@@ -287,6 +281,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Set initial visibilities
 
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible()
 				&& !getField(PersonDto.EDUCATION_TYPE).isVisible())
@@ -398,11 +393,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
-		Integer currentlySelected = (Integer) birthDateDay.getValue();
-		birthDateDay.removeAllItems();
-		birthDateDay.addItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
-		if (birthDateDay.containsId(currentlySelected)) {
-			birthDateDay.setValue(currentlySelected);
+		if (!birthDateDay.isReadOnly()) {
+			Integer currentlySelected = (Integer) birthDateDay.getValue();
+			birthDateDay.removeAllItems();
+			birthDateDay.addItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
+			if (birthDateDay.containsId(currentlySelected)) {
+				birthDateDay.setValue(currentlySelected);
+			}
 		}
 	}
 

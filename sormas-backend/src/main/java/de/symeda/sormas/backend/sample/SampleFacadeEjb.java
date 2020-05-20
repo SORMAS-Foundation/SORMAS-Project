@@ -507,9 +507,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public void deleteSample(SampleReferenceDto sampleRef) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
+		if (!userService.hasRight(UserRight.SAMPLE_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete samples.");
 		}
 		
 		Sample sample = sampleService.getByReferenceDto(sampleRef);

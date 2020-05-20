@@ -476,9 +476,8 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	public void deleteTask(TaskDto taskDto) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.TASK_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete tasks.");
+		if (!userService.hasRight(UserRight.TASK_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete tasks.");
 		}
 
 		Task task = taskService.getByUuid(taskDto.getUuid());

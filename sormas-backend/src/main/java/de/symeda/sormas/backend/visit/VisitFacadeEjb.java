@@ -206,9 +206,8 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public void deleteVisit(String visitUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.VISIT_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete visits.");
+		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete visits.");
 		}
 
 		Visit visit = visitService.getByUuid(visitUuid);

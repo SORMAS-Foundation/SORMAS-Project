@@ -48,6 +48,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 /**
@@ -94,7 +95,9 @@ public class CaseExportDto implements Serializable {
 	private String epidNumber;
 	private String diseaseFormatted;
 	private Disease disease;
+	@PersonalData
 	private String firstName;
+	@PersonalData
 	private String lastName;
 	private Sex sex;
 	private YesNoUnknown pregnant;
@@ -102,10 +105,22 @@ public class CaseExportDto implements Serializable {
 	private String ageGroup;
 	private BirthDateDto birthdate;
 	private Date reportDate;
+	private String reportingUserUuid;
+	private String regionUuid;
 	private String region;
+	private String districtUuid;
 	private String district;
+	@PersonalData
+	private String communityUuid;
+	@PersonalData
 	private String community;
+	@PersonalData
+	private String healthFacilityUuid;
+	@PersonalData
 	private String healthFacility;
+	@PersonalData
+	private String pointOfEntryUuid;
+	@PersonalData
 	private String pointOfEntry;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
@@ -122,9 +137,13 @@ public class CaseExportDto implements Serializable {
 	private BurialInfoDto burialInfo;
 	private String addressRegion;
 	private String addressDistrict;
+	@PersonalData
 	private String city;
+	@PersonalData
 	private String address;
+	@PersonalData
 	private String postalCode;
+	@PersonalData
 	private String addressGpsCoordinates;
 	private String phone;
 	private String occupationType;
@@ -165,7 +184,8 @@ public class CaseExportDto implements Serializable {
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
-						 Integer birthdateYYYY, Date reportDate, String region, String district, String community,
+						 Integer birthdateYYYY, Date reportDate, String reportingUserUuid, String regionUuid, String region,
+						 String districtUuid, String district, String communityUuid, String community,
 						 String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
 						 InvestigationStatus investigationStatus, CaseOutcome outcome,
@@ -201,8 +221,12 @@ public class CaseExportDto implements Serializable {
 		this.ageGroup = ApproximateAgeHelper.getAgeGroupFromAge(approximateAge, approximateAgeType);
 		this.birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.reportDate = reportDate;
+		this.reportingUserUuid = reportingUserUuid;
+		this.regionUuid = regionUuid;
 		this.region = region;
+		this.districtUuid = districtUuid;
 		this.district = district;
+		this.communityUuid = communityUuid;
 		this.community = community;
 		this.caseClassification = caseClassification;
 		this.investigationStatus = investigationStatus;
@@ -210,7 +234,9 @@ public class CaseExportDto implements Serializable {
 		this.quarantine = quarantine;
 		this.quarantineFrom = quarantineFrom;
 		this.quarantineTo = quarantineTo;
+		this.healthFacilityUuid = healthFacilityUuid;
 		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
+		this.pointOfEntryUuid = pointOfEntryUuid;
 		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry, pointOfEntryDetails);
 		this.admittedToHealthFacility = admittedToHealthFacility;
 		this.admissionDate = admissionDate;
@@ -376,12 +402,24 @@ public class CaseExportDto implements Serializable {
 		return reportDate;
 	}
 
+	public String getReportingUserUuid() {
+		return reportingUserUuid;
+	}
+
+	public String getRegionUuid() {
+		return regionUuid;
+	}
+
 	@Order(21)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(CaseDataDto.REGION)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getRegion() {
 		return region;
+	}
+
+	public String getDistrictUuid() {
+		return districtUuid;
 	}
 
 	@Order(22)
@@ -392,6 +430,10 @@ public class CaseExportDto implements Serializable {
 		return district;
 	}
 
+	public String getCommunityUuid() {
+		return communityUuid;
+	}
+
 	@Order(23)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(CaseDataDto.COMMUNITY)
@@ -400,12 +442,20 @@ public class CaseExportDto implements Serializable {
 		return community;
 	}
 
+	public String getHealthFacilityUuid() {
+		return healthFacilityUuid;
+	}
+
 	@Order(24)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(CaseDataDto.HEALTH_FACILITY)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getHealthFacility() {
 		return healthFacility;
+	}
+
+	public String getPointOfEntryUuid() {
+		return pointOfEntryUuid;
 	}
 
 	@Order(25)
