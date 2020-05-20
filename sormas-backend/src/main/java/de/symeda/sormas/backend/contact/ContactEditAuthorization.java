@@ -39,11 +39,8 @@ public class ContactEditAuthorization {
             return true;
         }
 
-        if (contact.getUuid() != null && contact.getCaze()!= null) {
-            Case caseofContact = contact.getCaze();
-            if (caseofContact != null && caseEditAuthorization.caseEditAllowedCheck(caseofContact)) {
-                return true;
-            }
+        if (contact.getCaze()!= null) {
+            return caseEditAuthorization.caseEditAllowedCheck(contact.getCaze());
         }
 
         if (userService.hasAnyRole(UserRole.getSupervisorRoles())) {
