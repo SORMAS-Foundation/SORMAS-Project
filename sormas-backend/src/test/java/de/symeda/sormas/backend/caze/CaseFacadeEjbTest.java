@@ -359,6 +359,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				caze.toReference(), null, null, new Date(), user.toReference());
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(),
 				SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto sampleAssociatedToContactAndCase = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
+				caze, new Date(), new Date(), null);
+		sampleAssociatedToContactAndCase.setAssociatedContact(new ContactReferenceDto(contact2.getUuid()));
+		getSampleFacade().saveSample(sampleAssociatedToContactAndCase);
+
 		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), caze);
 		AdditionalTestDto additionalTest = creator.createAdditionalTest(sample.toReference());
 
@@ -376,6 +382,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
 		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));

@@ -24,6 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -53,9 +54,11 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private Disease disease;
 	private SpecimenCondition specimenCondition;
 	private CaseReferenceDto caze;
+	private ContactReferenceDto contact;
 	private Boolean deleted = Boolean.FALSE;
 	private String caseCodeIdLike;
 	private EntityRelevanceStatus relevanceStatus;
+	private SampleAssociationType sampleAssociationType;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -141,6 +144,15 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public ContactReferenceDto getContact() {
+		return contact;
+	}
+
+	public SampleCriteria contact(ContactReferenceDto contact) {
+		this.contact = contact;
+		return this;
+	}
+
 	public SpecimenCondition getSpecimenCondition() {
 		return specimenCondition;
 	}
@@ -148,7 +160,16 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
 	}
-	
+
+	public SampleAssociationType getSampleAssociationType() {
+		return sampleAssociationType;
+	}
+
+	public SampleCriteria sampleAssociationType(SampleAssociationType sampleAssociationType) {
+		this.sampleAssociationType = sampleAssociationType;
+		return this;
+	}
+
 	public SampleCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;

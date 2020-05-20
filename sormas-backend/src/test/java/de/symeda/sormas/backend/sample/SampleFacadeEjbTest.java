@@ -17,42 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.junit.Test;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.sample.AdditionalTestingStatus;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleFacade;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.*;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.facility.Facility;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.*;
 
 public class SampleFacadeEjbTest extends AbstractBeanTest {
 
@@ -69,13 +61,102 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 		
-		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(null, 0, 100, null);
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null);
 		
 		// List should have one entry
 		assertEquals(2, sampleIndexDtos.size());
 		
 		// First sample should have an additional test
 		assertEquals(AdditionalTestingStatus.PERFORMED, sampleIndexDtos.get(1).getAdditionalTestingStatus());
+	}
+
+	@Test
+	public void testGetIndexListBySampleAssociationType() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person1");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person2");
+		ContactDto contact = creator.createContact(user.toReference(), contactPerson.toReference(), caze);
+		SampleDto cazeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto referredSample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		sample.setReferredTo(referredSample.toReference());
+		creator.createAdditionalTest(sample.toReference());
+
+		assertEquals(3, getSampleFacade().count(new SampleCriteria()));
+
+		final ArrayList<SortProperty> sortProperties = new ArrayList<>();
+		sortProperties.add(new SortProperty(SampleDto.SAMPLE_DATE_TIME));
+		final List<SampleIndexDto> sampleList1 = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100,
+				sortProperties);
+		assertEquals(3, sampleList1.size());
+
+		final SampleIndexDto sample11 = sampleList1.get(0);
+		Assert.assertEquals(cazeSample.getUuid(), sample11.getUuid());
+		Assert.assertEquals(caze.getUuid(), sample11.getAssociatedCase().getUuid());
+		Assert.assertTrue(sample11.getAssociatedCase().getCaption().startsWith("Case PERSON1"));
+
+		final SampleIndexDto sample12 = sampleList1.get(1);
+		Assert.assertEquals(sample.getUuid(), sample12.getUuid());
+		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
+		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
+
+		final SampleIndexDto sample13 = sampleList1.get(2);
+		Assert.assertEquals(referredSample.getUuid(), sample13.getUuid());
+		Assert.assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
+		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
+
+		assertEquals(2, getSampleFacade().getIndexList(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT), 0, 100, null).size());
+		assertEquals(1, getSampleFacade().getIndexList(new SampleCriteria().sampleAssociationType(SampleAssociationType.CASE), 0, 100, null).size());
+	}
+
+	@Test
+	public void testGetIndexListForCaseConvertedFromContact() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person1");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person2");
+		ContactDto contact = creator.createContact(user.toReference(), contactPerson.toReference(), caze);
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference());
+		SampleDto cazeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto referredSample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		sample.setReferredTo(referredSample.toReference());
+		creator.createAdditionalTest(sample.toReference());
+
+		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact, visit);
+		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid()));
+		caseDataDto.setReportingUser(user.toReference());
+		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);
+
+		getCaseFacade().setSampleAssociations(contact.toReference(), caseConvertedFromContact.toReference());
+
+		final SampleCriteria samplesConnectedToConvertedCaseCriteria = new SampleCriteria().caze(caseConvertedFromContact.toReference());
+		assertEquals(2, getSampleFacade().count(samplesConnectedToConvertedCaseCriteria));
+
+		final ArrayList<SortProperty> sortProperties = new ArrayList<>();
+		sortProperties.add(new SortProperty(SampleDto.SAMPLE_DATE_TIME));
+		final List<SampleIndexDto> samplesOfConvertedCase = getSampleFacade().getIndexList(samplesConnectedToConvertedCaseCriteria, 0, 100,
+				sortProperties);
+		assertEquals(2, samplesOfConvertedCase.size());
+
+		final SampleIndexDto sample11 = samplesOfConvertedCase.get(0);
+		Assert.assertEquals(sample.getUuid(), sample11.getUuid());
+		Assert.assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
+		Assert.assertEquals(contact.getUuid(), sample11.getAssociatedContact().getUuid());
+
+		final SampleIndexDto sample12 = samplesOfConvertedCase.get(1);
+		Assert.assertEquals(referredSample.getUuid(), sample12.getUuid());
+		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
+		Assert.assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
 	}
 
 	@Test

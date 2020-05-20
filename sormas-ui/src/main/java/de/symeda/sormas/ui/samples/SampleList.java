@@ -25,6 +25,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -38,6 +39,12 @@ import de.symeda.sormas.ui.utils.PaginationList;
 public class SampleList extends PaginationList<SampleIndexDto> {
 
 	private final SampleCriteria sampleCriteria = new SampleCriteria();
+
+	public SampleList(ContactReferenceDto contactRef) {
+		super(5);
+
+		sampleCriteria.contact(contactRef);
+	}
 
 	public SampleList(CaseReferenceDto caseRef) {
 		super(5);

@@ -38,6 +38,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.common.*;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -627,11 +628,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			contactService.ensurePersisted(contact);
 		}
 
-		// Mark all samples associated with this case as deleted
-		List<Sample> samples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), null);
-		for (Sample sample : samples) {
-			sampleService.delete(sample);
-		}
+		caze.getSamples().stream()
+				.filter(sample -> sample.getAssociatedContact() == null)
+				.forEach(sample -> sampleService.delete(sample));
 
 		// Delete all tasks associated with this case
 		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())));
@@ -779,7 +778,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			// get all cases based on the user's sample association
 			Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
 			Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
-			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot));
+			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(new QueryContext(cb, cq, sampleRoot)));
 			sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 			filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 		}
