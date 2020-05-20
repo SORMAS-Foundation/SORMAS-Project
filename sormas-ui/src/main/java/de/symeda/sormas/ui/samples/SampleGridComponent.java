@@ -125,6 +125,7 @@ public class SampleGridComponent extends VerticalLayout {
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
+		filterLayout.addStyleName("wrap");
 
 		UserDto user = UserProvider.getCurrent().getUser();
 
