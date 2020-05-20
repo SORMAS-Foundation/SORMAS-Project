@@ -55,7 +55,7 @@ public interface ContactFacade {
 	void deleteContact(String contactUuid);
 
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
-			List<SortProperty> sortProperties);
+									   List<SortProperty> sortProperties);
 
 	List<ContactIndexDetailedDto> getIndexDetailedList(ContactCriteria contactCriteria, Integer first, Integer max,
 			List<SortProperty> sortProperties);
@@ -80,8 +80,8 @@ public interface ContactFacade {
 	List<String> getDeletedUuidsSince(Date since);
 
 	boolean isDeleted(String contactUuid);
-
-	List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max,
+	
+	List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, int interval, Integer first, Integer max,
 			List<SortProperty> sortProperties);
 
 	int[] getContactCountsByCasesForDashboard(List<Long> contactIds);
