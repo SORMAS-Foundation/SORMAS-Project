@@ -542,7 +542,6 @@ public interface Strings {
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
 	String messageSampleErrors = "messageSampleErrors";
-	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
 	String messageSamplesDeleted = "messageSamplesDeleted";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";

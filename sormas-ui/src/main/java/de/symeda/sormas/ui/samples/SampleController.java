@@ -241,8 +241,16 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE,
-						dto.getAssociatedCase() != null ? dto.getAssociatedCase() : dto.getAssociatedContact(), dto);
+				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
+				if (associatedCase != null) {
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE,
+							associatedCase, dto);
+				}
+				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
+				if (associatedContact != null) {
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT,
+							associatedContact, dto);
+				}
 			}
 		});
 		requestTaskComponent.getCancelButton().addClickListener(new ClickListener() {
