@@ -437,6 +437,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
         // Symptoms hint text
         Label symptomsHint = new Label(I18nProperties.getString(symptomsContext == SymptomsContext.CASE ?
 				Strings.messageSymptomsHint : Strings.messageSymptomsVisitHint), ContentMode.HTML);
+        symptomsHint.setWidth(100, Unit.PERCENTAGE);
         getContent().addComponent(symptomsHint, SYMPTOMS_HINT_LOC);
 
         if (disease == Disease.MONKEYPOX) {

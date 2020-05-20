@@ -105,10 +105,11 @@ public class BaseFragment extends Fragment {
         try {
             final java.lang.reflect.Field declaredField =
                     dtoClass.getDeclaredField(propertyId.toString());
+            final String countryLocale = ConfigProvider.getServerLocale().toLowerCase();
             if (declaredField.isAnnotationPresent(HideForCountries.class)) {
                 final String[] hideForCountries = Objects.requireNonNull(declaredField.getAnnotation(HideForCountries.class)).countries();
                 for (String country : hideForCountries) {
-                    if (ConfigProvider.getServerLocale().toLowerCase().startsWith(country)) {
+                    if (countryLocale.startsWith(country)) {
                         return true;
                     }
                 }
@@ -117,7 +118,7 @@ public class BaseFragment extends Fragment {
                 final String[] hideForCountriesExcept = Objects.requireNonNull(declaredField.getAnnotation(HideForCountriesExcept.class)).countries();
                 boolean countryIncluded = false;
                 for (String country : hideForCountriesExcept) {
-                    if (ConfigProvider.getServerLocale().toLowerCase().startsWith(country)) {
+                    if (countryLocale.startsWith(country)) {
                         countryIncluded = true;
                     }
                 }

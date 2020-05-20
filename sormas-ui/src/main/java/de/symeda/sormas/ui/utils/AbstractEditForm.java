@@ -402,8 +402,9 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		try {
 			final java.lang.reflect.Field declaredField =
 					getType().getDeclaredField(propertyId.toString());
+			final String countryLocale = FacadeProvider.getConfigFacade().getCountryLocale();
 			final Predicate<String> currentCountryIsHiddenForField =
-					country -> FacadeProvider.getConfigFacade().getCountryLocale().startsWith(country);
+					country -> countryLocale.startsWith(country);
 					if (declaredField.isAnnotationPresent(HideForCountries.class) &&
 							Arrays.asList(declaredField.getAnnotation(HideForCountries.class).countries())
 							.stream().anyMatch(currentCountryIsHiddenForField)) {
