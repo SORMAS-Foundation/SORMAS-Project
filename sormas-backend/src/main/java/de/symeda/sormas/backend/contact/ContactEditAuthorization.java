@@ -18,33 +18,33 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
 
-@Stateless (name = "ContactEditAuthorization")
+@Stateless(name = "ContactEditAuthorization")
 @LocalBean
 public class ContactEditAuthorization {
-	
-	@EJB
-	private UserService userService;
-	@EJB
-	private CaseService caseService;
-	@EJB
-	private CaseEditAuthorization caseEditAuthorization;
-	@EJB
-	private ContactService contactService;
-	
-    public boolean isContactEditAllowed(Contact contact){
 
-    	User user = userService.getCurrentUser();
+    @EJB
+    private UserService userService;
+    @EJB
+    private CaseService caseService;
+    @EJB
+    private CaseEditAuthorization caseEditAuthorization;
+    @EJB
+    private ContactService contactService;
 
-        if (contact.getReportingUser()!=null && DataHelper.equal(user.getUuid(), (contact.getReportingUser().getUuid()))){
+    public boolean isContactEditAllowed(Contact contact) {
+
+        User user = userService.getCurrentUser();
+
+        if (contact.getReportingUser() != null && DataHelper.equal(user.getUuid(), (contact.getReportingUser().getUuid()))) {
             return true;
         }
 
-        if (contact.getCaze()!= null) {
+        if (contact.getCaze() != null) {
             return caseEditAuthorization.caseEditAllowedCheck(contact.getCaze());
         }
 
         if (userService.hasAnyRole(UserRole.getSupervisorRoles())) {
-            return  DataHelper.equal(contact.getRegion(), (user.getRegion()));
+            return DataHelper.equal(contact.getRegion(), (user.getRegion()));
         }
 
         if (userService.hasAnyRole(UserRole.getOfficerRoles())) {

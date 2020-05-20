@@ -20,8 +20,15 @@ package de.symeda.sormas.ui.contact;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.Alignment;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -84,12 +91,9 @@ public class ContactsView extends AbstractView {
 	private ContactsFilterForm filterForm;
 	private ComboBox relevanceStatusFilter;
 
-	private int rangeInterval = 14;
-	private boolean fromWasUpdated;
-	private boolean toWasUpdated;
+    private int followUpRangeInterval = 14;
 	private boolean buttonPreviousOrNextClick = false;
-	private Date newToDate;
-
+    private Date followUpToDate;
 
 	public ContactsView() {
 		super(VIEW_NAME);
@@ -106,7 +110,7 @@ public class ContactsView extends AbstractView {
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			criteria.reportDateTo(DateHelper.getEndOfDay(new Date()));
 			criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 4)));
-			grid = new ContactFollowUpGrid(criteria, new Date(),rangeInterval, getClass());
+			grid = new ContactFollowUpGrid(criteria, new Date(), followUpRangeInterval, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = ContactsViewType.DETAILED_OVERVIEW.equals(viewConfiguration.getViewType())
@@ -397,78 +401,62 @@ public class ContactsView extends AbstractView {
 			}
 
 			// Follow-up overview scrolling
-			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
+            if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+                statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				HorizontalLayout scrollLayout = new HorizontalLayout();
-				scrollLayout.setMargin(false);
+                HorizontalLayout scrollLayout = new HorizontalLayout();
+                scrollLayout.setMargin(false);
 
-                DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactToFollowUpOverviewReferenceDate), LocalDate.now());
-                LocalDate fromReferenceLocal = DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()),rangeInterval-1));
-                DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactFromFollowUpOverviewReferenceDate), fromReferenceLocal);
+                DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now());
+                LocalDate fromReferenceLocal = DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1));
+                DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
 
                 Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
-				CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-				minusDaysButton.addClickListener(e -> {
-					rangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
-					toWasUpdated = false;
-					fromWasUpdated = false;
-					buttonPreviousOrNextClick = true;
+                CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+                minusDaysButton.addClickListener(e -> {
+                    followUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+                    buttonPreviousOrNextClick = true;
+                    toReferenceDate.setValue(toReferenceDate.getValue().minusDays(followUpRangeInterval));
+                    fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(followUpRangeInterval));
+                });
+                scrollLayout.addComponent(minusDaysButton);
 
-					toReferenceDate.setValue(toReferenceDate.getValue().minusDays(rangeInterval));
-					fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(rangeInterval));
-				});
-				scrollLayout.addComponent(minusDaysButton);
+                fromReferenceDate.addValueChangeListener(e -> {
+                    Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+                    applyingCriteria = true;
+                    criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
+                    applyingCriteria = false;
+                    followUpRangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDate.getValue()));
+                    reloadGrid();
+                });
+                scrollLayout.addComponent(fromReferenceDate);
 
-				fromReferenceDate.addValueChangeListener(e -> {
-					Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+                toReferenceDate.addValueChangeListener(e -> {
+                    followUpToDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+                    applyingCriteria = true;
+                    criteria.reportDateTo(DateHelper.getEndOfDay(followUpToDate));
+                    applyingCriteria = false;
+                    if (!buttonPreviousOrNextClick) {
+                        followUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), followUpToDate);
+                        reloadGrid();
+                    }
+                });
+                scrollLayout.addComponent(toReferenceDate);
 
-					applyingCriteria = true;
-					criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
-					fromWasUpdated = true;
+                Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
+                CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+                plusDaysButton.addClickListener(e -> {
+                    followUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+                    buttonPreviousOrNextClick = true;
+                    toReferenceDate.setValue(toReferenceDate.getValue().plusDays(followUpRangeInterval));
+                    fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(followUpRangeInterval));
+                });
+                scrollLayout.addComponent(plusDaysButton);
 
-					if (!buttonPreviousOrNextClick){
-						toWasUpdated = true;
-						rangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDate.getValue()));
-					}
-					applyingCriteria = false;
-					reloadGrid();
-				});
-				scrollLayout.addComponent(fromReferenceDate);
+                actionButtonsLayout.addComponent(scrollLayout);
 
-				toReferenceDate.addValueChangeListener(e -> {
-					newToDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
-
-					applyingCriteria = true;
-					criteria.reportDateTo(DateHelper.getEndOfDay(newToDate));
-					toWasUpdated = true;
-
-					if (!buttonPreviousOrNextClick){
-						rangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), newToDate);
-						fromWasUpdated = true;
-					}
-					applyingCriteria = false;
-					reloadGrid();
-				});
-				scrollLayout.addComponent(toReferenceDate);
-
-				Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
-				CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-				plusDaysButton.addClickListener(e -> {
-                    rangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
-					toWasUpdated = false;
-					fromWasUpdated = false;
-					buttonPreviousOrNextClick = true;
-
-                    fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(rangeInterval));
-					toReferenceDate.setValue(toReferenceDate.getValue().plusDays(rangeInterval));
-				});
-				scrollLayout.addComponent(plusDaysButton);
-
-				actionButtonsLayout.addComponent(scrollLayout);
-
-			}
-		}
+            }
+        }
 		statusFilterLayout.addComponent(actionButtonsLayout);
 		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
@@ -476,14 +464,12 @@ public class ContactsView extends AbstractView {
 		return statusFilterLayout;
 	}
 
-	private void reloadGrid(){
-		if (toWasUpdated && fromWasUpdated){
-			((ContactFollowUpGrid) grid).addVisitColumns(newToDate, rangeInterval, criteria);
-			((ContactFollowUpGrid) grid).reload();
-			updateStatusButtons();
-			buttonPreviousOrNextClick = false;
-		}
-	}
+    private void reloadGrid() {
+        ((ContactFollowUpGrid) grid).setVisitColumns(followUpToDate, followUpRangeInterval, criteria);
+        ((ContactFollowUpGrid) grid).reload();
+        updateStatusButtons();
+        buttonPreviousOrNextClick = false;
+    }
 
 	private HorizontalLayout createFollowUpLegend() {
 		HorizontalLayout legendLayout = new HorizontalLayout();
