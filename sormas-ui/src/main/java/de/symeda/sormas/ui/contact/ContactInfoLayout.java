@@ -57,12 +57,26 @@ public class ContactInfoLayout extends HorizontalLayout {
 			addDescLabel(firstColumn, DataHelper.getShortUuid(contactDto.getUuid()),
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.UUID))
 			.setDescription(contactDto.getUuid());
+
+			addDescLabel(firstColumn, contactDto.getPerson(),
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 			
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 
-				addDescLabel(firstColumn, DateFormatHelper.formatDate(contactDto.getLastContactDate()),
-						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
+				final HorizontalLayout ageSexRow = new HorizontalLayout();
+				ageSexRow.setMargin(false);
+				ageSexRow.setSpacing(true);
 
+				addDescLabel(ageSexRow, ApproximateAgeHelper.formatApproximateAge(
+						personDto.getApproximateAge(), personDto.getApproximateAgeType()),
+						I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
+
+				addDescLabel(ageSexRow, personDto.getSex(),
+						I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+				firstColumn.addComponent(ageSexRow);
+
+				addDescLabel(firstColumn, contactDto.getContactOfficer(),
+						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_OFFICER));
 			}
 		}
 		this.addComponent(firstColumn);
@@ -73,20 +87,14 @@ public class ContactInfoLayout extends HorizontalLayout {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 
-			addDescLabel(secondColumn, contactDto.getPerson(),
-					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
+			addDescLabel(secondColumn, contactDto.getDisease(),
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE));
 
-			final HorizontalLayout ageSexRow = new HorizontalLayout();
-			ageSexRow.setMargin(false);
-			ageSexRow.setSpacing(true);
+			addDescLabel(secondColumn, contactDto.getContactClassification(),
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_CLASSIFICATION));
 
-			addDescLabel(ageSexRow, ApproximateAgeHelper.formatApproximateAge(
-					personDto.getApproximateAge(), personDto.getApproximateAgeType()),
-					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
-
-			addDescLabel(ageSexRow, personDto.getSex(),
-					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-			secondColumn.addComponent(ageSexRow);
+			addDescLabel(secondColumn, DateFormatHelper.formatDate(contactDto.getLastContactDate()),
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
 		}
 		this.addComponent(secondColumn);
 	}

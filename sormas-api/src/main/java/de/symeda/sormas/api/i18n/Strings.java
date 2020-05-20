@@ -139,6 +139,7 @@ public interface Strings {
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
+	String forContact = "forContact";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAllContacts = "headingAllContacts";

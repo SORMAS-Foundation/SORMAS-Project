@@ -451,16 +451,18 @@ public class Sample extends CoreAdo {
 	public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
-	
+
 	@Override
 	public String toString() {
-		return SampleReferenceDto.buildCaption(getSampleMaterial(), 
-				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null);
+		return SampleReferenceDto.buildCaption(getSampleMaterial(),
+				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null, getAssociatedContact() != null ?
+						getAssociatedContact().getUuid() : null);
 	}
 
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(getUuid(), getSampleMaterial(), 
-				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null);
+				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
+				getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
 	}
 
 	public Double getReportLat() {

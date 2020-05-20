@@ -225,7 +225,9 @@ public class SampleIndexDto implements Serializable {
 		this.specimenCondition = specimenCondition;
 	}
 	public SampleReferenceDto toReference() {
-		return new SampleReferenceDto(uuid, getSampleMaterial(), getAssociatedCase().getUuid());
+		return new SampleReferenceDto(uuid, getSampleMaterial(),
+				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
+				getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
 	}
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;
