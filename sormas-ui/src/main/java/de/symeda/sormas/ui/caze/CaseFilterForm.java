@@ -167,10 +167,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			case CaseDataDto.COMMUNITY:
 				CommunityReferenceDto community = (CommunityReferenceDto) event.getProperty().getValue();
 				if (!DataHelper.equal(community, criteria.getCommunity())) {
-					criteria.setHealthFacility(null);
+					getField(CaseDataDto.HEALTH_FACILITY).setValue(null);
 				}
 		}
-
 	}
 
 	@Override
