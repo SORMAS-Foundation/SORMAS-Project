@@ -306,6 +306,14 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState erraticBehaviour;
     @Enumerated(EnumType.STRING)
     private SymptomState coma;
+    @Enumerated(EnumType.STRING)
+    private SymptomState respiratoryDiseaseVentilation;
+    @Enumerated(EnumType.STRING)
+    private SymptomState generalSignsOfDisease;
+    @Enumerated(EnumType.STRING)
+    private SymptomState fastHeartRate;
+    @Enumerated(EnumType.STRING)
+    private SymptomState oxygenSaturationLower94;
 
     @Enumerated(EnumType.STRING)
     private SymptomState convulsion;
@@ -1699,5 +1707,37 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setOtherComplicationsText(String otherComplicationsText) {
         this.otherComplicationsText = otherComplicationsText;
+    }
+
+    public SymptomState getRespiratoryDiseaseVentilation() {
+        return respiratoryDiseaseVentilation;
+    }
+
+    public void setRespiratoryDiseaseVentilation(SymptomState respiratoryDiseaseVentilation) {
+        this.respiratoryDiseaseVentilation = respiratoryDiseaseVentilation;
+    }
+
+    public SymptomState getGeneralSignsOfDisease() {
+        return generalSignsOfDisease;
+    }
+
+    public void setGeneralSignsOfDisease(SymptomState generalSignsOfDisease) {
+        this.generalSignsOfDisease = generalSignsOfDisease;
+    }
+
+    public SymptomState getFastHeartRate() {
+        return fastHeartRate;
+    }
+
+    public void setFastHeartRate(SymptomState fastHeartRate) {
+        this.fastHeartRate = fastHeartRate;
+    }
+
+    public SymptomState getOxygenSaturationLower94() {
+        return oxygenSaturationLower94;
+    }
+
+    public void setOxygenSaturationLower94(SymptomState oxygenSaturationLower94) {
+        this.oxygenSaturationLower94 = oxygenSaturationLower94;
     }
 }

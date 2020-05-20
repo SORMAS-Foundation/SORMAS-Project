@@ -17,6 +17,7 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HEPATITIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.HIV_ART;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.I18N_PREFIX;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_INCLUDING_HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFICIENCY_OTHER_THAN_HIV;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
@@ -50,9 +51,9 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			h3(I18nProperties.getString(Strings.headingHealthConditions)) +
 					fluidRow(
 							fluidColumn(6, 0, locs(
-									TUBERCULOSIS, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV, HIV,
-									HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME, CHRONIC_LIVER_DISEASE,
-									MALIGNANCY_CHEMOTHERAPY)),
+									TUBERCULOSIS, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV, 
+									IMMUNODEFICIENCY_INCLUDING_HIV, HIV, HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME, 
+									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY)),
 							fluidColumn(6, 0, locs(
 									CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
@@ -70,7 +71,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 				MALIGNANCY_CHEMOTHERAPY, CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE,
 				CHRONIC_KIDNEY_DISEASE, CHRONIC_NEUROLOGIC_CONDITION, DOWN_SYNDROME, CONGENITAL_SYPHILIS,
 				IMMUNODEFICIENCY_OTHER_THAN_HIV, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION, OBESITY,
-				CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE);
+				CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE, IMMUNODEFICIENCY_INCLUDING_HIV);
 		addField(OTHER_CONDITIONS, TextArea.class).setRows(3);
 
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
