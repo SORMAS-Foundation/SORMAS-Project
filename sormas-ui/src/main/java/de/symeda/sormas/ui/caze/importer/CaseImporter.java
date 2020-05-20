@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -68,6 +67,7 @@ import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
