@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,6 +36,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -215,6 +219,13 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 	
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
+
+		if (CollectionUtils.isEmpty(caseIds)) {
+			// Avoid empty IN clause
+			return new HashMap<>();
+		}
+
+		// Avoid parameter limit by joining caseIds to a String instead of n parameters 
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
 				.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
@@ -224,12 +235,11 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 				.append(Sample.SAMPLE_DATE_TIME).append(" desc) SELECT sortedsamples.").append(Sample.PATHOGEN_TEST_RESULT).append(", COUNT(")
 				.append(Sample.ASSOCIATED_CASE).append("_id) FROM sortedsamples JOIN ").append(Case.TABLE_NAME).append(" ON sortedsamples.")
 				.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
-				.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (:ids) ")
+				.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (").append(StringUtils.join(caseIds, ",")).append(") ")
 				.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
 
 		Query query = em.createNativeQuery(queryBuilder.toString());
-		query.setParameter("ids", caseIds);
-		
+
 		@SuppressWarnings("unchecked")
 		List<Object[]> results = query.getResultList();
 		
