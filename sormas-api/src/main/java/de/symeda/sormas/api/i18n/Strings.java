@@ -576,8 +576,10 @@ public interface Strings {
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
 	String notificationDiseaseChangedSubject = "notificationDiseaseChangedSubject";
 	String notificationLabResultArrived = "notificationLabResultArrived";
+	String notificationLabResultArrivedContact = "notificationLabResultArrivedContact";
 	String notificationLabResultArrivedSubject = "notificationLabResultArrivedSubject";
 	String notificationLabResultSpecified = "notificationLabResultSpecified";
+	String notificationLabResultSpecifiedContact = "notificationLabResultSpecifiedContact";
 	String notificationLabResultSpecifiedSubject = "notificationLabResultSpecifiedSubject";
 	String notificationLabSampleShipped = "notificationLabSampleShipped";
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";

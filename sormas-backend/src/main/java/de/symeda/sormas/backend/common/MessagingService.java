@@ -58,7 +58,9 @@ public class MessagingService {
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChanged";
 	public static final String CONTENT_CASE_INVESTIGATION_DONE = "notificationCaseInvestigationDone";
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "notificationLabResultArrived";
+	public static final String CONTENT_LAB_RESULT_ARRIVED_CONTACT = "notificationLabResultArrivedContact";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED = "notificationLabResultSpecified";
+	public static final String CONTENT_LAB_RESULT_SPECIFIED_CONTACT = "notificationLabResultSpecifiedContact";
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED = "notificationLabSampleShipped";
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT = "notificationLabSampleShippedShort";
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOT_CONTACT = "notificationLabSampleShippedShortForContact";

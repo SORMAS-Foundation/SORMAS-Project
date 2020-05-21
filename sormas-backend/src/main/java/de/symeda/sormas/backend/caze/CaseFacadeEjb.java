@@ -552,7 +552,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				Expression<String> caseIdsExpr = samplesCaseJoin.get(Case.ID);
 				samplesCq.where(caseIdsExpr.in(resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList())));
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				samples = samplesList.stream().collect(Collectors.groupingBy(s -> ((Sample) s).getAssociatedCase().getId()));
+				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
 			}
 
 			for (CaseExportDto exportDto : resultList) {
