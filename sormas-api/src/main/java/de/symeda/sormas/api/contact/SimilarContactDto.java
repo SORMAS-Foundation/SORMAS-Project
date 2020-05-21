@@ -3,12 +3,14 @@ package de.symeda.sormas.api.contact;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class SimilarContactDto implements Serializable {
-	
+
 	private static final long serialVersionUID = -7290520732250426907L;
-	
+
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String UUID = "uuid";
@@ -19,113 +21,130 @@ public class SimilarContactDto implements Serializable {
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
-	
-    private String firstName;
-    private String lastName;
-    private String uuid;
+
+	@PersonalData
+	private String firstName;
+	@PersonalData
+	private String lastName;
+	private String uuid;
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
-    private Date lastContactDate;
-    private ContactProximity contactProximity;
-    private ContactClassification contactClassification;
-    private ContactStatus contactStatus;
-    private FollowUpStatus followUpStatus;
+	private Date lastContactDate;
+	private ContactProximity contactProximity;
+	private ContactClassification contactClassification;
+	private ContactStatus contactStatus;
+	private FollowUpStatus followUpStatus;
+	private ContactJurisdictionDto jurisdiction;
 
-    public SimilarContactDto(String firstName, String lastName, String uuid, 
-    						 String cazeUuid, String caseFirstName, String caseLastName, String caseIdExternalSystem,
-                             Date lastContactDate, ContactProximity contactProximity, ContactClassification contactClassification,
-                             ContactStatus contactStatus, FollowUpStatus followUpStatus) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.uuid = uuid;
-        if (cazeUuid != null) {
-        	this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
-        }
-        this.caseIdExternalSystem = caseIdExternalSystem;
-        this.lastContactDate = lastContactDate;
-        this.contactProximity = contactProximity;
-        this.contactClassification = contactClassification;
-        this.contactStatus = contactStatus;
-        this.followUpStatus = followUpStatus;
-    }
+	public SimilarContactDto(String firstName, String lastName, String uuid,
+							 String cazeUuid, String caseFirstName, String caseLastName, String caseIdExternalSystem,
+							 Date lastContactDate, ContactProximity contactProximity, ContactClassification contactClassification,
+							 ContactStatus contactStatus, FollowUpStatus followUpStatus,
 
-    public CaseReferenceDto getCaze() {
+							 String reportingUserUuid, String regionUuid, String districtUuid,
+							 String caseReportingUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid,
+							 String caseHealthFacilityUuid, String casePointOfEntryUuid) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.uuid = uuid;
+
+		CaseJurisdictionDto caseJurisdiction = null;
+		if (cazeUuid != null) {
+			caseJurisdiction = new CaseJurisdictionDto(caseReportingUuid, caseRegionUuid, caseDistrictUuid,
+					caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName, caseJurisdiction);
+		}
+		this.caseIdExternalSystem = caseIdExternalSystem;
+		this.lastContactDate = lastContactDate;
+		this.contactProximity = contactProximity;
+		this.contactClassification = contactClassification;
+		this.contactStatus = contactStatus;
+		this.followUpStatus = followUpStatus;
+
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+	}
+
+	public CaseReferenceDto getCaze() {
 		return caze;
 	}
 
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 	}
-	
-    public String getCaseIdExternalSystem() {
-        return caseIdExternalSystem;
-    }
 
-    public void setCaseIdExternalSystem(String caseIdExternalSystem) {
-        this.caseIdExternalSystem = caseIdExternalSystem;
-    }
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
 
-    public Date getLastContactDate() {
-        return lastContactDate;
-    }
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
 
-    public void setLastContactDate(Date lastContactDate) {
-        this.lastContactDate = lastContactDate;
-    }
+	public Date getLastContactDate() {
+		return lastContactDate;
+	}
 
-    public ContactProximity getContactProximity() {
-        return contactProximity;
-    }
+	public void setLastContactDate(Date lastContactDate) {
+		this.lastContactDate = lastContactDate;
+	}
 
-    public void setContactProximity(ContactProximity contactProximity) {
-        this.contactProximity = contactProximity;
-    }
+	public ContactProximity getContactProximity() {
+		return contactProximity;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public void setContactProximity(ContactProximity contactProximity) {
+		this.contactProximity = contactProximity;
+	}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public String getUuid() {
-        return uuid;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+	public String getUuid() {
+		return uuid;
+	}
 
-    public ContactClassification getContactClassification() {
-        return contactClassification;
-    }
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 
-    public void setContactClassification(ContactClassification contactClassification) {
-        this.contactClassification = contactClassification;
-    }
+	public ContactClassification getContactClassification() {
+		return contactClassification;
+	}
 
-    public ContactStatus getContactStatus() {
-        return contactStatus;
-    }
+	public void setContactClassification(ContactClassification contactClassification) {
+		this.contactClassification = contactClassification;
+	}
 
-    public void setContactStatus(ContactStatus contactStatus) {
-        this.contactStatus = contactStatus;
-    }
+	public ContactStatus getContactStatus() {
+		return contactStatus;
+	}
 
-    public FollowUpStatus getFollowUpStatus() {
-        return followUpStatus;
-    }
+	public void setContactStatus(ContactStatus contactStatus) {
+		this.contactStatus = contactStatus;
+	}
 
-    public void setFollowUpStatus(FollowUpStatus followUpStatus) {
-        this.followUpStatus = followUpStatus;
-    }
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	public ContactJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
 }

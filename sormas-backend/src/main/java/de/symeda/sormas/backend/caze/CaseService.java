@@ -38,6 +38,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.region.Community;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -158,7 +159,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.orderBy(cb.asc(from.get(Case.CREATION_DATE)));
 
 		List<Case> resultList = em.createQuery(cq).getResultList();
-		return resultList;	
+		return resultList;
 	}
 
 	public List<Case> getAllActiveCasesAfter(Date date) {
@@ -178,7 +179,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);	
+				filter = cb.and(filter, dateFilter);
 			}
 		}
 
@@ -211,9 +212,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
-		Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
-		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
-		Join<Person, Location> casePersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
+
+		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
 		Predicate filter = createActiveCasesFilter(cb, caze);
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, caze, new CaseUserFilterCriteria()
@@ -255,16 +255,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					caze.get(Case.REPORT_DATE),
 					caze.get(Case.CASE_CLASSIFICATION),
 					caze.get(Case.DISEASE),
-					person.get(Person.UUID),
-					person.get(Person.FIRST_NAME),
-					person.get(Person.LAST_NAME),
-					facility.get(Facility.UUID),
-					facility.get(Facility.LATITUDE),
-					facility.get(Facility.LONGITUDE),
+					joins.getPerson().get(Person.UUID),
+					joins.getPerson().get(Person.FIRST_NAME),
+					joins.getPerson().get(Person.LAST_NAME),
+					joins.getFacility().get(Facility.UUID),
+					joins.getFacility().get(Facility.LATITUDE),
+					joins.getFacility().get(Facility.LONGITUDE),
 					caze.get(Case.REPORT_LAT),
 					caze.get(Case.REPORT_LON),
-					casePersonAddress.get(Location.LATITUDE),
-					casePersonAddress.get(Location.LONGITUDE));
+					joins.getPersonAddress().get(Location.LATITUDE),
+					joins.getPersonAddress().get(Location.LONGITUDE),
+					joins.getReportingUser().get(User.UUID),
+					joins.getRegion().get(Region.UUID),
+					joins.getDistrict().get(District.UUID),
+					joins.getCommunity().get(Community.UUID),
+					joins.getPointOfEntry().get(PointOfEntry.UUID)
+			);
 
 			result = em.createQuery(cq).getResultList();
 		} else {
@@ -292,7 +298,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			ParameterExpression<String> regexPattern = cb.parameter(String.class);
 			ParameterExpression<String> regexReplacement = cb.parameter(String.class);
 			ParameterExpression<String> regexFlags = cb.parameter(String.class);
-			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class, 
+			Expression<String> epidNumberSuffixClean = cb.function("regexp_replace", String.class,
 					cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length() + 1), regexPattern, regexReplacement, regexFlags);
 			cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
 			cq.select(caze.get(Case.EPID_NUMBER));
@@ -391,8 +397,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	/**
-	 * Creates a filter that checks whether the case is considered "relevant" in the time frame specified by {@code fromDate} and 
-	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are 
+	 * Creates a filter that checks whether the case is considered "relevant" in the time frame specified by {@code fromDate} and
+	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are
 	 * within the time frame.
 	 */
 	public Predicate createCaseRelevanceFilter(CriteriaBuilder cb, Root<Case> from, Date fromDate, Date toDate) {
@@ -406,15 +412,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (toDate != null) {
 			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
 			dateToFilter = cb.or(
-					cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate), 
+					cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate),
 					cb.and(
-							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), 
+							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
 							cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate))
 					);
 		}
 
 		if (dateFromFilter != null && dateToFilter != null) {
-			return cb.and(dateFromFilter, dateToFilter);			
+			return cb.and(dateFromFilter, dateToFilter);
 		} else if (dateFromFilter != null) {
 			return dateFromFilter;
 		} else {
@@ -431,7 +437,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = and(cb, filter, cb.isMember(
-					caseCriteria.getReportingUserRole(), 
+					caseCriteria.getReportingUserRole(),
 					from.join(Case.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
 		}
 		if (caseCriteria.getDisease() != null) {
@@ -484,7 +490,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
 		}
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
-			filter = and(cb, filter, createNewCaseFilter(cb, from, DateHelper.getStartOfDay(caseCriteria.getNewCaseDateFrom()), 
+			filter = and(cb, filter, createNewCaseFilter(cb, from, DateHelper.getStartOfDay(caseCriteria.getNewCaseDateFrom()),
 					DateHelper.getEndOfDay(caseCriteria.getNewCaseDateTo()), caseCriteria.getNewCaseDateType()));
 		}
 		if (caseCriteria.getCreationDateFrom() != null) {
@@ -501,13 +507,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getMustHaveNoGeoCoordinates() != null && caseCriteria.getMustHaveNoGeoCoordinates() == true) {
 			Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
-			filter = and(cb, filter, 
+			filter = and(cb, filter,
 					cb.and(
 							cb.or(
-									cb.isNull(from.get(Case.REPORT_LAT)), 
-									cb.isNull(from.get(Case.REPORT_LON))), 
+									cb.isNull(from.get(Case.REPORT_LAT)),
+									cb.isNull(from.get(Case.REPORT_LON))),
 							cb.or(
-									cb.isNull(personAddress.get(Location.LATITUDE)), 
+									cb.isNull(personAddress.get(Location.LATITUDE)),
 									cb.isNull(personAddress.get(Location.LONGITUDE)))
 							)
 					);
@@ -669,7 +675,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		dateFilter = cb.or(dateFilter,
 				greaterThanAndNotNull(cb, hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 
-		Join<Hospitalization, PreviousHospitalization> previousHospitalization 
+		Join<Hospitalization, PreviousHospitalization> previousHospitalization
 		= hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter,
 				greaterThanAndNotNull(cb, previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
@@ -814,7 +820,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		if (filter != null) {
 			filter = cb.or(filter, filterResponsible);
-		} else { 
+		} else {
 			filter = filterResponsible;
 		}
 
@@ -829,7 +835,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	/**
 	 * Creates a filter that checks whether the case has "started" within the time frame specified by {@code fromDate} and {@code toDate}.
-	 * By default (if {@code newCaseDateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null, 
+	 * By default (if {@code newCaseDateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
 	 * the {@link Case#reportDate}.
 	 */
 	private Predicate createNewCaseFilter(CriteriaBuilder cb, From<Case, Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {

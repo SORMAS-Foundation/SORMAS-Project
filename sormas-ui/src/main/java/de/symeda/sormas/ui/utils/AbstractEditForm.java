@@ -413,7 +413,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	 */
 	protected void initializeAccessAndAllowedAccesses() {
 		if (fieldAccessCheckers == null) {
-			throw new RuntimeException("Field access checker is not set!");
+			throw new RuntimeException("Access checker is not set!");
 		}
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			Field<?> field = getFieldGroup().getField(propertyId);

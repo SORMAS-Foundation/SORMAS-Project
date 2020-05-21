@@ -22,6 +22,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -45,6 +46,9 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactEditAuthorization;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -96,6 +100,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
+	private ContactService contactService;
+	@EJB
 	private FacilityService facilityService;
 	@EJB
 	private RegionService regionService;
@@ -111,6 +117,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private PseudonymizationService pseudonymizationService;
 	@EJB
 	private CaseEditAuthorization caseEditAuthorization;
+	@EJB
+	private ContactEditAuthorization contactEditAuthorization;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -372,18 +380,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		return toIndexDto(person);
 	}
 
-	private PersonDto convertToDto(Person person){
-		PersonDto dto = toDto(person);
-
-		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
-		boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseEditAuthorization.caseEditAllowedCheck(c));
-		pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
-			pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
-		});
-
-		return dto;
-	}
-
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target) {
 
 		if (target == null) {
@@ -452,11 +448,27 @@ public class PersonFacadeEjb implements PersonFacade {
 		return target;
 	}
 
+	private PersonDto convertToDto(Person person) {
+		PersonDto dto = toDto(person);
+
+		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
+		List<Contact> personContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(person.getUuid())), null);
+
+		boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseEditAuthorization.isInJurisdiction(c))
+				|| personContacts.stream().anyMatch(c -> contactEditAuthorization.isInJurisdiction(c));
+
+		pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
+			pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
+		});
+
+		return dto;
+	}
+
 	public static PersonReferenceDto toReferenceDto(Person entity) {
 		if (entity == null) {
 			return null;
 		}
-		PersonReferenceDto dto = new PersonReferenceDto(entity.getUuid(), entity.toString());
+		PersonReferenceDto dto = new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
 		return dto;
 	}
 

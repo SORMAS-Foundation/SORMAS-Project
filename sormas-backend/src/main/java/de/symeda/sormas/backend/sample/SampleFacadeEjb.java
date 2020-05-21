@@ -40,6 +40,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.backend.caze.CaseEditAuthorization;
+import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +61,6 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -122,6 +124,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
+	@EJB
+	private PseudonymizationService pseudonymizationService;
+	@EJB
+	private CaseEditAuthorization caseEditAuthorization;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -132,18 +138,18 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		return sampleService.getAllActiveUuids(user);
-	}	
+	}
 
 	@Override
 	public List<SampleDto> getAllActiveSamplesAfter(Date date) {
 		User user = userService.getCurrentUser();
 
-		if(user == null) {
+		if (user == null) {
 			return Collections.emptyList();
 		}
 
 		return sampleService.getAllActiveSamplesAfter(date, user).stream()
-				.map(e -> toDto(e))
+				.map(e -> convertToDto(e))
 				.collect(Collectors.toList());
 	}
 
@@ -151,15 +157,15 @@ public class SampleFacadeEjb implements SampleFacade {
 	public List<SampleDto> getByUuids(List<String> uuids) {
 		return sampleService.getByUuids(uuids)
 				.stream()
-				.map(c -> toDto(c))
+				.map(c -> convertToDto(c))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
 		return sampleService.getByCaseUuids(caseUuids)
 				.stream()
-				.map(c -> toDto(c))
+				.map(c -> convertToDto(c))
 				.collect(Collectors.toList());
 	}
 
@@ -173,17 +179,17 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.getDeletedUuidsSince(user, since);
 	}
-	
+
 	@Override
 	public SampleDto getSampleByUuid(String uuid) {
-		return toDto(sampleService.getByUuid(uuid));
+		return convertToDto(sampleService.getByUuid(uuid));
 	}
 
 	@Override
 	public SampleDto saveSample(SampleDto dto) {
 		return saveSample(dto, true);
 	}
-	
+
 	public SampleDto saveSample(SampleDto dto, boolean handleChanges) {
 		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
 		Sample sample = fromDto(dto);
@@ -216,29 +222,25 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
 
-		Join<Sample, Sample> referredSample = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
-		Join<Sample, Facility> lab = sample.join(Sample.LAB, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Case, Person> cazePerson = caze.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
+		SampleJoins joins = new SampleJoins(sample);
 
-		cq.multiselect(sample.get(Sample.UUID), 
-				caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
-				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
-				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SAMPLE_PURPOSE), sample.get(Sample.SPECIMEN_CONDITION), 
-				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 
-				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
-				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
-				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), sample.get(Sample.PATHOGEN_TEST_RESULT), 
-				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
+		cq.multiselect(sample.get(Sample.UUID),
+				joins.getCaze().get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME),
+				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE),
+				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SAMPLE_PURPOSE), sample.get(Sample.SPECIMEN_CONDITION),
+				joins.getLab().get(Facility.UUID), joins.getLab().get(Facility.NAME), joins.getReferredSample().get(Sample.UUID),
+				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
+				joins.getCaze().get(Case.DISEASE), joins.getCaze().get(Case.DISEASE_DETAILS),
+				joins.getCaseRegion().get(Region.UUID), joins.getCaseDistrict().get(District.UUID), joins.getCaseDistrict().get(District.NAME), sample.get(Sample.PATHOGEN_TEST_RESULT),
+				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
+				joins.getCaseReportingUser().get(User.UUID), joins.getCaseCommunity().get(Community.UUID), joins.getCaseFacility().get(Community.UUID), joins.getCasePointOfEntry().get(Community.UUID));
 
 		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-		}		
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -249,39 +251,39 @@ public class SampleFacadeEjb implements SampleFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case SampleIndexDto.UUID:
-				case SampleIndexDto.LAB_SAMPLE_ID:
-				case SampleIndexDto.SHIPPED:
-				case SampleIndexDto.RECEIVED:
-				case SampleIndexDto.REFERRED:
-				case SampleIndexDto.SAMPLE_DATE_TIME:
-				case SampleIndexDto.SHIPMENT_DATE:
-				case SampleIndexDto.RECEIVED_DATE:
-				case SampleIndexDto.SAMPLE_MATERIAL:
-				case SampleIndexDto.SAMPLE_PURPOSE:
-				case SampleIndexDto.PATHOGEN_TEST_RESULT:
-				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
-					expression = sample.get(sortProperty.propertyName);
-					break;
-				case SampleIndexDto.DISEASE:
-					expression = caze.get(Case.DISEASE);
-					break;
-				case SampleIndexDto.EPID_NUMBER:
-					expression = caze.get(Case.EPID_NUMBER);
-					break;
-				case SampleIndexDto.ASSOCIATED_CASE:
-					expression = cazePerson.get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = cazePerson.get(Person.FIRST_NAME);
-					break;
-				case SampleIndexDto.CASE_DISTRICT:
-					expression = caseDistrict.get(District.NAME);
-					break;
-				case SampleIndexDto.LAB:
-					expression = lab.get(Facility.NAME);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
+					case SampleIndexDto.UUID:
+					case SampleIndexDto.LAB_SAMPLE_ID:
+					case SampleIndexDto.SHIPPED:
+					case SampleIndexDto.RECEIVED:
+					case SampleIndexDto.REFERRED:
+					case SampleIndexDto.SAMPLE_DATE_TIME:
+					case SampleIndexDto.SHIPMENT_DATE:
+					case SampleIndexDto.RECEIVED_DATE:
+					case SampleIndexDto.SAMPLE_MATERIAL:
+					case SampleIndexDto.SAMPLE_PURPOSE:
+					case SampleIndexDto.PATHOGEN_TEST_RESULT:
+					case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
+						expression = sample.get(sortProperty.propertyName);
+						break;
+					case SampleIndexDto.DISEASE:
+						expression = joins.getCaze().get(Case.DISEASE);
+						break;
+					case SampleIndexDto.EPID_NUMBER:
+						expression = joins.getCaze().get(Case.EPID_NUMBER);
+						break;
+					case SampleIndexDto.ASSOCIATED_CASE:
+						expression = joins.getCasePerson().get(Person.LAST_NAME);
+						order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+						expression = joins.getCasePerson().get(Person.FIRST_NAME);
+						break;
+					case SampleIndexDto.CASE_DISTRICT:
+						expression = joins.getCaseDistrict().get(District.NAME);
+						break;
+					case SampleIndexDto.LAB:
+						expression = joins.getLab().get(Facility.NAME);
+						break;
+					default:
+						throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
@@ -290,13 +292,27 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 		}
 
+		List<SampleIndexDto> samples;
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			samples = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			return em.createQuery(cq).getResultList();
+			samples = em.createQuery(cq).getResultList();
 		}
+
+		pseudonymizationService.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> {
+					if (s.getAssociatedCase() == null) {
+						return true;
+					}
+
+					return caseEditAuthorization.isInJurisdiction(s.getAssociatedCase().getJurisdiction());
+				},
+				(s, isInJurisdiction) -> {
+					pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), isInJurisdiction, null);
+				});
+
+		return samples;
 	}
-	
+
 	@Override
 	public void validate(SampleDto sample) throws ValidationRuntimeException {
 		if (sample.getAssociatedCase() == null) {
@@ -318,7 +334,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
 	}
-	
+
 	private List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
@@ -380,7 +396,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				caseFacility.get(Facility.UUID),
 				caseFacility.get(Facility.NAME),
 				caze.get(Case.HEALTH_FACILITY_DETAILS)
-				);
+		);
 
 		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
@@ -409,53 +425,53 @@ public class SampleFacadeEjb implements SampleFacade {
 			int count = 0;
 			for (PathogenTest pathogenTest : pathogenTests) {
 				switch (++count) {
-				case 1:
-					exportDto.setPathogenTestType1(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto.setPathogenTestDisease1(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime1(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto
-								.setPathogenTestLab1(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
-										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult1(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified1(pathogenTest.getTestResultVerified());
-					break;
-				case 2:
-					exportDto.setPathogenTestType2(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto.setPathogenTestDisease2(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime2(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto
-								.setPathogenTestLab2(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
-										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult2(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified2(pathogenTest.getTestResultVerified());
-					break;
-				case 3:
-					exportDto.setPathogenTestType3(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto.setPathogenTestDisease3(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime3(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto
-								.setPathogenTestLab3(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
-										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult3(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified3(pathogenTest.getTestResultVerified());
-					break;
-				default:
-					StringBuilder sb = new StringBuilder();
-					if (!exportDto.getOtherPathogenTestsDetails().isEmpty()) {
-						sb.append(", ");
-					}
-					sb.append(DateHelper.formatDateForExport(pathogenTest.getTestDateTime())).append(" (")
-					.append(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()))
-					.append(", ").append(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()))
-					.append(", ").append(pathogenTest.getTestResult()).append(")");
-					exportDto.setOtherPathogenTestsDetails(exportDto.getOtherPathogenTestsDetails() + sb.toString());
-					break;
+					case 1:
+						exportDto.setPathogenTestType1(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
+						exportDto.setPathogenTestDisease1(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
+						exportDto.setPathogenTestDateTime1(pathogenTest.getTestDateTime());
+						if (pathogenTest.getLab() != null) {
+							exportDto
+									.setPathogenTestLab1(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+											pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+						}
+						exportDto.setPathogenTestResult1(pathogenTest.getTestResult());
+						exportDto.setPathogenTestVerified1(pathogenTest.getTestResultVerified());
+						break;
+					case 2:
+						exportDto.setPathogenTestType2(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
+						exportDto.setPathogenTestDisease2(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
+						exportDto.setPathogenTestDateTime2(pathogenTest.getTestDateTime());
+						if (pathogenTest.getLab() != null) {
+							exportDto
+									.setPathogenTestLab2(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+											pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+						}
+						exportDto.setPathogenTestResult2(pathogenTest.getTestResult());
+						exportDto.setPathogenTestVerified2(pathogenTest.getTestResultVerified());
+						break;
+					case 3:
+						exportDto.setPathogenTestType3(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
+						exportDto.setPathogenTestDisease3(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
+						exportDto.setPathogenTestDateTime3(pathogenTest.getTestDateTime());
+						if (pathogenTest.getLab() != null) {
+							exportDto
+									.setPathogenTestLab3(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+											pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+						}
+						exportDto.setPathogenTestResult3(pathogenTest.getTestResult());
+						exportDto.setPathogenTestVerified3(pathogenTest.getTestResultVerified());
+						break;
+					default:
+						StringBuilder sb = new StringBuilder();
+						if (!exportDto.getOtherPathogenTestsDetails().isEmpty()) {
+							sb.append(", ");
+						}
+						sb.append(DateHelper.formatDateForExport(pathogenTest.getTestDateTime())).append(" (")
+								.append(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()))
+								.append(", ").append(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()))
+								.append(", ").append(pathogenTest.getTestResult()).append(")");
+						exportDto.setOtherPathogenTestsDetails(exportDto.getOtherPathogenTestsDetails() + sb.toString());
+						break;
 				}
 			}
 
@@ -510,7 +526,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (!userService.hasRight(UserRight.SAMPLE_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete samples.");
 		}
-		
+
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample);
 
@@ -525,10 +541,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	public Sample fromDto(@NotNull SampleDto source) {
 
 		Sample target = sampleService.getByUuid(source.getUuid());
-		if(target == null) {
+		if (target == null) {
 			target = new Sample();
 			target.setUuid(source.getUuid());
-			if(source.getCreationDate() != null) {
+			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
@@ -570,8 +586,19 @@ public class SampleFacadeEjb implements SampleFacade {
 		return target;
 	}
 
+	private SampleDto convertToDto(Sample source) {
+		SampleDto dto = toDto(source);
+
+		Boolean isInJurisdiction = caseEditAuthorization.isInJurisdiction(source.getAssociatedCase());
+		pseudonymizationService.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
+			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), isInJurisdiction, null);
+		});
+
+		return dto;
+	}
+
 	public static SampleDto toDto(Sample source) {
-		if(source == null) {
+		if (source == null) {
 			return null;
 		}
 		SampleDto target = new SampleDto();
@@ -614,7 +641,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	public static SampleReferenceDto toReferenceDto(Sample entity) {
-		if(entity == null) {
+		if (entity == null) {
 			return null;
 		}
 		SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
@@ -629,18 +656,18 @@ public class SampleFacadeEjb implements SampleFacade {
 				newSample.setPathogenTestResultChangeDate(latestPathogenTestDate);
 			}
 		}
-		
+
 		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
-		
+
 		// Send an email to the lab user when a sample has been shipped to his lab
 		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
 			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
 
 			for (User recipient : messageRecipients) {
 				try {
-					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-						String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
-							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
+					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED),
+							String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
+									DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())),
 							MessageType.EMAIL, MessageType.SMS);
 				} catch (NotificationDeliveryFailedException e) {
 					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the shipment of a lab sample. "

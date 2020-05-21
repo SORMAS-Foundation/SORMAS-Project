@@ -39,11 +39,12 @@ public class PseudonymizationService {
 	@EJB
 	private UserService userService;
 
-	public <DTO> void pseudonymizeDtoCollection(Class<DTO> type, Collection<DTO> dtos, Function<DTO, Boolean> jurisdictionValidator, Consumer<DTO> customPseudonymization) {
+	public <DTO> void pseudonymizeDtoCollection(Class<DTO> type, Collection<DTO> dtos, Function<DTO, Boolean> jurisdictionValidator, CustomPseudonymization<DTO> customPseudonymization) {
 		List<Field> declaredFields = getDeclaredFields(type);
 
 		dtos.forEach(dto -> {
-			pseudonymizeDto(dto, declaredFields, jurisdictionValidator.apply(dto), customPseudonymization);
+			Boolean isInJurisdiction = jurisdictionValidator.apply(dto);
+			pseudonymizeDto(dto, declaredFields, isInJurisdiction, customPseudonymization == null ? null : d -> customPseudonymization.pseudonymize(dto, isInJurisdiction));
 		});
 	}
 
@@ -90,5 +91,9 @@ public class PseudonymizationService {
 		}
 
 		return declaredFields;
+	}
+
+	public interface CustomPseudonymization<DTO> {
+		void pseudonymize(DTO dto, boolean isInJurisdiction);
 	}
 }

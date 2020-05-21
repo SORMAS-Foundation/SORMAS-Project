@@ -105,21 +105,12 @@ public class CaseExportDto implements Serializable {
 	private String ageGroup;
 	private BirthDateDto birthdate;
 	private Date reportDate;
-	private String reportingUserUuid;
-	private String regionUuid;
 	private String region;
-	private String districtUuid;
 	private String district;
-	@PersonalData
-	private String communityUuid;
 	@PersonalData
 	private String community;
 	@PersonalData
-	private String healthFacilityUuid;
-	@PersonalData
 	private String healthFacility;
-	@PersonalData
-	private String pointOfEntryUuid;
 	@PersonalData
 	private String pointOfEntry;
 	private CaseClassification caseClassification;
@@ -180,6 +171,8 @@ public class CaseExportDto implements Serializable {
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
+	private CaseJurisdictionDto jurisdiction;
+
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex, YesNoUnknown pregnant,
@@ -221,12 +214,8 @@ public class CaseExportDto implements Serializable {
 		this.ageGroup = ApproximateAgeHelper.getAgeGroupFromAge(approximateAge, approximateAgeType);
 		this.birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.reportDate = reportDate;
-		this.reportingUserUuid = reportingUserUuid;
-		this.regionUuid = regionUuid;
 		this.region = region;
-		this.districtUuid = districtUuid;
 		this.district = district;
-		this.communityUuid = communityUuid;
 		this.community = community;
 		this.caseClassification = caseClassification;
 		this.investigationStatus = investigationStatus;
@@ -234,9 +223,7 @@ public class CaseExportDto implements Serializable {
 		this.quarantine = quarantine;
 		this.quarantineFrom = quarantineFrom;
 		this.quarantineTo = quarantineTo;
-		this.healthFacilityUuid = healthFacilityUuid;
 		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
-		this.pointOfEntryUuid = pointOfEntryUuid;
 		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry, pointOfEntryDetails);
 		this.admittedToHealthFacility = admittedToHealthFacility;
 		this.admissionDate = admissionDate;
@@ -264,10 +251,12 @@ public class CaseExportDto implements Serializable {
 		this.vaccinationDoses = vaccinationDoses;
 		this.vaccinationDate = vaccinationDate;
 		this.vaccinationInfoSource = vaccinationInfoSource;
+
+		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, PersonDto.buildCaption(firstName, lastName));
+		return new CaseReferenceDto(uuid, firstName, lastName, jurisdiction);
 	}
 
 	@Order(0)
@@ -402,24 +391,12 @@ public class CaseExportDto implements Serializable {
 		return reportDate;
 	}
 
-	public String getReportingUserUuid() {
-		return reportingUserUuid;
-	}
-
-	public String getRegionUuid() {
-		return regionUuid;
-	}
-
 	@Order(21)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(CaseDataDto.REGION)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getRegion() {
 		return region;
-	}
-
-	public String getDistrictUuid() {
-		return districtUuid;
 	}
 
 	@Order(22)
@@ -430,10 +407,6 @@ public class CaseExportDto implements Serializable {
 		return district;
 	}
 
-	public String getCommunityUuid() {
-		return communityUuid;
-	}
-
 	@Order(23)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(CaseDataDto.COMMUNITY)
@@ -442,20 +415,12 @@ public class CaseExportDto implements Serializable {
 		return community;
 	}
 
-	public String getHealthFacilityUuid() {
-		return healthFacilityUuid;
-	}
-
 	@Order(24)
 	@ExportTarget(caseExportTypes = {CaseExportType.CASE_SURVEILLANCE, CaseExportType.CASE_MANAGEMENT})
 	@ExportProperty(CaseDataDto.HEALTH_FACILITY)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getHealthFacility() {
 		return healthFacility;
-	}
-
-	public String getPointOfEntryUuid() {
-		return pointOfEntryUuid;
 	}
 
 	@Order(25)
@@ -1152,4 +1117,7 @@ public class CaseExportDto implements Serializable {
 		this.otherSamples = otherSamples;
 	}
 
+	public CaseJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
 }

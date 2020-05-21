@@ -262,6 +262,7 @@ public class CaseDataDto extends EntityDto {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private ReportingType reportingType;
+	private CaseJurisdictionDto jurisdiction;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -316,7 +317,8 @@ public class CaseDataDto extends EntityDto {
 
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
+		return new CaseReferenceDto(getUuid(), getPerson().getFirstName(), getPerson().getLastName(),
+				new CaseJurisdictionDto(this));
 	}
 
 	/**
@@ -904,5 +906,9 @@ public class CaseDataDto extends EntityDto {
 
 	public void setReportingType(ReportingType reportingType) {
 		this.reportingType = reportingType;
+	}
+
+	public CaseJurisdictionDto getJurisdiction() {
+		return new CaseJurisdictionDto(this);
 	}
 }

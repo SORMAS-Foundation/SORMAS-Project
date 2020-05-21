@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.contact;
+package de.symeda.sormas.api.caze;
 
 import java.io.Serializable;
 
-public class ContactCaseJurisdictionDto implements Serializable {
+public class CaseJurisdictionDto implements Serializable {
 
 	private static final long serialVersionUID = -5412823431238056752L;
 
@@ -31,16 +31,39 @@ public class ContactCaseJurisdictionDto implements Serializable {
 	private String healthFacilityUuid;
 	private String pointOfEntryUuid;
 
-	public ContactCaseJurisdictionDto() {
+	public CaseJurisdictionDto() {
 	}
 
-	public ContactCaseJurisdictionDto(String reportingUserUuid, String regionUui, String districtUud, String communityUuid, String healthFacilityUuid, String pointOfEntryUuid) {
+	public CaseJurisdictionDto(String reportingUserUuid, String regionUui, String districtUud, String communityUuid, String healthFacilityUuid, String pointOfEntryUuid) {
 		this.reportingUserUuid = reportingUserUuid;
 		this.regionUui = regionUui;
 		this.districtUud = districtUud;
 		this.communityUuid = communityUuid;
 		this.healthFacilityUuid = healthFacilityUuid;
 		this.pointOfEntryUuid = pointOfEntryUuid;
+	}
+
+	public CaseJurisdictionDto(CaseDataDto caseDto) {
+		this();
+
+		if (caseDto.getReportingUser() != null) {
+			reportingUserUuid = caseDto.getReportingUser().getUuid();
+		}
+		if (caseDto.getRegion() != null) {
+			regionUui = caseDto.getRegion().getUuid();
+		}
+		if (caseDto.getDistrict() != null) {
+			districtUud = caseDto.getDistrict().getUuid();
+		}
+		if (caseDto.getCommunity() != null) {
+			communityUuid = caseDto.getCommunity().getUuid();
+		}
+		if (caseDto.getHealthFacility() != null) {
+			healthFacilityUuid = caseDto.getHealthFacility().getUuid();
+		}
+		if (caseDto.getPointOfEntry() != null) {
+			pointOfEntryUuid = caseDto.getPointOfEntry().getUuid();
+		}
 	}
 
 	public String getReportingUserUuid() {

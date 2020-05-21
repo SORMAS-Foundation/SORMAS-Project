@@ -212,7 +212,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		MapCaseDto mapCaseDto = new MapCaseDto(caze.getUuid(), caze.getReportDate(), caze.getCaseClassification(), caze.getDisease(),
 				caze.getPerson().getUuid(), cazePerson.getFirstName(), cazePerson.getLastName(),
 				caze.getHealthFacility().getUuid(), 0d, 0d,
-				caze.getReportLat(), caze.getReportLon(), caze.getReportLat(), caze.getReportLon());
+				caze.getReportLat(), caze.getReportLon(), caze.getReportLat(), caze.getReportLon(), null, null, null, null, null);
 
 		List<MapContactDto> mapContactDtos =  getContactFacade().getContactsForMap(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), Arrays.asList(mapCaseDto));
 

@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.utils.PersonalData;
 
 public class ContactIndexDto implements Serializable {
@@ -70,8 +71,7 @@ public class ContactIndexDto implements Serializable {
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
-
-	private ContactCaseJurisdictionDto caseJurisdiction;
+	private ContactJurisdictionDto jurisdiction;
 
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
@@ -83,7 +83,8 @@ public class ContactIndexDto implements Serializable {
 		this.uuid = uuid;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
-		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
+		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName, new CaseJurisdictionDto(caseReportingUserUid, caseRegionUuid, caseDistrictUud,
+				caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.regionUuid = regionUuid;
@@ -99,9 +100,8 @@ public class ContactIndexDto implements Serializable {
 		this.reportingUserUuid = reportingUserUuid;
 		this.reportDateTime = reportDateTime;
 		this.setCaseClassification(caseClassification);
-
-		this.caseJurisdiction = new ContactCaseJurisdictionDto(caseReportingUserUid, caseRegionUuid, caseDistrictUud,
-				caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid,
+				new CaseJurisdictionDto(caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
 	}
 
 	public String getUuid() {
@@ -256,11 +256,11 @@ public class ContactIndexDto implements Serializable {
 		this.caseClassification = caseClassification;
 	}
 
-	public ContactCaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
-	}
-
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(uuid);
+	}
+
+	public ContactJurisdictionDto getJurisdiction() {
+		return jurisdiction;
 	}
 }

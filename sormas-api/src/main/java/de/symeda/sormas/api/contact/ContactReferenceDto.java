@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.utils.PersonalData;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -24,39 +26,76 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 
+import java.io.Serializable;
+
 public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
-	
+
+	private PersonName contactPersonName;
+	private PersonName casePersonName;
+	private ContactJurisdictionDto contactJurisdiction;
+
 	public ContactReferenceDto() {
-		
+
 	}
-	
+
 	public ContactReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
-	public ContactReferenceDto(String uuid, String caption) {
+
+	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName,
+							   String caseFirstName, String caseLastName,
+							   ContactJurisdictionDto contactJurisdiction) {
 		setUuid(uuid);
-		setCaption(caption);
+		contactPersonName = new PersonName(contactFirstName, contactLastName);
+		casePersonName = new PersonName(caseFirstName, caseLastName);
+
+		this.contactJurisdiction = contactJurisdiction;
 	}
-	
-	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
-		setUuid(uuid);
-		setCaption(buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName));
+
+	@Override
+	public String getCaption() {
+		return buildCaption(contactPersonName.firstName, contactPersonName.lastName, casePersonName.firstName, casePersonName.lastName);
+	}
+
+	public PersonName getContactPersonName() {
+		return contactPersonName;
+	}
+
+	public PersonName getCasePersonName() {
+		return casePersonName;
+	}
+
+	public ContactJurisdictionDto getContactJurisdiction() {
+		return contactJurisdiction;
 	}
 
 	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(DataHelper.toStringNullable(contactFirstName))
 			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase());
-		
+
 		if (caseFirstName != null || caseLastName != null) {
 			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""))
 			.append(DataHelper.toStringNullable(caseFirstName))
 			.append(" ").append(DataHelper.toStringNullable(caseLastName));
 		}
-		
+
 		return builder.toString();
+	}
+
+	public static class PersonName implements Serializable {
+		private static final long serialVersionUID = -6077306945043270617L;
+
+		@PersonalData
+		private String firstName;
+		@PersonalData
+		private String lastName;
+
+		public PersonName(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+		}
 	}
 }

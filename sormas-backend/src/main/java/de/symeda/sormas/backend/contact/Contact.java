@@ -35,8 +35,10 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -60,7 +62,7 @@ public class Contact extends CoreAdo {
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	public static final String TABLE_NAME = "contact";
-	
+
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -110,7 +112,7 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String VISITS = "visits";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
-	
+
 	private Date reportDateTime;
 	private User reportingUser;
 	private Double reportLat;
@@ -119,7 +121,7 @@ public class Contact extends CoreAdo {
 
 	private Region region;
 	private District district;
-	
+
 	private Person person;
 	private Case caze;
 	private Disease disease;
@@ -137,19 +139,19 @@ public class Contact extends CoreAdo {
 	private User contactOfficer;
 	private String description;
 	private String externalID;
-	
+
 	private Case resultingCase;
 	private User resultingCaseUser;
-	
+
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
-	
+
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
-	
+
 	private String caseIdExternalSystem;
 	private String caseOrEventInformation;
 
@@ -169,17 +171,17 @@ public class Contact extends CoreAdo {
 
 	private List<Task> tasks;
 	private Set<Visit> visits;
-	
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public Person getPerson() {
 		return person;
 	}
-	
+
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	@JoinColumn
 	public Case getCaze() {
@@ -215,7 +217,7 @@ public class Contact extends CoreAdo {
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public User getReportingUser() {
@@ -224,7 +226,7 @@ public class Contact extends CoreAdo {
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getLastContactDate() {
 		return lastContactDate;
@@ -232,7 +234,7 @@ public class Contact extends CoreAdo {
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public ContactProximity getContactProximity() {
 		return contactProximity;
@@ -285,7 +287,7 @@ public class Contact extends CoreAdo {
 
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
-	}	
+	}
 
 	@Enumerated(EnumType.STRING)
 	public ContactStatus getContactStatus() {
@@ -300,7 +302,7 @@ public class Contact extends CoreAdo {
 	public ContactRelation getRelationToCase() {
 		return relationToCase;
 	}
-	
+
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
 	}
@@ -330,13 +332,21 @@ public class Contact extends CoreAdo {
 		return ContactReferenceDto.buildCaption(contactPerson.getFirstName(), contactPerson.getLastName(),
 				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
 	}
-	
+
 	public ContactReferenceDto toReference() {
 		Person contactPerson = getPerson();
-		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(),
-				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
+
+		String casePersonFirstName = null;
+		String casePersonLastName = null;
+		if(getCaze() != null){
+			casePersonFirstName = getCaze().getPerson().getFirstName();
+			casePersonLastName = getCaze().getPerson().getLastName();
+		}
+
+		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(), casePersonFirstName, casePersonLastName,
+				createContactJurisdiction());
 	}
-	
+
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)
 	public List<Task> getTasks() {
 		return tasks;
@@ -359,7 +369,7 @@ public class Contact extends CoreAdo {
 	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
-	
+
 	public Double getReportLon() {
 		return reportLon;
 	}
@@ -510,7 +520,7 @@ public class Contact extends CoreAdo {
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
-	
+
 	@Column(length = 512)
 	public String getContactProximityDetails() {
 		return contactProximityDetails;
@@ -609,7 +619,7 @@ public class Contact extends CoreAdo {
 	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
-	
+
 	@Column(length = 512)
 	public String getAdditionalDetails() {
 		return additionalDetails;
@@ -617,5 +627,53 @@ public class Contact extends CoreAdo {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	private ContactJurisdictionDto createContactJurisdiction() {
+		ContactJurisdictionDto jurisdiction = new ContactJurisdictionDto();
+
+		if(getReportingUser() != null){
+			jurisdiction.setReportingUserUuid(getReportingUser().getUuid());
+		}
+
+		if(getRegion() != null){
+			jurisdiction.setRegionUuId(getRegion().getUuid());
+		}
+
+		if(getDistrict() != null){
+			jurisdiction.setDistrictUuid(getDistrict().getUuid());
+		}
+
+		CaseJurisdictionDto caseJurisdiction = new CaseJurisdictionDto();
+		Case caze = getCaze();
+		if (caze != null) {
+			if (caze.getReportingUser() != null) {
+				caseJurisdiction.setReportingUserUuid(caze.getReportingUser().getUuid());
+			}
+
+			if (caze.getRegion() != null) {
+				caseJurisdiction.setRegionUui(caze.getRegion().getUuid());
+			}
+
+			if (caze.getDistrict() != null) {
+				caseJurisdiction.setDistrictUud(caze.getDistrict().getUuid());
+			}
+
+			if (caze.getCommunity() != null) {
+				caseJurisdiction.setCommunityUuid(caze.getCommunity().getUuid());
+			}
+
+			if (caze.getHealthFacility() != null) {
+				caseJurisdiction.setHealthFacilityUuid(caze.getHealthFacility().getUuid());
+			}
+
+			if (caze.getPointOfEntry() != null) {
+				caseJurisdiction.setPointOfEntryUuid(caze.getPointOfEntry().getUuid());
+			}
+		}
+
+		jurisdiction.setCaseJurisdiction(caseJurisdiction);
+
+		return jurisdiction;
 	}
 }

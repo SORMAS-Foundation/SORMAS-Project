@@ -95,7 +95,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		}
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
-		facilityField.setValue(caze.getHealthFacility().toString());
+		FacilityReferenceDto healthFacility = caze.getHealthFacility();
+		facilityField.setValue(healthFacility == null ? null: healthFacility.toString());
 		facilityField.setReadOnly(true);
 
 		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);

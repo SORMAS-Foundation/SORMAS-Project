@@ -74,19 +74,14 @@ public class CaseIndexDto implements Serializable {
 	private InvestigationStatus investigationStatus;
 	private PresentCondition presentCondition;
 	private Date reportDate;
-	private String reportingUserUuid;
 	private Date creationDate;
 	private String regionUuid;
 	private String districtUuid;
 	private String districtName;
 	@PersonalData
-	private String communityUuid;
-	@PersonalData
 	private String healthFacilityUuid;
 	@PersonalData
 	private String healthFacilityName;
-	@PersonalData
-	private String pointOfEntryUuid;
 	@PersonalData
 	private String pointOfEntryName;
 	private String surveillanceOfficerUuid;
@@ -95,6 +90,8 @@ public class CaseIndexDto implements Serializable {
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Float completeness;
 	private Date quarantineTo;
+
+	private CaseJurisdictionDto jurisdiction;
 
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
 						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
@@ -114,15 +111,12 @@ public class CaseIndexDto implements Serializable {
 		this.investigationStatus = investigationStatus;
 		this.presentCondition = presentCondition;
 		this.reportDate = reportDate;
-		this.reportingUserUuid = reportingUserUuid;
 		this.creationDate = creationDate;
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
 		this.districtName = districtName;
-		this.communityUuid = communityUuid;
 		this.healthFacilityUuid = healthFacilityUuid;
 		this.healthFacilityName = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacilityName, healthFacilityDetails);
-		this.pointOfEntryUuid = pointOfEntryUuid;
 		this.pointOfEntryName = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
 		this.outcome = outcome;
@@ -130,6 +124,9 @@ public class CaseIndexDto implements Serializable {
 		this.sex = sex;
 		this.quarantineTo = quarantineTo;
 		this.completeness = completeness;
+
+		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid,
+				healthFacilityUuid, pointOfEntryUuid);
 	}
 
 	public long getId() {
@@ -204,14 +201,6 @@ public class CaseIndexDto implements Serializable {
 		this.reportDate = reportDate;
 	}
 
-	public String getReportingUserUuid() {
-		return reportingUserUuid;
-	}
-
-	public void setReportingUserUuid(String reportingUserUuid) {
-		this.reportingUserUuid = reportingUserUuid;
-	}
-
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -252,14 +241,6 @@ public class CaseIndexDto implements Serializable {
 		this.districtName = districtName;
 	}
 
-	public String getCommunityUuid() {
-		return communityUuid;
-	}
-
-	public void setCommunityUuid(String communityUuid) {
-		this.communityUuid = communityUuid;
-	}
-
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
@@ -282,14 +263,6 @@ public class CaseIndexDto implements Serializable {
 
 	public void setHealthFacilityName(String healthFacilityName) {
 		this.healthFacilityName = healthFacilityName;
-	}
-
-	public String getPointOfEntryUuid() {
-		return pointOfEntryUuid;
-	}
-
-	public void setPointOfEntryUuid(String pointOfEntryUuid) {
-		this.pointOfEntryUuid = pointOfEntryUuid;
 	}
 
 	public String getPointOfEntryName() {
@@ -333,7 +306,7 @@ public class CaseIndexDto implements Serializable {
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid(), getPersonFirstName(), getPersonLastName());
+		return new CaseReferenceDto(uuid, personFirstName, personLastName, jurisdiction);
 	}
 
 	@Override
@@ -365,4 +338,7 @@ public class CaseIndexDto implements Serializable {
 		this.quarantineTo = quarantineTo;
 	}
 
+	public CaseJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
 }

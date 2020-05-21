@@ -20,35 +20,52 @@ package de.symeda.sormas.api.caze;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class CaseReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
-	
+
+	@PersonalData
+	private String firstName;
+	@PersonalData
+	private String lastName;
+
+	private CaseJurisdictionDto jurisdiction;
+
 	public CaseReferenceDto() {
-		
+
 	}
-	
+
 	public CaseReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
-	public CaseReferenceDto(String uuid, String caption) {
+
+	public CaseReferenceDto(String uuid, String firstName, String lastName, CaseJurisdictionDto jurisdiction) {
 		setUuid(uuid);
-		setCaption(caption);
+
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.jurisdiction = jurisdiction;
 	}
 
-	public CaseReferenceDto(String uuid, String firstName, String lastName) {
-		setUuid(uuid);
-		setCaption(buildCaption(uuid, firstName, lastName));
-	}
-	
-	public static String buildCaption(String uuid, String personName) {
-		return personName + " (" + DataHelper.getShortUuid(uuid) + ")";
+	@Override
+	public String getCaption() {
+		return buildCaption(getUuid(), firstName, lastName);
 	}
 
 	public static String buildCaption(String uuid, String firstName, String lastName) {
-		return buildCaption(uuid, PersonDto.buildCaption(firstName, lastName));
+		String personName = PersonDto.buildCaption(firstName, lastName);
+		String shortUuid = DataHelper.getShortUuid(uuid);
+
+		if (personName.trim().length() > 0) {
+			return personName + " (" + shortUuid + ")";
+		}
+
+		return shortUuid;
 	}
 
+	public CaseJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
 }

@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -75,15 +76,17 @@ public class SampleIndexDto implements Serializable {
 	private AdditionalTestingStatus additionalTestingStatus;
 
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
-			boolean shipped, Date shipmentDate, boolean received, Date receivedDate, 
+			boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
 			SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
-			String labUuid, String labName, String referredSampleUuid, 
+			String labUuid, String labName, String referredSampleUuid,
 			String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
-			Disease disease, String diseaseDetails, String caseRegionUuid, 
+			Disease disease, String diseaseDetails, String caseRegionUuid,
 			String caseDistrictUuid, String caseDistrictName, PathogenTestResultType pathogenTestResult,
-			Boolean additionalTestingRequested, Boolean additionalTestPerformed) {
+			Boolean additionalTestingRequested, Boolean additionalTestPerformed,
+			String caseReportingUserUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid) {
 		this.uuid = uuid;
-		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
+		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName,
+				new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
 		this.disease = disease;
@@ -101,7 +104,7 @@ public class SampleIndexDto implements Serializable {
 		this.samplePurpose = samplePurpose;
 		this.specimenCondition = specimenCondition;
 		this.pathogenTestResult = pathogenTestResult;
-		this.additionalTestingStatus =  Boolean.TRUE.equals(additionalTestPerformed) ? AdditionalTestingStatus.PERFORMED : 
+		this.additionalTestingStatus =  Boolean.TRUE.equals(additionalTestPerformed) ? AdditionalTestingStatus.PERFORMED :
 			(Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
 	}
 

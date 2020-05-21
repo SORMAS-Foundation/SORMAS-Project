@@ -22,7 +22,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -72,12 +74,19 @@ public class TaskIndexDto implements Serializable {
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
-			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply) {
+			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
+			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
+			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid) {
 		this.setUuid(uuid);
 		this.taskContext = taskContext;
-		this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName);
+		this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName, new CaseJurisdictionDto(
+				caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid
+		));
 		this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventDate);
-		this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName);
+		this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName,
+				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid,
+						new CaseJurisdictionDto(contactCaseReportingUserUuid, contactCaseRegionUuid, contactCaseDistrictUuid, contactCaseCommunityUuid, contactCaseHealthFacilityUuid, contactCasePointOfEntryUuid)));
 		this.taskType = taskType;
 		this.priority = priority;
 		this.dueDate = dueDate;

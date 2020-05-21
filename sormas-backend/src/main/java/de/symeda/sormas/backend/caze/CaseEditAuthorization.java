@@ -9,6 +9,9 @@ import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.user.User;
@@ -20,57 +23,38 @@ public class CaseEditAuthorization {
 
 	@EJB
 	private UserService userService;
-	@EJB
-	private CaseService caseService;
 
-	public Boolean caseEditAllowedCheck(Case caze) {
-
-		return isInJurisdiction(caze.getReportingUser(), caze.getRegion(), caze.getDistrict(),
-				caze.getCommunity(), caze.getHealthFacility(), caze.getPointOfEntry());
+	public Boolean isInJurisdiction(Case caze) {
+		return isInJurisdiction(createCaseJurisdictionDto(caze));
 	}
 
-	public boolean isInJurisdiction(CaseIndexDto dto) {
-		return isInJurisdiction(wrapUuid(dto.getReportingUserUuid()), wrapUuid(dto.getRegionUuid()), wrapUuid(dto.getDistrictUuid()),
-				wrapUuid(dto.getCommunityUuid()), wrapUuid(dto.getHealthFacilityUuid()), wrapUuid(dto.getPointOfEntryUuid()));
-	}
+	public Boolean isInJurisdiction(CaseJurisdictionDto caseJurisdictionDto) {
 
-	public boolean isInJurisdiction(CaseExportDto dto) {
-		return isInJurisdiction(wrapUuid(dto.getReportingUserUuid()), wrapUuid(dto.getRegionUuid()), wrapUuid(dto.getDistrictUuid()),
-				wrapUuid(dto.getCommunityUuid()), wrapUuid(dto.getHealthFacilityUuid()), wrapUuid(dto.getPointOfEntryUuid()));
-	}
-
-	public boolean isInJurisdiction(CaseDataDto dto) {
-		return isInJurisdiction(dto.getReportingUser(), dto.getRegion(), dto.getDistrict(),
-				dto.getCommunity(), dto.getHealthFacility(), dto.getPointOfEntry());
-	}
-
-	public boolean isInJurisdiction(HasUuid reportingUser, HasUuid region, HasUuid district,
-									 HasUuid community, HasUuid healthFacility, HasUuid pointOfEntry) {
 		User user = userService.getCurrentUser();
 
 		if (userService.hasRole(UserRole.NATIONAL_USER) ||
-				reportingUser != null && DataHelper.isSame(user, reportingUser)) {
+				caseJurisdictionDto.getDistrictUud() != null && DataHelper.isSame(user, wrapUuid(caseJurisdictionDto.getDistrictUud()))) {
 			return true;
 		}
 
 		if (userService.hasAnyRole(UserRole.getSupervisorRoles())) {
-			return DataHelper.isSame(region, user.getRegion());
+			return DataHelper.isSame(wrapUuid(caseJurisdictionDto.getRegionUui()), user.getRegion());
 		}
 
 		if (userService.hasAnyRole(UserRole.getOfficerRoles())) {
-			return DataHelper.isSame(district, user.getDistrict());
+			return DataHelper.isSame(wrapUuid(caseJurisdictionDto.getDistrictUud()), user.getDistrict());
 		}
 
 		if ((userService.hasRole(UserRole.COMMUNITY_INFORMANT))) {
-			return DataHelper.isSame(community, user.getCommunity());
+			return DataHelper.isSame(wrapUuid(caseJurisdictionDto.getCommunityUuid()), user.getCommunity());
 		}
 
 		if ((userService.hasRole(UserRole.HOSPITAL_INFORMANT))) {
-			return DataHelper.isSame(healthFacility, user.getHealthFacility());
+			return DataHelper.isSame(wrapUuid(caseJurisdictionDto.getHealthFacilityUuid()), user.getHealthFacility());
 		}
 
 		if ((userService.hasRole(UserRole.POE_INFORMANT))) {
-			return DataHelper.isSame(pointOfEntry, user.getPointOfEntry());
+			return DataHelper.isSame(wrapUuid(caseJurisdictionDto.getPointOfEntryUuid()), user.getPointOfEntry());
 		}
 
 		return false;
@@ -79,4 +63,33 @@ public class CaseEditAuthorization {
 	private HasUuid wrapUuid(final String uuId) {
 		return () -> uuId;
 	}
+
+	public static CaseJurisdictionDto createCaseJurisdictionDto(Case caze) {
+		if (caze == null) {
+			return null;
+		}
+		CaseJurisdictionDto dto = new CaseJurisdictionDto();
+
+		if (caze.getReportingUser() != null) {
+			dto.setReportingUserUuid(caze.getReportingUser().getUuid());
+		}
+		if (caze.getRegion() != null) {
+			dto.setRegionUui(caze.getRegion().getUuid());
+		}
+		if (caze.getDistrict() != null) {
+			dto.setDistrictUud(caze.getDistrict().getUuid());
+		}
+		if (caze.getCommunity() != null) {
+			dto.setCommunityUuid(caze.getCommunity().getUuid());
+		}
+		if (caze.getHealthFacility() != null) {
+			dto.setHealthFacilityUuid(caze.getHealthFacility().getUuid());
+		}
+		if (caze.getPointOfEntry() != null) {
+			dto.setPointOfEntryUuid(caze.getPointOfEntry().getUuid());
+		}
+
+		return dto;
+	}
+
 }

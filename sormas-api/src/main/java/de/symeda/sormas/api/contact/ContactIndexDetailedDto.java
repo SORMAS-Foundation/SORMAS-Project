@@ -5,6 +5,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.PersonalData;
 
 import java.util.Date;
 
@@ -21,8 +22,11 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private Sex sex;
 	private String approximateAge;
 	private String districtName;
+	@PersonalData
 	private String city;
+	@PersonalData
 	private String address;
+	@PersonalData
 	private String postalCode;
 	private String phone;
 	private UserReferenceDto reportingUser;

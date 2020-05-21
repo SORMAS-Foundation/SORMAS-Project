@@ -967,6 +967,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = and(cb, filter,
 					cb.equal(caze.get(Case.CASE_CLASSIFICATION), contactCriteria.getCaseClassification()));
 		}
+		if(contactCriteria.getPerson() != null){
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			filter = and(cb, filter,
+					cb.equal(person.get(Person.UUID), contactCriteria.getPerson().getUuid()));
+		}
 
 		return filter;
 	}

@@ -58,6 +58,8 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -138,7 +140,6 @@ import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
@@ -362,8 +363,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			cases = em.createQuery(cq).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(CaseIndexDto.class, cases, c -> caseEditAuthorization.isInJurisdiction(c), c -> {
-			c.getAgeAndBirthDate().setBirthdateDD(null);
+		pseudonymizationService.pseudonymizeDtoCollection(CaseIndexDto.class, cases, c -> caseEditAuthorization.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
+			pseudonymizationService.pseudonymizeDto(AgeAndBirthDateDto.class, c.getAgeAndBirthDate(), isInJurisdiction, null);
 		});
 
 		return cases;
@@ -382,8 +383,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			cases = em.createQuery(cq).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(CaseIndexDetailedDto.class, cases, c -> caseEditAuthorization.isInJurisdiction(c), c -> {
-			c.getAgeAndBirthDate().setBirthdateDD(null);
+		pseudonymizationService.pseudonymizeDtoCollection(CaseIndexDetailedDto.class, cases, c -> caseEditAuthorization.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
+			pseudonymizationService.pseudonymizeDto(AgeAndBirthDateDto.class, c.getAgeAndBirthDate(), isInJurisdiction, null);
 		});
 
 		return cases;
@@ -666,9 +667,9 @@ public class CaseFacadeEjb implements CaseFacade {
 					});
 
 				}
-				boolean inJurisdiction = caseEditAuthorization.isInJurisdiction(exportDto);
+				boolean inJurisdiction = caseEditAuthorization.isInJurisdiction(exportDto.getJurisdiction());
 				pseudonymizationService.pseudonymizeDto(CaseExportDto.class, exportDto, inJurisdiction, (c) -> {
-					c.getBirthdate().setBirthdateDD(null);
+					pseudonymizationService.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
 				});
 
 			}
@@ -727,7 +728,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return caseService.getCasesForMap(region, district, disease, from, to);
+		List<MapCaseDto> cases = caseService.getCasesForMap(region, district, disease, from, to);
+
+		pseudonymizationService.pseudonymizeDtoCollection(MapCaseDto.class, cases, c -> caseEditAuthorization.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
+			pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), isInJurisdiction, null);
+		});
+
+		return cases;
 	}
 
 	@Override
@@ -1669,8 +1676,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto dto = toDto(source);
 
 		if (dto != null) {
-			boolean inJurisdiction = caseEditAuthorization.isInJurisdiction(dto);
-			pseudonymizationService.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, null);
+			boolean inJurisdiction = caseEditAuthorization.isInJurisdiction(dto.getJurisdiction());
+			pseudonymizationService.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
+				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), inJurisdiction, null);
+			});
 		}
 
 		return dto;
@@ -1680,8 +1689,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (entity == null) {
 			return null;
 		}
-		CaseReferenceDto dto = new CaseReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		return entity.toReference();
 	}
 
 	public static CaseDataDto toDto(Case source) {
@@ -2294,6 +2302,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public Boolean isCaseEditAllowed(String caseUuid) {
 		Case caze = caseService.getByUuid(caseUuid);
-		return caseEditAuthorization.caseEditAllowedCheck(caze);
+		return caseEditAuthorization.isInJurisdiction(caze);
 	}
 }
