@@ -4257,23 +4257,6 @@ ALTER TABLE cases_history ADD COLUMN trimester varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (209, 'Add Trimester and Postpartum selection to case #1981');
 
--- 2020-05-07 Add samples to contacts #1753
-ALTER TABLE samples ADD COLUMN associatedcontact_id bigint;
-ALTER TABLE samples ADD CONSTRAINT fk_samples_associatedcontact_id FOREIGN KEY (associatedcontact_id) REFERENCES contact (id);
-ALTER TABLE samples ALTER COLUMN associatedcase_id DROP NOT NULL;
-ALTER TABLE samples_history ADD COLUMN associatedcontact_id bigint;
-ALTER TABLE samples_history ALTER COLUMN associatedcase_id DROP NOT NULL;
-
-INSERT INTO schema_version (version_number, comment) VALUES (209, '2020-05-07 Add samples to contacts #1753');
-
--- 2020-05-18 Add Trimester and Postpartum selection to case #1981
-ALTER TABLE cases ADD COLUMN postpartum varchar(255);
-ALTER TABLE cases ADD COLUMN trimester varchar(255);
-ALTER TABLE cases_history ADD COLUMN postpartum varchar(255);
-ALTER TABLE cases_history ADD COLUMN trimester varchar(255);
-
-INSERT INTO schema_version (version_number, comment) VALUES (209, 'Add Trimester and Postpartum selection to case #1981');
-
 -- 2020-05-20 Adjust COVID-19 symptoms and health conditions for Germany #2097
 ALTER TABLE symptoms ADD COLUMN respiratorydiseaseventilation varchar(255);
 ALTER TABLE symptoms ADD COLUMN generalsignsofdisease varchar(255);
@@ -4293,4 +4276,12 @@ UPDATE healthconditions SET immunodeficiencyincludinghiv = 'UNKNOWN' WHERE hiv =
 
 INSERT INTO schema_version (version_number, comment) VALUES (210, 'Adjust COVID-19 symptoms and health conditions for Germany #2097');
 
+-- 2020-05-07 Add samples to contacts #1753
+ALTER TABLE samples ADD COLUMN associatedcontact_id bigint;
+ALTER TABLE samples ADD CONSTRAINT fk_samples_associatedcontact_id FOREIGN KEY (associatedcontact_id) REFERENCES contact (id);
+ALTER TABLE samples ALTER COLUMN associatedcase_id DROP NOT NULL;
+ALTER TABLE samples_history ADD COLUMN associatedcontact_id bigint;
+ALTER TABLE samples_history ALTER COLUMN associatedcase_id DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (211, '2020-05-07 Add samples to contacts #1753');
 -- *** Insert new sql commands BEFORE this line ***

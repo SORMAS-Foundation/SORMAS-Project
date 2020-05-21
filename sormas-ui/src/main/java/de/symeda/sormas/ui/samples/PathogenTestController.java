@@ -121,8 +121,9 @@ public class PathogenTestController {
 	}
 
 	private void savePathogenTest(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
-		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
+		final SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
 		final CaseReferenceDto associatedCase = sample.getAssociatedCase();
+		final ContactReferenceDto associatedContact = sample.getAssociatedContact();
 		if (associatedCase != null) {
 			CaseDataDto preSaveCaseDto = FacadeProvider.getCaseFacade()
 					.getCaseDataByUuid(associatedCase.getUuid());
@@ -157,9 +158,7 @@ public class PathogenTestController {
 				confirmCaseCallback.run();
 				caseCloningCallback.run();
 			}
-		}
-		final ContactReferenceDto associatedContact = sample.getAssociatedContact();
-		if (associatedContact != null) {
+		} else if (associatedContact != null) {
 			facade.savePathogenTest(dto);
 		}
 	}
