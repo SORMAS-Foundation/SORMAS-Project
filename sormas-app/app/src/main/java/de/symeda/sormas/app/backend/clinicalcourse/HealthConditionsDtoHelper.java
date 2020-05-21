@@ -77,6 +77,7 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
         target.setFormerSmoker(source.getFormerSmoker());
         target.setAsthma(source.getAsthma());
         target.setSickleCellDisease(source.getSickleCellDisease());
+        target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
     }
 
     @Override
@@ -103,6 +104,7 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
         target.setFormerSmoker(source.getFormerSmoker());
         target.setAsthma(source.getAsthma());
         target.setSickleCellDisease(source.getSickleCellDisease());
+        target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
     }
 
 }

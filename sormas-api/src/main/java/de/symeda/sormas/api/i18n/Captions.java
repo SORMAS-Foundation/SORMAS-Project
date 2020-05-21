@@ -390,7 +390,8 @@ public interface Captions {
 	String ContactExport_lastName = "ContactExport.lastName";
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String contactFollowUpDay = "contactFollowUpDay";
-	String contactFollowUpOverviewReferenceDate = "contactFollowUpOverviewReferenceDate";
+	String contactFromFollowUpOverviewReferenceDate = "From";
+	String contactToFollowUpOverviewReferenceDate = "TO";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	String contactLostToFollowUp = "contactLostToFollowUp";
 	String contactMinusDays = "contactMinusDays";

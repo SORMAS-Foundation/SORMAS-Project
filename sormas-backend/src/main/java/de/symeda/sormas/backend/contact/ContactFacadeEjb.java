@@ -430,7 +430,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				.otherwise(contactRoot.get(Contact.REPORT_DATE_TIME)),
 				contactRoot.get(Contact.FOLLOW_UP_UNTIL));
 
-		cq.where(AbstractAdoService.and(cb, 
+		cq.where(AbstractAdoService.and(cb,
 				listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contactRoot, cq),
 				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
@@ -458,11 +458,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
 
 			List<VisitSummaryExportDetails> visitSummaryDetails = em.createQuery(visitsCq).getResultList();
-			
+
 			Map<Long, VisitSummaryExportDto> visitSummaryMap = visitSummaries.stream().collect(Collectors.toMap(VisitSummaryExportDto::getContactId, Function.identity()));
 			visitSummaryDetails.stream().forEach(v -> visitSummaryMap.get(v.getContactId()).getVisitDetails().add(new VisitSummaryExportDetailsDto(v.getVisitDateTime(), v.getVisitStatus(), v.getSymptoms().toHumanString(true, userLanguage))));
 		}
-		
+
 		return visitSummaries;
 	}
 
@@ -511,9 +511,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, int interval,
+														   Integer first, Integer max,
+														   List<SortProperty> sortProperties) {
 		Date end = DateHelper.getEndOfDay(referenceDate);
-		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, 7));
+		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, interval));
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactFollowUpDto> cq = cb.createQuery(ContactFollowUpDto.class);
@@ -569,6 +571,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<ContactFollowUpDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		if (!resultList.isEmpty()) {
+
 			List<String> contactUuids = resultList.stream().map(d -> d.getUuid()).collect(Collectors.toList());
 
 			CriteriaQuery<Object[]> visitsCq = cb.createQuery(Object[].class);
@@ -587,17 +590,19 @@ public class ContactFacadeEjb implements ContactFacade {
 					visitsJoin.get(Visit.VISIT_STATUS),
 					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC)
 					);
-			
+
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
-			
 			Map<String, ContactFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(ContactFollowUpDto::getUuid, Function.identity()));
+			resultMap.values().stream().forEach(contactFollowUpDto -> {
+				contactFollowUpDto.initVisitSize(interval + 1);
+			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
 				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
 			});
 		}
-		
+
 		return resultList;
 	}
 

@@ -113,6 +113,13 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_generalSignsOfDisease"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.generalSignsOfDisease}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/symptoms_abdominalPain"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
@@ -260,17 +267,24 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_cough_with_sputum"
+                android:id="@+id/symptoms_coughWithSputum"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.coughWithSputum}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_cough_with_heamoptysis"
+                android:id="@+id/symptoms_coughWithHeamoptysis"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.coughWithHeamoptysis}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_respiratoryDiseaseVentilation"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.respiratoryDiseaseVentilation}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -517,6 +531,13 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.painfulLymphadenitis}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_fastHeartRate"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.fastHeartRate}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -916,6 +937,13 @@
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
                 app:value="@={data.inDrawingOfChestWall}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/symptoms_oxygenSaturationLower94"
+                app:enumClass="@{symptomStateClass}"
+                app:slim="true"
+                app:value="@={data.oxygenSaturationLower94}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField

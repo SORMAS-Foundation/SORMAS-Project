@@ -129,7 +129,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	/**
-	 * Returns the locale
+	 * Returns the normalized locale
 	 */
 	@Override
 	public String getCountryLocale() {

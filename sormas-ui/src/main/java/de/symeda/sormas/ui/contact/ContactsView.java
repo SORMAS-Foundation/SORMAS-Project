@@ -17,64 +17,27 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DateHelper8;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.MenuBarHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import org.vaadin.hene.popupbutton.PopupButton;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.Alignment;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.v7.ui.PopupDateField;
-import com.vaadin.v7.ui.TextField;
-
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactCategory;
-import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactDateType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -82,16 +45,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -99,17 +55,12 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DateHelper8;
-import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.GridExportStreamResource;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.*;
+import org.vaadin.hene.popupbutton.PopupButton;
+
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -140,6 +91,10 @@ public class ContactsView extends AbstractView {
 	private ContactsFilterForm filterForm;
 	private ComboBox relevanceStatusFilter;
 
+    private int followUpRangeInterval = 14;
+	private boolean buttonPreviousOrNextClick = false;
+    private Date followUpToDate;
+
 	public ContactsView() {
 		super(VIEW_NAME);
 
@@ -154,8 +109,8 @@ public class ContactsView extends AbstractView {
 
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			criteria.reportDateTo(DateHelper.getEndOfDay(new Date()));
-			criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 7)));
-			grid = new ContactFollowUpGrid(criteria, new Date(), getClass());
+			criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 4)));
+			grid = new ContactFollowUpGrid(criteria, new Date(), followUpRangeInterval, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = ContactsViewType.DETAILED_OVERVIEW.equals(viewConfiguration.getViewType())
@@ -446,52 +401,75 @@ public class ContactsView extends AbstractView {
 			}
 
 			// Follow-up overview scrolling
-			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
+            if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+                statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				HorizontalLayout scrollLayout = new HorizontalLayout();
-				scrollLayout.setMargin(false);
+                HorizontalLayout scrollLayout = new HorizontalLayout();
+                scrollLayout.setMargin(false);
 
-				DateField followUpReferenceDate = new DateField(I18nProperties.getCaption(Captions.contactFollowUpOverviewReferenceDate), LocalDate.now());
-				followUpReferenceDate.setId("followUpReferenceDate");
+                DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now());
+                LocalDate fromReferenceLocal = DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1));
+                DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
 
-				Button minusDaysButton = ButtonHelper.createButton(Captions.contactMinusDays, e -> {
-					followUpReferenceDate.setValue(followUpReferenceDate.getValue().minusDays(8));
-				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+                Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
+                CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+                minusDaysButton.addClickListener(e -> {
+                    followUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+                    buttonPreviousOrNextClick = true;
+                    toReferenceDate.setValue(toReferenceDate.getValue().minusDays(followUpRangeInterval));
+                    fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(followUpRangeInterval));
+                });
+                scrollLayout.addComponent(minusDaysButton);
 
-				scrollLayout.addComponent(minusDaysButton);
+                fromReferenceDate.addValueChangeListener(e -> {
+                    Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+                    applyingCriteria = true;
+                    criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
+                    applyingCriteria = false;
+                    followUpRangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDate.getValue()));
+                    reloadGrid();
+                });
+                scrollLayout.addComponent(fromReferenceDate);
 
-				followUpReferenceDate.addValueChangeListener(e -> {
-					Date newDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+                toReferenceDate.addValueChangeListener(e -> {
+                    followUpToDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+                    applyingCriteria = true;
+                    criteria.reportDateTo(DateHelper.getEndOfDay(followUpToDate));
+                    applyingCriteria = false;
+                    if (!buttonPreviousOrNextClick) {
+                        followUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), followUpToDate);
+                        reloadGrid();
+                    }
+                });
+                scrollLayout.addComponent(toReferenceDate);
 
-					applyingCriteria = true;
+                Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
+                CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+                plusDaysButton.addClickListener(e -> {
+                    followUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+                    buttonPreviousOrNextClick = true;
+                    toReferenceDate.setValue(toReferenceDate.getValue().plusDays(followUpRangeInterval));
+                    fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(followUpRangeInterval));
+                });
+                scrollLayout.addComponent(plusDaysButton);
 
-					((ContactFollowUpGrid) grid).setReferenceDate(newDate);
-					criteria.reportDateTo(DateHelper.getEndOfDay(newDate));
-					criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(newDate, 7)));
+                actionButtonsLayout.addComponent(scrollLayout);
 
-					applyingCriteria = false;
-
-					((ContactFollowUpGrid) grid).reload();
-				});
-				scrollLayout.addComponent(followUpReferenceDate);
-
-				Button plusDaysButton = ButtonHelper.createButton(Captions.contactPlusDays, e -> {
-					followUpReferenceDate.setValue(followUpReferenceDate.getValue().plusDays(8));
-				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
-
-				scrollLayout.addComponent(plusDaysButton);
-
-				actionButtonsLayout.addComponent(scrollLayout);
-			}
-		}
-
+            }
+        }
 		statusFilterLayout.addComponent(actionButtonsLayout);
 		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return statusFilterLayout;
 	}
+
+    private void reloadGrid() {
+        ((ContactFollowUpGrid) grid).setVisitColumns(followUpToDate, followUpRangeInterval, criteria);
+        ((ContactFollowUpGrid) grid).reload();
+        updateStatusButtons();
+        buttonPreviousOrNextClick = false;
+    }
 
 	private HorizontalLayout createFollowUpLegend() {
 		HorizontalLayout legendLayout = new HorizontalLayout();
@@ -553,6 +531,12 @@ public class ContactsView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
+
+		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			((ContactFollowUpGrid) grid).reload();
+		} else {
+			((AbstractContactGrid<?>) grid).reload();
+		}
 	}
 
 	public void updateFilterComponents() {
