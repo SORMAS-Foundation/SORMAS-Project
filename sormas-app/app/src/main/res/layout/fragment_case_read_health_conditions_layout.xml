@@ -64,13 +64,13 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/healthConditions_hepatitis"
-                    app:value="@{data.hepatitis}"
+                    android:id="@+id/healthConditions_diabetes"
+                    app:value="@{data.diabetes}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/healthConditions_diabetes"
-                    app:value="@{data.diabetes}"
+                    android:id="@+id/healthConditions_hepatitis"
+                    app:value="@{data.hepatitis}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
@@ -78,6 +78,11 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/healthConditions_immunodeficiencyOtherThanHiv"
                 app:value="@{data.immunodeficiencyOtherThanHiv}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/healthConditions_immunodeficiencyIncludingHiv"
+                app:value="@{data.immunodeficiencyIncludingHiv}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
@@ -139,13 +144,13 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/healthConditions_chronicHeartFailure"
-                    app:value="@{data.chronicHeartFailure}"
+                    android:id="@+id/healthConditions_chronicPulmonaryDisease"
+                    app:value="@{data.chronicPulmonaryDisease}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/healthConditions_chronicPulmonaryDisease"
-                    app:value="@{data.chronicPulmonaryDisease}"
+                    android:id="@+id/healthConditions_chronicHeartFailure"
+                    app:value="@{data.chronicHeartFailure}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>

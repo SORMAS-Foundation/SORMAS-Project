@@ -83,6 +83,8 @@ public class HealthConditions extends AbstractDomainObject {
     private YesNoUnknown asthma;
     @Enumerated(EnumType.STRING)
     private YesNoUnknown sickleCellDisease;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown immunodeficiencyIncludingHiv;
 
     public YesNoUnknown getTuberculosis() {
         return tuberculosis;
@@ -258,6 +260,14 @@ public class HealthConditions extends AbstractDomainObject {
 
     public void setSickleCellDisease(YesNoUnknown sickleCellDisease) {
         this.sickleCellDisease = sickleCellDisease;
+    }
+
+    public YesNoUnknown getImmunodeficiencyIncludingHiv() {
+        return immunodeficiencyIncludingHiv;
+    }
+
+    public void setImmunodeficiencyIncludingHiv(YesNoUnknown immunodeficiencyIncludingHiv) {
+        this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
     }
 
     @Override

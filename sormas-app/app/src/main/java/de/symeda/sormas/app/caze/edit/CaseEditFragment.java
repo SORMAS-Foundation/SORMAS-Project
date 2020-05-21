@@ -36,6 +36,7 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -111,7 +112,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
         // Pregnancy
         if (record.getPerson().getSex() != Sex.FEMALE) {
-            contentBinding.caseDataPregnant.setVisibility(View.GONE);
+            contentBinding.caseDataPregnant.setVisibility(GONE);
+            contentBinding.caseDataPostpartum.setVisibility(GONE);
         }
 
         // Smallpox vaccination scar image
@@ -264,6 +266,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         contentBinding.setData(record);
         contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
         contentBinding.setVaccinationClass(Vaccination.class);
+        contentBinding.setTrimesterClass(Trimester.class);
 
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility,
                 contentBinding.caseDataHealthFacilityDetails);

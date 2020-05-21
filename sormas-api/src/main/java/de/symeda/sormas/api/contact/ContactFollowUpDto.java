@@ -22,14 +22,6 @@ public class ContactFollowUpDto implements Serializable {
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
-	public static final String DAY_1_RESULT = "day1Result";
-	public static final String DAY_2_RESULT = "day2Result";
-	public static final String DAY_3_RESULT = "day3Result";
-	public static final String DAY_4_RESULT = "day4Result";
-	public static final String DAY_5_RESULT = "day5Result";
-	public static final String DAY_6_RESULT = "day6Result";
-	public static final String DAY_7_RESULT = "day7Result";
-	public static final String DAY_8_RESULT = "day8Result";
 
 	private String uuid;
 	private PersonReferenceDto person;
@@ -58,7 +50,10 @@ public class ContactFollowUpDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
-		visitResults = new VisitResult[8];
+	}
+
+	public void initVisitSize(int i) {
+		visitResults = new VisitResult[i];
 		Arrays.fill(visitResults, VisitResult.NOT_PERFORMED);
 
 		this.reportingUserUuid = reportingUserUuid;

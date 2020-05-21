@@ -8,6 +8,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -28,6 +29,8 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -160,9 +163,16 @@ public class ContactListCriteriaBuilder {
 		CriteriaQuery<T> cq = cb.createQuery(type);
 		Root<Contact> contact = cq.from(Contact.class);
 
+		Subquery<Integer> visitCountSq = cq.subquery(Integer.class);
+		Root<Contact> visitCountRoot = visitCountSq.from(Contact.class);
+		visitCountSq.where(cb.equal(visitCountRoot.get(AbstractDomainObject.ID), contact.get(AbstractDomainObject.ID)));
+		visitCountSq.select(cb.size(visitCountRoot.get(Contact.VISITS)));
+
 		ContactJoins joins = new ContactJoins(contact);
 
-		cq.multiselect(selectionProvider.apply(contact, joins));
+		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, joins));
+		selections.add(visitCountSq);
+		cq.multiselect(selections);
 
 		Predicate filter = buildContactFilter(contactCriteria, cb, contact, cq);
 

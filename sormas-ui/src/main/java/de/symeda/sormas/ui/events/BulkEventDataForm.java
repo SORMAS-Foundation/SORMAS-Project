@@ -46,7 +46,7 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 	private CheckBox eventStatusCheckBox;
 	
 	public BulkEventDataForm() {
-		super(EventDto.class, EventDto.I18N_PREFIX, null);
+		super(EventDto.class, EventDto.I18N_PREFIX);
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 	}

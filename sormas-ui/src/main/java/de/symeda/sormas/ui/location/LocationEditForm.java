@@ -92,8 +92,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private MapPopupView leafletMapPopup;
 
-	public LocationEditForm(UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
-		super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight, true, fieldVisibilityCheckers, fieldAccessCheckers);
+	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() &&
 				isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {

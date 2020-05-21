@@ -87,7 +87,7 @@ public abstract class DataImporter {
 	 * Whether or not the current import has resulted in at least one error.
 	 */
 	private boolean hasImportError;
-	
+
 	protected UserReferenceDto currentUser;
 	private CSVWriter errorReportCsvWriter;
 
@@ -118,7 +118,7 @@ public abstract class DataImporter {
 				progressLayout.updateProgress(result);
 			}
 		};
-		
+
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingDataImport));
 		window.setWidth(800, Unit.PIXELS);
@@ -127,78 +127,78 @@ public abstract class DataImporter {
 		currentUI.addWindow(window);
 
 		Thread importThread = new Thread() {
-				@Override
-				public void run() {
-					try {
-						currentUI.setPollInterval(50);
+			@Override
+			public void run() {
+				try {
+					currentUI.setPollInterval(300);
 
-						ImportResultStatus importResult = runImport();
+					ImportResultStatus importResult = runImport();
 
-						// Display a window presenting the import result
-						currentUI.access(new Runnable() {
-							@Override
-							public void run() {
-								window.setClosable(true);
-								progressLayout.makeClosable(() -> {
-									window.close();
-								});
+					// Display a window presenting the import result
+					currentUI.access(new Runnable() {
+						@Override
+						public void run() {
+							window.setClosable(true);
+							progressLayout.makeClosable(() -> {
+								window.close();
+							});
 
-								if (importResult == ImportResultStatus.COMPLETED) {
-									progressLayout.displaySuccessIcon();
-									progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportSuccessful));
-								} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
-									progressLayout.displayWarningIcon();
-									progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportPartiallySuccessful));
-								} else if (importResult == ImportResultStatus.CANCELED) {
-									progressLayout.displaySuccessIcon();
-									progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceled));
-								} else {
-									progressLayout.displayWarningIcon();
-									progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceledErrors));
-								}								
+							if (importResult == ImportResultStatus.COMPLETED) {
+								progressLayout.displaySuccessIcon();
+								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportSuccessful));
+							} else if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS) {
+								progressLayout.displayWarningIcon();
+								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportPartiallySuccessful));
+							} else if (importResult == ImportResultStatus.CANCELED) {
+								progressLayout.displaySuccessIcon();
+								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceled));
+							} else {
+								progressLayout.displayWarningIcon();
+								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportCanceledErrors));
+							}								
 
-								window.addCloseListener(e -> {
-									if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
-										StreamResource streamResource = createErrorReportStreamResource();
-										errorReportConsumer.accept(streamResource);
-									}
-								});
+							window.addCloseListener(e -> {
+								if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
+									StreamResource streamResource = createErrorReportStreamResource();
+									errorReportConsumer.accept(streamResource);
+								}
+							});
 
-								currentUI.setPollInterval(-1);
-							}
-						});
-					} catch (InvalidColumnException e) {
-						currentUI.access(new Runnable() {
-							@Override
-							public void run() {
-								window.setClosable(true);
-								progressLayout.makeClosable(() -> {
-									window.close();
-								});
-								progressLayout.displayErrorIcon();
-								progressLayout.setInfoLabelText(String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()));
-								currentUI.setPollInterval(-1);
-							}
-						});
-					} catch (Exception e) {
-						logger.error(e.getMessage(), e);
-						
-						currentUI.access(new Runnable() {
-							@Override
-							public void run() {
-								window.setClosable(true);
-								progressLayout.makeClosable(() -> {
-									window.close();
-								});
-								progressLayout.displayErrorIcon();
-								progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
-								currentUI.setPollInterval(-1);
-							}
-						});
-					} 
+							currentUI.setPollInterval(-1);
+						}
+					});
+				} catch (InvalidColumnException e) {
+					currentUI.access(new Runnable() {
+						@Override
+						public void run() {
+							window.setClosable(true);
+							progressLayout.makeClosable(() -> {
+								window.close();
+							});
+							progressLayout.displayErrorIcon();
+							progressLayout.setInfoLabelText(String.format(I18nProperties.getString(Strings.messageImportInvalidColumn), e.getColumnName()));
+							currentUI.setPollInterval(-1);
+						}
+					});
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+
+					currentUI.access(new Runnable() {
+						@Override
+						public void run() {
+							window.setClosable(true);
+							progressLayout.makeClosable(() -> {
+								window.close();
+							});
+							progressLayout.displayErrorIcon();
+							progressLayout.setInfoLabelText(I18nProperties.getString(Strings.messageImportFailedFull));
+							currentUI.setPollInterval(-1);
+						}
+					});
+				}
 			}
 		};
-		
+
 		importThread.start();
 	}
 
@@ -207,14 +207,14 @@ public abstract class DataImporter {
 	 */
 	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException {
 		logger.debug("runImport - " + inputFile.getAbsolutePath());
-		
+
 		CSVReader csvReader = null;
 		try {
 			csvReader = CSVUtils.createCSVReader(
 					new InputStreamReader(new FileInputStream(inputFile), "UTF-8"),
 					FacadeProvider.getConfigFacade().getCsvSeparator());
 			errorReportCsvWriter = CSVUtils.createCSVWriter(createErrorReportWriter(), FacadeProvider.getConfigFacade().getCsvSeparator());
-		
+
 			// Build dictionary of entity headers
 			String[] entityClasses;
 			if (hasEntityClassRow) {
@@ -222,7 +222,7 @@ public abstract class DataImporter {
 			} else {
 				entityClasses = null;
 			}
-	
+
 			// Build dictionary of column paths
 			String[] entityProperties = csvReader.readNext();
 			String[][] entityPropertyPaths = new String[entityProperties.length][];
@@ -230,7 +230,7 @@ public abstract class DataImporter {
 				String[] entityPropertyPath = entityProperties[i].split("\\.");
 				entityPropertyPaths[i] = entityPropertyPath;
 			}
-	
+
 			// Write first line to the error report writer
 			String[] columnNames = new String[entityProperties.length + 1];
 			columnNames[0] = ERROR_COLUMN_NAME;
@@ -238,7 +238,7 @@ public abstract class DataImporter {
 				columnNames[i + 1] = entityProperties[i];
 			}
 			errorReportCsvWriter.writeNext(columnNames);
-	
+
 			// Read and import all lines from the import file
 			String[] nextLine = csvReader.readNext();
 			int lineCounter = 0;
@@ -253,7 +253,7 @@ public abstract class DataImporter {
 				}
 				nextLine = csvReader.readNext();
 			}
-	
+
 			logger.debug("runImport - done");
 
 			if (cancelAfterCurrent) {
@@ -281,7 +281,7 @@ public abstract class DataImporter {
 	public void cancelImport() {
 		cancelAfterCurrent = true;
 	}
-	
+
 	protected Writer createErrorReportWriter() throws IOException {
 		File errorReportFile = new File(errorReportFilePath.toString());
 		if (errorReportFile.exists()) {
@@ -313,7 +313,7 @@ public abstract class DataImporter {
 				importFileLength--;
 			}
 		}
-		
+
 		return importFileLength;
 	}
 
@@ -337,7 +337,7 @@ public abstract class DataImporter {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry,
 			String[] entryHeaderPath)
-			throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
+					throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
@@ -346,8 +346,13 @@ public abstract class DataImporter {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
-			pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry));
-			return true;
+			// If the string is smaller than the length of the expected date format, throw an exception
+			if (entry.length() < 10) {
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry));
+				return true;
+			}
 		}
 		if (propertyType.isAssignableFrom(Integer.class)) {
 			pd.getWriteMethod().invoke(element, Integer.parseInt(entry));
@@ -407,7 +412,7 @@ public abstract class DataImporter {
 	 */
 	protected boolean insertRowIntoData(String[] values, String[] entityClasses, String[][] entityPropertyPaths,
 			boolean ignoreEmptyEntries, Function<ImportCellData, Exception> insertCallback)
-			throws IOException, InvalidColumnException {
+					throws IOException, InvalidColumnException {
 		boolean dataHasImportError = false;
 
 		for (int i = 0; i < values.length; i++) {
@@ -452,5 +457,5 @@ public abstract class DataImporter {
 	protected String buildEntityProperty(String[] entityPropertyPath) {
 		return String.join(".", entityPropertyPath);
 	}
-	
+
 }

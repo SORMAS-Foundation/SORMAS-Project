@@ -71,6 +71,8 @@ public class ContactIndexDto implements Serializable {
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
+	private int visitCount;
+
 	private ContactJurisdictionDto jurisdiction;
 
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
@@ -78,7 +80,7 @@ public class ContactIndexDto implements Serializable {
 						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-						   CaseClassification caseClassification,
+						   CaseClassification caseClassification, int visitCount
 						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid) {
 		this.uuid = uuid;
 		this.firstName = personFirstName;
@@ -99,7 +101,8 @@ public class ContactIndexDto implements Serializable {
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportingUserUuid = reportingUserUuid;
 		this.reportDateTime = reportDateTime;
-		this.setCaseClassification(caseClassification);
+		this.caseClassification = caseClassification;
+		this.visitCount = visitCount;
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid,
 				new CaseJurisdictionDto(caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
 	}
@@ -254,6 +257,12 @@ public class ContactIndexDto implements Serializable {
 
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
+	}
+	public int getVisitCount() {
+		return visitCount;
+	}
+	public void setVisitCount(int visitCount) {
+		this.visitCount = visitCount;
 	}
 
 	public ContactReferenceDto toReference() {

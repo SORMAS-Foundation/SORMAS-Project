@@ -64,10 +64,10 @@ public class PathogenTestController {
 	public void create(SampleReferenceDto sampleRef, int caseSampleCount, Runnable callback,
 			BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
-		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, UserRight.PATHOGEN_TEST_CREATE, caseSampleCount);
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount);
 		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(
-				createForm, createForm.getFieldGroup());
+				createForm, UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -88,11 +88,10 @@ public class PathogenTestController {
 		PathogenTestDto newDto = facade.getByUuid(dto.getUuid());
 
 		PathogenTestForm form = new PathogenTestForm(
-				FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false,
-				UserRight.PATHOGEN_TEST_EDIT, caseSampleCount);
+				FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false, caseSampleCount);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(
-				form, form.getFieldGroup());
+				form, UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT), form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView,
 				I18nProperties.getString(Strings.headingEditPathogenTestResult));

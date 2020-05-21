@@ -436,8 +436,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS), joins.getEpiData().get(EpiData.TRAVELED), joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
 				joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE), joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
 				joins.getEpiData().get(EpiData.RODENTS), caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES),
-				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE)
-		);
+				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE),
+				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER)
+				);
 
 		cq.distinct(true);
 
@@ -1668,6 +1669,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setReportingType(source.getReportingType());
+		target.setPostpartum(source.getPostpartum());
+		target.setTrimester(source.getTrimester());
 
 		return target;
 	}
@@ -1787,6 +1790,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setReportingType(source.getReportingType());
+		target.setPostpartum(source.getPostpartum());
+		target.setTrimester(source.getTrimester());
 
 		return target;
 	}

@@ -10,7 +10,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -41,8 +40,8 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE, MaternalHistoryDto.RASH_EXPOSURE_DATE, MaternalHistoryDto.RASH_EXPOSURE_MONTH) +
 			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE_REGION, MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
 	
-	public MaternalHistoryForm(UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX, editOrCreateUserRight);
+	public MaternalHistoryForm(ViewMode viewMode) {
+		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX);
 		this.viewMode = viewMode;
 	}
 	

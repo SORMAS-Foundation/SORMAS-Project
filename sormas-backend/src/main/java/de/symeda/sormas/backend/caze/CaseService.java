@@ -433,6 +433,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
 		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
 		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Case, Community> community = from.join(Case.COMMUNITY, JoinType.LEFT);
 		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
@@ -451,6 +452,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getDistrict() != null) {
 			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+		}
+		if (caseCriteria.getCommunity() != null) {
+			filter = and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
 			User currentUser = getCurrentUser();
@@ -665,7 +669,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<Case,Case> casePath, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date) {
 		Predicate dateFilter = greaterThanAndNotNull(cb, casePath.get(Case.CHANGE_DATE), date);
 
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);

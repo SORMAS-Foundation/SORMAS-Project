@@ -141,30 +141,31 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.REPORTING_TYPE,
 							"")
 					+
-					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
-					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-					fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-					fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
-					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
-					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
-					fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
-					fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
-					fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
-					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
-					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
-					fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
-					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
-					loc(MEDICAL_INFORMATION_LOC) +
-					fluidRowLocs(CaseDataDto.PREGNANT, "") +
-					fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
-					fluidRowLocs(CaseDataDto.VACCINE, "") +
-					fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
-					fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
-					fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE) +
-					fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME) +
-					fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
-					fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
-					loc(PAPER_FORM_DATES_LOC) +
+			fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
+			fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+			fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+			fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
+			fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
+			locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
+			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
+			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
+			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) + 
+			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
+			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
+			fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
+			fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
+			loc(MEDICAL_INFORMATION_LOC) +
+					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "")
+					+
+			fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
+			fluidRowLocs(CaseDataDto.VACCINE, "") +
+			fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
+			fluidRowLocs(SMALLPOX_VACCINATION_SCAR_IMG) +
+			fluidRowLocs(CaseDataDto.VACCINATION_DATE, CaseDataDto.VACCINATION_INFO_SOURCE) +
+			fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.CLINICIAN_NAME) +
+			fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
+			fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
+			loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE,
 							CaseDataDto.NATIONAL_LEVEL_DATE)
 					+ loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
@@ -176,9 +177,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private DateField quarantineTo;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
+	private OptionGroup pregnant;
+	private OptionGroup trimester;
 
-	public CaseDataForm(PersonDto person, Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode, boolean isInJurisdiction) {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight, false,
+	public CaseDataForm(PersonDto person, Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, false,
 				new FieldVisibilityCheckers()
 						.add(new DiseaseFieldVisibilityChecker(disease))
 						.add(new OutbreakFieldVisibilityChecker(viewMode)),
@@ -329,9 +332,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		additionalDetails.setRows(3);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		addFields(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES,
-				CaseDataDto.VACCINATION_INFO_SOURCE, CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR,
-				CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.VACCINATION_DATE);
+		pregnant = addField(CaseDataDto.PREGNANT, OptionGroup.class);
+		pregnant.addValueChangeListener(e -> handleTrimesterField());
+		addField(CaseDataDto.POSTPARTUM, OptionGroup.class);
+		trimester = addField(CaseDataDto.TRIMESTER, OptionGroup.class);
+		trimester.setVisible(false);
+
+		addFields(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
+				CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
+				CaseDataDto.VACCINATION_DATE);
 
 		// Set initial visibilities & accesses
 
@@ -356,7 +365,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// dynamically setting the visibility
 
 		if (isVisibleAllowed(CaseDataDto.PREGNANT)) {
-			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT);
+			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM);
 		}
 		if (isVisibleAllowed(CaseDataDto.VACCINATION_DOSES)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION,
@@ -530,6 +539,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(false, CaseDataDto.EXTERNAL_ID);
 			}
 		});
+	}
+
+	private void handleTrimesterField() {
+		if (YesNoUnknown.YES.equals(pregnant.getValue())) {
+			trimester.setVisible(true);
+		} else {
+			trimester.setVisible(false);
+			trimester.clear();
+		}
 	}
 
 	private void updateQuarantineFields() {

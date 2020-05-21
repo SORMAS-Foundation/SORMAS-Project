@@ -47,6 +47,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -141,6 +142,8 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String REPORTING_TYPE = "reportingType";
+	public static final String POSTPARTUM = "postpartum";
+	public static final String TRIMESTER = "trimester";
 
 	private Person person;
 	private String description;
@@ -238,6 +241,9 @@ public class Case extends CoreAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private ReportingType reportingType;
+
+	private YesNoUnknown postpartum;
+	private Trimester trimester;
 
 	private List<Task> tasks;
 
@@ -996,6 +1002,24 @@ public class Case extends CoreAdo {
 
 	public void setReportingType(ReportingType reportingType) {
 		this.reportingType = reportingType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPostpartum() {
+		return postpartum;
+	}
+
+	public void setPostpartum(YesNoUnknown postpartum) {
+		this.postpartum = postpartum;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
 	}
 
 	private CaseJurisdictionDto createJurisdictionDto(){

@@ -39,7 +39,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -76,8 +75,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
 			fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     
-    public UserEditForm(boolean create, UserRight editOrCreateUserRight) {
-        super(UserDto.class, UserDto.I18N_PREFIX, editOrCreateUserRight, true, new FieldVisibilityCheckers(), new FieldAccessCheckers());
+    public UserEditForm(boolean create) {
+        super(UserDto.class, UserDto.I18N_PREFIX, true, new FieldVisibilityCheckers(), new FieldAccessCheckers());
 
         setWidth(640, Unit.PIXELS);
         

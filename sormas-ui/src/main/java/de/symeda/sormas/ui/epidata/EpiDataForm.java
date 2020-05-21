@@ -138,8 +138,8 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private final Disease disease;
 	private final ViewMode viewMode;
 	
-	public EpiDataForm(Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, editOrCreateUserRight,
+	public EpiDataForm(Disease disease, ViewMode viewMode) {
+		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX,
 				new FieldVisibilityCheckers()
 						.add(new DiseaseFieldVisibilityChecker(disease)));
 		this.disease = disease;

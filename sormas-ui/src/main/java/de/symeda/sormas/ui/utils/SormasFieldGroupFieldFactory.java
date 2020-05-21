@@ -26,15 +26,13 @@ import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
-	private static final long serialVersionUID = 471700572643936674L;
 
-	private final UserRight editOrCreateUserRight;
+	private static final long serialVersionUID = 471700572643936674L;
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private final FieldAccessCheckers fieldAccessCheckers;
 
-	SormasFieldGroupFieldFactory(UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
-		this.editOrCreateUserRight = editOrCreateUserRight;
+	SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
@@ -86,10 +84,10 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) field;
 		}
 		else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationEditForm(editOrCreateUserRight, fieldVisibilityCheckers, fieldAccessCheckers);
-		} 
+			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
+		}
 		else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
-			return (T) new HealthConditionsForm(editOrCreateUserRight);
+			return (T) new HealthConditionsForm();
 		}
 		else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 			DateTimeField field = new DateTimeField();
@@ -172,4 +170,5 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
             newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
         }
 	}
+
 }

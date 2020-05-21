@@ -12,7 +12,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
@@ -30,8 +29,8 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 	
 	private boolean create;
 	
-	public PointOfEntryForm(UserRight editOrCreateUserRight, boolean create) {
-		super(PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX, editOrCreateUserRight, false);
+	public PointOfEntryForm(boolean create) {
+		super(PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX, false);
 		this.create = create;
 		
 		setWidth(540, Unit.PIXELS);

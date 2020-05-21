@@ -1,5 +1,13 @@
 package de.symeda.sormas.ui.utils;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.div;
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
@@ -7,15 +15,14 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.AbstractTextField;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.PopupDateField;
+import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.*;
 
 public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	public static final String FILTER_ITEM_STYLE = "filter-item";
@@ -28,7 +35,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	private boolean skipChangeEvents;
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
-		super(type, propertyI18nPrefix, null,
+		super(type, propertyI18nPrefix,
 				new SormasFieldGroupFieldFactory(null, null, null), true);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();

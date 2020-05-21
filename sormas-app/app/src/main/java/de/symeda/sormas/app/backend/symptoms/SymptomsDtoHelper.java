@@ -221,6 +221,10 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
         target.setOtherComplications(source.getOtherComplications());
         target.setOtherComplicationsText(source.getOtherComplicationsText());
+        target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
+        target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+        target.setFastHeartRate(source.getFastHeartRate());
+        target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
     }
 
     @Override
@@ -388,5 +392,9 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
         target.setOtherComplications(source.getOtherComplications());
         target.setOtherComplicationsText(source.getOtherComplicationsText());
+        target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
+        target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+        target.setFastHeartRate(source.getFastHeartRate());
+        target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
     }
 }

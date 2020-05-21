@@ -31,11 +31,11 @@ public class ClinicalCourseController {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.build(clinicalCourse, caze.getDisease());
 		ClinicalVisitForm form = new ClinicalVisitForm(true, clinicalVisit.getDisease(),
-				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
-				UserRight.CLINICAL_VISIT_CREATE);
+				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()));
 		form.setValue(clinicalVisit);
 
-		final CommitDiscardWrapperComponent<ClinicalVisitForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<ClinicalVisitForm> view = new CommitDiscardWrapperComponent<>(form, 
+				UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_CREATE), form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
 		view.addCommitListener(new CommitListener() {
 			@Override
@@ -61,11 +61,11 @@ public class ClinicalCourseController {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = FacadeProvider.getClinicalVisitFacade().getClinicalVisitByUuid(clinicalVisitIndex.getUuid());
 		ClinicalVisitForm form = new ClinicalVisitForm(false, clinicalVisit.getDisease(), 
-				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), 
-				UserRight.CLINICAL_VISIT_EDIT);
+				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()));
 		form.setValue(clinicalVisit);
 
-		final CommitDiscardWrapperComponent<ClinicalVisitForm> view = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<ClinicalVisitForm> view = new CommitDiscardWrapperComponent<>(form, 
+				UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_EDIT), form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditClinicalVisit));
 		// Clinical visit form is too big for typical screens

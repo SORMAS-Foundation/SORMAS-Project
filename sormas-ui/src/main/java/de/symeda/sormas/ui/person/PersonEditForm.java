@@ -33,6 +33,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -60,7 +62,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
@@ -148,8 +149,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
 									loc(PersonDto.GENERAL_PRACTITIONER_DETAILS));
 
-	public PersonEditForm(Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, ViewMode viewMode, boolean isInJurisdiction) {
-		super(PersonDto.class, PersonDto.I18N_PREFIX, editOrCreateUserRight, false,
+	public PersonEditForm(Disease disease, String diseaseDetails, ViewMode viewMode, boolean isInJurisdiction) {
+		super(PersonDto.class, PersonDto.I18N_PREFIX, false,
 				new FieldVisibilityCheckers()
 						.add(new DiseaseFieldVisibilityChecker(disease))
 						.add(new OutbreakFieldVisibilityChecker(viewMode)),
@@ -665,14 +666,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void fillDeathAndBurialFields(AbstractSelect deathPlaceType, TextField deathPlaceDesc, TextField burialPlaceDesc) {
+
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
 			deathPlaceType.setValue(DeathPlaceType.OTHER);
-			if (deathPlaceDesc.isVisible() && (deathPlaceDesc.getValue() == null || deathPlaceDesc.getValue().isEmpty())) {
+			if (deathPlaceDesc.isVisible() && StringUtils.isBlank(deathPlaceDesc.getValue())) {
 				deathPlaceDesc.setValue(getValue().getAddress().toString());
 			}
 		}
 
-		if (burialPlaceDesc.isVisible() && (burialPlaceDesc.getValue() == null || deathPlaceDesc.getValue().isEmpty())) {
+		if (burialPlaceDesc.isVisible() && StringUtils.isBlank(burialPlaceDesc.getValue())) {
 			burialPlaceDesc.setValue(getValue().getAddress().toString());
 		}
 	}

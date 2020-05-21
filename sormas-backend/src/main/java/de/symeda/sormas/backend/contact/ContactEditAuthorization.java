@@ -41,6 +41,10 @@ public class ContactEditAuthorization {
 		if (contactJurisdiction.getCaseJurisdiction() != null && caseEditAuthorization.isInJurisdiction(contactJurisdiction.getCaseJurisdiction())) {
 			return true;
 		}
+		// TODO - merge
+//        if (contact.getCaze() != null) {
+//            return caseEditAuthorization.caseEditAllowedCheck(contact.getCaze());
+//        }
 
 		if (userService.hasAnyRole(UserRole.getSupervisorRoles())) {
 			return DataHelper.isSame(wrapUuid(contactJurisdiction.getRegionUuId()), user.getRegion());

@@ -23,7 +23,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.time.Month;
 import java.util.Arrays;
 
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.joda.time.LocalDate;
 
 import com.vaadin.shared.ui.ContentMode;
@@ -56,11 +55,11 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -101,8 +100,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	/**
 	 * TODO use disease and case relation information given in ContactDto
 	 */
-	public ContactCreateForm(UserRight editOrCreateUserRight, Disease disease, boolean hasCaseRelation) {
-		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
+	public ContactCreateForm(Disease disease, boolean hasCaseRelation) {
+		super(ContactDto.class, ContactDto.I18N_PREFIX);
 
 		this.disease = disease;
 		this.hasCaseRelation = new Boolean(hasCaseRelation);

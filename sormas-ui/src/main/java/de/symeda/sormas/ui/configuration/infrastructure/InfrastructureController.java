@@ -119,9 +119,7 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<FacilityEditForm> getFacilityEditComponent(FacilityDto facility, boolean laboratory) {
 		boolean isNew = facility == null;
-		FacilityEditForm editForm = new FacilityEditForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT,
-				isNew, laboratory);
+		FacilityEditForm editForm = new FacilityEditForm(isNew, laboratory);
 		if (isNew) {
 			facility = FacilityDto.build();
 			if (laboratory) {
@@ -132,7 +130,7 @@ public class InfrastructureController {
 		editForm.setValue(facility);
 
 		final CommitDiscardWrapperComponent<FacilityEditForm> editView = new CommitDiscardWrapperComponent<FacilityEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -158,8 +156,7 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<RegionEditForm> getRegionEditComponent(RegionDto region) {
 		boolean isNew = region == null;
-		RegionEditForm editForm = new RegionEditForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		RegionEditForm editForm = new RegionEditForm(isNew);
 		if (isNew) {
 			region = RegionDto.build();
 		}
@@ -167,7 +164,7 @@ public class InfrastructureController {
 		editForm.setValue(region);
 
 		final CommitDiscardWrapperComponent<RegionEditForm> editView = new CommitDiscardWrapperComponent<RegionEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -188,8 +185,7 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<DistrictEditForm> getDistrictEditComponent(DistrictDto district) {
 		boolean isNew = district == null;
-		DistrictEditForm editForm = new DistrictEditForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		DistrictEditForm editForm = new DistrictEditForm(isNew);
 		if (isNew) {
 			district = DistrictDto.build();
 		}
@@ -197,7 +193,7 @@ public class InfrastructureController {
 		editForm.setValue(district);
 
 		final CommitDiscardWrapperComponent<DistrictEditForm> editView = new CommitDiscardWrapperComponent<DistrictEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -218,8 +214,7 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<CommunityEditForm> getCommunityEditComponent(CommunityDto community) {
 		boolean isNew = community == null;
-		CommunityEditForm editForm = new CommunityEditForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		CommunityEditForm editForm = new CommunityEditForm(isNew);
 		if (isNew) {
 			community = CommunityDto.build();
 		}
@@ -227,7 +222,7 @@ public class InfrastructureController {
 		editForm.setValue(community);
 
 		final CommitDiscardWrapperComponent<CommunityEditForm> editView = new CommitDiscardWrapperComponent<CommunityEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -248,15 +243,15 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<PointOfEntryForm> getPointOfEntryEditComponent(PointOfEntryDto pointOfEntry) {
 		boolean isNew = pointOfEntry == null;
-		PointOfEntryForm form = new PointOfEntryForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		PointOfEntryForm form = new PointOfEntryForm(isNew);
 		if (isNew) {
 			pointOfEntry = PointOfEntryDto.build();
 		}
 
 		form.setValue(pointOfEntry);
 
-		final CommitDiscardWrapperComponent<PointOfEntryForm> view = new CommitDiscardWrapperComponent<PointOfEntryForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<PointOfEntryForm> view = new CommitDiscardWrapperComponent<PointOfEntryForm>(form, 
+				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), form.getFieldGroup());
 		view.addCommitListener(() -> {
 			FacadeProvider.getPointOfEntryFacade().save(form.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);

@@ -54,12 +54,12 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	private List<Field<?>> visibleAllowedFields = new ArrayList<>();
 	private List<Field<?>> editableAllowedFields = new ArrayList<>();
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, true, null, null);
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
+		this(type, propertyI18nPrefix, true, null, null);
 	}
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, addFields, null, null);
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, boolean addFields) {
+		this(type, propertyI18nPrefix, addFields, null, null);
 	}
 
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers) {
