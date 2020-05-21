@@ -68,7 +68,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 		
 		visitsQuery.where(and(cb, 
 				contactService.createUserFilter(cb, visitsQuery, contactRoot), 
-				contactService.createActiveContactsFilter(cb, contactRoot)));
+				contactService.createActiveContactsFilter(cb, contactRoot),
+				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
 		visitsQuery.select(visitJoin.get(Visit.UUID));
 		visitsQuery.distinct(true);
 

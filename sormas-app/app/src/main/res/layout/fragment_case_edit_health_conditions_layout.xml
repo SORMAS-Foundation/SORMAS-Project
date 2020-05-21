@@ -66,15 +66,15 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/healthConditions_hepatitis"
-                    app:useAbbreviations="true"
-                    app:value="@={data.hepatitis}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/healthConditions_diabetes"
                     app:useAbbreviations="true"
                     app:value="@={data.diabetes}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_hepatitis"
+                    app:useAbbreviations="true"
+                    app:value="@={data.hepatitis}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
@@ -83,6 +83,12 @@
                 android:id="@+id/healthConditions_immunodeficiencyOtherThanHiv"
                 app:useAbbreviations="true"
                 app:value="@={data.immunodeficiencyOtherThanHiv}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/healthConditions_immunodeficiencyIncludingHiv"
+                app:useAbbreviations="true"
+                app:value="@={data.immunodeficiencyIncludingHiv}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
@@ -150,15 +156,15 @@
                 android:orientation="horizontal">
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/healthConditions_chronicHeartFailure"
-                    app:useAbbreviations="true"
-                    app:value="@={data.chronicHeartFailure}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/healthConditions_chronicPulmonaryDisease"
                     app:useAbbreviations="true"
                     app:value="@={data.chronicPulmonaryDisease}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/healthConditions_chronicHeartFailure"
+                    app:useAbbreviations="true"
+                    app:value="@={data.chronicHeartFailure}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
@@ -187,7 +193,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                     android:id="@+id/healthConditions_cardiovascularDiseaseIncludingHypertension"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:useAbbreviations="true"

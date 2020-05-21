@@ -201,6 +201,10 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState skinUlcers;
 	private SymptomState inabilityToWalk;
 	private SymptomState inDrawingOfChestWall;
+	private SymptomState respiratoryDiseaseVentilation;
+	private SymptomState generalSignsOfDisease;
+	private SymptomState fastHeartRate;
+	private SymptomState oxygenSaturationLower94;
 
 	// complications
 	private SymptomState alteredConsciousness;
@@ -1655,6 +1659,42 @@ public class Symptoms extends AbstractDomainObject {
 		this.coughWithHeamoptysis = coughWithHeamoptysis;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SymptomState getRespiratoryDiseaseVentilation() {
+		return respiratoryDiseaseVentilation;
+	}
+
+	public void setRespiratoryDiseaseVentilation(SymptomState respiratoryDiseaseVentilation) {
+		this.respiratoryDiseaseVentilation = respiratoryDiseaseVentilation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getGeneralSignsOfDisease() {
+		return generalSignsOfDisease;
+	}
+
+	public void setGeneralSignsOfDisease(SymptomState generalSignsOfDisease) {
+		this.generalSignsOfDisease = generalSignsOfDisease;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFastHeartRate() {
+		return fastHeartRate;
+	}
+
+	public void setFastHeartRate(SymptomState fastHeartRate) {
+		this.fastHeartRate = fastHeartRate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getOxygenSaturationLower94() {
+		return oxygenSaturationLower94;
+	}
+
+	public void setOxygenSaturationLower94(SymptomState oxygenSaturationLower94) {
+		this.oxygenSaturationLower94 = oxygenSaturationLower94;
+	}
+
 	@Enumerated
 	public SymptomState getOtherComplications() {
 		return otherComplications;
@@ -1824,6 +1864,10 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, skinUlcers, SymptomsDto.SKIN_ULCERS);
 		appendYesSymptom(string, inabilityToWalk, SymptomsDto.INABILITY_TO_WALK);
 		appendYesSymptom(string, inDrawingOfChestWall, SymptomsDto.IN_DRAWING_OF_CHEST_WALL);
+		appendYesSymptom(string, respiratoryDiseaseVentilation, SymptomsDto.RESPIRATORY_DISEASE_VENTILATION);
+		appendYesSymptom(string, generalSignsOfDisease, SymptomsDto.GENERAL_SIGNS_OF_DISEASE);
+		appendYesSymptom(string, fastHeartRate, SymptomsDto.FAST_HEART_RATE);
+		appendYesSymptom(string, oxygenSaturationLower94, SymptomsDto.OXYGEN_SATURATION_LOWER_94);
 		appendNotNullValue(string, otherComplicationsText, SymptomsDto.OTHER_COMPLICATIONS_TEXT);
 
 		// symptomsComments;

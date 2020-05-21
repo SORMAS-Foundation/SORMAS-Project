@@ -44,6 +44,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 
 public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
@@ -401,13 +402,19 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		try {
 			final java.lang.reflect.Field declaredField =
 					getType().getDeclaredField(propertyId.toString());
+			final String countryLocale = FacadeProvider.getConfigFacade().getCountryLocale();
 			final Predicate<String> currentCountryIsHiddenForField =
-					country -> FacadeProvider.getConfigFacade().getCountryLocale().startsWith(country);
-			if (declaredField.isAnnotationPresent(HideForCountries.class) &&
-					Arrays.asList(declaredField.getAnnotation(HideForCountries.class).countries())
+					country -> countryLocale.startsWith(country);
+					if (declaredField.isAnnotationPresent(HideForCountries.class) &&
+							Arrays.asList(declaredField.getAnnotation(HideForCountries.class).countries())
 							.stream().anyMatch(currentCountryIsHiddenForField)) {
-				return true;
-			}
+						return true;
+					}
+					if (declaredField.isAnnotationPresent(HideForCountriesExcept.class) &&
+							Arrays.asList(declaredField.getAnnotation(HideForCountriesExcept.class).countries())
+							.stream().noneMatch(currentCountryIsHiddenForField)) {
+						return true;
+					}
 		} catch (NoSuchFieldException e) {
 			// This exception is fine because it should only happen for UUID fields
 		}

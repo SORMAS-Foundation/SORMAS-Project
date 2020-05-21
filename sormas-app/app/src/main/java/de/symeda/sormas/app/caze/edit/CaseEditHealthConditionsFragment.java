@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.app.caze.edit;
 
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -28,6 +29,7 @@ public class CaseEditHealthConditionsFragment extends BaseEditFragment<FragmentC
 
     public static final String TAG = CaseEditHealthConditionsFragment.class.getSimpleName();
 
+    private Case caze;
     private HealthConditions record;
 
     // Static methods
@@ -40,13 +42,18 @@ public class CaseEditHealthConditionsFragment extends BaseEditFragment<FragmentC
 
     @Override
     protected void prepareFragmentData() {
-        Case caze = getActivityRootData();
+        caze = getActivityRootData();
         record = caze.getClinicalCourse().getHealthConditions();
     }
 
     @Override
     public void onLayoutBinding(FragmentCaseEditHealthConditionsLayoutBinding contentBinding) {
         contentBinding.setData(record);
+    }
+
+    @Override
+    public void onAfterLayoutBinding(FragmentCaseEditHealthConditionsLayoutBinding contentBinding) {
+        setVisibilityByDisease(HealthConditionsDto.class, caze.getDisease(), contentBinding.mainContent);
     }
 
     @Override
