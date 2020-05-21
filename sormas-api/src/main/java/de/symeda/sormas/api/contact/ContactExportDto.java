@@ -141,8 +141,10 @@ public class ContactExportDto implements Serializable {
 		this.reportingUserUuid = reportingUserUuid;
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUui, caseDistrictUud,
-				caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
+
+		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null ? null : new CaseJurisdictionDto(
+				caseReportingUserUuid, caseRegionUui, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
 	}
 
 	public ContactReferenceDto toReference() {

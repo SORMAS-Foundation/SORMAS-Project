@@ -451,15 +451,17 @@ public class PersonFacadeEjb implements PersonFacade {
 	private PersonDto convertToDto(Person person) {
 		PersonDto dto = toDto(person);
 
-		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
-		List<Contact> personContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(person.getUuid())), null);
+		if (dto != null) {
+			List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
+			List<Contact> personContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(person.getUuid())), null);
 
-		boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseEditAuthorization.isInJurisdiction(c))
-				|| personContacts.stream().anyMatch(c -> contactEditAuthorization.isInJurisdiction(c));
+			boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseEditAuthorization.isInJurisdiction(c))
+					|| personContacts.stream().anyMatch(c -> contactEditAuthorization.isInJurisdiction(c));
 
-		pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
-			pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
-		});
+			pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
+				pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
+			});
+		}
 
 		return dto;
 	}

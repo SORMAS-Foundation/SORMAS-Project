@@ -103,8 +103,10 @@ public class ContactIndexDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 		this.caseClassification = caseClassification;
 		this.visitCount = visitCount;
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid,
-				new CaseJurisdictionDto(caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
+
+		CaseJurisdictionDto caseJurisdiction = cazeUuid == null ? null : new CaseJurisdictionDto(
+				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
 	}
 
 	public String getUuid() {
@@ -258,9 +260,11 @@ public class ContactIndexDto implements Serializable {
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 	}
+
 	public int getVisitCount() {
 		return visitCount;
 	}
+
 	public void setVisitCount(int visitCount) {
 		this.visitCount = visitCount;
 	}

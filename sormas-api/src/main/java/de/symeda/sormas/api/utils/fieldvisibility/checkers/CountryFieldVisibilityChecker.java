@@ -19,9 +19,11 @@
 package de.symeda.sormas.api.utils.fieldvisibility.checkers;
 
 import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.FieldBasedChecker {
 
@@ -33,17 +35,28 @@ public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.Fi
 
 	@Override
 	public boolean isVisible(Field field) {
-		if (!field.isAnnotationPresent(HideForCountries.class)) {
+		if (field.isAnnotationPresent(HideForCountries.class)) {
+			String[] countries = field.getAnnotation(HideForCountries.class).countries();
+			for (String country : countries) {
+				if (countryLocale.startsWith(country)) {
+					return false;
+				}
+			}
+
 			return true;
 		}
 
-		String[] countries = field.getAnnotation(HideForCountries.class).countries();
-		for (String country : countries) {
-			if (countryLocale.startsWith(country)) {
-				return true;
+		if(field.isAnnotationPresent(HideForCountriesExcept.class)){
+			String[] countries = field.getAnnotation(HideForCountriesExcept.class).countries();
+			for (String country : countries) {
+				if(countryLocale.startsWith(country)){
+					return true;
+				}
 			}
+
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 }

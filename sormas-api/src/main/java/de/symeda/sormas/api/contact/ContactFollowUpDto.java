@@ -48,8 +48,9 @@ public class ContactFollowUpDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
 
-		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid,
-				new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUud, caseHealthFacilityUuid, casePointOfEntryUuid));
+		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid == null ? null : new CaseJurisdictionDto(
+				caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUud, caseHealthFacilityUuid, casePointOfEntryUuid);
+		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
 	}
 
 	public void initVisitSize(int i) {

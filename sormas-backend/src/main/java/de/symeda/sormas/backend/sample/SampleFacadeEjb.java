@@ -589,10 +589,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	private SampleDto convertToDto(Sample source) {
 		SampleDto dto = toDto(source);
 
-		Boolean isInJurisdiction = caseEditAuthorization.isInJurisdiction(source.getAssociatedCase());
-		pseudonymizationService.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
-			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), isInJurisdiction, null);
-		});
+		if (dto != null) {
+			Boolean isInJurisdiction = caseEditAuthorization.isInJurisdiction(source.getAssociatedCase());
+			pseudonymizationService.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
+				pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), isInJurisdiction, null);
+			});
+		}
 
 		return dto;
 	}
