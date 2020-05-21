@@ -412,9 +412,9 @@ public class ContactFacadeEjb implements ContactFacade {
 					exportContact.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
 					exportContact.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				}
-			}
 
-			pseudonymizationService.pseudonymizeDto(ContactExportDto.class, exportDto, contactEditAuthorization.isInJurisdiction(exportDto.getJurisdiction()), null);
+				pseudonymizationService.pseudonymizeDto(ContactExportDto.class, exportContact, contactEditAuthorization.isInJurisdiction(exportContact.getJurisdiction()), null);
+			}
 		}
 
 		return exportContacts;
@@ -608,7 +608,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
 				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, contactFollowUpDto.getPerson(),
-						contactEditAuthorization.isInJurisdiction(followUpDto.getJurisdiction()), null);
+						contactEditAuthorization.isInJurisdiction(contactFollowUpDto.getJurisdiction()), null);
 			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
@@ -1076,7 +1076,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		final Predicate userFilter = contactService.createUserFilter(cb, cq, contactRoot);
 
 		final PersonReferenceDto person = criteria.getPerson();
-		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) : null;
+		final Predicate samePersonFilter = person != null ? cb.equal(joins.getPerson().get(Person.UUID), person.getUuid()) : null;
 
 		final Disease disease = criteria.getDisease();
 		final Predicate diseaseFilter = disease != null ? cb.equal(contactRoot.get(Contact.DISEASE), disease) : null;

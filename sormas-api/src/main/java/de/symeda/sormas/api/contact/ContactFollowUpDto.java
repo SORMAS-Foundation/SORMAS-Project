@@ -32,9 +32,6 @@ public class ContactFollowUpDto implements Serializable {
 	private Disease disease;
 	private VisitResult[] visitResults;
 
-	private String reportingUserUuid;
-	private String regionUuid;
-	private String districtUuid;
 	private ContactJurisdictionDto jurisdiction;
 
 	public ContactFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
@@ -50,17 +47,14 @@ public class ContactFollowUpDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
+
+		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid,
+				new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUud, caseHealthFacilityUuid, casePointOfEntryUuid));
 	}
 
 	public void initVisitSize(int i) {
 		visitResults = new VisitResult[i];
 		Arrays.fill(visitResults, VisitResult.NOT_PERFORMED);
-
-		this.reportingUserUuid = reportingUserUuid;
-		this.regionUuid = regionUuid;
-		this.districtUuid = districtUuid;
-		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid,
-				new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUud, caseHealthFacilityUuid, casePointOfEntryUuid));
 	}
 
 	public String getUuid() {
@@ -125,18 +119,6 @@ public class ContactFollowUpDto implements Serializable {
 
 	public void setVisitResults(VisitResult[] visitResults) {
 		this.visitResults = visitResults;
-	}
-
-	public String getReportingUserUuid() {
-		return reportingUserUuid;
-	}
-
-	public String getRegionUuid() {
-		return regionUuid;
-	}
-
-	public String getDistrictUuid() {
-		return districtUuid;
 	}
 
 	public ContactJurisdictionDto getJurisdiction() {

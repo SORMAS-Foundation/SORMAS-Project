@@ -62,12 +62,12 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		this(type, propertyI18nPrefix, addFields, null, null);
 	}
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, FieldVisibilityCheckers fieldVisibilityCheckers) {
-		this(type, propertyI18nPrefix, editOrCreateUserRight, true, fieldVisibilityCheckers, null);
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
+		this(type, propertyI18nPrefix, true, fieldVisibilityCheckers, null);
 	}
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, UserRight editOrCreateUserRight, boolean addFields, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
-		super(type, propertyI18nPrefix, editOrCreateUserRight, new SormasFieldGroupFieldFactory(editOrCreateUserRight, fieldVisibilityCheckers, fieldAccessCheckers), false);
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, boolean addFields, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, fieldAccessCheckers), false);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
 

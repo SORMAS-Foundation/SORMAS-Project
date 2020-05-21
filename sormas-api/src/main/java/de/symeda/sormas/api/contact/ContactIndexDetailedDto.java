@@ -34,19 +34,18 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private String phone;
 	private UserReferenceDto reportingUser;
 
-	public ContactIndexDetailedDto(String uuid, String firstName, String lastName, String cazeUuid, Disease disease, String diseaseDetails,
+	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName, String cazeUuid, Disease disease, String diseaseDetails,
 								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid,
 								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
-								   ContactClassification contactClassification, ContactStatus contactStatus,
-								   FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid, Date reportDateTime,
-								   CaseClassification caseClassification,
+								   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
+								   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+								   CaseClassification caseClassification, int visitCount,
+								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
+								   String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String districtName, String city, String address, String postalCode, String phone,
-								   String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName, int visitCount) {
-		super(uuid, firstName, lastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
-				regionUuid, districtUuid, lastContactDate, contactCategory, contactProximity, contactClassification,
-				contactStatus, followUpStatus, followUpUntil, contactOfficerUuid, reportDateTime, caseClassification, visitCount);
-		// TODO - merge
+								   String reportingUserFirstName, String reportingUserLastName) {
+		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification, visitCount, caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.districtName = districtName;

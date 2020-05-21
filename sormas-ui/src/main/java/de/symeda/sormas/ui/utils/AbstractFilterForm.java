@@ -36,7 +36,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
 		super(type, propertyI18nPrefix,
-				new SormasFieldGroupFieldFactory(null, null, null), true);
+				new SormasFieldGroupFieldFactory(null, null), true);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
