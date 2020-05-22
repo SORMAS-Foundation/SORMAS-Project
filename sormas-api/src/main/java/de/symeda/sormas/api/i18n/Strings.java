@@ -627,6 +627,11 @@ public interface Strings {
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
 	String promptSamplesSearchField = "promptSamplesSearchField";
+	String promptSampleDateFrom = "promptSampleDateFrom";
+	String promptSampleDateTo = "promptSampleDateTo";
+	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";
+	String promptSampleEpiWeekTo = "promptSampleEpiWeekTo";
+	String promtSampleDataType = "promtSampleDataType";
 	String promptSearch = "promptSearch";
 	String promptSelectPeriod = "promptSelectPeriod";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
