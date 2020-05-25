@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -82,10 +83,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
     private PathogenTestService pathogenTestService;
     @EJB
     private SampleService sampleService;
-    @EJB
-    private RegionService regionService;
-    @EJB
-    private DistrictService districtService;
     @EJB
     private FacilityService facilityService;
     @EJB
@@ -318,21 +315,25 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
         final Sample sample = sampleService.getByUuid(sampleUuid);
         final Case caze = sample.getAssociatedCase();
         final Contact contact = sample.getAssociatedContact();
+        final List<User> messageRecipients = new ArrayList<>();
 
         if (caze != null) {
             final Region region = caze.getRegion();
             final Disease disease = caze.getDisease();
-            final List<User> messageRecipients = userService.getAllByRegionAndUserRoles(region,
-                    UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+            messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region,
+                    UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR));
             sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease, messageRecipients);
         }
 
-        if (contact != null){
+        if (contact != null) {
             final Region region = contact.getRegion() != null ? contact.getRegion() : contact.getCaze().getRegion();
-            final Disease disease = contact.getDisease() != null ? contact.getDisease() : contact.getCaze().getDisease();
-            final List<User> messageRecipients = userService.getAllByRegionAndUserRoles(region,
-                    UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
-            sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease, messageRecipients);
+            final Disease disease = contact.getDisease() != null ? contact.getDisease() :
+                    contact.getCaze().getDisease();
+            messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region,
+                    UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR).stream()
+                    .filter(user -> !messageRecipients.contains(user)).collect(Collectors.toList()));
+            sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease,
+                    messageRecipients);
         }
     }
 
